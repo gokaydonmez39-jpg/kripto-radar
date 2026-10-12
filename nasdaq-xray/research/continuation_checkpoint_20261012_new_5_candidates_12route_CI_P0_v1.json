@@ -1,0 +1,177 @@
+{
+  "schema": "XRAY_C417_12_ROUTE_FIVE_NONADMITTED_SOURCE_LIVE_CONTINUATION_V1",
+  "audit_date": "2026-10-12",
+  "branch": "main",
+  "baseline_main_commit_at_checkpoint_creation": "b1b406dae7250150f3907ed4a36c0c4a7fc28cd0",
+  "source_inventory_commit": "b1b406dae7250150f3907ed4a36c0c4a7fc28cd0",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "policy_successor_C418": "PROPOSAL_INACTIVE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "asof": "2026-10-09",
+  "source_current_tracked_artifacts": {
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "asof": "2026-10-09",
+      "pass": 514,
+      "unknown": 0,
+      "blocked": 0
+    },
+    "history": {
+      "path": "nasdaq-xray/canonical_current_history.json",
+      "git_blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "asof": "2026-10-07",
+      "pass": 460,
+      "production_current": false
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "git_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof": "2026-10-07",
+      "status": "PARTIAL_UNKNOWN",
+      "r92_count": 0
+    },
+    "overlay": {
+      "path": "nasdaq-xray/canonical_current_final_gate_overlay.json",
+      "git_blob_sha": "ed9400c1edf8527ed385a20af6d2d14c66018709",
+      "asof": "2026-10-07",
+      "artifact_binding_exact": false,
+      "live_blob_mismatch_keys": [
+        "master",
+        "full_state",
+        "price"
+      ]
+    },
+    "g9": {
+      "path": "nasdaq-xray/g9_entitlement_authority.json",
+      "git_blob_sha": "b26aa17cc13b4e8b7038079d0bc9034f46a8454",
+      "status": "BLOCKED_STRICT_PERMANENT_ZERO"
+    },
+    "inventory": {
+      "path": "nasdaq-xray/c418_provider_inventory_20261012.json",
+      "git_blob_sha": "ad18256e3fd9d58dddc8daca45a3e4ecad3ead6a",
+      "active_route_count": 12,
+      "nonadmitted_new_discoveries": 5
+    }
+  },
+  "shadow_history_prior_checkpoint": {
+    "file": "nasdaq-xray/research/continuation_checkpoint_20261012_p0_primary_mc_history_deepverified_v1.json",
+    "asof": "2026-10-09",
+    "full_260_52_stocks_research_only": 497,
+    "short_stocks": 17,
+    "history_production_pass": 0,
+    "SEC_mc_shadow_shares_vintage": 346,
+    "SEC_mc_unknown": 168,
+    "primary_mc": 0
+  },
+  "connected_provider_real_probe": {
+    "provider": "FINANCIAL_DATASETS",
+    "sample_ticker": "AAPL",
+    "facts": "UNAUTHORIZED",
+    "financial_metric_snapshot": "CURRENT_BALANCE_0_USD",
+    "price_history": "CURRENT_BALANCE_0_USD",
+    "data_obtained": false,
+    "balance_purchase": false
+  },
+  "new_nonadmitted_sources": [
+    "INTRINIO_DIRECT",
+    "FINANCIAL_DATASETS_CONNECTED",
+    "DATABENTO",
+    "YFINANCE_YAHOO",
+    "EDGARTOOLS_SEC"
+  ],
+  "businessquant": {
+    "free_calls_daily": 30,
+    "documented_historic_mc_batch_tickers": 5,
+    "minimum_calls_for_514": 103,
+    "minimum_days_if_zero_other_calls": 4,
+    "observed_9oct_primary_mc": 0,
+    "key_in_runner": false,
+    "signed_license_proof_in_runner": false,
+    "pit_filing_acceptance_proof": false
+  },
+  "latest_live_CI": {
+    "source_commit": "b1b406dae7250150f3907ed4a36c0c4a7fc28cd0",
+    "C418": {
+      "workflow_run_id": 38217523996,
+      "status": "success",
+      "artifact_id": 11733290503,
+      "github_artifact_zip_sha256": "82b3413beffba5c42aab0570d2f91520d056d36c57975ebe67065ed5516a29c9"
+    },
+    "MULTISOURCE_SHADOW": {
+      "workflow_run_id": 38217524151,
+      "status": "success",
+      "artifact_id": 11731669908,
+      "github_artifact_zip_sha256": "05f007cdadf9f82053b29751ce4fa038c44fe5c36e7bfee81a8840189819a29f"
+    },
+    "artifact_zip_independently_downloaded_and_hashed": false,
+    "workflow_success_proves_primary_mc": false
+  },
+  "pr_7": {
+    "state": "open",
+    "draft": true,
+    "rest_mergeable_value": null,
+    "rest_mergeable_state": "unknown",
+    "merge_conflict_not_independently_proven": true
+  },
+  "go_gates": {
+    "CURRENT_MC_AUTHORITY_MISSING": {
+      "status": "BLOCKED",
+      "reason": "NO_AUTHORIZED_EXACT_ASOF_PIT_514_DIRECT_PRIMARY_MC"
+    },
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN": {
+      "status": "BLOCKED",
+      "reason": "NO_CURRENT_MC_PRIMARY_TO_PROPAGATE"
+    },
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE": {
+      "status": "BLOCKED",
+      "reason": "TERMINAL_OCT7_PARTIAL_UNKNOWN"
+    },
+    "IDENTITY_PARTITION_INCOMPLETE": {
+      "status": "BLOCKED",
+      "reason": "TWELVE_MASTER_IDENTITIES_UNKNOWN"
+    },
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION": {
+      "status": "BLOCKED",
+      "reason": "HISTORY_AND_TERMINAL_OCT7_WHILE_OFFICIAL_SETTLED_IS_OCT9"
+    },
+    "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY": {
+      "status": "BLOCKED",
+      "reason": "DELAYED_HISTORY_IS_NOT_STRICT_G9"
+    },
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN": {
+      "status": "BLOCKED",
+      "reason": "NO_R92_CANONICAL_CANDIDATE_OR_VERIFIED_DEVICE_RECEIPT"
+    }
+  },
+  "next_required_evidence": [
+    "Account-bound provider right for unattended PRIVATE internal analysis/persistence and real API key configured as GitHub secret; do not put raw vendor data in public artifacts",
+    "Exact-asof (2026-10-09) market-cap with SEC acceptance-time and issuer class/ADR/corporate-action PIT independent proof; no primary promotion from date label alone",
+    "Identity UNKNOWN 12 via official CIK/filing acceptance and class membership checks",
+    "Current same-ASOF MC=>HISTORY260/WEEKLY52=>FINAL=>TERMINAL, R92/AL strict safety, strict G9 entitlement and actual delivery receipt",
+    "Independent artifact ZIP content hash/readback after vendor-authorized CI"
+  ],
+  "sources": [
+    "https://businessquant.com/pricing",
+    "https://businessquant.com/terms-of-use",
+    "https://docs.intrinio.com/documentation/web_api/getHistoricalData_v2",
+    "https://docs.openbb.co/odp/python/reference/equity/historical_market_cap/",
+    "https://www.financialdatasets.ai/pricing",
+    "https://databento.com/docs/getting-started/live",
+    "https://github.com/ranaroussi/yfinance",
+    "https://github.com/dgunning/edgartools/blob/main/edgar/docs/Filings.md",
+    "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule"
+  ],
+  "full_production_go": false,
+  "notes": "Source research and compile/selftests in Actions succeed; neither immutable ZIP bytes independently downloaded nor production same-asof 514 PRIMARY verified. No live order, purchase, AL, or phone delivery executed."
+}
