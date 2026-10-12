@@ -1,0 +1,184 @@
+{
+  "schema": "XRAY_STRICT_FULL_GO_P0_CONTINUATION_20261012_G9_2_RED_GREEN_V1",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "precheckpoint_readback_head_sha": "4a66cbeed8efd31eef33ff90d546c55faae4e86e",
+  "date": "2026-10-12",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "EXECUTION": "NONE",
+  "REAL_MONEY": "NO-GO",
+  "UNKNOWN_NEVER_PASS": true,
+  "active_successor": "C4.18_RESEARCH_ONLY_INACTIVE",
+  "full_production_go": false,
+  "current_canonical": {
+    "official_latest_complete_asof_et": "2026-10-09",
+    "master": {
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12,
+      "sha": "828c21436a836b69fe5084387e1c54446c7b5075"
+    },
+    "price": {
+      "asof": "2026-10-09",
+      "pass": 514,
+      "sha": "6f3f68fff0897d68f200ad3621c51a5071494714"
+    },
+    "history": {
+      "asof": "2026-10-07",
+      "sha": "28e182225c45c3adf4243e40eb7df7ebdb783884"
+    },
+    "terminal": {
+      "asof": "2026-10-07",
+      "primary_mc_pass": 0,
+      "registered_R92": 0,
+      "sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+    },
+    "g9": {
+      "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
+      "g9_pass": false,
+      "authority_sha": "b26aa17cc13b4e8b7038079d0bc9034f46a8454b",
+      "runtime_sha": "fb077b1177153df149e63502818d190875c0b119"
+    },
+    "account": {
+      "status": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
+      "connected_Longbridge_account_balance_error_code": 403308,
+      "connected_Longbridge_stock_positions_error_code": 403308,
+      "account_pass": false,
+      "no_private_account_values_exported": true
+    },
+    "delivery": {
+      "ledger_sha": "cb14dfc2233ff074fdaa030aee564863db401b29",
+      "deliveries": 0,
+      "phone_receipt_verified": false
+    }
+  },
+  "g9_real_software_repairs": [
+    {
+      "finding": "NAIVE_TIMESTAMP_ACCEPTED_AND_NONFINITE_QUOTES_AND_SYMBOL_COLLISION",
+      "red_commit": "50f5e43ea3bc40ec4fcf6cdd7a2a73bb804a5420",
+      "red_ci_run": 38230042595,
+      "red_reason": "NAIVE_TIMESTAMP_ACCEPTED",
+      "green_commit": "17076920fe65fa4862ab96be67b55711ab92627f",
+      "green_ci_run": 38230216370,
+      "green_ci_conclusion": "success",
+      "source_path": "nasdaq-xray/strict_g9_probe.py",
+      "safety": "NO_PROVIDER_RIGHTS_BYPASS_NO_G9_PASS"
+    },
+    {
+      "finding": "PREAUTHORITY_SHADOW_NAIVE_TIMESTAMP_AND_NAN_INF_QUOTE_ACCEPTED",
+      "red_commit": "7389d7f9e3842f24770502af5786b7271dc48f7d",
+      "red_ci_run": 38230636398,
+      "red_reason": "PREAUTH_NAIVE_TIMESTAMP_ACCEPTED",
+      "green_code_commit": "9390c1d5471b9817038a8544a7f064f906ad52c4",
+      "green_workflow_commit": "4a66cbeed8efd31eef33ff90d546c55faae4e86e",
+      "green_ci_run": 38230784333,
+      "green_ci_conclusion": "success",
+      "source_path": "nasdaq-xray/g9_preauthority_probe.py",
+      "safety": "RESEARCH_NO_G9_AUTHORITY"
+    }
+  ],
+  "new_external_primary_evidence": [
+    {
+      "provider": "INTERACTIVE_BROKERS",
+      "official": "https://api.ibkr.com/en/pricing/market-data-pricing.php",
+      "observed": "Free streaming CBOE_ONE_IEX is non-consolidated, NOT NBBO. Free 100 snapshots/month stated; dynamic fee waiver/eligibility and non-display rights not proved.",
+      "api_regulatory_snapshot": "https://www.interactivebrokers.com/docs/web-api/v1/endpoints/market-data/regulatory-snapshot",
+      "note": "Endpoint says $0.01 per regulatory snapshot unless already subscribed; cannot assume same user 514-scope unlimited G9 permanent $0.",
+      "g9_pass": false
+    },
+    {
+      "provider": "ALPACA",
+      "official": "https://docs.alpaca.markets/us/docs/about-market-data-api",
+      "observed": "Basic IEX-only realtime; SIP all-exchange realtime is paid subscription. Delayed SIP is not real-time.",
+      "g9_pass": false
+    },
+    {
+      "provider": "CLEAR_STREET",
+      "official": "https://docs.clearstreet.com/changelog/",
+      "observed": "2026-08-17 market data snapshots include bid/ask venue MIC and exchange timestamp, plus trade venue/event timestamp.",
+      "missing": "Written Turkey-client eligibility, automated unattended non-display license, permanent zero fee/balance requirement, GitHub runner credentials, same-run runtime proof",
+      "g9_pass": false
+    },
+    {
+      "provider": "WEALTHNOW",
+      "official": "https://app.wealthnow.io/docs/market-data",
+      "observed": "Free plan price_snapshot endpoint consumes 1 credit/call; fresh bid+ask/quote_as_of/last as_of schema in regular session.",
+      "missing": "Consolidated UTP SIP/NBBO upstream lineage and unconditional permanent-zero automated non-display entitlement",
+      "g9_pass": false
+    }
+  ],
+  "x_com_research": {
+    "reliable_new_signed_UTP_API_entitlement_found": false,
+    "source_promoted": false
+  },
+  "latest_real_preopen_run": {
+    "run": 38230784251,
+    "head_sha": "4a66cbeed8efd31eef33ff90d546c55faae4e86e",
+    "conclusion": "success",
+    "artifact_id": 11738755751,
+    "zip_sha256": "eb5889b260eb6e9cada9722fcb29b36e0f3cded83049fb043c89c5d5176dd6be",
+    "zip_download_and_independent_sha_verified": true,
+    "preopen_status": "PREOPEN_BLOCKED_NO_GO",
+    "official_preopen_window_not_started_at_observation": true,
+    "source_blockers": [
+      "C417_MC_PRIMARY_CHAIN_NOT_PROVEN",
+      "C417_NON_G9_PRICE_SOURCE_RELEASE_VETO",
+      "CANDIDATE_SOURCE_CHAIN_NOT_PROVEN",
+      "CANONICAL_EPOCH_STALE",
+      "FULL_RESEARCH_CHAIN_NOT_PROVEN",
+      "OFFICIAL_GUARD_STALE",
+      "ROOT_HISTORY_PARTIAL_OR_UNKNOWN"
+    ],
+    "research_go": false,
+    "registered_candidate_count": 0,
+    "device_receipt": false
+  },
+  "P0": [
+    {
+      "code": "PRIMARY_MC_514",
+      "status": "BLOCKED",
+      "external": "Authorized exact asof issuer-specific shares MC PIT evidence and independent source plus 514 source membership"
+    },
+    {
+      "code": "HISTORY_FINAL_TERMINAL",
+      "status": "BLOCKED",
+      "external": "Licensed 260 daily 52 weekly, official issuer CA PIT, exact MC/price SHA chain"
+    },
+    {
+      "code": "IDENTITY_12",
+      "status": "BLOCKED",
+      "external": "12 official historical CIK/class/listing continuity, zero intersection of these unknowns with existing 514 price PASS"
+    },
+    {
+      "code": "STRICT_G9_NBBO",
+      "status": "BLOCKED",
+      "external": "UTP National NBBO, bid ask last event timestamps, at least one implemented adapter and actual signed recurring-$0 automated non-display grant"
+    },
+    {
+      "code": "ACCOUNT_PASS",
+      "status": "BLOCKED",
+      "external": "New read-only account.read scope and fresh same-run success on balance plus stock positions"
+    },
+    {
+      "code": "R92_AND_DELIVERY",
+      "status": "BLOCKED",
+      "external": "Genuine authorized candidate with exact same asof and proof of device receipt (not GitHub issue alone)"
+    }
+  ],
+  "release_prohibition": [
+    "No automatic code/data/source promotion on a test PASS",
+    "No unproven license or fee waiver inferred from public provider documentation",
+    "No account scope workaround or private account credential in public GitHub",
+    "No experimental fake R92 or device receipt",
+    "No paid API calls/topups and no broker order execution",
+    "Current research policy C4.17 and control C4.27 remain immutable"
+  ],
+  "next_validation_priority": [
+    "Provider-signed right plus genuine unattended GitHub live NBBO quote+trade AAPL NVDA canary, then candidate-specific exact-symbol RTH witness",
+    "Independent signed/verified automated historical MC source with 514 exact cohort and publication PIT",
+    "Separate restricted Longbridge /v2 read-only account.read bootstrap by an eligible user, no trade/write scope",
+    "Full canonical MC->HISTORY->FINAL->TERMINAL refreshed on exact last completed session",
+    "Authentic verified R92 then notification service send and actual user-device delivery acknowledgment"
+  ]
+}
