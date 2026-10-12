@@ -139,5 +139,63 @@
   ],
   "all_go_gates_passed": false,
   "full_production_go": false,
-  "no_public_vendor_data_or_secrets_persisted": true
+  "no_public_vendor_data_or_secrets_persisted": true,
+  "additional_repairs": {
+    "bulk_screener_shadow": {
+      "code_path": "nasdaq-xray/c418_bq_bulk_screener_shadow.py",
+      "code_blob_sha": "32a107a01a9b9e75e9a924799f2b9dd79fc32c5b",
+      "code_commit": "aa9f60bf159bad097920a471186b0291534601c9",
+      "ci_workflow_commit": "4cbb0038c0b413caee5293ad5a7674dd82d494bd",
+      "new_workflow_sha": "28852e32219036962c8cbf8b5ab138bbd215033e",
+      "local_py_compile": true,
+      "local_normal_selftest": "PASS_2_STRUCTURAL_11_NEGATIVE",
+      "local_python_O_selftest": "PASS_2_STRUCTURAL_11_NEGATIVE",
+      "ci_run_id": 38219403715,
+      "ci_result": "success",
+      "ci_head_sha": "4cbb0038c0b413caee5293ad5a7674dd82d494bd",
+      "ci_logs_asserted": true,
+      "artifact_id": 11732804298,
+      "artifact_zip_sha256": "69cad249ae20df9ea7aa1603cc05e7aee949e26739fdda57a7f48f07aa435c01",
+      "artifact_zip_independently_hashed": true,
+      "can_use_as_primary": false,
+      "real_vendor_bulk_market_caps_observed": 0,
+      "reason": "NO_ACCOUNT_KEY_OR_OWNED_UNATTENDED_RESEARCH_GRANT;LATEST_SCREEN_NOT_HISTORICAL_ASOF_PIT",
+      "contract_only_no_HTTP_or_secret_access": true
+    }
+  },
+  "identity_spac_shadow_alisaudit": {
+    "symbol": "ALIS",
+    "current_master_unknown_reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+    "original_master_unknown_no_change": true,
+    "cik": "0002026767",
+    "sec_latest_8k_accession": "0001493152-26-046343",
+    "sec_8k_form": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226046343/form8-k.htm",
+    "sec_8k_dated": "2026-10-08",
+    "sep21_sec_index": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
+    "earlier_blank_check_SIC_6770_asof_2026_03": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226009317/0001493152-26-009317-index.htm",
+    "newer_sec_index_sic_7374": "2026-09-21",
+    "sec_conflicting_sic_modes": true,
+    "oct8_vote_approved": true,
+    "october8_sec_says_business_combination_closing_conditions_pending": true,
+    "issuer_share_class_tickers": [
+      "ALIS",
+      "ALISU",
+      "ALISR"
+    ],
+    "exact_same_asof_SEC_NASDAQ_SPAC_CLASS_POLICY_proof_complete": false,
+    "production_identity_pass": false,
+    "canonical_removed_from_unknown": false,
+    "reason": "CONFIRM_OPERATING_VS_SPAC_LEGAL_CLOSING_ASOF_9OCT_AND_POLICY_REQUIRED_OFFICIAL_CLASSIFICATION; SEC_SIC_HISTORY_CONFLICT_PREVENTS_SILENT_PROMOTION",
+    "no_snapshot_past_asof_rewrite": true
+  },
+  "final_conclusion_latest": {
+    "latest_verified_ci_run": 38219403715,
+    "latest_verified_code_commit": "4cbb0038c0b413caee5293ad5a7674dd82d494bd",
+    "full_go": false,
+    "policy": "C4.17",
+    "real_money": "NO-GO",
+    "seven_p0_gates_blocked": true,
+    "primary_mc_zero": true,
+    "actual_user_device_notification_receipt_proven": false
+  }
 }
