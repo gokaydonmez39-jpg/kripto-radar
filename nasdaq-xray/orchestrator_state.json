@@ -32,8 +32,14 @@
   "execution": "NONE",
   "full_universe_identity": true,
   "g9_status": "BLOCKED",
+  "history_asof_bar_missing_count": 3157,
+  "history_provider_exception_exhausted_count": 28,
   "history_retry_reason": "NO_RETRYABLE_HISTORY_WORK_REMAINS",
   "history_retryable": false,
+  "history_unknown_reason_counts": {
+    "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 3157,
+    "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 28
+  },
   "late_asof_canary_probes_this_run": 0,
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
@@ -44,5 +50,6 @@
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3185,
-  "updated_at_utc": "2026-10-12T20:44:01.220822+00:00"
+  "unknown_reason_partition_exact": true,
+  "updated_at_utc": "2026-10-12T21:10:14.278276+00:00"
 }
