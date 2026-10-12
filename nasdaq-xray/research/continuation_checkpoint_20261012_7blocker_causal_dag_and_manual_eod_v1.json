@@ -1,0 +1,180 @@
+{
+  "schema": "XRAY_20261012_SEVEN_BLOCKER_PRODUCTION_ENGINEERING_CONTINUATION_V1",
+  "verified_at": "2026-10-12T00:10:00Z",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "start_verified_head": "7655093f366a6f69084010c08072f2782c649a9b",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "alpha_thresholds_unchanged": true,
+    "no_synthetic_primary": true,
+    "no_trading": true,
+    "no_unlicensed_provider_bypass": true
+  },
+  "current": {
+    "asof_master": "2026-10-09",
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "master_unknown_symbols": [
+      "ALIS",
+      "BSAA",
+      "FACT",
+      "FVN",
+      "HCAC",
+      "IBAC",
+      "IPXG",
+      "MACI",
+      "MCGA",
+      "MMTX",
+      "NBRG",
+      "WTG"
+    ],
+    "price_dv30_asof": "2026-10-09",
+    "price_pass": 514,
+    "price_unknown": 0,
+    "master_unknown_intersection_price_pass": 0,
+    "full_current_primary_mc_bridges": 0,
+    "canonical_history_asof": "2026-10-07",
+    "canonical_terminal_asof": "2026-10-07",
+    "registered_r92": 0,
+    "device_receipt_attested": false,
+    "strict_g9_status": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "historical_manual_non_g9_source_contract_ready": true,
+    "historical_manual_candidate_prep_only": false
+  },
+  "root_causes": [
+    {
+      "code": "CURRENT_PRIMARY_MC_SOURCE_UNAVAILABLE",
+      "severity": "P0",
+      "evidence": [
+        "BIGDATA_CONNECTED_PLUGIN_CREDITS_EXHAUSTED",
+        "FINANCIAL_DATASETS_COMPANY_FACTS_BALANCE_0_USD",
+        "FINANCIAL_DATASETS_FINANCIAL_SNAPSHOT_UNAUTHORIZED",
+        "CURRENT_C417_PRIMARY_MC_BRIDGE_COUNT_ZERO"
+      ],
+      "required": "Valid per-symbol C4.17 exact-XNAS as-of primary issuer market-cap rights and measurements; OR separately tested, versioned legally appropriate successor. No fabricated or shadow promotion."
+    },
+    {
+      "code": "GLOBAL_IDENTITY_UNKNOWNS",
+      "severity": "P0_GLOBAL_SCOPE",
+      "evidence": [
+        "12_official_SPAC_suspects_STILL_UNKNOWN",
+        "INTERSECTION_WITH_514_PRICE_PASS_ZERO"
+      ],
+      "required": "Filings/SEC SIC6770 or proved completed-merger operating classification as-of close, never name-only inference."
+    },
+    {
+      "code": "STRICT_G9_LIVE_SIP_NOT_ENTITLED",
+      "severity": "P0_FULL_GO",
+      "evidence": [
+        "g9_entitlement_authority.json_BLOCKED_STRICT_PERMANENT_ZERO",
+        "ALPACA_BASIC_IEX_REALTIME_NOT_CONSOLIDATED_SIP"
+      ],
+      "required": "Legally entitled current consolidated quote and exchange/time freshness proof; do not equate 15-minute-delayed SIP with strict live G9."
+    },
+    {
+      "code": "USER_DEVICE_RECEIPT_UNOBSERVABLE",
+      "severity": "P0_DELIVERY_EVIDENCE",
+      "evidence": [
+        "DELIVERY_LEDGER_NO_REGISTERED_R92",
+        "CONNECTED_PROVIDER_CANNOT_ATTEST_PHONE_UI"
+      ],
+      "required": "First genuine verified R92 and exact issue/email/app delivery readback; phone receipt needs actual independent attestation."
+    }
+  ],
+  "dependent_blockers": [
+    {
+      "code": "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+      "parent": "CURRENT_PRIMARY_MC_SOURCE_UNAVAILABLE"
+    },
+    {
+      "code": "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "parent": "CURRENT_PRIMARY_MC_SOURCE_UNAVAILABLE",
+      "following": "MC=>HISTORY=>LEGAL=>STAGE1=>REGIME=>EVENT=>FINAL"
+    },
+    {
+      "code": "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "parent": "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE"
+    },
+    {
+      "code": "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "parent": "STRICT_G9_LIVE_SIP_NOT_ENTITLED",
+      "manual_exception": "HISTORICAL_EOD_RESEARCH_CONTRACT_ONLY_NO_RELEASE"
+    }
+  ],
+  "verified_code_fixes": [
+    {
+      "scope": "MC_RESOLVER_FULL_SCOPE_MEMBER_HASH_COUNT_FENCES",
+      "commits": [
+        "ae2dca4820cd9e6e53867a6768ece2ef88eb4cff",
+        "c516f10f9bfa4cfe89936109ee1192d3e7b6dfac"
+      ],
+      "positive_run": 38186083731,
+      "negative_mutations_rejected": 14,
+      "artifact_id": 11719950782,
+      "zip_sha256": "f41d81669a134c550de3367d7996bde7e5fd2256a8af9e8ff1ef271702545ffd"
+    },
+    {
+      "scope": "E2E_SEVEN_BLOCKER_CAUSAL_DAG_EXACT_BLOB_AND_LOCAL_12_IDENTITY_SEPARATION",
+      "commits": [
+        "049909e1882833c260f71a67e0ef6070ef0adbd3",
+        "bf99a02220d2c4d35076a5b306e7be792bc0fa5c",
+        "7655093f366a6f69084010c08072f2782c649a9b"
+      ],
+      "latest_run": 38186928271,
+      "artifact_id": 11720400880,
+      "zip_sha256": "50652d8c4973b89da5b62a0430a44061f8ed0f593e322556cd0de6ba426db4f5"
+    },
+    {
+      "scope": "OPTIONAL_HISTORICAL_MANUAL_NON_G9_CONTRACT_SHADOW_ONLY",
+      "commits": [
+        "29b3eccc73c424b8fcdc17116bc08b415be20c1d",
+        "a502ec0f7079668d73c6c1b0e74e415e9df6bb60"
+      ],
+      "positive_e2e_run": 38186813611,
+      "dynamic_policy_ci": 38186813599,
+      "dual_lane_ci": 38186813586,
+      "manual_historical_source_contract_ready": true,
+      "manual_prep_attested": false,
+      "strict_g9_pass": false,
+      "deliveries_sent": 0
+    }
+  ],
+  "providers_checked": {
+    "bigdata": "CONNECTED_APP_EXHAUSTED_CREDITS_NO_UNATTENDED_PRIMARY_PROOF",
+    "financial_datasets": "0_USD_CREDITS_OR_UNAUTHORIZED_NO_PRIMARY",
+    "rallies": "READ_ONLY_LATEST_MC_AAPL_GOOG_GOOGL_CORT_PLTR_NOT_POINT_IN_TIME_OR_AUTOMATION_LICENSED;WATCH_ONLY",
+    "alpaca": "CONNECTOR_ASSET_IDENTITY_AVAILABLE_BUT_NO_ASOF_MC;DELAYED_HISTORICAL_SIP_NOT_STRICT_G9",
+    "sec": "PUBLIC_ISSUER_FACTS_DO_NOT_RESOLVE_ALL_CLASS_DIMENSIONS_OR_CURRENT_ASOF_CORPORATE_ACTIONS",
+    "github_open_source": "EDGARTOOLS_XBRL_WITH_DIMENSIONS_USEFUL_FOR_FILING_DILIGENCE_ONLY_NO_MARKET_CAP_AUTHORITY"
+  },
+  "external_primary_sources": [
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "https://docs.alpaca.markets/us/docs/about-market-data-api",
+    "https://github.com/dgunning/edgartools/blob/main/docs/guides/equity-statement-data-layers.md"
+  ],
+  "ci_release": {
+    "latest_run": 38186928271,
+    "unit_and_selftests": "PASS",
+    "e2e_causal_dag": "PASS",
+    "terminal_release": "FAIL_CLOSED_NO_GO_EXPECTED",
+    "full_production_go": false,
+    "research_signal_release": false,
+    "phone_receipt_proven": false
+  },
+  "next_validation_order": [
+    "Obtain and verify authorized as-of primary MC source, or validate formally versioned independent free alternative with per-symbol rights, share classes, ADR and CA PIT.",
+    "Commit exact full 514 MC classification without unknown-to-PASS or alpha threshold reduction.",
+    "Run 9-Oct same-epoch post-MC history legal stage1 regime deep events final and verify exact source hashes.",
+    "Resolve 12 global SPAC UNKNOWN only with official pre-close SEC identity evidence.",
+    "Keep delayed research and strict G9 separate; activate strict G9 only on rights and current quote attestations.",
+    "Register real qualified R92 if there is one; verify issue/email/app delivery and independent device receipt."
+  ],
+  "provenance_caveat": "This checkpoint preserves proved readbacks and provider errors; it does not grant a market-data entitlement, create primary MC, revive stale terminal, transmit a phone alert, or certify all source code paths.",
+  "full_GO": false
+}
