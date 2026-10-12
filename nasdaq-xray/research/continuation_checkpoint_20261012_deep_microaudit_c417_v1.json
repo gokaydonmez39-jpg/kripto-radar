@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T20:55:25.026Z",
+  "observation_date_utc": "2026-10-12T21:08:58.556Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -124,6 +124,49 @@
       "production_pass_created": false,
       "vendor_prices_and_bars_persisted": false,
       "conclusion": "SHADOW_DIAGNOSTIC_ONLY_NO_RELEASE"
+    },
+    "rallies_exact_asof_bulk_symbol_match_20261012": {
+      "asof_et": "2026-10-12",
+      "collection": "CONNECTED_RALLIES_FOREGROUND_ONE_DATE_BULK_NONAUTHORITATIVE",
+      "method": "get_ohcv_data_for_all_tickers_for_a_date",
+      "date_argument": "2026-10-12",
+      "xray_source_sina_state_blob_sha": "71723dfa85c881ababcb94fdaaec78a11d4f7e95",
+      "xray_identity_queue_count": 3185,
+      "xray_identity_unknown_not_in_queue": 212,
+      "raw_rows_received": 12588,
+      "unique_ticker_count": 12588,
+      "exact_case_sensitive_ticker_match_count": 3150,
+      "ticker_unmatched_count": 35,
+      "matched_invalid_ohlcv_count": 0,
+      "matched_duplicate_ticker_count": 0,
+      "matched_conflicting_duplicate_count": 0,
+      "unmatched_status_partition": {
+        "UNKNOWN_STATIC": 33,
+        "UNKNOWN_RETRY_EXHAUSTED": 2
+      },
+      "canary_timestamps_checked_for": [
+        "AAPL",
+        "NVDA",
+        "MSFT",
+        "META"
+      ],
+      "canary_timestamp_utc": "2026-10-12T20:00:00Z",
+      "all_matched_timestamps_verified": false,
+      "explicit_exchange_in_bulk_row": false,
+      "exact_symbol_only_not_issuer_listing_proof": true,
+      "historical_30_exact_dates_proven": false,
+      "history_260_completed_proven": false,
+      "weekly_52_completed_proven": false,
+      "runner_rallies_api_key_and_rights_attested": false,
+      "public_b2b_api_prerequisite_url": "https://rallies.ai/api-docs",
+      "public_b2b_api_requires_api_key": true,
+      "registered_chatgpt_plugin_means_runner_license": false,
+      "vendor_raw_ohlcv_persisted": false,
+      "canonical_price_modified": false,
+      "production_mc_primary_created": false,
+      "r92_created": false,
+      "classification": "RESEARCH_DIAGNOSTIC_SOURCE_SPECIFIC_GAP_NOT_PRIMARY_RELEASE",
+      "conclusion": "TICKER_ONLY_EOD_SOURCE_EXISTS_FOR_LARGE_FRACTION; SOURCE_RIGHTS, SESSION_COVERAGE, CORPORATE_ACTION, TICKER_LISTING_IDENTITY REMAIN UNPROVEN"
     }
   },
   "dependency_order": [
@@ -142,7 +185,8 @@
       "task": "Observe the 2026-10-12 completed official session through exact source publication and bounded real-quote canaries; distinguish feed delay, transport retry, permanent short history and 212 unknown identity",
       "acceptance": "Nonempty exact-ASOF vendor daily bars validated by official exchange dates and source entitlement, no synthetic backfill; runner artifact + Git blob exact",
       "rollback": "HISTORY_PARTIAL, no new PASS",
-      "observation": "3-symbol Alpaca delayed-SIP snapshot has ASOF daily bar field but get_stock_bars historical endpoint returns api_error; this is not a production fallback or proof of 260/52."
+      "observation": "3-symbol Alpaca delayed-SIP snapshot has ASOF daily bar field but get_stock_bars historical endpoint returns api_error; this is not a production fallback or proof of 260/52.",
+      "rallies_probe_observation": "Rallies read-only foreground bulk 2026-10-12 returned 12,588 unique tickers; 3,150 exact source-queue symbol matches with valid positive OHLCV; 35 missing; 4 sample exact 20:00Z timestamps. This is NOT full NASDAQ identity/PIT or automated runner rights and cannot satisfy exact30/260 alone."
     },
     {
       "id": "P1",
