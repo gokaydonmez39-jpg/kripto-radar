@@ -1,0 +1,143 @@
+{
+  "schema": "XRAY_C417_CURRENT_DATE_MULTI_PROVIDER_DAILY_CAPACITY_RESEARCH_CHECKPOINT_V1",
+  "prepared_on": "2026-10-12",
+  "branch": "main",
+  "observed_head_at_creation": "7b5aab69435ad88a32118ceaa2de92991f63e237",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "c418": "RESEARCH_ONLY_INACTIVE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "alpha_thresholds_unchanged": true,
+  "current_asof": "2026-10-09",
+  "source_snapshot": {
+    "master_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "price_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "price_pass": 514,
+    "terminal_blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL",
+    "primary_mc_verified": 0,
+    "g9": "BLOCKED_STRICT_PERMANENT_ZERO"
+  },
+  "code_fix": {
+    "guard_path": "nasdaq-xray/c418_daily_mc_capacity_guard.py",
+    "guard_git_blob_sha": "f62aa5b84672686ed55bd5452cfbb3867aa982c8",
+    "source_commit": "2cdd42f36d89a8446e91c7e92e1e494c7a2fd82a",
+    "workflow_path": ".github/workflows/xray-c418-multi-source-contract.yml",
+    "workflow_git_blob_sha": "4f0cbb0e72e3f11f86cd27d4fb4fb8628c5e50e7",
+    "workflow_commit": "7b5aab69435ad88a32118ceaa2de92991f63e237",
+    "test_evidence": "LOCAL_PYCOMPILE_NORMAL_AND_OPTIMIZED_7_DYNAMIC_14_NEGATIVE_PASS;GITHUB_ACTIONS_SUCCESS"
+  },
+  "ci": {
+    "c418_contract": {
+      "run": 38218860738,
+      "status": "success",
+      "head_sha": "7b5aab69435ad88a32118ceaa2de92991f63e237",
+      "artifact_id": 11732803179,
+      "zip_sha256": "74d3f16e7a709e359384299b36cfaf1abfc08e5090f731d37ce3884de578aab9",
+      "zip_sha256_independently_verified": true,
+      "json_member": "xray_c418_daily_mc_capacity.json",
+      "json_observed": {
+        "asof": "2026-10-09",
+        "price_pass": 514,
+        "master_pass": 3184,
+        "master_unknown": 12,
+        "source_rows": 12,
+        "daily_calls": 30,
+        "symbols_per_historic_call": 5,
+        "required_calls": 103,
+        "daily_capacity_symbols": 150,
+        "minimum_quota_days": 4,
+        "full_daily_coverage": false,
+        "can_create_PRIMARY": false,
+        "can_register_R92": false,
+        "status": "SHADOW_DAILY_REFRESH_BLOCKED"
+      }
+    },
+    "preopen": {
+      "run": 38218860674,
+      "status": "success",
+      "artifact_id": 11733032096,
+      "artifact_zip_digest": "9093d13b04964559b35ef7d17615596068f26318f8141efcc7b33515f08fb3cd",
+      "downloaded_and_hashed": false
+    }
+  },
+  "live_provider_interactive_probes": {
+    "massive_reference_ticker_asof_9oct": [
+      "AAPL",
+      "PLTR",
+      "AAON"
+    ],
+    "massive_returned_market_cap": true,
+    "massive_date_parameter_guarantees_filing_acceptance_pit": false,
+    "rallies_reference_tickers": [
+      "AAPL",
+      "PLTR",
+      "AAON"
+    ],
+    "massive_rallies_market_cap_integer_rounded_match_count": 3,
+    "independent_upstream_attested": false,
+    "provider_values_written_to_public_repo": false,
+    "alpaca_calendar_9oct_12oct_normal_hours": true,
+    "alpaca_historical_aapl_api_call": "API_ERROR_NOT_OBSERVED",
+    "financial_datasets_aapl": "UNAUTHORIZED_OR_ZERO_BALANCE",
+    "provider_rights_for_unattended_runner": "NOT_ATTESTED"
+  },
+  "source_discovery": {
+    "new_open_source_PIT_engines": [
+      {
+        "repo": "https://github.com/RaghhavMalani/AsOf",
+        "license": "MIT",
+        "role": "SEC_FILING_VALID_TIME_VS_TRANSACTION_TIME_ENGINEERING_REFERENCE",
+        "not_evidence_of_514_market_cap": true
+      },
+      {
+        "repo": "https://github.com/purysho/QuantOS",
+        "license": "Apache-2.0",
+        "role": "SEC_FACTS_PUBLICATION_TIME_RESEARCH_ENGINEERING_REFERENCE",
+        "not_second_market_data_origin": true
+      }
+    ],
+    "businessquant_screener_bulk_alternative": {
+      "docs": "https://businessquant.com/docs/api/screener",
+      "documented_default_page_limit": 10000,
+      "documented_latest_minute_level_fundamentals": true,
+      "historical_asof_date_parameter_documented": false,
+      "asof_seal_and_SEC_acceptance_pit": "NOT_PROVEN",
+      "possible_fewer_calls_than_103_historical_metric_calls": true,
+      "full_514_live_coverage_measured": false,
+      "runner_account_key_and_license": "NOT_ATTESTED",
+      "note": "LATEST_SCREENER_SNAPSHOT_NOT_EQUIVALENT_TO_EXACT_9OCT_HISTORICAL_MARKET_CAP; CAN_ONLY_BE_A_NONPRIMARY_RESEARCH_PROBE_UNTIL_PIT_CUTOFF_AND_RIGHTS_PROVEN"
+    },
+    "fmp_batch": {
+      "docs": "https://site.financialmodelingprep.com/developer/docs",
+      "pricing": "https://site.financialmodelingprep.com/pricing-plans",
+      "current_batch_endpoint_documented": true,
+      "point_in_time_historic_batch_not_documented": true,
+      "free_bulk_access_not_attested": true
+    },
+    "asof_date_filings_warning": "Massive docs explicitly compare date with SEC report period instead of SEC acceptance: exact date request is not historical publication-PIT"
+  },
+  "remaining_p0_codes": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "next_priorities": [
+    "Run BQ screener full-universe bulk SHADOW on verified account grant only; check symbol/CIK membership, as-of capture and same-day timing; never treat latest screener snapshot as historical PIT",
+    "Resolve exact-asof direct MC from registered filing/shares and authorized consolidated close, with independent provider origin proof and share classes",
+    "Require separate signed non-display and unattended automated research rights plus private provider secrets before any production source advancement",
+    "Run full canonical 514 history/legal/events/risk/final/terminal with matching SHA and ASOF after genuine MC; keep stale terminal fail-closed",
+    "Verify strict G9 and actual delivery ledger only after a permitted R92 candidate"
+  ],
+  "all_go_gates_passed": false,
+  "full_production_go": false,
+  "no_public_vendor_data_or_secrets_persisted": true
+}
