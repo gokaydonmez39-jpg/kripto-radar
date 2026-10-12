@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, os, ssl, urllib.parse, urllib.request
+import json, os, ssl, urllib.parse, urllib.request, math
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -13,19 +13,25 @@ def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 def parse_ts(v):
-    if v is None: return None
+    if v is None or type(v) is bool: return None
     try:
-        if isinstance(v,(int,float)):
+        if type(v) in (int,float):
             x=float(v)
+            if not math.isfinite(x): return None
             if x>10_000_000_000: x/=1000.0
             return datetime.fromtimestamp(x,tz=timezone.utc)
-        s=str(v).strip()
+        if not isinstance(v,str) or not v.strip(): return None
+        s=v.strip()
         if s.replace(".","",1).isdigit():
             x=float(s)
+            if not math.isfinite(x): return None
             if x>10_000_000_000: x/=1000.0
             return datetime.fromtimestamp(x,tz=timezone.utc)
-        return datetime.fromisoformat(s.replace("Z","+00:00")).astimezone(timezone.utc)
-    except Exception:
+        d=datetime.fromisoformat(s.replace("Z","+00:00"))
+        if d.tzinfo is None or d.utcoffset() is None:
+            return None
+        return d.astimezone(timezone.utc)
+    except (ValueError,TypeError,OverflowError,OSError):
         return None
 
 def is_rth():
@@ -50,9 +56,18 @@ def unwrap(j):
     return j
 
 def validate_triplet(bid,ask,last,qts,tts,utcnow):
-    bid=float(bid); ask=float(ask); last=float(last)
-    if min(bid,ask,last)<=0 or bid>ask or not qts or not tts:
+    if any(type(v) is bool or v is None for v in (bid,ask,last)):
         raise RuntimeError("INVALID_QUOTE_TRADE")
+    try:
+        bid,ask,last=(float(v) for v in (bid,ask,last))
+    except (ValueError,TypeError,OverflowError):
+        raise RuntimeError("INVALID_QUOTE_TRADE") from None
+    if (not all(math.isfinite(v) and v>0 for v in (bid,ask,last))
+        or bid>ask):
+        raise RuntimeError("INVALID_QUOTE_TRADE")
+    if not all(isinstance(t,datetime) and t.tzinfo is not None
+               and t.utcoffset() is not None for t in (qts,tts,utcnow)):
+        raise RuntimeError("UNTRUSTED_NAIVE_QUOTE_TIMESTAMP")
     qa=(utcnow-qts).total_seconds()
     ta=(utcnow-tts).total_seconds()
     sk=abs((qts-tts).total_seconds())
