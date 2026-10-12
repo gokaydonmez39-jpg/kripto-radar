@@ -7,6 +7,10 @@ on:
       - "nasdaq-xray/e2e_production_readiness.py"
       - "nasdaq-xray/blocker_root_dependency_audit.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
+      - "nasdaq-xray/history_17_short_official_bound_selftest.py"
+      - "nasdaq-xray/history_official_identity_evidence.json"
+      - "nasdaq-xray/chatgpt_only_delivery_mode.py"
+      - "nasdaq-xray/notification_channel_policy_v1.json"
       - ".github/workflows/xray-e2e-production-readiness.yml"
   workflow_run:
     workflows:
@@ -56,6 +60,20 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/e2e_production_readiness.py
           python nasdaq-xray/e2e_production_readiness.py --selftest
+      - name: Verify 17 new-listing HISTORY failures and exclusive ChatGPT user channel
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/history_17_short_official_bound_selftest.py nasdaq-xray/chatgpt_only_delivery_mode.py
+          python nasdaq-xray/history_17_short_official_bound_selftest.py
+          python -O nasdaq-xray/history_17_short_official_bound_selftest.py
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python -O nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --check
+          echo "XRAY_START_ACCEPTANCE_17_SHORT_HISTORY=PROVEN_FAIL_ONLY_NO_260_52_PASS"
+          echo "XRAY_START_ACCEPTANCE_NOTIFICATION=CHATGPT_ONLY_GITHUB_ISSUES_OFF_DEVICE_UNVERIFIED"
+          echo "XRAY_START_ACCEPTANCE_MC=SEPARATE_PRODUCTION_AUTHORITY_REQUIRED"
+
       - name: Assess REAL source epochs and safety gates
         run: |
           python nasdaq-xray/e2e_production_readiness.py --output "$RUNNER_TEMP/xray_e2e_readiness.json"
