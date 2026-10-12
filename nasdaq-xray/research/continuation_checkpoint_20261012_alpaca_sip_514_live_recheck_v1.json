@@ -1,0 +1,165 @@
+{
+  "schema": "XRAY_20261012_ALPACA_SIP_514_INTERACTIVE_EXACT260_RECHECK_V1",
+  "date_trt": "2026-10-12",
+  "asof_et": "2026-10-09",
+  "provenance": {
+    "scope": "RESEARCH_ONLY_INTERACTIVE_CONNECTED_ACCOUNT",
+    "provider": "ALPACA",
+    "feed": "sip",
+    "bar_timeframe": "1Day",
+    "start": "2025-09-01T00:00:00Z",
+    "end_exclusive": "2026-10-10T00:00:00Z",
+    "daily_reference": "AAPL_last_260_dates_not_independent_calendar",
+    "price_source_blob": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_source_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "screen_symbols_sha256": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef",
+    "screen_artifact_zip_sha256": "b0fa7dfea678db069fef6c8ddd231fa800df1251c493c3a755931460606e16a8",
+    "screen_artifact_content_sha256": "0efb8d2ba2dbcd97b44aefdfbe399ee6fa1c3757a925bc26d1c73152d2611667"
+  },
+  "measured": {
+    "symbols": 514,
+    "symbols_responded": 514,
+    "queries": 21,
+    "batch_errors": 0,
+    "coverage_260_daily_52_calendar_weeks": 497,
+    "insufficient_history": 17,
+    "latest_asof_daily_bar": 514,
+    "ohlcv_structural_errors": 0,
+    "duplicate_days": 0,
+    "future_days": 0,
+    "groups": [
+      {
+        "total": 200,
+        "pass": 196,
+        "short": 4
+      },
+      {
+        "total": 200,
+        "pass": 193,
+        "short": 7
+      },
+      {
+        "total": 114,
+        "pass": 108,
+        "short": 6
+      }
+    ]
+  },
+  "insufficient_symbols": {
+    "BSP": {
+      "observed_daily_bars": 71,
+      "calendar_weeks": 15,
+      "missing_reference_sessions": 189
+    },
+    "CBRS": {
+      "observed_daily_bars": 103,
+      "calendar_weeks": 22,
+      "missing_reference_sessions": 157
+    },
+    "EQPT": {
+      "observed_daily_bars": 180,
+      "calendar_weeks": 38,
+      "missing_reference_sessions": 80
+    },
+    "FRVO": {
+      "observed_daily_bars": 104,
+      "calendar_weeks": 22,
+      "missing_reference_sessions": 156
+    },
+    "HONA": {
+      "observed_daily_bars": 82,
+      "calendar_weeks": 17,
+      "missing_reference_sessions": 178
+    },
+    "INIO": {
+      "observed_daily_bars": 89,
+      "calendar_weeks": 19,
+      "missing_reference_sessions": 171
+    },
+    "MDLN": {
+      "observed_daily_bars": 204,
+      "calendar_weeks": 43,
+      "missing_reference_sessions": 56
+    },
+    "MMED": {
+      "observed_daily_bars": 151,
+      "calendar_weeks": 32,
+      "missing_reference_sessions": 109
+    },
+    "NAVN": {
+      "observed_daily_bars": 237,
+      "calendar_weeks": 50,
+      "missing_reference_sessions": 23
+    },
+    "PURR": {
+      "observed_daily_bars": 214,
+      "calendar_weeks": 45,
+      "missing_reference_sessions": 46
+    },
+    "QNT": {
+      "observed_daily_bars": 89,
+      "calendar_weeks": 19,
+      "missing_reference_sessions": 171
+    },
+    "SHAZ": {
+      "observed_daily_bars": 163,
+      "calendar_weeks": 34,
+      "missing_reference_sessions": 97
+    },
+    "SKHY": {
+      "observed_daily_bars": 65,
+      "calendar_weeks": 14,
+      "missing_reference_sessions": 195
+    },
+    "SOLS": {
+      "observed_daily_bars": 245,
+      "calendar_weeks": 51,
+      "missing_reference_sessions": 15
+    },
+    "SPCX": {
+      "observed_daily_bars": 83,
+      "calendar_weeks": 18,
+      "missing_reference_sessions": 177
+    },
+    "VSNT": {
+      "observed_daily_bars": 206,
+      "calendar_weeks": 43,
+      "missing_reference_sessions": 54
+    },
+    "XE": {
+      "observed_daily_bars": 117,
+      "calendar_weeks": 25,
+      "missing_reference_sessions": 143
+    }
+  },
+  "not_attested": {
+    "independent_exchange_calendar": true,
+    "corporate_action_and_split_adjustment": true,
+    "pit_share_class_identity": true,
+    "provider_historical_reuse_non_display_rights": true,
+    "github_runner_sip_credential_and_contract_rights": true,
+    "licensed_same_asof_primary_mc": true,
+    "current_c417_r1_rr_stop_engine_replay": true,
+    "r92_device_receipt": true
+  },
+  "authority": {
+    "history_primary_pass_created": 0,
+    "market_cap_primary_pass_created": 0,
+    "qualified_c417_al_count": "UNVERIFIED_NOT_ZERO",
+    "r92_registered": 0,
+    "device_delivery_verified": false,
+    "strict_full_go": false
+  },
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "c418": "SHADOW_ONLY",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_vendor_raw_bars_stored": true,
+    "no_vendor_price_values_persisted": true,
+    "no_paid_subscription_purchased": true
+  },
+  "interpretation": "INTERACTIVE DATA COVERAGE VERIFIED; PRIMARY HISTORY, PIT/CA, LICENSED MC, C4.17 AL, G9, ACCOUNT AND REAL DELIVERY REMAIN BLOCKED OR UNKNOWN. 229 ROOT HISTORY UNKNOWN ARE NOT CLAIMED REPAIRED."
+}
