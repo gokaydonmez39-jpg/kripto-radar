@@ -141,6 +141,20 @@ def main():
       "NOT_CONFIGURED",1)
     assert j["reason"]=="SELFTEST_NO_TOKEN"
 
+    # RED regressions for actual G9 technical payload ingestion:
+    # NaN/Inf and timezone-naive timestamps must never create technical PASS.
+    mod=load_mod()
+    assert mod.parse_ts("2026-10-12T09:00:00") is None, "NAIVE_TIMESTAMP_ACCEPTED"
+    assert mod.best([{"Price":"Infinity","TimeStamp":"2026-10-12T09:00:00Z"}],"bid") is None, "INFINITE_DEPTH_ACCEPTED"
+    assert mod.exact_symbol_row([{"symbol":"aaPl"}],"AAPL") is None, "CASE_COLLIDED_ISSUER_ACCEPTED"
+    for triplet in ((float("nan"),100,100),(1,float("inf"),1),(True,2,2),
+                    (100,99,100),(0,1,1)):
+        try:
+            mod.strict_triplet(*triplet)
+        except ValueError:
+            continue
+        raise AssertionError("INVALID_G9_PRICE_TRIPLET_ACCEPTED")
+    assert mod.strict_triplet(10,11,10.5)==(10.0,11.0,10.5)
     print("XRAY_STRICT_G9_FAIL_CLOSED_SELFTEST=PASS")
 
 if __name__=="__main__":
