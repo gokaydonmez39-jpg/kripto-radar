@@ -19,6 +19,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import pandas_market_calendars as mcal
 
 from source_epoch_freshness_guard import last_complete_session
 
@@ -55,7 +56,7 @@ def completed_weeks(bars,asof):
     return [close for _,(date,close) in sorted(weeks.items())
             if date.weekday()==4 and date.isoformat()<=asof]
 
-def validate_bars(symbol,bars,asof):
+def validate_bars(symbol,bars,asof,expected_sessions=None):
     require(type(bars) is list and len(bars)>=260,"NOT_260_BARS:"+symbol)
     prev=None
     for x in bars:
@@ -74,6 +75,11 @@ def validate_bars(symbol,bars,asof):
                 v>0 and l>0 and l<=min(o,c)<=max(o,c)<=h,
                 "BAD_BAR_OR_SYNTHETIC:"+symbol)
     require(bars[-1]["date"]==asof,"ASOF_MISSING:"+symbol)
+    if expected_sessions is not None:
+        require(type(expected_sessions) is list and len(expected_sessions)==260,
+                "BAD_OFFICIAL_CALENDAR")
+        require([x["date"] for x in bars[-260:]]==expected_sessions,
+                "NOT_EXACT_OFFICIAL_260_SESSIONS:"+symbol)
     require(len(completed_weeks(bars,asof))>=52,"NOT_52_WEEKS:"+symbol)
 
 def aligned_returns(bars,qqq):
@@ -85,8 +91,8 @@ def aligned_returns(bars,qqq):
         return common[-1][0]/common[-k-1][0]-common[-1][1]/common[-k-1][1]
     return rs(20),rs(60)
 
-def evaluate_b_precursor(symbol,bars,qqq,asof):
-    validate_bars(symbol,bars,asof)
+def evaluate_b_precursor(symbol,bars,qqq,asof,expected_sessions=None):
+    validate_bars(symbol,bars,asof,expected_sessions)
     c=[x["close"] for x in bars];h=[x["high"] for x in bars]
     l=[x["low"] for x in bars];v=[x["volume"] for x in bars]
     tr=[max(x["high"]-x["low"],abs(x["high"]-(c[i-1] if i else c[0])),
@@ -221,15 +227,21 @@ def report(now):
     # Source and licensing conditions remain independent of API success.
     symbols=price["pass_symbols"]
     try:
+        cal=mcal.get_calendar("NASDAQ")
+        official=[x.date().isoformat() for x in cal.valid_days(
+            start_date=(dt.date.fromisoformat(asof)-dt.timedelta(days=560)).isoformat(),
+            end_date=asof)]
+        require(len(official)>=260,"OFFICIAL_CALENDAR_LT260")
+        required_sessions=official[-260:]
         qb=get_sip(["QQQ"],asof,key,secret)["QQQ"]
-        validate_bars("QQQ",qb,asof)
+        validate_bars("QQQ",qb,asof,required_sessions)
         positive=[];missing=[];complete=0
         for i in range(0,len(symbols),20):
             cohort=symbols[i:i+20]
             group=get_sip(cohort,asof,key,secret)
             for sym in cohort:
                 try:
-                    r=evaluate_b_precursor(sym,group[sym],qb,asof)
+                    r=evaluate_b_precursor(sym,group[sym],qb,asof,required_sessions)
                     complete+=1
                     if r["b_precursor"]:positive.append(r)
                 except (ValueError,KeyError,IndexError,OverflowError):
@@ -238,10 +250,12 @@ def report(now):
                                 "b_precursor_count":len(positive),
                                 "b_precursors":positive,
                                 "blocked_symbols":missing})
-        # Do not promote partial-source observations, even to current WATCH.
+        # Incomplete symbols are UNKNOWN, never PASS. Independently verified
+        # symbols may still be monitored as RESEARCH WATCH, not as AL.
+        require(not ({x["symbol"] for x in positive}&set(missing)),
+                "CANDIDATE_LOCAL_UNKNOWN_LEAK")
         if missing or complete!=len(symbols):
-            return dict(result,status="BLOCKED_INCOMPLETE_COHORT",
-                        b_precursors=[],b_precursor_count=0)
+            return dict(result,status="PARTIAL_PROVEN_SUBSET_WATCH_ONLY_NO_AL")
         return dict(result,status="B_PRECURSOR_RESEARCH_ONLY_NO_AL")
     except Exception as exc:
         # Never print vendor errors or credentials in public CI.
@@ -264,7 +278,12 @@ def selftest():
     except ValueError:pass
     else:raise RuntimeError("PARTIAL_WEEKLY_ACCEPTED")
     require(round(ema([10.0]*52,10),3)==10.0,"EMA_REPRODUCIBILITY")
-    print("XRAY_ALPACA_SIP_EOD_B_SHADOW_SELFTEST=PASS_FAIL_CLOSED_8_NEGATIVE_NO_AL")
+    try:
+        validate_bars("TEST",[{"date":"2026-10-09","open":1.0,
+            "high":1.1,"low":0.9,"close":1.0,"volume":10.0}],"2026-10-09")
+    except ValueError:pass
+    else:raise RuntimeError("SHORT_BAR_SERIES_ACCEPTED")
+    print("XRAY_ALPACA_SIP_EOD_B_SHADOW_SELFTEST=PASS_FAIL_CLOSED_9_NEGATIVE_EXACT260_NO_AL")
 
 def main():
     ap=argparse.ArgumentParser()
