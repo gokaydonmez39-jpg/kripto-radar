@@ -249,10 +249,9 @@ def report(now):
                     error_class=type(exc).__name__)
 
 def selftest():
-    assert False is False  # Guard logic itself uses require, never assert.
     for obj in ([],["B","A"],["A","A"],["A","?"]):
         try:
-            require(type(obj) is list and obj==sorted(set(obj)) and
+            require(type(obj) is list and bool(obj) and obj==sorted(set(obj)) and
                     all(re.fullmatch(r"[A-Z0-9.-]+",x) for x in obj),
                     "BAD_TEST_COHORT")
         except ValueError:pass
