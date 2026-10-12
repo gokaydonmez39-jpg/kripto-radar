@@ -29,3 +29,39 @@ jobs:
         run: |
           python nasdaq-xray/sec_mc_legacy_pit_safety_selftest.py
           python -O nasdaq-xray/sec_mc_legacy_pit_safety_selftest.py
+
+      - name: Record immutable code hash and verified fail-closed safety results
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          report={
+            "schema":"XRAY_SEC_LEGACY_PIT_SAFETY_CODE_ONLY_CI_V1",
+            "source_commit":os.environ["GITHUB_SHA"],
+            "source_path":"nasdaq-xray/sec_mc.py",
+            "source_git_blob_sha":subprocess.check_output(["git","hash-object","nasdaq-xray/sec_mc.py"],text=True).strip(),
+            "negative_regressions_executed":"NORMAL_AND_PYTHON_OPTIMIZED",
+            "same_day_filing_date_not_preclose_pit":True,
+            "unverified_share_class_not_mc_pass":True,
+            "legacy_positive_cache_demoted":True,
+            "same_vintage_conflicts_fail_closed":True,
+            "production_primary_authority":False,
+            "r92_authority":False,
+            "execution":"NONE",
+            "real_money":"NO-GO",
+            "vendor_raw_data_in_artifact":False,
+          }
+          dest=Path(os.environ["RUNNER_TEMP"])/"xray_sec_legacy_pit_safety_ci.json"
+          dest.write_text(json.dumps(report,indent=2,sort_keys=True)+"\\n")
+          print("XRAY_SEC_LEGACY_CODE_SHA="+report["source_git_blob_sha"])
+          print("XRAY_SEC_LEGACY_NONAUTHORITY_CI=PASS")
+          PY
+      - name: Upload code-only PIT regression evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: xray-sec-legacy-pit-code-only
+          path: ${{ runner.temp }}/xray_sec_legacy_pit_safety_ci.json
+          retention-days: 14
+          if-no-files-found: error
