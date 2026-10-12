@@ -1,0 +1,203 @@
+{
+  "schema": "XRAY_C417_PIT_SECONDARY_SOURCE_RESEARCH_AND_RED_GREEN_CHECKPOINT_V1",
+  "date": "2026-10-12",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "preimage_main_commit": "0afa8f48525ee7edcb8a6da255be7ae4828d2e64",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "C418": "ADVISORY_ONLY_UNACTIVATED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "alpha_thresholds_changed": false,
+  "no_orders_or_paid_topups": true,
+  "live_canonical": {
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+      "asof_et": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "asof_et": "2026-10-09",
+      "pass": 514,
+      "unknown": 0,
+      "blocked": 0,
+      "source_pass_hash": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef"
+    },
+    "history": {
+      "path": "nasdaq-xray/canonical_current_history.json",
+      "blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "asof_et": "2026-10-07",
+      "pass": 460,
+      "stale_for_oct9": true
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof_et": "2026-10-07",
+      "terminal_result": "PARTIAL_UNKNOWN"
+    },
+    "overlay": {
+      "path": "nasdaq-xray/canonical_current_final_gate_overlay.json",
+      "blob_sha": "5e5ba68003bbeaa1c788086e669261dfc1df152f",
+      "asof_et": "2026-10-07"
+    },
+    "primary_mc_verified_count": 0,
+    "g9_verified_live": false,
+    "phone_delivery_receipt_verified": false
+  },
+  "legacy_sec_mc_fix": {
+    "old_source_blob_sha": "8f3e3f56a4ea3c1f2a4f6254505ab96dc4496dea",
+    "new_source_blob_sha": "a247af40ee587f1077617b4799c8a590edbcd99c",
+    "path": "nasdaq-xray/sec_mc.py",
+    "selftest_path": "nasdaq-xray/sec_mc_legacy_pit_safety_selftest.py",
+    "red": {
+      "run_id": 38220374790,
+      "head_sha": "59b4186d3a76f7b48e3de59d2f68f627a1661888",
+      "status": "failure",
+      "exact_reason": "SEC_MC_LEGACY_PIT_REGRESSION:SAME_DAY_LOOKAHEAD_ACCEPTED"
+    },
+    "code_fix_commit": "95b4cd4e044a802206c62a69efb6f1a62eeeb404",
+    "green": {
+      "run_id": 38220886263,
+      "head_sha": "8628534e292635ade116bae0487930964698f9ea",
+      "status": "success",
+      "artifact_id": 11734356905,
+      "artifact_zip_sha256": "294d65d00c6fb817d15eedbe2ba0f6e62962aadd0e05351c6407fc3605f78a69",
+      "independently_downloaded_hashed": true,
+      "artifact_report_source_blob_exact": true,
+      "normal_and_optimized_pass": true
+    },
+    "repaired_classes": [
+      "DATE_ONLY_SAME_DAY_SEC_FILING_NOT_PRE_CLOSE_PROOF",
+      "SAME_VINTAGE_CONFLICT_NOT_LAST_WRITE_WINS",
+      "SHARE_CLASS_CA_UNVERIFIED_NO_MC_PASS_OR_FAIL",
+      "LEGACY_PREVIOUS_PASS_FAIL_CACHE_DEMOTED",
+      "LEGACY_MC_COMPLETE_RENAMED_NO_PRIMARY"
+    ],
+    "source_legacy_not_proven_on_current_primary_call_path": true,
+    "production_primary_count_created": 0
+  },
+  "multi_source_evidence": {
+    "inventory_path": "nasdaq-xray/c418_provider_inventory_20261012.json",
+    "inventory_blob_sha": "c4c66a6a15bb7b47d62769dfa21376e712877c44",
+    "active_source_route_count_unchanged": 12,
+    "new_nonadmitted_candidates": [
+      "PTDATA_PIT_CORPORATE",
+      "VALUEIN_PIT_SEC",
+      "FMP_BULK_MARKETCAP"
+    ],
+    "ptdata": {
+      "official_docs": "https://api.ptdata.io/docs",
+      "openapi": "https://api.ptdata.io/openapi.json",
+      "free_daily_ip_calls": 200,
+      "use": "EVALUATION_ONLY",
+      "openapi_verified_filing_acceptance_datetime": true,
+      "real_data_call_observed": false,
+      "production_issuer_mc_available": false
+    },
+    "valuein": {
+      "pricing": "https://valuein.biz/pricing",
+      "free_universe": "SP500_ONLY",
+      "full_NASDAQ_514": false,
+      "issuer_mc_primary": false
+    },
+    "fmp": {
+      "docs": "https://site.financialmodelingprep.com/developer/docs",
+      "current_batch": true,
+      "licence_and_historical_pit_not_proven": true
+    },
+    "businessquant_mcp": {
+      "docs": "https://businessquant.com/docs/api/mcp",
+      "uri": "https://mcp.businessquant.com/mcp",
+      "tools_read_only": 23,
+      "oauth_user_action_required": true,
+      "runner_api_key_separate": true,
+      "free_daily_calls": 30,
+      "upstream_root_distinct_from_BQ_REST": false
+    },
+    "source_official_code": [
+      "https://github.com/sec-gov/python-for-dera-financial-datasets",
+      "https://github.com/ptdata-io/ptdata-correctness",
+      "https://github.com/dgunning/edgartools"
+    ],
+    "new_12_route_ci": {
+      "source_commit": "0afa8f48525ee7edcb8a6da255be7ae4828d2e64",
+      "contract": {
+        "run_id": 38221220969,
+        "status": "success",
+        "artifact_id": 11734850061,
+        "zip_sha256": "e6aaccdbbbd938dd9a7de06a3f542a3092d6a9e33a8d8df279b489241488b96b",
+        "zip_content_sha_verified": true
+      },
+      "shadow": {
+        "run_id": 38221220928,
+        "status": "success",
+        "artifact_id": 11734482460,
+        "zip_sha256": "989fd068018db1dcb65781cf24f9e9c739f6b2145454879d3bd1edebe0d919b0",
+        "zip_content_sha_verified": true,
+        "MC_SCOPE": 514,
+        "MC_sample_status": {
+          "UNKNOWN": 5
+        },
+        "BQ_API_calls": 0,
+        "BQ_status": "BLOCKED_NO_API_KEY"
+      }
+    },
+    "additional_primary_mc": 0,
+    "new_r92": 0
+  },
+  "pr_7": {
+    "state": "open",
+    "draft": true,
+    "mergeable": false,
+    "mergeable_state": "dirty",
+    "no_automatic_merge_performed": true
+  },
+  "active_XRAY_automation_count": 5,
+  "p0_outstanding": [
+    {
+      "code": "CURRENT_MC_AUTHORITY_MISSING",
+      "status": "BLOCKED",
+      "release_evidence": "LICENSED_EXACT_ASOF_514_PRIMARY_MC_INCLUDING_SHARE_CLASS_CA_ADR_AND_INDEPENDENCE"
+    },
+    {
+      "code": "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+      "status": "BLOCKED",
+      "release_evidence": "EXACT_MC_HISTORY_FINAL_TERMINAL_SHA_SET_MEMBERSHIP"
+    },
+    {
+      "code": "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "status": "BLOCKED",
+      "release_evidence": "REBUILD_OCT9_WITH_REAL_SOURCE"
+    },
+    {
+      "code": "IDENTITY_PARTITION_INCOMPLETE",
+      "status": "BLOCKED",
+      "release_evidence": "12_UNKNOWNS_OFFICIAL_IDENTITY_ASOF"
+    },
+    {
+      "code": "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "status": "BLOCKED",
+      "release_evidence": "OCT9_FULL_CURRENT_SESSIONS"
+    },
+    {
+      "code": "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "status": "BLOCKED",
+      "release_evidence": "LIVE_STRICT_G9_LICENCE_AND_CONSOLIDATED_FEED"
+    },
+    {
+      "code": "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "status": "BLOCKED",
+      "release_evidence": "REGISTERED_REAL_R92_PLUS_DEVICE_RECEIPT"
+    }
+  ],
+  "next_priority": "PIT_ACCEPTANCE_SHARES_CLASS_ACTIONS_X_LAWFUL_CLOSE_WITH_INDEPENDENT_514_MC_ORIGIN_AND_AUTOMATED_GRANTED_RIGHTS",
+  "user_external_action": "OPTIONAL_BUSINESSQUANT_OAUTH_CUSTOM_CONNECTOR_SIGN_IN_DOES_NOT_AUTHORIZE_GITHUB_RUNNER_OR_PRODUCTION",
+  "full_production_go": false
+}
