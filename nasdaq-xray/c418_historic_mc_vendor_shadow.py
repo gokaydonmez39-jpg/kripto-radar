@@ -99,6 +99,14 @@ def selftest() -> None:
     a = {"symbol":"AAPL","currency":"USD",
          "data":[{"atDate":"2026-10-09","marketCapitalization":3000000000000.0}]}
     b = {"0":{"date":"2026-10-09","value":3000000000000}}
+    # RED: FMP official historical-market-cap returns an array. A schema
+    # match is only research evidence; no caller can turn this into PRIMARY.
+    fmp = [{"symbol":"AAPL","date":"2026-10-09",
+            "marketCap":3000000000000}]
+    fmp_witness = evaluate("FMP","AAPL","2026-10-09",fmp)
+    require(fmp_witness["exact_asof_row_count"] == 1
+            and fmp_witness["can_create_PRIMARY"] is False,
+            "FMP_FALSE_MC_PRIMARY")
     for name, data in (("FINNHUB",a), ("EODHD",b)):
         result = evaluate(name,"AAPL","2026-10-09",data)
         require(result["exact_asof_row_count"] == 1, "POSITIVE_SHADOW_SCHEMA")
