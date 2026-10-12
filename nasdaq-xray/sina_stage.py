@@ -26,6 +26,7 @@ from sina_transport_rescue import choose as choose_transport_rescue
 from sina_state_hash_guard import seal as seal_sina_state
 from sina_identity_epoch import frozen_identity_fingerprint
 from sina_late_asof_recheck import choose as choose_late_asof, choose_canary_probe
+from sec_spac_manual_seed_appendonly_guard import prove as prove_manual_sec_seed
 from pathlib import Path
 
 import akshare as ak
@@ -110,6 +111,17 @@ def load_sec_spac_proof(asof):
     proofs=j.get("proofs") or {}
     if not isinstance(proofs,dict):
         raise RuntimeError("SEC_SPAC_PROOF_BODY_INVALID")
+    # The manual registry is append-only: later official SEC discoveries
+    # change the whole-file blob but must not invalidate exact unchanged
+    # records referenced by this frozen same-ASOF proof. Load once, then
+    # validate every referenced issuer independently and fail closed on edits.
+    has_manual=any(isinstance(r,dict) and
+        str(r.get("revalidation_semantics") or "").startswith("MANUAL_OFFICIAL_SEC_")
+        for r in proofs.values())
+    seed_doc=(json.loads(MANUAL_IDENTITY_SEED.read_text(encoding="utf-8"))
+              if has_manual and MANUAL_IDENTITY_SEED.is_file() else None)
+    seed_blob=(git_blob_sha(MANUAL_IDENTITY_SEED)
+               if has_manual and MANUAL_IDENTITY_SEED.is_file() else None)
     out={}
     for sym,row in proofs.items():
         sym=str(sym or "").strip().upper()
@@ -133,13 +145,15 @@ def load_sec_spac_proof(asof):
             if semantics not in allowed:
                 raise RuntimeError("SEC_SPAC_PROOF_FALLBACK_SEMANTICS_INVALID:"+sym)
             if semantics.startswith("MANUAL_OFFICIAL_SEC_"):
-                expected_path="nasdaq-xray/master_sec_identity_manual_seed_registry.json"
-                if (
-                  not MANUAL_IDENTITY_SEED.exists()
-                  or row.get("manual_seed_registry_path")!=expected_path
-                  or row.get("manual_seed_registry_blob_sha")!=git_blob_sha(MANUAL_IDENTITY_SEED)
-                ):
-                    raise RuntimeError("SEC_SPAC_PROOF_MANUAL_SEED_PROVENANCE_INVALID:"+sym)
+                try:
+                    prove_manual_sec_seed(
+                        j,seed_doc,asof,sym,
+                        str(row.get("manual_seed_registry_blob_sha") or ""),
+                        seed_blob)
+                except (ValueError,TypeError,AttributeError) as exc:
+                    raise RuntimeError(
+                        "SEC_SPAC_PROOF_MANUAL_SEED_PROVENANCE_INVALID:"+sym
+                    ) from exc
             try:
                 age=(datetime.fromisoformat(asof)-datetime.fromisoformat(str(row.get("evidence_date")))).days
             except Exception:
