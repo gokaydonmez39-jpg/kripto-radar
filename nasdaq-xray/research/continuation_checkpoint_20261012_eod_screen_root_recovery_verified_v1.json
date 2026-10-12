@@ -1,0 +1,78 @@
+{
+  "schema": "XRAY_20261012_EOD_OPERATIONAL_RELEASE_EVIDENCE_V1",
+  "observed_at": "2026-10-12T10:41:00Z",
+  "source_head_before_checkpoint": "4ab5123143a75983a1dc5e1ff9ad6424b0ec7db0",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "release_scope": "EOD_PRICE_DV30_SCREEN_ONLY",
+  "release_status": "SCREEN_READY_RESEARCH_ONLY",
+  "no_full_go": true,
+  "no_qualified_al_asserted": true,
+  "latest_completed_session": "2026-10-09",
+  "universe_master_pass": 3184,
+  "universe_master_unknown": 12,
+  "price_pass": 514,
+  "price_unknown": 0,
+  "master_unknown_intersect_screen": 0,
+  "qualified_al_count": "UNVERIFIED_NOT_ZERO",
+  "r92_registration_count": 0,
+  "screen_source_blob_sha": {
+    "master": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "history": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "terminal": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+  },
+  "screen_symbol_hash_sha256": "cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef",
+  "screen_logic": {
+    "path": "nasdaq-xray/eod_screening_digest.py",
+    "blob_sha": "1e895dd35d9482055d157c28d2c50ff3085e9a6c",
+    "creation_commit": "7b57c02a9d8bb185be4d13292b0d62d2247a8718",
+    "escape_bug_fix_commit": "a4a2bde3295739890e2ef23be8b56b224ec4060d"
+  },
+  "workflow": {
+    "path": ".github/workflows/xray-manual-decision-research-shadow.yml",
+    "blob_sha": "f0a3941d0d211ffb8f99b13098f33e0fba0a9b58",
+    "integration_commit": "3e95f6b17c256b057ec15d384923c9274e5d0650",
+    "success_run": 38237374453,
+    "original_manual_run_retained": true,
+    "normal_selftest": "PASS",
+    "python_optimized_selftest": "PASS",
+    "negative_cases": 12,
+    "positive_cases": 2
+  },
+  "verified_artifact": {
+    "id": 11741152603,
+    "name": "xray-eod-screen-research-only",
+    "zip_sha256": "b0fa7dfea678db069fef6c8ddd231fa800df1251c493c3a755931460606e16a8",
+    "content_sha256": "0efb8d2ba2dbcd97b44aefdfbe399ee6fa1c3757a925bc26d1c73152d2611667",
+    "symbols": 514,
+    "sha256_matched_github": true
+  },
+  "scheduler_recovery": {
+    "kick_commit": "9f6c1aa6b631967b3134ca19a579a23875364b7e",
+    "sequence_before": 20,
+    "sequence_after": 21,
+    "kick_blob": "c285fc08ec189b32b2106fdfb0f5dcac3ea6552e",
+    "root_run": 38237713268,
+    "root_conclusion": "success",
+    "downstream_pre_mc": 38237785884,
+    "downstream_pre_mc_conclusion": "success",
+    "research_delivery_run": 38237794116,
+    "research_delivery_conclusion": "success",
+    "trigger_proved": true
+  },
+  "current_bottlenecks": {
+    "primary_market_cap": "NO_AUTHORIZED_SAME_ASOF_PRIMARY_514",
+    "history": "2026-10-07_STALE_DOWNSTREAM",
+    "terminal": "2026-10-07_PARTIAL",
+    "root_history_unknown": 229,
+    "strict_g9": "ENTITLEMENT_BLOCKED",
+    "account": "OAUTH_403308_SCOPE_AND_SECRETS",
+    "delivery": "NO_CONFIRMED_REAL_R92_OR_DEVICE_RECEIPT"
+  },
+  "strict_full_go": "BLOCKED",
+  "status_explanation": "A real, repeatable stage-A liquidity screen now runs inside existing manual workflow and an observed failover root completed; neither creates technical AL or waives C4.17/C4.27."
+}
