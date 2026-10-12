@@ -104,7 +104,17 @@
       "primary_rights_and_pit_attested": false
     },
     "actual_vendor_payload_sample_514_received": false,
-    "can_create_primary": false
+    "can_create_primary": false,
+    "two_vendor_conditional_daily_max_unique_if_both_hypothetically_entitled": {
+      "FMP": 250,
+      "BUSINESSQUANT": 150,
+      "combined_daily_unique_max": 400,
+      "current_price_cohort": 514,
+      "daily_shortfall": 114,
+      "validity": "CONDITIONAL_UPPER_BOUND_ASSUMES_ALL_CALLS_SUCCEED_EACH_SYMBOL_UNIQUE_AND_NO_LICENSE_OR_PIT_ERRORS",
+      "independent_two_source_each_symbol_crosscheck_covered": false,
+      "production_ready": false
+    }
   },
   "blockers": [
     {
