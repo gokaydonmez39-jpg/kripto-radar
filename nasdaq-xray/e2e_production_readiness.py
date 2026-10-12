@@ -224,6 +224,48 @@ def non_g9_price_pass_count(price):
             total+=1
     return total
 
+def manual_delayed_eod_source_contract(price, manual_policy):
+    """Historical non-G9 data may be *inspected* in manual-only research.
+
+    Strict G9 remains BLOCKED. This helper grants NO registered candidate,
+    delivery, live quote, market-cap measurement, or trade authority. The
+    independent full MC/HISTORY/FINAL source chain is still mandatory.
+    """
+    if not isinstance(manual_policy,dict) or not isinstance(price,dict):
+        return False
+    g9=manual_policy.get("g9") or {}
+    delivery=manual_policy.get("delivery") or {}
+    h=manual_policy.get("hard_gates") or {}
+    if not (
+        manual_policy.get("schema")=="XRAY_MANUAL_DECISION_RESEARCH_MODE_V1"
+        and manual_policy.get("mode")=="RESEARCH_ONLY_MANUAL_DECISION"
+        and manual_policy.get("status")=="PARALLEL_SHADOW_UNTIL_VERIFIED"
+        and manual_policy.get("parent_policy_version")=="C4.17"
+        and manual_policy.get("execution")=="NONE"
+        and manual_policy.get("real_money")=="NO-GO"
+        and manual_policy.get("unknown_never_pass") is True
+        and manual_policy.get("alpha_thresholds_unchanged") is True
+        and manual_policy.get("broker_trade_access_allowed") is False
+        and g9.get("mandatory_for_research_signal") is False
+        and g9.get("never_claim_g9_pass_unless_existing_gate_pass") is True
+        and delivery.get("enabled_in_this_shadow") is False
+        and delivery.get("quotes_must_disclose_asof_and_data_delay") is True
+        and h.get("price_min_usd")==5
+        and h.get("dv30_min_usd")==50000000
+        and h.get("mc_min_usd")==2000000000
+        and h.get("history_min_daily_bars")==260
+        and h.get("mc_fallback_watch_cannot_promote") is True
+    ):
+        return False
+    symbols=price.get("pass_symbols")
+    n=non_g9_price_pass_count(price)
+    return bool(type(symbols) is list and symbols
+                and type(n) is int and n==len(symbols)
+                and price.get("execution")=="NONE"
+                and price.get("real_money")=="NO-GO"
+                and price.get("unknown_never_pass") is True
+                and price.get("unknown_count")==0)
+
 def scope_readiness(blockers,chain_exact):
     """Distinguish global universe completion from exact candidate-local lineage.
 
@@ -390,6 +432,8 @@ def snapshot():
          and set(price.get("blocked_symbols") or []).isdisjoint(price_set)
          and int(price.get("pass_count") if price.get("pass_count") is not None else -1)==len(price_set))
     non_g9_count=non_g9_price_pass_count(price)
+    manual_policy=read("manual_decision_policy_v1.json")
+    delayed_manual_contract=manual_delayed_eod_source_contract(price,manual_policy)
     fail("PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",non_g9_count==0)
     fail("PRICE_UNKNOWN_CURRENT",price.get("unknown_count")==0)
     fail("PRICE_BLOCKED_30_SESSION_BARS",price.get("blocked_count")==0)
@@ -430,6 +474,12 @@ def snapshot():
                   and freshness.get("freshness_ready") is True
                   and registered_research_candidate_exact(
         terminal,pointer,asof,sha("canonical_current_terminal.json")))
+    manual_eod_candidate_prep=bool(delayed_manual_contract and current_chain
+        and freshness.get("freshness_ready") is True
+        and registered_research_candidate_exact(
+            terminal,pointer,asof,sha("canonical_current_terminal.json")))
+    # Unlike current/live G9, this is a separate historical manual-only
+    # witness; it is NEVER a market-data entitlement, full GO or delivery.
     # Delivery is independent: a zero-signal scenario may be a legitimate
     # completed run, but a device receipt must never be inferred from a ledger.
     fail("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",False)
@@ -440,6 +490,10 @@ def snapshot():
         "execution":"NONE","real_money":"NO-GO","alpha_authority":False,
         "blockers":sorted(set(blocks)),
         "ready_for_current_research_signal":prepared,
+        "historical_manual_non_g9_source_contract_ready":delayed_manual_contract,
+        "historical_manual_research_candidate_prep_only":manual_eod_candidate_prep,
+        "historical_manual_research_no_g9_pass_claim":True,
+        "historical_manual_research_no_notification_claim":True,
         "candidate_preparation_witness_only":prepared,
         "actual_device_delivery_receipt_attested":False,
         "full_e2e_research_attested":current_chain
@@ -480,6 +534,35 @@ def selftest():
       }}
     assert non_g9_price_pass_count(sample)==1
     assert non_g9_price_pass_count({}) is None
+    # The policy expressly permits historical manual research without strict
+    # G9. Check the source-contract distinction, without publishing a signal.
+    _policy=read("manual_decision_policy_v1.json")
+    _price={"pass_symbols":["A"],"results":{
+        "A":{"status":"PASS_PRICE_DV30","info":{"source":"RALLIES_EXACT30_NON_G9"}}},
+        "execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,"unknown_count":0}
+    assert manual_delayed_eod_source_contract(_price,_policy) is True
+    from copy import deepcopy as _copy_manual
+    for mutate in (
+        lambda q,p:q.update(mode="FULL_GO"),
+        lambda q,p:q.update(execution="TRADE"),
+        lambda q,p:q.update(real_money="GO"),
+        lambda q,p:q.update(unknown_never_pass=False),
+        lambda q,p:q["g9"].update(mandatory_for_research_signal=True),
+        lambda q,p:q["delivery"].update(enabled_in_this_shadow=True),
+        lambda q,p:q["delivery"].update(quotes_must_disclose_asof_and_data_delay=False),
+        lambda q,p:q["hard_gates"].update(price_min_usd=2),
+        lambda q,p:q["hard_gates"].update(mc_min_usd=0),
+        lambda q,p:q["hard_gates"].update(history_min_daily_bars=10),
+        lambda q,p:p["results"]["A"]["info"].update(source="UNKNOWN"),
+        lambda q,p:p["results"]["A"]["info"].pop("source"),
+        lambda q,p:p.update(unknown_count=1),
+        lambda q,p:p["pass_symbols"].append("A"),
+    ):
+        q,p=_copy_manual(_policy),_copy_manual(_price)
+        mutate(q,p)
+        assert manual_delayed_eod_source_contract(p,q) is False
+    print("XRAY_MANUAL_EOD_NON_G9_SEPARATE_FROM_STRICT_G9=PASS_14_NEGATIVES_NO_RELEASE")
     from copy import deepcopy as _deepcopy
     invalid=_deepcopy(sample)
     invalid["results"]["B"]["info"].pop("source")
