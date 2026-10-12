@@ -1,0 +1,95 @@
+{
+  "schema": "XRAY_20261012_11_PROVIDER_C418_514_REAL_CI_CONTINUATION_V1",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "start_live_main_sha": "b11d80aa8d060aea52ac9587150333c9d2f7d355",
+  "asof_et": "2026-10-09",
+  "effective_policy": "C4.17",
+  "successor": "C4.18_PROPOSED_NOT_ACTIVATED",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "goal": "Close single-Bigdata dependency with source-exact PIT multi-provider market cap while preserving alpha, rights, and independent G9/delivery evidence.",
+  "live_source_proofs": {
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "master_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "inventory_blob_sha": "13e463ef90e0d9e91c5ba74a4e0fb98d80a1dc47",
+    "price_dv30_pass_count": 514,
+    "master_identity_pass_count": 3184,
+    "master_identity_unknown_count": 12,
+    "unknown_intersect_514_count": 0
+  },
+  "actual_connected_checks": {
+    "massive": "Three date-filtered AAPL GOOG GOOGL ticker overview readbacks on 2026-10-09; values agreed with Rallies exactly or to integer rounding; feed independence NOT proven; date-selected SEC filing data may reflect later publication.",
+    "rallies": "3 single-company 2026-10-12 interactive observations; MC values agree with Massive; not an independent validated publication-timestamp PIT source.",
+    "alpaca": "Historical completed SIP delayed 15 minutes eligible only where exact role and rights are met; no strict current G9.",
+    "financial_datasets": "COMPANY_FACTS_CREDIT_BALANCE_ZERO; METRICS_SNAPSHOT_UNAUTHORIZED; not an alternate current primary.",
+    "bigdata": "LIVE_CONNECTED_PLUGIN_CREDITS_EXHAUSTED; no paid top-up."
+  },
+  "additional_options_from_official_docs": [
+    "SEC_EDGAR",
+    "ALPACA",
+    "RALLIES",
+    "LONGBRIDGE",
+    "MASSIVE",
+    "FMP",
+    "ALPHA_VANTAGE",
+    "EODHD",
+    "TIINGO",
+    "NASDAQ_DATA_LINK_SHARADAR",
+    "OPENBB"
+  ],
+  "major_findings": [
+    "FMP historical/batch market cap is a documented endpoint, but endpoint-tier access, grant and realtime provenance not verified.",
+    "Alpha Vantage free generally 25 API queries per day, with verified open-source/educational exception that requires eligibility.",
+    "EODHD free sandbox 20 calls/day: one-symbol-day scan of 514 would require at least 26 days, ignoring endpoint restrictions.",
+    "Tiingo free Starter 500 distinct monthly symbols cannot alone cover exact 514 and fundamental data is add-on.",
+    "Massive free 5 req/min implies at least 103 minutes for one-per-symbol 514, excluding cross-check and rate limit volatility; legal non-display and SEC period-end lookahead unresolved.",
+    "OpenBB orchestrates vendors but is not an independent provider or substitute for exchange grants.",
+    "Rallies+Massive same rounded values for 3 examples cannot prove independent upstream roots, and vendor licensing prohibits assuming aggregated personal data is safely publishable.",
+    "SEC as-of issuer shares times historical Alpaca price can be shadow reconstructed for separately proven single-share-class/CAs only; existing 346/168 SEC cohort is not full validated as-of primary.",
+    "Existing C4.17 Fallback A 514: 475 WATCH,10 FAIL,29 UNKNOWN and 0 MC_PRIMARY; WATCH cannot become AL."
+  ],
+  "repository_files": {
+    "inventory": "nasdaq-xray/c418_provider_inventory_20261012.json",
+    "router": "nasdaq-xray/c418_provider_routing_readiness.py",
+    "workflow": ".github/workflows/xray-c418-multi-source-contract.yml",
+    "original_proposal": "nasdaq-xray/source_successor_c418_proposal.json",
+    "original_guard": "nasdaq-xray/c418_multi_source_guard.py"
+  },
+  "real_ci": {
+    "run_id": 38187772981,
+    "conclusion": "SUCCESS",
+    "exact_invocation_sha": "b11d80aa8d060aea52ac9587150333c9d2f7d355",
+    "artifact_id": 11719539185,
+    "artifact_digest_sha256": "7316217d499f2274ff6b990b6404d3633813e544caadfbb9cee48f1ac35108e0",
+    "artifact_entries": [
+      "xray_c418_514_source_router.json",
+      "xray_c418_multi_source_health.json"
+    ],
+    "source_router": "PASS_11_SOURCE_ROWS_514_EXACT_PRICE_12_UNKNOWN_DISJOINT_15_NEGATIVE_MUTANTS_PYTHON_AND_PYTHON_O",
+    "underlying_source_rights": "DATA_BLOCKED_NO_PRIVATE_LIVE_EVIDENCE",
+    "CI_success_qualifies_as_market_cap_primary": false
+  },
+  "no_fabrications": {
+    "no_source_lawful_rights_claim": true,
+    "no_paid_services_or_topups": true,
+    "no_vendor_raw_market_data_public": true,
+    "no_fabricated_alpha": true,
+    "no_broker_action": true,
+    "no_device_receipt_claim": true,
+    "no_pass_from_source_count": true
+  },
+  "continuation_actions": [
+    "Test a provider account/runner only after it actually offers user-authorized automation and non-display/derived-result rights; do not speculate credentials.",
+    "Build C4.18 per-class PIT acceptance-time MC source for independent legally accessible vendors; verify SEC filing and issuer action interval, exact daily bar and source timestamp.",
+    "Independently verify MC provider root, not by three matching quoted numbers.",
+    "Build complete price MC HISTORY260/WEEKLY52 LEGAL EVENTS STAGE1 FINAL same session source hash chain; do not carry Oct 7 terminal.",
+    "Resolve 12 global identity UNKNOWN using official preclose filing evidence; only global full-universe status blocked when unrelated to local scope.",
+    "Keep strict G9 and actual device notification receipt as separate GO requirements."
+  ],
+  "current_final_go": false,
+  "current_r92_verified": false,
+  "verified_device_notification_receipt": false
+}
