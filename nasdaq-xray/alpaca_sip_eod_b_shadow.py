@@ -15,6 +15,7 @@ import math
 import os
 import re
 import statistics
+from functools import lru_cache
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -46,15 +47,31 @@ def ema(xs,length):
     for x in xs[length:]:v+=2/(length+1)*(x-v)
     return v
 
+@lru_cache(maxsize=32)
+def official_completed_week_closes(first_date, asof):
+    """Exchange-final RTH dates, not calendar Fridays (Good Friday matters).
+
+    Query beyond ASOF to distinguish an in-progress Wednesday/Thursday week
+    from an officially complete Thursday-shortened week. Same Nasdaq calendar
+    is used by the C4.17 production history_phase.week_count predicate.
+    """
+    end=(dt.date.fromisoformat(asof)+dt.timedelta(days=7)).isoformat()
+    calendar=mcal.get_calendar("NASDAQ")
+    schedule=calendar.schedule(start_date=first_date,end_date=end)
+    week_last={}
+    for session,_ in schedule.iterrows():
+        date=session.date()
+        iso=date.isocalendar()
+        week_last[(iso.year,iso.week)]=date.isoformat()
+    return tuple(sorted(d for d in week_last.values() if d<=asof))
+
+
 def completed_weeks(bars,asof):
-    weeks={}
-    for b in bars:
-        date=dt.date.fromisoformat(b["date"])
-        monday=date-dt.timedelta(days=date.weekday())
-        # Do not use a partial current trading week as completed history.
-        weeks[monday]=(date,b["close"])
-    return [close for _,(date,close) in sorted(weeks.items())
-            if date.weekday()==4 and date.isoformat()<=asof]
+    if not bars:return []
+    by={b["date"]:b["close"] for b in bars}
+    completed=official_completed_week_closes(
+        min(by),asof)
+    return [by[d] for d in completed if d in by]
 
 def validate_bars(symbol,bars,asof,expected_sessions=None):
     require(type(bars) is list and len(bars)>=260,"NOT_260_BARS:"+symbol)
@@ -283,6 +300,26 @@ def selftest():
             "high":1.1,"low":0.9,"close":1.0,"volume":10.0}],"2026-10-09")
     except ValueError:pass
     else:raise RuntimeError("SHORT_BAR_SERIES_ACCEPTED")
+    # April 3, 2026 was Good Friday: Nasdaq final trading session was Thu 2.
+    # Calendar-Friday-only aggregation loses a valid completed weekly close.
+    gd=[{"date":"2026-04-01","close":10.0},
+        {"date":"2026-04-02","close":11.0}]
+    require(completed_weeks(gd,"2026-04-02")==[11.0],
+            "GOOD_FRIDAY_THURSDAY_COMPLETED_WEEK_NOT_COUNTED")
+    require(completed_weeks([gd[0]],"2026-04-01")==[],
+            "IN_PROGRESS_WEDNESDAY_WEEK_WRONGLY_COUNTED")
+    # Ordinary Thursday remains incomplete when Friday is an official session.
+    require(completed_weeks([{"date":"2026-04-09","close":12.0}],
+                            "2026-04-09")==[],
+            "REGULAR_THURSDAY_WEEK_WRONGLY_COUNTED")
+    require(completed_weeks([{"date":"2026-04-09","close":12.0}],
+                            "2026-04-10")==[],
+            "MISSING_OFFICIAL_FRIDAY_CLOSE_WRONGLY_COUNTED")
+    require(completed_weeks([{"date":"2026-04-09","close":12.0},
+                             {"date":"2026-04-10","close":13.0}],
+                            "2026-04-10")==[13.0],
+            "REGULAR_FRIDAY_WEEK_NOT_COUNTED")
+    print("XRAY_SIP_OFFICIAL_COMPLETED_WEEK_SELFTEST=PASS_5_POSITIVE_NEGATIVE_CASES_NO_AL")
     print("XRAY_ALPACA_SIP_EOD_B_SHADOW_SELFTEST=PASS_FAIL_CLOSED_9_NEGATIVE_EXACT260_NO_AL")
 
 def main():
