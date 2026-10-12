@@ -167,6 +167,29 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_
             "actual_same_asof_mc_entitlement":"UNVERIFIED",
             "conditional_only_not_scheduled":True,
         }
+    # BQ daily historical MC is NOT the latest screener. Official REST:
+    # up to 5 tickers per /historic request (one metric slug); 30 free/day.
+    # Row.date is NOT independent SEC publication-time PIT evidence.
+    bq=providers["BUSINESSQUANT"]
+    require(bq.get("historical_mc_endpoint")=="https://data.businessquant.com/historic"
+            and bq.get("historical_mc_slug")=="market-capitalization-daily"
+            and bq.get("max_tickers_per_historic_call")==5
+            and bq.get("report_date_alone_not_pit") is True
+            and bq.get("request_asof_requires_explicit_from_date_till_date_and_exact_row") is True
+            and bq.get("automated_non_display_primary_license_verified") is False
+            and bq.get("mc_current_exact") is False
+            and bq.get("runner_key_attested") is False,
+            "BQ_HISTORY_HARD_LIMIT_PIT_LICENSE_UNATTESTED")
+    batch_calls=cap(len(ps),5)
+    estimates["BUSINESSQUANT"].update({
+        "documented_historic_metric":"market-capitalization-daily",
+        "documented_tickers_per_call":5,
+        "best_case_historical_mc_calls_if_all_symbols_have_data":batch_calls,
+        "best_case_free_calendar_days":cap(batch_calls,bq["daily_requests"]),
+        "historical_filing_acceptance_pit_proven":False,
+        "batch_api_token_present_in_runner":False,
+        "best_case_only_not_entitled_to_primary":True,
+    })
     ti=providers["TIINGO"]
     estimates["TIINGO"]={
         "unique_symbol_quota_month":ti["max_unique_symbols"],
@@ -257,11 +280,16 @@ def selftest():
     require(got["per_source_capacity_scenarios"]["FMP"]["minimum_days_if_one_request_per_symbol"]==3,"FMP_CAP_3")
     require(got["per_source_capacity_scenarios"]["ALPHA_VANTAGE"]["minimum_days_if_one_request_per_symbol"]==21,"ALPHA_CAP_21")
     require(got["per_source_capacity_scenarios"]["EODHD"]["minimum_days_if_one_request_per_symbol"]==26,"EODHD_CAP_26")
-    require(got["per_source_capacity_scenarios"]["BUSINESSQUANT"]["minimum_days_if_one_request_per_symbol"]==18,"BUSINESSQUANT_CAP_18_IF_ONE_PER_SYMBOL")
+    bqroute=got["per_source_capacity_scenarios"]["BUSINESSQUANT"]
+    require(bqroute["minimum_days_if_one_request_per_symbol"]==18,"BQ_CONSERVATIVE_IF_PER_SYMBOL")
+    require(bqroute["best_case_historical_mc_calls_if_all_symbols_have_data"]==103
+            and bqroute["best_case_free_calendar_days"]==4
+            and bqroute["historical_filing_acceptance_pit_proven"] is False,
+            "BQ_FIVE_PER_CALL_BEST_CASE_NOT_PRIMARY")
     require(got["new_primary_mc_authority_count"]==0 and got["new_r92_count_created"]==0,"BQ_NOT_PRIMARY")
     bq=next(s for s in inv["sources"] if s["id"]=="BUSINESSQUANT")
     require(bq["current_connected"]=="IN_REPO_RESEARCH_ADAPTER_NO_VERIFIED_KEY"
-            and bq["lookahead_guard"].startswith("SCREEN_RECALCULATED_EVERY_MINUTE")
+            and bq["lookahead_guard"].startswith("DAILY_MC_ROW_DATE_NOT_SUFFICIENT")
             and bq["runner_key_attested"] is False
             and bq["mc_current_exact"] is False, "BQ_NOT_PIT_OR_LICENSED")
 
@@ -324,6 +352,9 @@ def selftest():
         (1,lambda x:x.update(real_money="GO"),"REAL_MONEY"),
         (2,lambda x:x.update(source_rights_not_inferred_from_free_price=False),"FAKE_LICENSE"),
         (2,lambda x:x["sources"][4].update(runner_key_attested=True),"FAKE_RUNNER_KEY"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(max_tickers_per_historic_call=514),"FAKE_BQ_BATCH_CAP"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(automated_non_display_primary_license_verified=True),"FAKE_BQ_PRIMARY_LICENSE"),
+        (2,lambda x:next(s for s in x["sources"] if s["id"]=="BUSINESSQUANT").update(historical_mc_slug="market-capitalization"),"WRONG_BQ_DAILY_SLUG"),
         (2,lambda x:x["live_shadow_probe_summary"].update(upstream_independence_verified=True),"FAKE_INDEPENDENCE"),
         (2,lambda x:x["live_shadow_probe_summary"].update(production_mc_primary_created=1),"FAKE_MC"),
         (3,lambda x:x.update(explicit_source_promotion_authorized=True),"FAKE_C418_CUTOVER"),
