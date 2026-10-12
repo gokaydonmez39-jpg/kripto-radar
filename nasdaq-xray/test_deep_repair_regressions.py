@@ -619,7 +619,13 @@ def test_workflow_race_and_pre_mc_freeze_contracts():
     assert "Fail closed when exact event binding is unavailable" in final_wf
     assert "steps.event.outputs.ready != 'true' && steps.event.outputs.upstream_epoch_drift != 'true'" in final_wf
     assert "XRAY_FINAL_EVENT_BINDING=FAIL_CLOSED" in final_wf
-    assert "Healthy no-op while current upstream epoch is incomplete" in final_wf
+    # Validate source-exact fail-closed behavior, not a mutable prose label.
+    # Final must no-op on incomplete cross-epoch MC/HISTORY, never mint R92.
+    assert "healthy upstream-incomplete no-op" in final_wf
+    assert "if not current_mc_exact:" in final_wf
+    assert 'h.get("source_mc_blob_sha")==bsha(mc_path)' in final_wf
+    assert 'mc.get("input_blob_sha")==bsha(pathlib.Path("nasdaq-xray/canonical_current_price_dv30.json"))' in final_wf
+    assert 'print("upstream_reason=CURRENT_DV30_MC_CHAIN_NOT_EXACT")' in final_wf
     assert 'print("upstream_epoch_drift=true")' in final_wf
     assert 'master_asof!=req_asof or price_asof!=req_asof' in final_wf
     assert 'int(p.get("unknown_count",-1))!=0' in final_wf
