@@ -85,6 +85,69 @@ def inspect(start: dict, pre: dict) -> dict:
         "notice":"Research-only observation; only Canonical can release independently proven current R92 candidates."
     }
 
+def attach_manual_eod_observation(report: dict, manual: dict | None) -> dict:
+    """Attach *human interactive* EOD research observations, never Canonical AL.
+
+    The existing independent SIP provenance verifier must produce the input.
+    Passing through an archive or a source mismatch yields zero current watches.
+    """
+    value=dict(report)
+    value.update(manual_eod_watch_status="NOT_VERIFIED",
+                 manual_eod_watch_count=0, manual_eod_watch_symbols=[],
+                 manual_eod_not_automated=True,
+                 manual_eod_alpha_authority=False,
+                 manual_eod_r92_authority=False)
+    if manual is None:
+        return value
+    need(isinstance(manual,dict) and manual.get("schema") ==
+         "XRAY_MANUAL_SIP_WATCH_PROVENANCE_READBACK_V1","MANUAL_WITNESS_SCHEMA")
+    need(manual.get("execution")=="NONE" and manual.get("real_money")=="NO-GO"
+         and manual.get("unknown_never_pass") is True,"MANUAL_SAFETY")
+    need(manual.get("not_a_buy_signal") is True
+         and manual.get("full_go") is False
+         and manual.get("r92_registered")==0
+         and manual.get("candidate_delivery_performed") is False
+         and manual.get("orders")==[]
+         and manual.get("live_provider_replay_or_licensing_attested") is False,
+         "MANUAL_FALSE_PROMOTION")
+    need(manual.get("technical_C417_AL_count")=="UNVERIFIED",
+         "MANUAL_AL_IS_UNVERIFIED_NOT_ZERO")
+    require_status=manual.get("status")
+    need(require_status in ("EOD_MANUAL_TECH_WATCH_CURRENT_UNREPLAYED",
+                            "STALE_ARCHIVAL_SNAPSHOT_NOT_CURRENT"),"MANUAL_STATUS")
+    current=(require_status=="EOD_MANUAL_TECH_WATCH_CURRENT_UNREPLAYED")
+    symbols=manual.get("current_eod_research_watch")
+    need(isinstance(symbols,list) and
+         symbols==sorted(set(symbols)) and
+         all(isinstance(x,str) and x and x.replace(".","").replace("-","").isalnum() for x in symbols),
+         "MANUAL_WATCH_SET")
+    need(manual.get("current_eod_research_watch_count")==len(symbols),
+         "MANUAL_WATCH_COUNT")
+    need(isinstance(manual.get("source_git_blob_shas"),dict),
+         "MANUAL_SOURCE_REFS")
+    source_ok=all(manual["source_git_blob_shas"].get(k)==report["readback_sha"].get(k)
+                  for k in ("master","price"))
+    same_asof=manual.get("snapshot_asof_et")==report["source_asof"].get("master") == report["source_asof"].get("price")
+    completed=manual.get("latest_completed_session")==manual.get("snapshot_asof_et")
+    if current:
+        need(source_ok and same_asof and completed
+             and manual.get("canonical_master_price_exact") is True
+             and manual.get("same_asof_latest_completed") is True,
+             "MANUAL_CURRENT_SOURCE_DRIFT")
+        need(len(symbols)==11 and
+             manual.get("observed_watch_count")==11 and
+             manual.get("close_crosschecks")==11,
+             "MANUAL_11_OBSERVATIONS")
+        value.update(manual_eod_watch_status="CURRENT_COMPLETED_EOD_MANUAL_SHADOW_NOT_AL",
+                     manual_eod_watch_count=len(symbols),
+                     manual_eod_watch_symbols=symbols)
+    else:
+        need(not symbols and manual.get("current_eod_research_watch_count")==0,
+             "STALE_MANUAL_WATCH_MUST_BE_EMPTY")
+        value["manual_eod_watch_status"]="ARCHIVAL_ONLY_NO_CURRENT_MANUAL_WATCH"
+    return value
+
+
 def selftest() -> None:
     sha={k:c*40 for k,c in (("terminal","a"),("master","b"),("price","c"))}
     start={"schema":"XRAY_RESEARCH_MONITORING_START_WITNESS_V1","operational_status":"RESEARCH_MONITORING_START_CONFIGURED",**SAFE,"alpha_go":False,"orders":[],"buy_candidates":[],"current_signal_release":"NOT_ATTESTED","primary_mc_attested":False,"delivery_receipt_attested":False,"input_epochs_aligned":True,"readback":{k:{"asof_et":"2026-10-09","blob_sha":v} for k,v in sha.items()}}
@@ -106,21 +169,54 @@ def selftest() -> None:
     try:inspect(bad,pre)
     except ValueError:pass
     else:raise RuntimeError("START_PREIMAGE_DRIFT_ACCEPTED")
-    print("XRAY_DUAL_LANE_SELFTEST=PASS_SOURCE_SHA_EPOCH_DISJOINT_NO_R92_NO_ORDER_NEGATIVES")
+    manual={"schema":"XRAY_MANUAL_SIP_WATCH_PROVENANCE_READBACK_V1",
+            **SAFE,"not_a_buy_signal":True,"full_go":False,
+            "r92_registered":0,"candidate_delivery_performed":False,"orders":[],
+            "live_provider_replay_or_licensing_attested":False,
+            "technical_C417_AL_count":"UNVERIFIED",
+            "status":"EOD_MANUAL_TECH_WATCH_CURRENT_UNREPLAYED",
+            "current_eod_research_watch":["M%02d"%i for i in range(11)],
+            "current_eod_research_watch_count":11,"observed_watch_count":11,
+            "close_crosschecks":11,
+            "source_git_blob_shas":sha.copy(),
+            "snapshot_asof_et":"2026-10-09",
+            "latest_completed_session":"2026-10-09",
+            "canonical_master_price_exact":True,
+            "same_asof_latest_completed":True}
+    out=attach_manual_eod_observation(inspect(start,pre),manual)
+    need(out["manual_eod_watch_count"]==11
+         and out["verified_al_start_status"]=="BLOCKED_CURRENT_SOURCE_CHAIN"
+         and out["r92_candidates"]==[],"MANUAL_WATCH_MUST_NOT_PROMOTE_AL")
+    archived=copy.deepcopy(manual)
+    archived.update(status="STALE_ARCHIVAL_SNAPSHOT_NOT_CURRENT",
+                    current_eod_research_watch=[],current_eod_research_watch_count=0)
+    need(attach_manual_eod_observation(inspect(start,pre),archived)["manual_eod_watch_count"]==0,
+         "MANUAL_ARCHIVAL_GUARD")
+    for field,value in (("r92_registered",1),("live_provider_replay_or_licensing_attested",True),
+                        ("source_git_blob_shas",{**sha,"price":"d"*40}),
+                        ("latest_completed_session","2026-10-08")):
+        bad=copy.deepcopy(manual);bad[field]=value
+        try:attach_manual_eod_observation(inspect(start,pre),bad)
+        except ValueError:pass
+        else:raise RuntimeError("MANUAL_FALSE_SOURCE_PROMOTION_ACCEPTED:"+field)
+        print("XRAY_DUAL_LANE_SELFTEST=PASS_SOURCE_SHA_EPOCH_DISJOINT_NO_R92_NO_ORDER_NEGATIVES")
 
 def main() -> None:
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
     p.add_argument("--start",type=Path)
     p.add_argument("--preentry",type=Path)
+    p.add_argument("--manual",type=Path)
     p.add_argument("--out",type=Path)
     args=p.parse_args()
     if args.selftest:selftest();return
     if not args.start or not args.preentry or not args.out:p.error("--start, --preentry, --out required")
     value=inspect(json.loads(args.start.read_text()),json.loads(args.preentry.read_text()))
+    value=attach_manual_eod_observation(value,json.loads(args.manual.read_text()) if args.manual else None)
     args.out.write_text(json.dumps(value,sort_keys=True,indent=2)+"\n")
     print("XRAY_RESEARCH_START="+value["research_start_status"])
     print("XRAY_VERIFIED_AL_START="+value["verified_al_start_status"])
+    print("XRAY_MANUAL_EOD_WATCH="+value["manual_eod_watch_status"]+" count="+str(value["manual_eod_watch_count"]))
     print("XRAY_DUAL_LANE_BUY=0_EXECUTION_NONE")
 
 if __name__=="__main__":main()
