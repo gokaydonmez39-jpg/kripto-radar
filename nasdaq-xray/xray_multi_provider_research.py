@@ -219,7 +219,7 @@ def inputs():
     sha["MC"]=blob(full)
     return asof,scopes,sha
 
-def pre_mc_recovery_inputs():
+def pre_mc_recovery_inputs(now_utc=None):
     """Exact current MASTER+PRICE bootstrap when 9-Oct MC/HISTORY/TERMINAL lag.
 
     The MC lane is the price-pass cohort, *not* a fabricated canonical MC
@@ -235,6 +235,10 @@ def pre_mc_recovery_inputs():
     master=json.loads((ROOT/names["MASTER"]).read_text())
     price=json.loads((ROOT/names["PRICE"]).read_text())
     asof=proper_date(price.get("asof_et"))
+    from source_epoch_freshness_guard import last_complete_session
+    instant=now_utc if now_utc is not None else dt.datetime.now(dt.timezone.utc)
+    if asof!=last_complete_session(instant):
+        raise ValueError("PRE_MC_PRICE_NOT_LATEST_OFFICIAL_COMPLETED_SESSION")
     if master.get("asof_et")!=asof:
         raise ValueError("PRE_MC_MASTER_PRICE_ASOF_MISMATCH")
     for row in (master,price):
@@ -407,6 +411,26 @@ def selftest():
     assert recovered_sha["PRICE"]==blob(ROOT/"canonical_current_price_dv30.json")
     assert recovered_sha["MASTER"]==blob(ROOT/"canonical_current_master_manifest.json")
     assert recovered_asof==json.loads((ROOT/"canonical_current_price_dv30.json").read_text())["asof_et"]
+    # 9-Oct is latest through Mon-12 Oct 20:29 UTC. The same immutable
+    # 9-Oct PRICE must not be replayed as "current" after Mon close+buffer.
+    if recovered_asof=="2026-10-09":
+        for instant in (dt.datetime(2026,10,10,12,tzinfo=dt.timezone.utc),
+                        dt.datetime(2026,10,12,13,tzinfo=dt.timezone.utc),
+                        dt.datetime(2026,10,12,20,29,tzinfo=dt.timezone.utc)):
+            assert pre_mc_recovery_inputs(now_utc=instant)[0]=="2026-10-09"
+        try:
+            pre_mc_recovery_inputs(now_utc=dt.datetime(2026,10,12,20,30,tzinfo=dt.timezone.utc))
+        except ValueError as e:
+            assert str(e)=="PRE_MC_PRICE_NOT_LATEST_OFFICIAL_COMPLETED_SESSION"
+        else:
+            raise AssertionError("STALE_9OCT_REPLAY_AS_12OCT_CURRENT")
+        try:
+            pre_mc_recovery_inputs(now_utc=dt.datetime(2026,10,9,19,tzinfo=dt.timezone.utc))
+        except ValueError as e:
+            assert str(e)=="PRE_MC_PRICE_NOT_LATEST_OFFICIAL_COMPLETED_SESSION"
+        else:
+            raise AssertionError("FUTURE_9OCT_PRE_MARKET_CLOSE")
+    print("XRAY_PRE_MC_OFFICIAL_SESSION_FRESHNESS=PASS_9OCT_THROUGH_12OCT_PRESETTLEMENT")
 
     # Deliberately simulate the production circular deadlock. Recovery must
     # inspect just MASTER/PRICE and never infer MC PRIMARY, EVENTS or R92.
