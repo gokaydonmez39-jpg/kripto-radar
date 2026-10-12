@@ -95,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-12T18:46:03.326849+00:00",
+  "generated_at_utc": "2026-10-12T19:04:19.519133+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -745,8 +745,19 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=10/12/2026"
     },
     "system_status_ipo": {
-      "item_count": 0,
-      "items": [],
+      "item_count": 1,
+      "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "<p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>SKIN </strong>before the opening on, Tuesday, October 13, 2026. All open GTC orders in symbol <strong>SKIN </strong>will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br>",
+          "Message_dt": "Mon, 12 Oct 2026 18:46:27 GMT",
+          "SubjectLine": "Option Notice: Option Delisting",
+          "Time": "14:46:27",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">14:46:27</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\"><p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>SKIN </strong>before the opening on, Tuesday, October 13, 2026. All open GTC orders in symbol <strong>SKIN </strong>will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br></td></tr></table>",
+          "pubDate": "Mon, 12 Oct 2026 18:46:27 GMT",
+          "title": "Option Notice: Option Delisting"
+        }
+      ],
       "status": "PASS",
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=IPO"
     },
@@ -773,8 +784,53 @@
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 104,
+      "item_count": 107,
       "items": [
+        {
+          "HaltDate": "10/12/2026",
+          "HaltTime": "15:00:03.833",
+          "IssueName": "Ribbon Acq Corp Ut",
+          "IssueSymbol": "RIBBU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/12/2026",
+          "ResumptionQuoteTime": "15:00:03",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">15:00:03.833</td><td valign=\"top\">RIBBU</td><td valign=\"top\">Ribbon Acq Corp Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">15:00:03                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
+          "title": "RIBBU"
+        },
+        {
+          "HaltDate": "10/12/2026",
+          "HaltTime": "14:53:58.640",
+          "IssueName": "WF Hldg Ltd Ord",
+          "IssueSymbol": "WFF",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/12/2026",
+          "ResumptionQuoteTime": "14:53:58",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:53:58.640</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:53:58                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
+          "title": "WFF"
+        },
+        {
+          "HaltDate": "10/12/2026",
+          "HaltTime": "14:48:43.623",
+          "IssueName": "WF Hldg Ltd Ord",
+          "IssueSymbol": "WFF",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/12/2026",
+          "ResumptionQuoteTime": "14:48:43",
+          "ResumptionTradeTime": "14:53:43",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:48:43.623</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:48:43                      </td><td valign=\"top\">14:53:43                      </td></tr></table>",
+          "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
+          "title": "WFF"
+        },
         {
           "HaltDate": "10/12/2026",
           "HaltTime": "14:37:31.176",
@@ -785,8 +841,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/12/2026",
           "ResumptionQuoteTime": "14:37:31",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:37:31.176</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:37:31                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "14:47:40",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:37:31.176</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:37:31                      </td><td valign=\"top\">14:47:40                      </td></tr></table>",
           "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
           "title": "WFF"
         },
@@ -800,8 +856,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/12/2026",
           "ResumptionQuoteTime": "14:36:12",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:36:12.643</td><td valign=\"top\">RIBBU</td><td valign=\"top\">Ribbon Acq Corp Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:36:12                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "14:46:13",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:36:12.643</td><td valign=\"top\">RIBBU</td><td valign=\"top\">Ribbon Acq Corp Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">14:36:12                      </td><td valign=\"top\">14:46:13                      </td></tr></table>",
           "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
           "title": "RIBBU"
         },
