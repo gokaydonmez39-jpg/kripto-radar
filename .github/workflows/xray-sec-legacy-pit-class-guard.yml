@@ -54,7 +54,7 @@ jobs:
             "vendor_raw_data_in_artifact":False,
           }
           dest=Path(os.environ["RUNNER_TEMP"])/"xray_sec_legacy_pit_safety_ci.json"
-          dest.write_text(json.dumps(report,indent=2,sort_keys=True)+"\\n")
+          dest.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
           print("XRAY_SEC_LEGACY_CODE_SHA="+report["source_git_blob_sha"])
           print("XRAY_SEC_LEGACY_NONAUTHORITY_CI=PASS")
           PY
