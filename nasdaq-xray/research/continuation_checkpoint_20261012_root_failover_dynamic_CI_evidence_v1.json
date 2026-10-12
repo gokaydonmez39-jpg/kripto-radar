@@ -1,0 +1,185 @@
+{
+  "schema": "XRAY_C417_ROOT_FAILOVER_DYNAMIC_C418_EVIDENCE_20261012_V1",
+  "audit_date": "2026-10-12",
+  "timezone": "Europe/Istanbul",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "main_sha_before_checkpoint": "485052802e2bd7cb6123710207d5a7ceb92dd461",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "c418": "RESEARCH_PROPOSAL_INACTIVE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_paid_api_purchase": true,
+  "no_new_alpha": true,
+  "no_new_r92": true,
+  "no_automated_orders": true,
+  "five_XRAY_enabled_automation_tasks_verified": true,
+  "no_sixth_created": true,
+  "live_readback": {
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "asof": "2026-10-09",
+      "pass": 514,
+      "unknown": 0,
+      "blocked": 0
+    },
+    "history": {
+      "path": "nasdaq-xray/canonical_current_history.json",
+      "sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "asof": "2026-10-07",
+      "pass": 460
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof": "2026-10-07",
+      "status": "PARTIAL_UNKNOWN"
+    },
+    "strict_g9": {
+      "path": "nasdaq-xray/g9_entitlement_authority.json",
+      "sha": "b26aa17cc13b4e8b7038079d0bc9034f46a8454b",
+      "status": "BLOCKED_STRICT_PERMANENT_ZERO"
+    },
+    "true_full_go": "BLOCKED",
+    "primary_mc_verified": 0,
+    "r92_registered": 0,
+    "device_receipt_attested": false
+  },
+  "root_failover": {
+    "mode": "SINGLE_CAS_WITH_DOUBLE_ACTIONS_SNAPSHOT",
+    "root_name": "NASDAQ SWING XRAY Autonomous Data Plane",
+    "contract_path": "nasdaq-xray/scheduler_failover_contract.json",
+    "contract_sha": "93c7070df2dd34048cab962ba7f3af87990608d3",
+    "last_success_before_kick": {
+      "run_id": 38214533372,
+      "updated_at_utc": "2026-10-12T06:57:10Z"
+    },
+    "checked_at_utc": "2026-10-12T08:26:04.998Z",
+    "last_success_age_seconds_at_check": 5335,
+    "stale_threshold_seconds": 4500,
+    "active_or_race_found": false,
+    "kick_lease_expired": true,
+    "kick_path": "nasdaq-xray/scheduler_kick_dataplane.json",
+    "preimage_sha": "b44e46376def2395083291829d2ddb7da0776e93",
+    "postimage_sha": "d7449d4fb6b927ab3869a1692759473affe3e9ac",
+    "sequence_before": 19,
+    "sequence_after": 20,
+    "requested_by": "XRAY_HEALTH_FAILOVER",
+    "reason": "STALE_GITHUB_SCHEDULE",
+    "commit": "94b5d27ac1d7a7c78e05745bd33ea6eac064f17d",
+    "exact_postimage_readback": true,
+    "root_run": {
+      "id": 38223545236,
+      "head_sha": "94b5d27ac1d7a7c78e05745bd33ea6eac064f17d",
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_id": 11735352272,
+      "zip_sha256": "003442f7b853152735016ae01d34c3cb2a3d17d6cf16e0997c6de04368979dba",
+      "zip_independently_downloaded_and_hashed": true
+    },
+    "pre_mc_run": {
+      "id": 38223618509,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "root_research_payload": {
+      "asof": "2026-10-09",
+      "cohort": 3184,
+      "pass": 497,
+      "fail_price": 1291,
+      "fail_dv30": 1167,
+      "unknown_static": 201,
+      "unknown_retry_exhausted": 28,
+      "unknown_total": 229,
+      "unknown_reason_counts": {
+        "historical_260_missing": 151,
+        "asof_bar_missing": 45,
+        "dv30_exact30_missing": 5,
+        "provider_retry_exhausted": 28
+      },
+      "scope_separate_from_canonical_price_514": true,
+      "market_cap_primary_created": 0
+    },
+    "root_success_does_not_prove_full_e2e": true
+  },
+  "fixed_dynamic_C418_CI": {
+    "workflow_path": ".github/workflows/xray-c418-multi-source-contract.yml",
+    "old_workflow_sha": "bcaf84609db6be35e59055b18b43bf3b11e8dea2",
+    "new_workflow_sha": "12485d4c7612e64fc468b7ee57ef6e398cf17343",
+    "fix_commit": "485052802e2bd7cb6123710207d5a7ceb92dd461",
+    "fixed_false_fixed_inputs": [
+      "514_PRICE_PASS",
+      "103_BQ_CALLS",
+      "4_QUOTA_DAYS",
+      "2026-10-09_SAMPLE_ASOF",
+      "12_SOURCE_ROWS"
+    ],
+    "implementation": "Derive exact current cohort, source inventory quota parameters, asof and historical date relation from live MASTER/PRICE and inventory; preserve all fail-closed MC/AL gates",
+    "ci": {
+      "run_id": 38224012973,
+      "head_sha": "485052802e2bd7cb6123710207d5a7ceb92dd461",
+      "status": "completed",
+      "conclusion": "success",
+      "job_id": 114726943524,
+      "artifact_id": 11734934119,
+      "zip_sha256": "0036c799b4c9b81b36b4233445cc6f023ec7c43856a60eb0b84adc03dbb2de06",
+      "zip_independently_downloaded_and_hashed": true,
+      "three_json_reports_read": true
+    },
+    "verified_tests": [
+      "XRAY_C418_DAILY_MC_CAPACITY_SELFTEST=PASS_7_DYNAMIC_14_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY",
+      "XRAY_BQ_DYNAMIC_DAILY_CAPACITY=PASS_NO_PRIMARY_NO_GO",
+      "XRAY_C418_DYNAMIC_ACTUAL_ROUTING=PASS_CURRENT_COHORT_NO_FAKE_PRIMARY",
+      "XRAY_C418_MULTI_SOURCE_LIVE_READINESS=DATA_BLOCKED_CORRECT_NO_LICENSE"
+    ],
+    "data_result": {
+      "asof": "2026-10-09",
+      "price_pass": 514,
+      "existing_route_rows": 12,
+      "bq_calls_per_day": 30,
+      "bq_tickers_per_call": 5,
+      "needed_calls": 103,
+      "free_quota_days_best_case": 4,
+      "provider_authority": "DATA_BLOCKED",
+      "new_primary": 0,
+      "new_r92": 0
+    }
+  },
+  "independent_e2e_evidence": {
+    "workflow_id": 38220584028,
+    "conclusion": "failure_FAIL_CLOSED_INTENTIONAL",
+    "artifact_id": 11733906602,
+    "zip_sha256": "30391dcc8058ad6d896f1921c907f7036e0062fff1540d88beb0232b99995bc5",
+    "zip_independently_downloaded_and_hashed": true
+  },
+  "seven_go_blockers": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "separation_of_proof": "GitHub workflow success, root recovery and production source licensing are independent gates; no automatic source promotion from shadow/fallback.",
+  "release_requirements": [
+    "For exact current cohort acquire usable vendor key AND legal unattended non-display derived-signal storage rights with zero paid topups",
+    "Demonstrate SEC acceptance-time publication PIT and exact security share-class/ADR/corporate-action continuity",
+    "Get independent upstream market cap per exact ASOF and licensed consolidated historical bars for 260/52",
+    "Rebuild current canonical MC,HISTORY,FINAL,TERMINAL under exact Git blob/path/asof set equality",
+    "Independently clear official 12 UNKNOWN identities, strict G9 and synchronized account right when full GO",
+    "Register actual R92 candidate before real deduplicated push and obtain observed user device receipt"
+  ],
+  "full_production_go": false,
+  "note": "Root failover actually dispatched and finished, and CI hard-code defect actually repaired/tested. No provider data grant or full 514 daily PRIMARY was demonstrated. Do NOT promote data or claim GO."
+}
