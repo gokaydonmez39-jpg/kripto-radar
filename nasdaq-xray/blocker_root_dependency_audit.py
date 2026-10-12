@@ -245,7 +245,10 @@ def selftest():
     good=evaluate(*x)
     require(good["master_identity_unknown_intersection_price_pass_count"]==0,"BASE_DISJOINT")
     require(good["canonical_mc_current_revision_count"]==0,"BASE_NO_MC")
-    require(len(good["root_cause_classes"])==4,"FOUR_ROOT_CLASSES")
+    require(len(good["root_cause_classes"])==6 and
+            good["root_cause_classes"]["P0_EXACT30_AUTHENTICATED_PRICE_DV30"] is False and
+            good["root_cause_classes"]["P0_SETTLEMENT_SOURCE_BINDING"] is False,
+            "SIX_ROOT_CLASSES_WITH_TWO_EXPLICIT_SOURCE_GATES")
     require(len(good["ordered_recovery_steps"])==9 and
             good["ordered_recovery_steps"][1]["status"]=="REQUIRES_REAL_MEASUREMENT_ENTITLEMENT" and
             good["ordered_recovery_steps"][7]["status"]=="GLOBAL_IDENTITY_UNKNOWN_1" and
