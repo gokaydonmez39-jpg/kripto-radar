@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/c418_provider_routing_readiness.py"
       - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
       - "nasdaq-xray/c418_bq_bulk_screener_shadow.py"
+      - "nasdaq-xray/c418_historic_mc_vendor_shadow.py"
       - "nasdaq-xray/immutable_action_dependency_guard.py"
       - "nasdaq-xray/rallies_history_shadow_guard.py"
       - "nasdaq-xray/c418_shadow_resilience_guard.py"
@@ -63,6 +64,11 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
           python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
+      - name: Finnhub and EODHD historical MC exact-ASOF/non-PIT contract
+        run: |
+          python -m py_compile nasdaq-xray/c418_historic_mc_vendor_shadow.py
+          python nasdaq-xray/c418_historic_mc_vendor_shadow.py --selftest
+          python -O nasdaq-xray/c418_historic_mc_vendor_shadow.py --selftest
       - name: Reject BQ latest bulk screener as historic PIT / production MC
         run: |
           python -m py_compile nasdaq-xray/c418_bq_bulk_screener_shadow.py
