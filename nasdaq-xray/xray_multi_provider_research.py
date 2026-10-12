@@ -418,6 +418,44 @@ def selftest():
     assert c["MIRROR"]==0
     assert finite(None) is None and finite(float("nan")) is None
     assert finite(2000000000)==2000000000
+    # Historical MC endpoint actual documented schema, with no external
+    # call or vendor data in public artifacts.
+    def bq_mock(url,headers=None,body=None):
+        from urllib.parse import urlsplit,parse_qs
+        assert url.startswith("https://data.businessquant.com/historic?")
+        query=parse_qs(urlsplit(url).query)
+        assert query["slug"]==["market-capitalization-daily"]
+        assert query["ticker"]==["ASTS"]
+        assert query["from_date"]==["2026-10-09"]
+        assert query["till_date"]==["2026-10-09"]
+        assert query["mode"]==["original"]
+        return [{"ticker":"ASTS","date":"2026-10-09",
+                 "metric":"Market Capitalization (Daily)",
+                 "value":3500000000.0}]
+    hist=lookup("BQ_MC_HISTORICAL_DAILY","ASTS","2026-10-09",
+                {"BQ":"FAKE_TEST_KEY"}, {}, bq_mock)
+    assert hist=="DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT"
+    bad_cases=[
+       [{"ticker":"DIFFERENT","date":"2026-10-09","metric":"Market Capitalization","value":3e9}],
+       [{"ticker":"ASTS","date":"2026-10-12","metric":"Market Capitalization","value":3e9}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Revenue (Annual)","value":3e9}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":None}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":float("nan")}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":-3e9}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":True}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":3e9}]*2,
+       {"metadata":{"ticker":"ASTS"},"data":[]},
+    ]
+    for rows in bad_cases:
+        try:
+            lookup("BQ_MC_HISTORICAL_DAILY","ASTS","2026-10-09",
+                   {"BQ":"FAKE_TEST_KEY"},{},lambda *a,**kw:rows)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("BQ_HISTORICAL_MC_FALSE_ACCEPT")
+    print("XRAY_BQ_HISTORIC_DAILY_MC=PASS_NINE_NEGATIVE_NO_PRIMARY")
+
     assert rotate_sample(["A","B","C","D","E","F"],2,0)==["A","B"]
     assert rotate_sample(["A","B","C","D","E","F"],2,1)==["C","D"]
     assert rotate_sample(["A","B","C","D","E","F"],2,2)==["E","F"]
