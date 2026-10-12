@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""XRAY official SEC conservative market-cap stage V2.
-Input: PRICE/DV20/HISTORY candidates.
-Official facts: SEC companyfacts, no paid key.
-Research/forward-test only. EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
+"""Legacy SEC shares x close RESEARCH-ONLY witness, never C4.17 PRIMARY MC.
+
+SEC companyfacts has entity-wide facts, not verified share-class/ADR scope.
+A SEC filing date has no pre-16:00 ET acceptance proof on the same day;
+corporate actions and price/share adjustment continuity are also unresolved.
+No terminal MC PASS or FAIL can be derived from this module alone.
+Input is legacy PRICE/DV20/HISTORY candidates; no production authority.
+EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 """
 from __future__ import annotations
 
@@ -20,7 +24,7 @@ ROOT=Path(__file__).resolve().parent
 IN=ROOT/"market_candidates.json"
 OUT=ROOT/"sec_mc_state.json"
 TASK_ID="6a825366222081918997094d76e6ae46"
-BUILD="2026-10-01.2"
+BUILD="2026-10-12.1-PIT-RESEARCH-NONAUTHORITY"
 UA="NASDAQ-SWING-XRAY/1.0 research github.com/gokaydonmez39-jpg/kripto-radar"
 MAX_NEW=int(os.getenv("XRAY_SEC_MC_BATCH","35"))
 MAX_ATTEMPTS=int(os.getenv("XRAY_SEC_MC_MAX_ATTEMPTS","3"))
@@ -68,37 +72,63 @@ def input_hash(candidates,asof):
     return hashlib.sha256("\n".join(rows).encode()).hexdigest()
 
 def latest_shares(facts,asof):
+    """Research-only selection. Date-only companyfacts are NOT pre-close PIT."""
     concept=(((facts.get("facts") or {}).get("dei") or {}).get("EntityCommonStockSharesOutstanding"))
     if not concept:
         return None,"SHARES_CONCEPT_MISSING"
     vals=((concept.get("units") or {}).get("shares") or [])
     eligible=[]
+    same_day_unknown=False
     for x in vals:
-        end=str(x.get("end") or "")
-        filed=str(x.get("filed") or "")
-        form=str(x.get("form") or "")
-        val=finite(x.get("val"))
-        if val is None or not end or not filed:
+        if not isinstance(x,dict):
             continue
-        if end>asof or filed>asof:
+        end=x.get("end")
+        filed=x.get("filed")
+        form=x.get("form")
+        val=finite(x.get("val"))
+        if not isinstance(end,str) or not isinstance(filed,str) or val is None:
             continue
         if form not in ALLOWED_FORMS:
             continue
         try:
             age=(date.fromisoformat(asof)-date.fromisoformat(end)).days
-        except Exception:
+            filed_date=date.fromisoformat(filed)
+        except (TypeError,ValueError):
             continue
         if age<0 or age>MAX_FACT_AGE_DAYS:
             continue
+        # Any filing stamped ON the target date could have arrived after the
+        # 16:00 ET RTH close. Without exact SEC acceptance time reject it.
+        if filed_date>=date.fromisoformat(asof):
+            if filed_date==date.fromisoformat(asof):
+                same_day_unknown=True
+            continue
         eligible.append((filed,end,val,form,age,x.get("accn")))
     if not eligible:
-        return None,"NO_FRESH_US_10K10Q_SHARES_FACT"
+        return None,("SAME_DAY_FILING_ACCEPTANCE_UNKNOWN" if same_day_unknown
+                     else "NO_FRESH_US_10K10Q_SHARES_FACT")
     eligible.sort(key=lambda z:(z[0],z[1]))
     filed,end,val,form,age,accn=eligible[-1]
+    # Same-vintage conflicting facts must never resolve by row order.
+    same_vintage=[item for item in eligible if item[0]==filed and item[1]==end]
+    if len({item[2] for item in same_vintage})!=1:
+        return None,"CONFLICTING_SAME_VINTAGE_SHARES"
     return {
         "shares":val,"end":end,"filed":filed,"form":form,
         "age_days":age,"accn":accn
     },None
+
+
+def sanitize_legacy_results(results):
+    """Demote persisted legacy optimistic decisions before any resume/write."""
+    if not isinstance(results,dict):
+        raise ValueError("INVALID_LEGACY_RESULTS")
+    for record in results.values():
+        if not isinstance(record,dict):
+            raise ValueError("INVALID_LEGACY_RESULT_RECORD")
+        if record.get("status") in {"PASS_SEC_CONSERVATIVE","FAIL_MC"}:
+            record["status"]="SHADOW_LEGACY_UNVERIFIED"
+            record["safety_downgrade"]="SEC_CLASS_CA_AND_ACCEPTANCE_PIT_NOT_PROVEN"
 
 def classify_symbol(sym,info,asof):
     if bool((info or {}).get("multi_ticker_cik")):
@@ -121,11 +151,15 @@ def classify_symbol(sym,info,asof):
             "accn":sh["accn"],"market_cap_est":mc,
             "method":"ASOF_CLOSE_X_FRESH_SEC_ENTITY_SHARES",
         }
-        if mc>=PASS_FLOOR:
-            return "PASS_SEC_CONSERVATIVE",rec
-        if mc<FAIL_CEILING:
-            return "FAIL_MC",rec
-        return "UNKNOWN_STATIC",{"reason":"MC_BORDERLINE_2_0_TO_2_1B","detail":rec}
+        # Even an older SEC filing has NO proven issuer share-class scope,
+        # split/ADR continuity or independent MC origin. A numerical floor
+        # cannot establish a terminal MC PASS/FAIL under C4.17.
+        rec["research_only"]=True
+        rec["class_and_corporate_actions_verified"]=False
+        rec["filing_acceptance_time_verified"]=False
+        rec["can_create_primary"]=False
+        rec["can_register_R92"]=False
+        return "SHADOW_SEC_MC_CLASS_CA_UNVERIFIED",rec
     except Exception as e:
         return "UNKNOWN_RETRY",f"{type(e).__name__}:{str(e)[:160]}"
 
@@ -155,6 +189,7 @@ def main():
         }
 
     results=state.setdefault("results",{})
+    sanitize_legacy_results(results)
     new=[s for s in sorted(candidates) if s not in results][:MAX_NEW]
     retry=[
         s for s,v in sorted(results.items())
@@ -194,7 +229,12 @@ def main():
     )
     state["pending_new"]=pending_new
     state["pending_retry"]=pending_retry
-    state["status"]="MC_COMPLETE" if pending_new==0 and pending_retry==0 else "MC_PARTIAL"
+    # Completeness of a legacy research scan is never C4.17 PRIMARY coverage.
+    state["status"]=("SEC_MC_SHADOW_COMPLETE_NO_PRIMARY" if pending_new==0 and pending_retry==0
+                     else "SEC_MC_SHADOW_PARTIAL_NO_PRIMARY")
+    state["primary_mc_authority"]=False
+    state["alpha_authority"]=False
+    state["r92_eligible"]=False
     state["updated_at_utc"]=datetime.now(timezone.utc).isoformat()
     state["state_hash"]=hashlib.sha256(
         json.dumps(state,sort_keys=True,separators=(",",":")).encode()
