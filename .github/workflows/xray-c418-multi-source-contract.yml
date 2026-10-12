@@ -74,10 +74,15 @@ jobs:
           import os,json
           from pathlib import Path
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_514_source_router.json").read_text())
-          assert j["schema"]=="XRAY_C418_REAL_514_MULTI_PROVIDER_ROUTING_READINESS_V1"
-          assert j["asof_et"]=="2026-10-09"
-          assert j["canonical_price_pass_count"]==514
-          assert j["master_identity_unknown_count"]==12
+          assert j["schema"]=="XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
+          source=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          master=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
+          assert j["asof_et"]==source["asof_et"]==master["asof_et"]
+          assert j["canonical_price_pass_count"]==len(source["pass_symbols"])==source["pass_count"]
+          assert j["master_identity_unknown_count"]==len(master["unknown_symbols"])==master["unknown_count"]
+          assert j["historical_3_ticker_sample_asof_et"]=="2026-10-09"
+          assert j["historical_3_ticker_sample_is_current_asof"] == (source["asof_et"]=="2026-10-09")
+          assert j["historical_sample_may_grant_primary"] is False
           assert j["identity_unknown_intersect_price_count"]==0
           assert j["discovered_source_rows"]==11
           assert j["verified_distinct_market_cap_origin_count"]==0
