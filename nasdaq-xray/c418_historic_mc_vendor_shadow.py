@@ -25,9 +25,11 @@ def require(ok: bool, reason: str) -> None:
 def date(value: object, reason: str) -> str:
     require(isinstance(value, str), reason)
     try:
-        assert dt.date.fromisoformat(value).isoformat() == value
-    except (ValueError, AssertionError):
+        parsed = dt.date.fromisoformat(value)
+    except ValueError:
         raise ValueError("C418_MC_VENDOR_FAIL_CLOSED:" + reason) from None
+    # Never rely on assert in input validation: python -O erases assertions.
+    require(parsed.isoformat() == value, reason)
     return value
 
 
