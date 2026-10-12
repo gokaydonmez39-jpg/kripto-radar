@@ -67,6 +67,11 @@ def classify(now, blobs, files, main_stable):
         root_asof_valid=False
     if not root_asof_valid:
         issues.append("ROOT_ASOF_INVALID")
+    # A newer successful Root job cannot make a prior-day MASTER current.
+    # Both files must prove the same completed-session epoch independently.
+    master_asof=master.get("asof_et")
+    if root_asof_valid and master_asof!=root_asof:
+        issues.append("ROOT_MASTER_ASOF_LAG")
     current_mc_bridges=[]
     if root_asof_valid:
         prefix=ROOT+"canonical_mc_bridge_"+root_asof.replace("-","")+"_c417_dv30_v"
@@ -117,9 +122,23 @@ def classify(now, blobs, files, main_stable):
             issues.append("PRICE_SYMBOL_LOCAL_BLOCKED_PRESENT")
         if resolver_price_unknown:
             issues.append("PRICE_SYMBOL_LOCAL_UNKNOWN_PRESENT")
-    age=(now-timestamp(official.get("generated_at_utc"))).total_seconds()
-    if age>900:
-        issues.append("OFFICIAL_GUARD_STALE_OVER_900S")
+    try:
+        age=(now-timestamp(official.get("generated_at_utc"))).total_seconds()
+    except (TypeError, ValueError, OverflowError, AttributeError):
+        age=None
+        issues.append("OFFICIAL_GUARD_TIMESTAMP_INVALID")
+    if age is not None:
+        if age < 0:
+            issues.append("OFFICIAL_GUARD_FUTURE_TIMESTAMP")
+        elif age > 900:
+            issues.append("OFFICIAL_GUARD_STALE_OVER_900S")
+    # Fresh timestamps do not imply that official Nasdaq veto feeds succeeded.
+    feeds=official.get("sources")
+    if (not isinstance(feeds,dict)
+        or any(not isinstance(feeds.get(k),dict) or feeds[k].get("status")!="PASS"
+               for k in ("trade_halts","security_status"))
+        or official.get("status")!="PASS"):
+        issues.append("OFFICIAL_SAFETY_FEEDS_NOT_PASS")
     if int(events.get("affected_geometry_event_unknown_count",-1))>0:
         issues.append("EVENT_GEOMETRY_UNRESOLVED")
     # C4.17 manual research is independent of broker/account and G9 NBBO.
@@ -143,6 +162,8 @@ def classify(now, blobs, files, main_stable):
         "terminal_drift_keys":drift,
         "master_pass_count":master.get("pass_count"),
         "master_unknown_count":master_count,
+        "master_asof_et":master_asof,
+        "master_asof_matches_root":bool(root_asof_valid and master_asof==root_asof),
         "root_asof_et":root_asof,
         "canonical_terminal_asof_et":terminal.get("asof_et"),
         "current_mc_bridge_artifact_count":len(current_mc_bridges),
@@ -153,7 +174,8 @@ def classify(now, blobs, files, main_stable):
         "price_symbol_local_blocked_count":resolver_price_blocked,
         "price_symbol_local_unknown_count":resolver_price_unknown,
         "price_pass_count_from_exact_resolver":resolver.get("source_price_pass_count") if resolver_price_exact else None,
-        "official_guard_age_seconds":round(age),
+        "official_guard_age_seconds":round(age) if age is not None else None,
+        "official_safety_feeds_pass":("OFFICIAL_SAFETY_FEEDS_NOT_PASS" not in issues),
         "geometry_event_unknown_count":events.get("affected_geometry_event_unknown_count"),
         "g9_status":g9.get("status"),
         "account_status":account.get("current_status"),
@@ -233,6 +255,35 @@ def selftest():
     dated_v=classify(now,blobs,dated,True)
     assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" in dated_v["issues"]
     assert "CURRENT_TERMINAL_ASOF_LAG" in dated_v["issues"]
+    assert "ROOT_MASTER_ASOF_LAG" in dated_v["issues"]
+    assert dated_v["master_asof_matches_root"] is False
+    matching_master=dict(dated,master=dict(objects["master"],asof_et="2026-10-08"))
+    bound_v=classify(now,blobs,matching_master,True)
+    assert "ROOT_MASTER_ASOF_LAG" not in bound_v["issues"]
+    assert bound_v["master_asof_matches_root"] is True
+    # Official safety invalid, future-dated, stale, or degraded are different faults.
+    fresh_official={
+        "generated_at_utc":"2026-10-08T10:55:00Z",
+        "status":"PASS",
+        "sources":{"trade_halts":{"status":"PASS"},
+                   "security_status":{"status":"PASS"}}}
+    fresh_v=classify(now,blobs,dict(matching_master,official=fresh_official),True)
+    assert fresh_v["official_safety_feeds_pass"] is True
+    assert all(not x.startswith("OFFICIAL_GUARD_") for x in fresh_v["issues"])
+    for stamp_value, expected in [
+        ("2030-01-01T00:00:00Z","OFFICIAL_GUARD_FUTURE_TIMESTAMP"),
+        ("GARBAGE","OFFICIAL_GUARD_TIMESTAMP_INVALID"),
+        ("2026-10-08T10:00:00Z","OFFICIAL_GUARD_STALE_OVER_900S")]:
+        bad_official=dict(fresh_official,generated_at_utc=stamp_value)
+        got=classify(now,blobs,dict(matching_master,official=bad_official),True)
+        assert expected in got["issues"],(stamp_value,got)
+        assert got["alpha_authority"] is False
+    bad_feed=dict(fresh_official,
+                  sources={"trade_halts":{"status":"UNKNOWN"},
+                           "security_status":{"status":"PASS"}})
+    feed_v=classify(now,blobs,dict(matching_master,official=bad_feed),True)
+    assert "OFFICIAL_SAFETY_FEEDS_NOT_PASS" in feed_v["issues"]
+    assert feed_v["official_safety_feeds_pass"] is False
     assert dated_v["current_mc_bridge_artifact_count"]==0
     old_mc=dict(blobs)
     old_mc[ROOT+"canonical_mc_bridge_20261007_c417_dv30_v28.json"]="c"*40
