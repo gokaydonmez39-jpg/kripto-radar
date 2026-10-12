@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/manual_decision_report.py"
+      - "nasdaq-xray/eod_screening_digest.py"
       - "nasdaq-xray/manual_workflow_trigger_sha_guard.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
@@ -69,6 +70,35 @@ jobs:
           assert j["alpha_go"] is False and j["orders"]==[]
           assert j["current_signal_release"]=="NOT_ATTESTED"
           print("XRAY_RESEARCH_ONLY_LAUNCH=ACTIVATED_MONITORING_NOT_AL")
+          PY
+      - name: Run current ASOF EOD liquidity screen (source-bound, not AL)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'pandas_market_calendars==5.4.0'
+          python -m py_compile nasdaq-xray/eod_screening_digest.py
+          python nasdaq-xray/eod_screening_digest.py --selftest
+          python -O nasdaq-xray/eod_screening_digest.py --selftest
+          python nasdaq-xray/eod_screening_digest.py --out "$RUNNER_TEMP/xray_eod_screen.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_eod_screen.json").read_text())
+          assert j["schema"]=="XRAY_EOD_LIQUIDITY_SCREEN_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["research_signals"]==[] and j["qualified_al_count"] is None
+          assert j["r92_registered_here"]==0 and j["orders"]==[]
+          assert j["alpha_authority"] is False and j["delivery_authority"] is False
+          assert j["master_unknown_intersect_screen_count"]==0
+          assert len(j["screen_symbols"])==(j["price_dv30_pass_count"] if j["current_screen_ready"] else 0)
+          assert j["no_confirmed_setup_asserted"] is False
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("## EOD liquidity screen — independent research (NOT AL)\\n\\n")
+              f.write("ASOF: "+str(j["asof_et"])+"; latest completed: "+str(j["latest_completed_official_nasdaq_session"])+"\\n\\n")
+              f.write("Source status: **"+j["status"]+"**\\n\\n")
+              f.write("PRICE/DV30 screened: **"+str(len(j["screen_symbols"]))+"** / master identity PASS: "+str(j["master_identity_pass_count"])+"\\n\\n")
+              f.write("Technical, primary MC, AL and real delivery: **NOT VERIFIED**; no trade or notification.\\n")
+          print("XRAY_EOD_SCREEN_READBACK=PASS_SOURCE_EXACT_NO_FAKE_AL")
           PY
       - name: Compile and regression tests (manual only, no account or orders)
         run: |
@@ -249,6 +279,14 @@ jobs:
           output.write_text(json.dumps(safe,indent=2,sort_keys=True)+"\n")
           print("XRAY_MANUAL_SOURCE_INTEGRITY=BLOCKED (workflow failure preserved)")
           PY
+      - name: Upload read-only EOD price-screen list (not signals)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-eod-screen-research-only
+          path: ${{ runner.temp }}/xray_eod_screen.json
+          retention-days: 14
+          if-no-files-found: warn
       - name: Upload safe operational telemetry only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
