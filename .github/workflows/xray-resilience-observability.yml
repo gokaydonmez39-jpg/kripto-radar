@@ -116,6 +116,104 @@ jobs:
       - name: Append official PIT ledger
         run: python nasdaq-xray/official_pit_ledger.py
 
+
+      - name: Persist official safety independent of blocked research pointer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy, datetime as dt, hashlib, json, pathlib, subprocess
+          base=pathlib.Path("nasdaq-xray")
+          guard=json.loads((base/"canonical_official_source_guard.json").read_text())
+          ledger=json.loads((base/"official_pit_ledger.json").read_text())
+          existing=json.loads(subprocess.check_output(
+              ["git","show","HEAD:nasdaq-xray/official_pit_ledger.json"],text=True))
+          def digest(x):
+              return hashlib.sha256(json.dumps(
+                  x,sort_keys=True,separators=(",",":"),ensure_ascii=False
+              ).encode("utf-8")).hexdigest()
+          def require(ok,code):
+              if not ok: raise RuntimeError(code)
+          def check(g,l,prior):
+              require(g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1","GUARD_SCHEMA")
+              require(l.get("schema")=="XRAY_OFFICIAL_PIT_LEDGER_V1","LEDGER_SCHEMA")
+              require(g.get("execution")=="NONE" and g.get("real_money")=="NO-GO","GUARD_SAFETY")
+              require(l.get("execution")=="NONE" and l.get("real_money")=="NO-GO","LEDGER_SAFETY")
+              require(g.get("alpha_authority") is False and l.get("alpha_authority") is False,"NO_ALPHA_AUTHORITY")
+              require(l.get("append_only_semantics") is True and l.get("unknown_never_pass") is True,"LEDGER_FAIL_CLOSED")
+              stamp=dt.datetime.fromisoformat(str(g.get("generated_at_utc") or "").replace("Z","+00:00"))
+              now=dt.datetime.now(dt.timezone.utc)
+              age=(now-stamp).total_seconds()
+              require(0<=age<=900,"OFFICIAL_GUARD_NOT_CURRENT")
+              sources=g.get("sources") or {}
+              require({"security_status","trade_halts"}.issubset(sources),"REQUIRED_FEEDS_MISSING")
+              require(all(isinstance(v,dict) and v.get("status") in {"PASS","UNKNOWN"}
+                          for v in sources.values()),"FEED_STATUS_INVALID")
+              expected="PASS" if all(v["status"]=="PASS" for v in sources.values()) else "DEGRADED"
+              require(g.get("status")==expected,"GUARD_STATUS_CONTRADICTS_FEEDS")
+              safety=g.get("candidate_safety") or {}
+              require(safety.get("halt_guard_status")==sources["trade_halts"]["status"]
+                      and safety.get("security_status_guard_status")==sources["security_status"]["status"],
+                      "CANDIDATE_SAFETY_FEED_BINDING")
+              snaps=l.get("snapshots")
+              old=prior.get("snapshots")
+              require(isinstance(snaps,list) and isinstance(old,list),"LEDGER_SNAPSHOTS_MISSING")
+              require(snaps[:len(old)]==old,"PIT_LEDGER_APPEND_ONLY_VIOLATION")
+              require(l.get("snapshot_count")==len(snaps),"PIT_LEDGER_COUNT_DRIFT")
+              witnessed={(s.get("source"),s.get("payload_sha256")) for s in snaps if isinstance(s,dict)}
+              required={(name,digest(value)) for name,value in sources.items()}
+              required.add(("candidate_safety",digest(safety)))
+              require(required.issubset(witnessed),"LATEST_OFFICIAL_PAYLOAD_NOT_LEDGER_BOUND")
+          check(guard,ledger,existing)
+          tests=[
+              ("STALE_GUARD",lambda g,l:g.update(generated_at_utc="2020-01-01T00:00:00+00:00")),
+              ("FORGED_PASS",lambda g,l:g["sources"]["trade_halts"].update(status="UNVERIFIED")),
+              ("PIT_COUNT_DRIFT",lambda g,l:l.update(snapshot_count=-1)),
+              ("PIT_PAYLOAD_REMOVED",lambda g,l:l.update(snapshots=[])),
+              ("CANDIDATE_SAFETY_DRIFT",lambda g,l:g["candidate_safety"].update(halt_guard_status="UNVERIFIED")),
+              ("NO_ALPHA_VIOLATION",lambda g,l:g.update(alpha_authority=True)),
+          ]
+          for label,mutate in tests:
+              g=copy.deepcopy(guard);l=copy.deepcopy(ledger)
+              mutate(g,l)
+              try:check(g,l,existing)
+              except (RuntimeError,ValueError,TypeError):continue
+              raise AssertionError("NEGATIVE_GUARD_NOT_REJECTED:"+label)
+          print("XRAY_OFFICIAL_PERSISTENCE_GATE=PASS_REAL_INPUT_6_NEGATIVE")
+          PY
+          git config user.name "xray-official-safety-bot"
+          git config user.email "xray-official-safety-bot@users.noreply.github.com"
+          pre_guard="$(git rev-parse HEAD:nasdaq-xray/canonical_official_source_guard.json)"
+          pre_ledger="$(git rev-parse HEAD:nasdaq-xray/official_pit_ledger.json)"
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          cp nasdaq-xray/canonical_official_source_guard.json "$tmpdir/guard.json"
+          cp nasdaq-xray/official_pit_ledger.json "$tmpdir/ledger.json"
+          git fetch origin main
+          live_guard="$(git rev-parse origin/main:nasdaq-xray/canonical_official_source_guard.json)"
+          live_ledger="$(git rev-parse origin/main:nasdaq-xray/official_pit_ledger.json)"
+          if [[ "$live_guard" != "$pre_guard" || "$live_ledger" != "$pre_ledger" ]]; then
+            echo "XRAY_OFFICIAL_PERSISTENCE=RACE_ABORT_NO_OVERWRITE"
+            exit 0
+          fi
+          git reset --hard origin/main
+          cp "$tmpdir/guard.json" nasdaq-xray/canonical_official_source_guard.json
+          cp "$tmpdir/ledger.json" nasdaq-xray/official_pit_ledger.json
+          git add nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json
+          if git diff --cached --quiet; then
+            echo "XRAY_OFFICIAL_PERSISTENCE=NO_CHANGE"
+            exit 0
+          fi
+          git commit -m "chore(xray): publish independent official safety witnesses"
+          if ! git push origin HEAD:main; then
+            echo "XRAY_OFFICIAL_PERSISTENCE=RACE_ABORT_PUSH_REJECTED" >&2
+            exit 1
+          fi
+          git fetch origin main
+          test "$(git rev-parse origin/main:nasdaq-xray/canonical_official_source_guard.json)" = "$(git hash-object "$tmpdir/guard.json")"
+          test "$(git rev-parse origin/main:nasdaq-xray/official_pit_ledger.json)" = "$(git hash-object "$tmpdir/ledger.json")"
+          echo "XRAY_OFFICIAL_PERSISTENCE=PASS_EXACT_GITHUB_READBACK"
+
       - name: SEC official witness
         run: python nasdaq-xray/sec_official_witness.py
 
