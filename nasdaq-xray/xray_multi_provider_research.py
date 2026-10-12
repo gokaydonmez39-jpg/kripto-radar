@@ -219,6 +219,48 @@ def inputs():
     sha["MC"]=blob(full)
     return asof,scopes,sha
 
+def pre_mc_recovery_inputs():
+    """Exact current MASTER+PRICE bootstrap when 9-Oct MC/HISTORY/TERMINAL lag.
+
+    The MC lane is the price-pass cohort, *not* a fabricated canonical MC
+    unknown list. EVENT cannot run without exact terminal proof.
+    Every reported SHA comes from the actual tracked local Git bytes.
+    """
+    from hashlib import sha256
+    names={"MASTER":"canonical_current_master_manifest.json",
+           "PRICE":"canonical_current_price_dv30.json",
+           "HISTORY":"canonical_current_history.json",
+           "EVENT":"canonical_current_event_state.json",
+           "TERMINAL":"canonical_current_terminal.json"}
+    master=json.loads((ROOT/names["MASTER"]).read_text())
+    price=json.loads((ROOT/names["PRICE"]).read_text())
+    asof=proper_date(price.get("asof_et"))
+    if master.get("asof_et")!=asof:
+        raise ValueError("PRE_MC_MASTER_PRICE_ASOF_MISMATCH")
+    for row in (master,price):
+        if row.get("execution")!="NONE" or row.get("real_money")!="NO-GO" or row.get("unknown_never_pass") is not True:
+            raise ValueError("PRE_MC_SAFETY_NOT_FROZEN")
+    ms,us,ps=master.get("pass_symbols"),master.get("unknown_symbols"),price.get("pass_symbols")
+    for name,seq in (("MASTER_PASS",ms),("MASTER_UNKNOWN",us),("PRICE_PASS",ps)):
+        if (not isinstance(seq,list) or seq!=sorted(set(seq))
+            or any(not isinstance(x,str) or not SYMBOL.fullmatch(x) for x in seq)):
+            raise ValueError("PRE_MC_SCOPE_INVALID:"+name)
+    if (len(ms)!=master.get("pass_count") or len(us)!=master.get("unknown_count")
+        or len(ps)!=price.get("pass_count") or set(ms)&set(us)
+        or not set(ps).issubset(ms)):
+        raise ValueError("PRE_MC_IDENTITY_COUNT_OR_MEMBERSHIP_MISMATCH")
+    hashset=lambda rows:sha256("\n".join(rows).encode()).hexdigest()
+    if (master.get("queue_hash")!=hashset(ms)
+        or price.get("pass_hash")!=hashset(ps)
+        or price.get("source_master_queue_hash")!=master.get("queue_hash")
+        or price.get("source_master_count")!=len(ms)
+        or price.get("unknown_count")!=0 or price.get("blocked_count")!=0):
+        raise ValueError("PRE_MC_GIT_SCOPE_HASH_OR_PRICE_BLOCKED")
+    sha={k:blob(ROOT/v) for k,v in names.items()}
+    sha["MC"]=None  # no current PRIMARY MC authority: intentionally absent
+    return asof,{"MASTER":us,"MC":ps,"EVENT":[]},sha
+
+
 def rotate_sample(symbols,limit,day_ordinal=None):
     """Deterministic daily coverage; never continuously repeat the first 3 symbols."""
     ordered=sorted(symbols)
@@ -258,17 +300,40 @@ def source_epoch_blocked(reason: str)->dict:
             "result":"BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"}
 
 
-def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs):
+def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs,
+            allow_pre_mc_recovery=False,recovery_inputs_fn=pre_mc_recovery_inputs):
     if not isinstance(limit,int) or not 1<=limit<=3:raise ValueError("MAX_3_PER_LANE")
+    recovery=False
     try:
         asof,scopes,sha=inputs_fn()
     except ValueError as e:
         msg=str(e)
         if msg.startswith("SOURCE_DRIFT:"):
-            return source_epoch_blocked(msg)
-        raise
-    keys={"MASSIVE":os.getenv("XRAY_MASSIVE_API_KEY","").strip(),
-          "BQ":os.getenv("XRAY_BQ_API_KEY","").strip()}
+            if not allow_pre_mc_recovery:
+                return source_epoch_blocked(msg)
+            # Deliberate independent exact source boundary: no MC or
+            # terminal is read as current authority during recovery.
+            try:
+                asof,scopes,sha=recovery_inputs_fn()
+            except (ValueError,KeyError,TypeError,OSError) as err:
+                blocked=source_epoch_blocked(msg)
+                blocked["pre_mc_recovery_failed_reason"]=type(err).__name__
+                return blocked
+            recovery=True
+        else:
+            raise
+    # A GitHub Actions secret being present is NOT evidence of an unattended
+    # derived-use licence. Explicit grant fence avoids an accidental API call.
+    # Operator declarations are not a substitute for independent legal proof.
+    def research_key(envkey,prefix):
+        key=os.getenv(envkey,"").strip()
+        approved=os.getenv(prefix+"_UNATTENDED_RESEARCH_LICENSE_OK","").lower()=="true"
+        digest=os.getenv(prefix+"_LICENSE_EVIDENCE_SHA256","")
+        if not (approved and re.fullmatch(r"[a-f0-9]{64}",digest)):
+            return ""
+        return key
+    keys={"MASSIVE":research_key("XRAY_MASSIVE_API_KEY","XRAY_MASSIVE"),
+          "BQ":research_key("XRAY_BQ_API_KEY","XRAY_BQ")}
     counters=collections.Counter()
     cache={}
     lanes={}
@@ -280,6 +345,7 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs):
             statuses[status]+=1
             for provider,code in logs:attempts[provider+":"+code]+=1
         lanes[lane]={"scope_count":len(symbols),"sample_attempted":min(limit,len(symbols)),
+                     "scope_unverified":bool(recovery and lane=="EVENT"),
                      "status_counts":dict(statuses),"provider_attempts":dict(attempts)}
     return {"schema":SCHEMA,"asof_et":asof,"policy":"C4.17","control":"C4.27",
             "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
@@ -287,9 +353,12 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs):
             "mc_pass_created":False,"g9_pass":False,"account_pass":False,
             "canonical_status_changed":False,"raw_market_data_persisted":False,
             "provider_keys_present":{k:bool(v) for k,v in keys.items()},
-            "source_epoch_exact":True,
+            "source_epoch_exact":not recovery,
+            "pre_mc_recovery_source_exact":recovery,
+            "post_mc_event_lane_ready":not recovery,
             "source_blobs":sha,"lanes":lanes,"invocation_counts":dict(counters),
-            "result":"MULTI_PROVIDER_FAIL_CLOSED_SHADOW_ONLY_NO_C4_17_PROMOTION"}
+            "result":"PRE_MC_SOURCE_EXACT_SHADOW_ONLY_NO_PRIMARY_NO_AL" if recovery else
+                     "MULTI_PROVIDER_FAIL_CLOSED_SHADOW_ONLY_NO_C4_17_PROMOTION"}
 
 def selftest():
     good=lambda *args:"PIT_MC_DISCOVERY_ONLY"
@@ -359,15 +428,16 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--selftest",action="store_true")
     ap.add_argument("--limit",type=int,default=3)
+    ap.add_argument("--pre-mc-recovery",action="store_true")
     ap.add_argument("--out",default="/tmp/xray_multi_provider_research.json")
     args=ap.parse_args()
     if args.selftest:
         selftest();return
     out=pathlib.Path(args.out)
     out.unlink(missing_ok=True)
-    result=produce(args.limit)
+    result=produce(args.limit,allow_pre_mc_recovery=args.pre_mc_recovery)
     out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
-    print("XRAY_MULTI_PROVIDER_RESEARCH="+("BLOCKED_SOURCE_EPOCH_ZERO_CALLS" if result.get("source_epoch_exact") is False else "COMPLETED_SHADOW_ONLY_NONAUTHORITATIVE"))
+    print("XRAY_MULTI_PROVIDER_RESEARCH="+result["result"])
     for lane,v in result["lanes"].items():
         print("XRAY_"+lane+"_OBSERVATIONS="+str(v["status_counts"].get("REFERENCE_OBSERVED_NOT_AUTHORITY",0)))
 
