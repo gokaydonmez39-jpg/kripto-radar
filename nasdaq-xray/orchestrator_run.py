@@ -506,6 +506,56 @@ def history_retry_plan(ss):
         return True,"REAL_SOURCE_LATE_ASOF_RECHECK_PENDING"
     return False,"NO_RETRYABLE_HISTORY_WORK_REMAINS"
 
+
+def history_unknown_reason_partition(ss):
+    """Diagnostic-only partition: no provider string, bar, or value becomes PASS.
+
+    A missing exact-ASOF bar is distinct from a proven short listing and
+    from an exhausted provider exception. Check that every observed UNKNOWN
+    is accounted for before publishing the compact health evidence.
+    """
+    rows=ss.get("results")
+    queue=ss.get("queue")
+    total=ss.get("unknown_count")
+    if (not isinstance(rows,dict) or not isinstance(queue,list)
+        or len(queue)!=len(set(queue)) or set(rows)-set(queue)
+        or type(total) is not int or total<0):
+        raise ValueError("HISTORY_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
+    out={}
+    seen=0
+    for sym,row in rows.items():
+        if not isinstance(sym,str) or not sym or not isinstance(row,dict):
+            raise ValueError("HISTORY_UNKNOWN_DIAGNOSTIC_ROW_INVALID")
+        status=row.get("status")
+        if not isinstance(status,str) or not status:
+            raise ValueError("HISTORY_UNKNOWN_DIAGNOSTIC_STATUS_INVALID")
+        if not status.startswith("UNKNOWN"):
+            continue
+        seen+=1
+        if status=="UNKNOWN_STATIC":
+            info=row.get("info")
+            reason=info.get("reason") if isinstance(info,dict) else info
+            if reason=="ASOF_MISSING_REQUIRES_RESOLUTION":
+                label="ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF"
+            elif reason=="EXACT30_INCOMPLETE_NEVER_PASS":
+                label="EXACT30_SESSIONS_INCOMPLETE"
+            elif reason=="SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION":
+                label="SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF"
+            elif reason=="SINA_HISTORY_EMPTY":
+                label="SOURCE_RETURNED_EMPTY_HISTORY"
+            else:
+                label="STATIC_UNKNOWN_OTHER"
+        elif status=="UNKNOWN_RETRY_EXHAUSTED":
+            label="PROVIDER_EXCEPTION_RETRY_EXHAUSTED"
+        elif status=="UNKNOWN_RETRY":
+            label="PROVIDER_EXCEPTION_RETRY_PENDING"
+        else:
+            label="OTHER_UNKNOWN_STATUS"
+        out[label]=out.get(label,0)+1
+    if seen!=total or sum(out.values())!=total:
+        raise ValueError("HISTORY_UNKNOWN_DIAGNOSTIC_COUNT_MISMATCH")
+    return dict(sorted(out.items()))
+
 def main():
     now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
     # Keep an all-UTC schedule without accidentally treating UTC Saturday as ET Friday loss.
@@ -546,6 +596,8 @@ def main():
     ss=readj("sina_state.json")
     if ss.get("status")!="HISTORY_COMPLETE":
         retry_allowed,retry_reason=history_retry_plan(ss)
+        # Validate exact UNKNOWN reason partition before any reporting success.
+        unknown_reason_counts=history_unknown_reason_partition(ss)
         downstream_invalidation=invalidate_downstream_for_partial_history(ss)
         out={
           "schema":"XRAY_ORCHESTRATOR_V1","task_id":TASK_ID,
@@ -554,6 +606,12 @@ def main():
           "status":"PARTIAL_HISTORY","asof_et":ss.get("asof_et"),
           "cursor":ss.get("cursor"),"queue_total":ss.get("queue_total"),
           "unknown_count":ss.get("unknown_count"),
+          "history_unknown_reason_counts":unknown_reason_counts,
+          "unknown_reason_partition_exact":True,
+          "history_asof_bar_missing_count":unknown_reason_counts.get(
+              "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF",0),
+          "history_provider_exception_exhausted_count":unknown_reason_counts.get(
+              "PROVIDER_EXCEPTION_RETRY_EXHAUSTED",0),
           "pending_retry":ss.get("pending_retry"),
           "pending_late_asof_recheck":ss.get("pending_late_asof_recheck",0),
           "late_asof_canary_probes_this_run":ss.get("processed_late_asof_canary_this_run",0),
