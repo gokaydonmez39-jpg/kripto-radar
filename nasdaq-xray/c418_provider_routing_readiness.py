@@ -41,14 +41,14 @@ def require(ok, reason):
 
 def blob_sha(data):
     return hashlib.sha1(b"blob " + str(len(data)).encode("ascii")
-                        + b"\\0" + data).hexdigest()
+                        + b"\0" + data).hexdigest()
 
 def symbol_hash(rows):
-    return hashlib.sha256("\\n".join(rows).encode()).hexdigest()
+    return hashlib.sha256("\n".join(rows).encode()).hexdigest()
 
 def valid_set(rows):
     return bool(type(rows) is list and rows == sorted(set(rows))
-                and all(type(x) is str and re.fullmatch(r"[A-Z0-9.\\-]+",x) for x in rows))
+                and all(type(x) is str and re.fullmatch(r"[A-Z0-9.-]+",x) for x in rows))
 
 def cap(n,rate):
     require(type(n) is int and n>0 and type(rate) is int and rate>0,
@@ -282,7 +282,7 @@ def main():
     result=analyze(load(MASTER),load(PRICE),load(INVENTORY),load(PROPOSAL),
                    load(G9),source_sha(MASTER),source_sha(PRICE),source_sha(INVENTORY))
     if opt.out:
-        opt.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\\n")
+        opt.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_C418_MULTI_PROVIDER_FEASIBILITY=VALID_ROUTING_NO_PRODUCTION_GO")
     print("XRAY_C418_SCOPE="+str(result["canonical_price_pass_count"]))
     print("XRAY_C418_SOURCES="+str(result["discovered_source_rows"]))
