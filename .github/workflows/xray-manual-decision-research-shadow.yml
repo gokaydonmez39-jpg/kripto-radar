@@ -16,6 +16,7 @@ on:
       - "nasdaq-xray/alpaca_sip_eod_b_shadow.py"
       - "nasdaq-xray/manual_workflow_trigger_sha_guard.py"
       - "nasdaq-xray/manual_shadow_latest_main_guard.py"
+      - "nasdaq-xray/workflow_source_epoch_fence_selftest.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"

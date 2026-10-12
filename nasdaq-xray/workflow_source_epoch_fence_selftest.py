@@ -32,7 +32,15 @@ def main():
          "MANUAL_UPSTREAM_PIN_MISSING")
     need("github.event.workflow_run.head_repository.full_name == github.repository" in m
          and "github.event.workflow_run.head_branch == 'main'" in m,"MANUAL_ORIGIN_MISSING")
-    need("XRAY_MANUAL_SOURCE_EPOCH=BLOCKED_MAIN_ADVANCED" in m,"MANUAL_CURRENT_MAIN_FENCE_MISSING")
+    need("python nasdaq-xray/manual_shadow_latest_main_guard.py --live" in m
+         and "python nasdaq-xray/manual_shadow_latest_main_guard.py --selftest" in m,
+         "MANUAL_CURRENT_MAIN_FENCE_MISSING")
+    g=(ROOT/"nasdaq-xray/manual_shadow_latest_main_guard.py").read_text()
+    need('REPORTING_ONLY = "nasdaq-xray/canonical_current_final_gate_overlay.json"' in g
+         and "SOURCE_SENSITIVE_MAIN_ADVANCED_FAIL_CLOSED" in g
+         and "BLOCKED_REMOTE_MAIN_MOVED" in g
+         and "XRAY_MANUAL_ALPHA_AUTHORITY=false" in g,
+         "MANUAL_REPORTING_ONLY_RACE_ALLOWLIST_DRIFT")
     need(not re.search(r"^\s*ref:\s*main\s*$",a,re.M)
          and not re.search(r"^\s*ref:\s*main\s*$",m,re.M),"MOVING_MAIN_REF")
     need(selected("workflow_run",B,A)==A and selected("push",A,B)==A
