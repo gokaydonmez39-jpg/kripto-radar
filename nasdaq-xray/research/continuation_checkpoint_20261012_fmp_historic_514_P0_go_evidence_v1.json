@@ -1,0 +1,158 @@
+{
+  "schema": "XRAY_20261012_FMP_HISTORIC_MC_514_LIVE_CI_P0_CHECKPOINT_V1",
+  "asof_et": "2026-10-09",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "readback_head_before_write": "43deea1af3810e218c58f7e0acafd3dc7a78f334",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "paid_top_up": false,
+    "sources_without_rights_must_not_be_primary": true,
+    "source_successor": "C4.18_PROPOSED_NOT_ACTIVATED",
+    "new_R92_registered": false,
+    "full_go": false
+  },
+  "same_asof_scope": {
+    "master_pass": 3184,
+    "master_unknown_count": 12,
+    "master_unknown_symbols": [
+      "ALIS",
+      "BSAA",
+      "FACT",
+      "FVN",
+      "HCAC",
+      "IBAC",
+      "IPXG",
+      "MACI",
+      "MCGA",
+      "MMTX",
+      "NBRG",
+      "WTG"
+    ],
+    "price_pass": 514,
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "price_pass_intersect_master_unknown_count": 0,
+    "primary_mc_proven_count": 0,
+    "history_asof": "2026-10-07",
+    "terminal_asof": "2026-10-07",
+    "strict_g9": "BLOCKED_STRICT_PERMANENT_ZERO"
+  },
+  "implementation": {
+    "new_vendor": "FINANCIAL_MODELING_PREP",
+    "existing_provider_inventory_row": "FMP",
+    "method": "HISTORICAL_MARKET_CAP_ARRAY_EXACT_SYMBOL_DATE_SAFETY_VALIDATOR_SHADOW",
+    "official_endpoint": "https://financialmodelingprep.com/stable/historical-market-capitalization",
+    "official_docs": "https://site.financialmodelingprep.com/developer/docs",
+    "official_free_key_test_explainer": "https://site.financialmodelingprep.com/insights/platform/how-to-retrieve-historical-market-capitalization-using-a-free-api",
+    "unit_gate_path": "nasdaq-xray/c418_historic_mc_vendor_shadow.py",
+    "route_gate_path": "nasdaq-xray/c418_provider_routing_readiness.py",
+    "registry_path": "nasdaq-xray/c418_provider_inventory_20261012.json",
+    "red": {
+      "commit": "e752b7cfbf82b7c8882fa63a4e78bc708d6fb28f",
+      "run": 38227902688,
+      "result": "FAILURE_EXPECTED_UNKNOWN_VENDOR"
+    },
+    "green_parser": {
+      "commit": "0b6356c18b6c19c959e71fe15cd2e83ebdbcd817",
+      "run": 38228019852,
+      "result": "SUCCESS",
+      "artifact": 11736184529,
+      "zip_sha256": "48b999f38b0c5f261cf0457e7473eba275dd8df5b4965c5566f7dd6127a5033c",
+      "negative_vendor_mutation_cases_added": 6
+    },
+    "inventory_commit": "ef18305921f7cfb1ae29537794f5a774f406c3d0",
+    "router_commit": "43deea1af3810e218c58f7e0acafd3dc7a78f334",
+    "green_router": {
+      "run": 38228573450,
+      "result": "success",
+      "artifact": 11737217068,
+      "zip_sha256": "2764eabd9cf22bb52fd2544c8e964d7eaf46f741f0f4918a7ed294e795f6f82c"
+    },
+    "green_shadows": {
+      "run": 38228573197,
+      "result": "success",
+      "artifact": 11737211903,
+      "zip_sha256": "6ff1a8887d0b3e9cafc900433ee45f25e0f016efad303b35d4fc6ba90d5fc26f"
+    },
+    "digest_independently_computed_from_downloaded_zip": true
+  },
+  "capacity": {
+    "FMP": {
+      "source": "DOCUMENTED_CURRENT_FREE_PLAN_LIMIT_BUT_ACTUAL_HISTORICAL_ENDPOINT_ENTITLEMENT_UNKNOWN",
+      "requested_tickers": 514,
+      "assumed_tickers_per_call": 1,
+      "calls_at_best": 514,
+      "documented_daily_requests_from_existing_inventory": 250,
+      "theoretical_days": 3,
+      "full_daily_514_available": false,
+      "asof_publication_PIT": false,
+      "usd_listing_attested": false,
+      "independent_license_attested": false
+    },
+    "BUSINESSQUANT": {
+      "source": "CURRENT_CONFIG_INVENTORY_RESEARCH_ONLY",
+      "requested_tickers": 514,
+      "max_tickers_per_historical_mc_call": 5,
+      "required_calls": 103,
+      "daily_free_requests": 30,
+      "theoretical_days": 4,
+      "free_api_key_present_in_runner": false,
+      "primary_rights_and_pit_attested": false
+    },
+    "actual_vendor_payload_sample_514_received": false,
+    "can_create_primary": false
+  },
+  "blockers": [
+    {
+      "code": "P0_MC",
+      "status": "BLOCKED",
+      "proof_missing": "LEGALLY_AUTHORIZED_514_SYMBOL_SAME_ASOF_PIT_ISSUER_CLASS_AND_INDEPENDENT_MARKET_CAP_DATA"
+    },
+    {
+      "code": "P0_HISTORY_FINAL_TERMINAL",
+      "status": "BLOCKED",
+      "proof_missing": "CURRENT_MC_PLUS_LICENSED_260_52_EXACT_CA_OFFICIAL_SYMBOL_EPOCH_AND_E2E"
+    },
+    {
+      "code": "P0_12_SEC_IDENTITY",
+      "status": "BLOCKED",
+      "proof_missing": "SEC_PIT_ACCEPTANCE_AND_NASDAQ_LISTING_CLASS_CONTINUITY",
+      "intersection_price_514": 0
+    },
+    {
+      "code": "P0_G9_NBBO",
+      "status": "BLOCKED",
+      "proof_missing": "CONSOLIDATED_LIVE_NBBO_BID_ASK_LAST_TIMESTAMPS_PERMANENT_ZERO_NONDISPLAY_RIGHT"
+    },
+    {
+      "code": "P0_CANDIDATE_DELIVERY",
+      "status": "BLOCKED",
+      "proof_missing": "SAME_ASOF_REGISTERED_R92_PLUS_INDEPENDENT_USER_DEVICE_RECEIPT"
+    }
+  ],
+  "operator_or_vendor_dependencies": [
+    "Provider account real API token & lawful intended scheduled non-display data use/retention rights",
+    "Proof that FMP historical MC endpoint accessible under exact account's free plan, not mere presence of docs",
+    "Historical share-class and reporting acceptance timestamp, CA and independent market-cap measurement",
+    "Legally entitled LIVE SIP/NBBO or separately-approved manual EOD-only mode (manual mode not FULL_GO)",
+    "Independently confirmed actual user device receipt after a qualifying signal"
+  ],
+  "tested_but_not_achieved": [
+    "FMP_REAL_CREDENTIALLED_514_VENDOR_READ",
+    "STRICT_G9_PROVIDER_LICENSE",
+    "CANONICAL_20261009_PRIMARY_MC",
+    "FRESH_TERMINAL",
+    "PHONE_DEVICE_RECEIPT"
+  ],
+  "next_actions": [
+    "Test one legally entitled FMP / historical MC provider only after key+use grant is present; never call missing/paid endpoints speculatively",
+    "Prioritize authorized batch/eod feed not 3 or 4 day per ASOF rotating quota",
+    "Complete 12 historical exact listing+SEC class as-of with source timestamp",
+    "Only when proofs pass apply C4.18 cutover with rollback plan and downstream CI",
+    "Treat manual EOD research release as different target and never silently rename as FULL GO"
+  ]
+}
