@@ -1,0 +1,150 @@
+{
+  "schema": "XRAY_20261012_DYNAMIC_12_SOURCE_PRE_MC_UNLOCK_CONTINUATION_V1",
+  "verified_date_trt": "2026-10-12",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "previous_source_head_before_checkpoint": "397ae86d6916dc5f7a2e3d63fdd99cc205101fa6",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "successor": "C4.18_PROPOSED_NOT_ACTIVATED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "objective": "Eliminate dependency on only Bigdata by validating multiple permissible free/low-cost source paths, while never equating provider counts with production primary market cap rights.",
+  "new_verified_repairs": [
+    {
+      "id": "C418_SOURCE_ROUTER_ASOF_AND_COHORT_HARDCODE",
+      "severity": "HIGH",
+      "old_fault": "Tied audit to 2026-10-09/514/12 and would fail valid next-session symbols and zero-PASS sets",
+      "fix": "Current MASTER+PRICE exact date/SHA and dynamic count; historical Massive/Rallies sample never relabeled current; selftest shifted 2026-10-12 520/9 and zero PRICE PASS",
+      "files": [
+        "nasdaq-xray/c418_provider_routing_readiness.py",
+        ".github/workflows/xray-c418-multi-source-contract.yml"
+      ],
+      "ci_run": 38188585706,
+      "ci_conclusion": "success",
+      "artifact_sha256": "1547c1813d42406af2a2aaa98278cc4aa5b12e743bbea3cda588077ef931826a"
+    },
+    {
+      "id": "BUSINESSQUANT_MISSING_FROM_INVENTORY",
+      "severity": "MEDIUM",
+      "old_fault": "BusinessQuant existed in original failover code but absent in eleven-source inventory",
+      "fix": "Added as 12th source, documented 30 free calls/day, multi-ticker historical EOD, stock screener MC and SEC filings; current screener is NOT as-of 2026-10-09 PIT and does not prove standalone provider rights or feed independence",
+      "files": [
+        "nasdaq-xray/c418_provider_inventory_20261012.json",
+        "nasdaq-xray/c418_provider_routing_readiness.py"
+      ],
+      "ci_run": 38188728907,
+      "ci_conclusion": "success",
+      "artifact_sha256": "862114349220eb5cd28a164f32d7f116bae6e363de9ae9818eda8715ab709f39"
+    },
+    {
+      "id": "C417_MC_RECOVERY_CIRCULAR_DEPENDENCY",
+      "severity": "P0_OPERATIONAL",
+      "old_fault": "xray_multi_provider_research.inputs required terminal/history/MC exact before attempting MC vendor failover; 2026-10-09 had terminal 2026-10-07 so ALL recovery lanes blocked",
+      "fix": "Explicit optional --pre-mc-recovery path requires exact MASTER/PRICE date, symbol set, count and SHA, and marks current MC authority None; allows MC/MASTER discovery only, never EVENTS, HISTORY authority or R92.",
+      "files": [
+        "nasdaq-xray/xray_multi_provider_research.py",
+        ".github/workflows/xray-multi-provider-research-shadow.yml"
+      ],
+      "ci_run": 38189013595,
+      "ci_conclusion": "success",
+      "artifact_id": 11721390092,
+      "artifact_sha256": "331600b2edc6ec765f91bbc12cf3548cd70039781cc26ec1269d93f1110acb50",
+      "reproduced_live_asof": "2026-10-09",
+      "live_mc_lane_scope": 514,
+      "live_master_lane_scope": 12,
+      "live_event_lane_scope": 0,
+      "source_epoch_exact": false,
+      "pre_mc_recovery_source_exact": true,
+      "MC_PRIMARY_0": true
+    },
+    {
+      "id": "UNLICENSED_VENDOR_READ_SECURITY_FENCE",
+      "severity": "HIGH",
+      "old_fault": "Existing full-chain research code treated API-key presence as enough to attempt unattended third-party vendor calls",
+      "fix": "Separate per-provider unattended research grant environment claim and SHA-256 evidence gates; no vendor calls without both, and no PRIMARY promotion even when research key present.",
+      "files": [
+        "nasdaq-xray/xray_multi_provider_research.py",
+        ".github/workflows/xray-multi-provider-research-shadow.yml"
+      ],
+      "ci_run": 38189013595,
+      "live_runner_massive_key_present_and_entitled": false,
+      "live_runner_bq_key_present_and_entitled": false
+    },
+    {
+      "id": "FAILOVER_PIPELINE_NOT_CONNECTED_TO_ROUTER",
+      "severity": "MEDIUM",
+      "old_fault": "12-source inventory CI was not directly executed by actual MASTER/MC/EVENT multi-provider research workflow",
+      "fix": "Added dynamic source eligibility check to research failover, safe telemetry and immutable SHA-pinned GitHub Actions dependencies; separate 12-provider CI also tests",
+      "files": [
+        ".github/workflows/xray-multi-provider-research-shadow.yml"
+      ],
+      "ci_run": 38189013595,
+      "ci_conclusion": "success"
+    }
+  ],
+  "live_artifact_readback": {
+    "run_id": 38189013595,
+    "artifact_id": 11721390092,
+    "artifact_sha256": "331600b2edc6ec765f91bbc12cf3548cd70039781cc26ec1269d93f1110acb50",
+    "files": [
+      "xray_multi_provider_shadow.json",
+      "xray_bq_history_onecall_shadow.json",
+      "xray_12_provider_routing_readiness.json"
+    ],
+    "master_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "history_blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "MC_current_bridge_blob": null,
+    "MC_shadow_eligible_symbol_count": 514,
+    "MC_shadow_samples_attempted": 3,
+    "MC_shadow_samples_unknown": 3,
+    "MC_provider_attempts_no_key": {
+      "MASSIVE": 3,
+      "BUSINESSQUANT": 3
+    },
+    "MASTER_unknown_scope": 12,
+    "MASTER_discovery_samples": 3,
+    "MASTER_discovery_only_observations": 3,
+    "OFFICIAL_SEC_DIRECTORY_AUTH_DENIED": 1,
+    "MASTER_mirror_queries_bounded": true,
+    "BUSINESSQUANT_EOD_status": "BLOCKED_NO_API_KEY",
+    "BUSINESSQUANT_EOD_api_calls": 0,
+    "current_MC_primary_count": 0,
+    "new_R92_count": 0,
+    "source_rights_pit_sufficient": false
+  },
+  "provider_docs": [
+    "https://businessquant.com/docs/api/overview",
+    "https://businessquant.com/docs/api/quotes",
+    "https://businessquant.com/docs/api/screener",
+    "https://businessquant.com/pricing",
+    "https://massive.com/pricing?product=stocks",
+    "https://site.financialmodelingprep.com/developer/docs",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+  ],
+  "source_independence_note": "12 inventory rows represent official registries, price providers, derived MC vendors and software orchestration; this is not 12 legally independent as-of market-cap sources, and none is yet a verified new full-scope PRIMARY provider.",
+  "remaining_P0": [
+    "Valid automated non-display source license/runner key with verifiable 2026-10-09 or latest-session true PIT MC/share-class data and independent upstream crosscheck",
+    "Resolve known 12 issuer identity unknowns using official SEC acceptance-time evidence without UNKNOWN-to-PASS",
+    "Recompute MC=>260/52 history=>legal/events=>technical FINAL on one exact latest-completed session with immutable source hash chain",
+    "Strict G9 consolidated real-time entitlement not demonstrated from free historical EOD",
+    "Candidate R92 and actual delivery/device receipt remain unproven"
+  ],
+  "safety": {
+    "historical_manual_non_g9_research_ok": true,
+    "current_primary_MC_go": false,
+    "current_research_signal_release": false,
+    "new_alert_delivery_verified": false,
+    "strict_g9_pass": false,
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "no_api_secrets_persisted": true,
+    "no_vendor_raw_market_data_persisted": true,
+    "no_paid_upgrade_or_credits_bought": true,
+    "no_threshold_weakening": true,
+    "full_production_go": false
+  }
+}
