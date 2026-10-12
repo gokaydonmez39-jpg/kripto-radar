@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - nasdaq-xray/research_watch_radar.py
+      - "nasdaq-xray/research/sip_eod_manual_11_watch_20261009_v1.json"
+      - "nasdaq-xray/research/verify_manual_sip_watch_v1.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - nasdaq-xray/preentry_watch_observer.py
@@ -44,6 +46,40 @@ jobs:
           assert j["alpha_go"] is False and j["orders"]==[]
           assert j["current_signal_release"]=="NOT_ATTESTED"
           print("XRAY_RESEARCH_ONLY_LAUNCH=ACTIVATED_MONITORING_NOT_AL")
+          PY
+      - name: Validate 11 real observed SIP EOD research watches without any AL promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'pandas_market_calendars==5.4.0'
+          python -m py_compile nasdaq-xray/research/verify_manual_sip_watch_v1.py
+          python nasdaq-xray/research/verify_manual_sip_watch_v1.py --selftest
+          python -O nasdaq-xray/research/verify_manual_sip_watch_v1.py --selftest
+          python nasdaq-xray/research/verify_manual_sip_watch_v1.py --out "$RUNNER_TEMP/xray_manual_sip_watch_provenance.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_manual_sip_watch_provenance.json").read_text())
+          assert r["schema"]=="XRAY_MANUAL_SIP_WATCH_PROVENANCE_READBACK_V1"
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          assert r["not_a_buy_signal"] is True and r["full_go"] is False
+          assert r["technical_C417_AL_count"]=="UNVERIFIED"
+          assert r["r92_registered"]==0 and r["orders"]==[]
+          assert not r["live_provider_replay_or_licensing_attested"]
+          assert not r["candidate_delivery_performed"] and not r["public_vendor_ohlcv_present"]
+          assert r["current_eod_research_watch_count"] in (0,11)
+          if r["current_eod_research_watch_count"]==11:
+              assert len(r["current_eod_research_watch"])==11
+              assert r["canonical_master_price_exact"] and r["same_asof_latest_completed"]
+          else:
+              assert r["current_eod_research_watch"]==[]
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("## Alpaca SIP manual EOD research watch (NOT BUY / NO AL)\\n\\n")
+              f.write("Snapshot: "+r["snapshot_asof_et"]+"; last complete NASDAQ: "+r["latest_completed_session"]+"\\n\\n")
+              f.write("Current research observations: **"+str(r["current_eod_research_watch_count"])+"**. Status: **"+r["status"]+"**\\n\\n")
+              f.write("C4.17 AL, PRIMARY MC, G9, ACCOUNT, R92, licensed runner source and delivery: **NOT ATTESTED**.\\n\\n")
+              f.write("Provider bars are not stored or redistributed.\\n")
+          print("XRAY_SIP_INTERACTIVE_11_OBSERVATION=PASS_PROVENANCE_UNREPLAYED_NOT_AL")
           PY
       - name: Verify fail-closed WATCH-only invariants
         run: |
@@ -121,6 +157,14 @@ jobs:
           assert j["alpha_authority"] is False and j["buy_candidates"]==j["orders"]==[]
           print("XRAY_FORWARD_PROSPECTIVE_TRACKER=CONTRACT_PASS_OUTCOMES_PENDING_NOT_FAKE")
           PY
+      - name: Preserve 11-source-observed EOD watch digest without vendor raw bars
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sip-manual-eod-watch-nonbuy
+          path: ${{ runner.temp }}/xray_manual_sip_watch_provenance.json
+          retention-days: 14
+          if-no-files-found: warn
       - name: Preserve inspectable WATCH JSON artifact
         if: always()
         uses: actions/upload-artifact@v4
