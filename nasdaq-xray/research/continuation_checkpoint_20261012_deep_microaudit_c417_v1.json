@@ -1,0 +1,221 @@
+{
+  "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
+  "observation_date_utc": "2026-10-12T20:51:46.555Z",
+  "source_repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
+  "authority": "READ_ONLY_AUDIT_CHECKPOINT_NOT_PRODUCTION_SOURCE",
+  "effective_policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_new_alpha_or_r92": true,
+  "no_synthetic_price_or_history": true,
+  "no_licensed_provider_promotion": true,
+  "no_automation_duplication": true,
+  "production_go": false,
+  "evidence": {
+    "root_run": {
+      "id": 38305388712,
+      "conclusion": "success",
+      "production_completion": false
+    },
+    "github_watchdog_run": {
+      "id": 38306518617,
+      "conclusion": "success",
+      "production_completion": false
+    },
+    "git_code_fix": {
+      "commit": "889eb15895623ac4bbcdef2273d477ca02db4a36",
+      "path": "nasdaq-xray/github_native_chain_health.py",
+      "selftest": "PASS",
+      "live_run": 38306518617
+    },
+    "preopen_snapshot_retry": {
+      "commit": "ff79c7cc95dd7d5c733bc10f3fe3eab0e5faac55",
+      "run": 38305037926,
+      "conclusion": "success"
+    },
+    "orchestrator": {
+      "path": "nasdaq-xray/orchestrator_state.json",
+      "blob_sha": "a73f07a4573270dadc5aa2385bb6695b725798b8",
+      "asof_et": "2026-10-12",
+      "status": "PARTIAL_HISTORY",
+      "unknown_count": 3185,
+      "pending_retry": 0
+    },
+    "root_sina": {
+      "path": "nasdaq-xray/sina_state.json",
+      "blob_sha": "71723dfa85c881ababcb94fdaaec78a11d4f7e95",
+      "asof_et": "2026-10-12",
+      "unknown_static_asof_missing": 3157,
+      "exhausted_transport": 28,
+      "identity_unknown_count": 212,
+      "price_pass_authority": false
+    },
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+      "asof_et": "2026-10-09",
+      "identity_pass": 3184,
+      "identity_unknown": 12
+    },
+    "canonical_history": {
+      "path": "nasdaq-xray/canonical_current_history.json",
+      "blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "asof_et": "2026-10-07",
+      "history_pass": 460
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof_et": "2026-10-07",
+      "status": "PARTIAL",
+      "registered_r92_count": 0
+    },
+    "official_safety": {
+      "path": "nasdaq-xray/canonical_official_source_guard.json",
+      "blob_sha": "5b0daa2e4eea87973a39ba61ebf95edbd2490e17",
+      "status": "PASS",
+      "generated_at_utc": "2026-10-12T20:21:09.396891+00:00",
+      "candidate_freshness_requires_age_at_most_seconds": 900
+    },
+    "mc": {
+      "primary_pass_count_attested": 0,
+      "shadow_fallback_watch": 475,
+      "shadow_fallback_fail": 10,
+      "unknown": 29,
+      "shadow_asof": "2026-10-09",
+      "bigdata_credit_exhausted_last_observation": true,
+      "current_licensed_primary_proven": false,
+      "successor": "C4.18_PROPOSED_NOT_ACTIVATED"
+    },
+    "delivery": {
+      "registered_r92_count": 0,
+      "ledger_count": 0,
+      "platform_device_receipt_attested": false,
+      "github_issue_notification_enabled": false
+    },
+    "automations": {
+      "expected_active": 5,
+      "observed_active": 5,
+      "canonical_notification_authority_id": "6a825366222081918997094d76e6ae46",
+      "support_tasks_silent": true,
+      "new_tasks_created": 0
+    }
+  },
+  "dependency_order": [
+    {
+      "id": "P0_A",
+      "owner": "SOURCE_ACQUISITION",
+      "status": "BLOCKED_EXTERNAL",
+      "task": "Prove perpetual zero-additional-payment lawful automated/non-display GitHub-primary MC for exact XNAS issuer/listing and point-in-time as-of USD, independently cross-check corporate actions and classes",
+      "acceptance": "Real provider response, license/rights document, runner credentials and 514-scope bounded capacity plus independent PIT checks; formal C4.18 activation if provider changes; otherwise C4.17 PRIMARY remains blocked",
+      "rollback": "No new primary, retain WATCH/UNKNOWN"
+    },
+    {
+      "id": "P0_B",
+      "owner": "ROOT_DATA_PLANE",
+      "status": "SOURCE_PUBLICATION_PENDING",
+      "task": "Observe the 2026-10-12 completed official session through exact source publication and bounded real-quote canaries; distinguish feed delay, transport retry, permanent short history and 212 unknown identity",
+      "acceptance": "Nonempty exact-ASOF vendor daily bars validated by official exchange dates and source entitlement, no synthetic backfill; runner artifact + Git blob exact",
+      "rollback": "HISTORY_PARTIAL, no new PASS"
+    },
+    {
+      "id": "P1",
+      "owner": "IDENTITY",
+      "status": "BLOCKED_EVIDENCE",
+      "task": "Build exact-asof Nasdaq listing/SEC CIK/class/issuer/SPAC evidence for current full universe, specifically 12 Oct9 unresolved and 212 distinct Oct12 unresolved; do not reuse 9Oct proof for 12Oct",
+      "acceptance": "Master and exchange identity partition exact, missing/unknown stays non-PASS",
+      "rollback": "UNKNOWN_IDENTITY"
+    },
+    {
+      "id": "P2",
+      "owner": "PRICE_AND_RESOLVER",
+      "status": "WAITING_P0_B_P1",
+      "task": "Produce current exact30 completed RTH close*regular-session-volume median DV30 and >=5 USD for the full eligible Nasdaq identity universe; exact pass/block/unknown partitions, resolver/settlement SHA chain",
+      "acceptance": "current ASOF and source set/hash/count/30 sessions exact, provider rights; no pass on missing date",
+      "rollback": "BLOCK_CURRENT_RUN/UNKNOWN"
+    },
+    {
+      "id": "P3",
+      "owner": "MC",
+      "status": "WAITING_P0_A_P2",
+      "task": "Produce current PRIMARY MC>=2B USD for exact PRICE-pass symbols; keep fallback A/C WATCH and ambiguous class UNKNOWN",
+      "acceptance": "Provider-rights exact and same-ASOF issuer identity, 5-way partition equal PRICE PASS, no shadow R92",
+      "rollback": "MC_UNKNOWN/WATCH"
+    },
+    {
+      "id": "P4",
+      "owner": "HISTORY_WEEKLY_CA",
+      "status": "WAITING_P2_P3",
+      "task": "Prove >=260 official daily and 52 completed weekly bars and official corporate action/IPO continuity; 17 short listings remain fail-only",
+      "acceptance": "At least 260 and 52 real completed bars, exact SRC-blob and CA PIT, negative missing-date tests",
+      "rollback": "HISTORY_UNKNOWN/HISTORY_INELIGIBLE"
+    },
+    {
+      "id": "P5",
+      "owner": "TECHNICAL",
+      "status": "WAITING_P4",
+      "task": "Validate same-ASOF Stage1 weekly/regime/breadth/deep setup and R1/RR entry band/stop/target; calibrate with out-of-sample walk-forward and costs without weakening thresholds",
+      "acceptance": "per-symbol tests, independent R/R arithmetic, no lookahead/repaint or false event omission",
+      "rollback": "TECH_FAIL/WATCH"
+    },
+    {
+      "id": "P6",
+      "owner": "EVENT",
+      "status": "WAITING_P5",
+      "task": "Independently verify issuer IR/SEC earnings/event inside 8 sessions for each active geometry symbol; discovery outage never means clean",
+      "acceptance": "exact issue dates, primary URLs, event request/bridge immutable SHA and geometry intersection",
+      "rollback": "EVENT_UNKNOWN"
+    },
+    {
+      "id": "P7",
+      "owner": "OFFICIAL_SAFETY",
+      "status": "MONITORING_FIXED",
+      "task": "Refresh official Nasdaq Trade Halt and Security Status with sticky suspension veto, append-only official PIT and <=900s candidate guard; detect invalid/future/feed UNKNOWN",
+      "acceptance": "fresh PASS both feeds, veto exact candidate intersection, checkpointed ledger, negative tests",
+      "rollback": "CANDIDATE_VETO"
+    },
+    {
+      "id": "P8",
+      "owner": "FINAL_TERMINAL",
+      "status": "WAITING_P3_TO_P7",
+      "task": "Atomic master→price→resolver→MC→history→weekly→regime→deep→event→final→official→terminal→overlay→pointer for same completed ASOF and exact blob set",
+      "acceptance": "real terminal candidate_local_research_pass plus exact registered R92 or justified no candidate only after full global E2E",
+      "rollback": "PARTIAL/NO_GO"
+    },
+    {
+      "id": "P9",
+      "owner": "DELIVERY_AND_LIFECYCLE",
+      "status": "BLOCKED_NO_R92",
+      "task": "Register real R92 candidate with unique key, dedup and lifecycle monitoring before sole Canonical ChatGPT alert; no GitHub issues or fake AL",
+      "acceptance": "real terminal registered symbol, exact delivery ledger key and user receipt verified separately",
+      "rollback": "NO_USER_SIGNAL"
+    },
+    {
+      "id": "P10",
+      "owner": "AUTOMATION_SRE",
+      "status": "PARTIAL",
+      "task": "Keep exactly five active XRAY tasks; test root/final stale failover CAS, two snapshots, single-writer cooldown, provider quota and non-retryable zero-credit, alert incident escalation and recovery dedup; repair manual research SHA drift without weakening source checks",
+      "acceptance": "real positive+negative GitHub regressions, Actions artifact exact readback, fault→recovery transitions and no-noop false PASS",
+      "rollback": "FAIL_CLOSED_AND_HEALTH_INCIDENT"
+    },
+    {
+      "id": "P11",
+      "owner": "RELEASE_ACCEPTANCE",
+      "status": "BLOCKED",
+      "task": "Run current exact E2E production readiness plus candidate-local delivery and iPhone ChatGPT receipt tests once real candidate exists; do not require G9/account for manual research AL",
+      "acceptance": "Genuine source-bound AL R92 delivered once with actual receipt; G9/account separately required only strict FULL_GO",
+      "rollback": "NO_GO"
+    }
+  ],
+  "corrections_and_constraints": [
+    "12 Oct root 3157 missing EOD observations are not evidence all symbols have insufficient 260-history; distinguish publication lag.",
+    "12 Oct root 212 identity UNKNOWN and 9 Oct canonical MASTER 12 UNKNOWN belong to different ASOF universes.",
+    "As of snapshot root SUCCESS means runner success only; current MASTER is Oct9, HISTORY and terminal Oct7.",
+    "Provider personal/free account does not automatically grant unattended runner or non-display storage/derived trading rights.",
+    "No arbitrary 100-percent GO claim, no new ChatGPT tasks, no market order."
+  ]
+}
