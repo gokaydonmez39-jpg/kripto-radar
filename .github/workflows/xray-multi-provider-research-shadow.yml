@@ -82,10 +82,12 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/xray_multi_provider_research.py
           python nasdaq-xray/xray_multi_provider_research.py --selftest
+          python -O nasdaq-xray/xray_multi_provider_research.py --selftest
       - name: Probe all three lanes with shared per-run budgets (non-authoritative)
         run: |
           python nasdaq-xray/xray_multi_provider_research.py \
             --limit 3 \
+            --pre-mc-recovery \
             --out "$RUNNER_TEMP/xray_multi_provider_shadow.json"
       - name: Independently validate public operational telemetry only
         run: |
@@ -105,7 +107,16 @@ jobs:
           assert set(x["source_blobs"])=={"MASTER","MC","HISTORY","EVENT","TERMINAL"}
           assert all(0<=r["sample_attempted"]<=3 for r in x["lanes"].values())
           assert all(v<=3 for k,v in x["invocation_counts"].items() if k=="MASSIVE")
-          if x.get("source_epoch_exact") is False:
+          if x.get("pre_mc_recovery_source_exact") is True:
+              assert x["source_epoch_exact"] is False
+              assert x["result"]=="PRE_MC_SOURCE_EXACT_SHADOW_ONLY_NO_PRIMARY_NO_AL"
+              assert x["source_blobs"]["MC"] is None
+              assert x["source_blobs"]["PRICE"]
+              assert x["lanes"]["EVENT"]["scope_unverified"] is True
+              assert x["lanes"]["EVENT"]["sample_attempted"]==0
+              assert x["mc_pass_created"] is False and x["alpha_authority"] is False
+              print("XRAY_MULTIPROVIDER_PRE_MC_RECOVERY=EXACT_MASTER_PRICE_RESEARCH_ONLY")
+          elif x.get("source_epoch_exact") is False:
               assert x["result"]=="BLOCKED_SOURCE_EPOCH_NO_CALLS_NO_ALPHA"
               assert not x["invocation_counts"]
               assert all(v["sample_attempted"]==0 and v["scope_unverified"] is True
