@@ -60,13 +60,27 @@ jobs:
           from pathlib import Path
           f=Path(os.environ["RUNNER_TEMP"])/"xray_12_provider_routing_readiness.json"
           j=json.loads(f.read_text())
+          root=Path("nasdaq-xray")
+          price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          master=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          inventory=json.loads((root/"c418_provider_inventory_20261012.json").read_text())
+          cfg=next(x for x in inventory["sources"] if x["id"]=="BUSINESSQUANT")
+          cohort=len(price["pass_symbols"])
+          batch=cfg["max_tickers_per_historic_call"]
+          daily=cfg["daily_requests"]
+          expected_calls=(cohort+batch-1)//batch
+          expected_days=(expected_calls+daily-1)//daily
           assert j["schema"]=="XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
-          assert j["discovered_source_rows"]==12
+          assert j["asof_et"]==price["asof_et"]==master["asof_et"]
+          assert j["canonical_price_pass_count"]==price["pass_count"]==cohort
+          assert j["master_identity_pass_count"]==master["pass_count"]==len(master["pass_symbols"])
+          assert j["master_identity_unknown_count"]==master["unknown_count"]==len(master["unknown_symbols"])
+          assert j["discovered_source_rows"]==len(inventory["sources"])
           assert j["verified_distinct_market_cap_origin_count"]==0
           bq=j["per_source_capacity_scenarios"]["BUSINESSQUANT"]
-          assert bq["documented_tickers_per_call"]==5
-          assert bq["best_case_historical_mc_calls_if_all_symbols_have_data"]==103
-          assert bq["best_case_free_calendar_days"]==4
+          assert bq["documented_tickers_per_call"]==batch
+          assert bq["best_case_historical_mc_calls_if_all_symbols_have_data"]==expected_calls
+          assert bq["best_case_free_calendar_days"]==expected_days
           assert bq["historical_filing_acceptance_pit_proven"] is False
           assert bq["best_case_only_not_entitled_to_primary"] is True
           assert j["new_primary_mc_authority_count"]==0
