@@ -165,9 +165,9 @@ jobs:
                          "secrets.XRAY_ALPACA_DATA_SECRET_KEY"):
               if wanted not in manual or wanted not in full:
                   raise SystemExit("XRAY_ALPACA_SECRET_NAME_DRIFT_FAIL_CLOSED")
-          if ("APCA_API_KEY_ID: " + "${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}") not in manual:
+          if ("APCA_API_KEY_ID: " + chr(36) + "{{ secrets.XRAY_ALPACA_DATA_KEY_ID }}") not in manual:
               raise SystemExit("XRAY_ALPACA_SHADOW_KEY_ALIAS_DRIFT")
-          if ("APCA_API_SECRET_KEY: " + "${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}") not in manual:
+          if ("APCA_API_SECRET_KEY: " + chr(36) + "{{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}") not in manual:
               raise SystemExit("XRAY_ALPACA_SHADOW_SECRET_ALIAS_DRIFT")
           if 'os.environ.get("APCA_API_KEY_ID")' not in script or 'os.environ.get("APCA_API_SECRET_KEY")' not in script:
               raise SystemExit("XRAY_ALPACA_SHADOW_SCRIPT_ENV_DRIFT")
