@@ -1,0 +1,107 @@
+{
+  "schema": "XRAY_STRICT_GO_LIVE_RESEARCH_CHECKPOINT_V1",
+  "observed_on": "2026-10-12",
+  "observed_asof_et": "2026-10-09",
+  "observed_main_sha_before_checkpoint": "373a5c183ef2e7eeb55f9c75bb362cc57d9cb0c4",
+  "effective_policy": "C4.17",
+  "c418": "PROPOSED_NOT_ACTIVATED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_authority": "LIVE_GITHUB_READBACK_PLUS_OFFICIAL_VENDOR_DOCS_PLUS_CONNECTED_READONLY_PROBES",
+  "source_blob_sha": {
+    "provider_inventory": "1ddb476c19fd803e81e0e41354fd7a02372286cf",
+    "master": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_dv30": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "history": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "final_tech": "4d220717a8e8a8f266ef5224ed31e8eb5090e34a",
+    "terminal": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "overlay": "1c4aa1ead4e224664c84f84836fa89027615cb30",
+    "strict_g9": "fb077b1177153df149e63502818d190875c0b119",
+    "account": "3bc1d79497970cdfa805d7aa836c7231ea905e6b",
+    "delivery": "cb14dfc2233ff074fdaa030aee564863db401b29"
+  },
+  "canonical_unchanged_before_checkpoint": true,
+  "canonical": {
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "price_pass": 514,
+    "price_pass_unique": 514,
+    "master_unknown_intersect_price_pass": 0,
+    "primary_mc_proven": 0,
+    "history_asof": "2026-10-07",
+    "terminal_asof": "2026-10-07",
+    "terminal_status": "PARTIAL_UNKNOWN",
+    "registered_r92": 0
+  },
+  "preopen": {
+    "run_id": 38230784251,
+    "artifact_id": 11738755751,
+    "zip_sha256": "eb5889b260eb6e9cada9722fcb29b36e0f3cded83049fb043c89c5d5176dd6be",
+    "sha256_locally_recomputed_and_equal_github_digest": true,
+    "status": "PREOPEN_BLOCKED_NO_GO",
+    "registered_candidates": 0
+  },
+  "strict_g9": {
+    "red_run_id": 38230636398,
+    "red_failure": "PREAUTH_NAIVE_TIMESTAMP_ACCEPTED",
+    "green_run_id": 38230784333,
+    "green_ci": "success",
+    "pass": false,
+    "status": "BLOCKED_ENTITLEMENT_AUTHORITY_UNPROVEN",
+    "source_rights": false
+  },
+  "provider_multisource": {
+    "run_id": 38228573197,
+    "artifact_id": 11737211903,
+    "zip_sha256": "6ff1a8887d0b3e9cafc900433ee45f25e0f016efad303b35d4fc6ba90d5fc26f",
+    "sha256_locally_recomputed_and_equal_github_digest": true,
+    "bq_eod_status": "BLOCKED_NO_API_KEY",
+    "massive_key_present": false,
+    "primary_created": 0
+  },
+  "provider_c418_after_repair": {
+    "run_id": 38234213929,
+    "artifact_id": 11739663340,
+    "zip_sha256": "a41a6d6e706659a053c6d2d2bff52c0f143a2e4a1401613b98317f474ae9d525",
+    "sha256_locally_recomputed_and_equal_github_digest": true,
+    "normal_python_ci_pass": true,
+    "optimized_python_ci_pass": true,
+    "route_status": "VALID_ROUTING_NO_PRODUCTION_GO",
+    "source_status": "DATA_BLOCKED",
+    "primary_created": 0
+  },
+  "repair": {
+    "kind": "RESEARCH_ONLY_SOURCE_METADATA",
+    "source": "EODHD",
+    "commit": "373a5c183ef2e7eeb55f9c75bb362cc57d9cb0c4",
+    "preimage_blob": "9dde4281ba696815e860cc78bdd9e64028d20618",
+    "postimage_blob": "1ddb476c19fd803e81e0e41354fd7a02372286cf",
+    "before": "HISTORICAL_MC_ENDPOINT_ABSENT_FALSE",
+    "after": "DOCS_VERIFIED_WEEKLY_10_CREDITS_PER_SYMBOL_NOT_PIT_RIGHTS_UNVERIFIED",
+    "primary_eligible": false,
+    "source_doc": "https://eodhd.com/financial-apis/historical-market-capitalization-api"
+  },
+  "current_readonly_provider_checks": {
+    "rallies_aapl": "API_TESTED_ONE_TICKER_LATEST_MC_ONLY_NO_EVENT_TIMESTAMP_NO_PIT",
+    "financial_datasets_aapl": "BLOCKED_ZERO_CREDIT_BALANCE_NO_SPEND",
+    "longbridge_account_balance": "403308_SCOPE_NOT_AUTHORIZED",
+    "longbridge_stock_positions": "403308_SCOPE_NOT_AUTHORIZED"
+  },
+  "P0": {
+    "MC": "BLOCKED_NO_LICENSED_PIT_514_PRIMARY",
+    "HISTORY_FINAL_TERMINAL": "BLOCKED_OLD_ASOF_DEPENDS_ON_MC",
+    "IDENTITY": "BLOCKED_12_OFFICIAL_SPAC_PROOFS_UNRESOLVED_NO_514_INTERSECTION",
+    "STRICT_G9": "BLOCKED_ENTITLEMENT_NBBO_UNPROVEN",
+    "ACCOUNT": "BLOCKED_403308_AND_MISSING_ONE_TIME_READONLY_BOOTSTRAP",
+    "R92_DELIVERY": "BLOCKED_ZERO_CONFIRMED_SETUP_NO_REAL_DEVICE_RECEIPT"
+  },
+  "external_unlocks": [
+    "P0 MC provider API key/account entitlement, exact date/time PIT, 514 cohort response, and written non-display automated rights",
+    "Strict G9 consolidated real-time NBBO entitlement with automated permanent-zero terms and same RTH session quote+trade evidence",
+    "Longbridge account.read-only OAuth reauthorization: XRAY_ACCOUNT_TOKEN_FERNET_KEY, one-time LONGBRIDGE_AGENT_AUTH_CODE; never trade.write",
+    "Independent real-device delivery receipt if an authentic candidate exists"
+  ],
+  "safety_caveat": "NOT_AN_AL_SIGNAL_NOT_PRIMARY_PROMOTION_NOT_G9_PASS_NOT_PERMISSION_TO_TRADE",
+  "strict_full_go": "BLOCKED"
+}
