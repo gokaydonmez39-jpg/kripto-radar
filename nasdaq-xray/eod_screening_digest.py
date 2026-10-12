@@ -27,14 +27,14 @@ def require(value,reason):
     if not value: raise ValueError("XRAY_EOD_SCREEN_FAIL_CLOSED:"+reason)
 
 def blob(data):
-    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def shash(symbols):
-    return hashlib.sha256("\\n".join(symbols).encode()).hexdigest()
+    return hashlib.sha256("\n".join(symbols).encode()).hexdigest()
 
 def exact_symbols(symbols):
     return (type(symbols) is list and symbols==sorted(set(symbols))
-            and all(type(s) is str and re.fullmatch(r"[A-Z0-9.\\-]+",s) for s in symbols))
+            and all(type(s) is str and re.fullmatch(r"[A-Z0-9.-]+",s) for s in symbols))
 
 def analyze(obj,sha,now_utc):
     m,p,pol,h,f,t=(obj[k] for k in FILES)
@@ -220,7 +220,7 @@ def main():
     if args.out is None or args.out.resolve().is_relative_to(ROOT.parent.resolve()):
         ap.error("write report to a runner-private output path only")
     report=build(ROOT,dt.datetime.now(dt.timezone.utc))
-    args.out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\\n")
+    args.out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
     print("XRAY_EOD_SCREEN="+report["status"])
     print("XRAY_EOD_PRICE_DV30_PASS_COUNT="+str(report["price_dv30_pass_count"]))
     print("XRAY_EOD_SCREENED_SYMBOLS="+str(len(report["screen_symbols"])))
