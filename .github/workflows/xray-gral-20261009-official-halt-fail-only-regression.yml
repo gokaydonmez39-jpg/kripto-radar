@@ -7,11 +7,15 @@ on:
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - ".github/workflows/xray-canonical-current-pre-mc.yml"
       - "nasdaq-xray/evidence/nasdaq_gral_20260923_full_session_halt_v1.json"
+      - "nasdaq-xray/research/gral_sina_full_state_20261009.json"
+      - "nasdaq-xray/research/price_dv30_20261009_full_snapshot.json"
       - ".github/workflows/xray-gral-20261009-official-halt-fail-only-regression.yml"
   pull_request:
     paths:
       - "nasdaq-xray/price_gral_halt_fail_only.py"
       - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/research/gral_sina_full_state_20261009.json"
+      - "nasdaq-xray/research/price_dv30_20261009_full_snapshot.json"
       - ".github/workflows/xray-gral-20261009-official-halt-fail-only-regression.yml"
 permissions:
   contents: read
@@ -30,14 +34,24 @@ jobs:
           set -euo pipefail
           python -m py_compile nasdaq-xray/price_gral_halt_fail_only.py nasdaq-xray/price_dv30_recover_from_fullstate.py
           python nasdaq-xray/price_gral_halt_fail_only.py --selftest
-      - name: Replay only Oct9 514 PASS plus GRAL UNKNOWN without writing canonical PRICE
+      - name: Replay immutable Oct9 514 PASS and GRAL FAIL without rewriting current PRICE
         run: |
           python - <<'PY'
           import hashlib,json,os,pathlib,subprocess,sys
           sys.path.insert(0,"nasdaq-xray")
           from price_gral_halt_fail_only import apply_to_results
           root=pathlib.Path("nasdaq-xray")
-          data=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          archival_price=root/"research/price_dv30_20261009_full_snapshot.json"
+          archival_sina=root/"research/gral_sina_full_state_20261009.json"
+          price_pin="6f3f68fff0897d68f200ad3621c51a5071494714"
+          sina_pin="ffee6b60305336d9b6c89e52621f98a12a8850e9"
+          assert subprocess.check_output(["git","hash-object",str(archival_price)],text=True).strip()==price_pin
+          assert subprocess.check_output(["git","hash-object",str(archival_sina)],text=True).strip()==sina_pin
+          data=json.loads(archival_price.read_text())
+          current_price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          assert data["asof_et"]=="2026-10-09"
+          assert current_price["asof_et"]>=data["asof_et"]
+          assert current_price["execution"]=="NONE" and current_price["real_money"]=="NO-GO"
           must_replay=data["asof_et"]=="2026-10-09" and "GRAL" in data["unknown_symbols"]
           assert data["pass_count"]==514 and data["unknown_never_pass"] is True
           assert data["execution"]=="NONE" and data["real_money"]=="NO-GO"
@@ -63,9 +77,12 @@ jobs:
             "schema":"XRAY_20261009_GRAL_PINNED_OFFICIAL_HALT_AND_REAL_SOURCE_CI_V1",
             "git_head":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
             "asof_et":data["asof_et"],
-            "price_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"canonical_current_price_dv30.json")],text=True).strip(),
+            "price_git_blob_sha":price_pin,
+            "current_price_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"canonical_current_price_dv30.json")],text=True).strip(),
+            "current_price_asof_et":current_price["asof_et"],
+            "historical_test_only":True,"historical_alpha_authority":False,
             "event_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"evidence/nasdaq_gral_20260923_full_session_halt_v1.json")],text=True).strip(),
-            "sina_git_blob_sha":subprocess.check_output(["git","hash-object",str(root/"sina_state.json")],text=True).strip(),
+            "sina_git_blob_sha":sina_pin,
             "replay_gral_fail_only":must_replay,
             "gral_pass_promoted":False,
             "price_pass_original":514,
