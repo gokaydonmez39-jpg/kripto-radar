@@ -86,19 +86,33 @@ jobs:
           python - <<'PY'
           import json,os
           from pathlib import Path
-          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_daily_mc_capacity.json").read_text())
-          assert x["schema"]=="XRAY_C418_DAILY_MC_CAPACITY_GUARD_V1"
-          assert x["status"]=="SHADOW_DAILY_REFRESH_BLOCKED"
-          assert x["source_cohort_price_pass"]==514
-          assert x["BQ"]["daily_free_requests"]==30
-          assert x["BQ"]["tickers_per_historical_mc_call"]==5
-          assert x["BQ"]["required_full_cohort_calls"]==103
-          assert x["BQ"]["maximum_tickers_per_day"]==150
-          assert x["BQ"]["minimum_quota_calendar_days"]==4
-          assert x["BQ"]["full_cohort_daily_refresh_with_this_quota"] is False
-          assert not any(x[k] for k in ("can_create_PRIMARY","can_register_R92","can_enable_G9","production_go","vendor_raw_data_persisted"))
-          assert x["real_money"]=="NO-GO" and x["execution"]=="NONE"
-          print("XRAY_BQ_FREE_514_DAILY_CAPACITY=BLOCKED_NO_PRIMARY_NO_GO")
+          root=Path("nasdaq-xray")
+          actual=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_daily_mc_capacity.json").read_text())
+          price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          master=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          inv=json.loads((root/"c418_provider_inventory_20261012.json").read_text())
+          bq=next(z for z in inv["sources"] if z["id"]=="BUSINESSQUANT")
+          n=len(price["pass_symbols"])
+          batch=bq["max_tickers_per_historic_call"]
+          daily=bq["daily_requests"]
+          calls=(n+batch-1)//batch
+          days=(calls+daily-1)//daily
+          assert actual["schema"]=="XRAY_C418_DAILY_MC_CAPACITY_GUARD_V1"
+          assert actual["asof_et"]==price["asof_et"]==master["asof_et"]
+          assert actual["source_cohort_price_pass"]==n==price["pass_count"]
+          assert actual["source_master_identity_pass"]==len(master["pass_symbols"])==master["pass_count"]
+          assert actual["source_master_identity_unknown"]==len(master["unknown_symbols"])==master["unknown_count"]
+          assert actual["provider_rows_unchanged"]==len(inv["sources"])
+          assert actual["BQ"]["daily_free_requests"]==daily
+          assert actual["BQ"]["tickers_per_historical_mc_call"]==batch
+          assert actual["BQ"]["required_full_cohort_calls"]==calls
+          assert actual["BQ"]["maximum_tickers_per_day"]==daily*batch
+          assert actual["BQ"]["minimum_quota_calendar_days"]==days
+          assert actual["BQ"]["full_cohort_daily_refresh_with_this_quota"] is (calls<=daily)
+          assert actual["status"]=="SHADOW_DAILY_REFRESH_BLOCKED"
+          assert not any(actual[k] for k in ("can_create_PRIMARY","can_register_R92","can_enable_G9","production_go","vendor_raw_data_persisted"))
+          assert actual["real_money"]=="NO-GO" and actual["execution"]=="NONE"
+          print("XRAY_BQ_DYNAMIC_DAILY_CAPACITY=PASS_NO_PRIMARY_NO_GO")
           PY
       - name: Verify 12-route real current cohort capacity and forbid fake MC rights
         shell: bash
@@ -110,25 +124,36 @@ jobs:
           python nasdaq-xray/c418_provider_routing_readiness.py \
             --out "$RUNNER_TEMP/xray_c418_514_source_router.json"
           python - <<'PY'
-          import os,json
+          import os,json,datetime as dt
           from pathlib import Path
+          root=Path("nasdaq-xray")
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_c418_514_source_router.json").read_text())
+          price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          master=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          inv=json.loads((root/"c418_provider_inventory_20261012.json").read_text())
+          bqconfig=next(s for s in inv["sources"] if s["id"]=="BUSINESSQUANT")
+          cohort=len(price["pass_symbols"])
+          batch=bqconfig["max_tickers_per_historic_call"]
+          quota=bqconfig["daily_requests"]
+          calls=(cohort+batch-1)//batch
+          days=(calls+quota-1)//quota
           assert j["schema"]=="XRAY_C418_DYNAMIC_MULTI_PROVIDER_ROUTING_READINESS_V2"
-          source=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
-          master=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
-          assert j["asof_et"]==source["asof_et"]==master["asof_et"]
-          assert j["canonical_price_pass_count"]==len(source["pass_symbols"])==source["pass_count"]
+          assert j["asof_et"]==price["asof_et"]==master["asof_et"]
+          assert j["canonical_price_pass_count"]==cohort==price["pass_count"]
+          assert j["master_identity_pass_count"]==len(master["pass_symbols"])==master["pass_count"]
           assert j["master_identity_unknown_count"]==len(master["unknown_symbols"])==master["unknown_count"]
-          assert j["historical_3_ticker_sample_asof_et"]=="2026-10-09"
-          assert j["historical_3_ticker_sample_is_current_asof"] == (source["asof_et"]=="2026-10-09")
+          historic_date=dt.date.fromisoformat(j["historical_3_ticker_sample_asof_et"])
+          current_date=dt.date.fromisoformat(price["asof_et"])
+          assert historic_date<=current_date
+          assert j["historical_3_ticker_sample_is_current_asof"] is (historic_date==current_date)
           assert j["historical_sample_may_grant_primary"] is False
           assert j["identity_unknown_intersect_price_count"]==0
-          assert j["discovered_source_rows"]==12
+          assert j["discovered_source_rows"]==len(inv["sources"])
           assert j["verified_distinct_market_cap_origin_count"]==0
           bq=j["per_source_capacity_scenarios"]["BUSINESSQUANT"]
-          assert bq["documented_tickers_per_call"]==5
-          assert bq["best_case_historical_mc_calls_if_all_symbols_have_data"]==103
-          assert bq["best_case_free_calendar_days"]==4
+          assert bq["documented_tickers_per_call"]==batch
+          assert bq["best_case_historical_mc_calls_if_all_symbols_have_data"]==calls
+          assert bq["best_case_free_calendar_days"]==days
           assert bq["historical_filing_acceptance_pit_proven"] is False
           assert bq["best_case_only_not_entitled_to_primary"] is True
           assert j["new_primary_mc_authority_count"]==0
@@ -136,9 +161,9 @@ jobs:
           assert j["go"] is False and j["unknown_never_pass"] is True
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert j["no_vendor_raw_data_exported"] is True
-          assert j["per_source_capacity_scenarios"]["BUSINESSQUANT"]["conditional_only_not_scheduled"] is True
-          assert j["per_source_capacity_scenarios"]["BUSINESSQUANT"]["actual_same_asof_mc_entitlement"]=="UNVERIFIED"
-          print("XRAY_C418_DYNAMIC_ACTUAL_ROUTING=PASS_12_PROVIDER_ROWS_NO_FAKE_PRIMARY")
+          assert bq["conditional_only_not_scheduled"] is True
+          assert bq["actual_same_asof_mc_entitlement"]=="UNVERIFIED"
+          print("XRAY_C418_DYNAMIC_ACTUAL_ROUTING=PASS_CURRENT_COHORT_NO_FAKE_PRIMARY")
           PY
       - name: Confirm missing real provider rights cannot become PRIMARY or R92
         shell: bash
