@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",
-  "updated_on": "2026-10-04",
+  "updated_on": "2026-10-13",
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
@@ -40,6 +40,23 @@
       "production_effect": "Website screener market-cap/industry collection blocked without separately verified automated analytics rights. Historic shadow artifacts do not make C4.17 primary MC. Official SEC may supply issuer filings only, never Nasdaq screener redistribution rights.",
       "written_grant_required": true,
       "cutover": false
+    },
+    "RALLIES": {
+      "role": "RESEARCH_PRICE_DV30_DIAGNOSTIC_ONLY_UNTIL_SOURCE_ATTESTED",
+      "automated_non_display_runner_entitlement": "NOT_ATTESTED",
+      "unadjusted_official_rth_integer_volume_lineage": "NOT_ATTESTED",
+      "historical_source_status": "INTERACTIVE_READ_OBSERVED_NOT_GITHUB_RUNNER_PROOF",
+      "positive_price_dv30_promotion_allowed": false,
+      "passive_reader_positive_promotion_allowed": false,
+      "unverified_existing_passive_reader_price_dv30": "QUARANTINE_UNKNOWN_NOT_AUTHORITY",
+      "volume_integrity": "Finite integer regular-session volume is required for exact30 positive DV30 PASS; any fractional observed vendor volume makes entire affected 30-session symbol UNKNOWN/BLOCK_CURRENT_RUN, never rounded or used for PASS.",
+      "evidence": "2026-10-12 AAPL 30/30 connected Rallies get_price_from_date_range daily volumes nonintegral; same computed DV30 median as reader passive 2026-10-12. Existing repo newscope nonintegral-volume negative CI passed, but passive task path bypassed the same requirement.",
+      "no_threshold_change": true,
+      "no_fabricated_pass": true,
+      "permission_or_transport_not_proof": true,
+      "paid_top_up_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO"
     }
   }
 }
