@@ -147,6 +147,10 @@ jobs:
           print("XRAY_SIP_B_RESEARCH_ONLY="+state)
           print("XRAY_SIP_B_VALIDATED=1_FSLY_RISK_CHASE_VETO_NO_AL")
           PY
+      # Proven in prior source-pinned run 38280304946: 497 numeric complete
+      # 260d/52w research histories and one B precursor. Shadow only:
+      # MC/CA/rights/terminal/R92 remain independently fail-closed.
+      # Re-verify on exact stable main after audit-policy migration.
       - name: Optional free historical SIP 260d/52w B research (never AL)
         shell: bash
         env:
