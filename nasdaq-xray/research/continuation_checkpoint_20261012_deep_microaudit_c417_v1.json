@@ -668,5 +668,247 @@
     "As of snapshot root SUCCESS means runner success only; current MASTER is Oct9, HISTORY and terminal Oct7.",
     "Provider personal/free account does not automatically grant unattended runner or non-display storage/derived trading rights.",
     "No arbitrary 100-percent GO claim, no new ChatGPT tasks, no market order."
-  ]
+  ],
+  "live_readback_20261013_v2": {
+    "schema": "XRAY_FOREGROUND_GITHUB_CANONICAL_READBACK_20261013_V2",
+    "authority": "READ_ONLY_AUDIT_EVIDENCE_NOT_PRODUCTION_SOURCE",
+    "observation_date_istanbul": "2026-10-13",
+    "source_main_head_before_audit_commit": "8f6e0d259d30948a638be3c6c1341311544b773c",
+    "previous_checkpoint_blob_sha": "b92a97723905d0e8afeb388a0b5f6380c2d8b059",
+    "policy": "C4.17",
+    "control": "C4.27",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "production_go": false,
+    "new_r92_created": false,
+    "observed_main": {
+      "root": {
+        "path": "nasdaq-xray/orchestrator_state.json",
+        "blob_sha": "65af111462c6db80aafac296bdbf6b5",
+        "asof_et": "2026-10-12",
+        "status": "PARTIAL_HISTORY",
+        "unknown": 3185,
+        "unknown_reason_counts": {
+          "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 3157,
+          "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 28
+        },
+        "pending_retry": 0
+      },
+      "root_provider_state": {
+        "path": "nasdaq-xray/sina_state.json",
+        "blob_sha": "516b069aebbdf4af32c6fcc741323e943b5c53dc",
+        "asof_et": "2026-10-12",
+        "queue": 3185,
+        "history_status": "HISTORY_PARTIAL"
+      },
+      "master": {
+        "path": "nasdaq-xray/canonical_current_master_manifest.json",
+        "blob_sha": "0240c558082e8ef4ce855b7da2141526ff6ba324",
+        "asof_et": "2026-10-12",
+        "identity_pass": 3184,
+        "identity_unknown": 10,
+        "identity_unknown_symbols": [
+          "ALIS",
+          "BSAA",
+          "FACT",
+          "FVN",
+          "HCAC",
+          "IPXG",
+          "MACI",
+          "MCGA",
+          "MMTX",
+          "WTG"
+        ]
+      },
+      "price": {
+        "path": "nasdaq-xray/canonical_current_price_dv30.json",
+        "blob_sha": "787e1222fe140ae141b51e98bbbaaa9034ead377",
+        "asof_et": "2026-10-12",
+        "scope": 3184,
+        "counts": {
+          "FAIL_PRICE": 1322,
+          "FAIL_DV30": 1303,
+          "FAIL_DV30_INSUFFICIENT_SESSIONS": 10,
+          "FAIL_PRICE_NO_ASOF_BAR": 9,
+          "UNKNOWN": 540
+        },
+        "pass_count": 0,
+        "unknown_reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED",
+        "authoritative_rallies_materialized_count": 0
+      },
+      "history": {
+        "path": "nasdaq-xray/canonical_current_history.json",
+        "blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+        "asof_et": "2026-10-07",
+        "history_pass": 460
+      },
+      "event": {
+        "path": "nasdaq-xray/canonical_current_event_state.json",
+        "blob_sha": "9e795a30c9cb219ae6f14bb2bca6140173ee4a82",
+        "asof_et": "2026-10-07",
+        "geometry_event_unknown": 17
+      },
+      "terminal": {
+        "path": "nasdaq-xray/canonical_current_terminal.json",
+        "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+        "asof_et": "2026-10-07",
+        "status": "PARTIAL",
+        "candidate_local_research_pass": false,
+        "r92_count": 0
+      },
+      "official_guard": {
+        "path": "nasdaq-xray/canonical_official_source_guard.json",
+        "blob_sha": "76921f9cd7ab87f33ce1e2a7ac162c7872ad172a",
+        "generated_at_utc": "2026-10-12T21:53:39.769469+00:00",
+        "snapshot_status": "PASS",
+        "fresh_within_900_seconds_at_future_delivery": "NOT_ATTESTED"
+      },
+      "lifecycle": {
+        "path": "nasdaq-xray/canonical_candidate_lifecycle_registry.json",
+        "blob_sha": "024d7add5d898e52537192531ed860bf3942be73",
+        "records": 0
+      },
+      "delivery": {
+        "path": "nasdaq-xray/delivery_ledger.json",
+        "blob_sha": "cb14dfc2233ff074fdaa030aee564863db401b29",
+        "deliveries": 0
+      }
+    },
+    "action_evidence": {
+      "root": {
+        "id": 38308348001,
+        "conclusion": "success",
+        "production_history_pass": false
+      },
+      "preopen": {
+        "id": 38314824903,
+        "conclusion": "success",
+        "actual_candidate_source": "BLOCKED",
+        "artifact_name": "xray-preopen-source-readiness-v1",
+        "artifact_id": 11776596581
+      },
+      "post_mc": {
+        "id": 38313369292,
+        "conclusion": "failure",
+        "logged_reason": "CURRENT_MC_BRIDGE_ABSENT",
+        "credential_status": "NOT_PROBED_BY_POST_MC_WORKFLOW"
+      },
+      "final_factory": {
+        "id": 38313385676,
+        "conclusion": "success",
+        "operational_status": "BLOCKED_UPSTREAM_NO_NEW_TERMINAL_NO_R92"
+      },
+      "delivery": {
+        "id": 38313405274,
+        "conclusion": "success",
+        "operational_status": "NO_REGISTERED_R92",
+        "phone_receipt_attested": false
+      },
+      "e2e": {
+        "id": 38313413892,
+        "conclusion": "failure",
+        "first_failure": "XRAY_E2E_CHECKED_SOURCE_NOT_CURRENT_MAIN_FAIL_CLOSED"
+      },
+      "fractional_volume_regression": {
+        "id": 38311705339,
+        "conclusion": "success",
+        "repair_commit": "69bcf23eab83db245c6e901fa37a113637aa4b3e",
+        "test_commit": "d5fa53807c9647d8ec0f48c7561b95c31f6c7baa"
+      }
+    },
+    "source_rights": {
+      "ralllies_public_b2b_api_key_required": true,
+      "ralllies_api_docs": "https://rallies.ai/api-docs",
+      "ralllies_non_display_unattended_runner_license": "NOT_ATTESTED",
+      "free_consumer_platform_is_runner_license": false,
+      "fractional_vendor_volumes_mean_unadjusted_rth_volume_unproven": true,
+      "current_c417_primary_mc": "ABSENT",
+      "bigdata_last_observed_balance_zero_credit_exhausted": true,
+      "c418_successor": "PROPOSED_NOT_ACTIVATED",
+      "no_paid_top_up": true
+    },
+    "automation_topology": {
+      "active_count": 5,
+      "reader": "6abeb37721ec81918e78b0ac65eb64a0",
+      "committer": "6abeb39630a88191a672574b45bdcd1b",
+      "health": "6abd0465d15c8191aac5888abb784f27",
+      "finisher": "6abeb68907a88191a364437de1fb2275",
+      "canonical": "6a825366222081918997094d76e6ae46",
+      "canonical_sole_user_notifications": true,
+      "phone_delivery_receipt": "UNVERIFIED"
+    },
+    "work_classification": [
+      {
+        "id": "P0_A",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P0_B",
+        "status": "PARTIAL"
+      },
+      {
+        "id": "P1",
+        "status": "PARTIAL"
+      },
+      {
+        "id": "P2",
+        "status": "PARTIAL"
+      },
+      {
+        "id": "P3",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P4",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P5",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P6",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P7",
+        "status": "PARTIAL"
+      },
+      {
+        "id": "P8",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P9",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      },
+      {
+        "id": "P10",
+        "status": "PARTIAL"
+      },
+      {
+        "id": "P11",
+        "status": "BLOCKED_WITH_EVIDENCE"
+      }
+    ],
+    "critical_dependency": "LICENSED_ZERO_ADDITIONAL_PAYMENT_PRIMARY_MC_AND_EXACT30_UNADJUSTED_RTH_PRICE_VOLUME_REMMAIN_UNPROVEN",
+    "root_cause": "DATA_AUTHORITY_GAP_NOT_AUTOMATIC_HEALABLE_SOFTWARE_ASSERTION",
+    "no_promotions": [
+      "SHADOW_MC_TO_PRIMARY",
+      "RALLIES_FRACTIONAL_VOLUME_TO_RTH",
+      "WATCH_TO_R92",
+      "STALE_TERMINAL_TO_CURRENT",
+      "WORKFLOW_SUCCESS_TO_PRODUCTION_GO"
+    ],
+    "audit_self_checks": {
+      "positive_price_partition_exact": true,
+      "positive_root_reason_partition_exact": true,
+      "negative_unknown_as_pass_rejected": true,
+      "negative_stale_terminal_as_current_rejected": true,
+      "negative_success_as_go_rejected": true,
+      "primary_and_unadjusted_rights_unverified": true
+    },
+    "rollback": "Revert only audit checkpoint commit; canonical production artifacts and policy untouched."
+  }
 }
