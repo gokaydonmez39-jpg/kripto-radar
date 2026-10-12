@@ -33,7 +33,7 @@ def _utc(value):
 def prove(row):
     """Issue redacted, non-authoritative proof from *verified* class-level inputs.
 
-    Under an independently proven equity-class identity, nonnegative equity
+    Under an independently proven class identity and audited maximum later share reduction, nonnegative equity
     class values imply issuer equity MC >= class outstanding shares * close.
     A valid floor certificate is necessary evidence for a future policy source,
     NOT C4.17 MC authority. A SHA string alone never proves issuer/usage rights.
@@ -90,7 +90,21 @@ def prove(row):
         return unknown("PRICE_PARSE_INVALID")
     if shares <= 0 or not close.is_finite() or close <= 0:
         return unknown("NONPOSITIVE_OR_NONFINITE")
-    met = Decimal(shares) * close >= FLOOR
+    # PIT share vintages are NOT current lower bounds: buybacks can reduce shares.
+    # Only an independently audited upper bound on shares removed since the
+    # historical filing permits a conservative *current* minimum.
+    bound_sha = row.get("post_vintage_share_change_audit_sha256")
+    if (row.get("max_share_reduction_asof_verified") is not True
+            or not isinstance(bound_sha, str) or not SHA.fullmatch(bound_sha)):
+        return unknown("ASOF_SHARE_REDUCTION_UPPER_BOUND_UNPROVEN")
+    maximum_decrease = row.get("maximum_post_vintage_share_reduction")
+    if (type(maximum_decrease) is not int or maximum_decrease < 0
+            or maximum_decrease > shares):
+        return unknown("INVALID_ASOF_SHARE_REDUCTION_BOUND")
+    current_class_minimum = shares - maximum_decrease
+    if current_class_minimum <= 0:
+        return unknown("NO_POSITIVE_ASOF_CLASS_SHARE_LOWER_BOUND")
+    met = Decimal(current_class_minimum) * close >= FLOOR
     return {"schema": SCHEMA, "asof_et": asof, "symbol": symbol,
             "status": ("SHADOW_CLASS_MC_LOWER_BOUND_GE_2B" if met
                        else "SHADOW_CLASS_MC_LOWER_BOUND_INSUFFICIENT"),
@@ -117,6 +131,9 @@ def selftest():
                 "issuer_common_equity_class_verified",
                 "not_adr_or_depositary_receipt"):
         row[key] = True
+    row["max_share_reduction_asof_verified"] = True
+    row["post_vintage_share_change_audit_sha256"] = "b"*64
+    row["maximum_post_vintage_share_reduction"] = 0
     good = prove(row)
     if good["status"] != "SHADOW_CLASS_MC_LOWER_BOUND_GE_2B":
         raise AssertionError("POSITIVE_PROOF_MISSING")
@@ -126,6 +143,11 @@ def selftest():
         raise AssertionError("RAW_DATA_LEAK")
     negative = (
         ("sip_close_usd", "19.99", "SHADOW_CLASS_MC_LOWER_BOUND_INSUFFICIENT"),
+        ("max_share_reduction_asof_verified", False, "UNKNOWN_ASOF_SHARE_REDUCTION_UPPER_BOUND_UNPROVEN"),
+        ("post_vintage_share_change_audit_sha256", "invalid", "UNKNOWN_ASOF_SHARE_REDUCTION_UPPER_BOUND_UNPROVEN"),
+        ("maximum_post_vintage_share_reduction", None, "UNKNOWN_INVALID_ASOF_SHARE_REDUCTION_BOUND"),
+        ("maximum_post_vintage_share_reduction", 90000000, "SHADOW_CLASS_MC_LOWER_BOUND_INSUFFICIENT"),
+        ("maximum_post_vintage_share_reduction", 100000000, "UNKNOWN_NO_POSITIVE_ASOF_CLASS_SHARE_LOWER_BOUND"),
         ("class_shares_pit_verified", False, "UNKNOWN_ISSUER_CLASS_CA_OR_PIT_UNPROVEN"),
         ("actions_interval_exhaustive", False, "UNKNOWN_ISSUER_CLASS_CA_OR_PIT_UNPROVEN"),
         ("source_rights_attested", False, "UNKNOWN_PERSONAL_USAGE_RIGHTS_UNVERIFIED"),
@@ -136,12 +158,16 @@ def selftest():
         ("sip_close_usd", "NaN", "UNKNOWN_NONPOSITIVE_OR_NONFINITE"),
         ("alpaca_bar_utc", "2026-10-10T04:00:00Z", "UNKNOWN_LOOKAHEAD_OR_STALE_OR_WRONG_SESSION"),
     )
+    vintage_only = dict(row)
+    del vintage_only["maximum_post_vintage_share_reduction"]
+    if prove(vintage_only)["status"] != "UNKNOWN_INVALID_ASOF_SHARE_REDUCTION_BOUND":
+        raise AssertionError("VINTAGE_ONLY_MUST_NOT_PASS")
     for field, bad, reason in negative:
         mutated = dict(row)
         mutated[field] = bad
         if prove(mutated)["status"] != reason:
             raise AssertionError("NEGATIVE_REGRESSION:" + field)
-    print(json.dumps({"selftest": "PASS", "cases": 11,
+    print(json.dumps({"selftest": "PASS", "cases": 17,
                       "production_mc_created": 0, "R92_created": 0,
                       "version": SCHEMA}))
 
