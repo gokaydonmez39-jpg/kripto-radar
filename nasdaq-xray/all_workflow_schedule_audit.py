@@ -52,7 +52,9 @@ READONLY_PROVIDER_SCHEDULED={
  "xray-twelve-history-resume.yml",
  "xray-zero-cost-four-stage-verification.yml",
 }
-ISSUE_WRITERS={"nasdaq-xray-delivery.yml"}
+# User preference 2026-10-12: GitHub stores audit evidence only;
+# new Issues, issue-write permissions and issue-triggered alerts are forbidden.
+ISSUE_WRITERS=set()
 PROVIDER_RIGHTS={
  "xray-massive-grouped-history-resume.yml":(
     'XRAY_MASSIVE_NONDISPLAY_LICENSE_OK', 'XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK',
@@ -91,8 +93,12 @@ def inventory(files):
         if n not in EXPECTED:errors.append("UNREVIEWED_NEW_SCHEDULE:"+n)
     for n in writer_names:
         if n not in ISSUE_WRITERS:errors.append("UNAUTHORIZED_ISSUE_WRITE_PRIVILEGE:"+n)
-    for n in ISSUE_WRITERS:
-        if n not in writer_names:errors.append("AUTHORIZED_DELIVERY_ISSUE_WRITER_MISSING:"+n)
+    delivery=files.get("nasdaq-xray-delivery.yml","")
+    if ("issues: read" not in delivery or
+        "if: steps.prep.outputs.ready == 'true' && false" not in delivery or
+        "chatgpt_only_delivery_mode.py --check" not in delivery or
+        "SUPPRESSED_CHATGPT_ONLY" not in delivery):
+        errors.append("CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
     for n,needles in PROVIDER_RIGHTS.items():
         if n not in names:continue
         for value in needles:
@@ -119,7 +125,7 @@ def selftest():
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
     assert base["scheduled_count"]==23
-    assert base["issue_writers"]==["nasdaq-xray-delivery.yml"]
+    assert base["issue_writers"]==[]
     def bad(modify,want):
         sample=dict(actual)
         modify(sample)
@@ -150,7 +156,16 @@ def selftest():
         "UNAUTHORIZED_ISSUE_WRITE_PRIVILEGE")
     bad(lambda x:x.pop("xray-research-watch-radar.yml"),
         "SCHEDULED_WORKFLOW_FILE_MISSING")
-    print("XRAY_ALL_135_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_7_NEGATIVES_23_CRONS_ONE_ISSUE_WRITER")
+    bad(lambda x:x.update({"nasdaq-xray-delivery.yml":
+        x["nasdaq-xray-delivery.yml"].replace(
+            "issues: read","issues: write")}),
+        "UNAUTHORIZED_ISSUE_WRITE_PRIVILEGE")
+    bad(lambda x:x.update({"nasdaq-xray-delivery.yml":
+        x["nasdaq-xray-delivery.yml"].replace(
+            "if: steps.prep.outputs.ready == 'true' && false",
+            "if: steps.prep.outputs.ready == 'true'")}),
+        "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
+    print("XRAY_ALL_135_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_9_NEGATIVES_23_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
