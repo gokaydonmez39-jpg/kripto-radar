@@ -393,5 +393,100 @@
       "historical_daily_market_cap_row_date_not_sec_filing_acceptance_proof": true
     },
     "conclusion": "DISCOVERY_EXPANDED_NOT_PRIMARY_ENABLED_C417_ACTIVE_NO_GO"
+  },
+  "additional_research_pit_public_sources_20261012": {
+    "role": "EVIDENCE_ONLY_NO_ADMISSION_NO_PRIMARY_NO_R92",
+    "new_vendor_candidates": [
+      {
+        "id": "PTDATA_PIT_CORPORATE",
+        "url": "https://api.ptdata.io/docs",
+        "openapi": "https://api.ptdata.io/openapi.json",
+        "official_methodology": "https://github.com/ptdata-io/ptdata-methodology",
+        "free_endpoint_families": [
+          "/v1/fundamentals",
+          "/v1/filings",
+          "/v1/index-constituents",
+          "/v1/earnings-event"
+        ],
+        "free_ip_requests_per_day": 200,
+        "free_ip_requests_per_minute": 120,
+        "free_use": "EVALUATION_ONLY",
+        "full_514_direct_issuer_MC_available": false,
+        "historical_close_prices_included": false,
+        "acceptance_datetime_in_schema": true,
+        "full_514_filing_coverage_observed": false,
+        "automated_unattended_runner_rights_proven": false,
+        "api_response_checked": false,
+        "openapi_schema_checked": true,
+        "primary_admitted": false,
+        "reason": "SUPPORTING_BITEMPORAL_SEC_CROSSCHECK_ONLY_NOT_PRICE_OR_ISSUER_MC"
+      },
+      {
+        "id": "VALUEIN_PIT_SEC",
+        "url": "https://valuein.biz/pricing",
+        "github": "https://github.com/valuein/valuein",
+        "free_universe": "SP500_ONLY",
+        "free_price_usd": 0,
+        "full_NASDAQ_514_COVERAGE": false,
+        "historical_issuer_mc_daily": "NOT_PROVEN",
+        "SEC_acceptance_PIT_marketed": true,
+        "unattended_private_rights_for_production_attested": false,
+        "actual_AAPL_API_call_observed": false,
+        "primary_admitted": false,
+        "reason": "FREE_SAND_BOX_UNIVERSE_NOT_FULL_NASDAQ_AND_NO_LICENSED_DAILY_MC"
+      },
+      {
+        "id": "FMP_BULK_MARKETCAP",
+        "url": "https://site.financialmodelingprep.com/developer/docs",
+        "rest_endpoint": "https://financialmodelingprep.com/stable/market-capitalization-batch",
+        "batch_symbols_param": true,
+        "historical_same_asof_batch_not_documented": true,
+        "limited_access_in_official_docs": true,
+        "free_plan_exact_endpoint_entitlement_proven": false,
+        "runner_key_proven": false,
+        "issuer_filing_acceptance_PIT_proven": false,
+        "primary_admitted": false,
+        "reason": "BATCH_CURRENT_IS_NOT_HISTORIC_PIT_AND_FREE_TIER_ACCESS_UNVERIFIED"
+      }
+    ],
+    "implementation_references": [
+      {
+        "github": "https://github.com/sec-gov/python-for-dera-financial-datasets",
+        "license": "CC0-1.0",
+        "role": "OFFICIAL_SEC_DERA_EXAMPLE_CODE",
+        "not_new_market_cap_origin": true
+      },
+      {
+        "github": "https://github.com/ptdata-io/ptdata-correctness",
+        "license": "MIT",
+        "role": "PIT_GOLDEN_VERIFICATION_SUITE",
+        "independent_514_license_validation_complete": false
+      },
+      {
+        "github": "https://github.com/dgunning/edgartools",
+        "license": "MIT",
+        "role": "SPLIT_ADJUSTMENT_CODE_REFERENCE_ONLY",
+        "filing_clock_and_share_class_still_need_VERIFICATION": true
+      }
+    ],
+    "extra_access_surface": {
+      "id": "BUSINESSQUANT_MCP",
+      "docs": "https://businessquant.com/docs/api/mcp",
+      "mcp_url": "https://mcp.businessquant.com/mcp",
+      "tools_read_only": 23,
+      "chatgpt_oauth_user_grant_required": true,
+      "scripts_require_separate_key": true,
+      "free_calls_daily": 30,
+      "counts_as_same_businessquant_upstream": true,
+      "new_independent_provider": false,
+      "github_runner_secret_or_unattended_licence_granted_by_chatgpt_oauth": false,
+      "no_auto_configuration": true
+    },
+    "scope_promotion_forbidden": true,
+    "policy": "C4.17",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "new_primary_mc_count": 0,
+    "comment": "OPENAPI schema inspected; REST AAPL live vendor sample could not be obtained from web environment. No fictitious API response or quota consumption asserted."
   }
 }
