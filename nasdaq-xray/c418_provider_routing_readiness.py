@@ -108,7 +108,7 @@ def source_obstacles(records):
         "PHONE_RECEIPT":"NO_USER_DEVICE_RECEIPT_WITNESS",
     }
 
-def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
+def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_utc=None):
     providers=provider_table(inv)
     require(type(proposal) is dict
             and proposal.get("schema")=="XRAY_SOURCE_SUCCESSOR_POLICY_PROPOSAL_V1"
@@ -125,6 +125,10 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
     require(type(asof) is str and re.fullmatch(r"20[0-9]{2}-[01][0-9]-[0-3][0-9]",asof or "") is not None
             and dt.date.fromisoformat(asof).isoformat()==asof
             and master.get("asof_et")==asof, "ASOF_MASTER_PRICE_NOT_EXACT")
+    from source_epoch_freshness_guard import last_complete_session
+    instant=now_utc if now_utc is not None else dt.datetime.now(dt.timezone.utc)
+    latest=last_complete_session(instant)
+    require(asof==latest,"CANONICAL_PRICE_NOT_LAST_OFFICIAL_SETTLED_SESSION")
     require(all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO"
                 and x.get("unknown_never_pass") is True for x in (master,price)),
             "CANONICAL_SAFETY_INVALID")
@@ -173,6 +177,8 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory):
     return {
         "schema":SCHEMA,
         "asof_et":price["asof_et"],
+        "official_last_completed_session":latest,
+        "price_is_official_latest":True,
         "source_git_blob_shas":{"master":sha_master,"price":sha_price,"inventory":sha_inventory},
         "historical_3_ticker_sample_asof_et":sample_asof,
         "historical_3_ticker_sample_is_current_asof":sample_asof==asof,
@@ -238,7 +244,9 @@ def selftest():
     price["pass_count"]=514;price["pass_hash"]=symbol_hash(price["pass_symbols"])
     price["source_master_queue_hash"]=master["queue_hash"]
     g9={"status":"BLOCKED_STRICT_PERMANENT_ZERO"}
-    args=(master,price,inv,proposal,g9,"a"*40,"b"*40,"c"*40)
+    # Synthetic *metadata* test clock, not a fabricated vendor data source.
+    asof_clock=dt.datetime(2026,10,10,12,tzinfo=dt.timezone.utc)
+    args=(master,price,inv,proposal,g9,"a"*40,"b"*40,"c"*40,asof_clock)
     got=analyze(*args)
     require(got["discovered_source_rows"]==12 and got["identity_unknown_intersect_price_count"]==0,
             "SELFTEST_POSITIVE")
@@ -267,6 +275,7 @@ def selftest():
     shifted[1]["pass_symbols"]=shifted[0]["pass_symbols"][:520]
     shifted[1]["pass_count"]=520
     shifted[1]["pass_hash"]=symbol_hash(shifted[1]["pass_symbols"])
+    shifted[8]=dt.datetime(2026,10,12,20,30,tzinfo=dt.timezone.utc)
     new_epoch=analyze(*shifted)
     require(new_epoch["canonical_price_pass_count"]==520
             and new_epoch["master_identity_unknown_count"]==9
@@ -290,6 +299,20 @@ def selftest():
     try:analyze(*futures)
     except ValueError:pass
     else:raise RuntimeError("FUTURE_VENDOR_SAMPLE_MUST_FAIL_CLOSED")
+    # At 12 Oct 20:30 UTC the 9 Oct cohort is no longer current.
+    expired=[copy.deepcopy(z) for z in args]
+    expired[8]=dt.datetime(2026,10,12,20,30,tzinfo=dt.timezone.utc)
+    try:analyze(*expired)
+    except ValueError as e:
+        require("CANONICAL_PRICE_NOT_LAST_OFFICIAL_SETTLED_SESSION" in str(e),
+                "STALE_REASON_NOT_EXACT")
+    else:
+        raise RuntimeError("ASOF_FRESHNESS_FALSE_ACCEPT")
+    # On Monday 12 Oct 20:29 UTC, the latest *completed* is Oct 9.
+    presettled=[copy.deepcopy(z) for z in args]
+    presettled[8]=dt.datetime(2026,10,12,20,29,tzinfo=dt.timezone.utc)
+    require(analyze(*presettled)["official_last_completed_session"]=="2026-10-09",
+            "PRESETTLEMENT_9OCT_DATE_DISPLACED")
     mutations=[
         (0,lambda x:x.update(unknown_count=0),"MASTER_COUNT"),
         (0,lambda x:x["unknown_symbols"].append("S0000"),"UNKNOWN_OVERLAP"),
