@@ -1,0 +1,20 @@
+name: XRAY C4.18 Class MC Floor Negative Regression (Research Only)
+on:
+  push:
+    paths:
+      - 'nasdaq-xray/c418_sec_alpaca_class_floor_research.py'
+      - '.github/workflows/xray-c418-class-floor-selftest.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fail-closed-math-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python normal and -O negative regressions
+        run: |
+          python nasdaq-xray/c418_sec_alpaca_class_floor_research.py
+          python -O nasdaq-xray/c418_sec_alpaca_class_floor_research.py
+          python -m py_compile nasdaq-xray/c418_sec_alpaca_class_floor_research.py
