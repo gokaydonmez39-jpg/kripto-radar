@@ -1,0 +1,128 @@
+{
+  "schema": "XRAY_20261012_BQ_HISTORICAL_FIVE_TICKER_P0_CONTINUATION_V1",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "verified_source_head_at_creation": "920234d8195ecc3ae2d8f48ab47bc012fc41242e",
+  "asof": "2026-10-09",
+  "latest_completed_session_asof_utc_2026_10_12_02_48": "2026-10-09",
+  "effective_policy": "C4.17",
+  "control": "C4.27",
+  "c418_successor": "PROPOSED_NOT_ACTIVATED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "new_findings": {
+    "official_history_issuer_mc": "BusinessQuant /historic slug market-capitalization-daily exists with up to 5 tickers per request. Daily valuation period date does NOT prove contemporaneous SEC acceptance-time historical share class source.",
+    "asof_history_rights": "FREE 30 requests/day officially; API key required, no valid API key in latest GitHub runner; automated derived use/retention/output grant not independently verified.",
+    "hypothetical_free_quota_full_514_bestcase": {
+      "ticker_count": 514,
+      "max_tickers_per_call": 5,
+      "min_calls": 103,
+      "free_daily_calls": 30,
+      "min_calendar_days": 4,
+      "requires_actual_key_grant_and_all_exact_rows": true,
+      "verified_primary_mc_rows": 0,
+      "actual_current_runtime_sampling_per_run": 5,
+      "actual_runner_perday_persistent_30_batch_rollover_implemented": false
+    },
+    "original_xray_routed_provider_count": 12,
+    "fix_pit_lookahead": "Massive date-selected SEC report_period MC explicitly separated from acceptance-time PIT. BQ /historic exact-date daily MC is accepted as shadow-only, never direct PRIMARY.",
+    "additional_sec_oss_evidence": "EdgarTools issue #557: normal UTC vs Eastern Time display explains much of discrepancy; other SEC duplicate accession/index pointer can have inconsistent acceptance-time fields. Always use official SEC UTC and accession tie-out, not an unqualified Python library field."
+  },
+  "live_research": {
+    "master_git_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_git_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "history_git_blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "terminal_git_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "master_pass_count": 3184,
+    "master_identity_unknown_count": 12,
+    "price_pass_count": 514,
+    "current_primary_mc_count": 0,
+    "current_r92_count": 0,
+    "last_terminal_epoch": "2026-10-07",
+    "strict_g9": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "actual_device_delivery_receipt_proven": false
+  },
+  "verified_code_changes": [
+    {
+      "area": "Official Nasdaq calendar latest ASOF fence for dynamic source router and pre-MC recovery",
+      "commits": [
+        "a8bca7132c581d5573917ed7e204c90d39c6b402",
+        "e4a86fd1263e479f5879fa87c7c7fde3276fa626",
+        "fdf3f05c3450c17463c970917a95b24d75ba8771",
+        "6b5277fead1e586884b49b587ef62eb4de3a6015"
+      ],
+      "verified_ci_runs": [
+        38196598392,
+        38196598382
+      ],
+      "expected_boundary": "2026-10-12T20:30:00Z"
+    },
+    {
+      "area": "BQ official historical daily market cap endpoint 5 per call and 514 conditional capacity",
+      "commits": [
+        "fc61794eac5347a8c65f575d2d3ce8de22f90245",
+        "43dc004050746f313f92e859721819b8423dc146",
+        "2f831a232d28c61337ff12a2df79514d743e0f9c",
+        "93c3305e5f28350aedf0e02b08c6aa7ffe5542da"
+      ],
+      "verified_ci_runs": [
+        38196845430,
+        38196848675
+      ],
+      "rights": "NOT_PROVEN"
+    },
+    {
+      "area": "MC vendor BQ exact symbol/date /historic lookup before current screener, explicit REPORT_PERIOD_NOT_PIT Massive labels, 9 negative mutants",
+      "commits": [
+        "6e66a4c32b7483151aa9e02906bd4de701db156e",
+        "25d2f5ed08c18a854ddffbefa511753d8428b297"
+      ],
+      "ci_run": 38196959566,
+      "artifact_id": 11723543672
+    },
+    {
+      "area": "BQ actual 5-ticker one-call runtime batching in MC pre-research fallback with 9 negative tests and no vendor raw persistence",
+      "commits": [
+        "e548022b225d14e68c53699d06d7c8a3c4b9e965",
+        "dc9594181734ec150419cb9fde48500b65b50921",
+        "920234d8195ecc3ae2d8f48ab47bc012fc41242e"
+      ],
+      "ci_run": 38197192651,
+      "conclusion": "SUCCESS",
+      "job_id": 114642457389,
+      "artifact_id": 11723474370,
+      "artifact_sha256": "393d9378c43a236c976e89b80d2ebc30f8cc1aa02a4b5129e52503d56c8a1a63",
+      "test_report": "XRAY_BQ_FIVE_TICKER_BATCH_ONE_CALL=PASS_9_NEGATIVE_NO_PRIMARY_NO_PIT"
+    }
+  ],
+  "live_provider_integration_probes": {
+    "Bigdata": "CONNECTED_CREDIT_EXHAUSTED_NO_CURRENT_MC",
+    "Massive": "DATE_FILTERED_MC_INTERACTIVE_REFERENCE_NO_PIT_PROOF_OR_GITHUB_KEY_LICENSE",
+    "Rallies": "LATEST_MC_PUBLIC_CONNECTED_DATA_MATCHES_MASSIVE_REPRESENTATIVE_SYMBOLS_NO_ROOT_INDEPENDENCE_OR_TIMESTAMP",
+    "Longbridge": "US company profile lacked usable timestamped MC in sampled returned rows; third sample rate-limited HTTP_429",
+    "BusinessQuant": "Official /historic exact date docs verified. Latest runtime BQ API key absent, result BLOCKED_NO_API_KEY. Only fake selftest data used. No actual BQ market cap persisted.",
+    "FinancialDatasets": "CONNECTED_CREDITS_ZERO_OR_UNAUTHORIZED",
+    "EDGAR": "OFFICIAL_FILINGS_CIK_SHARE_CLASSES_ACCEPTANCE_TIME_REQUIRED",
+    "OpenSource": "Edgartools MIT-licensed parsing software, not independent vendor source. Pit date/UTC must reconcile SEC accession."
+  },
+  "external_sources": [
+    "https://businessquant.com/docs/api/historic",
+    "https://businessquant.com/metrics/api/market-capitalization-daily",
+    "https://businessquant.com/pricing",
+    "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+    "https://github.com/dgunning/edgartools/issues/557",
+    "https://massive.com/docs/rest/stocks/tickers/ticker-overview"
+  ],
+  "remaining_root_blockers": [
+    "P0: Obtain independently authorized unattended as-of primary MC and issuer share classes; no input API key/entitlement for BQ/Massive and no verified 9-Oct measured current MC.",
+    "P0: BQ /historic date alone not filing acceptance-time PIT; independent upstream root/SEC/share-class + CA/ADR evidence required.",
+    "P0: Global MASTER 12 identity UNKNOWN, excluding them from 514 does not certify full universe.",
+    "P0: Rerun same-ASOF legal/events/history260/weekly52/FINAL/TERMINAL and validate no frozen stale risk gate; no current 9-Oct full terminal.",
+    "P0: Strict G9 live consolidated NBBO and device-delivery receipt remain independently unproven.",
+    "P1: For a lawful BQ full-universe research sweep, implement time-scoped daily quota scheduling, encrypted private persistence/replay and explicit per-symbol completion; present per-run 5-ticker shadow demo is not 103 batches/day."
+  ],
+  "project_current_production_go": false,
+  "all_seven_blockers_cleared": false,
+  "persistence_disclaimer": "This checkpoint is durable engineering evidence, not synthetic MC, legal entitlement, real alert or permission to trade."
+}
