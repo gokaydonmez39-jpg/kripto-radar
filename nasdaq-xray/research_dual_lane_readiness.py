@@ -199,7 +199,7 @@ def selftest() -> None:
         try:attach_manual_eod_observation(inspect(start,pre),bad)
         except ValueError:pass
         else:raise RuntimeError("MANUAL_FALSE_SOURCE_PROMOTION_ACCEPTED:"+field)
-        print("XRAY_DUAL_LANE_SELFTEST=PASS_SOURCE_SHA_EPOCH_DISJOINT_NO_R92_NO_ORDER_NEGATIVES")
+    print("XRAY_DUAL_LANE_SELFTEST=PASS_SOURCE_SHA_EPOCH_DISJOINT_NO_R92_NO_ORDER_NEGATIVES")
 
 def main() -> None:
     p=argparse.ArgumentParser()
