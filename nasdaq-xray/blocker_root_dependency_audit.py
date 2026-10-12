@@ -21,6 +21,8 @@ BLOCKS={
     "IDENTITY_PARTITION_INCOMPLETE",
     "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
     "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+    "PRICE_UNKNOWN_CURRENT",
+    "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
     "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
     "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
 }
@@ -74,6 +76,12 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     blocked=set(e.get("blockers") or [])
     require(len(blocked)==len(e.get("blockers") or []),"DUPLICATE_E2E_BLOCKER")
     require(blocked.issubset(BLOCKS),"UNEXPECTED_BLOCKERS_MUST_TRIAGE:"+str(sorted(blocked-BLOCKS)))
+    price_unknown=p.get("unknown_symbols")
+    require(type(price_unknown) is list and clean(price_unknown) and
+            len(price_unknown)==p.get("unknown_count") and
+            set(price_unknown).isdisjoint(ps),"PRICE_UNKNOWN_PARTITION_INTEGRITY")
+    if price_unknown:
+        require("PRICE_UNKNOWN_CURRENT" in blocked,"PRICE_UNKNOWN_MUST_BLOCK_RELEASE")
     require(e.get("current_mc_authority_count")==0 if "CURRENT_MC_AUTHORITY_MISSING" in blocked else True,"MC_AUTHORITY_CLAIM")
     if not current:
         require("CURRENT_MC_AUTHORITY_MISSING" in blocked,"MISSING_MC_NOT_FLAGGED")
@@ -93,6 +101,8 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     g9_block=(strict_g9.get("status")=="BLOCKED_STRICT_PERMANENT_ZERO")
     root={
         "P0_CURRENT_MEASURED_PRIMARY_MC":bool("CURRENT_MC_AUTHORITY_MISSING" in blocked),
+        "P0_EXACT30_AUTHENTICATED_PRICE_DV30":bool("PRICE_UNKNOWN_CURRENT" in blocked),
+        "P0_SETTLEMENT_SOURCE_BINDING":bool("SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT" in blocked),
         "P0_IDENTITY_GLOBAL_COVERAGE":bool("IDENTITY_PARTITION_INCOMPLETE" in blocked),
         "P0_STRICT_G9_ENTITLEMENT":g9_block,
         "P0_DEVICE_RECEIPT_EVIDENCE":bool("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in blocked),
@@ -112,7 +122,8 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     ordered_recovery_steps=[
         {
             "order":1,"id":"C417_CURRENT_PRICE_SCOPE",
-            "status":"SOURCE_SCOPE_EXACT_BUT_GLOBAL_IDENTITY_OPEN" if local_scope_eligible and len(us)>0
+            "status":"PRICE_UNKNOWN_SOURCE_REQUIRES_EXACT30" if price_unknown
+                     else "SOURCE_SCOPE_EXACT_BUT_GLOBAL_IDENTITY_OPEN" if local_scope_eligible and len(us)>0
                      else "SOURCE_SCOPE_EXACT" if local_scope_eligible else "SOURCE_SCOPE_NOT_CURRENT",
             "acceptance":"Current compiled C4.17, exact master and 30-session DV30 PRICE blob/hash/set; no unknown identity intersects PRICE PASS.",
             "research_candidate_required":True,"universe_full_e2e_required":True
@@ -172,6 +183,8 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE":"NEEDS_MC_HISTORY_LEGAL_STAGE1_EVENTS_FINAL",
         "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION":"RESULT_OF_STALE_TERMINAL_ASOF",
         "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY":"G9_ENTITLEMENT_IS_NOT_HISTORICAL_PRICE_AUTHORITY",
+        "PRICE_UNKNOWN_CURRENT":"NO_UNVERIFIED_DV30_PASS_PROMOTION",
+        "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT":"REQUIRE_EXACT_CURRENT_SETTLEMENT_PRICE_SOURCE_BINDING",
     }
     return {
         "schema":"XRAY_C417_BLOCKER_CAUSAL_DAG_V1",
