@@ -1,0 +1,208 @@
+{
+  "schema": "XRAY_C417_PREOPEN_MULTI_SOURCE_MC_IDENTITY_RED_GREEN_V1",
+  "date": "2026-10-12",
+  "audit_timezone": "Europe/Istanbul",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "main_sha_before_write": "e90bba16bdbe748e7c223220c7023eb626b098f3",
+  "safety": {
+    "policy": "C4.17",
+    "control": "C4.27",
+    "C418": "RESEARCH_PROPOSED_NOT_ACTIVATED",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_paid_top_up": true,
+    "no_new_production_signal": true
+  },
+  "live_canonical": {
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12
+    },
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+      "asof": "2026-10-09",
+      "pass": 514,
+      "unknown": 0,
+      "blocked": 0
+    },
+    "history": {
+      "path": "nasdaq-xray/canonical_current_history.json",
+      "blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+      "asof": "2026-10-07",
+      "pass": 460
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof": "2026-10-07",
+      "terminal_result": "PARTIAL_UNKNOWN"
+    },
+    "overlay": {
+      "path": "nasdaq-xray/canonical_current_final_gate_overlay.json",
+      "blob_sha": "1c4aa1ead4e224664c84f84836fa89027615cb30",
+      "asof": "2026-10-07",
+      "full_go_status": "BLOCKED"
+    },
+    "g9": {
+      "path": "nasdaq-xray/g9_entitlement_authority.json",
+      "blob_sha": "b26aa17cc13b4e8b7038079d0bc9034f46a8454b",
+      "status": "BLOCKED_STRICT_PERMANENT_ZERO"
+    },
+    "primary_mc_pass_count_attested": 0,
+    "new_R92_count": 0,
+    "actual_device_receipt_proven": false
+  },
+  "source_calls": [
+    {
+      "provider": "BIGDATA",
+      "method": "bigdata_help",
+      "date": "2026-10-12",
+      "payg_balance": 0,
+      "out_of_credits": true,
+      "status": "CREDITS_EXHAUSTED_DO_NOT_TOP_UP"
+    },
+    {
+      "provider": "FINANCIAL_DATASETS",
+      "symbol": "AAON",
+      "methods": [
+        "get_financial_metrics",
+        "get_company_facts"
+      ],
+      "date": "2026-10-12",
+      "results": [
+        "CURRENT_BALANCE_0_REJECTED",
+        "CURRENT_BALANCE_0_REJECTED"
+      ],
+      "unattended_rights": false
+    },
+    {
+      "provider": "ALPACA",
+      "symbol": "AAON",
+      "method": "get_stock_bars",
+      "feed": "delayed_sip",
+      "requested": "2025-09-01_to_2026-10-09",
+      "result": "INVALID_ARGUMENT_WRAPPER_API_ERROR",
+      "bars_proven": 0
+    },
+    {
+      "provider": "RALLIES",
+      "symbol": "AAON",
+      "method": "get_price_from_date_range",
+      "requested": "2025-09-01_to_2026-10-09",
+      "daily_rows_observed": 279,
+      "weekly_rows_observed": 58,
+      "weekly_fractional_share_volume_rows_observed": 33,
+      "weekly_date_basis": "SUNDAY_LABELS_OBSERVED",
+      "proven_history260_52_licensed": false,
+      "source_RTH_CAs_pit_attested": false,
+      "raw_prices_not_persisted": true
+    },
+    {
+      "provider": "MASSIVE",
+      "github_runner_key_attested": false,
+      "unattended_license": false
+    },
+    {
+      "provider": "BUSINESSQUANT",
+      "github_runner_key_attested": false,
+      "historical_market_cap_primary_PIT": false
+    }
+  ],
+  "code_changes": [
+    {
+      "issue": "SECOND_SHADOW_CI_HARDCODED_STALE_514_103_4_AND_SOURCE_ROWS",
+      "commit": "78be16ac8540fb05c4efae0d71cf50b0cd54749b",
+      "workflow": ".github/workflows/xray-multi-provider-research-shadow.yml",
+      "green_run": 38225412901,
+      "green_artifact": 11735971150,
+      "zip_sha256": "4d55dc35781969adda140471be1d6cf75b884612c8e491c19b500312b173d0ca",
+      "independently_downloaded_hashed": true
+    },
+    {
+      "issue": "BQ_TICKER_CASE_COLLISION_FALSE_ACCEPT",
+      "red_commit": "0ec1c024aa9fdd9e734e28020ecb9a4eb5390f20",
+      "red_run": 38225727087,
+      "red_failure": "BQ_BATCH_INVALID_RESPONSE_ACCEPTED",
+      "green_commit": "3feb652362e8ad3b202dc8be698e7caa3b4cfcec",
+      "green_run": 38225890805,
+      "green_artifact": 11736556986,
+      "zip_sha256": "9cf05b04c019d849bd189066d32d118136e36ccc29b53475d9dd9c9b3f5740ab",
+      "independently_downloaded_hashed": true,
+      "paths_fixed": 4
+    },
+    {
+      "issue": "SEC_DIRECTORY_CASE_COLLISION_CAN_REPLACE_UPPERCASE_CIK",
+      "red_commit": "336e293b516fb9014b90e148a50de01c7f689457",
+      "red_run": 38226140162,
+      "red_failure": "assert exact.get('ALIS') == (1920406,...)",
+      "green_commit": "e90bba16bdbe748e7c223220c7023eb626b098f3",
+      "green_run": 38226284179,
+      "green_artifact": 11736977410,
+      "zip_sha256": "09d19b11d64c7a6207afb7011c1a31d0934896499a2cd6633a6d4f8c5f04de1d",
+      "independently_downloaded_hashed": true,
+      "added_same_exact_symbol_conflicting_CIK_negative": true,
+      "other_issuer_identity_sources_unchanged": true
+    }
+  ],
+  "e2e_latest": {
+    "workflow_id": 38225669503,
+    "conclusion": "FAILURE_EXPECTED_RELEASE_BLOCK",
+    "artifact_id": 11736436471,
+    "artifact_sha256": "93e3c25f1ca46f4932bcb1c5f0d300d3ae49da6e0422516d2e6a0210f78a5732",
+    "independently_downloaded_hashed": true,
+    "asof": "2026-10-09",
+    "source_session_lag": {
+      "MASTER": 0,
+      "PRICE": 0,
+      "TERMINAL": 2
+    },
+    "identity_unknown_intersection_PRICE": 0,
+    "current_MC_revision_count": 0,
+    "registered_R92_attested": false
+  },
+  "remaining_seven_P0": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "source_causality": {
+    "P0_root": [
+      "NO_LICENSED_SAME_ASOF_PRIMARY_MC",
+      "IDENTITY_UNKNOWN_12",
+      "STRICT_G9_NO_AUTHORIZED_ZERO_DOLLAR_NBBO",
+      "USER_DEVICE_RECEIPT_NOT_ATTESTED"
+    ],
+    "downstream": [
+      "MC_HISTORY_FINAL_TERMINAL_STALE",
+      "FULL_CHAIN_ASOF_MISMATCH"
+    ],
+    "false_equivalences_forbidden": [
+      "OPEN_SOURCE_LIBRARY_IS_INDEPENDENT_VENDOR",
+      "INTERACTIVE_API_ACCESS_IS_GITHUB_RUNNER_ENTITLEMENT",
+      "REPORT_PERIOD_IS_FILING_ACCEPTANCE_PIT",
+      "SAME_VALUE_MEANS_INDEPENDENT_UPSTREAM",
+      "ACTIONS_SUCCESS_IS_PRODUCTION_GO",
+      "PRICE_NON_G9_IS_STRICT_G9"
+    ],
+    "legal_future_work_requires_vendor_permission": true
+  },
+  "go": false,
+  "next_actions": [
+    "Use licensed zero-dollar API rights for automated historical issuer MC and discover verifiable source publication timestamp+corporate-action/share-class proof; never promote SHADOW",
+    "Complete 514 exact-set licensed PIT MC and independent-origin validation; do not substitute 5-sample shadow",
+    "Fix 12 identity unknown only with exchange ticker-class/CIK/SEC acceptance official as-of evidence",
+    "Run exact 260/52 under permitted historical feed; verify regular-session volume and adjustment basis",
+    "Rebuild MC->HISTORY->LEGAL->EVENT->FINAL->TERMINAL only after upstream proof",
+    "Separately prove strict G9 and real candidate receipt; do not relabel research shadow as full go"
+  ]
+}
