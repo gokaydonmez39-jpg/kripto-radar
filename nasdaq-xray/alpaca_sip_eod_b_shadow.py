@@ -256,7 +256,7 @@ def selftest():
                     "BAD_TEST_COHORT")
         except ValueError:pass
         else:raise RuntimeError("MALFORMED_COHORT_ACCEPTED")
-    for x in (float("nan"),float("inf"),-1.0):
+    for x in (float("nan"),float("inf"),True):
         try:mean([1.0,x])
         except ValueError:pass
         else:raise RuntimeError("UNSAFE_NUMERIC_ACCEPTED")
