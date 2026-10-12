@@ -9,6 +9,7 @@ from __future__ import annotations
 import ast
 import copy
 import json
+import hashlib
 from datetime import datetime,timedelta
 from pathlib import Path
 import pandas_market_calendars as mcal
@@ -74,14 +75,37 @@ def guard(records,scope):
 
 def main():
     registry=json.loads((ROOT/"history_official_identity_evidence.json").read_text())
-    price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
-    require(price.get("asof_et")==ASOF,"PRICE_ASOF_DRIFT")
-    require(price.get("execution")=="NONE" and price.get("real_money")=="NO-GO",
-            "PRICE_SAFETY_DRIFT")
+    # Historical evidence is immutable; rolling current PRICE is never repinned.
+    archive=json.loads((ROOT/"research/history_17_short_price_scope_20261009.json").read_text())
+    current_price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    require(current_price.get("asof_et")>=ASOF,"CURRENT_PRICE_PRECEDES_HISTORICAL_ASOF")
+    require(current_price.get("execution")=="NONE" and current_price.get("real_money")=="NO-GO",
+            "CURRENT_PRICE_SAFETY_DRIFT")
+    require(archive.get("schema")=="XRAY_HISTORY_17_SHORT_PRICE_SCOPE_ARCHIVE_V1" and
+            archive.get("asof_et")==ASOF and
+            archive.get("source_price_blob_sha")=="6f3f68fff0897d68f200ad3621c51a5071494714",
+            "HISTORICAL_SOURCE_IDENTITY")
+    require(archive.get("source_price_pass_count")==514 and
+            archive.get("source_price_pass_hash")=="cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef",
+            "HISTORICAL_PASS_SET_PIN")
+    require(archive.get("execution")=="NONE" and archive.get("real_money")=="NO-GO" and
+            archive.get("unknown_never_pass") is True and
+            archive.get("historical_test_only") is True and
+            archive.get("not_current_session_authority") is True and
+            archive.get("alpha_authority") is False,
+            "HISTORICAL_SCOPE_NEVER_PRODUCTION")
+    scope=archive.get("pass_symbols")
+    require(isinstance(scope,list) and len(scope)==514 and len(set(scope))==514 and
+            scope==sorted(scope) and
+            hashlib.sha256("\n".join(scope).encode()).hexdigest()==archive["source_price_pass_hash"],
+            "HISTORICAL_SCOPE_EXACT_INTEGRITY")
+    require(archive.get("short_symbols")==list(SHORT),"HISTORICAL_SHORT_COHORT_DRIFT")
+    if current_price.get("asof_et")==ASOF:
+        require(current_price.get("pass_symbols")==scope,"SAME_ASOF_CURRENT_PRICE_SET_DRIFT")
     require(registry.get("execution")=="NONE" and registry.get("real_money")=="NO-GO"
             and registry.get("alpha_authority") is False and
             registry.get("unknown_never_pass") is True,"REGISTRY_SAFETY_DRIFT")
-    records=registry["records"];scope=price["pass_symbols"]
+    records=registry["records"]
     valid=guard(records,scope)
     require(len(valid)==17,"EXACT_SHORT_COHORT")
     def negative(name,recs,syms):
