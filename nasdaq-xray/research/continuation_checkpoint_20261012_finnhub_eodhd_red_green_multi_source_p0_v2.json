@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_C417_PIT_MULTI_PROVIDER_RED_GREEN_CONTINUATION_20261012_V2",
+  "timestamp_date": "2026-10-12",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "precommit": "46e9a87b0a6b9aeb6ef3bf0de108f76382aeb5e0",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "C418": "INACTIVE",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "canonical": {
+    "master": {
+      "asof": "2026-10-09",
+      "pass": 3184,
+      "unknown": 12,
+      "blob": "828c21436a836b69fe5084387e1c54446c7b5075"
+    },
+    "price": {
+      "asof": "2026-10-09",
+      "pass": 514,
+      "unknown": 0,
+      "blocked": 0,
+      "blob": "6f3f68fff0897d68f200ad3621c51a5071494714"
+    },
+    "history": {
+      "asof": "2026-10-07",
+      "blob": "28e182225c45c3adf4243e40eb7df7ebdb783884"
+    },
+    "terminal": {
+      "asof": "2026-10-07",
+      "result": "PARTIAL_UNKNOWN",
+      "blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+    },
+    "g9": {
+      "strict_pass": false,
+      "blob": "b26aa17cc13b4e8b7038079d0bc9034f46a8454b"
+    },
+    "mc_primary_count": 0,
+    "r92_count": 0,
+    "real_device_receipt_verified": false
+  },
+  "pr7": {
+    "state": "open",
+    "draft": true,
+    "mergeable": null,
+    "mergeable_state": "unknown",
+    "no_merge_performed": true
+  },
+  "real_connected_AAON_probe": {
+    "massive_reference_date": "2026-10-09",
+    "rallies_current_overview": true,
+    "longbridge_current_company_identity": true,
+    "Massive_and_Rallies_same_MC_to_integer_USD": true,
+    "publication_time_verified": false,
+    "independent_origins_verified": 0,
+    "github_runner_non_display_rights_verified": false
+  },
+  "new_sources": [
+    {
+      "id": "FINNHUB_HISTORIC_MC",
+      "official_sdk": "https://github.com/Finnhub-Stock-API/finnhub-python/blob/master/finnhub/client.py",
+      "historical_endpoint": "/stock/historical-market-cap",
+      "publication_time_in_response": false,
+      "exact_514_free_license": false,
+      "primary": false
+    },
+    {
+      "id": "EODHD_HISTORIC_MC",
+      "official_docs": "https://eodhd.com/financial-apis/historical-market-capitalization-api",
+      "equity_frequency": "weekly",
+      "api_credits_per_call": 10,
+      "free_plan_daily_credits": 20,
+      "credits_for_514_if_entitled": 5140,
+      "free_MC_entitlement_proven": false,
+      "primary": false
+    },
+    {
+      "id": "SHARADAR_DAILY_MC",
+      "official_docs": "https://sharadar.com/docs/daily",
+      "unit": "USD_millions",
+      "free_universe": "Dow 30",
+      "NASDAQ_514_free": false,
+      "primary": false
+    }
+  ],
+  "source_inventory": {
+    "path": "nasdaq-xray/c418_provider_inventory_20261012.json",
+    "blob": "6dd6c6c3771313573623090c572a22c67977b934",
+    "original_source_rows": 12,
+    "source_routes_unchanged": true
+  },
+  "code_red_green": {
+    "source": "nasdaq-xray/c418_historic_mc_vendor_shadow.py",
+    "original_commit": "9d9c3ea82d7cd0ee78357179b70c8e18ee5670b9",
+    "workflow_commit": "834806d0f1598a3c464209e81eec35e4549d2707",
+    "inventory_commit": "80ea2aea9a70457bbcf3c329c4974ee4f43a9ac0",
+    "red_run": 38222371768,
+    "red_failure": "ROW_DATE_BAD wrong failure caused by assert stripped in python -O",
+    "green_fix_commit": "46e9a87b0a6b9aeb6ef3bf0de108f76382aeb5e0",
+    "green_code_blob": "8d39f656d794f98b12af17742c18f6019adda2c0",
+    "green_run": 38222540279,
+    "green_ci": "success",
+    "artifact_id": 11735500260,
+    "artifact_sha256": "b6ebca89cf674a6835964f9d06dcd33d1ee33ff6eb21cc4c331fca7e85c033c2",
+    "independently_hashed": true,
+    "normal_and_python_O": "PASS_2_SHADOW_1_WEEKLY_16_NEGATIVE",
+    "router_MC_pass_scope": 514,
+    "distinct_market_cap_origins": 0,
+    "new_primary": 0,
+    "new_r92": 0,
+    "guard_result": "DATA_BLOCKED"
+  },
+  "P0": [
+    "CURRENT_MC_AUTHORITY_MISSING",
+    "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+    "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+    "IDENTITY_PARTITION_INCOMPLETE",
+    "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+    "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN"
+  ],
+  "external_release_requirements": [
+    "Authorized unattended Github runner automated non-display license + historical MC and signed evidence",
+    "Two genuinely independent issuer MC provenance roots, historical publication/SEC acceptance PIT",
+    "Verified same-asof price/share-class/ADR/corporate-actions for all price pass symbols",
+    "Current 260/52 historical bars and final terminal exact Git SHA end-to-end",
+    "Separate strict G9 consolidated bid ask last entitlement and proof",
+    "Real R92 and observed notification/device receipt"
+  ],
+  "full_production_go": false,
+  "next": "Run licensed endpoint sample and full 514 on exact asof once vendor access and historical PIT publication timestamps are actually proven; never turn documented API presence into licensed data"
+}
