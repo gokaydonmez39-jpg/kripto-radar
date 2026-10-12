@@ -1,0 +1,1187 @@
+{
+  "schema": "XRAY_20261012_ROOT229_SOURCE_BOUND_AUDIT_V1",
+  "authority": "DIAGNOSTIC_ONLY_NOT_C417_PRIMARY_MC_OR_CANONICAL_HISTORY",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "asof_et": "2026-10-09",
+  "source_head_sha": "77e4c10d0ea5f5691bffc2566f23e9ad6b2f122d",
+  "source_sina_state": {
+    "path": "nasdaq-xray/sina_state.json",
+    "blob_sha": "db428a10ee7e4081aec644fdec1387e0a7389229"
+  },
+  "source_root_actions_run": 38258616572,
+  "source_root_actions_artifact_id": 11751990451,
+  "source_root_zip_sha256": "704d674a49cf82a9e1608614bfd78ac9352980bb7aeda40631242748234682d8",
+  "source_local_csv_sha256": "d9ac69bd9d2a687ef4f802d1815e67b59d157b8434a3631494ae9d941dac90db",
+  "root_queue_total": 3184,
+  "root_unknown_count": 229,
+  "root_reason_counts": {
+    "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION": 151,
+    "ASOF_MISSING_REQUIRES_RESOLUTION": 45,
+    "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION": 28,
+    "EXACT30_INCOMPLETE_NEVER_PASS": 5
+  },
+  "root_unknown_by_symbol": [
+    {
+      "symbol": "ACCV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ACFN",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "ADAM",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "ADRX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AEC",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "AGCC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AGMB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AGPU",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AIFA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AIIR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AIOK",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AIOS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ALDF",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "ALMR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ALOV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ALOY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ALTI",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "APMD",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "APUR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "ARXS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ASTI",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "AUC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "AVLN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BBCI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BDAI",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "BDCI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "BGDE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BLLN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BLSM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BOT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BRBI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BRTM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BRUN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BRVE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BTLN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "BVC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CAES",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CBC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CBK",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CBRS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CDNL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CEPS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CEPV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CGCF",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "CHRN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CHWM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CMTV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CNL",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "COAG",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "CUVL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "DFTX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "DMRA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "DNMX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "DPU",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "DSC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "DYOR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "EFTY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "EIKN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ELE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ELMT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ELOX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ELWT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ENGN",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "EQPT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ETRA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FGC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FNRN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FORTY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "FRBT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FRNM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FRVO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FTH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "FXHO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "GCGR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "GENB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "GFUZ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "GHXI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "GIX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
+    },
+    {
+      "symbol": "GRAL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
+    },
+    {
+      "symbol": "GRML",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "GTEN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
+    },
+    {
+      "symbol": "GYRO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HAPN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "HCHL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HCIC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HDL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HELP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "HFBL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HMH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "HONA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "HQ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "HTCO",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "HVMC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "HYNE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "IA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "INIO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "INV",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "IOND",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "IPVV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "IQMX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "IRHO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "JONE",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "KARD",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "KBON",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "KELYB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "KLRA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "KRAQ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "KRKR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "KRSA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "KYNB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LAWR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "LFTO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LKFT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LMRI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LONA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LTGO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "LTGR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MAGH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MAKO",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "MAYS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MCTA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MDBH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MDLN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "MDRR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MFP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "MGRT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "MMED",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "MPLT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "MSLE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "MWH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "NAVN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "NCEW",
+      "status": "UNKNOWN_STATIC",
+      "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
+    },
+    {
+      "symbol": "NHIV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "NHP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "NICM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "NOEM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
+    },
+    {
+      "symbol": "NUCL",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "NWCL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "OBX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "OCTV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ODTX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ORIQ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "OST",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "OWLS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PAMT",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "PARK",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PAYP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PBAM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PBLS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PBM",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "PC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "PHOS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PICS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PONO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "PPHC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PPLI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PRHI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PSQL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PURR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "PWRL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "QMLS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "QNBC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "QNT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "QVCG",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RACC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RACD",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "RCBC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RJET",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "RMIX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RML",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ROMA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "RPGL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RTB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "RTSN",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "RYOJ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "RZAI",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SCPQ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "SCTX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SCZM",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SDA",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SENEB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "SHAZ",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SHOE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SHOT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "SKHY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SLBT",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SLE",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SOLS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SPCX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SPPL",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "SPTX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "STLN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SUJA",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SUNE",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SVA",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "SVCC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SVRN",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "SWMR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "TBCV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "TJGC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "TLIH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "TLNC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "TMS",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "TRAX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "TRGS",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "TRXB",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "TTRX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "TULP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "TWLV",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "UCFI",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "USDE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "VCRE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "VHCP",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "VMET",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "VOGX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "VSNT",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "WCCB",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "WEST",
+      "status": "UNKNOWN_RETRY_EXHAUSTED",
+      "reason": "EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+    },
+    {
+      "symbol": "WLCO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "WLTH",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "WQEY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "WSE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "XE",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "XMAX",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "YARW",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "YIBO",
+      "status": "UNKNOWN_STATIC",
+      "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
+    },
+    {
+      "symbol": "YICC",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "YSWY",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    },
+    {
+      "symbol": "ZSQR",
+      "status": "UNKNOWN_STATIC",
+      "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+    }
+  ],
+  "current_c417_primary_mc_514_proven": 0,
+  "canonical_history_asof_et": "2026-10-07",
+  "canonical_terminal_asof_et": "2026-10-07",
+  "new_r92_candidates_from_this_audit": 0,
+  "real_device_notification_receipt_proven": false,
+  "strict_full_go": "BLOCKED",
+  "no_alpha_thresholds_changed": true,
+  "missing_evidence": [
+    "LAWFUL_PRIMARY_MC_514_SAME_ASOF_CLASS_PIT_NONDISPLAY_RIGHTS",
+    "CANONICAL_260D_52W_HISTORY_RIGHTS_AND_CORPORATE_ACTIONS",
+    "CURRENT_FINAL_TERMINAL_SHA_CHAIN",
+    "REAL_R92_AND_DELIVERY_RECEIPT"
+  ]
+}
