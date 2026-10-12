@@ -97,6 +97,76 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "P0_STRICT_G9_ENTITLEMENT":g9_block,
         "P0_DEVICE_RECEIPT_EVIDENCE":bool("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in blocked),
     }
+    # Operational dependency order: evidence-only, never a shortcut to AL.
+    # A partial global identity set does not contaminate an exact disjoint
+    # PRICE survivor cohort; it still blocks universe-wide completeness.
+    local_scope_eligible=(len(unknown_in_price)==0 and
+                          p.get("asof_et")==e.get("latest_completed_nasdaq_session"))
+    mc_authorized=(e.get("current_mc_authority_count")==1 and
+                   "CURRENT_MC_AUTHORITY_MISSING" not in blocked)
+    terminal_exact=mc_authorized and t.get("asof_et")==p.get("asof_et") and (
+        "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE" not in blocked
+        and "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN" not in blocked)
+    manual_research_preparation=(terminal_exact and e.get(
+        "ready_for_current_research_signal") is True)
+    ordered_recovery_steps=[
+        {
+            "order":1,"id":"C417_CURRENT_PRICE_SCOPE",
+            "status":"SOURCE_SCOPE_EXACT_BUT_GLOBAL_IDENTITY_OPEN" if local_scope_eligible and len(us)>0
+                     else "SOURCE_SCOPE_EXACT" if local_scope_eligible else "SOURCE_SCOPE_NOT_CURRENT",
+            "acceptance":"Current compiled C4.17, exact master and 30-session DV30 PRICE blob/hash/set; no unknown identity intersects PRICE PASS.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":2,"id":"LICENSED_CURRENT_PRIMARY_MC",
+            "status":"REQUIRES_REAL_MEASUREMENT_ENTITLEMENT" if not mc_authorized else "MC_AUTHORITY_PRESENT_RECHECK_EXACT_BINDINGS",
+            "acceptance":"Same ASOF, issuer/listing identity, license, PIT/report date, current PRICE exact 514-symbol pass set/hash/blob and PRIMARY MC USD >=2bn; no WATCH-to-PRIMARY promotion.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":3,"id":"HISTORY_260_DAILY_52_WEEKLY",
+            "status":"WAITING_EXACT_PRIMARY_MC" if not mc_authorized else "NEEDS_FRESH_EXACT_SOURCE_HISTORY_PROOF",
+            "acceptance":"260 actual completed official exchange sessions, 52 completed weeks per eligible stock; verified raw-source lineage, actions/split/ticker continuity, no synthetic backfill.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":4,"id":"CORPORATE_ACTIONS_LEGAL_ISSUER_EVENTS",
+            "status":"WAITING_HISTORICAL_SOURCE_CHAIN" if not terminal_exact else "RECHECK_CURRENT_ISSUER_PRIMARY_EVIDENCE",
+            "acceptance":"Exact candidate-local CA/legal/issuer event PIT, 8-session event horizon, official Nasdaq halt and sticky suspension veto; UNKNOWN never CLEAN.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":5,"id":"STAGE1_WEEKLY_REGIME_DEEP_FINAL_R1_RR",
+            "status":"WAITING_ELIGIBLE_SAME_ASOF_CHAIN" if not terminal_exact else "NEEDS_INDEPENDENT_SETUP_EVIDENCE",
+            "acceptance":"Same ASOF SHA-bound Stage1, 52-weekly, regime, deep geometry, risks <= policy maxima, family-specific RR, no chase; WATCH never AL.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":6,"id":"TERMINAL_R92_CANDIDATE_LOCAL",
+            "status":"PREPARATION_ATTESTED_NOT_DELIVERY" if manual_research_preparation
+                     else "BLOCKED_CURRENT_TERMINAL_AND_R92_PROOF",
+            "acceptance":"Exact CURRENT terminal candidate_local_research_pass, nonempty registered R92, unique delivery key, official safety, no in-flight scheduler recovery; G9/account not required for manual research.",
+            "research_candidate_required":True,"universe_full_e2e_required":True
+        },{
+            "order":7,"id":"CANONICAL_USER_DELIVERY_AND_RECEIPT",
+            "status":"DEVICE_RECEIPT_NOT_ATTESTED",
+            "acceptance":"Canonical sole user-facing authority; independent real candidate notification and actual device receipt proof, never infer push from GitHub workflow or task setting.",
+            "research_candidate_required":False,"universe_full_e2e_required":False
+        },{
+            "order":8,"id":"UNIVERSE_WIDE_IDENTITY_COMPLETENESS",
+            "status":"GLOBAL_IDENTITY_UNKNOWN_"+str(len(us)) if us else "GLOBAL_IDENTITY_PROVEN",
+            "acceptance":"Every remaining official Nasdaq security identity resolved or explicitly excluded; no universe-wide NO_CONFIRMED_SETUP with unknown identity.",
+            "research_candidate_required":False,"universe_full_e2e_required":True
+        },{
+            "order":9,"id":"STRICT_G9_AND_READ_ONLY_ACCOUNT_TRUE_FULL_GO",
+            "status":"G9_BLOCKED_ACCOUNT_UNATTESTED" if g9_block else "G9_ACCOUNT_STILL_REQUIRE_SAME_RUN_PROOF",
+            "acceptance":"Independent strict zero-dollar consolidated National NBBO A+B+C+D and same-run sanctioned read-only cash/positions plus global FULL_E2E; not prerequisites for manual R92.",
+            "research_candidate_required":False,"universe_full_e2e_required":False
+        }
+    ]
+    require([x["order"] for x in ordered_recovery_steps]==list(range(1,10)),
+            "RECOVERY_ORDER_INTEGRITY")
+    require(all(x["id"] and x["acceptance"] for x in ordered_recovery_steps),
+            "RECOVERY_ACCEPTANCE_NOT_EMPTY")
+    require(not mc_authorized or manual_research_preparation or
+            ordered_recovery_steps[5]["status"]=="BLOCKED_CURRENT_TERMINAL_AND_R92_PROOF",
+            "MC_NOT_AL_PROOF")
+
     derivative={
         "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN":"NEEDS_SAME_ASOF_MEASURED_MC",
         "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE":"NEEDS_MC_HISTORY_LEGAL_STAGE1_EVENTS_FINAL",
@@ -116,6 +186,10 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "canonical_mc_current_revision_count":len(current),
         "canonical_current_mc_primary_count_attested":e["current_mc_authority_count"],
         "root_cause_classes":root,
+        "ordered_recovery_steps":ordered_recovery_steps,
+        "manual_research_g9_account_required":False,
+        "manual_candidate_claim_released":False,
+        "full_go_g9_account_requires_separate_validation":True,
         "downstream_blocker_dependencies":{k:v for k,v in derivative.items() if k in blocked},
         "e2e_blockers_exact":sorted(blocked),
         "strict_g9_status":strict_g9.get("status"),
@@ -158,6 +232,11 @@ def selftest():
     require(good["master_identity_unknown_intersection_price_pass_count"]==0,"BASE_DISJOINT")
     require(good["canonical_mc_current_revision_count"]==0,"BASE_NO_MC")
     require(len(good["root_cause_classes"])==4,"FOUR_ROOT_CLASSES")
+    require(len(good["ordered_recovery_steps"])==9 and
+            good["ordered_recovery_steps"][1]["status"]=="REQUIRES_REAL_MEASUREMENT_ENTITLEMENT" and
+            good["ordered_recovery_steps"][7]["status"]=="GLOBAL_IDENTITY_UNKNOWN_1" and
+            good["manual_research_g9_account_required"] is False and
+            good["manual_candidate_claim_released"] is False, "ORDERED_RECOVERY_NEGATIVE_DEFAULT")
     n=0
     for idx,key,bad in [
         (0,"pass_symbols",["AAA","SPAC"]),
@@ -215,6 +294,7 @@ def main():
     print("XRAY_CAUSAL_DAG_ROOT_CLASSES="+str(result["root_cause_classes"]))
     print("XRAY_CAUSAL_DAG_UNKNOWN_INTERSECT_PRICE="+str(result["master_identity_unknown_intersection_price_pass_count"]))
     print("XRAY_CAUSAL_DAG_CURRENT_PRIMARY_MC="+str(result["canonical_current_mc_primary_count_attested"]))
+    print("XRAY_CAUSAL_DAG_ORDERED_RECOVERY="+json.dumps([{ "order":x["order"],"id":x["id"],"status":x["status"] } for x in result["ordered_recovery_steps"]],sort_keys=True))
     print("XRAY_CAUSAL_DAG_GO=false_RECEIPT=false")
 
 if __name__=="__main__":
