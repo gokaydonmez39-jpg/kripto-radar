@@ -298,5 +298,100 @@
     "primary_market_cap_not_attested": true,
     "effective_policy": "C4.17",
     "real_money": "NO-GO"
+  },
+  "additional_evidence_only_discovery_20261012": {
+    "classification": "NON_ADMITTED_RESEARCH_CANDIDATES_ONLY",
+    "no_change_to_existing_12_provider_routes": true,
+    "no_new_primary_mc": true,
+    "no_vendor_licensed_values_observed": true,
+    "asof_under_review": "2026-10-09",
+    "candidates": [
+      {
+        "id": "INTRINIO_DIRECT",
+        "kind": "HISTORICAL_MC_API_UPSTREAM_FOR_OPENBB",
+        "url": "https://docs.intrinio.com/documentation/web_api/getHistoricalData_v2",
+        "documented_tag": "marketcap",
+        "documented_frequency": "daily",
+        "has_readable_public_docs": true,
+        "verified_runner_key": false,
+        "verified_perpetual_free_quota": false,
+        "verified_rights_for_unattended_signal_persistence": false,
+        "verified_independent_pit_filing_lineage": false,
+        "primary_admitted": false,
+        "reason": "DAILY_TAG_API_NOT_A_PIT_PUBLICATION_OR_LICENSE_PROOF"
+      },
+      {
+        "id": "FINANCIAL_DATASETS_CONNECTED",
+        "kind": "POTENTIAL_VENDOR_MC_AND_HISTORY",
+        "url": "https://www.financialdatasets.ai/pricing",
+        "connected_probes": [
+          {
+            "ticker": "AAPL",
+            "action": "get_company_facts",
+            "result": "UNAUTHORIZED"
+          },
+          {
+            "ticker": "AAPL",
+            "action": "get_financial_metrics_snapshot",
+            "result": "CURRENT_BALANCE_0_USD"
+          },
+          {
+            "ticker": "AAPL",
+            "action": "get_stock_prices",
+            "date_start": "2026-10-08",
+            "date_end": "2026-10-10",
+            "result": "CURRENT_BALANCE_0_USD"
+          }
+        ],
+        "verified_runner_key": false,
+        "verified_free_ongoing_use": false,
+        "verified_rights_for_derived_automated_signals": false,
+        "primary_admitted": false,
+        "reason": "CONNECTED_FOREGROUND_FAILURE_NO_RUNNER_GRANT_NO_HISTORIC_MC"
+      },
+      {
+        "id": "DATABENTO",
+        "kind": "HISTORICAL_TAPE_CA_ONLY_NOT_STANDALONE_ISSUER_MC",
+        "url": "https://databento.com/docs/getting-started/live",
+        "advertised_one_time_free_credits_usd": 125,
+        "verified_runner_key": false,
+        "verified_unlimited_free_continuous_coverage": false,
+        "issuer_market_cap_from_tape_alone": false,
+        "primary_admitted": false,
+        "reason": "CREDIT_NOT_PERMANENT_FREE_MC_SHARES_PIT_MISSING"
+      },
+      {
+        "id": "YFINANCE_YAHOO",
+        "kind": "OPEN_SOURCE_ADAPTER_NOT_INDEPENDENT_LICENSE",
+        "url": "https://github.com/ranaroussi/yfinance",
+        "official_library_disclaimer": "YAHOO_API_PERSONAL_USE_ONLY_DATA_TERMS_SEPARATE_FROM_APACHE_CODE_LICENSE",
+        "verified_unattended_license": false,
+        "verified_issuer_mc_point_in_time": false,
+        "primary_admitted": false,
+        "reason": "SOURCE_LICENSE_PIT_AND_UPSTREAM_INDEPENDENCE_UNVERIFIED"
+      },
+      {
+        "id": "EDGARTOOLS_SEC",
+        "kind": "OFFICIAL_SEC_FILING_PIT_HELPER_NOT_INDEPENDENT_MC_SOURCE",
+        "url": "https://github.com/dgunning/edgartools/blob/main/edgar/docs/Filings.md",
+        "documented_optional_accepted_timestamp": true,
+        "verified_514_identity_partition_resolution": false,
+        "primary_admitted": false,
+        "reason": "SEC_ACCEPTANCE_HELPER_ONLY_REQUIRES_SYMBOL_CIK_CLASS_AND_ASOF_PROOFS"
+      }
+    ],
+    "terms_edge_case": {
+      "provider": "BUSINESSQUANT",
+      "pricing_url": "https://businessquant.com/pricing",
+      "terms_url": "https://businessquant.com/terms-of-use",
+      "official_free_api_calls_per_day": 30,
+      "documented_max_symbols_per_historic_metric_call": 5,
+      "minimum_calls_for_514": 103,
+      "minimum_quota_days_if_empty_free_budget": 4,
+      "free_plan_limited_automated_access_not_equivalent_to_unattended_market_data_persistence_license": true,
+      "paid_plan_internal_use_faq_does_not_automatically_prove_free_tier_signal_storage_or_public_repo_redistribution": true,
+      "historical_daily_market_cap_row_date_not_sec_filing_acceptance_proof": true
+    },
+    "conclusion": "DISCOVERY_EXPANDED_NOT_PRIMARY_ENABLED_C417_ACTIVE_NO_GO"
   }
 }
