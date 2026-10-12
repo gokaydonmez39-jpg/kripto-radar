@@ -247,7 +247,7 @@ def manual_delayed_eod_source_contract(price, manual_policy):
         and manual_policy.get("alpha_thresholds_unchanged") is True
         and manual_policy.get("broker_trade_access_allowed") is False
         and g9.get("mandatory_for_research_signal") is False
-        and g9.get("never_claim_g9_pass_unless_existing_gate_pass") is True
+        and g9.get("never_label_g9_pass_unless_existing_gate_pass") is True
         and delivery.get("enabled_in_this_shadow") is False
         and delivery.get("quotes_must_disclose_asof_and_data_delay") is True
         and h.get("price_min_usd")==5
