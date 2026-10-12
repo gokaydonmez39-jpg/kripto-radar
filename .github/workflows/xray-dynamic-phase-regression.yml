@@ -643,6 +643,38 @@ jobs:
           print("MC_PARTIAL_UNKNOWN_FAIL_CLOSED_TECHNICAL_SCOPE=PASS")
           PY
 
+      - name: Reject nonintegral Rallies new-scope daily volume (positive and negative)
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          import price_dv30_recover_from_fullstate as r
+
+          asof="2026-10-12"
+          dates=r.expected30(asof)
+          assert len(dates)==30 and len(set(dates))==30 and dates[-1]==asof
+          sym="AAPL"
+          good=[{"date":day,"close":10.0,"volume":10_000_000.0} for day in dates]
+          ok,_=r.build_c417_rallies_newscope_partition({sym:good},asof,[sym],{})
+          assert set(ok["pass_price_dv30"])=={sym},ok
+          assert not ok["block_current_run"],ok
+
+          bad=[dict(row) for row in good]
+          bad[15]["volume"]=10_000_000.25
+          failed,_=r.build_c417_rallies_newscope_partition({sym:bad},asof,[sym],{})
+          assert not failed["pass_price_dv30"],failed
+          b=failed["block_current_run"][sym]
+          assert b["reason"]=="RALLIES_NEW_SCOPE_NONINTEGRAL_VOLUME_NOT_UNADJUSTED_RTH_PROOF",b
+          assert b["nonintegral_volume_sessions"]==[dates[15]],b
+          assert b["missing_sessions"]==[dates[15]],b
+
+          bad.append(dict(good[15]))
+          duplicate,_=r.build_c417_rallies_newscope_partition({sym:bad},asof,[sym],{})
+          assert not duplicate["pass_price_dv30"],duplicate
+          assert duplicate["block_current_run"][sym]["missing_sessions"]==[dates[15]]
+          print("RALLIES_UNADJUSTED_VOLUME_FAILCLOSED=PASS_INTEGER_POSITIVE_FRACTIONAL_NEGATIVE_DUPLICATE_NEGATIVE")
+          PY
+
       - name: Assert blocked-only resolver scope binds exactly
         run: |
           python - <<'PY'
