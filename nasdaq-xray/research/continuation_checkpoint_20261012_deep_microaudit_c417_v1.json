@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_DEEP_MICROAUDIT_CHECKPOINT_V1",
-  "observation_date_utc": "2026-10-12T21:38:34.440Z",
+  "observation_date_utc": "2026-10-12T21:41:11.076Z",
   "source_repository": "gokaydonmez39-jpg/kripto-radar",
   "branch": "main",
   "reference_head_before_checkpoint": "c3fb030a8edd2b2f399c24b5a8f04bc38da73b97",
@@ -494,6 +494,61 @@
       "restoration_authority": "EXISTING_HEALTH_FINAL_FACTORY_FAILOVER_ONLY",
       "this_checkpoint_does_not_kick": true,
       "no_candidate_delivery_while_stale": true
+    },
+    "rallies_260_daily_52_weekly_sample_20261013": {
+      "schema": "XRAY_RALLIES_260_52_SAMPLE_ONLY_NONAUTHORITY_V1",
+      "observed_at_utc": "2026-10-12T21:41:11.076Z",
+      "source": "CONNECTED_RALLIES_GET_PRICE_FROM_DATE_RANGE",
+      "range_start": "2025-09-01",
+      "range_end": "2026-10-12",
+      "timeframe": "day",
+      "tested_tickers": [
+        "AAPL",
+        "NVDA",
+        "MSFT",
+        "QQQ"
+      ],
+      "samples": [
+        {
+          "ticker": "AAPL",
+          "actual_daily": 280,
+          "actual_iso_weeks": 59,
+          "noninteger_volume_days": 161
+        },
+        {
+          "ticker": "NVDA",
+          "actual_daily": 280,
+          "actual_iso_weeks": 59,
+          "noninteger_volume_days": 161
+        },
+        {
+          "ticker": "MSFT",
+          "actual_daily": 280,
+          "actual_iso_weeks": 59,
+          "noninteger_volume_days": 161
+        },
+        {
+          "ticker": "QQQ",
+          "actual_daily": 280,
+          "actual_iso_weeks": 59,
+          "noninteger_volume_days": 161
+        }
+      ],
+      "daily_date_distinct": true,
+      "ohlc_positive_and_candle_geometry_true": true,
+      "single_ticker_scope_only": true,
+      "vendor_data_rights_for_automated_runner_proven": false,
+      "official_corporate_action_pit_proven": false,
+      "official_unadjusted_regular_session_volume_proven": false,
+      "full_universe_260_52_proven": false,
+      "new_primary_market_cap_authority_created": false,
+      "production_data_backfilled": false,
+      "r92_created": false,
+      "production_go": false,
+      "interpretation": "REAL_SOURCE_HISTORICAL_RANGE_EXISTS_FOR_FOUR_TESTED_INSTRUMENTS_BUT_FRACTIONAL_VOLUMES_BLOCK_UNADJUSTED_RTH_AUTHORITY",
+      "execution": "NONE",
+      "real_money": "NO-GO",
+      "unknown_never_pass": true
     }
   },
   "dependency_order": [
@@ -546,7 +601,8 @@
       "status": "WAITING_P2_P3",
       "task": "Prove >=260 official daily and 52 completed weekly bars and official corporate action/IPO continuity; 17 short listings remain fail-only",
       "acceptance": "At least 260 and 52 real completed bars, exact SRC-blob and CA PIT, negative missing-date tests",
-      "rollback": "HISTORY_UNKNOWN/HISTORY_INELIGIBLE"
+      "rollback": "HISTORY_UNKNOWN/HISTORY_INELIGIBLE",
+      "latest_diagnostic": "Four tickers AAPL NVDA MSFT QQQ 280 distinct daily bars and 59 ISO weeks from Rallies research query; 161 fractional-volume days each and no identity/CA/runner rights, so not eligible for production 260/52 authority."
     },
     {
       "id": "P5",
