@@ -1,0 +1,92 @@
+{
+  "schema": "XRAY_20261012_SIP_514_SCOPE_11_TECH_WATCH_PREFLIGHT_CHECKPOINT_V1",
+  "observed_at_utc": "2026-10-12T11:25:00Z",
+  "git_head_before_checkpoint": "35036144a21d6d3db0b40e39f5c08d89ce718669",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "scope": {
+    "asof_et": "2026-10-09",
+    "master_identity_pass": 3184,
+    "master_unknown": 12,
+    "price_dv30_pass": 514,
+    "sip_valid_260_daily_52_iso_weeks": 497,
+    "sip_insufficient_260": 17,
+    "technical_research_watch": 11,
+    "watch_55d_breakout": 5,
+    "watch_near20d_high": 6,
+    "watch_symbols": [
+      "AMGN",
+      "CAKE",
+      "DDOG",
+      "EXEL",
+      "FFIV",
+      "GILD",
+      "MSFT",
+      "NTNX",
+      "PLTR",
+      "PTC",
+      "VRNS"
+    ],
+    "technical_c417_al": "UNVERIFIED_NOT_ZERO",
+    "r92_registered": 0
+  },
+  "verification": {
+    "sip_consolidated_full_daily_260_test": "ONE_TIME_CONNECTED_ACCOUNT_INTERACTIVE_ONLY",
+    "last_session_price_close_3_channels_exact_count": 11,
+    "sources": [
+      "ALPACA_HISTORIC_SIP",
+      "RALLIES_HISTORICAL",
+      "LONGBRIDGE_EOD_QUOTE"
+    ],
+    "cross_provider_upstream_independence": "UNKNOWN",
+    "rallies_latest_company_cap_count": 11,
+    "latest_market_cap_over_1_8b_count": 11,
+    "current_asof_market_cap_pit_and_licensed_primary": "NOT_PROVEN",
+    "runner_unattended_sip_rights": "NOT_PROVEN",
+    "source_raw_vendor_data_in_public": false,
+    "gh_runner_history_replay": "NOT_PERFORMED"
+  },
+  "files": {
+    "snapshot": {
+      "path": "nasdaq-xray/research/sip_eod_manual_11_watch_20261009_v1.json",
+      "blob": "6734e875bda8fe95c3e19c82589aa8c9ce923410"
+    },
+    "validator": {
+      "path": "nasdaq-xray/research/verify_manual_sip_watch_v1.py",
+      "blob": "3edf4830e97420ec1b2509ca5710b1e60a3fa065"
+    },
+    "workflow": {
+      "path": ".github/workflows/xray-research-watch-radar.yml",
+      "blob": "9f94525d1d8b7426a9404bc72086d7b20f980ebe"
+    },
+    "master_blob": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price_blob": "6f3f68fff0897d68f200ad3621c51a5071494714"
+  },
+  "ci": {
+    "positive_negative_guard_sip_watch_run": 38241852798,
+    "positive_negative_guard_conclusion": "success",
+    "normal_python_guard": "PASS",
+    "optimized_python_guard": "PASS",
+    "negative_tests": 12,
+    "scheduled_preopen_change_commit": "35036144a21d6d3db0b40e39f5c08d89ce718669",
+    "preopen_schedule": "0 13 * * 1-5",
+    "preopen_timezone": "Europe/Istanbul",
+    "preopen_trt": "16:00",
+    "post_schedule_run": 38242095176,
+    "post_schedule_run_conclusion": "success",
+    "artifact_id": 11742459721,
+    "artifact_sha256": "1b94c0d96de737329627c5f6099cd3944f51ae4acf24b85b6f5eb1cb3b820d45",
+    "download_sha256_verified_against_github": true
+  },
+  "true_full_go": "BLOCKED",
+  "strict_g9": "BLOCKED_MISSING_LICENSED_REALTIME_NBBO",
+  "current_history": "STALE_2026-10-07",
+  "canonical_terminal": "STALE_2026-10-07",
+  "primary_mc_count": 0,
+  "account": "BLOCKED_ACCOUNT_READ_SCOPE",
+  "user_device_receipt": "UNVERIFIED",
+  "operating_contract": "Do not promote manual interactive observations to C4.17 PRIMARY/AL. Do not show yesterday's results as new after latest official NASDAQ session changes. No paid vendor API, no trades, no price/MC values in public repo."
+}
