@@ -61,6 +61,46 @@ def bq_url(endpoint,key,**params):
     # Vendor contract requires API key in URL; NEVER log URL/errors or publish raw data.
     return "https://data.businessquant.com/"+endpoint+"?"+urllib.parse.urlencode({**params,"api_key":key})
 
+def bq_historic_batch_shadow(symbols,asof,key,http_get):
+    """One /historic call for <=5 distinct tickers; no raw MC retained.
+
+    Exact daily observations are still non-PIT and are not PRIMARY. Returns
+    only a mapping of ticker => confirmed-present boolean; never market caps.
+    """
+    if (not isinstance(symbols,list) or not (1<=len(symbols)<=5)
+        or len(symbols)!=len(set(symbols))
+        or any(not isinstance(s,str) or not SYMBOL.fullmatch(s) for s in symbols)
+        or not isinstance(key,str) or not key
+        or proper_date(asof)!=asof):
+        raise ValueError("BQ_BATCH_INPUT_INVALID")
+    url=bq_url("historic",key,slug="market-capitalization-daily",
+               ticker=",".join(symbols),
+               from_date=asof,till_date=asof,mode="original")
+    obj=http_get(url)
+    if not isinstance(obj,list):
+        raise ValueError("BQ_BATCH_SCHEMA_INVALID")
+    counts=collections.Counter()
+    allowed=set(symbols)
+    for row in obj:
+        if not isinstance(row,dict):
+            raise ValueError("BQ_BATCH_NON_OBJECT")
+        ticker=str(row.get("ticker") or "").upper()
+        # Additional time-series rows outside the explicitly requested ASOF
+        # must not be used for authority or counted as same-session evidence.
+        if row.get("date")!=asof:
+            continue
+        if ticker not in allowed:
+            raise ValueError("BQ_BATCH_UNREQUESTED_TICKER")
+        if not isinstance(row.get("metric"),str) or "market cap" not in row["metric"].casefold():
+            raise ValueError("BQ_BATCH_METRIC_DRIFT")
+        if finite(row.get("value")) is None:
+            raise ValueError("BQ_BATCH_NONFINITE_MC")
+        counts[ticker]+=1
+        if counts[ticker]>1:
+            raise ValueError("BQ_BATCH_DUPLICATE_TICKER_DATE")
+    return {s:counts[s]==1 for s in symbols}
+
+
 def sec_directory(http_get,cache):
     if "directory" not in cache:
         obj=http_get(SEC_DIRECTORY)
@@ -117,6 +157,11 @@ def lookup(provider,sym,asof,keys,cache,http_get):
         # A Massive report-period date is not filing-acceptance-time PIT.
         return "REPORT_PERIOD_MC_NOT_FILING_ACCEPTANCE_PIT"
     if provider=="BQ_MC_HISTORICAL_DAILY":
+        cached=cache.get("bq_daily_batch_status")
+        if isinstance(cached,dict) and sym in cached:
+            if cached[sym] is True:
+                return "DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT"
+            raise ValueError("BQ_BATCH_MC_ASOF_MISSING")
         url=bq_url("historic",keys["BQ"],slug="market-capitalization-daily",
                    ticker=sym,from_date=asof,till_date=asof,mode="original")
         obj=http_get(url)
@@ -183,7 +228,10 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
         if g in ("MASSIVE","BQ") and not keys.get(g):
             attempts.append((provider,"NO_KEY"));continue
         needed=0 if (provider=="SEC_TICKER_DIRECTORY" and "directory" in cache) or (
-            provider=="SEC_MIRROR_PIT" and "mirror" in cache) else 1
+            provider=="SEC_MIRROR_PIT" and "mirror" in cache) or (
+            provider=="BQ_MC_HISTORICAL_DAILY" and
+            isinstance(cache.get("bq_daily_batch_status"),dict) and
+            sym in cache["bq_daily_batch_status"]) else 1
         if provider=="SEC_SUBMISSIONS" and "directory" not in cache:needed+=1
         if (needed>0 and counters[provider]>=MAX_PER_RUN[provider]) or counters[g]+needed>GROUP_CAP[g]:
             attempts.append((provider,"QUOTA_GUARD"));continue
@@ -327,7 +375,7 @@ def source_epoch_blocked(reason: str)->dict:
 
 def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs,
             allow_pre_mc_recovery=False,recovery_inputs_fn=pre_mc_recovery_inputs):
-    if not isinstance(limit,int) or not 1<=limit<=3:raise ValueError("MAX_3_PER_LANE")
+    if type(limit) is not int or not 1<=limit<=5:raise ValueError("MAX_5_PER_LANE")
     recovery=False
     try:
         asof,scopes,sha=inputs_fn()
@@ -363,6 +411,24 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs,
     cache={}
     lanes={}
     for lane,symbols in scopes.items():
+        # A verified BQ research key can retrieve up to 5 date-scoped MC
+        # rows per call, rather than spend one call per symbol. This path is
+        # activated only when Massive has no eligible key: failover, not
+        # duplicate quota expenditure. It never persists vendor values.
+        if (lane=="MC" and keys.get("BQ") and not keys.get("MASSIVE")
+            and not cache.get("circuit:BQ_MC_HISTORICAL_DAILY")):
+            sample=rotate_sample(symbols,limit)
+            if sample:
+                if (counters["BQ"]+1<=GROUP_CAP["BQ"]
+                    and counters["BQ_MC_HISTORICAL_DAILY"]+1<=MAX_PER_RUN["BQ_MC_HISTORICAL_DAILY"]):
+                    counters["BQ"]+=1
+                    counters["BQ_MC_HISTORICAL_DAILY"]+=1
+                    try:
+                        cache["bq_daily_batch_status"]=bq_historic_batch_shadow(
+                            sample,asof,keys["BQ"],http_get)
+                    except Exception:
+                        cache["circuit:BQ_MC_HISTORICAL_DAILY"]=True
+                        # Discard provider exception text; API key is in URL.
         statuses=collections.Counter()
         attempts=collections.Counter()
         for sym in rotate_sample(symbols,limit):
