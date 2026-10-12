@@ -15,6 +15,7 @@ on:
       - "nasdaq-xray/eod_screening_digest.py"
       - "nasdaq-xray/alpaca_sip_eod_b_shadow.py"
       - "nasdaq-xray/manual_workflow_trigger_sha_guard.py"
+      - "nasdaq-xray/manual_shadow_latest_main_guard.py"
       - "nasdaq-xray/research_only_start_20261010.json"
       - "nasdaq-xray/research_only_start_guard.py"
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
@@ -201,16 +202,14 @@ jobs:
           assert r["user_notification_delivered"] is False
           print("XRAY_MANUAL_FOLLOWUP_NO_DELIVERY_CLAIM=PASS")
           PY
-      - name: Block stale main before manual candidate research
+      - name: Block any authoritative source drift; tolerate reporting-overlay-only race
         shell: bash
         run: |
           set -euo pipefail
-          latest="$(git ls-remote origin refs/heads/main | cut -f1)"
-          if [[ -z "$latest" || "$(git rev-parse HEAD)" != "$latest" ]]; then
-            echo "XRAY_MANUAL_SOURCE_EPOCH=BLOCKED_MAIN_ADVANCED" >&2
-            exit 1
-          fi
-          echo "XRAY_MANUAL_SOURCE_EPOCH=CURRENT_EXACT"
+          python -m py_compile nasdaq-xray/manual_shadow_latest_main_guard.py
+          python nasdaq-xray/manual_shadow_latest_main_guard.py --selftest
+          python -O nasdaq-xray/manual_shadow_latest_main_guard.py --selftest
+          python nasdaq-xray/manual_shadow_latest_main_guard.py --live
       - name: Build exact-source manual-decision research report
         env:
           GITHUB_TOKEN: ${{ github.token }}
