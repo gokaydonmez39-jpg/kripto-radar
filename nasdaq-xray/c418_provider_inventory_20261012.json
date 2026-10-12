@@ -211,8 +211,8 @@
     },
     {
       "id": "BUSINESSQUANT",
-      "role": "MULTI_TICKER_EOD_SEC_FILINGS_CA_CURRENT_SCREEN",
-      "api_class": "BATCH_EOD_SCREEN_AND_SEC_DISCOVERY",
+      "role": "HISTORICAL_DAILY_MC_BATCH_AND_SEC_CA_DISCOVERY",
+      "api_class": "HISTORICAL_DAILY_MARKET_CAP_AND_MULTI_TICKER_PRICE",
       "official_docs": "https://businessquant.com/docs/api/overview",
       "pricing_docs": "https://businessquant.com/pricing",
       "screener_docs": "https://businessquant.com/docs/api/screener",
@@ -223,14 +223,25 @@
       "max_unique_symbols": null,
       "rate_per_minute": null,
       "current_connected": "IN_REPO_RESEARCH_ADAPTER_NO_VERIFIED_KEY",
-      "p0_use": "SCREENING_AND_SEC_CIK_CA_DISCOVERY_BATCH_HISTORY_AFTER_RIGHTS_NO_CURRENT_OR_PIT_MC_PRIMARY",
+      "p0_use": "DATE_SPECIFIC_MC_HISTORICAL_SHADOW; 5 TICKERS/API CALL; REQUIRE PERIOD_END VS PUBLICATION_TIME, SHARE_CLASS, CA, RIGHTS BEFORE PRIMARY",
       "mc_current_exact": false,
       "market_cap_direct": true,
-      "lookahead_guard": "SCREEN_RECALCULATED_EVERY_MINUTE_NOT_2026_10_09_PUBLICATION_TIMESTAMP_PIT; EXPLICIT_CIK_FILING_ACCEPTANCE_REQUIRED",
+      "lookahead_guard": "DAILY_MC_ROW_DATE_NOT_SUFFICIENT_FOR_SEC_FILING_ACCEPTANCE_TIME; NO_DAILY_METRIC_SOURCE_PUBLICATION_TIMESTAMP; CROSS_CHECK_OFFICIAL_SEC_SUBMISSIONS",
       "rights_state": "FREE_PERSONAL_ACCESS_NOT_AUTOMATED_NONDISPLAY_DERIVED_STORAGE_GRANT_ATTESTED",
       "runner_key_attested": false,
       "related_existing_module": "nasdaq-xray/xray_multi_provider_research.py",
-      "market_data_and_filing_lineage_independence": "PARTLY_SEC_DERIVED; NO_INDEPENDENT_ROOT_ESTABLISHED"
+      "market_data_and_filing_lineage_independence": "PARTLY_SEC_DERIVED; NO_INDEPENDENT_ROOT_ESTABLISHED",
+      "historical_mc_endpoint": "https://data.businessquant.com/historic",
+      "historical_mc_slug": "market-capitalization-daily",
+      "historical_mc_docs": "https://businessquant.com/docs/api/historic",
+      "historical_mc_public_chart": "https://businessquant.com/metrics/api/market-capitalization-daily",
+      "max_tickers_per_historic_call": 5,
+      "history_endpoint_return_schema": "FLAT_ROWS_TICKER_METRIC_DATE_VALUE",
+      "report_date_alone_not_pit": true,
+      "request_asof_requires_explicit_from_date_till_date_and_exact_row": true,
+      "default_free_full_514_cohort_calls": 103,
+      "default_free_30_calls_daily_min_calendar_days": 4,
+      "automated_non_display_primary_license_verified": false
     }
   ],
   "live_shadow_probe_summary": {
@@ -259,6 +270,12 @@
     "license_attested": false,
     "rate_limit_quota_documented_30_day": true,
     "batched_EOD_documented": true,
-    "source_observation_did_not_occur": true
+    "source_observation_did_not_occur": true,
+    "historic_daily_mc_discovered": true,
+    "historic_daily_mc_max_tickers_per_api_call": 5,
+    "historic_daily_mc_minimum_calls_for_514": 103,
+    "historic_daily_mc_minimum_free_quota_days_for_514": 4,
+    "historic_api_key_access_checked": false,
+    "production_pit_mc_authority_attested": false
   }
 }
