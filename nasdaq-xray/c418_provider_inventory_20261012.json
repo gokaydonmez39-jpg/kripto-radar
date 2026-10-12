@@ -241,7 +241,15 @@
       "request_asof_requires_explicit_from_date_till_date_and_exact_row": true,
       "default_free_full_514_cohort_calls": 103,
       "default_free_30_calls_daily_min_calendar_days": 4,
-      "automated_non_display_primary_license_verified": false
+      "automated_non_display_primary_license_verified": false,
+      "standard_terms_api_internal_research": "EXPRESSLY_PERMITTED_SUBJECT_TO_ACCOUNT_AND_PLAN",
+      "standard_terms_api_automation": "API_IS_THE_ONLY_AUTHORIZED_AUTOMATED_ACCESS",
+      "standard_terms_external_redistribution": "PROHIBITED_WITHOUT_SEPARATE_WRITTEN_LICENSE",
+      "terms_effective_date": "2026-07-31",
+      "terms_primary_source": "https://businessquant.com/terms-of-use",
+      "account_holder_consent_and_valid_api_key_attested": false,
+      "github_runner_entitlement_for_THIS_ACCOUNT": "NOT_YET_CONFIRMED",
+      "derived_internal_research_and_public_dataset_rights_not_equivalent": true
     }
   ],
   "live_shadow_probe_summary": {
@@ -277,5 +285,18 @@
     "historic_daily_mc_minimum_free_quota_days_for_514": 4,
     "historic_api_key_access_checked": false,
     "production_pit_mc_authority_attested": false
+  },
+  "verified_new_research_20261012": {
+    "businessquant_terms": "Official terms explicitly allow programmatic API access under every plan for internal research and analysis; need the actual user's account/API key/consent and plan limits, not a presumed paid Enterprise licence for single-seat internal notes.",
+    "no_bq_key_attested": true,
+    "no_bq_api_call_from_current_github_run": true,
+    "public_raw_data_redistribution": false,
+    "openbb_multiple_symbols": "OpenBB equity.historical_market_cap supports list-of-symbols for FMP and Intrinio adapters; connector only, upstream provider terms/PIT are independent requirements.",
+    "openbb_official_docs": "https://docs.openbb.co/odp/python/reference/equity/historical_market_cap/",
+    "businessquant_official_terms": "https://businessquant.com/terms-of-use",
+    "strict_g9_not_from_bq_terms": true,
+    "primary_market_cap_not_attested": true,
+    "effective_policy": "C4.17",
+    "real_money": "NO-GO"
   }
 }
