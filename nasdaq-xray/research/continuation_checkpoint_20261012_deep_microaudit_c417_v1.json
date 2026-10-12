@@ -818,15 +818,15 @@
       }
     },
     "source_rights": {
-      "ralllies_public_b2b_api_key_required": true,
-      "ralllies_api_docs": "https://rallies.ai/api-docs",
-      "ralllies_non_display_unattended_runner_license": "NOT_ATTESTED",
       "free_consumer_platform_is_runner_license": false,
       "fractional_vendor_volumes_mean_unadjusted_rth_volume_unproven": true,
       "current_c417_primary_mc": "ABSENT",
       "bigdata_last_observed_balance_zero_credit_exhausted": true,
       "c418_successor": "PROPOSED_NOT_ACTIVATED",
-      "no_paid_top_up": true
+      "no_paid_top_up": true,
+      "rallies_public_b2b_api_key_required": true,
+      "rallies_api_docs": "https://rallies.ai/api-docs",
+      "rallies_non_display_unattended_runner_license": "NOT_ATTESTED"
     },
     "automation_topology": {
       "active_count": 5,
@@ -892,7 +892,7 @@
         "status": "BLOCKED_WITH_EVIDENCE"
       }
     ],
-    "critical_dependency": "LICENSED_ZERO_ADDITIONAL_PAYMENT_PRIMARY_MC_AND_EXACT30_UNADJUSTED_RTH_PRICE_VOLUME_REMMAIN_UNPROVEN",
+    "critical_dependency": "LICENSED_ZERO_ADDITIONAL_PAYMENT_PRIMARY_MC_AND_EXACT30_UNADJUSTED_RTH_PRICE_VOLUME_REMAIN_UNPROVEN",
     "root_cause": "DATA_AUTHORITY_GAP_NOT_AUTOMATIC_HEALABLE_SOFTWARE_ASSERTION",
     "no_promotions": [
       "SHADOW_MC_TO_PRIMARY",
@@ -909,6 +909,34 @@
       "negative_success_as_go_rejected": true,
       "primary_and_unadjusted_rights_unverified": true
     },
-    "rollback": "Revert only audit checkpoint commit; canonical production artifacts and policy untouched."
+    "rollback": "Revert only audit checkpoint commit; canonical production artifacts and policy untouched.",
+    "market_source_probe": {
+      "provider": "Rallies",
+      "instrument": "AAPL",
+      "timeframe": "day",
+      "requested_start": "2026-08-31",
+      "requested_end": "2026-10-12",
+      "returned_rows": 30,
+      "noninteger_volume_rows": 30,
+      "example_date": "2026-10-12",
+      "example_volume": 25853311.721534,
+      "classification": "OBSERVED_RESEARCH_SHADOW_ONLY_NOT_UNADJUSTED_RTH_PROOF",
+      "github_runner_use_rights": "UNKNOWN",
+      "independent_alpaca_delayed_sip_history_check": {
+        "status": "TOOL_INTERNAL_FAILURE",
+        "accepted_history_bars": 0,
+        "source_revalidated": false
+      }
+    },
+    "synthetic_control_selftest_nonproduction": {
+      "reject_actual_observed_blockers": true,
+      "reject_false_unknown_to_pass": true,
+      "reject_shadow_mc_as_primary": true,
+      "reject_mixed_asof": true,
+      "reject_absent_r92": true,
+      "reject_unattested_phone_receipt": true,
+      "accept_synthetic_all_conditions_only": true
+    },
+    "audit_revision_parent_blob_sha": "7a13a29ac78aed7cbae260ee3348ca97f6139df5"
   }
 }
