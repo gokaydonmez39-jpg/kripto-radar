@@ -1,0 +1,103 @@
+{
+  "schema": "XRAY_INTERACTIVE_SIP_EOD_TECHNICAL_WATCH_SHADOW_V1",
+  "asof_et": "2026-10-09",
+  "observation_date_trt": "2026-10-12",
+  "research_only": true,
+  "manual_interactive_sip_only": true,
+  "automated_vendor_history_fetch_this_run": false,
+  "runner_provider_rights_verified": false,
+  "provider_upstream_independence_verified": false,
+  "c417_production_history_promoted": false,
+  "c417_production_primary_mc_promoted": false,
+  "strict_g9_pass": false,
+  "account_pass": false,
+  "technical_al_confirmed": false,
+  "alpha_authority": false,
+  "delivery_authority": false,
+  "order_authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_artifact_paths": {
+    "master": "nasdaq-xray/canonical_current_master_manifest.json",
+    "price": "nasdaq-xray/canonical_current_price_dv30.json"
+  },
+  "exact_source_blob_sha": {
+    "master": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "price": "6f3f68fff0897d68f200ad3621c51a5071494714"
+  },
+  "interactive_providers": [
+    "ALPACA_HISTORIC_SIP",
+    "RALLIES_HISTORICAL",
+    "LONGBRIDGE_EOD_QUOTE"
+  ],
+  "eod_close_crosschecked_symbols_count": 11,
+  "eod_close_crosschecked_all_exact": true,
+  "eod_same_upstream_independence": "UNKNOWN",
+  "universe_identity_pass": 3184,
+  "scope_price_dv30_pass": 514,
+  "full_260_session_and_52_iso_week_coverage": 497,
+  "insufficient_260_sessions_count": 17,
+  "insufficient_260_sessions_symbols": [
+    "BSP",
+    "CBRS",
+    "EQPT",
+    "FRVO",
+    "HONA",
+    "INIO",
+    "MDLN",
+    "MMED",
+    "NAVN",
+    "PURR",
+    "QNT",
+    "SHAZ",
+    "SKHY",
+    "SOLS",
+    "SPCX",
+    "VSNT",
+    "XE"
+  ],
+  "observed_technical_watch_count": 11,
+  "watch_55d_high_breakout": [
+    "DDOG",
+    "FFIV",
+    "NTNX",
+    "PLTR",
+    "VRNS"
+  ],
+  "watch_near20d_high": [
+    "AMGN",
+    "CAKE",
+    "EXEL",
+    "GILD",
+    "MSFT",
+    "PTC"
+  ],
+  "watch_symbols": [
+    "AMGN",
+    "CAKE",
+    "DDOG",
+    "EXEL",
+    "FFIV",
+    "GILD",
+    "MSFT",
+    "NTNX",
+    "PLTR",
+    "PTC",
+    "VRNS"
+  ],
+  "research_screen_rule": "Alpaca SIP >=260 distinct daily completed bars; >=52 ISO trading weeks; asof 2026-10-09; close>EMA20>EMA50>SMA200; QQQ-relative return 20d and 60d positive; close >=97% prior20-session intraday high; daily RVOL vs prior20 >=0.8; positive risk proxy <=8%, proxy uses max(last10 prior-session low, close-2*ATR14). Research watch ONLY; NOT C4.17 exact R1/RR/stop model.",
+  "market_data_values_in_public_artifact": false,
+  "original_raw_vendor_bars_in_public_artifact": false,
+  "no_alpha_policy_change": true,
+  "no_paid_vendor_or_broker_calls": true,
+  "no_device_delivery_claim": true,
+  "reasons_not_al": [
+    "LICENSED_PRIMARY_MC_NOT_VERIFIED",
+    "C417_R1_RR_AND_LEGAL_GATES_NOT_REPRODUCED",
+    "AUTOMATED_RUNNER_PROVIDER_RIGHTS_NOT_VERIFIED",
+    "R92_AND_DELIVERY_NOT_REGISTERED",
+    "STRICT_G9_ACCOUNT_NOT_PASSED"
+  ],
+  "caution": "One-off 12 Oct interactive research snapshot for last completed 9 Oct; not an automatically renewing AL signal. Watch list must expire at the next completed US market session; no raw bar persistence."
+}
