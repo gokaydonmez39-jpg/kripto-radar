@@ -176,5 +176,25 @@
     "Register real qualified R92 if there is one; verify issue/email/app delivery and independent device receipt."
   ],
   "provenance_caveat": "This checkpoint preserves proved readbacks and provider errors; it does not grant a market-data entitlement, create primary MC, revive stale terminal, transmit a phone alert, or certify all source code paths.",
-  "full_GO": false
+  "full_GO": false,
+  "additional_active_passive_task_drift": {
+    "task_id": "6abeb35ab4908191a4cdde6388b6e20c",
+    "task_title": "XRAY MC Epoch Result [READY]",
+    "task_enabled": false,
+    "last_readback_utc": "2026-10-12",
+    "source_scope_asof": "2026-10-09",
+    "result_primary_mc_count": 0,
+    "result_fallback_watch_count": 475,
+    "result_fallback_fail_count": 10,
+    "result_unknown_count": 29,
+    "reported_settlement_witness_relation": "EXACT_QUEUE",
+    "reported_settlement_witness": "nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v1.json",
+    "actual_witness_residual_symbol_count": 553,
+    "actual_master_full_scope_count": 3184,
+    "actual_exact_role_under_new_verified_guard": "EXACT_QUEUE_RESIDUAL_SETTLEMENT_ONLY",
+    "full_scope_separate_handoff": "nasdaq-xray/canonical_resolver_bridge_20261009_c417_dv30_v2.json",
+    "severity": "PROVENANCE_LABEL_INCORRECT_NOT_A_PRIMARY_MC_PASS",
+    "action": "Fail-closed; passive task metadata needs exact source-preserving patch. Do not rewrite the entire large passive payload from stale or truncated content. The production repo's build_mc_provenance_rebind.py now enforces scope and class distinction and CI-tested 14 mutations.",
+    "reader_committer_prompt_audit": "Existing active Reader and Committer prompt sections still describe exact queue as hash+total equality; migration to actual-set guarded semantics remains outstanding, without changing any alpha/provider decision."
+  }
 }
