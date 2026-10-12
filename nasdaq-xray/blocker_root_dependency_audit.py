@@ -79,6 +79,17 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         require("CURRENT_MC_AUTHORITY_MISSING" in blocked,"MISSING_MC_NOT_FLAGGED")
     require(e.get("actual_device_delivery_receipt_attested") is False,"FAKE_DEVICE_RECEIPT")
     require(e.get("alpha_authority") is False and e.get("ready_for_current_research_signal") is False,"RELEASE_PROMOTION")
+    manual_compatible=e.get("historical_manual_non_g9_source_contract_ready")
+    manual_prep=e.get("historical_manual_research_candidate_prep_only")
+    require(type(manual_compatible) is bool and type(manual_prep) is bool,
+            "MANUAL_HISTORICAL_CONTRACT_ATTESTATIONS_REQUIRED")
+    require(e.get("historical_manual_research_no_g9_pass_claim") is True,
+            "HISTORICAL_NOT_STRICT_G9_LABEL_MISSING")
+    require(e.get("historical_manual_research_no_notification_claim") is True,
+            "HISTORICAL_NOT_DELIVERY_LABEL_MISSING")
+    if manual_prep:
+        require(manual_compatible and e.get("current_mc_authority_count")==1,
+                "FAKE_MANUAL_PREP_WITHOUT_PRIMARY_MC")
     g9_block=(strict_g9.get("status")=="BLOCKED_STRICT_PERMANENT_ZERO")
     root={
         "P0_CURRENT_MEASURED_PRIMARY_MC":bool("CURRENT_MC_AUTHORITY_MISSING" in blocked),
@@ -108,6 +119,9 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "downstream_blocker_dependencies":{k:v for k,v in derivative.items() if k in blocked},
         "e2e_blockers_exact":sorted(blocked),
         "strict_g9_status":strict_g9.get("status"),
+        "historical_manual_non_g9_source_contract_ready":manual_compatible,
+        "historical_manual_research_candidate_prep_only":manual_prep,
+        "historical_manual_no_live_g9_or_order_claim":True,
         "e2e_latest_completed_nasdaq_session":e.get("latest_completed_nasdaq_session"),
         "terminal_session_lag":(e.get("source_session_lags") or {}).get("TERMINAL"),
         "needs_authorized_primary_mc_measurement":root["P0_CURRENT_MEASURED_PRIMARY_MC"],
@@ -131,7 +145,11 @@ def fixtures():
        "source_blob_shas":dict(blobs),"asof_et":"2026-10-09","terminal_asof_et":"2026-10-07",
        "price_pass_count":1,"master_unknown_count":1,"current_mc_authority_count":0,
        "blockers":sorted(BLOCKS),"source_session_lags":{"TERMINAL":2},
-       "actual_device_delivery_receipt_attested":False,"ready_for_current_research_signal":False,"alpha_authority":False}
+       "actual_device_delivery_receipt_attested":False,"ready_for_current_research_signal":False,"alpha_authority":False,
+       "historical_manual_non_g9_source_contract_ready":True,
+       "historical_manual_research_candidate_prep_only":False,
+       "historical_manual_research_no_g9_pass_claim":True,
+       "historical_manual_research_no_notification_claim":True}
     return m,p,t,e,blobs,[],{"status":"BLOCKED_STRICT_PERMANENT_ZERO"}
 
 def selftest():
@@ -156,6 +174,9 @@ def selftest():
         (3,"actual_device_delivery_receipt_attested",True),
         (3,"ready_for_current_research_signal",True),
         (3,"current_mc_authority_count",1),
+        (3,"historical_manual_research_candidate_prep_only",True),
+        (3,"historical_manual_research_no_g9_pass_claim",False),
+        (3,"historical_manual_research_no_notification_claim",False),
     ]:
         items=copy.deepcopy(x)
         items[idx][key]=bad
