@@ -28,6 +28,12 @@ jobs:
     env:
       XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
       XRAY_BQ_API_KEY: ${{ secrets.XRAY_BQ_API_KEY }}
+      # Research-only provider grants; mere API key presence does not
+      # authorize unattended vendor calls or data storage.
+      XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK: ${{ vars.XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK }}
+      XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
+      XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK: ${{ vars.XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK }}
+      XRAY_BQ_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_BQ_LICENSE_EVIDENCE_SHA256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -76,6 +82,22 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python -m py_compile nasdaq-xray/bq_history_onecall_shadow.py
           python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+          # Independently enforce no HTTP call merely because key is present.
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          module_path=Path("nasdaq-xray/bq_history_onecall_shadow.py")
+          spec=importlib.util.spec_from_file_location("bq_shadow_safety",module_path)
+          m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+          called=[]
+          def no_call(*args):
+              called.append(args)
+              raise RuntimeError("ILLEGAL_UNLICENSED_CALL")
+          result=m.run("2026-10-09","a-present-key",no_call,research_grant_ok=False)
+          if result["status"]!="BLOCKED_UNATTESTED_RESEARCH_LICENSE" or called or result["api_call_count"]!=0:
+              raise SystemExit("XRAY_BQ_UNLICENSED_NETWORK_CALL_FAIL_OPEN")
+          print("XRAY_BQ_API_KEY_ALONE_CANNOT_TRIGGER_UNATTENDED_REQUEST=PASS")
+          PY
           python nasdaq-xray/bq_history_onecall_shadow.py --out "$RUNNER_TEMP/xray_bq_history_onecall_shadow.json"
           python - <<'PY'
           import json,os
