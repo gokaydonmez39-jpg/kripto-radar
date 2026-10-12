@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_20261012_BQ_OFFICIAL_TERMS_LICENSE_PATH_AND_12_SOURCE_RUNTIME_HANDOFF_V1",
+  "observed_repo_head_before_checkpoint": "64332889475562733e40da249f45028267f095ca",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "date_trt": "2026-10-12",
+  "effective_policy": "C4.17",
+  "control": "C4.27",
+  "successor_policy": "C4.18_PROPOSED_NOT_ACTIVATED",
+  "safety": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "no_threshold_relaxation": true,
+    "no_forged_mc_primary": true,
+    "no_device_receipt_claim": true,
+    "no_vendor_raw_data_in_public_repo": true
+  },
+  "canonical": {
+    "asof_master": "2026-10-09",
+    "master_pass": 3184,
+    "master_unknown": 12,
+    "master_blob_sha": "828c21436a836b69fe5084387e1c54446c7b5075",
+    "asof_price": "2026-10-09",
+    "price_pass": 514,
+    "price_unknown": 0,
+    "price_blob_sha": "6f3f68fff0897d68f200ad3621c51a5071494714",
+    "asof_history": "2026-10-07",
+    "history_blob_sha": "28e182225c45c3adf4243e40eb7df7ebdb783884",
+    "asof_terminal": "2026-10-07",
+    "terminal_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+    "current_primary_mc_count": 0,
+    "r92_registered": 0,
+    "strict_g9_status": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "actual_phone_receipt": false
+  },
+  "latest_production_e2e": {
+    "run": 38214748021,
+    "status": "FAILURE_NO_GO_EXPECTED",
+    "artifact": 11731621223,
+    "artifact_zip_sha256": "c4d687d5bc13a5d25ab10af44b63b8c027b0e74d995a6b5edfe5c4e6e2bf2948",
+    "blockers": [
+      "CURRENT_MC_AUTHORITY_MISSING",
+      "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+      "IDENTITY_PARTITION_INCOMPLETE",
+      "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
+      "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+      "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+      "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN"
+    ],
+    "historical_non_g9_manual_source_contract": true,
+    "historical_manual_research_candidate_prep_only": false,
+    "full_go": false,
+    "source_latest_completed_nasdaq_session": "2026-10-09"
+  },
+  "last_delivery_workflow": {
+    "run": 38215102387,
+    "conclusion": "SUCCESS_WITH_NO_DELIVERY",
+    "candidate_delivery_step": "SKIPPED",
+    "candidate_issue_create_step": "SKIPPED",
+    "delivery_ledger_commit_step": "SKIPPED",
+    "actual_device_receipt": false
+  },
+  "source_research": {
+    "provider_rows": 12,
+    "BusinessQuant": {
+      "official_terms_url": "https://businessquant.com/terms-of-use",
+      "terms_effective": "2026-07-31",
+      "api_is_authorized_programmatic_automation": true,
+      "single_account_internal_research_permitted": true,
+      "public_data_redistribution_or_third_party_derived_product_without_written_agreement": false,
+      "account_owner_api_key_confirmed": false,
+      "github_secret_configured_confirmed": false,
+      "unattended_github_account_consent_attested": false,
+      "implies_primary_mc_or_live_g9": false,
+      "free_plan_requests_per_day": 30,
+      "needs_pit_acceptance_filing_and_class_crosscheck": true
+    },
+    "OpenBB": {
+      "official_multisymbol_mc_url": "https://docs.openbb.co/odp/python/reference/equity/historical_market_cap/",
+      "supports_list_of_symbols": [
+        "FMP",
+        "Intrinio"
+      ],
+      "aggregator_not_a_data_licence": true,
+      "upstream_vendor_pit_and_entitlement_unconfirmed": true
+    },
+    "massive": {
+      "connected_interactive_asof_mc_sample_exists": true,
+      "period_end_not_filing_publication_pit_risk": true,
+      "github_runner_key_or_license_not_proven": true
+    },
+    "Rallies": "SHADOW_COMPARISON_ONLY_UNPROVEN_UPSTREAM_INDEPENDENCE",
+    "SEC": "ORIGINAL_PIT_CIK_SHARE_CLASS_FACTS_WITH_FILING_ACCEPTANCE_CUTOFF",
+    "Alpaca": "DELAYED_HISTORICAL_SIP_NOT_STRICT_LIVE_G9"
+  },
+  "new_repairs": [
+    {
+      "commit": "09e0449af0ec45a8163a65e77fdeb36f8168334f",
+      "file": "nasdaq-xray/bq_history_onecall_shadow.py",
+      "change": "API-key-alone no longer initiates unattended BusinessQuant GET; requires explicit research API grant claim and SHA claim; selftests negative and no secret propagation."
+    },
+    {
+      "commit": "e0e0d0218f627a738d9db39eed448d708e6e08a8",
+      "file": ".github/workflows/xray-multi-provider-research-shadow.yml",
+      "change": "Wire BQ/Massive research-only license flags/digests to job environment and assert BQ key-alone yields zero API calls and no PRIMARY."
+    },
+    {
+      "commit": "64332889475562733e40da249f45028267f095ca",
+      "file": "nasdaq-xray/c418_provider_inventory_20261012.json",
+      "change": "Record official 2026-07-31 BQ terms that API/internal use may be allowed without enterprise license; separate public redistribution, self-account key and current P0 PIT; note OpenBB FMP+Intrinio multisymbol historic MC adapter."
+    }
+  ],
+  "verified_ci": {
+    "multi_provider_failover_run": 38215801694,
+    "conclusion": "SUCCESS",
+    "artifact_id": 11731587594,
+    "artifact_digest": "sha256:e240d017b252aede87b0ecd737f2fccaa8976b06dc31fe485fe2abd56b4bac35",
+    "negative_bq_key_without_license_network_count": 0,
+    "multi_provider_primary_mc_generated": 0
+  },
+  "next_engineering_steps": [
+    "Read latest GitHub main & E2E runs and check any C4.18 CI triggered by 643328894755; never trust only checkpoint.",
+    "Find a lawful Bigdata-independent account API key/usable research access for own single-account internal automation; never commit or disclose tokens, do not use website scraping or public raw data.",
+    "Compare FMP/Intrinio historical market-cap batch access via official OpenBB adapter API, verify dated publication-time PIT and upstream independence, no price/risk loosening.",
+    "Test BusinessQuant market cap screener's historical snapshot semantics versus SEC source timestamp; current minute-refreshed screens are not 2026-10-09 PIT.",
+    "Use immutable current 514 PRICE scope, 12 global issuer UNKNOWN outside 514, retain no-unknown-to-PASS.",
+    "Resolve current 514 MC real source; then 260/52 licensed bars => CA => LEGAL => TECH/RISK/RR => FINAL => TERMINAL same ASOF.",
+    "Strict G9 live consolidated entitlement, true R92 and actual phone receipt need independent evidence; no fake success.",
+    "Do not silently merge draft PR #7 or promote C4.18 to production."
+  ],
+  "real_go": false,
+  "note": "External provider account grant and live 9-Oct issuer-specific measurements cannot be created by code alone. This readback attests tests and blockers, not synthetic MC or a release."
+}
