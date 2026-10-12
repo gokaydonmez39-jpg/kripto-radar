@@ -61,7 +61,7 @@ jobs:
           python nasdaq-xray/mc_free_successor_contract.py --selftest
           python nasdaq-xray/c418_canonical_source_sha_selftest.py
           python nasdaq-xray/c418_upstream_independence_attestation_selftest.py
-      - name: Verify 11-route real 514-symbol cohort capacity and forbid fake MC rights
+      - name: Verify 12-route real current cohort capacity and forbid fake MC rights
         shell: bash
         run: |
           set -euo pipefail
@@ -84,14 +84,16 @@ jobs:
           assert j["historical_3_ticker_sample_is_current_asof"] == (source["asof_et"]=="2026-10-09")
           assert j["historical_sample_may_grant_primary"] is False
           assert j["identity_unknown_intersect_price_count"]==0
-          assert j["discovered_source_rows"]==11
+          assert j["discovered_source_rows"]==12
           assert j["verified_distinct_market_cap_origin_count"]==0
           assert j["new_primary_mc_authority_count"]==0
           assert j["new_r92_count_created"]==0
           assert j["go"] is False and j["unknown_never_pass"] is True
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           assert j["no_vendor_raw_data_exported"] is True
-          print("XRAY_C418_514_ACTUAL_ROUTING=PASS_11_PROVIDERS_NO_FAKE_PRIMARY")
+          assert j["per_source_capacity_scenarios"]["BUSINESSQUANT"]["conditional_only_not_scheduled"] is True
+          assert j["per_source_capacity_scenarios"]["BUSINESSQUANT"]["actual_same_asof_mc_entitlement"]=="UNVERIFIED"
+          print("XRAY_C418_DYNAMIC_ACTUAL_ROUTING=PASS_12_PROVIDER_ROWS_NO_FAKE_PRIMARY")
           PY
       - name: Confirm missing real provider rights cannot become PRIMARY or R92
         shell: bash
