@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Finnhub/EODHD historical MC response validators — C4.18 research only.
+"""Finnhub/EODHD/FMP historical MC response validators — C4.18 research only.
 
 Does not use APIs or secrets, does not infer PIT from an observation date,
 does not copy vendor data into git, and NEVER grants C4.17 PRIMARY or R92.
@@ -14,7 +14,8 @@ import math
 
 SCHEMA = "XRAY_C418_HISTORIC_MC_VENDOR_SHADOW_V1"
 VENDORS = {"FINNHUB": "FINNHUB_STOCK_HISTORICAL_MARKET_CAP",
-           "EODHD": "EODHD_HISTORICAL_MARKET_CAP_WEEKLY"}
+           "EODHD": "EODHD_HISTORICAL_MARKET_CAP_WEEKLY",
+           "FMP": "FMP_HISTORICAL_MARKET_CAPITALIZATION"}
 
 
 def require(ok: bool, reason: str) -> None:
@@ -41,14 +42,21 @@ def evaluate(vendor: str, symbol: str, asof: str, payload: object) -> dict:
     require(vendor in VENDORS, "UNKNOWN_VENDOR")
     require(isinstance(symbol, str) and symbol.strip() == symbol and symbol, "BAD_TICKER")
     asof = date(asof, "INVALID_ASOF")
-    require(isinstance(payload, dict), "NOT_OBJECT")
-    if vendor == "FINNHUB":
+    if vendor == "FMP":
+        # FMP official /stable/historical-market-capitalization returns
+        # a JSON array with exact ticker/date/marketCap per row.
+        require(isinstance(payload, list), "FMP_ROWS_INVALID")
+        raw = payload
+        dkey, mkey = "date", "marketCap"
+    elif vendor == "FINNHUB":
+        require(isinstance(payload, dict), "NOT_OBJECT")
         require(payload.get("symbol") == symbol, "FINNHUB_SYMBOL_MISMATCH")
         require(payload.get("currency") == "USD", "FINNHUB_CURRENCY_UNPROVEN")
         raw = payload.get("data")
         require(isinstance(raw, list), "FINNHUB_ROWS_INVALID")
         dkey, mkey = "atDate", "marketCapitalization"
     else:
+        require(isinstance(payload, dict), "NOT_OBJECT")
         # Documented EODHD returns indexed JSON keys 0,1,2 etc; a "date"
         # label is NOT a publication timestamp and observations are weekly.
         require(all(isinstance(k, str) and k.isdigit() for k in payload), "EODHD_INDEX_INVALID")
@@ -62,6 +70,12 @@ def evaluate(vendor: str, symbol: str, asof: str, payload: object) -> dict:
     dated = 0
     for row in raw:
         require(isinstance(row, dict), "ROW_NOT_OBJECT")
+        if vendor == "FMP":
+            require(row.get("symbol") == symbol, "FMP_SYMBOL_MISMATCH")
+            # FMP API documents cap currency as 'as trading'. US ticker
+            # spelling alone NEVER establishes that it is USD.
+            require(row.get("currency") in (None, "USD"),
+                    "FMP_CURRENCY_CONFLICT")
         row_date = date(row.get(dkey), "ROW_DATE_BAD")
         require(row_date not in seen, "DUPLICATE_DAY_OR_CONFLICT")
         seen.add(row_date)
@@ -79,6 +93,9 @@ def evaluate(vendor: str, symbol: str, asof: str, payload: object) -> dict:
         reasons.append("EXACT_ASOF_MC_NOT_RETURNED")
     if vendor == "EODHD":
         reasons.append("WEEKLY_MC_NOT_DAILY_ASOF_AUTHORITY")
+    if vendor == "FMP":
+        reasons.append("FMP_AS_TRADING_CURRENCY_NOT_USD_ATTESTED")
+        reasons.append("FMP_INDIVIDUAL_ENDPOINT_RUNNER_ACCESS_UNVERIFIED")
     return {
         "schema": SCHEMA, "provider": vendor, "source_root": VENDORS[vendor],
         "asof_et": asof, "requested_exact_symbol": symbol,
@@ -107,7 +124,7 @@ def selftest() -> None:
     require(fmp_witness["exact_asof_row_count"] == 1
             and fmp_witness["can_create_PRIMARY"] is False,
             "FMP_FALSE_MC_PRIMARY")
-    for name, data in (("FINNHUB",a), ("EODHD",b)):
+    for name, data in (("FINNHUB",a), ("EODHD",b), ("FMP",fmp)):
         result = evaluate(name,"AAPL","2026-10-09",data)
         require(result["exact_asof_row_count"] == 1, "POSITIVE_SHADOW_SCHEMA")
         require(all(result[k] is False for k in (
@@ -132,9 +149,15 @@ def selftest() -> None:
        ("FUTURE_DATA_INCLUDED","EODHD", lambda x: x["0"].update(date="2026-10-10")),
        ("INVALID_MARKET_CAP","EODHD", lambda x: x["0"].update(value=-1)),
        ("ROW_NOT_OBJECT","EODHD", lambda x: x.update({"0":None})),
+       ("FMP_SYMBOL_MISMATCH","FMP",lambda x: x[0].update(symbol="AAPl")),
+       ("FMP_CURRENCY_CONFLICT","FMP",lambda x: x[0].update(currency="EUR")),
+       ("DUPLICATE_DAY_OR_CONFLICT","FMP",lambda x: x.append(copy.deepcopy(x[0]))),
+       ("FUTURE_DATA_INCLUDED","FMP",lambda x: x[0].update(date="2026-10-12")),
+       ("INVALID_MARKET_CAP","FMP",lambda x: x[0].update(marketCap=0)),
+       ("ROW_NOT_OBJECT","FMP",lambda x: x.append("bogus")),
     ]
     for code, vendor, mut in negatives:
-        d = copy.deepcopy(a if vendor == "FINNHUB" else b)
+        d = copy.deepcopy({"FINNHUB":a, "EODHD":b, "FMP":fmp}[vendor])
         mut(d)
         try: evaluate(vendor,"AAPL","2026-10-09",d)
         except ValueError as e:
@@ -146,7 +169,7 @@ def selftest() -> None:
         try: evaluate(vendor,sym,asof,data)
         except ValueError: pass
         else: raise RuntimeError("INVALID_METADATA_ACCEPTED")
-    print("XRAY_MC_VENDOR_SHADOW_SELFTEST=PASS_2_SHADOW_1_WEEKLY_16_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
+    print("XRAY_MC_VENDOR_SHADOW_SELFTEST=PASS_3_SHADOW_1_WEEKLY_22_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
 
 
 def main():
