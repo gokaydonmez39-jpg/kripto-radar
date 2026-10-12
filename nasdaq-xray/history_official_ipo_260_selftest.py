@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Official 260-session IPO upper-bound regression; no market data."""
 import json
+import hashlib
 import ast
 from pathlib import Path
 import pandas_market_calendars as mcal
@@ -8,7 +9,22 @@ import pandas_market_calendars as mcal
 ROOT=Path(__file__).resolve().parent
 def run():
     evidence=json.loads((ROOT/"history_official_identity_evidence.json").read_text())
-    price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    # Frozen Oct-09 scope is test-only; never overwrite or downgrade current PRICE.
+    price=json.loads((ROOT/"research/history_17_short_price_scope_20261009.json").read_text())
+    current_price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    assert current_price.get("asof_et")>=price["asof_et"]
+    assert current_price.get("execution")=="NONE" and current_price.get("real_money")=="NO-GO"
+    assert price.get("schema")=="XRAY_HISTORY_17_SHORT_PRICE_SCOPE_ARCHIVE_V1"
+    assert price.get("source_price_blob_sha")=="6f3f68fff0897d68f200ad3621c51a5071494714"
+    assert price.get("source_price_pass_count")==514 and price.get("source_price_pass_hash")=="cb6d740f43378cacca40351e7503384d52b5a81a8b9b6cdc444f58a3965bbaef"
+    assert price.get("historical_test_only") is True and price.get("alpha_authority") is False
+    assert price.get("not_current_session_authority") is True and price.get("unknown_never_pass") is True
+    assert price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
+    assert len(price["pass_symbols"])==514 and len(set(price["pass_symbols"]))==514
+    assert price["pass_symbols"]==sorted(price["pass_symbols"])
+    assert hashlib.sha256("\n".join(price["pass_symbols"]).encode()).hexdigest()==price["source_price_pass_hash"]
+    if current_price.get("asof_et")==price["asof_et"]:
+        assert current_price.get("pass_symbols")==price["pass_symbols"]
     assert evidence["schema"]=="XRAY_HISTORY_OFFICIAL_IDENTITY_EVIDENCE_V1"
     assert evidence["execution"]=="NONE" and evidence["real_money"]=="NO-GO"
     assert evidence["alpha_authority"] is False
