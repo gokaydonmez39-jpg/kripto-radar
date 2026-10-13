@@ -20,7 +20,7 @@ EXPECTED={
  "nasdaq-xray-daily.yml":("30 * * * *",),
  "nasdaq-xray-delivery.yml":("*/15 * * * 1-5","7 * * * 0,6"),
  "xray-account-gate-reconcile.yml":("12 * * * *",),
- "xray-alpaca-delayed-sip-research.yml":("55 13,17 * * 1-5",),
+ "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
@@ -125,6 +125,7 @@ def selftest():
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
     assert base["scheduled_count"]==23
+    assert base["automated_schedules"]["xray-alpaca-delayed-sip-research.yml"]==["55 13 * * 1-5"]
     assert base["issue_writers"]==[]
     def bad(modify,want):
         sample=dict(actual)
@@ -146,6 +147,10 @@ def selftest():
         x["xray-twelve-history-resume.yml"].replace(
             "BLOCKED_SOURCE_LICENSE_OR_KEY","UNCONDITIONAL_CALL")}),
         "SCHEDULED_VENDOR_ENTITLEMENT_GUARD_DRIFT")
+    bad(lambda x:x.update({"xray-alpaca-delayed-sip-research.yml":
+        x["xray-alpaca-delayed-sip-research.yml"].replace(
+            '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
+        "SCHEDULED_CRON_CHANGED")
     bad(lambda x:x.update({"xray-e2e-production-readiness.yml":
         x["xray-e2e-production-readiness.yml"].replace(
             '"13 * * * 1-5"','"14 * * * 1-5"')}),
