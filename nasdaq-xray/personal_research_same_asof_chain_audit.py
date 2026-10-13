@@ -58,8 +58,8 @@ def read_sources():
                       "terminal_mc_input_price_sha":mc.get("current_price_blob_sha"),
                       "terminal_mc_blob_sha":mc.get("blob_sha"),
                       "history_source_mc_blob_sha":item.get("source_mc_blob_sha"),
-                      "terminal_evidence_blobs":{k:(v or {}).get("blob_sha")
-                        for k,v in evidence.items() if k in NAMES},
+                      "terminal_evidence_blobs":{k.upper():(v or {}).get("blob_sha")
+                        for k,v in evidence.items() if k.upper() in NAMES},
                       "candidate_local_research_pass":item.get(
                           "candidate_local_research_pass"),
                       "r92_count":len(item.get("r92_candidates") or [])}
@@ -133,6 +133,8 @@ def inspect(inputs,health,policy):
 
 def selftest(inputs,health,policy):
     live=inspect(inputs,health,policy)
+    demand(len(inputs["TERMINAL"]["terminal_evidence_blobs"])>=5,
+           "TERMINAL_EXACT_SOURCE_FIELDS")
     demand(live["r92_created"] is False
            and live["production_pointer_written"] is False,"SAFETY")
     tests=[
