@@ -86,8 +86,8 @@ def analyze(rows,daily,weeks):
     close=seen[ASOF][0]
     if close<5:return "TECH_FAIL_PRICE",{"dv":dv,"close":close}
     if dv<50_000_000:return "TECH_FAIL_DV30",{"dv":dv,"close":close}
-    return "PERSONAL_TECH_PRIMARY_HISTORY260_WEEK52_PRICE_DV30",
-           {"dv":dv,"close":close}
+    return ("PERSONAL_TECH_PRIMARY_HISTORY260_WEEK52_PRICE_DV30",
+            {"dv":dv,"close":close})
 
 def sec_share_math(symbol,close,asof,cik_map,ua):
     # Foreign or ambiguous issuer/class identities are not guessed.
