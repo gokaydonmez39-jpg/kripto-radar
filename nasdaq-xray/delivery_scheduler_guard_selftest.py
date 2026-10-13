@@ -142,4 +142,18 @@ assert 'workflow_run:' in workflow
 assert 'workflows: ["XRAY Canonical Current Final Factory", "NASDAQ SWING XRAY Autonomous Data Plane"]' in workflow
 assert "github.event.workflow_run.conclusion == 'success'" in workflow
 
+# NEGATIVE: a closed Nasdaq holiday is not a stale weekday requiring recovery.
+HOLIDAY=datetime(2026,7,3,20,30,tzinfo=timezone.utc)
+holiday_root=[run(created="2026-07-02T20:00:00Z")]
+holiday_final=[run(created="2026-07-02T20:10:00Z")]
+holiday_root_kick={"requested_at_utc":"2026-07-02T19:50:00Z"}
+holiday_final_kick={"requested_at_utc":"2026-07-02T19:50:00Z"}
+ok,why=evaluate_readiness(HOLIDAY,CONTRACT,holiday_root_kick,holiday_final_kick,
+                          holiday_root,holiday_final)
+assert ok and why=="PASS",(ok,why)
+# A completed holiday no-compute CI job must never be data-plane SUCCESS.
+from delivery_scheduler_guard import _weekday_root_successes
+holiday_green=run(created="2026-07-03T20:00:00Z")
+assert _weekday_root_successes([holiday_green]+holiday_root)==holiday_root
+
 print("XRAY_DELIVERY_SCHEDULER_GUARD_SELFTEST=PASS_WEEKEND_NOOP_RED_ROOT_RED_FINAL_AND_CREATED_AT_FRESHNESS")
