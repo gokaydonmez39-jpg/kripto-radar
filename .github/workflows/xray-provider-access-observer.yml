@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - "nasdaq-xray/provider_runner_access_audit.py"
+      - "nasdaq-xray/zero_limit_core_rebind_readiness.py"
 
 permissions:
   contents: read
@@ -42,7 +43,8 @@ jobs:
             nasdaq-xray/c418_daily_mc_capacity_guard.py \
             nasdaq-xray/xray_multi_provider_research.py \
             nasdaq-xray/bq_history_onecall_shadow.py \
-            nasdaq-xray/provider_runner_access_audit.py
+            nasdaq-xray/provider_runner_access_audit.py \
+            nasdaq-xray/zero_limit_core_rebind_readiness.py
           python nasdaq-xray/c418_provider_routing_readiness.py --selftest
           python -O nasdaq-xray/c418_provider_routing_readiness.py --selftest
           python nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
@@ -52,6 +54,9 @@ jobs:
           python nasdaq-xray/bq_history_onecall_shadow.py --selftest
           python nasdaq-xray/provider_runner_access_audit.py --selftest
           python -O nasdaq-xray/provider_runner_access_audit.py --selftest
+          python nasdaq-xray/zero_limit_core_rebind_readiness.py --selftest
+          python -O nasdaq-xray/zero_limit_core_rebind_readiness.py --selftest
+          python nasdaq-xray/zero_limit_core_rebind_readiness.py --check-current --out "$RUNNER_TEMP/xray_zero_limit_rebind_readiness.json"
       - name: Observe exactly 12 providers without reading PRICE or vendor credentials
         shell: bash
         run: |
