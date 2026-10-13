@@ -30,3 +30,28 @@ jobs:
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: python nasdaq-xray/personal_research_root_full_scope.py --offset 0 --limit 32 --sec-mc --out "$RUNNER_TEMP/xray_personal_root_32.json"
+      - name: Check real scope and reject false global completion
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_personal_root_32.json").read_text())
+          assert j["asof_et"]=="2026-10-13" and j["scope_total"]==3185
+          assert j["slice_count"]==len(j["statuses"])==32
+          assert sum(j["counts"].values())==32
+          assert j["daily_count"]==260 and j["completed_week_count"]==52
+          assert j["source_sina_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/sina_state.json"],text=True).strip()
+          assert j["mc_requested"] is True
+          assert j["r92_created"] is False and j["full_cohort_coverage_claimed"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_ACTUAL_COHORT=32_OF_3185_SOURCE_BOUND")
+          PY
+      - name: Archive count-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-root260-32-status
+          path: ${{ runner.temp }}/xray_personal_root_32.json
+          if-no-files-found: warn
+          retention-days: 14
