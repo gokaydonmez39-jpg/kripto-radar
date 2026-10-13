@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 ROOT=Path(__file__).resolve().parent
 WITNESS=ROOT/"health_chatgpt_runtime_attestation_20261013.json"
 CONTRACT=ROOT/"scheduler_failover_contract.json"
+APPEND_BLOCK=ROOT/"health_chatgpt_prompt_append_v21.txt"
 TASK_ID="6abd0465d15c8191aac5888abb784f27"
 SENTINEL="HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND"
 SCHEMA="XRAY_CHATGPT_HEALTH_RUNTIME_TASK_ATTESTATION_V1"
@@ -25,6 +26,33 @@ EXPECTED="HEALTH_TASK_PROMPT_HOLIDAY_VETO_DRIFT_UNVERIFIED"
 
 def need(pred,code):
     if not pred:raise ValueError("HEALTH_RUNTIME_ATTESTATION_"+code)
+
+def validate_append(text):
+    need(isinstance(text,str) and text.startswith("HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND\\n".replace("\\\\n","\\n")),
+         "APPEND_HEAD_MISSING")
+    need(text.count("HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND")==1,
+         "APPEND_DUPLICATE")
+    need(text.rstrip().endswith("END_HEALTH_NASDAQ_EXCHANGE_CAS_V21"),
+         "APPEND_FOOTER_MISSING")
+    required=(
+      "SCOPE=","PRECEDENCE=","TIME_AUTHORITY=","CALENDAR_AUTHORITY=",
+      "ROOT_CAS_VETO=","EARLY_CLOSE=","CALENDAR_UNAVAILABLE=",
+      "VALID_ROOT_ACTION=","FINAL_KICK=","PROMPT_DRIFT_HEALTH=",
+      "NO_ALPHA_PROMOTION=true","NO_PAID_FALLBACK=true",
+      "NO_BROKER_OR_ORDER_ACTION=true","EXECUTION=NONE",
+      "REAL_MONEY=NO-GO","UNKNOWN_NEVER_PASS=true",
+    )
+    lines=text.splitlines()
+    for marker in required:
+        need(any(line.startswith(marker) for line in lines),
+             "APPEND_REQUIRED_LINE_MISSING_"+marker[:25])
+    need('permit_compute(now_utc,"schedule")' in text,
+         "APPEND_MISSING_OFFICIAL_SESSION_PREDICATE")
+    need("DO NOT update scheduler_kick_dataplane.json" in text,
+         "APPEND_HOLIDAY_HARD_VETO_MISSING")
+    need("Preserve every existing prompt byte" in text,
+         "APPEND_FULL_PROMPT_PRESERVATION_REQUIRED")
+
 
 def validate(att,contract):
     need(type(att) is dict and type(contract) is dict,"OBJECTS_REQUIRED")
@@ -121,6 +149,24 @@ def validate(att,contract):
     }
 
 def selftest(att,contract):
+    block=APPEND_BLOCK.read_text()
+    validate_append(block)
+    broken=(
+      block.replace("ROOT_CAS_VETO=","UNSAFE_ROOT_CAS_VETO="),
+      block.replace("permit_compute(now_utc,\\\"schedule\\\")","WEEKDAY_ONLY"),
+      block.replace("DO NOT update scheduler_kick_dataplane.json","MAY update scheduler_kick_dataplane.json"),
+      block.replace("Preserve every existing prompt byte","Replace with a shorter prompt"),
+      block.replace("EXECUTION=NONE","EXECUTION=TRADE"),
+      block.replace("REAL_MONEY=NO-GO","REAL_MONEY=GO"),
+      block.replace("UNKNOWN_NEVER_PASS=true","UNKNOWN_NEVER_PASS=false"),
+      block.replace("END_HEALTH_NASDAQ_EXCHANGE_CAS_V21","END_UNSAFE_GUARD"),
+      block+"HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND\\n",
+      block.replace("NO_ALPHA_PROMOTION=true","NO_ALPHA_PROMOTION=false"),
+    )
+    for i,txt in enumerate(broken):
+        try:validate_append(txt)
+        except ValueError:pass
+        else:raise AssertionError("UNSAFE_APPEND_PATCH_ACCEPTED_"+str(i))
     pass_state=validate(att,contract)
     need(pass_state["status"]=="BLOCKED_CHATGPT_HEALTH_HOLIDAY_PROMPT_DRIFT",
          "INCORRECT_CLOSED_STATUS")
@@ -161,7 +207,7 @@ def selftest(att,contract):
         try:validate(att,altered)
         except ValueError:pass
         else:raise AssertionError("HEALTH_FAILOPEN_CONTRACT_MUTATION_"+key)
-    print("XRAY_CHATGPT_HEALTH_TASK_BINDING_GUARD=PASS_22_NEGATIVES_RUNTIME_STILL_BLOCKED")
+    print("XRAY_CHATGPT_HEALTH_TASK_BINDING_GUARD=PASS_32_NEGATIVES_RUNTIME_STILL_BLOCKED")
 
 def main():
     p=argparse.ArgumentParser()
@@ -170,6 +216,7 @@ def main():
     args=p.parse_args()
     att=json.loads(WITNESS.read_text())
     contract=json.loads(CONTRACT.read_text())
+    validate_append(APPEND_BLOCK.read_text())
     if args.selftest:selftest(att,contract)
     state=validate(att,contract)
     if args.out is not None:
