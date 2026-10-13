@@ -103,8 +103,14 @@ def report(statuses,state,daily,weeks,source_status):
 def selftest():
     daily,weeks,state=source_scope()
     def bar(day):
-        return {"t":day+"T04:00:00Z","o":10,"h":11,
-                "l":9,"c":10,"v":10000}
+        midnight=dt.datetime.combine(
+            dt.date.fromisoformat(day),dt.time(0,0),
+            tzinfo=ZoneInfo("America/New_York"))
+        return {"t":midnight.astimezone(dt.timezone.utc).isoformat(),
+                "o":10,"h":11,"l":9,"c":10,"v":10000}
+    demand(timestamp_date(bar("2026-01-12")["t"]).isoformat()=="2026-01-12"
+           and timestamp_date(bar("2026-10-13")["t"]).isoformat()=="2026-10-13",
+           "DST_FIXTURE_CORRECTNESS")
     positive=[bar(x) for x in daily]
     demand(classify(positive,daily,weeks)=="OBSERVED_RAW_260_52_SIP_SHADOW_NOT_PRIMARY","POSITIVE")
     cases=[
