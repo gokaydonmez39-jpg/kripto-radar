@@ -8,6 +8,7 @@ on:
     workflows:
       - "XRAY Live Truth Attestation"
       - "XRAY E2E Production Readiness (Fail-Closed)"
+      - "XRAY Account Gate Reconciler"
     types: [completed]
     branches: [main]
   workflow_dispatch:
