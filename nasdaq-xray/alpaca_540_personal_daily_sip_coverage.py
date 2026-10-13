@@ -124,12 +124,35 @@ def diagnostic_reason(rows,dates):
         return "OFFICIAL_DATE_SET_MISMATCH"
     return "UNKNOWN_VALIDATOR_DISAGREEMENT"
 
+def official_close_price_research_bucket(rows,dates):
+    """Offline SIP 1Day close triage, no authorization to set canonical PRICE.
+
+    Alpaca market-data FAQ: on tape C, T contributes to DAILY VOLUME but
+    NOT to DAILY CLOSE, and 6 contributes to both. This function never
+    consumes daily volume as RTH, nor makes a price PASS.
+    Only a fully validated, distinct exact30 daily set is eligible.
+    """
+    need(classify(rows,dates)=="DAILY_SIP_30_VALID_NOT_RTH",
+         "UNVERIFIED_DAILY_BAR_INPUT")
+    asof=dates[-1]
+    matching=[row for row in rows if
+        dt.datetime.fromisoformat(row["t"].replace("Z","+00:00"))
+          .astimezone(NY).date().isoformat()==asof]
+    need(len(matching)==1,"ASOF_CLOSE_EXACTLY_ONE")
+    close=matching[0]["c"]
+    need(type(close) in (int,float) and math.isfinite(close) and close>0,
+         "BAD_ASOF_CLOSE")
+    # 5.00 USD is an exact, inclusive C4.17 threshold.
+    return "BELOW_5_SHADOW" if close<5.0 else "AT_LEAST_5_SHADOW"
+
 def collect(scope,dates,fetch):
     """At most 24 actual HTTP page attempts TOTAL, even under pagination."""
     calls=[0]
     counters={"DAILY_SIP_30_VALID_NOT_RTH":0,"INCOMPLETE":0,"INTEGRITY":0}
     reasons={}
     affected=[]
+    price_buckets={"BELOW_5_SHADOW":0,"AT_LEAST_5_SHADOW":0}
+    below_five_symbols=[]
     attempted=0
     failure=None
     for offset in range(0,len(scope),CHUNK):
@@ -149,7 +172,12 @@ def collect(scope,dates,fetch):
             rows=data.get(s)
             status=classify(rows,dates)
             counters[status]+=1
-            if status!="DAILY_SIP_30_VALID_NOT_RTH":
+            if status=="DAILY_SIP_30_VALID_NOT_RTH":
+                classification=official_close_price_research_bucket(rows,dates)
+                price_buckets[classification]+=1
+                if classification=="BELOW_5_SHADOW":
+                    below_five_symbols.append(s)
+            else:
                 cause=diagnostic_reason(rows,dates)
                 reasons[cause]=reasons.get(cause,0)+1
                 affected.append({"symbol":s,"classification":status,"reason":cause})
@@ -157,8 +185,16 @@ def collect(scope,dates,fetch):
     need(sum(reasons.values())==len(affected) and
          len(affected)==counters["INCOMPLETE"]+counters["INTEGRITY"],
          "DIAGNOSTIC_ACCOUNTING")
+    need(sum(price_buckets.values())==counters["DAILY_SIP_30_VALID_NOT_RTH"]
+         and len(below_five_symbols)==price_buckets["BELOW_5_SHADOW"],
+         "RESEARCH_PRICE_BUCKET_ACCOUNTING")
     return {"attempted":attempted,"remaining":len(scope)-attempted,
             "api_calls":calls[0],"counts":counters,
+            "price_close_research_only":dict(price_buckets),
+            "below_5_research_symbol_sha256":sha_lines(sorted(below_five_symbols)),
+            "price_source_not_primary":True,
+            "confirmed_c417_price_fail_count":0,
+            "confirmed_c417_dv30_pass_count":0,
             "diagnostic_reasons":dict(sorted(reasons.items())),
             "affected_symbols":affected,
             "affected_symbols_sha256":sha_lines(sorted(x["symbol"] for x in affected)),
@@ -225,6 +261,21 @@ def selftest():
                 "o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":100000}
     records=[sample(d) for d in days]
     need(classify(records,days)=="DAILY_SIP_30_VALID_NOT_RTH","VALID")
+    need(official_close_price_research_bucket(records,days)=="AT_LEAST_5_SHADOW",
+         "ABOVE_THRESHOLD")
+    from copy import deepcopy
+    below=deepcopy(records)
+    below[-1].update(o=4.99,h=5.1,l=4.5,c=4.99)
+    need(official_close_price_research_bucket(below,days)=="BELOW_5_SHADOW",
+         "BELOW_THRESHOLD")
+    boundary=deepcopy(records)
+    boundary[-1].update(o=5.00,h=5.5,l=4.5,c=5.00)
+    need(official_close_price_research_bucket(boundary,days)=="AT_LEAST_5_SHADOW",
+         "EXACT_FIVE_INCLUSIVE")
+    bad=deepcopy(records);bad.pop()
+    try:official_close_price_research_bucket(bad,days)
+    except ValueError:pass
+    else:raise AssertionError("MISSING_DAY_PRICE_FALSE_ACCEPT")
     import copy
     negatives=[
         lambda x:x.pop(),lambda x:x[0].update(v=1.5),
@@ -247,8 +298,21 @@ def selftest():
     need(r["attempted"]==3 and r["remaining"]==0
          and r["api_calls"]==1
          and r["counts"]["DAILY_SIP_30_VALID_NOT_RTH"]==3
+         and r["price_close_research_only"]=={
+             "BELOW_5_SHADOW":0,"AT_LEAST_5_SHADOW":3}
+         and r["confirmed_c417_price_fail_count"]==0
+         and r["confirmed_c417_dv30_pass_count"]==0
          and r["verified_rth_primary_count"]==0
          and r["r92_created"] is False,"MOCK_CALL")
+    mixed=collect(["AAPL","NVDA"],days,
+        lambda syms,dates,token:{"bars":{
+            "AAPL":deepcopy(below),"NVDA":deepcopy(boundary)},
+            "next_page_token":None})
+    need(mixed["price_close_research_only"]=={
+             "BELOW_5_SHADOW":1,"AT_LEAST_5_SHADOW":1}
+         and mixed["confirmed_c417_price_fail_count"]==0
+         and mixed["confirmed_c417_dv30_pass_count"]==0,
+         "MIXED_BUCKET_SHADOW_ONLY")
     sample_bad=copy.deepcopy(records)
     sample_bad[0]["v"]=1.5
     d=collect(["AAPL","NVDA"],days,lambda a,b,t:{
@@ -264,7 +328,7 @@ def selftest():
     e=collect(["AAPL"],days,lambda a,b,t:{"bars":{},"next_page_token":"x"})
     need(e["attempted"]==0 and not e["coverage_complete"]
          and e["api_calls"]<=MAX_CALLS,"PAGINATION_BLOCK")
-    print("XRAY_PERSONAL_540_SIP_SELFTEST=PASS_8_BAR_NEGATIVES_3_SCOPE_CASES_REASON_CODE_NO_HTTP")
+    print("XRAY_PERSONAL_540_SIP_SELFTEST=PASS_8_BAR_NEGATIVES_3_SCOPE_CASES_PRICE_TRIAGE_5USD_NO_HTTP")
 
 def main():
     parser=argparse.ArgumentParser()
