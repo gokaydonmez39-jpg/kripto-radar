@@ -3,6 +3,7 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
+      "AZTR",
       "BKKT.W",
       "EFTY",
       "HCHL",
@@ -52,6 +53,7 @@
     ],
     "veto_symbols": [
       "ARBEW",
+      "AZTR",
       "BBBYW",
       "BKKT.W",
       "BLFS",
@@ -95,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-13T16:24:46.596916+00:00",
+  "generated_at_utc": "2026-10-13T16:48:10.448914+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -757,8 +759,9 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 13,
       "active_halt_symbols": [
+        "AZTR",
         "BKKT.W",
         "EFTY",
         "HCHL",
@@ -773,8 +776,68 @@
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 58,
+      "item_count": 62,
       "items": [
+        {
+          "HaltDate": "10/13/2026",
+          "HaltTime": "12:35:52.203",
+          "IssueName": "RF Acq Cp II Ord",
+          "IssueSymbol": "RFAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/13/2026",
+          "ResumptionQuoteTime": "12:35:52",
+          "ResumptionTradeTime": "12:40:52",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:35:52.203</td><td valign=\"top\">RFAI</td><td valign=\"top\">RF Acq Cp II Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:35:52                      </td><td valign=\"top\">12:40:52                      </td></tr></table>",
+          "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
+          "title": "RFAI"
+        },
+        {
+          "HaltDate": "10/13/2026",
+          "HaltTime": "12:30:52.136",
+          "IssueName": "WF Hldg Ltd Ord",
+          "IssueSymbol": "WFF",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/13/2026",
+          "ResumptionQuoteTime": "12:30:52",
+          "ResumptionTradeTime": "12:40:52",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:30:52.136</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:30:52                      </td><td valign=\"top\">12:40:52                      </td></tr></table>",
+          "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
+          "title": "WFF"
+        },
+        {
+          "HaltDate": "10/13/2026",
+          "HaltTime": "12:30:08.216",
+          "IssueName": "Archimedes Tech SPAC Partner U",
+          "IssueSymbol": "ATIIU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/13/2026",
+          "ResumptionQuoteTime": "12:30:08",
+          "ResumptionTradeTime": "12:40:08",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:30:08.216</td><td valign=\"top\">ATIIU</td><td valign=\"top\">Archimedes Tech SPAC Partner U</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:30:08                      </td><td valign=\"top\">12:40:08                      </td></tr></table>",
+          "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
+          "title": "ATIIU"
+        },
+        {
+          "HaltDate": "10/13/2026",
+          "HaltTime": "12:24:44.674",
+          "IssueName": "Azitra Inc.",
+          "IssueSymbol": "AZTR",
+          "Market": "AMEX",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "H11",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:24:44.674</td><td valign=\"top\">AZTR</td><td valign=\"top\">Azitra Inc.</td><td valign=\"top\">AMEX</td><td valign=\"top\">H11</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
+          "title": "AZTR"
+        },
         {
           "HaltDate": "10/13/2026",
           "HaltTime": "12:20:33.833",
@@ -785,8 +848,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/13/2026",
           "ResumptionQuoteTime": "12:20:33",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:20:33.833</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:20:33                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "12:30:33",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:20:33.833</td><td valign=\"top\">WFF</td><td valign=\"top\">WF Hldg Ltd Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">12:20:33                      </td><td valign=\"top\">12:30:33                      </td></tr></table>",
           "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
           "title": "WFF"
         },
