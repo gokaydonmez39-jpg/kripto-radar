@@ -1,0 +1,134 @@
+{
+  "schema": "XRAY_20261013_HEALTH_HOLIDAY_FAILOVER_CONTINUATION_CHECKPOINT_V1",
+  "asof_inspection_utc": "2026-10-13",
+  "head_at_checkpoint_preimage": "9932798564d966d78234072d6724b0a676dd3d8a",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "no_paid_fallback": true,
+  "no_broker_orders": true,
+  "active_xray_task_count_expected": 5,
+  "new_chatgpt_tasks_created": 0,
+  "scope": "RESEARCH_ONLY_CONTROL_PLANE_HOLIDAY_FAILOVER",
+  "root_cause": "Health failover decision fixture treated a US ET weekday as eligible even when Nasdaq is closed on observed market holiday; only exchange-session calendar can authorize a root CAS.",
+  "red_ci": {
+    "run_id": 38429803890,
+    "url": "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38429803890",
+    "result": "FAILURE_EXPECTED",
+    "error": "TypeError: _must_kick_root() got an unexpected keyword argument when_utc"
+  },
+  "fix": {
+    "decision_file": "nasdaq-xray/scheduler_failover_selftest.py",
+    "decision_blob_sha": "59852f610b1bf4531018eea8c311ce1add636a5d",
+    "contract_file": "nasdaq-xray/scheduler_failover_contract.json",
+    "contract_blob_sha": "3c6a70adb8c233275220fb34cf1e2dde9230eaf0",
+    "workflow_file": ".github/workflows/xray-resilience-observability.yml",
+    "workflow_blob_sha": "3d6a76cde04ce6df59511d7ed7ecaa88dabf8e46",
+    "calendar_package": "pandas_market_calendars==5.4.0",
+    "observed_july3_2026_exchange_closed_rejected": true,
+    "thanksgiving_christmas_closed_rejected": true,
+    "columbus_day_stock_market_open_accepted": true,
+    "black_friday_early_close_accepted": true,
+    "calendar_outage_blocks_cas": true,
+    "missing_naive_timestamp_blocks_cas": true
+  },
+  "ci_green": [
+    {
+      "workflow": "NASDAQ SWING XRAY Autonomous Data Plane",
+      "run_id": 38430025508,
+      "conclusion": "success",
+      "check": "XRAY_SCHEDULER_FAILOVER_SELFTEST=PASS"
+    },
+    {
+      "workflow": "XRAY Resilience + Official Witnesses",
+      "run_id": 38430226620,
+      "conclusion": "success",
+      "check": "XRAY_SCHEDULER_FAILOVER_SELFTEST=PASS"
+    },
+    {
+      "workflow": "XRAY GitHub-Native Root Watchdog",
+      "run_id": 38430223355,
+      "conclusion": "success"
+    }
+  ],
+  "scope_limitations": {
+    "github_contract_and_fixture_tested": true,
+    "root_market_quota_calendar_already_guarded": true,
+    "health_chatgpt_task_prompt_exact_append_not_performed": true,
+    "health_chatgpt_task_holiday_actual_runtime_cas_suppression_observed": false,
+    "production_research_released": false,
+    "raw_provider_data_persisted": false,
+    "primary_mc_created": false,
+    "r92_created": false,
+    "smartphone_receipt_observed": false
+  },
+  "last_canonical_readback": {
+    "master": {
+      "asof_et": "2026-10-12",
+      "pass": 3184,
+      "unknown": 10
+    },
+    "price_dv30": {
+      "asof_et": "2026-10-12",
+      "pass": 0,
+      "unknown": 540
+    },
+    "history": {
+      "asof_et": "2026-10-07",
+      "stale_for_current_scope": true
+    },
+    "terminal": {
+      "asof_et": "2026-10-07",
+      "r92_count": 0
+    },
+    "g9": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "account": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED",
+    "true_full_go": "BLOCKED"
+  },
+  "remaining_dependency_order": [
+    {
+      "id": 1,
+      "task": "Prove Health ChatGPT task honors exchange-closed no-CAS rule on an actual observed holiday or controlled permitted dry-run; preserve the full current task prompt and all five task IDs.",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": 2,
+      "task": "Verify lawful unattended historical Alpaca SIP RTH volume conditions and full 30 official sessions, including closing auction and adjustment provenance, before canonical PRICE promotion.",
+      "status": "BLOCKED_EXTERNAL_RIGHTS_AND_VOLUME_LINEAGE"
+    },
+    {
+      "id": 3,
+      "task": "Resolve 540 current PRICE UNKNOWN with exact symbols and complete source-licensed 30-session evidence; never infer zero from partial coverage.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": 4,
+      "task": "Verify BusinessQuant runner key+license, or suitable alternative current primary USD exact-ASOF filing-acceptance PIT MC lineage, with no fallback WATCH promotion.",
+      "status": "BLOCKED_EXTERNAL_ACCESS_AND_ENTITLEMENT"
+    },
+    {
+      "id": 5,
+      "task": "Resolve 10 master unknown and rebuild current HISTORY 260 daily/52 weekly, legal and issuer official corporate events.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": 6,
+      "task": "Rebuild same-ASOF SHA-bound Stage1/Regime/Deep/Final/Terminal, prove and durably register actual R92 only if all candidate-local gates pass.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": 7,
+      "task": "Verify device receipt of ChatGPT user alert, dedup, retry, chaos, source-missing and exchange-holiday recovery E2E.",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": 8,
+      "task": "Separately prove G9 consolidated National NBBO legal rights and read-only same-run ACCOUNT for TRUE_FULL_GO; these are not manual research AL prerequisites.",
+      "status": "BLOCKED"
+    }
+  ]
+}
