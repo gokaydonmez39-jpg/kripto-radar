@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
+      - "nasdaq-xray/evidence/alpaca_connected_sip_daily_20261013_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
     - cron: "55 13,17 * * 1-5"
@@ -61,6 +62,44 @@ jobs:
               assert first<=q<=last and first<=t<=last and q!=t
           assert not any(k in p.read_text().lower() for k in ('"bid_price"','"ask_price"','"trade_price"','"last_price"','"volume"'))
           print("XRAY_HISTORICAL_SIP_CONNECTOR_METADATA_FAIL_CLOSED=PASS symbols=3")
+          PY
+      - name: Validate 13-Oct interactive SIP daily transport metadata, no PRICE pass
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,pathlib
+          p=pathlib.Path("nasdaq-xray/evidence/alpaca_connected_sip_daily_20261013_v1.json")
+          x=json.loads(p.read_text())
+          assert x["schema"]=="XRAY_CONNECTED_ALPACA_SIP_DAILY_TRANSPORT_METADATA_V1"
+          assert x["source"]=="CONNECTED_ALPACA_CHATGPT_INTERACTIVE_READONLY"
+          assert x["api_feed"]=="sip" and x["api_timeframe"]=="1Day"
+          assert (x["request_start_date_et"],x["official_last_completed_session_et"],
+                  x["request_end_date_et"])==("2026-08-17","2026-10-12","2026-10-13")
+          assert (x["independent_connected_calendar_session_count_including_current_date"]==41
+                  and x["incomplete_current_date_in_response"]=="2026-10-13"
+                  and x["incomplete_date_is_excluded_from_eod_count"] is True)
+          assert set(x["symbols"])=={"AAPL","NVDA","MSFT"}
+          for sym,row in x["symbols"].items():
+              assert row=={
+                "daily_rows_returned":41,"completed_dated_rows_by_asof":40,
+                "completed_unique_dates":40,
+                "completed_volume_values_all_positive_integers":True,
+                "last_completed_bar_date":"2026-10-12"}
+          for key in ("raw_vendor_prices_or_volumes_persisted",
+                      "official_rth_only_lineage_attested",
+                      "github_runner_same_access_verified",
+                      "unattended_data_and_derived_rights_attested",
+                      "complete_540_unknown_universe_coverage_verified",
+                      "full_30_session_c417_positive_price_authority",
+                      "primary_mc_authority","r92_registration_authority",
+                      "strict_g9_authority","account_authority"):
+              assert x[key] is False,key
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          # No market data prices, per-bar OHLCV, or API credentials in Git.
+          forbidden=('"open":','"high":','"low":','"close":','"volume":',
+                     '"api_key":','"api_secret":','"market_cap":')
+          assert not any(f in p.read_text().lower() for f in forbidden)
+          print("XRAY_CONNECTED_SIP_13OCT=PASS_3_SYMBOLS_40_COMPLETED_DATES_NO_CURRENT_BAR_NO_PRICE_MC_R92")
           PY
       - name: Bounded delayed-SIP health readback
         run: |
