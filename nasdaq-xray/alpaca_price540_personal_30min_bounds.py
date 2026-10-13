@@ -21,9 +21,9 @@ ROOT=Path(__file__).resolve().parent
 ASOF="2026-10-12"
 PRIOR=("AAON","AAPL","MSFT","NVDA","AMZN","GOOGL","META","TSLA")
 PRIOR_RUNS=(38468954318,38473340983)
-BATCH=16
+BATCH=8
 MAX_BATCHES=34
-MAX_HTTP_CALLS=850
+MAX_HTTP_CALLS=950
 GOOD="LOWER_BOUND_GE_50M_SHADOW"
 REUSED="PRIOR_VERIFIED_LOWER_BOUND_GE_50M_SHADOW"
 
@@ -113,9 +113,11 @@ def load_resume(path,initial,source_sha):
     prior=prev["symbol_statuses"]
     for sym in PRIOR:
         demand(prior[sym]==REUSED,"PRIOR_COHORT_CHANGED")
+    exhausted="UNKNOWN_PROVIDER_XRAY_4_30M_GLOBAL_CALL_BUDGET_EXHAUSTED"
     allowed={REUSED,"LOWER_BOUND_GE_50M_SHADOW",
        "UPPER_BOUND_LT_50M_SHADOW","AMBIGUOUS_BETWEEN_BOUNDS_SHADOW",
-       "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW","UNKNOWN_NOT_YET_ATTEMPTED"}
+       "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW","UNKNOWN_NOT_YET_ATTEMPTED",
+       exhausted}
     demand(set(prior.values()).issubset(allowed),"PREVIOUS_STATUS_UNKNOWN")
     demand(type(prev.get("api_calls")) is int and
            0<=prev["api_calls"]<MAX_HTTP_CALLS,"PREVIOUS_CALL_ACCOUNTING")
@@ -126,10 +128,20 @@ def load_resume(path,initial,source_sha):
            "PREVIOUS_COUNT_PARTITION")
     current=dict(initial)
     current["symbol_statuses"]=dict(prior)
+    # The 16-symbol page-budget error did NOT complete its symbols. One
+    # smaller batch replay is required; every actually classified row is kept.
+    retry=sorted(sym for sym,value in prior.items() if value==exhausted)
+    demand(len(retry)<=16,"UNEXPECTED_PAGE_CAP_RETRY_SCOPE")
+    for sym in retry:
+        current["symbol_statuses"][sym]="UNKNOWN_NOT_YET_ATTEMPTED"
     current["api_calls"]=prev["api_calls"]
     current["resumed_from_sha256"]=source_sha
-    current["resumed_from_run_id"]=38482369533
-    current["reused_prior_symbols_count"]=prev["current_classification_count"]
+    current["resumed_from_run_id"]=38482777199
+    current["reused_prior_symbols_count"]=sum(
+        v!="UNKNOWN_NOT_YET_ATTEMPTED" for v in
+        current["symbol_statuses"].values())
+    current["previous_incomplete_page_batch_retried"]=retry
+    current["prior_run_failed_page_calls_not_accounted_exactly"]=True
     return current
 
 def recompute(r):
@@ -169,7 +181,7 @@ def selftest():
         except ValueError:continue
         raise AssertionError("FOREIGN_BATCH_ACCEPTED")
     demand(MAX_HTTP_CALLS>=2*MAX_BATCHES
-           and MAX_HTTP_CALLS<=850,"CALL_BUDGET")
+           and MAX_HTTP_CALLS<=950,"CALL_BUDGET")
     print("XRAY_PRICE540_SELFTEST=PASS_3_NEGATIVE_PRIOR_REUSE_UNKNOWN_NO_PRIMARY")
 
 def main():
