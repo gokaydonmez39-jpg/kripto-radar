@@ -1,0 +1,180 @@
+{
+  "schema": "XRAY_C417_PERSONAL_SIP_ANOMALY_FROZEN_QUEUE_V1",
+  "asof_et": "2026-10-12",
+  "observed_utc_date": "2026-10-13",
+  "source": "ALPACA_HISTORICAL_SIP_1DAY_PERSONAL_RESEARCH",
+  "source_runner_run": 38457415764,
+  "source_runner_head_sha": "86130cf6c0cbbc92c17a6cae74b68a069fdd60cf",
+  "source_artifact_id": 11844296878,
+  "source_artifact_json": "xray_alpaca_540_metadata.json",
+  "source_master_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+  "source_price_blob_sha": "787e1222fe140ae141b51e98bbbaaa9034ead377",
+  "source_exact30_sha256": "3cc198beda85ffc7e5960b8c8daa4ed1ce9e838d40839f3a0e8f4777e8b343c1",
+  "source_540_symbol_set_sha256": "c9711988617b601db946ac54cdd47f7880214d4ddfc6ac4028ed06ea6c2f7783",
+  "source_affected_symbols_sha256": "c1933406fd72edf8fdca6e12db38da697883f6cef32d9f66aa42b0a4d5b54bca",
+  "scope_count": 540,
+  "api_calls_observed": 17,
+  "daily_sip_exact30_valid_not_rth_count": 513,
+  "anomaly_count": 27,
+  "anomaly_reasons": {
+    "NONPOSITIVE_VOLUME": 26,
+    "BAR_COUNT_NOT_30": 1
+  },
+  "affected": [
+    {
+      "symbol": "ALDF",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "ALOV",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "BRBI",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "DYOR",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "GCGR",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "GIX",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "GRAL",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "HCIC",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "HFBL",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "HVMC",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "IPVV",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "JBDI",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "JONE",
+      "classification": "INCOMPLETE",
+      "reason": "BAR_COUNT_NOT_30"
+    },
+    {
+      "symbol": "LTGR",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "MDRR",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "MGRT",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "NCEW",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "NHIV",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "NOEM",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "ORIQ",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "PFX",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "RACD",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "ROMA",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "SCPQ",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "SVCC",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "TCBS",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    },
+    {
+      "symbol": "TWLV",
+      "classification": "INTEGRITY",
+      "reason": "NONPOSITIVE_VOLUME"
+    }
+  ],
+  "role": "FROZEN_RESEARCH_DIAGNOSTIC_ONLY",
+  "asof_scope": "EXACT_HISTORICAL_ASOF_ONLY",
+  "reuse_rule": "DO_NOT_PROMOTE_TO_NEW_ASOF_OR_PRIMARY; REPROBE_ONLY_AFFECTED_SYMBOLS_AND_ORIGINAL_FAILED_DATES_WHEN_PERMITTED",
+  "required_next_checks": [
+    "NONPOSITIVE_VOLUME_REPORTED_BAR_DATE_AND_REASON_IDENTIFICATION",
+    "JONE_MISSING_OFFICIAL_DAY_IDENTIFICATION",
+    "OFFICIAL_RTH_TRADE_CONDITION_AND_16_00_AUCTION_RECONCILIATION",
+    "PIT_CORPORATE_ACTION_AND_ISSUER_CLASS",
+    "CURRENT_ASOF_FRESHNESS"
+  ],
+  "canonical_price_pass_created": 0,
+  "primary_market_cap_created": 0,
+  "r92_created": 0,
+  "coverage_complete_for_daily_sip": true,
+  "rth_dv30_verified": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "paid_call_requested": false,
+  "no_vendor_ohlcv_or_price_published": true
+}
