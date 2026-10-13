@@ -14,6 +14,7 @@ on:
       - "nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py"
       - "nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py"
       - "nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py"
+      - "nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py"
       - "nasdaq-xray/research/continuation_checkpoint_20261013_alpaca_540_anomaly_queue_v1.json"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
@@ -83,6 +84,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py
           python nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py --selftest
           python -O nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py
+          python nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -262,6 +266,34 @@ jobs:
               assert x["sip_daily_close_rth_official_settlement_independently_verified"] is False
               assert x["source_automated_non_display_entitlement_verified"] is False
           print("XRAY_30MIN_RTH_RECONCILIATION_RESULT="+x["status"])
+          PY
+      - name: Four-symbol two-call exact30 30Min RTH conservative bound research
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run4bound]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py --one-shot-frozen-20261012 --out "$RUNNER_TEMP/xray_4symbol_30min_bound.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_4symbol_30min_bound.json").read_text())
+          assert x["schema"]=="XRAY_SIP_EXACT30_4_SYMBOL_30MIN_RTH_LOWER_BOUND_SHADOW_V1"
+          assert x["asof_et"]=="2026-10-12" and x["symbols_requested"]==x["symbols_completed"]==4
+          assert 1<=x["api_calls"]<=3
+          assert sum(x["counts"].values())==4
+          assert set(x["shadow_symbol_statuses"])=={"AAPL","NVDA","MSFT","AAON"}
+          assert x["historical_replay_not_current"] is True
+          assert all(x[k] is False for k in
+           ("primary_price_pass_created","primary_dv30_pass_created",
+            "primary_dv30_fail_created","primary_mc_created","r92_created",
+            "raw_ohlcv_persisted","vendor_dataset_independence_verified",
+            "automated_non_display_rights_verified",
+            "official_price_settlement_verified",
+            "correction_cancellation_lineage_verified"))
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          print("XRAY_4SYM_30MIN_RTH_SHADOW_BUCKETS="+json.dumps(x["counts"],sort_keys=True))
           PY
       - name: Targeted only 27 frozen anomalies, one daily SIP page maximum
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run27shadow]') }}
@@ -467,5 +499,6 @@ jobs:
             ${{ runner.temp }}/xray_aaon_hourly_rth_pilot.json
             ${{ runner.temp }}/xray_540_upperbound.json
             ${{ runner.temp }}/xray_30min_rth_lower_bound.json
+            ${{ runner.temp }}/xray_4symbol_30min_bound.json
           retention-days: 7
           if-no-files-found: error
