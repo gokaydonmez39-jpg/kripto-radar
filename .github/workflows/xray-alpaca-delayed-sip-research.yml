@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/alpaca_27_daily_sip_dates_shadow.py"
       - "nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py"
       - "nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py"
+      - "nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py"
       - "nasdaq-xray/research/continuation_checkpoint_20261013_alpaca_540_anomaly_queue_v1.json"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
@@ -75,6 +76,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py
           python nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py --selftest
           python -O nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py
+          python nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -183,6 +187,45 @@ jobs:
               raise SystemExit("XRAY_540_PERSONAL_SIP_SCOPE_INCOMPLETE_FAIL_CLOSED")
           print("XRAY_540_PERSONAL_SIP_COVERAGE=PASS_NO_RTH_PRIMARY_NO_R92")
           print("XRAY_540_PERSONAL_SIP_5USD_CLOSE_TRIAGE="+json.dumps(x["price_close_research_only"],sort_keys=True))
+          PY
+      - name: Frozen 540 SIP daily upper-bound DV30 fail-only shadow (one-shot)
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run540bound]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py --frozen-research-20261012 --out "$RUNNER_TEMP/xray_540_upperbound.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_540_upperbound.json"
+          x=json.loads(p.read_text())
+          assert x["schema"]=="XRAY_PERSONAL_SIP_EXACT30_DAILY_UPPER_BOUND_FAIL_ONLY_SHADOW_V1"
+          assert x["asof_et"]=="2026-10-12" and x["research_frozen_historical_not_current"] is True
+          assert x["source_master_blob_sha"]=="fb64a44b79ced9dcda390f5661b796ee13a60f63"
+          assert x["source_price_blob_sha"]=="787e1222fe140ae141b51e98bbbaaa9034ead377"
+          assert x["requested"]==540 and x["remaining"]==0 and x["attempted"]==540
+          assert x["coverage_complete"] is True and 1<=x["api_calls"]<=24
+          assert x["daily_sip_30_valid"]+x["incomplete_or_integrity"]==540
+          assert sum(x["daily_upper_bound_shadow"].values())==x["daily_sip_30_valid"]
+          assert set(x["daily_upper_bound_shadow"])=={
+              "BELOW_50M_DAILY_UPPER_BOUND_SHADOW",
+              "AT_OR_ABOVE_50M_RTH_UNVERIFIED_SHADOW"}
+          assert all(x[k]==0 for k in ("primary_price_count_created",
+              "primary_dv30_fail_count_created","primary_dv30_pass_count_created",
+              "primary_mc_count_created"))
+          assert x["r92_created"] is False
+          assert x["daily_sip_volume_is_rth"] is False
+          assert x["daily_upper_bound_is_primary_authority"] is False
+          assert x["volume_lineage_independently_attested"] is False
+          assert x["raw_prices_or_volumes_persisted"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          for key in ("daily_upper_bound_fail_only_symbols_sha256",
+                      "exact30_session_sha256","exact540_symbol_set_sha256"):
+              assert len(x[key])==64
+          print("XRAY_SIP_540_UPPER_BOUND_CONFIRMED_SHADOW="+
+                json.dumps(x["daily_upper_bound_shadow"],sort_keys=True))
           PY
       - name: Targeted only 27 frozen anomalies, one daily SIP page maximum
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run27shadow]') }}
@@ -384,5 +427,6 @@ jobs:
             ${{ runner.temp }}/xray_alpaca_540_metadata.json
             ${{ runner.temp }}/xray_alpaca_27_dates_metadata.json
             ${{ runner.temp }}/xray_aaon_hourly_rth_pilot.json
+            ${{ runner.temp }}/xray_540_upperbound.json
           retention-days: 7
           if-no-files-found: error
