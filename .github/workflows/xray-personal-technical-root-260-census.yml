@@ -56,7 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-personal-root260-32-status
-          path: ${{ runner.temp }}/xray_personal_root_32.json
+          path: |
+            ${{ runner.temp }}/xray_personal_root_32.json
+            ${{ runner.temp }}/xray_personal_asof_r92_health.json
           if-no-files-found: warn
           retention-days: 14
 
