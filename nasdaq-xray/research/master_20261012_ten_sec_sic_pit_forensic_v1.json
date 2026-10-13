@@ -1,0 +1,160 @@
+{
+  "schema": "XRAY_MASTER_TEN_SEC_PIT_FORENSIC_V1",
+  "asof_et": "2026-10-12",
+  "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
+  "source_master_git_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+  "source_master_expected_unknown_count": 10,
+  "authority": "DATED_SEC_ARCHIVE_REFERENCE_RESEARCH_ONLY",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "policy": "C4.17",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_verified_by": "PUBLIC_SEC_ARCHIVE_SEARCH_AND_EXISTING_REGISTRY_NOT_IMMUTABLE_SEC_BLOB_SNAPSHOT",
+  "actual_source_html_sha256_captured": false,
+  "no_auto_override": true,
+  "no_master_mutation": true,
+  "allowed_use": "ROOT_CAUSE_TRIAGE_AND_TARGETED_REVALIDATION_ONLY",
+  "observations": {
+    "ALIS": {
+      "cik": "0002026767",
+      "issuer": "Calisa Acquisition Corp",
+      "diagnostic_class": "NON6770_SIC_NOT_OPERATING_PASS",
+      "sec_filings": [
+        {
+          "sic": 7374,
+          "filing_date": "2026-09-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "Combination-related filing and nonblank SIC; no business-combination completion or class continuity proof."
+    },
+    "BSAA": {
+      "cik": "0002051587",
+      "issuer": "BEST SPAC I Acquisition Corp.",
+      "diagnostic_class": "NON6770_SIC_NOT_OPERATING_PASS",
+      "sec_filings": [
+        {
+          "sic": 8200,
+          "filing_date": "2026-08-06",
+          "url": "https://www.sec.gov/Archives/edgar/data/2051587/000121390026086168/0001213900-26-086168-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "Nonblank SIC alone cannot override official blank-check identity suspicion."
+    },
+    "FACT": {
+      "cik": "0002028935",
+      "issuer": "FACT II Acquisition Corp.",
+      "diagnostic_class": "NON6770_SIC_NOT_OPERATING_PASS",
+      "sec_filings": [
+        {
+          "sic": 3728,
+          "filing_date": "2026-03-16",
+          "url": "https://www.sec.gov/Archives/edgar/data/2028935/000121390026027877/0001213900-26-027877-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "Old SIC fact; no time-exact latest status or verified merger effective date."
+    },
+    "FVN": {
+      "cik": "0002010653",
+      "issuer": "Future Vision II Acquisition Corporation",
+      "diagnostic_class": "OLDER_INTERNAL_SEED_NOT_ASOF_PASS",
+      "sec_filings": [
+        {
+          "sic": 6770,
+          "filing_date": "2026-06-12",
+          "url": "https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm",
+          "role": "EXISTING_MASTER_MANUAL_SEED"
+        }
+      ],
+      "note": "Official SEC seed predates exact asof; existing registry verified only 2026-10-09."
+    },
+    "HCAC": {
+      "cik": "0002079013",
+      "issuer": "Hall Chadwick Acquisition Corp",
+      "diagnostic_class": "CONFLICTING_DATED_SEC_SIC_REQUIRES_EVENT_RECONCILIATION",
+      "sec_filings": [
+        {
+          "sic": 6770,
+          "filing_date": "2026-08-14",
+          "url": "https://www.sec.gov/Archives/edgar/data/2079013/000182912626008872/0001829126-26-008872-index.html",
+          "role": "ISSUER_FILING"
+        },
+        {
+          "sic": 3341,
+          "filing_date": "2026-09-23",
+          "url": "https://www.sec.gov/Archives/edgar/data/2079013/000182912626010338/0001829126-26-010338-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "Real SEC SIC change across filings; cannot silently carry either classification to exact asof."
+    },
+    "IPXG": {
+      "cik": null,
+      "issuer": "Inection Point Acquisition Corp. VII",
+      "diagnostic_class": "OFFICIAL_ISSUER_AND_TICKER_IDENTITY_UNRESOLVED",
+      "sec_filings": [],
+      "note": "Directory literal issuer name has ambiguous spelling. No speculative ticker/CIK substitution."
+    },
+    "MACI": {
+      "cik": "0002016221",
+      "issuer": "Melar Acquisition Corp. I",
+      "diagnostic_class": "ISSUER_FILING_NOT_ASOF_PASS",
+      "sec_filings": [
+        {
+          "sic": 6770,
+          "filing_date": "2026-08-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/2016221/000121390026092711/ea0273491-06.htm",
+          "role": "OFFICIAL_FILING_FRONT_PAGE"
+        }
+      ],
+      "note": "Registration document lists SIC 6770; must confirm listing and current asof issuer share class."
+    },
+    "MCGA": {
+      "cik": "0002064658",
+      "issuer": "Yorkville Acquisition Corp.",
+      "diagnostic_class": "OLDER_6770_NO_EXACT_ASOF_REVALIDATION",
+      "sec_filings": [
+        {
+          "sic": 6770,
+          "filing_date": "2025-12-01",
+          "url": "https://www.sec.gov/Archives/edgar/data/2064658/000110465925117351/0001104659-25-117351-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "SEC accession is old relative to 2026-10-12; not an exact-asof exclusion proof."
+    },
+    "MMTX": {
+      "cik": "0002077033",
+      "issuer": "Miluna Acquisition Corp",
+      "diagnostic_class": "OLDER_6770_NO_EXACT_ASOF_REVALIDATION",
+      "sec_filings": [
+        {
+          "sic": 6770,
+          "filing_date": "2026-04-27",
+          "url": "https://www.sec.gov/Archives/edgar/data/2077033/000149315226019056/0001493152-26-019056-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "SEC accession is older than 120 days; no same-date fresh classification."
+    },
+    "WTG": {
+      "cik": "0002053927",
+      "issuer": "Wintergreen Acquisition Corp.",
+      "diagnostic_class": "NON6770_SIC_NOT_OPERATING_PASS",
+      "sec_filings": [
+        {
+          "sic": 7370,
+          "filing_date": "2026-09-28",
+          "url": "https://www.sec.gov/Archives/edgar/data/2053927/000182912626010488/0001829126-26-010488-index.htm",
+          "role": "ISSUER_FILING"
+        }
+      ],
+      "note": "Nonblank current SIC doesn't prove consummated business combination or operative class."
+    }
+  },
+  "operator_caveat": "SEC SIC filing context does not by itself prove exchange ticker and share-class continuity. Direct filing source may be stale, change around merger, or refer to different co-registrant. All 10 remain UNKNOWN until independent exact-ASOF proof."
+}
