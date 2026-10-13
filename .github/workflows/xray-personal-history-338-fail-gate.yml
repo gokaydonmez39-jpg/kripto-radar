@@ -1,0 +1,68 @@
+name: XRAY Oct13 338 Reproduced HISTORY Raw-Bar Fail Gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_history_338_fail_gate_reconcile.py"
+      - ".github/workflows/xray-personal-history-338-fail-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  immutable-fail-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Python conservative FAIL/UNKNOWN adversarial tests
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m py_compile nasdaq-xray/personal_history_338_fail_gate_reconcile.py
+          python3 nasdaq-xray/personal_history_338_fail_gate_reconcile.py --selftest
+          python3 -O nasdaq-xray/personal_history_338_fail_gate_reconcile.py --selftest
+      - name: Download SHA-bound immutable historical metadata (no provider calls)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/xray_root" "$RUNNER_TEMP/xray_bad338"
+          gh run download 38481474945 --repo "${{ github.repository }}" --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/xray_root"
+          gh run download 38483601348 --repo "${{ github.repository }}" --name xray-root260-338-invalid-volume-reasons-no-bars --dir "$RUNNER_TEMP/xray_bad338"
+      - name: Reconcile all 338 symbol identities and bound failures to source runs
+        run: |
+          python3 nasdaq-xray/personal_history_338_fail_gate_reconcile.py \
+            --root "$RUNNER_TEMP/xray_root/xray_personal_root260_full_cohort.json" \
+            --recheck "$RUNNER_TEMP/xray_bad338/xray_bad338_260_source_causes.json" \
+            --out "$RUNNER_TEMP/xray_history_338_reproduced_source_fail.json"
+          python3 - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_history_338_reproduced_source_fail.json"
+          d=json.loads(p.read_text())
+          assert d["asof_et"]=="2026-10-13"
+          assert d["source_root_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/sina_state.json"],text=True).strip()
+          assert d["scope"]==3185
+          assert d["technical_screen_fail_260_valid_daily_bar"]==338
+          assert d["unresolved_missing_official_dates"]==168
+          assert d["positive_raw_260_52_shadow_not_primary"]==2679
+          assert 338==len(d["technical_screen_fail_symbols"])==len(set(d["technical_screen_fail_symbols"]))
+          assert 168==len(d["unresolved_missing_symbols"])==len(set(d["unresolved_missing_symbols"]))
+          assert not set(d["technical_screen_fail_symbols"])&set(d["unresolved_missing_symbols"])
+          for k in ("exchange_zero_trades_for_all_338_proven",
+                    "all_168_late_listings_proven",
+                    "canonical_history_primary_written",
+                    "same_asof_c417_release_proven",
+                    "r92_created"):
+              assert d[k] is False,k
+          assert d["personal_technical_history_primary_promoted"]==0
+          print("XRAY_HISTORY_338_VERIFIED_SOURCE_BAR_FAIL_GATE=PASS")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-20261013-338-reproduced-history-fail-no-r92
+          path: ${{ runner.temp }}/xray_history_338_reproduced_source_fail.json
+          if-no-files-found: error
+          retention-days: 14
