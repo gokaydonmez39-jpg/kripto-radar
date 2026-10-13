@@ -55,3 +55,52 @@ jobs:
           path: ${{ runner.temp }}/xray_personal_root_32.json
           if-no-files-found: warn
           retention-days: 14
+
+  full_scope:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[fullscan]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run exact source cohort and policy regression
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/personal_research_root_full_scope.py
+          python nasdaq-xray/personal_research_root_full_scope.py --selftest
+      - name: Scan all 3185 root symbols with strict per-provider budget
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: python nasdaq-xray/personal_research_root_full_scope.py --all --sec-mc --deadline-seconds 1260 --out "$RUNNER_TEMP/xray_personal_root3185_full.json"
+      - name: Validate exact root symbol partition before reporting coverage
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_personal_root3185_full.json").read_text())
+          assert d["scope_total"]==3185
+          assert sum(d["history_dv30_counts"].values())==d["attempted_count"]
+          assert d["symbols_status_count"]==d["attempted_count"]
+          assert d["attempted_count"]+d["remaining_count"]==3185
+          assert d["coverage_complete"]==(d["attempted_count"]==3185)
+          assert d["can_be_c417_primary"] is False and d["can_register_r92"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_ROOT_FULL_SCOPE="+str(d["attempted_count"])+"/3185")
+          print("XRAY_PERSONAL_ROOT_COUNTS="+json.dumps(d["history_dv30_counts"],sort_keys=True))
+          print("XRAY_PERSONAL_SEC_MC_COUNTS="+json.dumps(d["mc_counts"],sort_keys=True))
+          PY
+      - name: Archive every measured status and source fingerprint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-3185-epoch-full-census
+          path: ${{ runner.temp }}/xray_personal_root3185_full.json
+          if-no-files-found: warn
+          retention-days: 14
