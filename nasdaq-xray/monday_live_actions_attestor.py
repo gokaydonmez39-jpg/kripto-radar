@@ -11,6 +11,7 @@ import datetime as dt
 import json
 import os
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -250,15 +251,24 @@ def read_stable_actions_snapshot(token, max_attempts=2):
         inventory=fetch_workflow_inventory(token)
         entries={}
         now=dt.datetime.now(UTC)
-        for key,name in WORKFLOWS.items():
+        # Read the same exact 17+7 workflow scopes inside one bounded,
+        # read-only fanout. A single malformed/failed response aborts this
+        # entire attempt; no partial result can create a false green.
+        targets=[("required",key,name) for key,name in WORKFLOWS.items()]
+        targets += [("supplemental",key,name)
+                    for key,name in SUPPLEMENTAL_SCHEDULED.items()]
+        def fetch_one(row):
+            scope,key,name=row
             runs=verify_response(github(
                 "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
-            entries[key]=summarize(now,key,runs)
+            return scope,key,summarize(now,key,runs)
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            observations=list(pool.map(fetch_one,targets))
         supplementary={}
-        for key,name in SUPPLEMENTAL_SCHEDULED.items():
-            runs=verify_response(github(
-                "/actions/workflows/"+name+"/runs?per_page=20&branch=main",token))
-            supplementary[key]=summarize(now,key,runs)
+        for scope,key,observed in observations:
+            (entries if scope=="required" else supplementary)[key]=observed
+        if len(entries)!=len(WORKFLOWS) or len(supplementary)!=len(SUPPLEMENTAL_SCHEDULED):
+            raise RuntimeError("GITHUB_ACTIONS_SCOPE_INCOMPLETE")
         head_b=github("/git/ref/heads/main",token)["object"]["sha"]
         if head_a==head_b:
             return now,head_a,inventory,entries,supplementary,attempt+1
@@ -287,6 +297,8 @@ def snapshot_retry_selftest():
     stable=run_case(["a"*40,"b"*40,"b"*40,"b"*40])
     assert stable[1]=="b"*40 and stable[-1]==2
     assert len(stable[3])==17 and len(stable[4])==7
+    assert set(stable[3])==set(WORKFLOWS)
+    assert set(stable[4])==set(SUPPLEMENTAL_SCHEDULED)
     try:
         run_case(["a"*40,"b"*40,"c"*40,"d"*40])
     except RuntimeError as e:
@@ -299,7 +311,7 @@ def snapshot_retry_selftest():
         pass
     else:
         raise AssertionError("UNBOUNDED_OR_ZERO_RETRY_ACCEPTED")
-    print("XRAY_MONDAY_ACTIONS_ATOMIC_SNAPSHOT_RETRY=PASS_POSITIVE_2_NEGATIVE")
+    print("XRAY_MONDAY_ACTIONS_ATOMIC_SNAPSHOT_RETRY=PASS_POSITIVE_2_NEGATIVE_24_SCOPES_BOUNDED_FANOUT")
 
 
 def main():
