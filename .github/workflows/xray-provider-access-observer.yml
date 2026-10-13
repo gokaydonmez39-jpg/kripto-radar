@@ -1,8 +1,6 @@
 name: XRAY Provider Access Inventory Observer (Research Only)
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "11 22 * * 1-5"
   push:
     branches: [main]
     paths:
