@@ -17,6 +17,7 @@ on:
       - "nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py"
       - "nasdaq-xray/alpaca_sip_basket2_30min_shadow.py"
       - "nasdaq-xray/alpaca_exact_asof_daily_presence_probe.py"
+      - "nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py"
       - "nasdaq-xray/research/continuation_checkpoint_20261013_alpaca_540_anomaly_queue_v1.json"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
@@ -95,6 +96,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_exact_asof_daily_presence_probe.py
           python nasdaq-xray/alpaca_exact_asof_daily_presence_probe.py --selftest
           python -O nasdaq-xray/alpaca_exact_asof_daily_presence_probe.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py
+          python nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
