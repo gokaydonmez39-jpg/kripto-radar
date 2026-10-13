@@ -1,0 +1,40 @@
+{
+  "schema": "XRAY_C417_JONE_GRAL_OFFICIAL_EXCEPTION_RESEARCH_ADDENDUM_V1",
+  "source_27_run_id": 38466194900,
+  "source_27_artifact_sha256": "1820ccd521b0e289d6ebe6188f2072f74b2ab75adc934c358bc8c9b035e3f1bd",
+  "asof_et": "2026-10-12",
+  "date_semantics": "30_completed_official_US_EQUITY_RTH_SESSIONS_NO_SYNTHETIC_BACKFILL",
+  "JONE": {
+    "underlying": "Jones Ventures INTL Acquisition1 Corp Class A ordinary shares",
+    "listing_separate_trading_announced_start": "2026-09-03",
+    "primary_evidence": "https://www.sec.gov/Archives/edgar/data/2129056/000121390026096220/ea0304128-8k_jones1.htm",
+    "secondary_distribution": "https://www.nasdaq.com/press-release/jones-ventures-intl-acquisition1-corp-announces-separate-trading-its-class-ordinary",
+    "missing_exact30_sessions": [
+      "2026-08-31",
+      "2026-09-01",
+      "2026-09-02"
+    ],
+    "cause": "PRE_SEPARATE_TRADING_AS_OF_JONE_ANNOUNCED_START",
+    "alpha_action": "KEEP_UNKNOWN_PRELISTING_HISTORY_NO_SYNTHETIC_ZERO_FILL_NO_HISTORICAL_TICKER_BACKCAST",
+    "primary_listing_fact_evidence": true
+  },
+  "GRAL": {
+    "underlying": "GRAIL Inc common stock",
+    "date": "2026-09-23",
+    "public_dow_jones_evidence": "https://www.marketscreener.com/news/grail-trading-halted-ahead-of-fda-adcom-meeting-on-galleri-blood-test-ce785ad9dc8ef721",
+    "independent_historical_zero_volume_example": "https://stockinvest.us/stock-price/GRAL",
+    "nasdaq_halt_exact_record_verified": false,
+    "cause": "TRADING_HALT_20260923_PUBLICLY_CORROBORATED_OFFICIAL_EXCHANGE_DETAIL_PENDING",
+    "alpha_action": "KEEP_UNKNOWN_UNTIL_EXACT_30_RTH_PROOF_NO_ZERO_VOLUME_INFERENCE_TO_PRICE_PASS"
+  },
+  "other_25_anomaly_symbols": {
+    "root_causes_individually_not_verified": true,
+    "alpha_action": "RETAIN_UNKNOWN_AND_DO_NOT_AUTOFILL"
+  },
+  "provider_shadow_not_primary": true,
+  "no_paid_topup": true,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "can_create_r92": false
+}
