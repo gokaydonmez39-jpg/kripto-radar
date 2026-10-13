@@ -65,6 +65,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install pinned Nasdaq session calendar for quota guard
+        run: python -m pip install --disable-pip-version-check pandas==2.2.3 pandas_market_calendars==5.4.0
+
       - name: Scheduler failover self-test
         run: python nasdaq-xray/scheduler_failover_selftest.py
 
