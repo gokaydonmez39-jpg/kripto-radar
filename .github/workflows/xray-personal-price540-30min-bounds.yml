@@ -1,0 +1,78 @@
+name: XRAY Personal Price540 30Min SIP Frozen Bounds
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_price540_personal_30min_bounds.py"
+      - ".github/workflows/xray-personal-price540-30min-bounds.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-personal-price540-frozen-30min-bounds
+  cancel-in-progress: false
+jobs:
+  frozen-bounds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install official Nasdaq session schedule
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Check exact commit and negative source tests
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/alpaca_price540_personal_30min_bounds.py
+          python nasdaq-xray/alpaca_sip_4symbol_30min_rth_shadow.py --selftest
+          python nasdaq-xray/alpaca_price540_personal_30min_bounds.py --selftest
+          python -O nasdaq-xray/alpaca_price540_personal_30min_bounds.py --selftest
+      - name: Run single frozen data census on first controlled commit only
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runprice540]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_price540_personal_30min_bounds.py --frozen-20261012-all540 --out "$RUNNER_TEMP/xray_personal_price540_30min_bounds.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_personal_price540_30min_bounds.json"
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_FROZEN_PRICE540_PERSONAL_30MIN_BOUNDS_SHADOW_V1"
+          assert d["asof_et"]=="2026-10-12" and d["frozen_symbol_count"]==540
+          assert len(d["symbol_statuses"])==540 and sum(d["counts"].values())==540
+          assert d["prior_verified_ci_runs"]==[38468954318,38473340983]
+          assert d["prior_verified_symbols"]==["AAON","AAPL","MSFT","NVDA","AMZN","GOOGL","META","TSLA"]
+          assert d["api_calls"]<=d["api_call_budget"]<=160
+          assert d["price_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert d["master_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["unknown_never_pass"] and d["historical_replay_not_current"]
+          assert all(d[k] is False for k in (
+            "close_auction_correction_verified","daily_volume_exact_rth_proven",
+            "corporate_action_pit_proven","automated_feed_rights_independently_attested",
+            "primary_price_or_dv30_created","primary_mc_created",
+            "r92_created","provider_raw_ohlcv_persisted"))
+          if d["scope_fully_classified"] is not True:
+              raise SystemExit("XRAY_PRICE540_NOT_ALL_CLASSIFIED")
+          print("XRAY_PRICE540_ALL_CLASSIFIED=PASS_RESEARCH_ONLY")
+          print("XRAY_PRICE540_COUNTS="+json.dumps(d["counts"],sort_keys=True))
+          PY
+      - name: Retain metadata-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-frozen-price540-30min-metadata
+          path: ${{ runner.temp }}/xray_personal_price540_30min_bounds.json
+          if-no-files-found: ignore
+          retention-days: 14
