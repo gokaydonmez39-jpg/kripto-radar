@@ -28,7 +28,7 @@ EXPECTED = {
     ".github/workflows/xray-strict-g9-gate.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-account-gate-reconcile.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-live-truth-attestation.yml": (CHECKOUT, PYTHON, ARTIFACT),
-    ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT, ARTIFACT, ARTIFACT),
     ".github/workflows/xray-sec-free-mc-transport-proof.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-current-history-source-request.yml": (CHECKOUT, PYTHON, ARTIFACT),
 }
@@ -124,7 +124,8 @@ def selftest() -> None:
         "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --out result.json",
         "  - uses: " + ARTIFACT,
     ))
-    assert verify(manual,manual_source)==3
+    manual_source=manual_source+"\n"+"\n".join(("  - uses: "+ARTIFACT, "  - uses: "+ARTIFACT))
+    assert verify(manual,manual_source)==5
     for altered in (
         manual_source.replace("--selftest","--skipped"),
         manual_source.replace("--out result.json","--unchecked result.json")):
@@ -164,7 +165,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 44:
+    if sum(audited.values()) != 46:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -172,4 +173,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_44_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_46_EXACT_OFFICIAL_SHAS")
