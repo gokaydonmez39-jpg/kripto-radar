@@ -538,6 +538,9 @@ def selftest():
        [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":float("nan")}],
        [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":-3e9}],
        [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":True}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization Growth Rate","value":7.1}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Cap / Sales Ratio","value":3.2}],
+       [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":"3500000000"}],
        [{"ticker":"ASTS","date":"2026-10-09","metric":"Market Capitalization","value":3e9}]*2,
        {"metadata":{"ticker":"ASTS"},"data":[]},
     ]
@@ -581,6 +584,9 @@ def selftest():
                  "metric":"Market Capitalization","value":3500000000.0}],
         [{"ticker":"AAPL","date":"2026-10-09","metric":"Revenue (Annual)","value":1e9}],
         [{"ticker":"AAPL","date":"2026-10-09","metric":"Market Capitalization","value":float("nan")}],
+        [{"ticker":"AAPL","date":"2026-10-09","metric":"Market Capitalization Growth (%)","value":8.5}],
+        [{"ticker":"AAPL","date":"2026-10-09","metric":"Market Cap / Earnings","value":4.3}],
+        [{"ticker":"AAPL","date":"2026-10-09","metric":"Market Capitalization","value":"3500000000"}],
         {"metadata":{"rows":5}},
     ]
     for payload in bad_bundles:
