@@ -395,8 +395,8 @@ def selftest():
         ss["symbols"]=["AAPL","NVDA"]
         ss["targets"]=["AAPL","NVDA","QQQ"]
         ss["scope_hash"]=sha256_lines(ss["symbols"])
-        ss["price_sha"]="0"*40
-        ss["master_sha"]="1"*40
+        ss["price_sha"]="a"*40
+        ss["master_sha"]="b"*40
         assert not exact(fresh(ss),live_scope)
         assert telemetry(fresh(live_scope),live_scope,
                          "EMPTY_OR_SINGLE_PRICE_PASS_NO_HISTORY_AUTHORITY",0
