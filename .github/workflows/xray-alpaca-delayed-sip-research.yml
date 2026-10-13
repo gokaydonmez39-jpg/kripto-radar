@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py"
       - "nasdaq-xray/alpaca_27_daily_sip_dates_shadow.py"
       - "nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py"
+      - "nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py"
       - "nasdaq-xray/research/continuation_checkpoint_20261013_alpaca_540_anomaly_queue_v1.json"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
@@ -71,6 +72,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py
           python nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py --selftest
           python -O nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py
+          python nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py --selftest
+          python -O nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -202,6 +206,28 @@ jobs:
                  "missing_official_days","nonpositive_volume_days",
                  "bad_shape_days","reason"} for y in x["details"])
           print("XRAY_27_TARGETED_ONE_CALL_DATE_DIAGNOSTICS=PASS_NO_PRIMARY")
+          PY
+      - name: One-shot AAON hourly plus halfhour plus auction reconciliation research
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runHourPilot]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py --probe --out "$RUNNER_TEMP/xray_aaon_hourly_rth_pilot.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_aaon_hourly_rth_pilot.json").read_text())
+          assert x["schema"]=="XRAY_HOURLY_30MIN_RTH_CLOSE_AUCTION_PILOT_V1"
+          assert x["asof_et"]=="2026-10-12" and x["symbol"]=="AAON"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["api_calls"]==4
+          assert x["vendor_ohlcv_persisted"] is False
+          assert x["rth_volume_units_persisted"] is False
+          assert x["dv30_primary_created"] is False and x["r92_created"] is False
+          assert x["status"] in ("SHADOW_ONE_DAY_RTH_FORMULA_RECONCILED",
+                                 "BLOCKED_ONE_DAY_BAR_OR_AUCTION_RECONCILIATION")
+          print("XRAY_ONE_DAY_AAON_RECONCILIATION="+x["status"])
           PY
       - name: Validate historical SIP connector research-only proof without prices
         run: |
@@ -352,5 +378,6 @@ jobs:
             ${{ runner.temp }}/xray_sip_rth_minute_onecall.json
             ${{ runner.temp }}/xray_alpaca_540_metadata.json
             ${{ runner.temp }}/xray_alpaca_27_dates_metadata.json
+            ${{ runner.temp }}/xray_aaon_hourly_rth_pilot.json
           retention-days: 7
           if-no-files-found: error
