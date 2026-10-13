@@ -15,7 +15,7 @@ on:
       - "nasdaq-xray/evidence/alpaca_sip_20261012_rth_boundary_20261013_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
-    - cron: "55 13,17 * * 1-5"
+    - cron: "55 13 * * 1-5"
 permissions:
   contents: read
 concurrency:
@@ -30,6 +30,9 @@ jobs:
       XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
       XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK: ${{ vars.XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK }}
       XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256 }}
+      # Only metadata-only research, personal noncommercial Basic historical SIP.
+      # Independent exchange/non-display license is NOT asserted.
+      XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED: "true"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,6 +72,7 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True
           assert x["interactive_access_not_runner_authority"] is True
+          assert x["personal_basic_shadow_opt_in"] is True
           assert x["daily_sip_1day_volume_is_rth"] is False
           assert x["rth_volume_requires_official_session_minutes"] is True
           assert x["close_auction_allocation_verified"] is False
@@ -100,6 +104,7 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True
           assert x["api_calls"] in (0,1)
+          assert x["personal_basic_shadow_opt_in"] is True
           assert x["observed_valid_minutes"] in (0,210,390)
           for key in ("license_independently_verified","close_auction_allocation_verified",
                       "trade_conditions_rth_lineage_verified","daily_bar_volume_is_rth_proven",
