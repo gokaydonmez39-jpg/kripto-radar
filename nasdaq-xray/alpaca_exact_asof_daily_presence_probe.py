@@ -101,7 +101,7 @@ def selftest():
     need(x["counts"]["observed_exact_asof"]==4
          and x["primary_dv30_created"] is False
          and x["r92_created"] is False,"NO_ALPHA")
-    print("XRAY_DAILY_ASOF_PRESENCE_SELFTEST=PASS_6_NEGATIVE_AND_POSITIVE_NO_PRIMARY")
+    print("XRAY_DAILY_ASOF_PRESENCE_SELFTEST=PASS_5_NEGATIVES_ONE_POSITIVE_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
