@@ -69,6 +69,16 @@ def grant(env):
     return (env.get("XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK","").strip().lower()=="true"
             and re.fullmatch(r"[0-9a-f]{64}",env.get("XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256","")) is not None)
 
+def personal_shadow_access(env):
+    """Documented Basic historical SIP personal noncommercial research path.
+
+    https://docs.alpaca.markets/us/docs/market-data-faq
+    https://files.alpaca.markets/disclosures/library/TermsAndConditions.pdf
+    It is a narrow explicit operator opt-in, NOT an exchange license proof.
+    No vendor raw data redistribution and no PRIMARY or R92 authority.
+    """
+    return env.get("XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED","").strip().lower()=="true"
+
 def fetch(keys,dates):
     kid,secret=keys
     query=urllib.parse.urlencode(request_params(dates))
@@ -122,6 +132,7 @@ def report_base(asof=None):
         "api_calls":0,"provider":"ALPACA_SIP_HISTORICAL","feed":"sip",
         "interactive_access_not_runner_authority":True,
         "runner_credentials_present":False,"operator_research_grant_claimed":False,
+        "personal_basic_shadow_opt_in":False,
         "license_independently_verified":False,"official_rth_only_lineage_attested":False,
         # The SIP 1Day close is NOT an RTH-exclusive volume authority.
         # Exchange-hour minute windows and closing-auction trade conditions
@@ -148,10 +159,11 @@ def run(price,master,latest,env,getter=fetch):
     sec=env.get("XRAY_ALPACA_API_SECRET_KEY","").strip()
     out["runner_credentials_present"]=bool(kid and sec)
     out["operator_research_grant_claimed"]=grant(env)
+    out["personal_basic_shadow_opt_in"]=personal_shadow_access(env)
     if not kid or not sec:
         out["status"]="BLOCKED_RUNNER_CREDENTIALS_NOT_CONFIGURED"
         return out
-    if not grant(env):
+    if not grant(env) and not personal_shadow_access(env):
         out["status"]="BLOCKED_UNATTESTED_UNATTENDED_RESEARCH_RIGHTS"
         return out
     out["api_calls"]=1
@@ -214,6 +226,9 @@ def selftest():
     assert request_params(dates)["end"]==(
         dt.date.fromisoformat(dates[-1])+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
     assert grant({}) is False
+    assert personal_shadow_access({}) is False
+    assert personal_shadow_access({"XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED":"false"}) is False
+    assert personal_shadow_access({"XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED":"true"}) is True
     assert grant({"XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK":"true",
                   "XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256":"NONSENSE"}) is False
     calls=[]
@@ -236,6 +251,18 @@ def selftest():
                 "vendor_raw_data_persisted","license_independently_verified"))
     o=run(source,master,"2026-10-09",env,fake)
     assert o["api_calls"]==0 and len(calls)==1
+    personal={"XRAY_ALPACA_API_KEY_ID":"fake","XRAY_ALPACA_API_SECRET_KEY":"fake",
+              "XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED":"true"}
+    o=run(source,master,source["asof_et"],personal,fake)
+    assert o["api_calls"]==1 and len(calls)==2 and o["valid_bars"]==150
+    assert o["personal_basic_shadow_opt_in"] is True
+    assert o["operator_research_grant_claimed"] is False
+    assert all(o[k] is False for k in (
+        "license_independently_verified","primary_price_authority",
+        "primary_mc_authority","r92_created","strict_g9_pass",
+        "account_pass","vendor_raw_data_persisted","alpha_authority"))
+    o=run(source,master,"2026-10-09",personal,fake)
+    assert o["api_calls"]==0 and len(calls)==2
     with patch.dict(os.environ,{"TEST_SENTINEL":"NO_NETWORK"}):
         assert "fake" not in json.dumps(o)
     # REGRESSION: consolidated 1Day volume is not exclusive RTH volume.
