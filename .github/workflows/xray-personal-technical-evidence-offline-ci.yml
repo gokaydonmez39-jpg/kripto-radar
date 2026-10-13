@@ -19,6 +19,31 @@ jobs:
         run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --selftest
       - name: Audit all frozen 3185 HISTORY and 540 PRICE classifications
         run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --audit-frozen
+      - name: Verify personal research exact SHA chain and nonrelease evidence
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          root=Path('nasdaq-xray')
+          policy=json.loads((root/'personal_research_technical_policy_v1.json').read_text())
+          report=json.loads((root/'research/personal_research_execution_readback_20261014_v1.json').read_text())
+          sec=json.loads((root/'research/master_ten_sec_cik_sic_resolution_20261012_v1.json').read_text())
+          def sha(path):
+              return subprocess.check_output(['git','hash-object',str(path)],text=True).strip()
+          assert policy['technical_engine_blob_sha']==sha(root/'personal_research_primary_engine_v1.py')
+          assert report['technical_engine']['blob_sha']==policy['technical_engine_blob_sha']
+          assert report['personal_policy']['blob_sha']==sha(root/'personal_research_technical_policy_v1.json')
+          assert report['master']['research_amended_blob_sha']==sha(root/'research/master_ten_sec_cik_sic_resolution_20261012_v1.json')
+          assert sec['rows']['ALIS']['filing_evidence_date']=='2026-09-21'
+          assert sec['rows']['HCAC']['sec_20260930_8k_dei_ticker_cik_exact_observed'] is True
+          assert report['master']['canonical_unknown_zero_proven'] is False
+          assert report['joint']['same_asof'] is False
+          assert report['r92']['registered_new_candidates']==0
+          assert report['health']['official_exchange_holiday_no_cas_runtime_observed'] is False
+          assert report['execution']=='NONE' and report['real_money']=='NO-GO'
+          assert report['technical_engine']['ci_run']==38485435217
+          print('XRAY_PERSONAL_SHA_CHAIN=PASS_RELEASE_BLOCKED')
+          PY
       - name: Reject code paths with market execution and secrets
         run: |
           python3 - <<'PY'
