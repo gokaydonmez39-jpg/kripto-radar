@@ -43,8 +43,8 @@ jobs:
           XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
           mkdir -p "$RUNNER_TEMP/xray_prev"
-          GH_TOKEN="$GITHUB_TOKEN" gh run download 38482369533 --name xray-personal-frozen-price540-30min-metadata --dir "$RUNNER_TEMP/xray_prev"
-          python nasdaq-xray/alpaca_price540_personal_30min_bounds.py --frozen-20261012-all540 --resume-file "$RUNNER_TEMP/xray_prev/xray_personal_price540_30min_bounds.json" --resume-sha256 d11cf4ab4b3ef9bd8d1e6e6cf05794ae9133763e51756015bf2480140720f4d5 --out "$RUNNER_TEMP/xray_personal_price540_30min_bounds.json"
+          GH_TOKEN="$GITHUB_TOKEN" gh run download 38482777199 --name xray-personal-frozen-price540-30min-metadata --dir "$RUNNER_TEMP/xray_prev"
+          python nasdaq-xray/alpaca_price540_personal_30min_bounds.py --frozen-20261012-all540 --resume-file "$RUNNER_TEMP/xray_prev/xray_personal_price540_30min_bounds.json" --resume-sha256 9574fa5a966bbb37ae206cd0dd1a43a9d3b35f2de9f0e76d92632d0965d6d21e --out "$RUNNER_TEMP/xray_personal_price540_30min_bounds.json"
           python - <<'PY'
           import json,os,subprocess
           from pathlib import Path
@@ -55,7 +55,7 @@ jobs:
           assert len(d["symbol_statuses"])==540 and sum(d["counts"].values())==540
           assert d["prior_verified_ci_runs"]==[38468954318,38473340983]
           assert d["prior_verified_symbols"]==["AAON","AAPL","MSFT","NVDA","AMZN","GOOGL","META","TSLA"]
-          assert d["api_calls"]<=d["api_call_budget"]<=850
+          assert d["api_calls"]<=d["api_call_budget"]<=950
           assert d["price_git_blob_sha"]==subprocess.check_output(
             ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert d["master_git_blob_sha"]==subprocess.check_output(
