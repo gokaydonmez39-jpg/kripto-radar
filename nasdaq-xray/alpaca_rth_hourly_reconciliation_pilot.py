@@ -184,7 +184,9 @@ def main():
             'PRIVATE_ARTIFACT_ONLY')
     base='https://data.alpaca.markets/v2/stocks'
     start='2026-10-12T00:00:00-04:00'
-    end='2026-10-13T00:00:00-04:00'
+    # The historical endpoint accepts an inclusive end; never include
+    # next trading day's 00:00 timestamp in an ASOF-one-day proof.
+    end='2026-10-12T23:59:59-04:00'
     total=0
     def fetch(path,params):
         nonlocal total
@@ -205,6 +207,9 @@ def main():
         result=fetch('/AAON/bars',{'timeframe':tf,'feed':'sip',
             'start':start,'end':end,'adjustment':'raw','limit':10000})
         bars[tf]=result.get('bars')
+        if tf=='1Day':
+            require(type(bars[tf]) is list and len(bars[tf])==1,
+                    'ONE_DAY_ASOF_BAR_SCOPE')
     trade_response=fetch('/AAON/trades',{
          'feed':'sip','start':'2026-10-12T16:00:00-04:00',
          'end':'2026-10-12T16:00:04-04:00','limit':10000,'sort':'asc'})
