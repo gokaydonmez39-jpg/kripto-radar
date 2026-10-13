@@ -97,7 +97,7 @@ jobs:
               "control": "C4.27",
               "observation": "INVENTORY_ONLY_NO_HTTP_NO_VENDOR_CREDENTIAL_READ",
               "source_git_blob_sha": hashlib.sha1(
-                  b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest(),
+                  b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest(),
               "source_inventory_observed_date": inv.get("observed_date"),
               "provider_count": 12,
               "providers": [{
@@ -144,7 +144,7 @@ jobs:
           assert all(observation[x] is False for x in
                      ("can_create_primary", "can_register_r92", "go"))
           out = Path(os.environ["RUNNER_TEMP"]) / "xray_price_independent_provider_access.json"
-          out.write_text(json.dumps(observation, indent=2, sort_keys=True) + "\\n")
+          out.write_text(json.dumps(observation, indent=2, sort_keys=True) + "\n")
           print("XRAY_PROVIDER_PRICE_INDEPENDENCE=PASS_12_SOURCES_5_NEGATIVE_NO_HTTP")
           print("XRAY_BQ_PRIMARY_PIT_LICENSE_RUNNER=UNVERIFIED_RESEARCH_ONLY")
           PY
