@@ -57,6 +57,46 @@
       "paid_top_up_allowed": false,
       "execution": "NONE",
       "real_money": "NO-GO"
+    },
+    "BUSINESSQUANT": {
+      "role": "C417_MC_HISTORICAL_DAILY_RESEARCH_SHADOW_NOT_PRIMARY",
+      "official_api_terms": "https://businessquant.com/terms-of-use",
+      "official_free_pricing": "https://businessquant.com/pricing",
+      "official_mcp_docs": "https://businessquant.com/docs/api/mcp",
+      "official_history_mc_docs": "https://businessquant.com/docs/api/historic",
+      "free_plan_api_calls_per_day_documented": 30,
+      "historical_mc_tickers_per_call_documented": 5,
+      "api_is_authorized_programmatic_access_subject_to_account_plan": true,
+      "personal_account_api_key_connected_to_github": "NOT_ATTESTED",
+      "unattended_runner_use_entitlement_for_this_account": "NOT_ATTESTED",
+      "same_asof_issuer_filing_acceptance_pit": "NOT_ATTESTED",
+      "current_usd_share_class_mc_authority": "NOT_ATTESTED",
+      "price_pass_scope_required": true,
+      "automated_research_call_allowed_without_key_and_rights": false,
+      "primary_mc_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "paid_upgrade_allowed": false,
+      "no_vendor_raw_data_in_public_github": true,
+      "execution": "NONE",
+      "real_money": "NO-GO"
+    },
+    "TWELVE_DATA": {
+      "role": "C417_COMPLETED_EOD_OHLCV_RESEARCH_CANDIDATE_NOT_MC_PRIMARY",
+      "official_pricing": "https://twelvedata.com/pricing",
+      "free_basic_api_credits_per_minute_advertised": 8,
+      "free_basic_api_credits_per_day_advertised": 800,
+      "internal_non_display_listed_on_free_plan": true,
+      "github_runner_api_key_and_own_account_entitlement": "NOT_ATTESTED",
+      "current_exact30_unadjusted_nasdaq_rth_integer_volume_lineage": "NOT_ATTESTED",
+      "same_asof_260_sessions_52_completed_weeks": "NOT_ATTESTED",
+      "coverage_for_540_unknown": "NOT_ATTESTED",
+      "market_cap_source": "NOT_PROVEN_FOR_BASIC",
+      "primary_mc_promotion_allowed": false,
+      "price_dv30_positive_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "paid_upgrade_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO"
     }
   }
 }
