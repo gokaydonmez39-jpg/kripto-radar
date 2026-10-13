@@ -14,9 +14,15 @@ import os
 import urllib.parse
 import urllib.request
 from decimal import Decimal
+from functools import lru_cache
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from alpaca_rth_minute_integrity_shadow import official_window
+from alpaca_rth_minute_integrity_shadow import official_window as _official_window
+
+@lru_cache(maxsize=128)
+def official_window(day):
+    """Memoize the same immutable official session calendar result per date."""
+    return _official_window(day)
 from alpaca_540_personal_daily_sip_coverage import sha_lines
 
 NY=ZoneInfo("America/New_York")
