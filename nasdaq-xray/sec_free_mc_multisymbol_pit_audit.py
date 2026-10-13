@@ -162,10 +162,21 @@ def selftest():
         else:raise AssertionError("UNSAFE_BATCH_INPUT_ACCEPTED")
     # The full-scope mode is a separate explicit switch; the default
     # continues to mean a small canary probe.
-    asof, full = load_scope(full_current=True)
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
-    assert asof==price["asof_et"]
-    assert full==sorted(price["pass_symbols"])
+    if price["pass_count"]==0:
+        # A zero-PASS PRICE cohort has no SEC MC candidates. This is a
+        # legitimate fail-closed business state, not a selftest failure.
+        try:
+            load_scope(full_current=True)
+        except ValueError as exc:
+            if str(exc)!="FULL_PRICE_PASS_EXCEEDS_BOUNDED_SEC_CENSUS":
+                raise
+        else:
+            raise AssertionError("ZERO_PRICE_PASS_MISLABELED_AS_MC_SCOPE")
+    else:
+        asof,full=load_scope(full_current=True)
+        assert asof==price["asof_et"]
+        assert full==sorted(price["pass_symbols"])
     for off,lim in ((1,0),(0,1),(-1,1)):
         try:load_scope(off,lim,full_current=True)
         except ValueError:pass
