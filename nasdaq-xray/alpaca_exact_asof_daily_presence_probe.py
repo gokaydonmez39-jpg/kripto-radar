@@ -37,8 +37,8 @@ def check_scope():
              start_date=ASOF,end_date=ASOF)]
     need(days==[ASOF],"NOT_OFFICIAL_SESSION")
     now=dt.datetime.now(dt.timezone.utc)
-    closing=dt.datetime.fromisoformat(ASOF+"T16:20:00").replace(tzinfo=NY)
-    need(now>=closing.astimezone(dt.timezone.utc),"MARKET_NOT_CLOSED_PLUS_DELAY")
+    closing=dt.datetime.fromisoformat(ASOF+"T16:46:00").replace(tzinfo=NY)
+    need(now>=closing.astimezone(dt.timezone.utc),"MARKET_NOT_CLOSED_PLUS_15MIN_DELAY")
     state=json.loads((ROOT/"sina_state.json").read_text())
     need(state.get("asof_et")==ASOF and
          state.get("status")=="HISTORY_PARTIAL" and
@@ -98,6 +98,11 @@ def selftest():
     except ValueError:pass
     else:raise AssertionError("FOREIGN_SYMBOL_ACCEPTED")
     x=metadata(positive,1,"OBSERVED_SIP_DAILY_ONLY")
+    import urllib.parse
+    end="2026-10-13T16:30:00-04:00"
+    need(dt.datetime.fromisoformat(end).hour==16
+         and dt.datetime.fromisoformat(end).minute==30,
+         "REQUEST_END_MUST_BE_AFTER_CLOSE_BEFORE_CUTOFF")
     need(x["counts"]["observed_exact_asof"]==4
          and x["primary_dv30_created"] is False
          and x["r92_created"] is False,"NO_ALPHA")
@@ -125,12 +130,22 @@ def main():
     params={"symbols":",".join(SYMBOLS),"timeframe":"1Day",
             "feed":"sip","adjustment":"raw","sort":"asc","limit":"1000",
             "start":"2026-10-13T00:00:00-04:00",
-            "end":"2026-10-13T23:59:59-04:00"}
+            "end":"2026-10-13T16:30:00-04:00"}
     req=urllib.request.Request(BASE+"?"+urllib.parse.urlencode(params),
           headers={"APCA-API-KEY-ID":creds,"APCA-API-SECRET-KEY":secret,
                    "Accept":"application/json"})
-    with urllib.request.urlopen(req,timeout=25) as response:
-        raw=response.read(MAX_BYTES+1)
+    import urllib.error
+    try:
+        with urllib.request.urlopen(req,timeout=25) as response:
+            raw=response.read(MAX_BYTES+1)
+    except urllib.error.HTTPError as exc:
+        status=("BLOCKED_PROVIDER_HTTP_"+str(exc.code))
+        result=metadata({s:"UNKNOWN_PROVIDER_HTTP_"+str(exc.code)
+                         for s in SYMBOLS},1,status)
+        args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+        print("XRAY_DAILY_ASOF_PRESENCE="+json.dumps(result["counts"],sort_keys=True))
+        print("XRAY_DAILY_ASOF_PROVIDER_STATUS="+status)
+        return
     need(len(raw)<=MAX_BYTES,"RESPONSE_OVERSIZE")
     data=json.loads(raw)
     need(type(data) is dict and type(data.get("bars")) is dict,
