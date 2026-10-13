@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unattended GitHub root: no market/vendor work on an ET weekend.
+"""Unattended GitHub root: no market/vendor work on an ET weekend or Nasdaq holiday.
 
 The cron is UTC and must stay calendar-neutral; a UTC Monday can still be
 Sunday in New York. Explicit manual workflow_dispatch can examine the last
@@ -11,6 +11,8 @@ import datetime as dt
 import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from unittest.mock import patch
+import pandas_market_calendars as mcal
 
 NY=ZoneInfo("America/New_York")
 ROOT=Path(__file__).resolve().parent
@@ -31,7 +33,18 @@ def permit_compute(now_utc:dt.datetime,event_name:str)->bool:
         raise ValueError("UNSUPPORTED_ROOT_EVENT")
     if event_name=="workflow_dispatch":
         return True  # An explicit research invocation, not scheduled quota burn.
-    return now_utc.astimezone(NY).weekday()<5
+    et_day=now_utc.astimezone(NY).date()
+    if et_day.weekday()>=5:
+        return False
+    # A weekday is not sufficient: observed Nasdaq exchange holidays also
+    # prohibit unattended market-data quota burn. Calendar read failure must
+    # abort before provider work rather than default to weekday=True.
+    try:
+        sessions=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=et_day.isoformat(),end_date=et_day.isoformat())
+        return len(sessions)==1 and sessions[0].date()==et_day
+    except Exception as exc:
+        raise RuntimeError("NASDAQ_SESSION_CALENDAR_UNAVAILABLE_FAIL_CLOSED") from exc
 
 def check_workflow_guard(workflow:str)->None:
     if "id: session" not in workflow or "--emit" not in workflow:
@@ -58,6 +71,19 @@ def selftest()->None:
     assert not permit_compute(d(2026,10,12,3),"schedule")
     # Columbus Day 2026: stock market open, despite bond-market closure.
     assert permit_compute(d(2026,10,12,15),"schedule")
+    # Observed Independence Day, Thanksgiving and Christmas: weekdays with
+    # no Nasdaq RTH must not consume unattended history/provider quotas.
+    assert not permit_compute(d(2026,7,3,15),"schedule")
+    assert not permit_compute(d(2026,11,26,15),"push")
+    assert not permit_compute(d(2026,12,25,15),"schedule")
+    # Black Friday is a half session, and Veterans/Columbus Days trade.
+    assert permit_compute(d(2026,11,27,15),"schedule")
+    assert permit_compute(d(2026,11,11,15),"push")
+    # Unknown or broken exchange-calendar infrastructure cannot become GO.
+    with patch.object(mcal,"get_calendar",side_effect=RuntimeError("OUTAGE")):
+        try:permit_compute(d(2026,10,13,15),"schedule")
+        except RuntimeError as e:assert "NASDAQ_SESSION_CALENDAR_UNAVAILABLE_FAIL_CLOSED" in str(e)
+        else:raise AssertionError("CALENDAR_OUTAGE_ALLOWED_VENDOR_COMPUTE")
     # Explicit research invocation is a distinct, recorded event.
     assert permit_compute(d(2026,10,11,18),"workflow_dispatch")
     try:permit_compute(dt.datetime(2026,10,12,15),"schedule")
@@ -67,7 +93,7 @@ def selftest()->None:
     except ValueError:pass
     else:raise AssertionError("UNKNOWN_EVENT_ACCEPTED")
     check_workflow_guard(WORKFLOW.read_text())
-    print("XRAY_ROOT_ET_WEEKEND_QUOTA_GUARD_SELFTEST=PASS_DST_UTC_BOUNDARY_COLUBMUS_DAY_EXPLICIT_MANUAL_5_STAGES")
+    print("XRAY_ROOT_ET_WEEKEND_QUOTA_GUARD_SELFTEST=PASS_ET_DST_NASDAQ_HOLIDAYS_CALENDAR_OUTAGE_MANUAL_5_STAGES")
 
 def main():
     a=argparse.ArgumentParser()
@@ -84,7 +110,7 @@ def main():
     if not outfile:raise RuntimeError("GITHUB_OUTPUT_MISSING")
     with open(outfile,"a",encoding="utf-8") as out:
         out.write("allow_compute="+("true" if allowed else "false")+"\n")
-    print("XRAY_ROOT_UNATTENDED_MARKET_WORK="+("ENABLED" if allowed else "WEEKEND_BLOCKED_QUOTA_PROTECTED"))
+    print("XRAY_ROOT_UNATTENDED_MARKET_WORK="+("ENABLED" if allowed else "CLOSED_SESSION_QUOTA_PROTECTED"))
     print("XRAY_ROOT_WEEKEND_GUARD=RESEARCH_ONLY_NO_ALPHA_NO_TRADES_NO_PROVIDER_UPGRADE")
 
 if __name__=="__main__":main()
