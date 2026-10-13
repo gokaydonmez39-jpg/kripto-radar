@@ -1,0 +1,192 @@
+name: XRAY Provider Access Inventory Observer (Research Only)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "11 22 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-provider-access-observer.yml"
+      - "nasdaq-xray/c418_provider_inventory_20261012.json"
+      - "nasdaq-xray/c418_provider_routing_readiness.py"
+      - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
+      - "nasdaq-xray/xray_multi_provider_research.py"
+      - "nasdaq-xray/bq_history_onecall_shadow.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-provider-access-observer-research
+  cancel-in-progress: false
+
+jobs:
+  observe-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install official completed-session calendar for existing regressions
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Enforce exact checkout and offline negative regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile \
+            nasdaq-xray/c418_provider_routing_readiness.py \
+            nasdaq-xray/c418_daily_mc_capacity_guard.py \
+            nasdaq-xray/xray_multi_provider_research.py \
+            nasdaq-xray/bq_history_onecall_shadow.py
+          python nasdaq-xray/c418_provider_routing_readiness.py --selftest
+          python -O nasdaq-xray/c418_provider_routing_readiness.py --selftest
+          python nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+          python -O nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+          python nasdaq-xray/xray_multi_provider_research.py --selftest
+          python -O nasdaq-xray/xray_multi_provider_research.py --selftest
+          python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+      - name: Observe exactly 12 providers without reading PRICE or vendor credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import hashlib
+          import json
+          import os
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "nasdaq-xray")
+          from c418_provider_routing_readiness import provider_table
+          root = Path("nasdaq-xray")
+          inv_path = root / "c418_provider_inventory_20261012.json"
+          raw = inv_path.read_bytes()
+          inv = json.loads(raw)
+          rows = provider_table(inv)
+          assert len(rows) == 12
+          assert "BUSINESSQUANT" in rows and "ALPACA" in rows
+          def must_reject(mutate):
+              candidate = copy.deepcopy(inv)
+              mutate(candidate)
+              try:
+                  provider_table(candidate)
+              except (ValueError, KeyError, TypeError):
+                  return
+              raise AssertionError("UNSAFE_INVENTORY_MUTATION_ACCEPTED")
+          must_reject(lambda x: x["sources"].pop())
+          must_reject(lambda x: x["sources"][-1].update(runner_key_attested=True))
+          must_reject(lambda x: x.update(no_provider_automatically_activated=False))
+          must_reject(lambda x: next(s for s in x["sources"] if s["id"] == "BUSINESSQUANT")
+                      .update(mc_current_exact=True))
+          must_reject(lambda x: next(s for s in x["sources"] if s["id"] == "BUSINESSQUANT")
+                      .update(daily_requests=0))
+          bq = rows["BUSINESSQUANT"]
+          assert bq["daily_requests"] == 30
+          assert bq["max_tickers_per_historic_call"] == 5
+          assert bq["historical_mc_slug"] == "market-capitalization-daily"
+          assert bq["automated_non_display_primary_license_verified"] is False
+          assert bq["report_date_alone_not_pit"] is True
+          observation = {
+              "schema": "XRAY_C418_PRICE_INDEPENDENT_PROVIDER_OBSERVER_V1",
+              "effective_policy": "C4.17",
+              "control": "C4.27",
+              "observation": "INVENTORY_ONLY_NO_HTTP_NO_VENDOR_CREDENTIAL_READ",
+              "source_git_blob_sha": hashlib.sha1(
+                  b"blob " + str(len(raw)).encode() + b"\\0" + raw).hexdigest(),
+              "source_inventory_observed_date": inv.get("observed_date"),
+              "provider_count": 12,
+              "providers": [{
+                  "id": name,
+                  "inventory_access": data.get("access"),
+                  "previous_connection_inventory_only": data.get("current_connected"),
+                  "free_daily_quota_claim_inventory_only": data.get("daily_requests"),
+                  "authenticated_api_access": "NOT_PROBED",
+                  "github_runner_secret_presence": "NOT_PROBED",
+                  "unattended_non_display_and_derived_rights": "NOT_ATTESTED",
+                  "publication_time_pit": "NOT_ATTESTED",
+                  "primary_authority": False,
+              } for name, data in sorted(rows.items())],
+              "businessquant": {
+                  "documented_max_tickers_per_historic_call": 5,
+                  "documented_free_daily_calls": 30,
+                  "historical_514_price_pass_cohort_min_calls": 103,
+                  "historical_514_price_pass_cohort_min_calendar_days": 4,
+                  "current_price_cohort_calls": None,
+                  "current_price_unknown_count": None,
+                  "price_not_consulted": True,
+                  "runner_key_attested": False,
+                  "license_attested": False,
+                  "filing_acceptance_pit_attested": False,
+              },
+              "vendor_http_calls": 0,
+              "verified_live_api_access": 0,
+              "verified_production_mc_origins": 0,
+              "new_primary_mc_created": 0,
+              "new_r92_created": 0,
+              "can_create_primary": False,
+              "can_register_r92": False,
+              "can_set_g9_pass": False,
+              "can_set_account_pass": False,
+              "research_only": True,
+              "unknown_never_pass": True,
+              "execution": "NONE",
+              "real_money": "NO-GO",
+              "go": False,
+          }
+          assert observation["businessquant"]["price_not_consulted"] is True
+          assert observation["vendor_http_calls"] == 0
+          assert all(not x["primary_authority"] for x in observation["providers"])
+          assert all(observation[x] is False for x in
+                     ("can_create_primary", "can_register_r92", "go"))
+          out = Path(os.environ["RUNNER_TEMP"]) / "xray_price_independent_provider_access.json"
+          out.write_text(json.dumps(observation, indent=2, sort_keys=True) + "\\n")
+          print("XRAY_PROVIDER_PRICE_INDEPENDENCE=PASS_12_SOURCES_5_NEGATIVE_NO_HTTP")
+          print("XRAY_BQ_PRIMARY_PIT_LICENSE_RUNNER=UNVERIFIED_RESEARCH_ONLY")
+          PY
+      - name: PRICE-gated capacity diagnostic is separate and never required
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -s nasdaq-xray/canonical_current_price_dv30.json; then
+            python nasdaq-xray/c418_daily_mc_capacity_guard.py \
+              --out "$RUNNER_TEMP/xray_daily_mc_capacity_diagnostic.json"
+          else
+            echo "XRAY_PRICE_CAPACITY=UNVERIFIED_MISSING_PRICE_NO_VENDOR_AUTHORITY"
+          fi
+      - name: Reject any research telemetry which claims production permission
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_price_independent_provider_access.json"
+          x=json.loads(p.read_text())
+          assert x["schema"]=="XRAY_C418_PRICE_INDEPENDENT_PROVIDER_OBSERVER_V1"
+          assert x["provider_count"]==12 and len(x["providers"])==12
+          assert x["vendor_http_calls"]==0 and x["verified_live_api_access"]==0
+          assert x["new_primary_mc_created"]==x["new_r92_created"]==0
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True and x["go"] is False
+          assert x["businessquant"]["price_not_consulted"] is True
+          assert all(y["authenticated_api_access"]=="NOT_PROBED" for y in x["providers"])
+          if (Path(os.environ["RUNNER_TEMP"])/"xray_daily_mc_capacity_diagnostic.json").exists():
+              y=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_daily_mc_capacity_diagnostic.json").read_text())
+              assert y["can_create_PRIMARY"] is False and y["can_register_R92"] is False
+              assert y["production_go"] is False
+          print("XRAY_PROVIDER_OBSERVER_NO_PRIMARY_NO_R92_NO_REAL_MONEY=PASS")
+          PY
+      - name: Upload source-readiness operational metadata only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-price-independent-provider-access-operational-only
+          path: |
+            ${{ runner.temp }}/xray_price_independent_provider_access.json
+            ${{ runner.temp }}/xray_daily_mc_capacity_diagnostic.json
+          retention-days: 14
+          if-no-files-found: error
