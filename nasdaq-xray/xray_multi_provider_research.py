@@ -628,17 +628,28 @@ def selftest():
     assert rotate_sample([],2,0)==[]
     # Real repo pre-MC recovery: current MASTER/PRICE may advance while
     # HISTORY and TERMINAL remain stale. This MUST NOT freeze shadow discovery.
-    fixture_asof=proper_date(json.loads((ROOT/"canonical_current_price_dv30.json").read_text())["asof_et"])
+    live_price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    fixture_asof=proper_date(live_price["asof_et"])
     fixture_now=dt.datetime.combine(dt.date.fromisoformat(fixture_asof),dt.time(23,30),
                                     tzinfo=dt.timezone.utc)
-    recovered_asof,recovered_scopes,recovered_sha=pre_mc_recovery_inputs(now_utc=fixture_now)
-    assert recovered_scopes["EVENT"]==[]
-    assert recovered_scopes["MC"]==sorted(set(recovered_scopes["MC"]))
-    assert len(recovered_scopes["MC"])>0
-    assert recovered_sha["MC"] is None
-    assert recovered_sha["PRICE"]==blob(ROOT/"canonical_current_price_dv30.json")
-    assert recovered_sha["MASTER"]==blob(ROOT/"canonical_current_master_manifest.json")
-    assert recovered_asof==json.loads((ROOT/"canonical_current_price_dv30.json").read_text())["asof_et"]
+    if live_price.get("unknown_count") or live_price.get("blocked_count") or not live_price.get("pass_count"):
+        # Exact current PRICE is incomplete. A shadow runner must not claim a
+        # real positive recovery observation merely to keep CI green.
+        try:pre_mc_recovery_inputs(now_utc=fixture_now)
+        except ValueError as err:
+            assert str(err)=="PRE_MC_GIT_SCOPE_HASH_OR_PRICE_BLOCKED"
+        else:raise AssertionError("UNVERIFIED_PRICE_PROMOTED_TO_MC_DISCOVERY")
+        recovered_asof=fixture_asof
+        print("XRAY_REAL_PRE_MC_RECOVERY=BLOCKED_PRICE_UNKNOWN_NO_VENDOR_CALL")
+    else:
+        recovered_asof,recovered_scopes,recovered_sha=pre_mc_recovery_inputs(now_utc=fixture_now)
+        assert recovered_scopes["EVENT"]==[]
+        assert recovered_scopes["MC"]==sorted(set(recovered_scopes["MC"]))
+        assert len(recovered_scopes["MC"])>0
+        assert recovered_sha["MC"] is None
+        assert recovered_sha["PRICE"]==blob(ROOT/"canonical_current_price_dv30.json")
+        assert recovered_sha["MASTER"]==blob(ROOT/"canonical_current_master_manifest.json")
+        assert recovered_asof==live_price["asof_et"]
     # 9-Oct is latest through Mon-12 Oct 20:29 UTC. The same immutable
     # 9-Oct PRICE must not be replayed as "current" after Mon close+buffer.
     if recovered_asof=="2026-10-09":
