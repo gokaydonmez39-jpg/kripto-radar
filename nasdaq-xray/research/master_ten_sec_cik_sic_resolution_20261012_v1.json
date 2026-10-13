@@ -32,14 +32,18 @@
       "issuer": "Calisa Acquisition Corp",
       "ticker": "ALIS",
       "sic_diagnostic": 7374,
-      "filing_evidence_date": "2026-09-xx",
-      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226042390/form424b3.htm",
+      "filing_evidence_date": "2026-09-21",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
       "evidence_note": "2026-10-08 shareholder meeting announced, transaction closing not proven",
       "issuer_identification": "CIK_AND_LISTED_ISSUER_MAPPED",
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        7374
+      ]
     },
     "BSAA": {
       "cik": "0002051587",
@@ -53,7 +57,11 @@
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        8200
+      ]
     },
     "FACT": {
       "cik": "0002028935",
@@ -67,7 +75,11 @@
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        3728
+      ]
     },
     "FVN": {
       "cik": "0002010653",
@@ -95,7 +107,11 @@
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        3341
+      ]
     },
     "IPXG": {
       "cik": "0002088805",
@@ -130,14 +146,19 @@
       "issuer": "Yorkville Acquisition Corp",
       "ticker": "MCGA",
       "sic_diagnostic": 6199,
-      "filing_evidence_date": "2026-08-07",
-      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926026597/ex_1000119.htm",
+      "filing_evidence_date": "2026-08-12",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2064658/000110465926094872/0001104659-26-094872-index.htm",
       "evidence_note": "Trump Media/Yorkville August 7 proposed combination terminated; SIC mismatch does not imply postmerger issuer",
       "issuer_identification": "CIK_AND_LISTED_ISSUER_MAPPED",
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "secondary_business_combination_termination_url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926026597/ex_1000119.htm",
+      "competing_2026_sic_codes": [
+        6770,
+        6199
+      ]
     },
     "MMTX": {
       "cik": "0002077033",
@@ -151,7 +172,11 @@
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        7371
+      ]
     },
     "WTG": {
       "cik": "0002053927",
@@ -165,7 +190,11 @@
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "competing_2026_sic_codes": [
+        6770,
+        7370
+      ]
     }
   }
 }
