@@ -1,0 +1,32 @@
+name: XRAY Personal Technical Evidence Offline CI
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - nasdaq-xray/personal_research_primary_engine_v1.py
+      - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
+permissions:
+  contents: read
+jobs:
+  fail-closed-selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require immutable source commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Run technical measurement and adversarial tests without API credentials
+        run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --selftest
+      - name: Reject code paths with market execution and secrets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('nasdaq-xray/personal_research_primary_engine_v1.py')
+          s=p.read_text()
+          assert 'r92_created": False' in s
+          assert 'canonical_primary_created": False' in s
+          assert 'real_money": "NO-GO"' in s
+          assert 'TECHNICAL_PRIMARY_PERSONAL' in s
+          assert 'UNKNOWN_ZERO_VOLUME_CARRY_FORWARD_PLACEHOLDER' in s
+          print('XRAY_PERSONAL_TECHNICAL_OFFLINE_GATES=PASS_NO_RELEASE')
+          PY
