@@ -90,20 +90,24 @@ def evaluate(symbol_rows,calendar,weeks):
     return klass,len(missing),initial,interior,trailing
 
 def selftest():
-    sample=["2026-10-08","2026-10-09","2026-10-12","2026-10-13"]
+    # Exact 260 official Nasdaq sessions: synthetic metadata-only fixtures.
+    sample,weeks,_=prior.source_scope()
+    check(len(sample)==260 and len(weeks)==52 and sample[-1]==ASOF,
+          "OFFICIAL_SELFTEST_CALENDAR")
     def make(day):
         from zoneinfo import ZoneInfo
         ts=dt.datetime.combine(dt.date.fromisoformat(day),dt.time(0,0),
              tzinfo=ZoneInfo("America/New_York")).astimezone(dt.timezone.utc)
         return {"t":ts.isoformat()}
-    f=lambda ds:evaluate([make(x) for x in ds],sample,sample[1:])
+    f=lambda ds:evaluate([make(x) for x in ds],sample,weeks)
     check(f(sample)==("SOURCE_CHANGED_FULL_DATE_SET_REVERIFY_OHLCV",0,0,0,0),"FULL")
     check(f(sample[1:])==("MISSING_EARLY_HISTORY_OR_LATE_LISTING_UNPROVEN",1,1,0,0),"PREFIX")
     check(f(sample[:-1])==("CURRENT_OR_RECENT_SESSION_MISSING",1,0,0,1),"TRAILING")
-    check(f([sample[0],sample[-1]])==("OFFICIAL_SESSION_GAP_IN_RETAINED_PERIOD",2,0,2,0),"INTERIOR")
-    check(f([])==("NO_USABLE_OFFICIAL_SESSION_IN_260",4,4,0,0),"NONE")
-    check(evaluate(None,sample,sample[1:])[0]=="UNKNOWN_BAD_PROVIDER_SHAPE","SHAPE")
-    check(evaluate([make(sample[0])]*2,sample,sample[1:])[0]=="UNKNOWN_DUPLICATE_OR_FUTURE","DUPLICATE")
+    inner=[x for i,x in enumerate(sample) if i not in {80,120}]
+    check(f(inner)==("OFFICIAL_SESSION_GAP_IN_RETAINED_PERIOD",2,0,2,0),"INTERIOR")
+    check(f([])==("NO_USABLE_OFFICIAL_SESSION_IN_260",260,260,0,0),"NONE")
+    check(evaluate(None,sample,weeks)[0]=="UNKNOWN_BAD_PROVIDER_SHAPE","SHAPE")
+    check(evaluate([make(sample[0])]*2,sample,weeks)[0]=="UNKNOWN_DUPLICATE_OR_FUTURE","DUPLICATE")
     print("XRAY_MISSING168_SELFTEST=PASS_7_FIXTURES_SESSION_SPLITS_NO_PRIMARY")
 
 def run(raw,out):
