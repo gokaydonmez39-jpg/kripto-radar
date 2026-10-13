@@ -101,6 +101,9 @@ jobs:
               assert x[k] is False,k
           if x["api_calls"]==0:
               assert x["valid_symbols"]==0 and x["valid_bars"]==0
+              if x["status"]=="BLOCKED_STALE_OR_INVALID_CURRENT_PRICE_SCOPE":
+                  assert x["personal_basic_shadow_opt_in"] is True
+                  assert x["runner_credentials_present"] is False
           if x["status"]=="SHADOW_EXACT30_TRANSPORT_CONFIRMED_NO_PRIMARY":
               assert x["api_calls"]==1 and x["valid_symbols"]==5 and x["valid_bars"]==150
           payload=json.dumps(x)
@@ -133,6 +136,8 @@ jobs:
               assert x[key] is False,key
           if not x["exact_minute_window_observed"]:
               assert x["observed_valid_minutes"]==0
+              if x["status"]=="BLOCKED_STALE_OR_INVALID_PRICE_SCOPE":
+                  assert x["api_calls"]==0 and x["personal_basic_shadow_opt_in"] is True
           if x["status"]=="SHADOW_EXACT_RTH_MINUTE_WINDOW_NO_AUCTION_NO_DV30_AUTHORITY":
               assert x["api_calls"]==1 and x["exact_minute_window_observed"] is True
               assert x["observed_valid_minutes"]==x["expected_official_session_minutes"]
