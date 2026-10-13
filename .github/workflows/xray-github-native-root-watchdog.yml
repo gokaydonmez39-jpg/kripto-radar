@@ -15,6 +15,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/github_native_root_watchdog.py"
+      - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/github_native_chain_health.py"
       - "nasdaq-xray/retired_09oct_watch_topology_selftest.py"
       - ".github/workflows/xray-20261009-preopen-watch.yml"
@@ -36,6 +37,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned Nasdaq calendar for independent watchdog
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Dated preopen watch retirement, no duplicate trigger chain
         run: python nasdaq-xray/retired_09oct_watch_topology_selftest.py
       - name: Compile and regress failure classes
