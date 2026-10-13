@@ -35,10 +35,12 @@ def _successful_runs(runs):
 
 
 def _weekday_root_successes(runs):
-    # A green Sunday root is a weekend quota-protection NO-COMPUTE job.
-    ny=ZoneInfo("America/New_York")
+    # Legacy function name retained; actual authority is the SAME official
+    # Nasdaq exchange-session calendar used by root and native watchdog.
+    # Successful holiday/weekend no-compute jobs are NOT source heartbeats.
+    from root_weekend_quota_guard import permit_compute
     return [r for r in _successful_runs(runs)
-            if _dt(r.get("created_at")).astimezone(ny).weekday()<5]
+            if permit_compute(_dt(r.get("created_at")),"schedule")]
 
 
 def _latest_completed(runs):
@@ -119,8 +121,11 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
 
     root_grace=contract.get("root_active_run_grace_seconds",3300)
     final_grace=contract.get("final_active_run_grace_seconds",3600)
-    # Quota-protected weekend root successes are not recovered data work.
-    root_success=_weekday_root_successes(root_runs)
+    # Exchange-closed root runs, including weekday holidays, are not data work.
+    try:
+        root_success=_weekday_root_successes(root_runs)
+    except Exception:
+        return False,"NASDAQ_CALENDAR_UNAVAILABLE"
     root_active=classify_active(now_utc,root_runs,root_grace,
                                 recovery_successes=root_success)
     if root_active!="CLEAR":
@@ -148,8 +153,14 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
         if not witnessed:
             return False,label+"_KICK_SUCCESS_NOT_OBSERVED"
 
-    ny=now_utc.astimezone(ZoneInfo("America/New_York"))
-    if ny.weekday()<5:
+    # A trading day, not a generic NY weekday, requires a fresh root.
+    # Else keep all kick/active/failure/source checks; no inferred PASS.
+    try:
+        from root_weekend_quota_guard import permit_compute
+        trading_day=permit_compute(now_utc,"schedule")
+    except Exception:
+        return False,"NASDAQ_CALENDAR_UNAVAILABLE"
+    if trading_day:
         if latest_root is None:
             return False,"ROOT_SUCCESS_MISSING"
         # updated_at can move after a retry/UI update while source compute is
