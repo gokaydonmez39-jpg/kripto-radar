@@ -17,7 +17,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from alpaca_sip_exact30_backup_probe import PRICE, MASTER, expected_sessions, grant
+from alpaca_sip_exact30_backup_probe import PRICE, MASTER, expected_sessions, grant, personal_shadow_access
 from alpaca_rth_minute_integrity_shadow import official_window, inspect_minutes
 
 ROOT=Path(__file__).resolve().parent
@@ -73,7 +73,8 @@ def base(asof):
         "expected_official_session_minutes":0,
         "observed_valid_minutes":0,"api_calls":0,
         "runner_credentials_present":False,
-        "operator_license_claimed":False,"license_independently_verified":False,
+        "operator_license_claimed":False,"personal_basic_shadow_opt_in":False,
+        "license_independently_verified":False,
         "exact_minute_window_observed":False,"close_auction_allocation_verified":False,
         "trade_conditions_rth_lineage_verified":False,
         "daily_bar_volume_is_rth_proven":False,
@@ -102,10 +103,11 @@ def run(price,master,latest,env,fetcher=vendor_get):
     secret=env.get("XRAY_ALPACA_API_SECRET_KEY","").strip()
     result["runner_credentials_present"]=bool(key and secret)
     result["operator_license_claimed"]=grant(env)
+    result["personal_basic_shadow_opt_in"]=personal_shadow_access(env)
     if not key or not secret:
         result["status"]="BLOCKED_RUNNER_CREDENTIALS_NOT_CONFIGURED"
         return result
-    if not grant(env):
+    if not grant(env) and not personal_shadow_access(env):
         result["status"]="BLOCKED_UNATTESTED_UNATTENDED_RESEARCH_RIGHTS"
         return result
     result["api_calls"]=1
@@ -204,6 +206,21 @@ def selftest():
         raise AssertionError("STALE_DATE_REUSED")
     if any(x in json.dumps(yes) for x in ("TEST_SECRET","TEST_ID","390000")):
         raise AssertionError("SECRET_OR_VENDOR_VOLUME_PERSISTED")
+    personal={"XRAY_ALPACA_API_KEY_ID":"TEST_ID",
+              "XRAY_ALPACA_API_SECRET_KEY":"TEST_SECRET",
+              "XRAY_ALPACA_PERSONAL_BASIC_SHADOW_ENABLED":"true"}
+    shadow=run(src,master,asof,personal,fake)
+    if (shadow["api_calls"]!=1 or len(calls)!=2 or
+        shadow["observed_valid_minutes"]!=390 or
+        shadow["status"]!="SHADOW_EXACT_RTH_MINUTE_WINDOW_NO_AUCTION_NO_DV30_AUTHORITY" or
+        not shadow["personal_basic_shadow_opt_in"] or
+        shadow["operator_license_claimed"] or
+        shadow["license_independently_verified"] or
+        shadow["primary_price_authority"] or shadow["r92_created"]):
+        raise AssertionError("PERSONAL_FREE_SIP_MOCK_NOT_RESEARCH_ONLY")
+    shadow_stale=run(src,master,"2026-10-09",personal,fake)
+    if shadow_stale["api_calls"]!=0 or len(calls)!=2:
+        raise AssertionError("PERSONAL_FREE_SIP_STALE_REUSED")
     print("XRAY_SIP_RTH_ONECALL_SELFTEST=PASS_390_FULL_8_NEGATIVES_ZERO_UNLICENSED_REQUESTS_NO_DV30")
     print("XRAY_SIP_RTH_WINDOW_OPTIMIZED_NEGATIVES=PASS_3")
 
