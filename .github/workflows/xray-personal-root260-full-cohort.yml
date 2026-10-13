@@ -1,0 +1,78 @@
+name: XRAY Personal Root 260/52 Full Cohort (No Alpha)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_root260_full_cohort_personal.py"
+      - ".github/workflows/xray-personal-root260-full-cohort.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-personal-root260-full-cohort
+  cancel-in-progress: false
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Install official market calendar pinned
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Prove negative cases without provider calls
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_root260_full_cohort_personal.py
+          python nasdaq-xray/alpaca_root260_full_cohort_personal.py --selftest
+          python -O nasdaq-xray/alpaca_root260_full_cohort_personal.py --selftest
+          python nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py --selftest
+      - name: Read frozen root-unknown complete research cohort in bounded daily SIP batches
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_root260_full_cohort_personal.py --all-root-unknown --out "$RUNNER_TEMP/xray_personal_root260_full_cohort.json"
+      - name: Reject false completion and canonical leakage
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_personal_root260_full_cohort.json"
+          x=json.loads(p.read_text())
+          assert x["schema"]=="XRAY_FULL_ROOT_260_52_PERSONAL_SIP_COHORT_V1"
+          assert x["asof_et"]=="2026-10-13"
+          assert x["official_daily_session_count"]==260
+          assert x["official_weekly_close_count"]==52
+          assert x["actual_api_calls"]<=x["api_call_cap"]<=210
+          assert len(x["symbol_statuses"])==x["total_scope"]==3185
+          assert sum(x["counts"].values())==x["total_scope"]
+          assert x["prior_ci_run"]==38477817138
+          assert len(x["prior_reused_symbols"])==4
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert all(x[k] is False for k in (
+            "canonical_history_written","c417_primary_price_created",
+            "c417_primary_history_created","c417_primary_mc_created",
+            "r92_created","vendor_raw_ohlcv_persisted",
+            "non_display_enterprise_entitlement_inferred"))
+          if x["full_scope_reached"] is not True:
+              raise SystemExit("XRAY_FULL_ROOT260_INCOMPLETE_FAIL_CLOSED")
+          print("XRAY_FULL_ROOT260_ALL_SYMBOLS_CLASSIFIED=PASS_RESEARCH_ONLY")
+          print("XRAY_FULL_ROOT260_COUNTS="+json.dumps(x["counts"],sort_keys=True))
+          PY
+      - name: Archive only metadata, ticker IDs, root SHA and classified states
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-root260-full-scope-status-no-ohlcv
+          path: ${{ runner.temp }}/xray_personal_root260_full_cohort.json
+          retention-days: 14
+          if-no-files-found: warn
