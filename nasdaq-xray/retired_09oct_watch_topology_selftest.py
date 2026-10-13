@@ -26,6 +26,7 @@ def selftest():
     for mandatory in (
         '"XRAY Live Truth Attestation"',
         '"XRAY E2E Production Readiness (Fail-Closed)"',
+        '"XRAY Account Gate Reconciler"',  # independent hourly completion wakes root watchdog
         'cron: "*/15 * * * 1-5"',
     ):
         assert mandatory in d,"LIVE_ROOT_WATCHDOG_REQUIRED_TRIGGER_REMOVED:"+mandatory
