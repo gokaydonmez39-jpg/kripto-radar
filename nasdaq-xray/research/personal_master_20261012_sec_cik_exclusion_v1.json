@@ -1,0 +1,125 @@
+{
+  "schema": "XRAY_PERSONAL_RESEARCH_MASTER_SPAC_CONSERVATIVE_SUPERSET_V1",
+  "asof_et": "2026-10-12",
+  "source_master_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+  "source_ten_cik_sic_blob_sha": "0fd1d5c263d77822fe8d3bab61b457e638bf776c",
+  "source_policy_blob_sha": "6236133768a13d6144a877ad5397d47ecfc45736",
+  "source_master_unknown_count": 10,
+  "source_master_pass_count": 3184,
+  "source_master_explicit_excluded_count": 2435,
+  "resolved_issuer_cik_count": 10,
+  "unknown_issuer_cik_count": 0,
+  "operating_class_positive_promotions": 0,
+  "new_spac_exclusions_count": 10,
+  "personal_research_pass_count": 3184,
+  "personal_research_unknown_identity_count": 0,
+  "personal_research_existing_explicit_excluded_count": 2435,
+  "personal_research_total_excluded_count": 2445,
+  "scope_proof": {
+    "unknown_set_exact_source": true,
+    "no_new_pass_set": true,
+    "only_fail_closed_exclusion": true,
+    "pass_set_unmodified": true,
+    "raw_identity_total_unchanged": 3194,
+    "official_directory_date": "2026-10-12"
+  },
+  "resolved_conservative_exclusions": {
+    "ALIS": {
+      "cik": "0002026767",
+      "issuer": "Calisa Acquisition Corp",
+      "sic_observed": 7374,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "BSAA": {
+      "cik": "0002051587",
+      "issuer": "BEST SPAC I Acquisition Corp",
+      "sic_observed": 8200,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2051587/000121390026093238/ea0303116-8k_bestspac1.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "FACT": {
+      "cik": "0002028935",
+      "issuer": "FACT II Acquisition Corp",
+      "sic_observed": 3728,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2028935/000121390026080046/ea029868501ex99-1.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "FVN": {
+      "cik": "0002010653",
+      "issuer": "Future Vision II Acquisition Corp",
+      "sic_observed": 6770,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2010653/000182912626007886/futurevision2_8k.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "HCAC": {
+      "cik": "0002079013",
+      "issuer": "Hall Chadwick Acquisition Corp",
+      "sic_observed": 3341,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2079013/000182912626010706/R1.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "IPXG": {
+      "cik": "0002088805",
+      "issuer": "Inflection Point Acquisition Corp VII",
+      "sic_observed": null,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2088805/000121390026093821/ea0303421-8k_inflection7.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "MACI": {
+      "cik": "0002016221",
+      "issuer": "Melar Acquisition Corp I",
+      "sic_observed": 6770,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2016221/000121390026101166/ea0305899-8k425_melar1.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "MCGA": {
+      "cik": "0002064658",
+      "issuer": "Yorkville Acquisition Corp",
+      "sic_observed": 6199,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2064658/000110465926094872/0001104659-26-094872-index.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "MMTX": {
+      "cik": "0002077033",
+      "issuer": "Miluna Acquisition Corp",
+      "sic_observed": 7371,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2077033/000149315226043206/forms-4a.htm",
+      "requires_fresh_post_combination_proof": true
+    },
+    "WTG": {
+      "cik": "0002053927",
+      "issuer": "Wintergreen Acquisition Corp",
+      "sic_observed": 7370,
+      "classification": "EXCLUDED_PENDING_DE_SPAC_OPERATING_PROOF",
+      "listed_class_not_promoted": true,
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/2053927/000182912626010489/wintergreenacq_425.htm",
+      "requires_fresh_post_combination_proof": true
+    }
+  },
+  "canonical_master_mutated": false,
+  "production_master_unknown_remains": 10,
+  "can_create_r92": false,
+  "full_go": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
