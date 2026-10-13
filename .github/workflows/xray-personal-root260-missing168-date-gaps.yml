@@ -1,0 +1,88 @@
+name: XRAY Personal 168 Missing 260-Date SIP Cause Probe
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_root260_missing168_date_gaps.py"
+      - ".github/workflows/xray-personal-root260-missing168-date-gaps.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-root260-missing168-date-gap
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Install official Nasdaq calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Negative and positive exact-260 session fixtures
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_root260_missing168_date_gaps.py
+          python nasdaq-xray/alpaca_root260_missing168_date_gaps.py --selftest
+          python -O nasdaq-xray/alpaca_root260_missing168_date_gaps.py --selftest
+      - uses: actions/download-artifact@v4
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runmissing168]') }}
+        with:
+          run-id: 38481474945
+          github-token: ${{ github.token }}
+          name: xray-personal-root260-full-scope-status-no-ohlcv
+          path: ${{ runner.temp }}/xray_root260_frozen
+      - name: Diagnose exact 168 missing-history symbols only
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runmissing168]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_root260_missing168_date_gaps.py --frozen-artifact "$RUNNER_TEMP/xray_root260_frozen/xray_personal_root260_full_cohort.json" --out "$RUNNER_TEMP/xray_missing168_gap_classes.json"
+      - name: Verify scope SHA, complete partition, risk and no trading authority
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runmissing168]') }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_missing168_gap_classes.json").read_text())
+          assert x["schema"]=="XRAY_ROOT260_MISSING168_SOURCE_DATE_GAPS_V1"
+          assert x["source_report_sha256"]=="1d5bb3aaceb571fc84a631ab90e46fa15601067996a9062b2cc5ac6535563a9e"
+          assert x["source_run"]==38481474945
+          assert x["asof_et"]=="2026-10-13"
+          assert x["target_count"]==len(x["statuses"])==168
+          assert len(x["observed_date_metadata"])<=168
+          assert sum(x["counts"].values())==168
+          assert x["actual_api_calls"]<=x["max_api_calls"]<=14
+          assert x["source_root_git_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/sina_state.json"],
+             text=True).strip()
+          assert x["official_daily_sessions"]==260 and x["official_completed_week_closes"]==52
+          assert all(x[k] is False for k in (
+            "canonical_history_modified","primary_history_created",
+            "primary_price_created","primary_market_cap_created",
+            "r92_created","vendor_raw_ohlcv_persisted",
+            "same_asof_all_layers_proven"))
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          if not x["scope_classified"]:
+              raise SystemExit("XRAY_MISSING168_SOURCE_CENSUS_INCOMPLETE")
+          print("XRAY_MISSING168_COMPLETE=PASS_RESEARCH_ONLY")
+          print("XRAY_MISSING168_SOURCE_COUNTS="+json.dumps(x["counts"],sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-root260-168-missing-official-date-gaps
+          path: ${{ runner.temp }}/xray_missing168_gap_classes.json
+          if-no-files-found: ignore
+          retention-days: 14
