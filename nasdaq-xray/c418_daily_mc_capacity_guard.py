@@ -145,7 +145,9 @@ def selftest() -> None:
     # Actual blocked-source shape: positive regression on a metadata-only
     # witness MUST NOT become a positive MC or production proof.
     im=copy.deepcopy(master); ip=copy.deepcopy(price)
-    ip["unknown_symbols"]=["TEST0000","TEST0001"]
+    ip["pass_symbols"]=ip["pass_symbols"][:-2]
+    ip["pass_count"]=len(ip["pass_symbols"])
+    ip["unknown_symbols"]=im["pass_symbols"][-2:]
     ip["unknown_count"]=2
     ip["blocked_symbols"]=[]
     ip["blocked_count"]=0
