@@ -91,10 +91,45 @@ def classify(rows,dates):
             return "INTEGRITY"
     return "DAILY_SIP_30_VALID_NOT_RTH" if set(seen)==set(dates) else "INCOMPLETE"
 
+def diagnostic_reason(rows,dates):
+    """Data-shape diagnosis only: not a statement about exchange causation."""
+    if type(rows) is not list:
+        return "SYMBOL_MISSING_IN_RESPONSE"
+    if len(rows)!=30:
+        return "BAR_COUNT_NOT_30"
+    observed=set()
+    for row in rows:
+        if type(row) is not dict or type(row.get("t")) is not str:
+            return "MALFORMED_BAR_OR_TIMESTAMP"
+        try:
+            stamp=dt.datetime.fromisoformat(row["t"].replace("Z","+00:00"))
+        except ValueError:
+            return "BAD_TIMESTAMP"
+        if stamp.tzinfo is None:
+            return "NAIVE_TIMESTAMP"
+        day=stamp.astimezone(NY).date().isoformat()
+        if day in observed:return "DUPLICATE_SESSION"
+        observed.add(day)
+        vals=[row.get(k) for k in ("o","h","l","c")]
+        if not all(type(v) in (int,float) and math.isfinite(v) and v>0 for v in vals):
+            return "BAD_OHLC_NUMBER"
+        o,h,l,last=vals
+        if h<max(o,l,last) or l>min(o,h,last):
+            return "OHLC_ORDER_VIOLATION"
+        v=row.get("v")
+        if type(v) is not int:
+            return "NONINTEGER_OR_UNTYPED_VOLUME"
+        if v<=0:return "NONPOSITIVE_VOLUME"
+    if observed!=set(dates):
+        return "OFFICIAL_DATE_SET_MISMATCH"
+    return "UNKNOWN_VALIDATOR_DISAGREEMENT"
+
 def collect(scope,dates,fetch):
     """At most 24 actual HTTP page attempts TOTAL, even under pagination."""
     calls=[0]
     counters={"DAILY_SIP_30_VALID_NOT_RTH":0,"INCOMPLETE":0,"INTEGRITY":0}
+    reasons={}
+    affected=[]
     attempted=0
     failure=None
     for offset in range(0,len(scope),CHUNK):
@@ -111,10 +146,22 @@ def collect(scope,dates,fetch):
             failure="UPSTREAM_OR_BUDGET_FAIL_CLOSED"
             break
         for s in chunk:
-            counters[classify(data.get(s),dates)]+=1
+            rows=data.get(s)
+            status=classify(rows,dates)
+            counters[status]+=1
+            if status!="DAILY_SIP_30_VALID_NOT_RTH":
+                cause=diagnostic_reason(rows,dates)
+                reasons[cause]=reasons.get(cause,0)+1
+                affected.append({"symbol":s,"classification":status,"reason":cause})
         attempted+=len(chunk)
+    need(sum(reasons.values())==len(affected) and
+         len(affected)==counters["INCOMPLETE"]+counters["INTEGRITY"],
+         "DIAGNOSTIC_ACCOUNTING")
     return {"attempted":attempted,"remaining":len(scope)-attempted,
             "api_calls":calls[0],"counts":counters,
+            "diagnostic_reasons":dict(sorted(reasons.items())),
+            "affected_symbols":affected,
+            "affected_symbols_sha256":sha_lines(sorted(x["symbol"] for x in affected)),
             "failure":failure,"coverage_complete":attempted==len(scope),
             "verified_rth_primary_count":0,"r92_created":False}
 
@@ -202,10 +249,22 @@ def selftest():
          and r["counts"]["DAILY_SIP_30_VALID_NOT_RTH"]==3
          and r["verified_rth_primary_count"]==0
          and r["r92_created"] is False,"MOCK_CALL")
+    sample_bad=copy.deepcopy(records)
+    sample_bad[0]["v"]=1.5
+    d=collect(["AAPL","NVDA"],days,lambda a,b,t:{
+        "bars":{"AAPL":copy.deepcopy(records),"NVDA":copy.deepcopy(sample_bad)},
+        "next_page_token":None})
+    need(d["api_calls"]==1 and d["attempted"]==2 and
+         d["counts"]["INTEGRITY"]==1 and
+         d["diagnostic_reasons"]=={"NONINTEGER_OR_UNTYPED_VOLUME":1} and
+         d["affected_symbols"]==[{
+             "symbol":"NVDA","classification":"INTEGRITY",
+             "reason":"NONINTEGER_OR_UNTYPED_VOLUME"}],
+         "DIAGNOSTIC_NEGATIVE_AND_SCOPING")
     e=collect(["AAPL"],days,lambda a,b,t:{"bars":{},"next_page_token":"x"})
     need(e["attempted"]==0 and not e["coverage_complete"]
          and e["api_calls"]<=MAX_CALLS,"PAGINATION_BLOCK")
-    print("XRAY_PERSONAL_540_SIP_SELFTEST=PASS_8_BAR_NEGATIVES_2_SCOPE_CASES_NO_HTTP")
+    print("XRAY_PERSONAL_540_SIP_SELFTEST=PASS_8_BAR_NEGATIVES_3_SCOPE_CASES_REASON_CODE_NO_HTTP")
 
 def main():
     parser=argparse.ArgumentParser()
