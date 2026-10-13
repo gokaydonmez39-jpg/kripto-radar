@@ -43,6 +43,20 @@ def finite(v):
         return x if math.isfinite(x) and x>0 else None
     except (ValueError,TypeError,OverflowError):return None
 
+# Exact BusinessQuant market-cap dimension only; a positive growth ratio,
+# P/S or Market Cap / Revenue can never qualify as dollar market cap.
+# These are research-only shape checks, not proof of USD or filing-time PIT.
+BQ_EXACT_MARKET_CAP_METRICS=frozenset({
+    "market capitalization", "market capitalization (daily)"
+})
+
+def bq_exact_market_cap_metric(value):
+    return isinstance(value,str) and value.strip().casefold() in BQ_EXACT_MARKET_CAP_METRICS
+
+def bq_numeric_market_cap(value):
+    # JSON strings and bools do not have validated numeric lineage.
+    return type(value) in (int,float) and finite(value) is not None
+
 def http(url,headers=None,body=None):
     parts=urllib.parse.urlparse(url)
     if parts.scheme!="https" or parts.hostname not in (
@@ -91,10 +105,10 @@ def bq_historic_batch_shadow(symbols,asof,key,http_get):
             continue
         if ticker not in allowed:
             raise ValueError("BQ_BATCH_UNREQUESTED_TICKER")
-        if not isinstance(row.get("metric"),str) or "market cap" not in row["metric"].casefold():
-            raise ValueError("BQ_BATCH_METRIC_DRIFT")
-        if finite(row.get("value")) is None:
-            raise ValueError("BQ_BATCH_NONFINITE_MC")
+        if not bq_exact_market_cap_metric(row.get("metric")):
+            raise ValueError("BQ_BATCH_NONEXACT_MC_METRIC")
+        if not bq_numeric_market_cap(row.get("value")):
+            raise ValueError("BQ_BATCH_NONNUMERIC_OR_NONPOSITIVE_MC")
         counts[ticker]+=1
         if counts[ticker]>1:
             raise ValueError("BQ_BATCH_DUPLICATE_TICKER_DATE")
@@ -173,21 +187,11 @@ def lookup(provider,sym,asof,keys,cache,http_get):
             if cached[sym] is True:
                 return "DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT"
             raise ValueError("BQ_BATCH_MC_ASOF_MISSING")
-        url=bq_url("historic",keys["BQ"],slug="market-capitalization-daily",
-                   ticker=sym,from_date=asof,till_date=asof,mode="original")
-        obj=http_get(url)
-        # BQ returns a flat array with ticker, metric, date, value. Daily
-        # observation date does NOT imply original SEC filing acceptance PIT.
-        rows=obj if isinstance(obj,list) else None
-        if not isinstance(rows,list):
-            raise ValueError("BQ_DAILY_MC_FLAT_ROWS_UNVERIFIED")
-        matches=[r for r in rows if isinstance(r,dict)
-                 and r.get("ticker")==sym
-                 and r.get("date")==asof
-                 and isinstance(r.get("metric"),str)
-                 and "market cap" in r["metric"].casefold()
-                 and finite(r.get("value")) is not None]
-        if len(matches)!=1:
+        # Single ticker and five-ticker paths use one identical exact-metric
+        # validator. This makes ratio and string-value false positives impossible
+        # without adding vendor calls, weakening PIT or persisting market caps.
+        present=bq_historic_batch_shadow([sym],asof,keys["BQ"],http_get)
+        if present[sym] is not True:
             raise ValueError("BQ_DAILY_MC_SYMBOL_DATE_METRIC_NOT_UNIQUE")
         return "DATE_SCOPED_MC_NOT_FILING_ACCEPTANCE_PIT"
     if provider=="BQ_MC_SCREENER":
