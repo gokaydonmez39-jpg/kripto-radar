@@ -238,5 +238,6 @@ jobs:
             ${{ runner.temp }}/xray_price_independent_provider_access.json
             ${{ runner.temp }}/xray_daily_mc_capacity_diagnostic.json
             ${{ runner.temp }}/xray_runner_access_audit.json
+            ${{ runner.temp }}/xray_zero_limit_rebind_readiness.json
           retention-days: 14
           if-no-files-found: error
