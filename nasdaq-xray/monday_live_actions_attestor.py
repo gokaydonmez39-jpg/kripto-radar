@@ -14,6 +14,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from root_weekend_quota_guard import permit_compute
 
 REPO="gokaydonmez39-jpg/kripto-radar"
 UTC=dt.timezone.utc
@@ -57,6 +58,14 @@ def stamp(v):
     if r.tzinfo is None:raise ValueError("RUN_TIMESTAMP_NO_TIMEZONE")
     return r.astimezone(UTC)
 
+def root_compute_event_eligible(run):
+    """A green root invocation need not have executed Nasdaq data work."""
+    event=run.get("event")
+    if event not in ("schedule","push","workflow_dispatch"):
+        return False
+    return permit_compute(stamp(run["created_at"]),event)
+
+
 def summarize(now,workflow,runs):
     """Do not promote even a completed success to data, alpha or device PASS."""
     if now.tzinfo is None:raise ValueError("CLOCK_MUST_HAVE_TIMEZONE")
@@ -69,15 +78,19 @@ def summarize(now,workflow,runs):
     latest=ordered[0] if ordered else None
     if latest is None:
         return {"state":"NO_RUN_OBSERVED","observed":False,"run_id":None,
-                "last_success_id":None,"last_success_age_seconds":None}
+                "last_success_id":None,"last_success_age_seconds":None,
+                "latest_root_compute_eligible":False}
     completed=next((r for r in ordered if
                     r.get("status")==SUCCESS and r.get("conclusion")=="success"
-                    and (workflow!="root" or
-                         stamp(r["created_at"]).astimezone(NY).weekday()<5)),None)
+                    and (workflow!="root" or root_compute_event_eligible(r))),None)
     age=(now.astimezone(UTC)-stamp(completed["created_at"])).total_seconds() if completed else None
-    if workflow=="root" and latest.get("conclusion")=="success" and (
-        stamp(latest["created_at"]).astimezone(NY).weekday()>=5):
-        state="WEEKEND_GREEN_JOB_QUOTA_SKIP_NOT_DATA_HEARTBEAT"
+    latest_root_compute_eligible=(workflow=="root" and
+                                  root_compute_event_eligible(latest))
+    if workflow=="root" and latest.get("conclusion")=="success" and not latest_root_compute_eligible:
+        if stamp(latest["created_at"]).astimezone(NY).weekday()>=5:
+            state="WEEKEND_GREEN_JOB_QUOTA_SKIP_NOT_DATA_HEARTBEAT"
+        else:
+            state="NASDAQ_CLOSED_OR_UNVERIFIED_GREEN_NO_DATA_HEARTBEAT"
     elif latest.get("status")!=SUCCESS:
         state="PENDING_OR_RUNNING_NOT_RECOVERY"
     elif latest.get("conclusion")!="success":
@@ -90,6 +103,7 @@ def summarize(now,workflow,runs):
         "status":latest.get("status"),"conclusion":latest.get("conclusion"),
         "created_at_utc":latest.get("created_at"),
         "head_sha":latest.get("head_sha"),
+        "latest_root_compute_eligible":latest_root_compute_eligible,
         "last_success_id":completed.get("id") if completed else None,
         "last_success_age_seconds":round(age) if age is not None else None,
     }
@@ -161,6 +175,7 @@ def selftest():
     run=lambda id,date,status="completed",conclusion="success":{
         "id":id,"created_at":date,"head_branch":"main",
         "status":status,"conclusion":conclusion,"head_sha":"a"*40,
+        "event":"schedule",
     }
     sunday=run(1,"2026-10-12T03:59:00Z")
     friday=run(2,"2026-10-09T20:35:00Z")
@@ -171,6 +186,27 @@ def selftest():
     m=summarize(date,"root",[sunday,monday])
     assert m["last_success_id"]==3 and m["last_success_age_seconds"]==240
     assert m["state"]=="JOB_SUCCESS_ONLY_NO_DATA_OR_DEVICE_AUTHORITY"
+    # Weekday exchange holiday green is not a source-data heartbeat.
+    next_open=dt.datetime(2026,12,28,16,tzinfo=UTC)
+    holiday=run(41,"2026-12-25T16:30:00Z")
+    prior=run(42,"2026-12-24T17:00:00Z")
+    h=summarize(next_open,"root",[holiday,prior])
+    assert h["last_success_id"]==42 and h["run_id"]==41
+    assert h["latest_root_compute_eligible"] is False
+    assert h["state"]=="NASDAQ_CLOSED_OR_UNVERIFIED_GREEN_NO_DATA_HEARTBEAT"
+    half=run(43,"2026-11-27T15:00:00Z")
+    assert root_compute_event_eligible(half)
+    manual=dict(holiday,event="workflow_dispatch")
+    assert root_compute_event_eligible(manual)
+    unknown=dict(holiday,event=None)
+    assert root_compute_event_eligible(unknown) is False
+    assert summarize(next_open,"root",[unknown])["last_success_id"] is None
+    from unittest.mock import patch
+    with patch("root_weekend_quota_guard.mcal.get_calendar",
+               side_effect=RuntimeError("CALENDAR_OUTAGE")):
+        try:summarize(next_open,"root",[prior])
+        except RuntimeError as e:assert "NASDAQ_SESSION_CALENDAR_UNAVAILABLE_FAIL_CLOSED" in str(e)
+        else:raise AssertionError("CALENDAR_OUTAGE_PROMOTED_ROOT_COMPUTE")
     assert summarize(date,"pre_mc",[sunday])["last_success_id"]==1
     assert summarize(date,"final",[])["state"]=="NO_RUN_OBSERVED"
     for branch in (None,"feature/untrusted","refs/tags/v1"):
@@ -339,6 +375,8 @@ def main():
             and -60<=entries["root"]["last_success_age_seconds"]<=4500
             and entries["root"]["status"]=="completed"
             and entries["root"]["conclusion"]=="success"
+            and entries["root"]["latest_root_compute_eligible"] is True
+            and entries["root"]["run_id"]==entries["root"]["last_success_id"]
             and entries["root"]["head_sha"]==head_a
             and inventory["all_required_active"]
         ),
