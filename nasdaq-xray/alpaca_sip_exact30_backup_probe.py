@@ -150,6 +150,8 @@ def report_base(asof=None):
 
 def run(price,master,latest,env,getter=fetch):
     out=report_base(price.get("asof_et"))
+    # Report configured research mode even when ASOF staleness fails closed.
+    out["personal_basic_shadow_opt_in"]=personal_shadow_access(env)
     try:
         dates=expected_sessions(price,master,latest)
     except Exception:
