@@ -1,0 +1,129 @@
+{
+  "schema": "XRAY_PERSONAL_RESEARCH_EXECUTION_READBACK_20261014_V1",
+  "date_context": "2026-10-14 Europe/Istanbul",
+  "authority": "RESEARCH_AUDIT_ONLY_NO_RELEASE",
+  "technical_engine": {
+    "path": "nasdaq-xray/personal_research_primary_engine_v1.py",
+    "blob_sha": "b42a45bab4654f7e84d8a2b596fa0883e21b39c9",
+    "status": "OFFLINE_CODE_SELFTEST_PASS_FROZEN_METADATA_AUDIT_PASS",
+    "ci_run": 38485435217,
+    "ci_head_sha": "3f4c299b463c6b3df30c8df472cefde8c045b7e7"
+  },
+  "personal_policy": {
+    "path": "nasdaq-xray/personal_research_technical_policy_v1.json",
+    "blob_sha": "85a5fae9f5e36972e9827cc72c266d261f66acf2",
+    "technical_primary_local_without_enterprise_grant": true,
+    "source_provider_terms_still_apply": true,
+    "production_release_unchanged": true
+  },
+  "history": {
+    "asof_et": "2026-10-13",
+    "source_verified_path": "nasdaq-xray/research/personal_root260_full3185_20261013_verified_v1.json",
+    "scope": 3185,
+    "positive_raw_sip_shadow": 2679,
+    "unknown_zero_or_negative_volume": 338,
+    "unknown_missing_official_dates": 168,
+    "canonical_primary_promotions": 0,
+    "prior_verified_action_run": 38481474945,
+    "bad338_reproduction_run": 38483601348,
+    "missing168_diagnostic_run": 38484091581,
+    "missing168_reason_counts": {
+      "early_history_or_late_listing_unproven": 166,
+      "current_or_recent_session_missing": 1,
+      "bad_provider_shape": 1
+    }
+  },
+  "price": {
+    "asof_et": "2026-10-12",
+    "source_verified_path": "nasdaq-xray/research/personal_price540_full_bounded_20261012_verified_v1.json",
+    "scope": 540,
+    "rth30min_lower_bound_shadow": 419,
+    "ambiguous_bounds": 91,
+    "incomplete_or_integrity": 30,
+    "canonical_primary_promotions": 0,
+    "prior_verified_action_run": 38483078540
+  },
+  "source_bar_zero_volume_controls": {
+    "classification": "UNKNOWN_NON_TRADING_PLACEHOLDER_OR_UNVERIFIED_ZERO_VOLUME",
+    "provider": "ALPACA_SIP_HISTORICAL",
+    "personal_live_connected_read_only_probe": "2026-10-14_EUROPE_ISTANBUL",
+    "no_vendor_raw_ohlcv_stored": true,
+    "case_studies": [
+      {
+        "symbol": "GRAL",
+        "date_et": "2026-09-23",
+        "one_day_volume": 0,
+        "trade_count": 0,
+        "minute_bars_rth": 0,
+        "prev_close_equal_all_ohlc": true
+      },
+      {
+        "symbol": "JONE",
+        "date_et": "2026-09-22",
+        "one_day_volume": 0,
+        "trade_count": 0,
+        "minute_bars_rth": 0,
+        "prev_close_equal_all_ohlc": true
+      },
+      {
+        "symbol": "ALDF",
+        "date_et": "2025-10-02",
+        "one_day_volume": 0,
+        "trade_count": 0,
+        "minute_bars_rth": 0,
+        "prev_close_equal_all_ohlc": true
+      },
+      {
+        "symbol": "PFX",
+        "date_et": "2025-10-07",
+        "one_day_volume": 0,
+        "trade_count": 0,
+        "minute_bars_rth": 0,
+        "prev_close_equal_all_ohlc": true
+      }
+    ]
+  },
+  "master": {
+    "asof_et": "2026-10-12",
+    "source_canonical_path": "nasdaq-xray/canonical_current_master_manifest.json",
+    "source_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+    "pass_identity": 3184,
+    "unknown_operating_eligibility": 10,
+    "sec_cik_mapped": 10,
+    "sec_cik_unmapped": 0,
+    "research_amended_path": "nasdaq-xray/research/master_ten_sec_cik_sic_resolution_20261012_v1.json",
+    "research_amended_blob_sha": "4576ce1a3d273e027df8339a18719c2736ee832a",
+    "canonical_unknown_zero_proven": false
+  },
+  "mc": {
+    "same_asof_primary_sec_pit_class_reconciled_scope": 0,
+    "scope_completely_measured": false,
+    "valid_price_primary_set_available": false,
+    "status": "BLOCKED_NO_EXACT_PRICE_AND_PIT_CLASS_EVIDENCE"
+  },
+  "joint": {
+    "price_asof": "2026-10-12",
+    "history_asof": "2026-10-13",
+    "same_asof": false,
+    "prior_crossjoin_verified": true,
+    "price_positive_and_other_day_history_complete": 404,
+    "not_release_promotable": true
+  },
+  "r92": {
+    "registered_new_candidates": 0,
+    "successful_registered_candidate_proven": false,
+    "reason": "NO_SAME_ASOF_TECHNICAL_PRIMARY_PRICE_MC_HISTORY_AND_SAFETY_CHAIN"
+  },
+  "health": {
+    "five_chatgpt_support_automations_observed_enabled": true,
+    "official_exchange_holiday_no_cas_runtime_observed": false,
+    "strict_g9_pass": false,
+    "account_same_run_read_only_pass": false,
+    "true_full_go": false
+  },
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "canonical_files_mutated": false,
+  "raw_vendor_ohlcv_exported": false
+}
