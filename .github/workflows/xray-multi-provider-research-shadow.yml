@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/source_epoch_freshness_guard.py"
       - "nasdaq-xray/source_successor_c418_proposal.json"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
+      - "nasdaq-xray/bq_mc_exact_asof_shadow_probe.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
 
 permissions:
@@ -126,6 +127,37 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_BQ_OFFICIAL_EOD_PROBE_FAIL_CLOSED=PASS_NONAUTHORITY")
           PY
+      - name: Date-scoped BusinessQuant MC shadow works despite PRICE UNKNOWN
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/bq_mc_exact_asof_shadow_probe.py
+          python nasdaq-xray/bq_mc_exact_asof_shadow_probe.py --selftest
+          python -O nasdaq-xray/bq_mc_exact_asof_shadow_probe.py --selftest
+          python nasdaq-xray/bq_mc_exact_asof_shadow_probe.py --out "$RUNNER_TEMP/xray_bq_mc_price_independent.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_bq_mc_price_independent.json").read_text())
+          assert x["schema"]=="XRAY_BQ_MC_EXACT_ASOF_PRICE_INDEPENDENT_SHADOW_V1"
+          assert x["policy"]=="C4.17" and x["control"]=="C4.27"
+          assert x["research_only"] is True and x["unknown_never_pass"] is True
+          assert x["api_calls"] in (0,1) and 0<=x["sample_symbols_requested"]<=5
+          assert 0<=x["dated_metric_rows_present"]<=x["sample_symbols_requested"]
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          for k in ("market_cap_values_persisted","vendor_raw_data_persisted",
+                    "request_url_or_key_persisted","filing_acceptance_pit_attested",
+                    "license_independently_verified","current_primary_market_cap_created",
+                    "history_pass_created","r92_created","alpha_authority",
+                    "strict_g9_pass","account_pass","can_create_primary"):
+              assert x[k] is False,k
+          if x["api_calls"]==0:assert x["dated_metric_rows_present"]==0
+          for secret_name in ("XRAY_BQ_API_KEY",):
+              if os.environ.get(secret_name):
+                  assert os.environ[secret_name] not in json.dumps(x)
+          print("XRAY_BUSINESSQUANT_REAL_RUNNER_STATUS="+x["status"])
+          print("XRAY_BQ_PRICE_UNKNOWN_INDEPENDENCE=PASS_NO_MC_PRIMARY_R92")
+          PY
       - name: Compile and negative/positive fail-closed regression
         run: |
           python -m py_compile nasdaq-xray/xray_multi_provider_research.py
@@ -194,6 +226,7 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_multi_provider_shadow.json
             ${{ runner.temp }}/xray_bq_history_onecall_shadow.json
+            ${{ runner.temp }}/xray_bq_mc_price_independent.json
             ${{ runner.temp }}/xray_12_provider_routing_readiness.json
           retention-days: 14
           if-no-files-found: error
