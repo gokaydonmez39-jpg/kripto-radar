@@ -24,7 +24,7 @@ SYMBOLS=("AAPL","NVDA","MSFT","AAON")
 ASOF="2026-10-12"
 SCHEMA="XRAY_SIP_EXACT30_4_SYMBOL_30MIN_RTH_LOWER_BOUND_SHADOW_V1"
 LIMIT=Decimal("50000000")
-MAX_CALLS=8
+MAX_CALLS=24
 MAX_BYTES=2500000
 MASTER_SHA="fb64a44b79ced9dcda390f5661b796ee13a60f63"
 PRICE_SHA="787e1222fe140ae141b51e98bbbaaa9034ead377"
@@ -195,6 +195,9 @@ def selftest():
     deny(endless,"MAX_PAGE_BUDGET")
     deny(lambda token:{"bars":{"UNLISTED":[]},"next_page_token":None},
          "FOREIGN_SYMBOL")
+    # Global hard budget is intentionally greater than the original 8 pages.
+    # Providers may paginate by symbol, even with a nominal limit=10000.
+    need(MAX_CALLS==24,"BOUND_TO_24")
     print("XRAY_4SYM_30M_PAGINATION_SELFTEST=PASS_MERGE_CYCLE_LIMIT_FOREIGN_NO_HTTP")
     print("XRAY_4SYM_30M_EXACT30_SELFTEST=PASS_MIXED_UNKNOWN_BOUND_NO_PRIMARY")
 
@@ -205,7 +208,7 @@ def git_blob(path):
 
 def collect_pages_exact(getpage,max_pages=8):
     """Merge exact case-sensitive provider pages. Never silently truncate scope."""
-    need(type(max_pages) is int and 1<=max_pages<=8,"PAGE_CAP_INVALID")
+    need(type(max_pages) is int and 1<=max_pages<=MAX_CALLS,"PAGE_CAP_INVALID")
     merged={}
     token=None
     used_tokens=set()
