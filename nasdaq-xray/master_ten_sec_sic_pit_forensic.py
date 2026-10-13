@@ -46,7 +46,7 @@ def inspect(doc,master):
                    "OFFICIAL_ISSUER_AND_TICKER_IDENTITY_UNRESOLVED","UNKNOWN_CIK")
             unresolved.append(symbol)
             continue
-        demand(type(cik) is str and re.fullmatch(r"\\d{10}",cik) is not None
+        demand(type(cik) is str and re.fullmatch(r"\d{10}",cik) is not None
                and len(filings)>0,"CIK")
         codes=set()
         dates=[]
@@ -122,7 +122,7 @@ def main():
     demand(args.out is not None and not args.out.resolve().is_relative_to(ROOT),
            "OUTPUT_NOT_EPHEMERAL")
     result=inspect(doc,raw)
-    args.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\\n")
+    args.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_MASTER_TEN_SEC_PIT_REFS="+str(result["source_references"]))
     print("XRAY_MASTER_TEN_SEC_NO_PRIMARY=PASS")
 
