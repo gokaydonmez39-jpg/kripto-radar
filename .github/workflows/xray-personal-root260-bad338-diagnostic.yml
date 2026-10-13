@@ -1,0 +1,85 @@
+name: XRAY Personal ROOT 338 Bad-OHLCV Source Diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_root260_bad338_diagnostic.py"
+      - ".github/workflows/xray-personal-root260-bad338-diagnostic.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-personal-root260-bad338-diagnostic
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Install pinned exchange calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Offline input boundary, timestamp and OHLCV negative tests
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_root260_bad338_diagnostic.py
+          python nasdaq-xray/alpaca_root260_bad338_diagnostic.py --selftest
+          python -O nasdaq-xray/alpaca_root260_bad338_diagnostic.py --selftest
+      - uses: actions/download-artifact@v4
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runbad338]') }}
+        with:
+          run-id: 38481474945
+          github-token: ${{ github.token }}
+          name: xray-personal-root260-full-scope-status-no-ohlcv
+          path: ${{ runner.temp }}/xray_full_root260_input
+      - name: Recheck only 338 prior invalid bars without replaying healthy 2679
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runbad338]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_root260_bad338_diagnostic.py --frozen-artifact "$RUNNER_TEMP/xray_full_root260_input/xray_personal_root260_full_cohort.json" --out "$RUNNER_TEMP/xray_bad338_260_source_causes.json"
+      - name: Verify all source statuses and zero authority
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runbad338]') }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          f=Path(os.environ["RUNNER_TEMP"])/"xray_bad338_260_source_causes.json"
+          j=json.loads(f.read_text())
+          assert j["schema"]=="XRAY_BAD338_20261013_SIP_OHLCV_DIAGNOSTIC_V1"
+          assert j["asof_et"]=="2026-10-13"
+          assert j["source_artifact_run_id"]==38481474945
+          assert j["source_artifact_sha256"]=="1d5bb3aaceb571fc84a631ab90e46fa15601067996a9062b2cc5ac6535563a9e"
+          assert j["target_count"]==338 and len(j["symbol_statuses"])==338
+          assert sum(j["counts"].values())==338
+          assert j["actual_api_calls"]<=j["call_budget"]<=45
+          assert j["source_root_git_blob_sha"]==subprocess.check_output(
+             ["git","hash-object","nasdaq-xray/sina_state.json"],text=True).strip()
+          assert j["no_raw_ohlcv_exported"] is True
+          assert all(j[k] is False for k in
+              ("canonical_root_modified","canonical_history_modified",
+               "primary_history_created","r92_created"))
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          if not j["scope_fully_classified"]:
+              raise SystemExit("XRAY_BAD338_INCOMPLETE_RESEARCH")
+          print("XRAY_BAD338_ACTUAL_RESEARCH_COMPLETE_NO_ALPHA")
+          print("XRAY_BAD338_SOURCE_COUNTS="+json.dumps(j["counts"],sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-root260-338-invalid-volume-reasons-no-bars
+          path: ${{ runner.temp }}/xray_bad338_260_source_causes.json
+          if-no-files-found: ignore
+          retention-days: 14
