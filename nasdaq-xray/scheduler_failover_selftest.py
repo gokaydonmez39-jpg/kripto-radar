@@ -19,6 +19,7 @@ contract=json.loads((ROOT/"scheduler_failover_contract.json").read_text())
 kick=json.loads((ROOT/"scheduler_kick_dataplane.json").read_text())
 final_kick=json.loads((ROOT/"scheduler_kick_final.json").read_text())
 final_wf=(ROOT.parent/".github/workflows/xray-canonical-current-final.yml").read_text()
+resilience_wf=(ROOT.parent/".github/workflows/xray-resilience-observability.yml").read_text()
 wf=(ROOT.parent/".github/workflows/nasdaq-xray-daily.yml").read_text()
 orch=(ROOT/"orchestrator_run.py").read_text()
 
@@ -58,6 +59,15 @@ assert contract["final_kick_path"]=="nasdaq-xray/scheduler_kick_final.json"
 assert final_kick["schema"]=="XRAY_SCHEDULER_FINAL_KICK_V1"
 assert final_kick["execution"]=="NONE" and final_kick["real_money"]=="NO-GO"
 assert '"nasdaq-xray/scheduler_kick_final.json"' in final_wf or "'nasdaq-xray/scheduler_kick_final.json'" in final_wf
+# An observed successful root kick must wake official safety even if the
+# upstream PRICE/MC factory correctly defers with UNKNOWN.  This repairs
+# freshness, not source authority or candidate eligibility.
+assert 'workflows: ["XRAY Canonical Pointer Transition", "NASDAQ SWING XRAY Autonomous Data Plane"]' in resilience_wf
+assert "    branches: [main]" in resilience_wf
+assert "if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'" in resilience_wf
+assert "Persist official safety independent of blocked research pointer" in resilience_wf
+assert "python nasdaq-xray/official_source_guard.py" in resilience_wf
+assert 'workflows: ["XRAY Resilience + Official Witnesses", "XRAY Canonical Current Post-MC Factory", "XRAY Event Official Primary Promote"]' in final_wf
 assert '"30 * * * *"' in wf or "'30 * * * *'" in wf
 assert '"nasdaq-xray/scheduler_kick_dataplane.json"' in wf or "'nasdaq-xray/scheduler_kick_dataplane.json'" in wf
 assert '"nasdaq-xray/alpha_semantics.py"' in wf
