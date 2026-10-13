@@ -331,7 +331,7 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_BASKET2_SHADOW_BUCKETS="+json.dumps(x["counts"],sort_keys=True))
           PY
-      # Corrected request ends after RTH but before current Basic SIP cutoff; 403 remains UNKNOWN.
+      # 13-Oct daily canary: import shadowing fixed by a normal/-O selftest; 403 remains UNKNOWN.
       - name: Bounded single-day SIP daily presence research
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runlatest1day]') }}
         run: python nasdaq-xray/alpaca_exact_asof_daily_presence_probe.py --one-shot-20261013 --out "$RUNNER_TEMP/xray_asof_20261013_daily_presence.json"
