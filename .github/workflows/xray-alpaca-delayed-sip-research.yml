@@ -233,12 +233,14 @@ jobs:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
         run: |
-          python nasdaq-xray/alpaca_27_daily_sip_dates_shadow.py --out "$RUNNER_TEMP/xray_alpaca_27_dates_metadata.json"
+          python nasdaq-xray/alpaca_27_daily_sip_dates_shadow.py --frozen-20261012-dates --out "$RUNNER_TEMP/xray_alpaca_27_dates_metadata.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_27_dates_metadata.json").read_text())
           assert x["schema"]=="XRAY_PERSONAL_27_SIP_ANOMALOUS_DATES_SHADOW_V1"
+          assert x["historical_replay_not_current"] is True
+          assert x["current_c417_primary_authority"] is False
           assert x["api_calls"]<=1
           assert x["requested"]==27 and x["completed"]+x["remaining"]==27
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
