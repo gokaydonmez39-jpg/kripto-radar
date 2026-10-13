@@ -1,0 +1,49 @@
+{
+  "schema": "XRAY_CONNECTED_ALPACA_SIP_DAILY_TRANSPORT_METADATA_V1",
+  "observed_utc_date": "2026-10-13",
+  "source": "CONNECTED_ALPACA_CHATGPT_INTERACTIVE_READONLY",
+  "api_feed": "sip",
+  "api_timeframe": "1Day",
+  "request_start_date_et": "2026-08-17",
+  "request_end_date_et": "2026-10-13",
+  "official_last_completed_session_et": "2026-10-12",
+  "independent_connected_calendar_session_count_including_current_date": 41,
+  "symbols": {
+    "AAPL": {
+      "daily_rows_returned": 41,
+      "completed_dated_rows_by_asof": 40,
+      "completed_unique_dates": 40,
+      "completed_volume_values_all_positive_integers": true,
+      "last_completed_bar_date": "2026-10-12"
+    },
+    "MSFT": {
+      "daily_rows_returned": 41,
+      "completed_dated_rows_by_asof": 40,
+      "completed_unique_dates": 40,
+      "completed_volume_values_all_positive_integers": true,
+      "last_completed_bar_date": "2026-10-12"
+    },
+    "NVDA": {
+      "daily_rows_returned": 41,
+      "completed_dated_rows_by_asof": 40,
+      "completed_unique_dates": 40,
+      "completed_volume_values_all_positive_integers": true,
+      "last_completed_bar_date": "2026-10-12"
+    }
+  },
+  "incomplete_current_date_in_response": "2026-10-13",
+  "incomplete_date_is_excluded_from_eod_count": true,
+  "raw_vendor_prices_or_volumes_persisted": false,
+  "official_rth_only_lineage_attested": false,
+  "github_runner_same_access_verified": false,
+  "unattended_data_and_derived_rights_attested": false,
+  "complete_540_unknown_universe_coverage_verified": false,
+  "full_30_session_c417_positive_price_authority": false,
+  "primary_mc_authority": false,
+  "r92_registration_authority": false,
+  "strict_g9_authority": false,
+  "account_authority": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
