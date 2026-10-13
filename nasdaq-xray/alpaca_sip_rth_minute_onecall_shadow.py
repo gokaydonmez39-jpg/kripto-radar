@@ -90,6 +90,8 @@ def base(asof):
 
 def run(price,master,latest,env,fetcher=vendor_get):
     result=base(price.get("asof_et"))
+    # Opt-in reporting must not depend on successful source freshness.
+    result["personal_basic_shadow_opt_in"]=personal_shadow_access(env)
     try:
         dates=expected_sessions(price,master,latest)
         if dates[-1]!=latest:
