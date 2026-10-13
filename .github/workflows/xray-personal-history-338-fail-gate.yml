@@ -42,8 +42,12 @@ jobs:
           p=Path(os.environ["RUNNER_TEMP"])/"xray_history_338_reproduced_source_fail.json"
           d=json.loads(p.read_text())
           assert d["asof_et"]=="2026-10-13"
-          assert d["source_root_git_blob_sha"]==subprocess.check_output(
+          assert d["source_root_git_blob_sha"]=="dd6d3e6574dc318017d46f412b69e2a5f1331df5"
+          live_root=subprocess.check_output(
             ["git","hash-object","nasdaq-xray/sina_state.json"],text=True).strip()
+          assert len(live_root)==40
+          print("XRAY_FROZEN_20261013_ROOT_IS_CURRENT="+str(
+            live_root==d["source_root_git_blob_sha"]).upper())
           assert d["scope"]==3185
           assert d["technical_screen_fail_260_valid_daily_bar"]==338
           assert d["unresolved_missing_official_dates"]==168
