@@ -1,0 +1,92 @@
+{
+  "schema": "XRAY_HEALTH_CHATGPT_HOLIDAY_PROMPT_DRIFT_AUDIT_AND_SAFE_APPEND_CHECKPOINT_V2",
+  "observed_utc_date": "2026-10-13",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "live_head_at_checkpoint_preimage": "e066c7a6c9cf85d8d72a98ec5ea1656d079eb148",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "release": "START_BLOCKED",
+  "five_enabled_tasks_observed": true,
+  "no_sixth_created": true,
+  "all_task_schedules_unchanged": true,
+  "health_task_id": "6abd0465d15c8191aac5888abb784f27",
+  "health_task_live_prompt_current_has_holiday_veto": false,
+  "health_task_live_prompt_updated_this_turn": false,
+  "health_task_actual_holiday_runtime_behavior_proven": false,
+  "why_not_inline_replace": "The installed automation update accepts a FULL prompt replacement, not an append patch. Replacing the existing very long Health prompt with a shorter block would discard hard safety/provider/scheduler/notification requirements. Therefore no unsafe overwrite.",
+  "github_calendar_guard_preexisting_ci_pass": true,
+  "attestation": {
+    "path": "nasdaq-xray/health_chatgpt_runtime_attestation_20261013.json",
+    "blob": "1ebfc85d12bdfed297227056c98f3dccdd209c13",
+    "status": "HEALTH_TASK_PROMPT_HOLIDAY_VETO_DRIFT_UNVERIFIED"
+  },
+  "safe_append_block": {
+    "path": "nasdaq-xray/health_chatgpt_prompt_append_v21.txt",
+    "blob": "92ffc4ebd691069a0beb31a2eca4a88d8c259d61",
+    "tag": "HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND",
+    "applied_to_live_task": false
+  },
+  "offline_guard": {
+    "path": "nasdaq-xray/health_chatgpt_runtime_guard.py",
+    "blob": "aa5553e7f6a1a7848669047fc3a65346dcac4ccd",
+    "strict_negative_count": 32,
+    "fail_closed_status": "BLOCKED_CHATGPT_HEALTH_HOLIDAY_PROMPT_DRIFT"
+  },
+  "ci": {
+    "workflow": "XRAY Resilience + Official Witnesses",
+    "run_id": 38433905021,
+    "commit_sha": "dd85a65206c37c94193458427db12833dcde3881",
+    "status": "completed",
+    "conclusion": "success",
+    "marker": "XRAY_CHATGPT_HEALTH_TASK_BINDING_GUARD=PASS_32_NEGATIVES_RUNTIME_STILL_BLOCKED",
+    "runtime_marker": "XRAY_CHATGPT_HEALTH_TASK_RUNTIME=BLOCKED_CHATGPT_HEALTH_HOLIDAY_PROMPT_DRIFT"
+  },
+  "canonical": {
+    "master_asof_et": "2026-10-12",
+    "master_pass": 3184,
+    "master_unknown": 10,
+    "price_asof_et": "2026-10-12",
+    "price_pass": 0,
+    "price_unknown": 540,
+    "terminal_asof_et": "2026-10-07",
+    "terminal_r92": 0,
+    "g9": "BLOCKED_STRICT_PERMANENT_ZERO",
+    "account": "ACCOUNT_BOOTSTRAP_READY_CREDENTIALS_REQUIRED"
+  },
+  "remaining_order": [
+    {
+      "priority": 1,
+      "action": "Obtain exact complete current Health prompt preimage and perform safe append-only V21 block preserving every previous byte/ID/schedule/notifications; exact post-update readback.",
+      "status": "NOT_APPLIED"
+    },
+    {
+      "priority": 2,
+      "action": "Independently witness next actual Health scheduled invocation and holiday/no-CAS decision; do not equate prompt marker with a real holiday observation.",
+      "status": "NOT_PROVEN"
+    },
+    {
+      "priority": 3,
+      "action": "Prove lawful unattended Alpaca SIP official RTH minute/closing auction coverage or equivalent compliant research data source for exact 30 session DV30.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "priority": 4,
+      "action": "Resolve exactly 540 PRICE UNKNOWN, verify provider currency/identity and same-run primary MC rights, then rebuild all current ASOF history/legal/regime/final evidence.",
+      "status": "BLOCKED_EXTERNAL"
+    },
+    {
+      "priority": 5,
+      "action": "Verify registered current R92 and real device delivery/ack, then separate strict G9 and account true full GO evidence.",
+      "status": "BLOCKED_EVIDENCE"
+    }
+  ],
+  "notes": [
+    "GitHub CI success only validates guard, not ChatGPT Health task behavior.",
+    "No price/DV30/MC classification or R92 promoted.",
+    "Prior historical terminal cannot be today's full universe no-signal proof."
+  ]
+}
