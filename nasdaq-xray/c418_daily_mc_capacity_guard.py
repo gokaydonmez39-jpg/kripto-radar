@@ -33,7 +33,7 @@ def strings_unique(rows: object, *, label: str) -> set[str]:
     return set(rows)
 
 
-def evaluate(master: dict, price: dict, inventory: dict) -> dict:
+def evaluate(master: dict, price: dict, inventory: dict, *, blocked_price_diagnostics: bool = False) -> dict:
     require(all(isinstance(x, dict) for x in (master, price, inventory)), "BAD_INPUT")
     asof = master.get("asof_et")
     require(isinstance(asof, str) and dt.date.fromisoformat(asof).isoformat() == asof, "ASOF_DATE")
@@ -52,8 +52,20 @@ def evaluate(master: dict, price: dict, inventory: dict) -> dict:
     require(integer(price.get("pass_count"), minimum=0, label="PRICE_COUNT") == len(ps), "PRICE_COUNT_MISMATCH")
     require(price.get("source_master_count") == len(ms), "PRICE_MASTER_BINDING")
     require(price.get("source_master_queue_hash") == master.get("queue_hash"), "PRICE_MASTER_HASH_BINDING")
-    require(integer(price.get("unknown_count"), minimum=0, label="PRICE_UNKNOWN") == 0, "PRICE_UNKNOWN_NOT_ZERO")
-    require(integer(price.get("blocked_count"), minimum=0, label="PRICE_BLOCKED") == 0, "PRICE_BLOCKED_NOT_ZERO")
+    unknown=integer(price.get("unknown_count"), minimum=0, label="PRICE_UNKNOWN")
+    blocked=integer(price.get("blocked_count"), minimum=0, label="PRICE_BLOCKED")
+    if blocked_price_diagnostics:
+        # Counts-only inventory observation is permitted; never input authority.
+        # Exact per-symbol partitions prevent arbitrary UNKNOWN count spoofing.
+        pu=strings_unique(price.get("unknown_symbols"),label="PRICE_UNKNOWN_SYMBOLS")
+        pb=strings_unique(price.get("blocked_symbols"),label="PRICE_BLOCKED_SYMBOLS")
+        require(len(pu)==unknown and len(pb)==blocked,"PRICE_PARTITION_COUNT")
+        require(not (pu & pb or pu & ps or pb & ps),"PRICE_PARTITION_OVERLAP")
+        require(pu.issubset(ms) and pb.issubset(ms),"PRICE_PARTITION_NOT_MASTER")
+    else:
+        require(unknown==0,"PRICE_UNKNOWN_NOT_ZERO")
+        require(blocked==0,"PRICE_BLOCKED_NOT_ZERO")
+    incomplete=bool(unknown or blocked)
     sources = inventory.get("sources")
     require(isinstance(sources, list) and len(sources) >= 1, "MISSING_SOURCES")
     ids = [s.get("id") if isinstance(s, dict) else None for s in sources]
@@ -68,6 +80,8 @@ def evaluate(master: dict, price: dict, inventory: dict) -> dict:
     quota_days = (calls + daily - 1) // daily
     sustainable = calls <= daily
     reasons = []
+    if incomplete:
+        reasons.append("PRICE_UNKNOWN_OR_BLOCKED_NO_PRIMARY")
     if not sustainable:
         reasons.append("BQ_HISTORIC_MC_FREE_QUOTA_BELOW_DAILY_FULL_COHORT")
     if bq.get("automated_non_display_primary_license_verified") is not True:
@@ -81,6 +95,9 @@ def evaluate(master: dict, price: dict, inventory: dict) -> dict:
         "schema": REPORT_SCHEMA,
         "asof_et": asof,
         "source_cohort_price_pass": len(ps),
+        "source_price_unknown_count": unknown,
+        "source_price_blocked_count": blocked,
+        "source_price_cohort_complete": not incomplete,
         "source_master_identity_pass": len(ms),
         "source_master_identity_unknown": len(mu),
         "provider_rows_unchanged": len(sources),
@@ -94,7 +111,9 @@ def evaluate(master: dict, price: dict, inventory: dict) -> dict:
             "min_days_not_same_session_authority": True,
         },
         "reason_codes": reasons,
-        "status": "SHADOW_DAILY_REFRESH_BLOCKED" if reasons else "SHADOW_QUOTA_FEASIBLE_NOT_PRIMARY",
+        "status": ("SHADOW_PRICE_INCOMPLETE_NO_PRIMARY" if incomplete else
+                   "SHADOW_DAILY_REFRESH_BLOCKED" if reasons else
+                   "SHADOW_QUOTA_FEASIBLE_NOT_PRIMARY"),
         "can_create_PRIMARY": False,
         "can_register_R92": False,
         "can_enable_G9": False,
@@ -123,6 +142,26 @@ def selftest() -> None:
     require(r["BQ"]["required_full_cohort_calls"] == 103 and r["BQ"]["minimum_quota_calendar_days"] == 4, "ARITHMETIC_514")
     require(r["BQ"]["maximum_tickers_per_day"] == 150 and not r["BQ"]["full_cohort_daily_refresh_with_this_quota"], "DAILY_QUOTA")
     require(not r["production_go"] and not r["can_create_PRIMARY"] and not r["can_register_R92"], "FALSE_PROMOTION")
+    # Actual blocked-source shape: positive regression on a metadata-only
+    # witness MUST NOT become a positive MC or production proof.
+    im=copy.deepcopy(master); ip=copy.deepcopy(price)
+    ip["unknown_symbols"]=["TEST0000","TEST0001"]
+    ip["unknown_count"]=2
+    ip["blocked_symbols"]=[]
+    ip["blocked_count"]=0
+    diag=evaluate(im,ip,inv,blocked_price_diagnostics=True)
+    require(diag["status"]=="SHADOW_PRICE_INCOMPLETE_NO_PRIMARY"
+            and diag["source_price_unknown_count"]==2
+            and not diag["source_price_cohort_complete"]
+            and not diag["production_go"] and not diag["can_create_PRIMARY"],
+            "INCOMPLETE_SOURCE_MUST_NEVER_GO")
+    try:evaluate(im,ip,inv)
+    except ValueError as e:require("PRICE_UNKNOWN_NOT_ZERO" in str(e),"STRICT_SOURCE_REJECTION")
+    else:raise RuntimeError("STRICT_SOURCE_ACCEPTED_INCOMPLETE")
+    bad=copy.deepcopy(ip);bad["unknown_symbols"].append("EXTRA")
+    try:evaluate(im,bad,inv,blocked_price_diagnostics=True)
+    except ValueError as e:require("PRICE_PARTITION_COUNT" in str(e),"SPOOFED_PARTITION_REJECTION")
+    else:raise RuntimeError("SPOOFED_PARTITION_ACCEPTED")
     for n in (0, 1, 5, 150, 151, 514, 520):
         mm = copy.deepcopy(master); pp = copy.deepcopy(price)
         pp["pass_symbols"] = mm["pass_symbols"][:min(n, 514)] if n <= 514 else mm["pass_symbols"] + [f"EXTRA{i}" for i in range(n-514)]
@@ -167,7 +206,7 @@ def main() -> None:
     master=json.loads((ROOT / "canonical_current_master_manifest.json").read_text())
     price=json.loads((ROOT / "canonical_current_price_dv30.json").read_text())
     inventory=json.loads((ROOT / "c418_provider_inventory_20261012.json").read_text())
-    result=evaluate(master,price,inventory)
+    result=evaluate(master,price,inventory,blocked_price_diagnostics=True)
     if args.out:
         # Never serialize this diagnostic to a tracked GitHub source directory.
         require(not args.out.resolve().is_relative_to(ROOT.parent.resolve()), "PUBLIC_REPO_OUTPUT_FORBIDDEN")
