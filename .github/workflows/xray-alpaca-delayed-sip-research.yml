@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
       - "nasdaq-xray/alpaca_sip_exact30_backup_probe.py"
       - "nasdaq-xray/alpaca_rth_minute_integrity_shadow.py"
+      - "nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - "nasdaq-xray/evidence/alpaca_connected_sip_daily_20261013_v1.json"
@@ -51,6 +52,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_rth_minute_integrity_shadow.py
           python nasdaq-xray/alpaca_rth_minute_integrity_shadow.py --selftest
           python -O nasdaq-xray/alpaca_rth_minute_integrity_shadow.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py
+          python nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -83,6 +87,37 @@ jobs:
               if os.environ.get(k):assert os.environ[k] not in payload
           print("XRAY_SIP_EXACT30_RUNNER_STATUS="+x["status"])
           print("XRAY_SIP_NO_SOURCE_PRIMARY_OR_R92=PASS")
+          PY
+      - name: Authorized one-call full RTH minute coverage probe (never DV30)
+        run: |
+          python nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --out "$RUNNER_TEMP/xray_sip_rth_minute_onecall.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path(os.environ["RUNNER_TEMP"])/"xray_sip_rth_minute_onecall.json"
+          x=json.loads(f.read_text())
+          assert x["schema"]=="XRAY_ALPACA_SIP_RTH_MINUTE_ONECALL_SHADOW_V1"
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert x["api_calls"] in (0,1)
+          assert x["observed_valid_minutes"] in (0,210,390)
+          for key in ("license_independently_verified","close_auction_allocation_verified",
+                      "trade_conditions_rth_lineage_verified","daily_bar_volume_is_rth_proven",
+                      "historical_pit_revision_chain_verified","full_540_symbol_coverage",
+                      "coverage_complete","market_volume_persisted","raw_ohlcv_persisted",
+                      "api_key_or_url_persisted","primary_price_authority",
+                      "primary_mc_authority","dv30_pass_created","history_pass_created",
+                      "r92_created","alpha_authority","strict_g9_pass","account_pass"):
+              assert x[key] is False,key
+          if not x["exact_minute_window_observed"]:
+              assert x["observed_valid_minutes"]==0
+          if x["status"]=="SHADOW_EXACT_RTH_MINUTE_WINDOW_NO_AUCTION_NO_DV30_AUTHORITY":
+              assert x["api_calls"]==1 and x["exact_minute_window_observed"] is True
+              assert x["observed_valid_minutes"]==x["expected_official_session_minutes"]
+          for k in ("XRAY_ALPACA_API_KEY_ID","XRAY_ALPACA_API_SECRET_KEY"):
+              if os.environ.get(k):assert os.environ[k] not in json.dumps(x)
+          print("XRAY_RUNNER_SINGLE_SESSION_RTH_MINUTE="+x["status"])
+          print("XRAY_RUNNER_NO_DV30_PROMOTION=PASS")
           PY
       - name: Validate historical SIP connector research-only proof without prices
         run: |
@@ -229,5 +264,6 @@ jobs:
           path: |
             ${{ runner.temp }}/alpaca_delayed_sip_health.json
             ${{ runner.temp }}/xray_alpaca_exact30_backup.json
+            ${{ runner.temp }}/xray_sip_rth_minute_onecall.json
           retention-days: 7
           if-no-files-found: error
