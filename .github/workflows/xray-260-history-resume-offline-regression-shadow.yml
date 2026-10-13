@@ -52,7 +52,42 @@ jobs:
       - name: Bind exact current PRICE PASS scope to 260 daily and 52 weekly official dates
         run: |
           python nasdaq-xray/current_history_source_request.py --selftest
-          python nasdaq-xray/current_history_source_request.py --out "$RUNNER_TEMP/xray_history_current_scope.json"
+          python - <<'PY'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from current_history_source_request import expected_dates,sha256_lines
+          p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          m=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
+          out=Path(os.environ["RUNNER_TEMP"])/"xray_history_current_scope.json"
+          if p.get("pass_count")==0:
+              assert p.get("pass_symbols")==[]
+              assert p.get("pass_hash")==sha256_lines([])
+              assert p.get("asof_et")==m.get("asof_et")
+              assert p.get("unknown_count",0)>0
+              daily,weekly=expected_dates(p["asof_et"])
+              blob=subprocess.check_output(["git","hash-object",
+                    "nasdaq-xray/canonical_current_price_dv30.json"],
+                    text=True).strip()
+              data={"status":"BLOCKED_EMPTY_PRICE_PASS","asof_et":p["asof_et"],
+                    "source_price_blob_sha":blob,
+                    "source_price_pass_count":0,"source_price_pass_hash":p["pass_hash"],
+                    "source_price_unknown_count":p["unknown_count"],
+                    "source_price_blocked_count":p.get("blocked_count",0),
+                    "source_price_unknown_omitted_from_scope":True,
+                    "source_price_blocked_omitted_from_scope":True,
+                    "symbol_scope":[],"required_daily_official_sessions":daily,
+                    "required_completed_week_closes":weekly,
+                    "source_entitlement_proven":False,
+                    "current_history_authority_proven":False,
+                    "canonical_history_pass_created":0,"can_register_R92":False,
+                    "execution":"NONE","real_money":"NO-GO"}
+              out.write_text(json.dumps(data,sort_keys=True)+"\\n")
+              print("XRAY_HISTORY_REQUEST=BLOCKED_EMPTY_PRICE_PASS_NO_VENDOR_CALL")
+          else:
+              subprocess.run([sys.executable,"nasdaq-xray/current_history_source_request.py",
+                  "--out",str(out)],check=True)
+          PY
           python - <<'PY'
           import json,hashlib,subprocess,os
           from pathlib import Path
@@ -69,6 +104,7 @@ jobs:
           assert set(q["symbol_scope"]).isdisjoint(p.get("blocked_symbols",[]))
           assert set(p.get("unknown_symbols",[])).isdisjoint(p.get("blocked_symbols",[]))
           assert q["source_price_pass_count"]==p["pass_count"]==len(q["symbol_scope"])
+          assert (q["status"]=="BLOCKED_EMPTY_PRICE_PASS") == (p["pass_count"]==0)
           assert q["source_price_pass_hash"]==p["pass_hash"]
           assert len(q["required_daily_official_sessions"])==260
           assert len(q["required_completed_week_closes"])==52
@@ -98,7 +134,8 @@ jobs:
             "asof_et":scope["asof_et"],
             "official_daily_count":len(scope["required_daily_official_sessions"]),
             "official_weekly_count":len(scope["required_completed_week_closes"]),
-            "current_history_scope_ready_no_market_bars":True,
+            "current_history_scope_ready_no_market_bars":scope["status"]=="RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED",
+            "blocked_empty_price_pass":scope["status"]=="BLOCKED_EMPTY_PRICE_PASS",
             "current_price_unknown_promoted":False,
             "vendor_request_executed":False,"vendor_entitlement_verified":False,
             "canonical_history_promoted":False,"mc_primary_promoted":False,
@@ -112,9 +149,10 @@ jobs:
           import json,os,pathlib
           x=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"xray_grouped_twelve_offline_regression_witness.json").read_text())
           assert x["massive_offline_selftest"]=="PASS" and x["twelve_offline_selftest"]=="PASS"
-          assert x["price_pass_count"]>0 and len(x["price_blob_sha"])==40
+          assert x["price_pass_count"]>=0 and len(x["price_blob_sha"])==40
+          assert x["blocked_empty_price_pass"] is (x["price_pass_count"]==0)
           assert x["official_daily_count"]==260 and x["official_weekly_count"]==52
-          assert x["current_history_scope_ready_no_market_bars"] is True
+          assert x["current_history_scope_ready_no_market_bars"] is (x["price_pass_count"]>0)
           for key in ("vendor_request_executed","vendor_entitlement_verified","canonical_history_promoted",
                       "mc_primary_promoted","r92_created","current_price_unknown_promoted"):
               assert x[key] is False,key
