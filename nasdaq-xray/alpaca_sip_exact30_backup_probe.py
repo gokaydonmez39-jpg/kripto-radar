@@ -231,6 +231,12 @@ def selftest():
     assert o["api_calls"]==0 and len(calls)==1
     with patch.dict(os.environ,{"TEST_SENTINEL":"NO_NETWORK"}):
         assert "fake" not in json.dumps(o)
+    # REGRESSION: consolidated 1Day volume is not exclusive RTH volume.
+    # Must be explicit, not inferred from 30 bars / integer volume.
+    claim=report_base(source["asof_et"])
+    assert claim["daily_sip_1day_volume_is_rth"] is False
+    assert claim["rth_volume_requires_official_session_minutes"] is True
+    assert claim["close_auction_allocation_verified"] is False
     print("XRAY_ALPACA_SIP_EXACT30_BACKUP_SELFTEST=PASS_5_SYMBOLS_9_NEGATIVES_NO_KEY_RIGHTS_STALE_ZERO_ALPHA")
 
 def main():
