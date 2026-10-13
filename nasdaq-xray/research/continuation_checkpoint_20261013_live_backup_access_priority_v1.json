@@ -1,0 +1,136 @@
+{
+  "schema": "XRAY_20261013_LIVE_BACKUP_ACCESS_PRIORITY_CHECKPOINT_V1",
+  "project": "NASDAQ SWING X-RAY",
+  "repository": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "verified_main_head_before_checkpoint": "8e6390a9e05a24b6810eacc1b5d605b94d0a67b8",
+  "observation_day": "2026-10-13",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "zero_paid_upgrade": true,
+  "live_access_audit": {
+    "workflow": "XRAY Provider Access Inventory Observer (Research Only)",
+    "run_id": 38445749189,
+    "conclusion": "success",
+    "source_commit_sha": "8e6390a9e05a24b6810eacc1b5d605b94d0a67b8",
+    "module_path": "nasdaq-xray/provider_runner_access_audit.py",
+    "module_git_blob_sha": "a10d6cd2d04f281b05b4e954ce7138b9e89384ac",
+    "workflow_path": ".github/workflows/xray-provider-access-observer.yml",
+    "workflow_git_blob_sha": "9d6babdb6551dc61fb45c2cf8845b808399a43b4",
+    "provider_count": 12,
+    "probed_runner_secret_ids": [
+      "ALPACA",
+      "MASSIVE",
+      "BUSINESSQUANT"
+    ],
+    "alpaca_runner_credentials": "PRESENT",
+    "massive_runner_key": "MISSING",
+    "businessquant_runner_key": "MISSING",
+    "other_provider_runner_credential_status": "NOT_MAPPED_OR_CONNECTOR_ONLY",
+    "operator_licence_grants": "SEE_ARTIFACT_NOT_INDEPENDENTLY_VERIFIED",
+    "independent_entitlement_proven": false,
+    "production_primary_created": false,
+    "vendor_http_requests": 0,
+    "source_primary_legal_origin_count": 0
+  },
+  "independent_preopen_ci": {
+    "run_id": 38445748890,
+    "conclusion": "success"
+  },
+  "canonical_asof": "2026-10-12",
+  "canonical_master": {
+    "pass_count": 3184,
+    "unknown_count": 10,
+    "unknown_symbols": [
+      "ALIS",
+      "BSAA",
+      "FACT",
+      "FVN",
+      "HCAC",
+      "IPXG",
+      "MACI",
+      "MCGA",
+      "MMTX",
+      "WTG"
+    ],
+    "reason": "OFFICIAL_CLASSIFICATION_UNRESOLVED_SPAC_NAME_SUSPECT"
+  },
+  "canonical_price": {
+    "pass_count": 0,
+    "unknown_count": 540
+  },
+  "terminal_status": "STALE_PARTIAL_ASOF_2026-10-07",
+  "true_full_go": "BLOCKED",
+  "real_r92_proven": false,
+  "priority_queue": [
+    {
+      "id": 1,
+      "task": "Use authorized Alpaca SIP historical 1Min first as price-volume candidate for 540 unknown. Require legally permitted unattended/derived use, 30 exact official Nasdaq sessions, closing-auction trade-condition handling, adjusted/unadjusted CA bridge and source SHA. Never make 1Day extended-hours volume an RTH DV30 PASS.",
+      "owner": "ALPACA_DATA_RESEARCH",
+      "condition": "RUNNER_KEYS_EXIST_BUT_LICENCE_AND_RTH_LINEAGE_UNPROVEN",
+      "done": false
+    },
+    {
+      "id": 2,
+      "task": "Configure authorized GitHub BusinessQuant API key only via GitHub Secrets, verify unattended research and historical MC rights, then exercise existing <=5 ticker single-call daily MC canary; free 30-call/day capacity is not full-cohort one-day proof.",
+      "owner": "BUSINESSQUANT",
+      "condition": "GITHUB_RUNNER_SECRET_MISSING",
+      "done": false
+    },
+    {
+      "id": 3,
+      "task": "Configure authorized GitHub Massive key and separately verify unattended non-display/derived market data storage rights before existing grouped 260-session encrypted probe; avoid same-source Rallies upstream corroboration and period-end PIT lookahead.",
+      "owner": "MASSIVE",
+      "condition": "GITHUB_RUNNER_SECRET_MISSING",
+      "done": false
+    },
+    {
+      "id": 4,
+      "task": "Evaluate Rallies and Longbridge as interactive WATCH only, not independent current MC PRIMARY, until runner access, rights, timestamp and source independence are proven.",
+      "owner": "WATCH_BACKUPS",
+      "condition": "CONNECTED_CHATGPT_NOT_GITHUB_RUNNER_RIGHTS",
+      "done": false
+    },
+    {
+      "id": 5,
+      "task": "Run official SEC EDGAR CIK/filing-acceptance SPAC classification audit for exact 10 unresolved MASTER identities. Public filings are identity/facts evidence, not quote or real-time share price data.",
+      "owner": "MASTER_IDENTITY_SEC",
+      "condition": "10_SPAC_SUSPECT_UNRESOLVED",
+      "done": false
+    },
+    {
+      "id": 6,
+      "task": "Assess FMP/Alpha Vantage/EODHD/Tiingo/Sharadar as additional access-tier fallbacks only after individual availability, free-tier functional scope and legal non-display rights are verified; OpenBB is an orchestration library, not its own data source.",
+      "owner": "SECONDARY_FREE_SOURCES",
+      "condition": "RUNNER_ACCESS_NOT_MAPPED_UNVERIFIED",
+      "done": false
+    },
+    {
+      "id": 7,
+      "task": "Only once valid 30-session PRICE and exact ASOF MC exist rebuild 260 daily/52 weekly HISTORY, CA/LEGAL/EVENT, Stage1/Regime/Deep/Final SAME-RUN SHA and candidate-local R92 with proof; verify user alerts and device acknowledgment without fabricated delivery.",
+      "owner": "CANONICAL_CHAIN",
+      "condition": "CURRENT_PRICE_540_UNKNOWN_AND_MC_NO_PRIMARY",
+      "done": false
+    },
+    {
+      "id": 8,
+      "task": "Separately prove Health ChatGPT task actually enforces official Nasdaq holiday no-CAS; verify Strict G9 consolidated NBBO and read-only same-run ACCOUNT for TRUE_FULL_GO. Research-only manual signals do not infer G9/account passes.",
+      "owner": "HEALTH_G9_ACCOUNT",
+      "condition": "UNVERIFIED_OR_BLOCKED",
+      "done": false
+    }
+  ],
+  "safety": {
+    "no_secret_values_in_checkpoint": true,
+    "unchanged_compiled_policy": true,
+    "no_vendor_data_written": true,
+    "no_synthetic_primary": true,
+    "no_r92_invented": true,
+    "no_new_cron": true,
+    "no_new_chatgpt_task": true,
+    "no_order_or_broker_action": true
+  }
+}
