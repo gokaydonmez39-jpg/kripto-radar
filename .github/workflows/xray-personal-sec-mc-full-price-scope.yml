@@ -1,0 +1,71 @@
+name: XRAY Personal SEC PIT MC Full PRICE Pass Scope
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-personal-sec-mc-full-price-scope.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-personal-sec-pit-full-price-scope
+  cancel-in-progress: false
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Offline SEC vintage and accession negative tests
+        run: |
+          python -m py_compile nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+          python -O nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+      - name: Query SEC current identifiers and PIT shares for entire frozen PRICE pass cohort
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass --output "$RUNNER_TEMP/xray_sec_full_price_pass_pit.json"
+      - name: Validate complete cohort and no PRIMARY promotion
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_pit.json").read_text())
+          assert j["schema"]=="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
+          assert j["full_current_price_pass_scope"] is True
+          assert j["source"]=="SEC_EDGAR_OFFICIAL"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["unknown_never_pass"] is True
+          assert j["c417_primary_mc_count"]==0
+          assert j["market_cap_calculated"] is False
+          assert j["no_real_candidate_claim"] is True
+          assert sum(j["status_counts"].values())==j["sample_count"]
+          assert len(j["statuses"])==j["sample_count"]
+          assert j["master_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],
+             text=True).strip()
+          assert j["price_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
+             text=True).strip()
+          print("XRAY_SEC_FULL_SCOPE="+str(j["sample_count"]))
+          print("XRAY_SEC_PIT_STATES="+json.dumps(j["status_counts"],sort_keys=True))
+          print("XRAY_SEC_FULL_SCOPE_NO_PRIMARY_OR_R92=PASS")
+          PY
+      - name: Retain SEC status and source-SHA evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-sec-full-price-pass-pit-status
+          path: ${{ runner.temp }}/xray_sec_full_price_pass_pit.json
+          if-no-files-found: warn
+          retention-days: 14
