@@ -71,7 +71,79 @@ def run_case(gate,adapter_obj,expect_ok,expect_error=None):
             check(out["alternate_adapter_candidates"]["RALLIES_ACCOUNT_READ_V1"]==adapter_obj["adapters"]["RALLIES_ACCOUNT_READ_V1"]["status"])
         check(out["no_policy_weakening"] is True)
 
+def watchdog_account_heartbeat_contract(account_workflow: str, watchdog_workflow: str) -> None:
+    """The account workflow must remain an INDEPENDENT wake of existing root guard.
+
+    This checks the causal route's configuration; a real downstream
+    workflow_run observation is still required for operational proof.
+    """
+    def trigger_block(doc: str) -> str:
+        parts=doc.split("\non:\n",1)
+        if len(parts)!=2:
+            raise ValueError("WORKFLOW_TRIGGER_MISSING")
+        return parts[1].split("\npermissions:\n",1)[0]
+
+    a=trigger_block(account_workflow)
+    w=trigger_block(watchdog_workflow)
+    account_name="name: XRAY Account Gate Reconciler\n"
+    if not account_workflow.startswith(account_name):
+        raise ValueError("ACCOUNT_WORKFLOW_NAME_DRIFT")
+    if ('  schedule:\n    - cron: "12 * * * *"' not in a or
+        '  push:\n    branches: [main]' not in a or
+        '"nasdaq-xray/reconcile_account_gate_selftest.py"' not in a):
+        raise ValueError("ACCOUNT_INDEPENDENT_HEARTBEAT_MISSING")
+    # No extra cron or duplicate account workflow wake entry.
+    if (w.count('  schedule:\n')!=1 or
+        w.count('    - cron: "*/15 * * * 1-5"')!=1 or
+        w.count('      - "XRAY Account Gate Reconciler"')!=1):
+        raise ValueError("WATCHDOG_ACCOUNT_WAKE_OR_QUOTA_DRIFT")
+    if ('  workflow_run:\n' not in w or
+        '    types: [completed]\n    branches: [main]' not in w or
+        '  workflow_dispatch:\n' not in w):
+        raise ValueError("WATCHDOG_COMPLETION_TRIGGER_NOT_FAILCLOSED")
+    if ('      - "XRAY Live Truth Attestation"' not in w or
+        '      - "XRAY E2E Production Readiness (Fail-Closed)"' not in w):
+        raise ValueError("WATCHDOG_PRIOR_INDEPENDENT_WAKES_REMOVED")
+    if ('python nasdaq-xray/github_native_root_watchdog.py --out ' not in watchdog_workflow
+        or 'cancel-in-progress: false' not in watchdog_workflow
+        or 'contents: read' not in watchdog_workflow
+        or 'actions: write' not in watchdog_workflow):
+        raise ValueError("WATCHDOG_FAILCLOSED_AUDIT_OR_PERMISSIONS_REMOVED")
+
+def selftest_account_watchdog_topology():
+    account_path=HERE.parent/".github/workflows/xray-account-gate-reconcile.yml"
+    watchdog_path=HERE.parent/".github/workflows/xray-github-native-root-watchdog.yml"
+    a=account_path.read_text()
+    w=watchdog_path.read_text()
+    watchdog_account_heartbeat_contract(a,w)
+    # Prove the guard detects changes to each independently critical edge.
+    mutations=(
+        (a.replace("name: XRAY Account Gate Reconciler\n",
+                   "name: XRAY Account Gate Reconciler Renamed\n"),w),
+        (a.replace('    - cron: "12 * * * *"','    - cron: "13 * * * *"'),w),
+        (a.replace('"nasdaq-xray/reconcile_account_gate_selftest.py"',
+                   '"nasdaq-xray/obsolete_account_test.py"'),w),
+        (a,w.replace('      - "XRAY Account Gate Reconciler"','')),
+        (a,w.replace('    types: [completed]','    types: [requested]')),
+        (a,w.replace('    branches: [main]','    branches: [other]')),
+        (a,w.replace('cron: "*/15 * * * 1-5"','cron: "*/1 * * * 1-5"')),
+        (a,w.replace('      - "XRAY Live Truth Attestation"','')),
+        (a,w.replace('      - "XRAY E2E Production Readiness (Fail-Closed)"','')),
+        (a,w.replace('      - "XRAY Account Gate Reconciler"',
+                     '      - "XRAY Account Gate Reconciler"\n      - "XRAY Account Gate Reconciler"')),
+        (a,w.replace('cancel-in-progress: false','cancel-in-progress: true')),
+    )
+    for bad_account,bad_watchdog in mutations:
+        try:
+            watchdog_account_heartbeat_contract(bad_account,bad_watchdog)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("BROKEN_ACCOUNT_TO_WATCHDOG_WAKE_ACCEPTED")
+    print("XRAY_ACCOUNT_TO_ROOT_WATCHDOG_TOPOLOGY=PASS_11_NEGATIVES_NO_NEW_SCHEDULE_NO_ALPHA")
+
 def main():
+    selftest_account_watchdog_topology()
     # 1) BLOCKED state may synchronize evidence only; status cannot change.
     run_case(base_gate(),adapters(),True)
 
