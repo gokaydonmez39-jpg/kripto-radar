@@ -82,7 +82,7 @@ jobs:
                     "current_history_authority_proven":False,
                     "canonical_history_pass_created":0,"can_register_R92":False,
                     "execution":"NONE","real_money":"NO-GO"}
-              out.write_text(json.dumps(data,sort_keys=True)+"\\n")
+              out.write_text(json.dumps(data,sort_keys=True)+"\n")
               print("XRAY_HISTORY_REQUEST=BLOCKED_EMPTY_PRICE_PASS_NO_VENDOR_CALL")
           else:
               subprocess.run([sys.executable,"nasdaq-xray/current_history_source_request.py",
