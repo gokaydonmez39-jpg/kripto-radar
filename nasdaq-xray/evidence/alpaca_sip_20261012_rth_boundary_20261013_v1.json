@@ -1,0 +1,66 @@
+{
+  "schema": "XRAY_ALPACA_CONNECTED_RTH_VOLUME_BOUNDARY_WITNESS_V1",
+  "observed_date_utc": "2026-10-13",
+  "observed_session_date_et": "2026-10-12",
+  "provider": "ALPACA",
+  "data_feed": "sip",
+  "source": "CONNECTED_CHATGPT_ALPACA_GET_STOCK_BARS",
+  "symbol": "AAPL",
+  "timeframes_read": [
+    "1Day",
+    "1Min"
+  ],
+  "official_exchange": "NASDAQ",
+  "session_timezone": "America/New_York",
+  "regular_session_begin_et": "09:30",
+  "regular_session_close_et": "16:00",
+  "minute_windows": [
+    [
+      "09:30",
+      "10:34"
+    ],
+    [
+      "10:35",
+      "11:39"
+    ],
+    [
+      "11:40",
+      "12:44"
+    ],
+    [
+      "12:45",
+      "13:14"
+    ],
+    [
+      "13:15",
+      "13:49"
+    ],
+    [
+      "13:50",
+      "14:54"
+    ],
+    [
+      "14:55",
+      "15:59"
+    ]
+  ],
+  "complete_pre_close_minute_count": 390,
+  "all_pre_close_minute_volumes_positive_integer": true,
+  "separate_16_00_et_minute_bar_observed": true,
+  "daily_volume_different_from_09_30_through_15_59_minute_sum": true,
+  "minute_16_00_contains_close_auction_vs_afterhours_split_verified": false,
+  "rth_trade_conditions_proven": false,
+  "daily_1day_volume_can_be_rth_dv30": false,
+  "source_license_and_reproduction_rights_proven": false,
+  "raw_vendor_ohlcv_or_individual_minute_volumes_persisted": false,
+  "canonical_price_pass_created": 0,
+  "primary_mc_created": 0,
+  "r92_created": 0,
+  "audit_role": "RESEARCH_ONLY_DIAGNOSTIC_NOT_PIT_OR_PRIMARY",
+  "policy": "C4.17",
+  "control": "C4.27",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "method_note": "Each inclusive endpoint window read separately with connector; 16:00 minute observed independently. Exact close-auction allocation remains unresolved."
+}
