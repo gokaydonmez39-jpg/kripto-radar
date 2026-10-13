@@ -108,7 +108,7 @@ def source_obstacles(records):
         "PHONE_RECEIPT":"NO_USER_DEVICE_RECEIPT_WITNESS",
     }
 
-def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_utc=None):
+def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_utc=None,*,blocked_price_diagnostics=False):
     providers=provider_table(inv)
     require(type(proposal) is dict
             and proposal.get("schema")=="XRAY_SOURCE_SUCCESSOR_POLICY_PROPOSAL_V1"
@@ -143,10 +143,16 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_
             and price.get("pass_hash")==symbol_hash(ps)
             and master.get("queue_hash")==symbol_hash(ms)
             and type(price.get("unknown_count")) is int
-            and price.get("unknown_count")==0
+            and price.get("unknown_count")>=0
             and type(price.get("blocked_count")) is int
-            and price.get("blocked_count")==0,
+            and price.get("blocked_count")>=0,
             "SOURCE_HASH_SCOPE_OR_PRICE_NOT_COMPLETE")
+    price_incomplete=bool(price["unknown_count"] or price["blocked_count"])
+    # A blocked PRICE cohort may be *described* in a counts-only provider
+    # inventory report, but remains forbidden as canonical source authority.
+    # Strict callers and mutation regression tests keep rejecting it.
+    if price_incomplete and not blocked_price_diagnostics:
+        raise ValueError("XRAY_SOURCE_ROUTER_FAIL_CLOSED:SOURCE_HASH_SCOPE_OR_PRICE_NOT_COMPLETE")
     require(len(ms)>0 and len(ps)<=len(ms),"MASTER_SCOPE_OR_PRICE_COHORT_BAD")
     # Earlier interactive source samples remain historical when ASOF changes.
     sample_asof=inv["live_shadow_probe_summary"]["asof"]
@@ -238,6 +244,12 @@ def analyze(master,price,inv,proposal,g9,sha_master,sha_price,sha_inventory,now_
         "historical_3_ticker_sample_is_current_asof":sample_asof==asof,
         "historical_sample_may_grant_primary":False,
         "canonical_price_pass_count":len(ps),
+        "canonical_price_unknown_count":price["unknown_count"],
+        "canonical_price_blocked_count":price["blocked_count"],
+        "canonical_price_scope_complete":not price_incomplete,
+        "diagnostic_status":("BLOCKED_PRICE_UNKNOWN_OR_BLOCKED_NO_PRIMARY"
+                             if price_incomplete else "PROVIDER_CAPACITY_ONLY_NO_PRIMARY"),
+        "automated_vendor_calls_authorized_by_diagnostic":False,
         "master_identity_pass_count":len(ms),
         "master_identity_unknown_count":len(us),
         "identity_unknown_intersect_price_count":0,
@@ -357,6 +369,23 @@ def selftest():
     require(no_price["canonical_price_pass_count"]==0
             and no_price["per_source_capacity_scenarios"]["MASSIVE"]["minimum_minutes_if_one_request_per_symbol"]==0
             and no_price["go"] is False,"NO_PRICE_ZERO_NOT_VALID")
+    # A valid but incomplete live PRICE scope must be observable without
+    # silently becoming an eligible MC set or granting vendor calls.
+    diagnostic=[copy.deepcopy(z) for z in shifted]
+    diagnostic[1]["unknown_count"]=540
+    diagnostic[1]["blocked_count"]=0
+    incomplete=analyze(*diagnostic,blocked_price_diagnostics=True)
+    require(incomplete["canonical_price_unknown_count"]==540
+            and incomplete["canonical_price_scope_complete"] is False
+            and incomplete["diagnostic_status"]=="BLOCKED_PRICE_UNKNOWN_OR_BLOCKED_NO_PRIMARY"
+            and incomplete["new_primary_mc_authority_count"]==0
+            and incomplete["new_r92_count_created"]==0
+            and incomplete["automated_vendor_calls_authorized_by_diagnostic"] is False
+            and incomplete["go"] is False,"INCOMPLETE_PRICE_DIAGNOSTIC_FALSE_GO")
+    try:analyze(*diagnostic)
+    except ValueError as err:
+        require("SOURCE_HASH_SCOPE_OR_PRICE_NOT_COMPLETE" in str(err),"STRICT_INCOMPLETE_PRICE_REASON")
+    else:raise RuntimeError("STRICT_INCOMPLETE_PRICE_FALSE_PASS")
     # A past-source-data sample which lies in the future of the current
     # canonical price epoch must be rejected as invalid research lineage.
     bad_inventory=copy.deepcopy(inv)
@@ -423,10 +452,11 @@ def main():
         selftest()
         return
     result=analyze(load(MASTER),load(PRICE),load(INVENTORY),load(PROPOSAL),
-                   load(G9),source_sha(MASTER),source_sha(PRICE),source_sha(INVENTORY))
+                   load(G9),source_sha(MASTER),source_sha(PRICE),source_sha(INVENTORY),
+                   blocked_price_diagnostics=True)
     if opt.out:
         opt.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
-    print("XRAY_C418_MULTI_PROVIDER_FEASIBILITY=VALID_ROUTING_NO_PRODUCTION_GO")
+    print("XRAY_C418_MULTI_PROVIDER_FEASIBILITY="+result["diagnostic_status"])
     print("XRAY_C418_CURRENT_ASOF="+result["asof_et"])
     print("XRAY_C418_SCOPE="+str(result["canonical_price_pass_count"]))
     print("XRAY_C418_SOURCES="+str(result["discovered_source_rows"]))
