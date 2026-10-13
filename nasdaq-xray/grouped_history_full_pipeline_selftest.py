@@ -18,12 +18,25 @@ from massive_grouped_history_resume import (
 )
 from qualified_history_ingress_shadow import evaluate
 from history_transport_cache_guard import cache_path
+from current_history_source_request import sha256_lines
 
 def main():
     ss=scope()
     price=json.loads((Path(__file__).resolve().parent/"canonical_current_price_dv30.json").read_text())
-    assert ss["symbols"] and ss["symbols"]==sorted(set(ss["symbols"]))
+    assert ss["symbols"]==sorted(set(ss["symbols"]))
     assert len(ss["symbols"])==price["pass_count"]
+    if len(ss["symbols"])<2:
+        # Positive structural tests need at least two in-memory fixture names.
+        # Current empty PRICE PASS is an expected production NO-GO, not an
+        # excuse to skip tamper/260-session regression coverage or mint data.
+        ss=copy.deepcopy(ss)
+        ss["symbols"]=["AAA","BBB"]
+        ss["targets"]=["AAA","BBB","QQQ"]
+        ss["scope_hash"]=sha256_lines(ss["symbols"])
+        ss["price_sha"]="a"*40
+        ss["master_sha"]="b"*40
+        assert ss["symbols"]!=price["pass_symbols"]
+        assert telemetry(fresh(ss),ss,"SYNTHETIC_NO_ALPHA",0)["canonical_HISTORY_pass"] is False
     assert len(ss["targets"])==len(set(ss["symbols"])|{"QQQ"})
     assert len(ss["dates"])==260 and len(ss["weeks"])==52
     private_symbol=ss["symbols"][0]
@@ -62,6 +75,9 @@ def main():
         fixture=copy.deepcopy(price)
         fixture["unknown_count"]=0
         fixture["unknown_symbols"]=[]
+        fixture["pass_symbols"]=list(ss["symbols"])
+        fixture["pass_count"]=len(ss["symbols"])
+        fixture["pass_hash"]=sha256_lines(ss["symbols"])
         raw_fixture=json.dumps(fixture,sort_keys=True).encode()
         fixture_sha=hashlib.sha1(b"blob "+str(len(raw_fixture)).encode()
                                  +bytes([0])+raw_fixture).hexdigest()
