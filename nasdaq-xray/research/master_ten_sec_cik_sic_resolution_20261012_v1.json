@@ -32,7 +32,7 @@
       "issuer": "Calisa Acquisition Corp",
       "ticker": "ALIS",
       "sic_diagnostic": 7374,
-      "filing_evidence_date": null,
+      "filing_evidence_date": "2026-09-21",
       "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
       "evidence_note": "2026-10-08 shareholder meeting announced, transaction closing not proven",
       "issuer_identification": "CIK_AND_LISTED_ISSUER_MAPPED",
@@ -44,7 +44,10 @@
         6770,
         7374
       ],
-      "filing_date_verified": false
+      "filing_date_verified": true,
+      "sec_filing_index_verified_asof_20261012": true,
+      "sec_filing_index_sic_diagnostic": 7374,
+      "filing_date_source": "SEC_EDGAR_ACCESSION_0001493152-26-043574_OFFICIAL_INDEX"
     },
     "BSAA": {
       "cik": "0002051587",
@@ -112,7 +115,9 @@
       "competing_2026_sic_codes": [
         6770,
         3341
-      ]
+      ],
+      "sec_20260930_8k_dei_ticker_cik_exact_observed": true,
+      "sec_dei_identity_observation": "HCAC Class A / 0002079013 in 2026-09-30 Form 8-K; SIC 3341 vs prior 6770 is not a merger closing"
     },
     "IPXG": {
       "cik": "0002088805",
@@ -200,5 +205,11 @@
     }
   },
   "cik_mapping_claims_not_same_asof_operating_classification": true,
-  "latest_verification_note": "IPXG SEC 2026-09-21 Form 8-K examined; ALIS filing date deliberately unset rather than guessed"
+  "latest_verification_note": "2026-10-14: ALIS EDGAR 2026-09-21 filing date verified (previously unknown). HCAC 2026-09-30 8-K DEI CIK/ticker verified. Ten CIK routes map, but 10 operating-SPAC eligibility cases remain UNKNOWN; do not claim canonical zero.",
+  "current_research_identity_mapping": {
+    "mapped_cik_count": 10,
+    "unmapped_cik_count": 0,
+    "operating_eligibility_unknown_count": 10,
+    "sic_code_conflict_not_sufficient_for_operating_pass": true
+  }
 }
