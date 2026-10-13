@@ -16,7 +16,7 @@ SOURCES={
  "HEALTH_RUNTIME":"health_chatgpt_runtime_attestation_20261013.json"
 }
 def git_blob(buf):
-    return hashlib.sha1(b"blob "+str(len(buf)).encode()+b"\\0"+buf).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(buf)).encode()+b"\0"+buf).hexdigest()
 def read_sources():
     data={}
     bindings={}
@@ -101,7 +101,7 @@ def main():
         raise ValueError("REQUIRE_NONCANONICAL_REPORT_OUTPUT")
     data,bindings=read_sources()
     result=calculate(data,bindings)
-    args.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\\n")
+    args.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_ASOF_CHAIN_SAME="+str(result["current_chain_same_asof"]))
     print("XRAY_R92_REGISTERED="+str(result["source_terminal_r92_count"]))
     print("XRAY_HEALTH_REAL_HOLIDAY_RUNTIME="+str(result["official_holiday_runtime_proven"]))
