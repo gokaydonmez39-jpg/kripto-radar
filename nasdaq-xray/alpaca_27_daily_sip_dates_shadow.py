@@ -120,7 +120,12 @@ def measure(master,price,checkpoint,env,now,master_sha,price_sha,getter=None):
              "VENDOR_SCHEMA")
         need(not vendor.get("next_page_token"),"ONE_CALL_PAGINATION_INCOMPLETE")
         data=vendor["bars"]
-        need(set(data).issubset(set(r["symbol"] for r in rows)),"FOREIGN_SYMBOL")
+        expected_symbols={r["symbol"] for r in rows}
+        # An empty or partially missing map is not 27 observed symbols.
+        # Such provider responses must never be counted as completed.
+        need(set(data)==expected_symbols,"PARTIAL_OR_FOREIGN_SYMBOL_RESPONSE")
+        need(all(type(data[s]) is list and len(data[s])>0 for s in expected_symbols),
+             "EMPTY_SYMBOL_RESPONSE")
         details=[]
         for row in rows:
             item=inspect_dates(data.get(row["symbol"]),days)
@@ -187,6 +192,24 @@ def selftest():
          and q["details"][0]["nonpositive_volume_days"]==[days[0]]
          and q["details"][-1]["missing_official_days"]==[days[-1]]
          and q["primary_dv30_created"]==0 and q["r92_created"]==0,"PASS_FIXTURE")
+    # These three missing/empty payloads previously produced a fake
+    # completed=27 success, even with no observed symbol data.
+    def require_blocked_response(payload,label):
+        observed=measure(master,price,ck,enabled,now,ms,ps,
+                         lambda syms,dates,token:payload)
+        need(observed["status"]=="BLOCKED_ONE_CALL_VENDOR_OR_INTEGRITY"
+             and observed["completed"]==0 and observed["remaining"]==27
+             and observed["api_calls"]==1 and observed["details"]==[],
+             label)
+    require_blocked_response({"bars":{},"next_page_token":None},
+                             "EMPTY_MAP_FAKE_SUCCESS")
+    require_blocked_response({"bars":{scope[0]:deepcopy(allrows)},
+                              "next_page_token":None},
+                             "PARTIAL_MAP_FAKE_SUCCESS")
+    require_blocked_response({"bars":{s:deepcopy(allrows) if s!=scope[0] else []
+                                      for s in (r["symbol"] for r in changed)},
+                              "next_page_token":None},
+                             "EMPTY_TICKER_FAKE_SUCCESS")
     no=measure(master,price,ck,{},now,ms,ps,mock)
     need(no["api_calls"]==0 and len(calls)==1,"OPT_IN_GATE")
     altered=dict(ck,source_price_blob_sha="0"*40)
@@ -196,7 +219,7 @@ def selftest():
          lambda syms,dates,token:{"bars":{},"next_page_token":"more"})
     need(drift["status"]=="BLOCKED_ONE_CALL_VENDOR_OR_INTEGRITY"
          and drift["api_calls"]==1 and drift["completed"]==0,"PAGINATION_GATE")
-    print("XRAY_PERSONAL_27_DATE_SCOPE_SELFTEST=PASS_ONE_CALL_27_DATES_NEGATIVE_GATES_NO_HTTP")
+    print("XRAY_PERSONAL_27_DATE_SCOPE_SELFTEST=PASS_ONE_CALL_27_DATES_3_PARTIAL_RESPONSE_NEGATIVES_NO_HTTP")
 
 def main():
     ap=argparse.ArgumentParser()
