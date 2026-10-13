@@ -1,0 +1,32 @@
+{
+  "schema": "XRAY_PERSONAL_RESEARCH_TECHNICAL_AUTHORITY_V1",
+  "policy_id": "C4.18-PERSONAL-TECHNICAL-RESEARCH",
+  "parent_compiled_policy": "C4.17",
+  "activation": "RESEARCH_OUTPUT_ONLY_NOT_PRODUCTION_SWITCH",
+  "research_use": "PERSONAL_NONCOMMERCIAL_NO_RESALE",
+  "technical_primary_rule": "ALPACA_SIP_HISTORICAL_DAILY_EXACT_OFFICIAL_SESSIONS_WITH_PIT_VALIDATION",
+  "non_display_enterprise_grant_required_for_local_personal_technical_label": false,
+  "no_waiver_of_upstream_contract_or_feed_terms": true,
+  "source_usage_limit": "Only within actually granted personal API privileges; do not assert automated GitHub or redistribution permission from personal status alone",
+  "persist_raw_vendor_ohlcv": false,
+  "can_update_compiled_C417_alpha": false,
+  "can_override_canonical_unknown": false,
+  "can_create_r92": false,
+  "can_set_true_full_go": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "price_min_usd": 5,
+  "dv30_usd_min": 50000000,
+  "exact_sessions_for_dv30": 30,
+  "history_days_min": 260,
+  "history_completed_weeks_min": 52,
+  "mc_usd_min": 2000000000,
+  "technical_primary_vs_release": {
+    "technical_primary": "Exact source, timestamps, sessions, values, identity and corrections passed for requested measurement",
+    "release_primary": "Distinct live final C4.17 binding and all operational source governance gates passed"
+  },
+  "mc_source_rule": "SEC DEI entity shares and class-aware issuer reconciliation; incomplete class count remains unknown even with arithmetic",
+  "asof_binding": "No cross-ASOF join; every issued result binds exact 40-hex git object IDs and same completed NASDAQ session",
+  "fail_closed": "A zero-missing sample cannot imply zero-missing global cohort"
+}
