@@ -22,6 +22,37 @@ assert rallies["unverified_existing_passive_reader_price_dv30"]=="QUARANTINE_UNK
 assert rallies["no_threshold_change"] is True and rallies["no_fabricated_pass"] is True
 assert rallies["paid_top_up_allowed"] is False
 assert "fractional" in rallies["volume_integrity"].lower()
+bq=j["providers"]["BUSINESSQUANT"]
+assert bq["role"]=="C417_MC_HISTORICAL_DAILY_RESEARCH_SHADOW_NOT_PRIMARY"
+assert bq["official_api_terms"]=="https://businessquant.com/terms-of-use"
+assert bq["free_plan_api_calls_per_day_documented"]==30
+assert bq["historical_mc_tickers_per_call_documented"]==5
+assert bq["api_is_authorized_programmatic_access_subject_to_account_plan"] is True
+assert bq["personal_account_api_key_connected_to_github"]=="NOT_ATTESTED"
+assert bq["unattended_runner_use_entitlement_for_this_account"]=="NOT_ATTESTED"
+assert bq["same_asof_issuer_filing_acceptance_pit"]=="NOT_ATTESTED"
+assert bq["current_usd_share_class_mc_authority"]=="NOT_ATTESTED"
+assert bq["price_pass_scope_required"] is True
+assert bq["automated_research_call_allowed_without_key_and_rights"] is False
+assert bq["primary_mc_promotion_allowed"] is False
+assert bq["r92_promotion_allowed"] is False and bq["paid_upgrade_allowed"] is False
+assert bq["no_vendor_raw_data_in_public_github"] is True
+assert bq["execution"]=="NONE" and bq["real_money"]=="NO-GO"
+td=j["providers"]["TWELVE_DATA"]
+assert td["role"]=="C417_COMPLETED_EOD_OHLCV_RESEARCH_CANDIDATE_NOT_MC_PRIMARY"
+assert td["free_basic_api_credits_per_minute_advertised"]==8
+assert td["free_basic_api_credits_per_day_advertised"]==800
+assert td["internal_non_display_listed_on_free_plan"] is True
+assert td["github_runner_api_key_and_own_account_entitlement"]=="NOT_ATTESTED"
+assert td["current_exact30_unadjusted_nasdaq_rth_integer_volume_lineage"]=="NOT_ATTESTED"
+assert td["same_asof_260_sessions_52_completed_weeks"]=="NOT_ATTESTED"
+assert td["coverage_for_540_unknown"]=="NOT_ATTESTED"
+assert td["market_cap_source"]=="NOT_PROVEN_FOR_BASIC"
+assert td["primary_mc_promotion_allowed"] is False
+assert td["price_dv30_positive_promotion_allowed"] is False
+assert td["r92_promotion_allowed"] is False and td["paid_upgrade_allowed"] is False
+assert td["execution"]=="NONE" and td["real_money"]=="NO-GO"
+print("XRAY_BACKUP_PROVIDER_BQ_TWELVE_SELFTEST=PASS_DOCUMENTED_FREE_NOT_ACTIVATED_RIGHTS_ASOF_AND_NO_PRIMARY")
 print("XRAY_PROVIDER_AUTOMATION_GOVERNANCE_SELFTEST=PASS")
 
 # READINESS_WORKFLOW_RUN_REBIND_PROBE_2026_10_05: no semantic change.
