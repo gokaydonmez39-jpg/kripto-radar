@@ -80,7 +80,10 @@ jobs:
           python nasdaq-xray/github_native_stage_relay.py --selftest
 
       - name: Partial-history stale-state self-test
-        run: python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
+        run: |
+          python nasdaq-xray/orchestrator_partial_invalidation_selftest.py
+          python nasdaq-xray/root_checkpoint_semantic_noop.py --selftest
+          python -O nasdaq-xray/root_checkpoint_semantic_noop.py --selftest
 
       - name: Selftest hash integrity and bounded root HISTORY transport recovery
         run: |
@@ -133,6 +136,7 @@ jobs:
           PY
 
       - name: Commit durable XRAY checkpoints
+        id: checkpoint
         if: steps.session.outputs.allow_compute == 'true'
         shell: bash
         run: |
@@ -174,8 +178,16 @@ jobs:
             done
 
             git add "${files[@]}" 2>/dev/null || true
+            # Zero retries, zero provider work and timestamp-only artifact drift
+            # must NOT produce a new commit or cascade to Pre-MC.
+            if [ "$(python nasdaq-xray/root_checkpoint_semantic_noop.py --check)" = "XRAY_ROOT_TIMESTAMP_ONLY_NOOP=true" ]; then
+              echo "XRAY_DURABLE_COMMIT=NO_SEMANTIC_CHANGE"
+              echo "material_change=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
             if git diff --cached --quiet; then
               echo "XRAY_DURABLE_COMMIT=NO_CHANGE"
+              echo "material_change=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
 
@@ -193,9 +205,10 @@ jobs:
             exit 1
           fi
           echo "XRAY_DURABLE_COMMIT=PASS"
+          echo "material_change=true" >> "$GITHUB_OUTPUT"
 
       - name: Atomically wake pre-MC after root checkpoint, never claim terminal success
-        if: success() && steps.session.outputs.allow_compute == 'true'
+        if: success() && steps.session.outputs.allow_compute == 'true' && steps.checkpoint.outputs.material_change == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
