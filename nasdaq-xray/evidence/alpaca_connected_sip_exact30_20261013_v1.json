@@ -1,0 +1,81 @@
+{
+  "schema": "XRAY_ALPACA_CONNECTED_SIP_EXACT30_INTERACTIVE_WITNESS_V1",
+  "observation_date_utc": "2026-10-13",
+  "source": "CONNECTED_ALPACA_CHATGPT_INTERACTIVE_READONLY",
+  "api_method": "get_stock_bars",
+  "api_feed": "sip",
+  "api_timeframe": "1Day",
+  "date_from_et": "2026-08-31",
+  "last_official_completed_date_et": "2026-10-12",
+  "requested_end_exclusive_utc": "2026-10-13T00:00:00Z",
+  "date_set_source": "nasdaq-xray/canonical_current_price_dv30.json.expected30",
+  "observed_symbol_scope": [
+    "AAPL",
+    "AAON",
+    "AAL",
+    "AAOI",
+    "NVDA"
+  ],
+  "samples": {
+    "AAPL": {
+      "distinct_completed_et_sessions": 30,
+      "all_positive_integer_volume": true,
+      "exact_30_session_date_set": true,
+      "day_30_asof": "2026-10-12",
+      "source_policy_price_dv30_numeric_thresholds_met_research_only": true
+    },
+    "AAON": {
+      "distinct_completed_et_sessions": 30,
+      "all_positive_integer_volume": true,
+      "exact_30_session_date_set": true,
+      "day_30_asof": "2026-10-12",
+      "source_policy_price_dv30_numeric_thresholds_met_research_only": true
+    },
+    "AAL": {
+      "distinct_completed_et_sessions": 30,
+      "all_positive_integer_volume": true,
+      "exact_30_session_date_set": true,
+      "day_30_asof": "2026-10-12",
+      "source_policy_price_dv30_numeric_thresholds_met_research_only": true
+    },
+    "AAOI": {
+      "distinct_completed_et_sessions": 30,
+      "all_positive_integer_volume": true,
+      "exact_30_session_date_set": true,
+      "day_30_asof": "2026-10-12",
+      "source_policy_price_dv30_numeric_thresholds_met_research_only": true
+    },
+    "NVDA": {
+      "distinct_completed_et_sessions": 30,
+      "all_positive_integer_volume": true,
+      "exact_30_session_date_set": true,
+      "day_30_asof": "2026-10-12",
+      "source_policy_price_dv30_numeric_thresholds_met_research_only": true
+    }
+  },
+  "total_completed_daily_bars_observed": 150,
+  "sample_symbols_all_in_current_540_unknown_scope_at_observation": true,
+  "historical_bars_connector_read_succeeded": true,
+  "feed_delayed_sip_bars_connector_read_fails_with_api_error": true,
+  "feed_sip_historical_bars_connector_read_succeeded": true,
+  "company_identification_and_daily_asof_checked": true,
+  "raw_vendor_prices_volumes_quotes_stored": false,
+  "full_540_symbol_evaluated": false,
+  "rights_attested_for_unattended_runner": false,
+  "runner_key_readiness_checked_in_separate_github_ci": true,
+  "official_rth_only_lineage_attested": false,
+  "corporate_action_adjustment_exact": false,
+  "vendor_response_timestamp_and_revision_chain_attested": false,
+  "canonical_price_pass_created": 0,
+  "primary_market_cap_created": 0,
+  "history_pass_created": 0,
+  "r92_created": 0,
+  "strict_g9_pass": false,
+  "account_pass": false,
+  "policy": "C4.17",
+  "control": "C4.27",
+  "unknown_never_pass": true,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "note": "Connected interactive read proves sample transport only; no GitHub credential equivalence, market-data redistribution right, production price PASS or R92 authority."
+}
