@@ -1,0 +1,189 @@
+{
+  "schema": "XRAY_NONAUTHORITATIVE_CONVERSATION_CONTINUATION_CHECKPOINT_V1",
+  "observed_at_utc": "2026-10-13T07:31:43Z",
+  "historical_snapshot_only": true,
+  "must_re_read_live_github_main_first": true,
+  "authoritative_for_alpha_or_notifications": false,
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "branch": "main",
+  "observed_main_head": "517d2070f4f30e6968e7755906a90074fd8f7228",
+  "purpose": "Transfer engineering context to the next ChatGPT conversation without losing progress or starting over. Do not infer a market, release, workflow, source, or phone-delivery PASS from this document.",
+  "project": "NASDAQ SWING X-RAY",
+  "policy": "C4.17 ALPHA / C4.27 CONTROL",
+  "hard_safety": {
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true,
+    "paid_fallback": false,
+    "no_broker_actions": true,
+    "research_only": true
+  },
+  "architecture": {
+    "active_task_limit": 5,
+    "tasks": [
+      {
+        "role": "Reader",
+        "id": "6abeb37721ec81918e78b0ac65eb64a0",
+        "minute_et": 43,
+        "user_notifications": false
+      },
+      {
+        "role": "Committer",
+        "id": "6abeb39630a88191a672574b45bdcd1b",
+        "minute_et": 46,
+        "user_notifications": false
+      },
+      {
+        "role": "Health",
+        "id": "6abd0465d15c8191aac5888abb784f27",
+        "minute_et": 49,
+        "user_notifications": false
+      },
+      {
+        "role": "Finisher",
+        "id": "6abeb68907a88191a364437de1fb2275",
+        "minute_et": 52,
+        "user_notifications": false
+      },
+      {
+        "role": "Canonical",
+        "id": "6a825366222081918997094d76e6ae46",
+        "minute_et": 57,
+        "user_notifications": true,
+        "email_notifications": true
+      }
+    ],
+    "task_timezone": "America/New_York",
+    "user_timezone": "Europe/Istanbul",
+    "no_sixth_task": true,
+    "canonical_prompt_sentinel": "CHATGPT_ONLY_NOTIFICATION_RELIABILITY_V1=BOUND",
+    "user_delivery_channel": "CHATGPT_ONLY",
+    "no_github_issue_user_notifications": true
+  },
+  "observed_live_evidence": {
+    "price": {
+      "path": "nasdaq-xray/canonical_current_price_dv30.json",
+      "blob": "787e1222fe140ae141b51e98bbbaaa9034ead377",
+      "asof_et": "2026-10-12",
+      "pass_count": 0,
+      "unknown_count": 540
+    },
+    "master": {
+      "path": "nasdaq-xray/canonical_current_master_manifest.json",
+      "blob": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+      "asof_et": "2026-10-12",
+      "pass_count": 3184,
+      "unknown_count": 10,
+      "status": "PARTIAL_UNKNOWN"
+    },
+    "terminal": {
+      "path": "nasdaq-xray/canonical_current_terminal.json",
+      "blob": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f",
+      "asof_et": "2026-10-07",
+      "status": "PARTIAL",
+      "r92_candidate_count": 0,
+      "candidate_local_research_pass": false
+    },
+    "canonical_pointer": {
+      "path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
+      "blob": "11761c589063d28d8795621844c9ce8f965dd911",
+      "revision": 78,
+      "asof_et": "2026-10-07",
+      "last_recorded_daily_key_asof": "2026-10-02"
+    },
+    "delivery_ledger": {
+      "path": "nasdaq-xray/delivery_ledger.json",
+      "blob": "cb14dfc2233ff074fdaa030aee564863db401b29",
+      "delivery_count": 0
+    },
+    "root": {
+      "run_id": 38360916047,
+      "conclusion": "success",
+      "created_at_utc": "2026-10-13T07:09:32Z",
+      "history_status": "PARTIAL_HISTORY",
+      "history_unknown_count": 220,
+      "history_retryable_count": 0,
+      "history_independent_proof_missing_count": 193,
+      "alpha_authorized": false
+    },
+    "pre_mc": {
+      "run_id": 38361001993,
+      "conclusion": "success",
+      "result": "DEFERRED_LIVE_DIRECTORY_NOT_EXACT_PREVIOUS_ASOF",
+      "settlement": "PENDING_NOT_A_PASS"
+    },
+    "post_mc": {
+      "run_id": 38360855875,
+      "conclusion": "failure",
+      "reason": "CURRENT_MC_BRIDGE_ABSENT",
+      "credential_class": "NOT_PROBED_BY_POST_MC_WORKFLOW",
+      "release": "BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED"
+    },
+    "latest_e2e": {
+      "run_id": 38360930325,
+      "conclusion": "failure",
+      "created_at_utc": "2026-10-13T07:09:41Z"
+    },
+    "final_factory": {
+      "run_id": 38360910151,
+      "conclusion": "success",
+      "note": "Workflow success is not terminal/candidate completeness"
+    },
+    "research_delivery": {
+      "run_id": 38360930270,
+      "conclusion": "success",
+      "note": "No candidate delivery or phone receipt can be inferred from workflow success"
+    },
+    "user_phone_push_receipt": "UNVERIFIED",
+    "qualified_registered_r92": "NONE_OBSERVED_NOT_UNIVERSE_WIDE_NO_SETUP"
+  },
+  "previous_completed_repairs": [
+    {
+      "scope": "Rallies fractional-volume source quarantine and policy guard",
+      "commits": [
+        "052f5ddc8c5765b35227909d34f5b2231de5a161",
+        "862e0fc8d734147e235d73172599511937eb6099"
+      ],
+      "ci": "XRAY Resilience + Official Witnesses run 38319466035 SUCCESS",
+      "runtime_promotional_safety": "DO_NOT_TREAT_READER_34_PROVISIONAL_PRICE_PASS_AS_AUTHORITY"
+    },
+    {
+      "scope": "Historical 2026-10-09 514-symbol PRICE scope fixture and IPO/historical regression repair",
+      "commits": [
+        "2ab291c43cb78ae926342149322e190099a00f08",
+        "bcfbb19e440088095fb4041e775849937494d55f",
+        "1b6633e66fcb8bae26534f069cc389a7464064c1"
+      ],
+      "ci": "XRAY Official IPO 260 Daily Bound run 38320191250 SUCCESS",
+      "no_current_source_promotion": true
+    },
+    {
+      "scope": "Expand causal blocker DAG for PRICE_UNKNOWN_CURRENT and SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+      "commits": [
+        "633821d3b95585a59a48f0e2dcfacc1cdf067068",
+        "899c8a7b5305fc23385b8786121b89b2742c9fa8",
+        "cca17e0a539ff0ecfa4786a884690f0abd824902"
+      ],
+      "note": "Follow-on commits and later E2E regression failures occurred; re-read current code and CI before asserting success."
+    },
+    {
+      "scope": "Canonical ChatGPT-only notification task multiplexed daily status, material fault/recovery, candidate alerts and one-time test",
+      "status": "TASK_PROMPT_UPDATED",
+      "delivery": "USER_DEVICE_RECEIPT_UNVERIFIED",
+      "defect": "One-time diagnostic was pinned to a narrow 2026-10-12 18xx New York clock window; scheduled task execution drifted beyond window. Do not claim test delivered. Build a delay-tolerant repeatable test without sixth active task."
+    }
+  ],
+  "known_remaining_work_order": [
+    "Live main HEAD and all relevant workflow/task readback; verify five enabled plans, timezone, last run, prompt sentinels, notification/email settings, and one authoritative ChatGPT user channel.",
+    "Repair/verify Canonical notification creation with delay-tolerant diagnostic inside same existing task and record actual user phone receipt; distinguish task execution, in-chat output, push, email, and user attestation.",
+    "Audit scheduler/Health kick leases, active-run suppression, US market-day calendar, GitHub push skip-token behavior and stage retries; do not issue kicks while a run is active and do not retry immutable missing MC evidence.",
+    "Verify provider legal entitlement, Rallies 30-day fractional-volume quarantine and candidate-independent Alpaca exact RTH integer volume/price lineage. Reader passive 34 provisional positives are not authoritative.",
+    "Resolve PRICE exact30 540 UNKNOWN and actual source coverage while keeping UNKNOWN!=PASS; use exact SHA/set/date bindings. Root history 220 UNKNOWN also requires genuine source proof.",
+    "Only after real PRICE cohort passes, acquire lawful zero-dollar C4.17 primary MC with exact listing/issuer/PIT/US-dollar lineage. Bigdata historical zero-credit observations do not authorize paid topup; fallback WATCH cannot become R92.",
+    "Rebuild same-ASOF HISTORY 260 daily /52 completed weekly, legal/official exchange events, Stage1, weekly/regime, deep geometry, risk R1/RR, official halt/suspension veto, terminal and overlay.",
+    "Register only real nonempty candidate-local R92, exact delivery key and lifecycle after independent evidence; never invent AL, no universe-wide NO_CONFIRMED_SETUP on partial coverage.",
+    "Keep STRICT G9 A+B+C+D and read-only ACCOUNT separate for TRUE_FULL_GO; no order capabilities and no broker credentials required for manual research.",
+    "Run adversarial regression, monitor latest applicable CI, check GitHub readback, user notification receipt, and keep REAL_MONEY=NO-GO until every actual release gate is proven."
+  ],
+  "next_chat_start_instruction": "Canonical history accepted; NASDAQ SWING X-RAY final START engineering resumes from live GitHub and automation readback. Read this checkpoint only for historical continuity. First re-check live repo main, current task states and workflow evidence. Never restart project, create a sixth active task, weaken C4.17/C4.27, mark partial data PASS, claim phone receipt unobserved, or fake an AL candidate."
+}
