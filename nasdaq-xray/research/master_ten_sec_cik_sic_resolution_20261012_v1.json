@@ -32,7 +32,7 @@
       "issuer": "Calisa Acquisition Corp",
       "ticker": "ALIS",
       "sic_diagnostic": 7374,
-      "filing_evidence_date": "2026-09-21",
+      "filing_evidence_date": null,
       "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226043574/0001493152-26-043574-index.htm",
       "evidence_note": "2026-10-08 shareholder meeting announced, transaction closing not proven",
       "issuer_identification": "CIK_AND_LISTED_ISSUER_MAPPED",
@@ -43,7 +43,8 @@
       "competing_2026_sic_codes": [
         6770,
         7374
-      ]
+      ],
+      "filing_date_verified": false
     },
     "BSAA": {
       "cik": "0002051587",
@@ -117,15 +118,16 @@
       "cik": "0002088805",
       "issuer": "Inflection Point Acquisition Corp VII",
       "ticker": "IPXG",
-      "sic_diagnostic": null,
-      "filing_evidence_date": "2026-08-26",
-      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2088805/000121390026093821/ea0303421-8k_inflection7.htm",
-      "evidence_note": "Name and symbol change CMII to IPXG effective 2026-08-27; SAME CIK",
+      "sic_diagnostic": 7373,
+      "filing_evidence_date": "2026-09-21",
+      "sec_filing_url": "https://www.sec.gov/Archives/edgar/data/2088805/000121390026101659/ea0306061-8k425_inflection7.htm",
+      "evidence_note": "SEC Form 8-K lists IPXG Class A ordinary shares, CIK 0002088805 and SIC 7373; business combination agreement remains proposed",
       "issuer_identification": "CIK_AND_LISTED_ISSUER_MAPPED",
       "exchange_membership_asof": "CANONICAL_NASDAQ_DIRECTORY_UNCHANGED",
       "operating_status": "NOT_PROVEN_POST_COMBINATION",
       "security_type_risk": "SPAC_OR_ACQUISITION_COMPANY",
-      "do_not_auto_promote_to_operating": true
+      "do_not_auto_promote_to_operating": true,
+      "filing_date_verified": true
     },
     "MACI": {
       "cik": "0002016221",
@@ -196,5 +198,7 @@
         7370
       ]
     }
-  }
+  },
+  "cik_mapping_claims_not_same_asof_operating_classification": true,
+  "latest_verification_note": "IPXG SEC 2026-09-21 Form 8-K examined; ALIS filing date deliberately unset rather than guessed"
 }
