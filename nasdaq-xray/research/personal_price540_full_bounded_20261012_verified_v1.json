@@ -1,0 +1,69 @@
+{
+  "schema": "XRAY_PERSONAL_PRICE540_30MIN_BOUND_RESEARCH_VERIFIED_V1",
+  "research_asof_et": "2026-10-12",
+  "canonical_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
+  "canonical_price_git_blob_sha": "787e1222fe140ae141b51e98bbbaaa9034ead377",
+  "canonical_master_git_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
+  "research_run_id": 38483078540,
+  "run_conclusion": "success",
+  "job_id": 115590087263,
+  "artifact_id": 11857598663,
+  "artifact_member": "xray_personal_price540_30min_bounds.json",
+  "artifact_json_sha256": "add16b6188d284de90f9ac9dff668afcc51ebf94edfaa55303db6b9c16b0ac58",
+  "artifact_zip_sha256": "8c9cdf2b50b8182bd59ca3cd27a2c0d62089f1781d0970a33423733b2903912a",
+  "scope_symbols": 540,
+  "classified_symbols": 540,
+  "full_scope_classified": true,
+  "counts": {
+    "LOWER_BOUND_GE_50M_SHADOW": 411,
+    "PRIOR_VERIFIED_LOWER_BOUND_GE_50M_SHADOW": 8,
+    "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW": 91,
+    "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW": 30
+  },
+  "positive_technical_rth_30min_lower_bound_count": 419,
+  "ambiguous_or_unknown_count": 121,
+  "prior_positive_symbols_reused": [
+    "AAON",
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "TSLA"
+  ],
+  "prior_successful_cohort_ci": [
+    38468954318,
+    38473340983
+  ],
+  "prior_partial_ci": [
+    38482369533,
+    38482777199
+  ],
+  "prior_partial_artifact_sha256": [
+    "d11cf4ab4b3ef9bd8d1e6e6cf05794ae9133763e51756015bf2480140720f4d5",
+    "9574fa5a966bbb37ae206cd0dd1a43a9d3b35f2de9f0e76d92632d0965d6d21e"
+  ],
+  "last_resume_reused_classified_count": 312,
+  "previous_incomplete_16_requeried": true,
+  "reported_successful_batch_api_calls_cumulative": 692,
+  "actual_total_api_calls_exactly_instrumented": false,
+  "unaccounted_prior_failed_batch_calls_upper_bound": 24,
+  "source": "ALPACA_PERSONAL_1DAY_AND_30MIN_SIP_RAW",
+  "technique": "30 minute RTH bar sum for lower-bound / whole-day 1Day for upper-bound; lower-bound median >= 50M is SHADOW only",
+  "policy": "C4.17_HARD_THRESHOLDS_UNCHANGED_PERSONAL_RESEARCH",
+  "technical_source_rights_attestation": false,
+  "canonical_price_dv30_written": false,
+  "canonical_primary_market_cap_written": false,
+  "r92_registered": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "observed_known_weaknesses": [
+    "CLOSING_AUCTION_AND_CORRECTIONS_NOT_RECONCILED",
+    "ISSUER_SPLIT_CLASS_IDENTITY_REMAINS_SEPARATE",
+    "CANONICAL_PRIMARY_ENTITLEMENT_NOT_ATTESTED",
+    "PRICE_ASOF_2026_10_12_NOT_ROOT_ASOF_2026_10_13"
+  ],
+  "note": "Results are count-only and per-symbol shadow status. No trade, R92 or vendor OHLCV retained in public GitHub."
+}
