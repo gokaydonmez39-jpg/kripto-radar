@@ -94,9 +94,6 @@ jobs:
           print("XRAY_DELIVERY_OFFICIAL_SAFETY_GUARD=PASS veto="+str(len(safety.get("veto_symbols") or [])))
           PY
 
-      - name: Install pinned Nasdaq calendar for fail-closed scheduler tests
-        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
-
       - name: Synthetic registered-R92 delivery self-test
         run: |
           python nasdaq-xray/delivery_prepare_selftest.py
