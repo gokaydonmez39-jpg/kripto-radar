@@ -12,6 +12,7 @@ import pathlib
 import subprocess
 import urllib.request
 from zoneinfo import ZoneInfo
+from root_weekend_quota_guard import permit_compute
 
 REPO = "gokaydonmez39-jpg/kripto-radar"
 WORKFLOW = "nasdaq-xray-daily.yml"
@@ -33,6 +34,13 @@ def classify(now, runs):
     now = now.astimezone(UTC)
     if now.astimezone(NY).weekday() >= 5:
         return {"decision":"WEEKEND_OBSERVE_ONLY","dispatch_allowed":False}
+    # The existing canonical root quota guard is the single Nasdaq
+    # calendar authority. US weekdays include exchange-closed holidays.
+    try:
+        if not permit_compute(now,"schedule"):
+            return {"decision":"EXCHANGE_HOLIDAY_OBSERVE_ONLY","dispatch_allowed":False}
+    except Exception:
+        return {"decision":"EXCHANGE_CALENDAR_UNAVAILABLE_BLOCKED","dispatch_allowed":False}
     if not isinstance(runs, list) or any(not isinstance(r,dict) for r in runs):
         raise ValueError("XRAY_ROOT_RUNS_INVALID")
     for r in runs:
@@ -45,8 +53,22 @@ def classify(now, runs):
     # it is NOT a Monday data-plane heartbeat.  Excluding it from scheduler
     # success and cooldown is conservative even when a weekend workflow
     #_dispatch was manually invoked; no signal or PASS is inferred here.
-    operational = [r for r in runs if
-                   timestamp(r["created_at"]).astimezone(NY).weekday()<5]
+    # A green holiday no-compute job is not an operational heartbeat.
+    # Cache by NY market date so one 60-run snapshot does not make 60
+    # redundant exchange-calendar queries.
+    operational=[]
+    calendar_cache={now.astimezone(NY).date(): True}
+    for row in runs:
+        started=timestamp(row["created_at"])
+        exchange_day=started.astimezone(NY).date()
+        if exchange_day not in calendar_cache:
+            try:
+                calendar_cache[exchange_day]=permit_compute(started,"schedule")
+            except Exception:
+                return {"decision":"EXCHANGE_CALENDAR_UNAVAILABLE_BLOCKED",
+                        "dispatch_allowed":False}
+        if calendar_cache[exchange_day]:
+            operational.append(row)
     weekend_noop = [r for r in runs if r not in operational]
     latest = operational[0] if operational else None
     success = next((r for r in operational if
@@ -85,6 +107,8 @@ def classify(now, runs):
         "active_root_ids":[x.get("id") for x in active],
         "expired_active_root_ids":[x.get("id") for x in expired_active],
         "weekend_noop_root_ids_ignored_for_weekday_success":[
+            x.get("id") for x in weekend_noop],
+        "exchange_closed_noop_root_ids_ignored_for_session_success":[
             x.get("id") for x in weekend_noop],
     }
 
