@@ -30,12 +30,58 @@ jobs:
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
           python -O nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --selftest
+      - name: Check exact PRICE PASS membership before querying SEC
+        id: eligible
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          base=Path("nasdaq-xray")
+          p=json.loads((base/"canonical_current_price_dv30.json").read_text())
+          m=json.loads((base/"canonical_current_master_manifest.json").read_text())
+          assert p["asof_et"]==m["asof_et"]
+          assert p["unknown_never_pass"] and m["unknown_never_pass"]
+          assert p["execution"]==m["execution"]=="NONE"
+          assert p["real_money"]==m["real_money"]=="NO-GO"
+          assert len(p["pass_symbols"])==p["pass_count"]
+          assert set(p["pass_symbols"]).issubset(set(m["pass_symbols"]))
+          n=p["pass_count"]
+          eligible=0<n<=650
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+              out.write("has_price_pass="+str(eligible).lower()+"\n")
+          if not eligible:
+              status=("ZERO_PRICE_PASS_NO_SEC_MC_CANDIDATES" if n==0 else
+                      "PRICE_PASS_EXCEEDS_BOUNDED_SEC_SCOPE")
+              report={
+                "schema":"XRAY_SEC_PRICE_SCOPE_PREFLIGHT_V1",
+                "asof_et":p["asof_et"],"source_status":status,
+                "actual_price_pass":n,
+                "actual_price_unknown":p["unknown_count"],
+                "master_unknown":m["unknown_count"],
+                "price_blob_sha":subprocess.check_output(
+                  ["git","hash-object",str(base/"canonical_current_price_dv30.json")],
+                  text=True).strip(),
+                "master_blob_sha":subprocess.check_output(
+                  ["git","hash-object",str(base/"canonical_current_master_manifest.json")],
+                  text=True).strip(),
+                "sec_http_requests":0,"mc_primary_pass_created":False,
+                "r92_created":False,"canonical_modified":False,
+                "execution":"NONE","real_money":"NO-GO",
+                "unknown_never_pass":True}
+              (Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_pit.json").write_text(
+                  json.dumps(report,sort_keys=True,indent=2)+"\n")
+              print("XRAY_SEC_PIT_PREFLIGHT="+status)
+          else:
+              print("XRAY_SEC_PIT_ELIGIBLE_PRICE_SCOPE="+str(n))
+          PY
       - name: Query SEC current identifiers and PIT shares for entire frozen PRICE pass cohort
+        if: steps.eligible.outputs.has_price_pass == 'true'
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass --output "$RUNNER_TEMP/xray_sec_full_price_pass_pit.json"
       - name: Validate complete cohort and no PRIMARY promotion
+        if: steps.eligible.outputs.has_price_pass == 'true'
         run: |
           python - <<'PY'
           import hashlib,json,os,subprocess
@@ -60,6 +106,30 @@ jobs:
           print("XRAY_SEC_FULL_SCOPE="+str(j["sample_count"]))
           print("XRAY_SEC_PIT_STATES="+json.dumps(j["status_counts"],sort_keys=True))
           print("XRAY_SEC_FULL_SCOPE_NO_PRIMARY_OR_R92=PASS")
+          PY
+      - name: Validate zero-price or over-budget cohort without inventing MC
+        if: steps.eligible.outputs.has_price_pass == 'false'
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_pit.json"
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_SEC_PRICE_SCOPE_PREFLIGHT_V1"
+          assert j["source_status"] in {
+            "ZERO_PRICE_PASS_NO_SEC_MC_CANDIDATES",
+            "PRICE_PASS_EXCEEDS_BOUNDED_SEC_SCOPE"}
+          assert j["sec_http_requests"]==0 and not j["mc_primary_pass_created"]
+          assert not j["r92_created"] and not j["canonical_modified"]
+          assert j["unknown_never_pass"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["price_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
+            text=True).strip()
+          assert j["master_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],
+            text=True).strip()
+          print("XRAY_SEC_PIT_SCOPE_DIAGNOSTIC=PASS_"+j["source_status"]+"_NO_FALSE_MC")
           PY
       - name: Retain SEC status and source-SHA evidence only
         if: always()
