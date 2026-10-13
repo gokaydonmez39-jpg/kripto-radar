@@ -224,6 +224,7 @@ def selftest():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--selftest",action="store_true")
+    ap.add_argument("--frozen-20261012-dates",action="store_true")
     ap.add_argument("--out",type=Path)
     args=ap.parse_args()
     if args.selftest:selftest();return
@@ -234,8 +235,17 @@ def main():
     checkpoint=json.loads(CHECKPOINT.read_text(encoding="utf-8"))
     sha=lambda path:subprocess.check_output(
         ["git","hash-object",str(path)],text=True).strip()
-    report=measure(master,price,checkpoint,os.environ,dt.datetime.now(UTC),
+    if args.frozen_20261012_dates:
+        # Frozen historical evidence; never promote it as CURRENT ASOF.
+        need(master.get("asof_et")==price.get("asof_et")=="2026-10-12",
+             "FROZEN_ASOF_MISMATCH")
+        now=dt.datetime(2026,10,12,23,0,tzinfo=UTC)
+    else:
+        now=dt.datetime.now(UTC)
+    report=measure(master,price,checkpoint,os.environ,now,
          sha(MASTER),sha(PRICE))
+    report["historical_replay_not_current"]=bool(args.frozen_20261012_dates)
+    report["current_c417_primary_authority"]=False
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\n",
                         encoding="utf-8")
