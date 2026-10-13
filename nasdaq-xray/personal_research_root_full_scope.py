@@ -219,14 +219,18 @@ def scan(offset,limit,do_mc=False,now=None,fetch=None,sec_fetch=None):
         "full_cohort_coverage_claimed":False,"vendor_raw_bars_persisted":False,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
 
-def scan_all(*,do_mc=False):
+def scan_all(*,do_mc=False,deadline_seconds=1260):
     state,policy,queue,daily,weeks=load()
     all_status={}
     all_mc={}
     done=0
     chunks=0
     errors=[]
+    started=time.monotonic()
     for offset in range(0,len(queue),LIMIT_MAX):
+        if time.monotonic()-started>=deadline_seconds:
+            errors.append({"offset":offset,"remaining":len(queue)-offset,"reason":"BOUNDED_RUNNER_BUDGET_REACHED"})
+            break
         limit=min(LIMIT_MAX,len(queue)-offset)
         try:
             part=scan(offset,limit,do_mc)
@@ -327,6 +331,7 @@ def main():
     ap.add_argument("--limit",type=int,default=32)
     ap.add_argument("--sec-mc",action="store_true")
     ap.add_argument("--all",action="store_true")
+    ap.add_argument("--deadline-seconds",type=int,default=1260)
     ap.add_argument("--out",type=Path)
     a=ap.parse_args()
     if a.selftest:
@@ -335,7 +340,9 @@ def main():
     need(a.out is not None and
          not a.out.resolve().is_relative_to(ROOT.parent.resolve()),
          "REPORT_MUST_STAY_EPHEMERAL")
-    result=scan_all(do_mc=a.sec_mc) if a.all else scan(a.offset,a.limit,a.sec_mc)
+    need(60<=a.deadline_seconds<=1500,"RUNNER_BUDGET_INVALID")
+    result=(scan_all(do_mc=a.sec_mc,deadline_seconds=a.deadline_seconds)
+            if a.all else scan(a.offset,a.limit,a.sec_mc))
     a.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_PERSONAL_SLICE_COUNTS="+json.dumps(result["counts"],sort_keys=True))
     print("XRAY_PERSONAL_MC_COUNTS="+json.dumps(result["mc_counts"],sort_keys=True))
