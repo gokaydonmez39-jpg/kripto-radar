@@ -154,6 +154,12 @@ jobs:
           assert 0<=x["api_calls"]<=24
           assert sum(x["counts"].values())==x["attempted"]
           assert sum(x["diagnostic_reasons"].values())==len(x["affected_symbols"])
+          assert sum(x["price_close_research_only"].values())==x["counts"]["DAILY_SIP_30_VALID_NOT_RTH"]
+          assert set(x["price_close_research_only"])=={"BELOW_5_SHADOW","AT_LEAST_5_SHADOW"}
+          assert x["price_source_not_primary"] is True
+          assert x["confirmed_c417_price_fail_count"]==0
+          assert x["confirmed_c417_dv30_pass_count"]==0
+          assert isinstance(x["below_5_research_symbol_sha256"],str) and len(x["below_5_research_symbol_sha256"])==64
           assert len(x["affected_symbols"])==x["counts"]["INCOMPLETE"]+x["counts"]["INTEGRITY"]
           assert all(set(item)=={"symbol","classification","reason"}
                      for item in x["affected_symbols"])
@@ -167,6 +173,7 @@ jobs:
           if x["status"]!="SHADOW_540_DAILY_SIP_SCOPE_MEASURED_NOT_RTH":
               raise SystemExit("XRAY_540_PERSONAL_SIP_SCOPE_INCOMPLETE_FAIL_CLOSED")
           print("XRAY_540_PERSONAL_SIP_COVERAGE=PASS_NO_RTH_PRIMARY_NO_R92")
+          print("XRAY_540_PERSONAL_SIP_5USD_CLOSE_TRIAGE="+json.dumps(x["price_close_research_only"],sort_keys=True))
           PY
       - name: Targeted only 27 frozen anomalies, one daily SIP page maximum
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run27shadow]') }}
