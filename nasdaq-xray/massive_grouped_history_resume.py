@@ -382,9 +382,26 @@ def selftest():
     from tempfile import TemporaryDirectory
     from copy import deepcopy
     from cryptography.fernet import InvalidToken
-    ss=scope()  # Source is actual current PRICE+MASTER SHA-bound state.
-    # The C4.17 PRICE cohort changes with ASOF; never freeze selftest to 514.
-    assert ss["symbols"] and ss["symbols"]==sorted(set(ss["symbols"]))
+    live_scope=scope()  # Always validate actual PRICE+MASTER SHA bindings.
+    liveprice=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    assert live_scope["symbols"]==sorted(set(live_scope["symbols"]))
+    assert len(live_scope["symbols"])==liveprice["pass_count"]
+    assert len(live_scope["dates"])==260 and len(live_scope["weeks"])==52
+    # A legitimate zero-/one-PASS current cohort cannot furnish two bars for
+    # positive unit tests. Use ONLY an in-memory offline fixture in that case.
+    # It is never a vendor request, private transport, history PASS or R92.
+    ss=deepcopy(live_scope)
+    if len(ss["symbols"])<2:
+        ss["symbols"]=["AAPL","NVDA"]
+        ss["targets"]=["AAPL","NVDA","QQQ"]
+        ss["scope_hash"]=sha256_lines(ss["symbols"])
+        ss["price_sha"]="0"*40
+        ss["master_sha"]="1"*40
+        assert not exact(fresh(ss),live_scope)
+        assert telemetry(fresh(live_scope),live_scope,
+                         "EMPTY_OR_SINGLE_PRICE_PASS_NO_HISTORY_AUTHORITY",0
+                         )["canonical_HISTORY_pass"] is False
+    assert len(ss["symbols"])>=2 and ss["symbols"]==sorted(set(ss["symbols"]))
     assert len(ss["targets"])==len(set(ss["symbols"])|{"QQQ"})
     assert len(ss["dates"])==260 and len(ss["weeks"])==52
     # Change just the in-memory test scope in both directions. These fixtures
