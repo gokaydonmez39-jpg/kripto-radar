@@ -15,7 +15,7 @@ RESEARCH=ROOT/"research/personal_master_20261012_sec_cik_exclusion_v1.json"
 POLICY=ROOT/"personal_research_technical_policy_v1.json"
 def blob(path):
     raw=path.read_bytes()
-    return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
 def must(ok,reason):
     if not ok:raise ValueError("MASTER_TEN_PERSONAL_"+reason)
 def validate(m,s,p,o,blobs):
@@ -47,7 +47,7 @@ def validate(m,s,p,o,blobs):
     for symbol in keys:
         v=s["rows"][symbol]
         w=o["resolved_conservative_exclusions"][symbol]
-        must(type(v.get("cik")) is str and re.fullmatch(r"\\d{10}",v["cik"])
+        must(type(v.get("cik")) is str and re.fullmatch(r"\d{10}",v["cik"])
              and w.get("cik")==v["cik"],"CIK_"+symbol)
         uri=urlsplit(v["sec_filing_url"])
         must(uri.scheme=="https" and uri.netloc=="www.sec.gov"
@@ -111,7 +111,7 @@ def main():
     if args.out is not None:
         if args.out.resolve().is_relative_to(ROOT.parent.resolve()):
             raise ValueError("NO_PRODUCTION_WRITE")
-        args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\\n")
+        args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print("XRAY_PERSONAL_CIK_EXACT=10_OF_10")
     print("XRAY_PERSONAL_CONSERVATIVE_EXCLUSION=10")
     print("XRAY_C417_MASTER_UNKNOWN_REMAINS=10")
