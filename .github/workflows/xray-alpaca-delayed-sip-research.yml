@@ -144,6 +144,11 @@ jobs:
           assert x["requested"]==540 and x["attempted"]+x["remaining"]==540
           assert 0<=x["api_calls"]<=24
           assert sum(x["counts"].values())==x["attempted"]
+          assert sum(x["diagnostic_reasons"].values())==len(x["affected_symbols"])
+          assert len(x["affected_symbols"])==x["counts"]["INCOMPLETE"]+x["counts"]["INTEGRITY"]
+          assert all(set(item)=={"symbol","classification","reason"}
+                     for item in x["affected_symbols"])
+          assert all(isinstance(item["symbol"],str) for item in x["affected_symbols"])
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True
           assert x["vendor_raw_bars_persisted"] is False
