@@ -33,7 +33,8 @@ def params(asof):
     # Alpaca 'end' is inclusive. Exclude the 16:00 bar: may mix official
     # auction executions and after-hours transactions.
     end=close-dt.timedelta(minutes=1)
-    assert start<=end
+    if start>=close or n<=0 or (close-start)!=dt.timedelta(minutes=n):
+        raise ValueError("INVALID_OFFICIAL_SESSION_WINDOW")
     def fmt(x):
         return x.isoformat().replace("+00:00","Z")
     return {"start":fmt(start),"end":fmt(end),"timeframe":"1Min",
@@ -144,6 +145,13 @@ def selftest():
         return {"symbol":SYMBOL,"bars":[
             {"t":(start+dt.timedelta(minutes=i)).isoformat().replace("+00:00","Z"),
              "v":1000} for i in range(count)],"next_page_token":None}
+    from unittest.mock import patch
+    # This guard must still reject malformed calendars with python -O.
+    for broken in ((close,start,count),(start,start,0),(start,close,count-1)):
+        with patch(__name__+".official_window",return_value=broken):
+            try:params(asof)
+            except ValueError:pass
+            else:raise AssertionError("INVALID_OFFICIAL_SESSION_WINDOW_ACCEPTED")
     p=params(asof)
     if (p["feed"]!="sip" or p["timeframe"]!="1Min" or
         p["adjustment"]!="raw" or p["limit"]!="500" or
@@ -197,6 +205,7 @@ def selftest():
     if any(x in json.dumps(yes) for x in ("TEST_SECRET","TEST_ID","390000")):
         raise AssertionError("SECRET_OR_VENDOR_VOLUME_PERSISTED")
     print("XRAY_SIP_RTH_ONECALL_SELFTEST=PASS_390_FULL_8_NEGATIVES_ZERO_UNLICENSED_REQUESTS_NO_DV30")
+    print("XRAY_SIP_RTH_WINDOW_OPTIMIZED_NEGATIVES=PASS_3")
 
 def main():
     p=argparse.ArgumentParser()
