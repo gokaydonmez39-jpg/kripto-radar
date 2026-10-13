@@ -142,7 +142,7 @@ def main():
         status=("BLOCKED_PROVIDER_HTTP_"+str(exc.code))
         result=metadata({s:"UNKNOWN_PROVIDER_HTTP_"+str(exc.code)
                          for s in SYMBOLS},1,status)
-        args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+        args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
         print("XRAY_DAILY_ASOF_PRESENCE="+json.dumps(result["counts"],sort_keys=True))
         print("XRAY_DAILY_ASOF_PROVIDER_STATUS="+status)
         return
