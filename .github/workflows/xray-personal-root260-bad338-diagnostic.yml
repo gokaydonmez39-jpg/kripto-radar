@@ -39,6 +39,7 @@ jobs:
           github-token: ${{ github.token }}
           name: xray-personal-root260-full-scope-status-no-ohlcv
           path: ${{ runner.temp }}/xray_full_root260_input
+      # One SHA-pinned bounded live diagnostic; unrelated 2679 prior positives are excluded.
       - name: Recheck only 338 prior invalid bars without replaying healthy 2679
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runbad338]') }}
         env:
