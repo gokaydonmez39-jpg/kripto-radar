@@ -6,10 +6,12 @@ on:
     paths:
       - "nasdaq-xray/alpaca_delayed_sip_research_shadow.py"
       - "nasdaq-xray/alpaca_sip_exact30_backup_probe.py"
+      - "nasdaq-xray/alpaca_rth_minute_integrity_shadow.py"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - "nasdaq-xray/evidence/alpaca_connected_sip_daily_20261013_v1.json"
       - "nasdaq-xray/evidence/alpaca_connected_sip_exact30_20261013_v1.json"
+      - "nasdaq-xray/evidence/alpaca_sip_20261012_rth_boundary_20261013_v1.json"
       - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
   schedule:
     - cron: "55 13,17 * * 1-5"
@@ -46,6 +48,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_exact30_backup_probe.py
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --selftest
           python -O nasdaq-xray/alpaca_sip_exact30_backup_probe.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_rth_minute_integrity_shadow.py
+          python nasdaq-xray/alpaca_rth_minute_integrity_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_rth_minute_integrity_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -60,6 +65,10 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["unknown_never_pass"] is True
           assert x["interactive_access_not_runner_authority"] is True
+          assert x["daily_sip_1day_volume_is_rth"] is False
+          assert x["rth_volume_requires_official_session_minutes"] is True
+          assert x["close_auction_allocation_verified"] is False
+          assert x["c417_dv30_from_daily_sip_allowed"] is False
           for k in ("primary_price_authority","primary_mc_authority","history_pass",
                     "r92_created","strict_g9_pass","account_pass","can_create_primary",
                     "alpha_authority","vendor_raw_data_persisted","secrets_or_request_urls_persisted",
@@ -173,6 +182,30 @@ jobs:
           forbidden=('"close":','"volume":','"market_cap":','"api_key":','"api_secret":')
           assert not any(v in raw.lower() for v in forbidden)
           print("XRAY_FIVE_SYMBOL_CONNECTED_SIP_EXACT30_METADATA=PASS_NO_AL_AUTHORITY")
+          PY
+      - name: Independently verify RTH boundary provenance without raw data
+        run: |
+          python - <<'PY'
+          import json,pathlib
+          f=pathlib.Path("nasdaq-xray/evidence/alpaca_sip_20261012_rth_boundary_20261013_v1.json")
+          raw=f.read_text();j=json.loads(raw)
+          assert j["schema"]=="XRAY_ALPACA_CONNECTED_RTH_VOLUME_BOUNDARY_WITNESS_V1"
+          assert j["provider"]=="ALPACA" and j["data_feed"]=="sip"
+          assert j["observed_session_date_et"]=="2026-10-12"
+          assert j["complete_pre_close_minute_count"]==390
+          assert j["all_pre_close_minute_volumes_positive_integer"] is True
+          assert j["separate_16_00_et_minute_bar_observed"] is True
+          assert j["daily_volume_different_from_09_30_through_15_59_minute_sum"] is True
+          for key in ("minute_16_00_contains_close_auction_vs_afterhours_split_verified",
+                      "rth_trade_conditions_proven","daily_1day_volume_can_be_rth_dv30",
+                      "source_license_and_reproduction_rights_proven",
+                      "raw_vendor_ohlcv_or_individual_minute_volumes_persisted"):
+              assert j[key] is False,key
+          assert j["canonical_price_pass_created"]==j["primary_mc_created"]==j["r92_created"]==0
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["policy"]=="C4.17" and j["control"]=="C4.27"
+          assert not any(s in raw.lower() for s in ('"volume":','"close":','"api_key":'))
+          print("XRAY_SIP_RTH_BOUNDARY_AUDIT=PASS_390_MINUTES_DAILY_VOLUME_NOT_RTH_NO_GO")
           PY
       - name: Bounded delayed-SIP health readback
         run: |
