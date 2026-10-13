@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/alpaca_sip_exact30_backup_probe.py"
       - "nasdaq-xray/alpaca_rth_minute_integrity_shadow.py"
       - "nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py"
+      - "nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
       - "nasdaq-xray/evidence/alpaca_connected_sip_daily_20261013_v1.json"
@@ -58,6 +59,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py
           python nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --selftest
           python -O nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py
+          python nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py --selftest
+          python -O nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -123,6 +127,32 @@ jobs:
               if os.environ.get(k):assert os.environ[k] not in json.dumps(x)
           print("XRAY_RUNNER_SINGLE_SESSION_RTH_MINUTE="+x["status"])
           print("XRAY_RUNNER_NO_DV30_PROMOTION=PASS")
+          PY
+      - name: One-shot personal 540-symbol daily SIP coverage census (no canonical promotion)
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run540shadow]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py --out "$RUNNER_TEMP/xray_alpaca_540_metadata.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_540_metadata.json"
+          x=json.loads(p.read_text())
+          assert x["schema"]=="XRAY_PERSONAL_540_EXACT30_DAILY_SIP_COVERAGE_SHADOW_V1"
+          assert x["requested"]==540 and x["attempted"]+x["remaining"]==540
+          assert 0<=x["api_calls"]<=24
+          assert sum(x["counts"].values())==x["attempted"]
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert x["vendor_raw_bars_persisted"] is False
+          assert x["vendor_price_or_volume_values_persisted"] is False
+          assert x["primary_dv30_authority"] is False
+          assert x["primary_mc_authority"] is False and x["r92_created"] is False
+          if x["status"]!="SHADOW_540_DAILY_SIP_SCOPE_MEASURED_NOT_RTH":
+              raise SystemExit("XRAY_540_PERSONAL_SIP_SCOPE_INCOMPLETE_FAIL_CLOSED")
+          print("XRAY_540_PERSONAL_SIP_COVERAGE=PASS_NO_RTH_PRIMARY_NO_R92")
           PY
       - name: Validate historical SIP connector research-only proof without prices
         run: |
@@ -263,6 +293,7 @@ jobs:
           print("XRAY_DELAYED_SIP_VENDOR_GUARD=PASS status="+j["status"])
           PY
       - name: Upload health only
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xray-alpaca-delayed-sip-health
@@ -270,5 +301,6 @@ jobs:
             ${{ runner.temp }}/alpaca_delayed_sip_health.json
             ${{ runner.temp }}/xray_alpaca_exact30_backup.json
             ${{ runner.temp }}/xray_sip_rth_minute_onecall.json
+            ${{ runner.temp }}/xray_alpaca_540_metadata.json
           retention-days: 7
           if-no-files-found: error
