@@ -1,0 +1,18 @@
+HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND
+SCOPE=This is an APPEND-ONLY stronger safety condition for the existing XRAY Health + G9 Multi-Watch task (6abd0465d15c8191aac5888abb784f27). Preserve every existing prompt byte, task id, schedule, enabled=true, notifications=false, email=false, and exactly five enabled XRAY automations. Do not overwrite the task with this block alone.
+PRECEDENCE=For unattended ROOT scheduler-kick eligibility ONLY, this section supersedes every earlier instruction equating America/New_York Monday-Friday with an open Nasdaq stock trading session. All existing stricter source/policy/lease/active-run/two-snapshot/one-kick/official-safety/alpha/G9/ACCOUNT constraints remain unchanged.
+TIME_AUTHORITY=Use the ACTUAL current timezone-aware UTC runtime instant and its America/New_York exchange date; never infer today's session from ASOF_ET, Europe/Istanbul, ordinary weekday, or a fixed historical fixture.
+CALENDAR_AUTHORITY=Read current main nasdaq-xray/scheduler_failover_contract.json and nasdaq-xray/root_weekend_quota_guard.py; require contract.health_policy.nasdaq_exchange_session_required_for_root_kick=true, exchange_closed_weekday_kick_forbidden=true, exchange_calendar_failure=BLOCK_CAS_FAIL_CLOSED, and exchange_calendar_authority=ROOT_WEEKEND_QUOTA_GUARD_PERMIT_COMPUTE_SCHEDULE. For root CAS, independently verify the exchange session using the official Nasdaq schedule equivalent to permit_compute(now_utc,"schedule"), NOT ET weekday alone.
+ROOT_CAS_VETO=If official Nasdaq is CLOSED on the actual current exchange date, including observed Friday federal-exchange holidays, then DO NOT update scheduler_kick_dataplane.json even when ROOT_STALE_PREDICATE would pass. Do not claim HEALTH_FAILOVER_ACTION_OMITTED; set EXCHANGE_HOLIDAY_ROOT_CAS_VETO and keep candidate/scheduler readiness fail-closed.
+EARLY_CLOSE=An official 210-minute Nasdaq early-close date is an eligible exchange session; continue all existing root staleness, actions-double-read, lease and safety gates unchanged. Never confuse regular-close time with the exchange-date open/closed classification.
+CALENDAR_UNAVAILABLE=If official Nasdaq session state cannot be verified with trusted calendar evidence, DO NOT CAS. Record NASDAQ_EXCHANGE_CALENDAR_UNVERIFIED, do not fallback to US weekdays or fabricate a calendar PASS. A status-only diagnostic is appropriate because CAS is explicitly forbidden by this additional hard veto.
+VALID_ROOT_ACTION=Only when Nasdaq exchange session verified OPEN and every preexisting ROOT stale, kick lease, active-run, exact preimage, second Actions snapshot, and max-one-kick predicate independently succeeds MAY/MUST the existing safe Github Contents CAS increment occur. Required commit message must contain no [skip ci] variants; exact readback then real Actions run witness. A successful CAS is not recovery PASS.
+FINAL_KICK=Existing FINAL-only rebind and safety freshness controls remain as written. No Root+Final dual kick within one invocation, no ASOF advance on weekends/holidays, no candidate emit during unresolved recovery.
+PROMPT_DRIFT_HEALTH=If this guard block is absent from the Health task's actual live full prompt, or task control readback is unavailable, classify HEALTH_AUTOMATION_HOLIDAY_PROMPT_UNVERIFIED, not HEALTH_READY. A GitHub CI success, local test or document does NOT prove ChatGPT scheduled runtime complied; separately witness a real scheduled task invocation and a controlled holiday-no-CAS observation before labeling actual task behavior verified.
+NO_ALPHA_PROMOTION=true
+NO_PAID_FALLBACK=true
+NO_BROKER_OR_ORDER_ACTION=true
+EXECUTION=NONE
+REAL_MONEY=NO-GO
+UNKNOWN_NEVER_PASS=true
+END_HEALTH_NASDAQ_EXCHANGE_CAS_V21
