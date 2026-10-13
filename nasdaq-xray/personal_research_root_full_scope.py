@@ -219,6 +219,73 @@ def scan(offset,limit,do_mc=False,now=None,fetch=None,sec_fetch=None):
         "full_cohort_coverage_claimed":False,"vendor_raw_bars_persisted":False,
         "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
 
+def scan_all(*,do_mc=False):
+    state,policy,queue,daily,weeks=load()
+    all_status={}
+    all_mc={}
+    done=0
+    chunks=0
+    errors=[]
+    for offset in range(0,len(queue),LIMIT_MAX):
+        limit=min(LIMIT_MAX,len(queue)-offset)
+        try:
+            part=scan(offset,limit,do_mc)
+        except (RuntimeError,ValueError) as exc:
+            # Preserve an explicit partial footprint and do not hammer a
+            # blocked provider or skip a failed cohort.
+            why=str(exc)
+            errors.append({"offset":offset,"remaining":len(queue)-offset,
+                           "reason":why if why.startswith((
+                               "ALPACA_","SEC_","PERSONAL_SCOPE_"))
+                           else "UPSTREAM_SOURCE_STOP"})
+            break
+        need(part["slice_symbols"]==queue[offset:offset+limit]
+             and part["slice_count"]==limit
+             and part["source_sina_git_blob_sha"]==blob_sha(STATE)
+             and part["source_technical_policy_git_blob_sha"]==blob_sha(POLICY),
+             "SLICE_EXACTNESS")
+        need(not(set(part["statuses"])&set(all_status))
+             and set(part["statuses"])==set(part["slice_symbols"]),
+             "DUPLICATE_OR_MISSING")
+        all_status.update(part["statuses"])
+        all_mc.update(part["mc_statuses"])
+        chunks+=1
+        done+=limit
+        # Lower vendor request pressure; cannot bypass a quota cliff.
+        time.sleep(0.6)
+    coverage=done==len(queue) and set(all_status)==set(queue)
+    remain=queue[done:]
+    return {"schema":"XRAY_PERSONAL_FULL_3185_EPOCH_STATUS_V1",
+            "asof_et":ASOF,
+            "source_sina_git_blob_sha":blob_sha(STATE),
+            "source_technical_policy_git_blob_sha":blob_sha(POLICY),
+            "source_root_unknown_before":state["unknown_count"],
+            "source_root_scope_sha256":sha(queue),
+            "scope_total":len(queue),"attempted_count":done,
+            "remaining_count":len(remain),
+            "remaining_scope_sha256":sha(remain),
+            "completed_chunk_count":chunks,
+            "coverage_complete":coverage,
+            "source_errors":errors,
+            "symbols_status_count":len(all_status),
+            "symbol_statuses":all_status,
+            "history_dv30_counts":dict(sorted(collections.Counter(
+                all_status.values()).items())),
+            "mc_requested":do_mc,
+            "mc_status_count":len(all_mc),
+            "mc_counts":dict(sorted(collections.Counter(all_mc.values()).items())),
+            "mc_statuses":all_mc,
+            "exact260_history_required":260,
+            "exact52_completed_weeks_required":52,
+            "real_provider_value_scope_verified":coverage,
+            "corporate_action_class_chain_verified":False,
+            "official_rth_daily_volume_lineage_independently_attested":False,
+            "can_be_c417_primary":False,
+            "can_register_r92":False,
+            "no_canonical_artifacts_mutated":True,
+            "raw_vendor_ohlcv_persisted":False,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
+
 def selftest():
     state,p,queue,daily,weeks=load()
     def bar(day):
@@ -259,6 +326,7 @@ def main():
     ap.add_argument("--offset",type=int,default=0)
     ap.add_argument("--limit",type=int,default=32)
     ap.add_argument("--sec-mc",action="store_true")
+    ap.add_argument("--all",action="store_true")
     ap.add_argument("--out",type=Path)
     a=ap.parse_args()
     if a.selftest:
@@ -267,7 +335,7 @@ def main():
     need(a.out is not None and
          not a.out.resolve().is_relative_to(ROOT.parent.resolve()),
          "REPORT_MUST_STAY_EPHEMERAL")
-    result=scan(a.offset,a.limit,a.sec_mc)
+    result=scan_all(do_mc=a.sec_mc) if a.all else scan(a.offset,a.limit,a.sec_mc)
     a.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_PERSONAL_SLICE_COUNTS="+json.dumps(result["counts"],sort_keys=True))
     print("XRAY_PERSONAL_MC_COUNTS="+json.dumps(result["mc_counts"],sort_keys=True))
