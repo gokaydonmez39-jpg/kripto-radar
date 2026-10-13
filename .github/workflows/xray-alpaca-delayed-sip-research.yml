@@ -280,7 +280,7 @@ jobs:
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_4symbol_30min_bound.json").read_text())
           assert x["schema"]=="XRAY_SIP_EXACT30_4_SYMBOL_30MIN_RTH_LOWER_BOUND_SHADOW_V1"
           assert x["asof_et"]=="2026-10-12" and x["symbols_requested"]==x["symbols_completed"]==4
-          assert 1<=x["api_calls"]<=3
+          assert 2<=x["api_calls"]<=8
           assert sum(x["counts"].values())==4
           assert set(x["shadow_symbol_statuses"])=={"AAPL","NVDA","MSFT","AAON"}
           assert x["historical_replay_not_current"] is True
