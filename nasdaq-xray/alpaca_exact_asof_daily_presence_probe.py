@@ -117,8 +117,10 @@ def main():
     need(not args.out.resolve().is_relative_to(ROOT.parent.resolve()),
          "NO_REPOSITORY_DATA_ARTIFACT")
     check_scope()
-    creds=os.getenv("XRAY_ALPACA_DATA_KEY_ID","").strip()
-    secret=os.getenv("XRAY_ALPACA_DATA_SECRET_KEY","").strip()
+    creds=(os.getenv("XRAY_ALPACA_DATA_KEY_ID") or
+           os.getenv("XRAY_ALPACA_API_KEY_ID") or "").strip()
+    secret=(os.getenv("XRAY_ALPACA_DATA_SECRET_KEY") or
+            os.getenv("XRAY_ALPACA_API_SECRET_KEY") or "").strip()
     need(bool(creds and secret),"MISSING_API_KEYS")
     params={"symbols":",".join(SYMBOLS),"timeframe":"1Day",
             "feed":"sip","adjustment":"raw","sort":"asc","limit":"1000",
