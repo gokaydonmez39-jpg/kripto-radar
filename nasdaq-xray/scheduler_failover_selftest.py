@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json
+import datetime as dt
+from unittest.mock import patch
 from pathlib import Path
+from root_weekend_quota_guard import permit_compute
 
 ROOT=Path(__file__).resolve().parent
 
-def _must_kick_root(*, us_weekday: bool, root_age: int, stale_after: int, has_active: bool, kick_age: int, cooldown: int, preimages_equal: bool, second_snapshot_new_run: bool) -> bool:
+def _must_kick_root(*, us_weekday: bool, root_age: int, stale_after: int, has_active: bool, kick_age: int, cooldown: int, preimages_equal: bool, second_snapshot_new_run: bool, when_utc: dt.datetime | None = None) -> bool:
+    # A weekday is not an official Nasdaq session.  A missing or invalid
+    # calendar/time witness cannot authorize an automatic Health CAS kick.
+    try:
+        official_session = (when_utc is not None and permit_compute(when_utc,"schedule"))
+    except Exception:
+        official_session = False
     return (
-        us_weekday
+        official_session
+        and us_weekday
         and root_age > stale_after
         and not has_active
         and kick_age > cooldown
@@ -43,15 +53,15 @@ assert contract["health_policy"]["weekend_age_only_kick_forbidden"] is True
 
 _stale=int(contract["stale_after_seconds"])
 _cool=int(contract["kick_cooldown_seconds"])
-assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is True
-assert _must_kick_root(us_weekday=False, root_age=_stale+9999, stale_after=_stale, has_active=False, kick_age=_cool+9999, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
-assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=True, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
-assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
-assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=False, second_snapshot_new_run=False) is False
-assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=True) is False
+_OPEN_NOW=dt.datetime(2026,10,12,15,tzinfo=dt.timezone.utc)  # Columbus Day: Nasdaq open
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False, when_utc=_OPEN_NOW) is True
+assert _must_kick_root(us_weekday=False, root_age=_stale+9999, stale_after=_stale, has_active=False, kick_age=_cool+9999, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False, when_utc=_OPEN_NOW) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=True, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False, when_utc=_OPEN_NOW) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False, when_utc=_OPEN_NOW) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=False, second_snapshot_new_run=False, when_utc=_OPEN_NOW) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=True, when_utc=_OPEN_NOW) is False
 # Regression: NY weekdays are NOT always Nasdaq sessions.  Observed
 # Independence Day Friday must never permit unattended Health root recovery.
-import datetime as dt
 assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale,
     has_active=False, kick_age=_cool+1, cooldown=_cool,
     preimages_equal=True, second_snapshot_new_run=False,
@@ -60,6 +70,29 @@ assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale,
     has_active=False, kick_age=_cool+1, cooldown=_cool,
     preimages_equal=True, second_snapshot_new_run=False,
     when_utc=dt.datetime(2026,10,12,15,tzinfo=dt.timezone.utc)) is True
+# Half-day is a valid Nasdaq session: do not confuse exchange closure
+# with the shorter 13:00 ET close.  Christmas/Thanksgiving are not.
+_BASE_KICK={"us_weekday":True,"root_age":_stale+1,"stale_after":_stale,
+            "has_active":False,"kick_age":_cool+1,"cooldown":_cool,
+            "preimages_equal":True,"second_snapshot_new_run":False}
+for _closed in ((2026,11,26,15),(2026,12,25,15),(2026,7,3,15)):
+    assert _must_kick_root(**_BASE_KICK,when_utc=dt.datetime(
+        *_closed,tzinfo=dt.timezone.utc)) is False
+assert _must_kick_root(**_BASE_KICK,when_utc=dt.datetime(
+    2026,11,27,15,tzinfo=dt.timezone.utc)) is True
+assert _must_kick_root(**_BASE_KICK,when_utc=dt.datetime(
+    2026,10,13,15,tzinfo=dt.timezone.utc)) is True
+assert _must_kick_root(**_BASE_KICK) is False
+assert _must_kick_root(**_BASE_KICK,when_utc=dt.datetime(2026,10,13,15)) is False
+with patch("root_weekend_quota_guard.mcal.get_calendar",side_effect=RuntimeError("CALENDAR_OUTAGE")):
+    assert _must_kick_root(**_BASE_KICK,when_utc=dt.datetime(
+        2026,10,13,15,tzinfo=dt.timezone.utc)) is False
+
+assert contract["health_policy"]["nasdaq_exchange_session_required_for_root_kick"] is True
+assert contract["health_policy"]["exchange_closed_weekday_kick_forbidden"] is True
+assert contract["health_policy"]["exchange_calendar_failure"]=="BLOCK_CAS_FAIL_CLOSED"
+assert contract["health_policy"]["exchange_calendar_authority"]=="ROOT_WEEKEND_QUOTA_GUARD_PERMIT_COMPUTE_SCHEDULE"
+
 assert "requested_at_utc" in contract["kick_lease_rule"]
 assert "queued/in_progress" in contract["kick_lease_rule"]
 assert "queued or in_progress" in contract["health_policy"]["active_run_rule"]
