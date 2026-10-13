@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import urllib.parse
 import urllib.request
+import urllib.error
 from zoneinfo import ZoneInfo
 
 from alpaca_sip_exact30_backup_probe import personal_shadow_access
@@ -99,6 +100,7 @@ def selftest():
     else:raise AssertionError("FOREIGN_SYMBOL_ACCEPTED")
     x=metadata(positive,1,"OBSERVED_SIP_DAILY_ONLY")
     import urllib.parse
+    need("urllib" not in main.__code__.co_varnames,"LOCAL_PACKAGE_IMPORT_SHADOWS_REQUEST")
     end="2026-10-13T16:30:00-04:00"
     need(dt.datetime.fromisoformat(end).hour==16
          and dt.datetime.fromisoformat(end).minute==30,
@@ -134,7 +136,6 @@ def main():
     req=urllib.request.Request(BASE+"?"+urllib.parse.urlencode(params),
           headers={"APCA-API-KEY-ID":creds,"APCA-API-SECRET-KEY":secret,
                    "Accept":"application/json"})
-    import urllib.error
     try:
         with urllib.request.urlopen(req,timeout=25) as response:
             raw=response.read(MAX_BYTES+1)
