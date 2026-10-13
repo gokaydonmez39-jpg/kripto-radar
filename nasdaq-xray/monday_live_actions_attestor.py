@@ -61,7 +61,11 @@ def stamp(v):
 def root_compute_event_eligible(run):
     """A green root invocation need not have executed Nasdaq data work."""
     event=run.get("event")
-    if event not in ("schedule","push","workflow_dispatch"):
+    # An explicit manual dispatch is an operational recovery or diagnostic,
+    # not evidence that the unattended weekday data plane actually ran.
+    # It may compute the last session on an exchange-closed day, so it must
+    # not count as a fresh scheduled-session source heartbeat.
+    if event not in ("schedule","push"):
         return False
     return permit_compute(stamp(run["created_at"]),event)
 
@@ -197,7 +201,10 @@ def selftest():
     half=run(43,"2026-11-27T15:00:00Z")
     assert root_compute_event_eligible(half)
     manual=dict(holiday,event="workflow_dispatch")
-    assert root_compute_event_eligible(manual)
+    assert root_compute_event_eligible(manual) is False
+    assert summarize(next_open,"root",[manual,prior])["last_success_id"]==42
+    manual_open=dict(half,event="workflow_dispatch")
+    assert root_compute_event_eligible(manual_open) is False
     unknown=dict(holiday,event=None)
     assert root_compute_event_eligible(unknown) is False
     assert summarize(next_open,"root",[unknown])["last_success_id"] is None
