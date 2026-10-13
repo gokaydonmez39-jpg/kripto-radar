@@ -49,6 +49,17 @@ assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, h
 assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=False) is False
 assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=False, second_snapshot_new_run=False) is False
 assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale, has_active=False, kick_age=_cool+1, cooldown=_cool, preimages_equal=True, second_snapshot_new_run=True) is False
+# Regression: NY weekdays are NOT always Nasdaq sessions.  Observed
+# Independence Day Friday must never permit unattended Health root recovery.
+import datetime as dt
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale,
+    has_active=False, kick_age=_cool+1, cooldown=_cool,
+    preimages_equal=True, second_snapshot_new_run=False,
+    when_utc=dt.datetime(2026,7,3,15,tzinfo=dt.timezone.utc)) is False
+assert _must_kick_root(us_weekday=True, root_age=_stale+1, stale_after=_stale,
+    has_active=False, kick_age=_cool+1, cooldown=_cool,
+    preimages_equal=True, second_snapshot_new_run=False,
+    when_utc=dt.datetime(2026,10,12,15,tzinfo=dt.timezone.utc)) is True
 assert "requested_at_utc" in contract["kick_lease_rule"]
 assert "queued/in_progress" in contract["kick_lease_rule"]
 assert "queued or in_progress" in contract["health_policy"]["active_run_rule"]
