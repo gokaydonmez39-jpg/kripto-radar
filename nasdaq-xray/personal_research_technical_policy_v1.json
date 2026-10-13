@@ -28,5 +28,21 @@
   },
   "mc_source_rule": "SEC DEI entity shares and class-aware issuer reconciliation; incomplete class count remains unknown even with arithmetic",
   "asof_binding": "No cross-ASOF join; every issued result binds exact 40-hex git object IDs and same completed NASDAQ session",
-  "fail_closed": "A zero-missing sample cannot imply zero-missing global cohort"
+  "fail_closed": "A zero-missing sample cannot imply zero-missing global cohort",
+  "technical_engine_path": "nasdaq-xray/personal_research_primary_engine_v1.py",
+  "technical_engine_blob_sha": "03a10c1f20caf7881eb427c014cc0456738c2985",
+  "technical_primary_scope": "LOCAL_EVIDENCE_ONLY_NOT_C417_CANONICAL_OR_R92",
+  "personal_research_entitlement_interpretation": {
+    "source_contract_still_governs": true,
+    "enterprise_utp_nondisplay_attestation_is_not_precondition_for_local_technical_measurement_label": true,
+    "no_claim_that_automated_github_runner_use_or_republication_is_licensed": true,
+    "no_g9_or_account_substitution": true
+  },
+  "technical_evidence_requirements": {
+    "dv30": "EXACT_30_OFFICIAL_RTH_SESSIONS_EACH_VERIFIED_CLOSE_AND_VERIFIED_INTEGER_RTH_VOLUME_PLUS_CORRECTION_AND_IDENTITY_LINEAGE",
+    "history": "EXACT_260_OFFICIAL_COMPLETED_SESSIONS_52_OFFICIAL_WEEK_CLOSES_POSITIVE_RAW_OHLCV_IDENTITY_PIT_AND_CORPORATE_ACTIONS",
+    "mc": "SEC_ENTITY_SHARES_ASOF_CLASS_SPECIFIC_PRICE_SPLIT_ACTIONS_REPORT_LOOKAHEAD_GUARD_FULL_SHARE_CLASS_RECONCILIATION",
+    "bad_volume": "ZERO_VOLUME_CARRY_FORWARD_PLACEHOLDER_IS_UNKNOWN_NOT_VALID_SESSION",
+    "full_release": "REMAINS_SEPARATE_AND_NEVER_INFERRED_FROM_TECHNICAL_MEASUREMENT"
+  }
 }
