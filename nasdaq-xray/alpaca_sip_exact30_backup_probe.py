@@ -123,6 +123,13 @@ def report_base(asof=None):
         "interactive_access_not_runner_authority":True,
         "runner_credentials_present":False,"operator_research_grant_claimed":False,
         "license_independently_verified":False,"official_rth_only_lineage_attested":False,
+        # The SIP 1Day close is NOT an RTH-exclusive volume authority.
+        # Exchange-hour minute windows and closing-auction trade conditions
+        # must be proven separately before any C4.17 DV30 calculation.
+        "daily_sip_1day_volume_is_rth":False,
+        "rth_volume_requires_official_session_minutes":True,
+        "close_auction_allocation_verified":False,
+        "c417_dv30_from_daily_sip_allowed":False,
         "full_540_symbol_coverage":False,"primary_price_authority":False,
         "primary_mc_authority":False,"history_pass":False,
         "r92_created":False,"strict_g9_pass":False,"account_pass":False,
