@@ -2,8 +2,8 @@
   "schema": "XRAY_PERSONAL_RESEARCH_MASTER_SPAC_CONSERVATIVE_SUPERSET_V1",
   "asof_et": "2026-10-12",
   "source_master_blob_sha": "fb64a44b79ced9dcda390f5661b796ee13a60f63",
-  "source_ten_cik_sic_blob_sha": "0fd1d5c263d77822fe8d3bab61b457e638bf776c",
-  "source_policy_blob_sha": "6236133768a13d6144a877ad5397d47ecfc45736",
+  "source_ten_cik_sic_blob_sha": "4576ce1a3d273e027df8339a18719c2736ee832a",
+  "source_policy_blob_sha": "ba1774944430af1442a4c37b03ce3f9565a1a2b4",
   "source_master_unknown_count": 10,
   "source_master_pass_count": 3184,
   "source_master_explicit_excluded_count": 2435,
@@ -121,5 +121,14 @@
   "full_go": false,
   "execution": "NONE",
   "real_money": "NO-GO",
-  "unknown_never_pass": true
+  "unknown_never_pass": true,
+  "binding_refresh_20261014": {
+    "reason": "CAS-sha binding repair after SEC ALIS/HCAC official research refresh and personal policy engine binding",
+    "no_change_to_ten_exclusion_membership": true,
+    "actual_sec_blob_sha": "4576ce1a3d273e027df8339a18719c2736ee832a",
+    "actual_policy_blob_sha": "ba1774944430af1442a4c37b03ce3f9565a1a2b4",
+    "asof_et_unchanged": "2026-10-12",
+    "canonical_primary_promotions": 0,
+    "production_master_unknown_unchanged": 10
+  }
 }
