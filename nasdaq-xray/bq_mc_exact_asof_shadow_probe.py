@@ -146,7 +146,26 @@ def selftest():
         return data
     err=run(master,price,"2026-10-12",env,duplicate_bad)
     assert err["status"]=="BLOCKED_VENDOR_SCHEMA_OR_IDENTITY"
-    print("XRAY_BQ_PRICE_INDEPENDENT_MC_SHADOW_SELFTEST=PASS_BOUNDED_FIVE_ONE_CALL_NO_LICENCE_NO_PRIMARY")
+    # Direct pilot regression: the date-scoped MC probe must reject a growth
+    # rate, valuation multiple, string amount, zero or negative as USD MC.
+    # All cases use injected offline responses, never the actual vendor.
+    for bad_field in (
+        {"metric":"Market Capitalization Growth Rate"},
+        {"metric":"Market Cap / Sales Ratio"},
+        {"value":"2000000000"},
+        {"value":0},
+        {"value":-2000000000},
+    ):
+        def poisoned(url, mutation=bad_field):
+            rows=mocked(url)
+            rows[0].update(mutation)
+            return rows
+        bad_result=run(master,price,"2026-10-12",env,poisoned)
+        assert bad_result["status"]=="BLOCKED_VENDOR_SCHEMA_OR_IDENTITY",bad_field
+        assert bad_result["dated_metric_rows_present"]==0
+        assert bad_result["current_primary_market_cap_created"] is False
+        assert bad_result["r92_created"] is False
+    print("XRAY_BQ_PRICE_INDEPENDENT_MC_SHADOW_SELFTEST=PASS_BOUNDED_FIVE_ONE_CALL_5_MORE_NEGATIVES_NO_LICENSE_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
