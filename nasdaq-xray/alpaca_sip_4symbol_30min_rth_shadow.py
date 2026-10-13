@@ -78,10 +78,24 @@ def classify_one(daily,halfhour,dates):
     if hi<LIMIT:return "UPPER_BOUND_LT_50M_SHADOW"
     return "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW"
 
+@lru_cache(maxsize=1)
+def official_frozen_exact30():
+    """Independent official calendar fence for the frozen 2026-10-12 research cohort."""
+    import pandas_market_calendars as mcal
+    dates=tuple(x.date().isoformat() for x in
+        mcal.get_calendar("NASDAQ").valid_days(
+            start_date="2026-08-31",end_date=ASOF))
+    need(len(dates)==30 and dates[-1]==ASOF,
+         "OFFICIAL_CALENDAR_FROZEN_SCOPE_CHANGED")
+    return dates
+
 def measure(daily,halfhour,dates):
     need(type(daily) is dict and type(halfhour) is dict,
          "BAD_BATCH_PAYLOAD")
-    need(len(dates)==30 and dates[-1]==ASOF,"NOT_EXACT30")
+    need(type(dates) is list and len(dates)==30 and
+         all(type(day) is str for day in dates) and
+         tuple(dates)==official_frozen_exact30(),
+         "NOT_EXACT30_OFFICIAL_CALENDAR")
     need(set(daily).issubset(set(SYMBOLS)) and
          set(halfhour).issubset(set(SYMBOLS)),"FOREIGN_SYMBOL")
     statuses={}
@@ -142,6 +156,24 @@ def selftest():
                 half[sym].append({"t":(start+dt.timedelta(minutes=30*i)).isoformat(),
                                   "o":10.,"h":11.,"l":9.,"c":10.,
                                   "v":450000})
+    def reject_bad_calendar(candidate,reason):
+        try:
+            measure(daily,half,candidate)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("BAD_EXACT30_CALENDAR_ACCEPTED_"+reason)
+    duplicate=dates.copy()
+    duplicate[4]=duplicate[3]
+    reject_bad_calendar(duplicate,"DUPLICATE_DATE")
+    reordered=dates.copy()
+    reordered[3],reordered[4]=reordered[4],reordered[3]
+    reject_bad_calendar(reordered,"REORDERED_DATES")
+    reject_bad_calendar(["2026-08-28"]+dates[1:],
+                        "MISSING_RECENT_OFFICIAL_SESSION")
+    reject_bad_calendar(dates[:-1],"TRUNCATED")
+    reject_bad_calendar(tuple(dates),"WRONG_CONTAINER")
+    print("XRAY_4SYM_OFFICIAL_EXACT30_NEGATIVE=PASS_DUPLICATE_ORDER_MISSING_TRUNCATION")
     good=measure(daily,half,dates)
     need(good["counts"]["LOWER_BOUND_GE_50M_SHADOW"]==4 and
          good["primary_dv30_pass_created"] is False,"POSITIVE_SHADOW_ONLY")
