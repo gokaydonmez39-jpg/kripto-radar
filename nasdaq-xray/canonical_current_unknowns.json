@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-10-12",
+  "asof_et": "2026-10-13",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3184
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3184
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1012202621:31|||||||",
+  "official_footer": "File Creation Time: 1013202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3184
   },
-  "source_queue_hash": "a11c5e17acd970f23a912e000c83f473f34e6b4a9600b7d40f45176feab76bde",
-  "source_state_hash": "93a6ea8baa4855650a71921bae37a06f3fb33f9aade497eb7540f7891ea167c2",
+  "source_queue_hash": "96868c1255f1417d367ed4ac223ab10781928f37ebd2e8dce19cb1074aa80751",
+  "source_state_hash": "436614ee4718f966ce882fbe63ab1b3b87dd9db091ee42f277554cdd19aef7fe",
   "source_unknown_count": 3184,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3184,
@@ -5633,6 +5633,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Axogen, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "AXNX": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Axonex AI Group Limited - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "AXON": {
@@ -32725,24 +32743,6 @@
       "security_name": "The Middleby Corporation - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "MIMI": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Mint Incorporation Limited - Class A Ordinary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
     "MIND": {
       "attempts": 0,
       "discovery": {
@@ -44137,6 +44137,24 @@
       "security_name": "Rein Therapeutics, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "RNTZ": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Rantizo - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
     "RNW": {
       "attempts": 0,
       "discovery": {
@@ -46835,24 +46853,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "SkinHealth Systems Inc. - Class A Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "SKK": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "SKK Holdings Limited - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "SKWD": {
