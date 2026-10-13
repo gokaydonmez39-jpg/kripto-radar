@@ -40,7 +40,7 @@ def digest(value):
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 def git_blob(data):
-    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
 def official30(asof):
     require(type(asof) is str,"ASOF_FORMAT")
@@ -74,6 +74,7 @@ def analyze(inputs,blobs,expected=None):
         "OFFICIAL30_SCOPE")
     declared=p.get("expected30")
     exact=declared==official
+    require(exact,"DECLARED_OFFICIAL30_DRIFT")
     unknown_m=m.get("unknown_symbols")
     unknown_p=p.get("unknown_symbols")
     require(type(unknown_m) is list and type(unknown_p) is list,
