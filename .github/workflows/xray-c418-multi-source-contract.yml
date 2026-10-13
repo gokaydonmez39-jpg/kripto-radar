@@ -109,10 +109,17 @@ jobs:
           assert actual["BQ"]["maximum_tickers_per_day"]==daily*batch
           assert actual["BQ"]["minimum_quota_calendar_days"]==days
           assert actual["BQ"]["full_cohort_daily_refresh_with_this_quota"] is (calls<=daily)
-          assert actual["status"]=="SHADOW_DAILY_REFRESH_BLOCKED"
+          incomplete=bool(price["unknown_count"] or price["blocked_count"])
+          assert actual["status"]==("SHADOW_PRICE_INCOMPLETE_NO_PRIMARY"
+                                    if incomplete else "SHADOW_DAILY_REFRESH_BLOCKED")
+          assert actual["source_price_unknown_count"]==price["unknown_count"]
+          assert actual["source_price_blocked_count"]==price["blocked_count"]
+          assert actual["source_price_cohort_complete"] is (not incomplete)
+          if incomplete:
+              assert "PRICE_UNKNOWN_OR_BLOCKED_NO_PRIMARY" in actual["reason_codes"]
           assert not any(actual[k] for k in ("can_create_PRIMARY","can_register_R92","can_enable_G9","production_go","vendor_raw_data_persisted"))
           assert actual["real_money"]=="NO-GO" and actual["execution"]=="NONE"
-          print("XRAY_BQ_DYNAMIC_DAILY_CAPACITY=PASS_NO_PRIMARY_NO_GO")
+          print("XRAY_BQ_DYNAMIC_DAILY_CAPACITY=PASS_BLOCKED_PRICE_PARTITION_NO_PRIMARY_NO_GO")
           PY
       - name: Verify 12-route real current cohort capacity and forbid fake MC rights
         shell: bash
