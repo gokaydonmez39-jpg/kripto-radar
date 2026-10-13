@@ -24,7 +24,7 @@ SYMBOLS=("AAPL","NVDA","MSFT","AAON")
 ASOF="2026-10-12"
 SCHEMA="XRAY_SIP_EXACT30_4_SYMBOL_30MIN_RTH_LOWER_BOUND_SHADOW_V1"
 LIMIT=Decimal("50000000")
-MAX_CALLS=3
+MAX_CALLS=8
 MAX_BYTES=2500000
 MASTER_SHA="fb64a44b79ced9dcda390f5661b796ee13a60f63"
 PRICE_SHA="787e1222fe140ae141b51e98bbbaaa9034ead377"
@@ -172,6 +172,30 @@ def selftest():
     state=measure(daily,altered,dates)
     need(state["shadow_symbol_statuses"]["NVDA"]==
          "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW","MONOTONE_VIOLATION")
+    samples=[
+        {"bars":{"AAPL":[{"t":"a"}]},"next_page_token":"step2"},
+        {"bars":{"NVDA":[{"t":"b"}],"AAPL":[{"t":"c"}]},
+         "next_page_token":None}]
+    pager_calls=[]
+    def mock_page(token):
+        pager_calls.append(token)
+        return samples[0] if token is None else samples[1]
+    pages=collect_pages_exact(mock_page)
+    need(pager_calls==[None,"step2"] and len(pages["AAPL"])==2
+         and len(pages["NVDA"])==1,"PAGINATION_MERGE")
+    def deny(getpage,label):
+        try:collect_pages_exact(getpage,max_pages=2)
+        except ValueError:pass
+        else:raise AssertionError("PAGINATION_NEGATIVE_ACCEPTED_"+label)
+    deny(lambda t:{"bars":{},"next_page_token":"repeat"},"CYCLE")
+    seq=[0]
+    def endless(token):
+        seq[0]+=1
+        return {"bars":{},"next_page_token":str(seq[0])}
+    deny(endless,"MAX_PAGE_BUDGET")
+    deny(lambda token:{"bars":{"UNLISTED":[]},"next_page_token":None},
+         "FOREIGN_SYMBOL")
+    print("XRAY_4SYM_30M_PAGINATION_SELFTEST=PASS_MERGE_CYCLE_LIMIT_FOREIGN_NO_HTTP")
     print("XRAY_4SYM_30M_EXACT30_SELFTEST=PASS_MIXED_UNKNOWN_BOUND_NO_PRIMARY")
 
 def git_blob(path):
@@ -179,31 +203,53 @@ def git_blob(path):
     return subprocess.check_output(["git","hash-object",str(path)],
                                    text=True).strip()
 
+def collect_pages_exact(getpage,max_pages=8):
+    """Merge exact case-sensitive provider pages. Never silently truncate scope."""
+    need(type(max_pages) is int and 1<=max_pages<=8,"PAGE_CAP_INVALID")
+    merged={}
+    token=None
+    used_tokens=set()
+    for _ in range(max_pages):
+        data=getpage(token)
+        need(type(data) is dict and type(data.get("bars")) is dict,
+             "PAGE_SCHEMA")
+        for symbol,rows in data["bars"].items():
+            need(symbol in SYMBOLS and type(rows) is list,
+                 "PAGE_FOREIGN_SYMBOL_OR_BAD_ROWS")
+            merged.setdefault(symbol,[]).extend(rows)
+        nxt=data.get("next_page_token")
+        if not nxt:
+            return merged
+        need(type(nxt) is str and nxt not in used_tokens,
+             "PAGE_TOKEN_CYCLE_OR_MALFORMED")
+        used_tokens.add(nxt)
+        token=nxt
+    raise ValueError("XRAY_4_30M_PAGINATION_LIMIT_INCOMPLETE")
+
 def fetch(keys):
     creds,secret=keys
     base="https://data.alpaca.markets/v2/stocks/bars"
-    responses=[]
-    calls=0
-    for timeframe in ("1Day","30Min"):
-        need(calls<MAX_CALLS,"CALL_BUDGET")
-        calls+=1
-        params={"symbols":",".join(SYMBOLS),"timeframe":timeframe,
-                "feed":"sip","adjustment":"raw","sort":"asc",
-                "limit":"10000","start":"2026-08-31T00:00:00-04:00",
-                "end":"2026-10-12T23:59:59-04:00"}
-        request=urllib.request.Request(base+"?"+urllib.parse.urlencode(params),
-                  headers={"APCA-API-KEY-ID":creds,
-                           "APCA-API-SECRET-KEY":secret,"Accept":"application/json"})
-        with urllib.request.urlopen(request,timeout=30) as handle:
-            raw=handle.read(MAX_BYTES+1)
-        need(len(raw)<=MAX_BYTES,"BODY_TOO_LARGE")
-        data=json.loads(raw)
-        need(type(data) is dict and type(data.get("bars")) is dict,
-             "VENDOR_SCHEMA")
-        need(not data.get("next_page_token"),
-             "PAGINATION_REQUIRED_NO_SCOPE_SUCCESS")
-        responses.append(data["bars"])
-    return responses[0],responses[1],calls
+    calls=[0]
+    def one(timeframe):
+        def request_page(token):
+            need(calls[0]<MAX_CALLS,"GLOBAL_CALL_BUDGET_EXHAUSTED")
+            calls[0]+=1
+            params={"symbols":",".join(SYMBOLS),"timeframe":timeframe,
+                    "feed":"sip","adjustment":"raw","sort":"asc",
+                    "limit":"10000","start":"2026-08-31T00:00:00-04:00",
+                    "end":"2026-10-12T23:59:59-04:00"}
+            if token:params["page_token"]=token
+            request=urllib.request.Request(base+"?"+urllib.parse.urlencode(params),
+                headers={"APCA-API-KEY-ID":creds,
+                         "APCA-API-SECRET-KEY":secret,"Accept":"application/json"})
+            with urllib.request.urlopen(request,timeout=30) as handle:
+                raw=handle.read(MAX_BYTES+1)
+            need(len(raw)<=MAX_BYTES,"BODY_TOO_LARGE")
+            return json.loads(raw)
+        return collect_pages_exact(request_page,max_pages=MAX_CALLS)
+    daily=one("1Day")
+    half=one("30Min")
+    return daily,half,calls[0]
 
 def main():
     p=argparse.ArgumentParser()
