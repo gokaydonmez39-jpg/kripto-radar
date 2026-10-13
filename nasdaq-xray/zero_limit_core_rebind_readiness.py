@@ -42,14 +42,22 @@ def digest(value):
 def git_blob(data):
     return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
-def official30(asof):
+def official30(asof,now_utc=None):
     require(type(asof) is str,"ASOF_FORMAT")
     day=dt.date.fromisoformat(asof)
     require(day.isoformat()==asof,"ASOF_NONCANONICAL")
+    now=dt.datetime.now(dt.timezone.utc) if now_utc is None else now_utc
+    require(type(now) is dt.datetime and now.tzinfo is not None and
+        now.utcoffset()==dt.timedelta(0),"AWARE_UTC_CLOCK_REQUIRED")
     cal=mcal.get_calendar("NASDAQ")
+    schedule=cal.schedule(start_date=day,end_date=day)
+    require(len(schedule)==1,"ASOF_NOT_TRADING_SESSION")
+    close=schedule.iloc[0]["market_close"].to_pydatetime()
+    require(close.tzinfo is not None and
+        close+dt.timedelta(minutes=30)<=now,"ASOF_NOT_SETTLED")
     days=cal.valid_days(start_date=day-dt.timedelta(days=80),end_date=day)
     found=[str(x.date()) for x in days]
-    require(len(found)>=30 and found[-1]==asof,"ASOF_NOT_LAST_COMPLETED_OFFICIAL_SESSION")
+    require(len(found)>=30 and found[-1]==asof,"OFFICIAL30_INCOMPLETE")
     return found[-30:]
 
 def analyze(inputs,blobs,expected=None):
@@ -136,6 +144,16 @@ def read_current():
 def selftest():
     asof="2026-10-12"
     official=official30(asof)
+    # A future/unsettled session or calendar holiday must never enter DV30.
+    edge=dt.datetime(2026,10,12,20,29,tzinfo=dt.timezone.utc)
+    try:official30(asof,edge)
+    except ValueError:pass
+    else:raise AssertionError("UNSETTLED_RTH_SESSION_ACCEPTED")
+    require(official30(asof,dt.datetime(2026,10,12,20,30,
+           tzinfo=dt.timezone.utc))==official,"SETTLED_RTH_SESSION_REJECTED")
+    try:official30("2026-07-03",dt.datetime(2026,7,4,tzinfo=dt.timezone.utc))
+    except ValueError:pass
+    else:raise AssertionError("NASDAQ_HOLIDAY_ACCEPTED")
     m={"asof_et":asof,"execution":"NONE","real_money":"NO-GO",
        "unknown_never_pass":True,"unknown_symbols":["ALIS"],"unknown_count":1,
        "pass_symbols":["AAPL"]}
@@ -176,7 +194,7 @@ def selftest():
         except (ValueError,TypeError,KeyError):pass
         else:raise AssertionError("DANGEROUS_CANONICAL_INPUT_ACCEPTED")
     require(len(variants)==12,"NEGATIVE_FIXTURE_COUNT")
-    print("XRAY_ZERO_LIMIT_CORE_REBIND_SELFTEST=PASS_12_NEGATIVES_NO_VENDOR_NO_PRIMARY_NO_R92")
+    print("XRAY_ZERO_LIMIT_CORE_REBIND_SELFTEST=PASS_12_NEGATIVES_3_CALENDAR_GATES_NO_VENDOR_NO_PRIMARY_NO_R92")
 
 def main():
     ap=argparse.ArgumentParser()
