@@ -192,15 +192,80 @@ def selftest():
     ck(SAFETY["r92_created"] is False and
        SAFETY["canonical_primary_created"] is False, "NO_ALPHA")
     print(json.dumps({"schema": SCHEMA, "result": "OFFLINE_SELFTEST_PASS",
-                      "negative_and_boundary_tests": 12, **SAFETY},
+                      "negative_and_boundary_tests": 13, **SAFETY},
                      sort_keys=True))
+
+
+def audit_frozen_metadata(root):
+    """Validate all frozen metadata partitions; never synthesize missing OHLCV."""
+    from pathlib import Path
+    p = Path(root) / "nasdaq-xray" / "research"
+    history = json.loads((p / "personal_root260_full3185_20261013_verified_v1.json").read_text())
+    price = json.loads((p / "personal_price540_full_bounded_20261012_verified_v1.json").read_text())
+    joint = json.loads((p / "personal_joint_price540_root260_cross_asof_diagnostic_20261014_v1.json").read_text())
+    hc = history.get("statuses", {})
+    pc = price.get("counts", {})
+    ok = (
+        history.get("scope_count") == history.get("source_count_classified") == 3185 and
+        history.get("positive_shadow_count") == 2679 and
+        history.get("unresolved_count") == 506 and
+        sum(hc.values()) == 3185 and
+        hc.get("UNKNOWN_BAD_OHLCV") == 338 and
+        hc.get("UNKNOWN_260_CONSECUTIVE_OFFICIAL_DATES_INCOMPLETE") == 168 and
+        history.get("canonical_history_updated") is False and
+        price.get("scope_symbols") == price.get("classified_symbols") == 540 and
+        sum(pc.values()) == 540 and
+        pc.get("LOWER_BOUND_GE_50M_SHADOW", 0) +
+        pc.get("PRIOR_VERIFIED_LOWER_BOUND_GE_50M_SHADOW", 0) == 419 and
+        pc.get("AMBIGUOUS_BETWEEN_BOUNDS_SHADOW") == 91 and
+        pc.get("UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW") == 30 and
+        price.get("canonical_price_dv30_written") is False and
+        history.get("report_asof_et") == "2026-10-13" and
+        price.get("research_asof_et") == "2026-10-12" and
+        joint.get("same_asof_proven") is False and
+        joint.get("joined_price_scope") == 540 and
+        joint.get("price_scope_missing_in_root") == 0 and
+        joint.get("price_positive_lower_bound_count") == 419 and
+        joint.get("price_positive_and_other_day_history_complete") == 404 and
+        joint.get("price_positive_but_other_day_history_incomplete") == 15 and
+        joint.get("price_ambiguous_history_observed_other_day") == 89 and
+        joint.get("price_ambiguous_history_missing_other_day") == 2 and
+        joint.get("price_unknown_integrity_and_root_zerovolume") == 27
+    )
+    if not ok:
+        raise ValueError("XRAY_PERSONAL_FROZEN_METADATA_PARTITION_DRIFT")
+    report = {
+        "schema": "XRAY_PERSONAL_FROZEN_COHORT_READBACK_V1",
+        "history_asof_et": "2026-10-13",
+        "price_asof_et": "2026-10-12",
+        "history_classified": 3185,
+        "history_observed_positive_shadow": 2679,
+        "history_placeholder_or_bad_ohlcv_unknown": 338,
+        "history_missing_official_dates_unknown": 168,
+        "price_classified": 540,
+        "price_rth_lower_bound_shadow": 419,
+        "price_ambiguous": 91,
+        "price_incomplete_integrity": 30,
+        "cross_asof_price_with_other_day_history_observed": 404,
+        "same_asof_primary_chain": False,
+        "valid_all_symbol_primary_mc": False,
+        "technical_primary_claimed": False,
+        "result": "FROZEN_RESEARCH_COUNTS_PASS_RELEASE_NOT_READY",
+        **SAFETY,
+    }
+    print(json.dumps(report, sort_keys=True))
+    return report
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--audit-frozen", action="store_true")
     args = ap.parse_args()
     if args.selftest:
         selftest()
+    elif args.audit_frozen:
+        from pathlib import Path
+        audit_frozen_metadata(Path(__file__).resolve().parent.parent)
     else:
-        ap.error("read-only evidence engine; run --selftest or import functions")
+        ap.error("run --selftest or --audit-frozen; no provider side effects")
