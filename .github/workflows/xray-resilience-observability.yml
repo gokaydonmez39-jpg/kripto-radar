@@ -34,6 +34,8 @@ on:
       - "nasdaq-xray/provider_automation_governance_selftest.py"
       - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/scheduler_failover_contract.json"
+      - "nasdaq-xray/health_chatgpt_runtime_attestation_20261013.json"
+      - "nasdaq-xray/health_chatgpt_runtime_guard.py"
       - ".github/workflows/xray-resilience-observability.yml"
   workflow_run:
     workflows: ["XRAY Canonical Pointer Transition", "NASDAQ SWING XRAY Autonomous Data Plane"]
@@ -94,6 +96,28 @@ jobs:
 
       - name: Scheduler failover self-test
         run: python nasdaq-xray/scheduler_failover_selftest.py
+
+      - name: Read-only ChatGPT Health task prompt drift classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/health_chatgpt_runtime_guard.py
+          python nasdaq-xray/health_chatgpt_runtime_guard.py --selftest --out "$RUNNER_TEMP/xray_health_task_runtime_authority.json"
+          python -O nasdaq-xray/health_chatgpt_runtime_guard.py --selftest
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_health_task_runtime_authority.json").read_text())
+          assert result["status"]=="BLOCKED_CHATGPT_HEALTH_HOLIDAY_PROMPT_DRIFT"
+          assert result["github_calendar_guard_tested"] is True
+          assert result["chatgpt_runtime_cas_behavior_verified"] is False
+          assert result["task_prompt_holiday_gate_verified"] is False
+          assert result["ci_success_not_runtime_recovery"] is True
+          assert result["no_new_automation"] is True
+          assert result["alpha_authority"] is False and result["r92_created"] is False
+          assert result["execution"]=="NONE" and result["real_money"]=="NO-GO"
+          print("XRAY_HEALTH_TASK_PROMPT_DRIFT=BLOCKED_NOT_RUNTIME_PASS")
+          PY
 
       - name: Single-flight + circuit-breaker self-test
         run: python nasdaq-xray/resilience_selftest.py
