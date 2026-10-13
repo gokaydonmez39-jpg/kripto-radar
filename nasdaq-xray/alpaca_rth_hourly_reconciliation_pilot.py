@@ -159,8 +159,10 @@ def selftest():
         mutate(aa,bb,cc,dd)
         try:
             result=summarize(aa,bb,cc,dd,official_close_utc=closing)
+        except (ValueError,KeyError,TypeError):
+            pass
+        else:
             require(not result['one_session_reconciliation_complete'],'FALSE_PASS')
-        except (ValueError,KeyError,TypeError):pass
     print('XRAY_RTH_HOURLY_RECONCILIATION_SELFTEST=PASS_10_NEGATIVES_NO_VENDOR')
 
 
