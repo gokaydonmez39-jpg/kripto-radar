@@ -17,6 +17,8 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Run technical measurement and adversarial tests without API credentials
         run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --selftest
+      - name: Audit all frozen 3185 HISTORY and 540 PRICE classifications
+        run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --audit-frozen
       - name: Reject code paths with market execution and secrets
         run: |
           python3 - <<'PY'
