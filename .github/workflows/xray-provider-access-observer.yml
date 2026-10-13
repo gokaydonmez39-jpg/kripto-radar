@@ -10,6 +10,7 @@ on:
       - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
+      - "nasdaq-xray/provider_runner_access_audit.py"
 
 permissions:
   contents: read
@@ -40,7 +41,8 @@ jobs:
             nasdaq-xray/c418_provider_routing_readiness.py \
             nasdaq-xray/c418_daily_mc_capacity_guard.py \
             nasdaq-xray/xray_multi_provider_research.py \
-            nasdaq-xray/bq_history_onecall_shadow.py
+            nasdaq-xray/bq_history_onecall_shadow.py \
+            nasdaq-xray/provider_runner_access_audit.py
           python nasdaq-xray/c418_provider_routing_readiness.py --selftest
           python -O nasdaq-xray/c418_provider_routing_readiness.py --selftest
           python nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
@@ -48,6 +50,8 @@ jobs:
           python nasdaq-xray/xray_multi_provider_research.py --selftest
           python -O nasdaq-xray/xray_multi_provider_research.py --selftest
           python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+          python nasdaq-xray/provider_runner_access_audit.py --selftest
+          python -O nasdaq-xray/provider_runner_access_audit.py --selftest
       - name: Observe exactly 12 providers without reading PRICE or vendor credentials
         shell: bash
         run: |
@@ -146,6 +150,48 @@ jobs:
           print("XRAY_PROVIDER_PRICE_INDEPENDENCE=PASS_12_SOURCES_5_NEGATIVE_NO_HTTP")
           print("XRAY_BQ_PRIMARY_PIT_LICENSE_RUNNER=UNVERIFIED_RESEARCH_ONLY")
           PY
+      - name: Read live runner provider prerequisites without calls or secret disclosures
+        shell: bash
+        env:
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK: ${{ vars.XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK }}
+          XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256 }}
+          XRAY_MASSIVE_API_KEY: ${{ secrets.XRAY_MASSIVE_API_KEY }}
+          XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK: ${{ vars.XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK }}
+          XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256 }}
+          XRAY_BQ_API_KEY: ${{ secrets.XRAY_BQ_API_KEY }}
+          XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK: ${{ vars.XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK }}
+          XRAY_BQ_LICENSE_EVIDENCE_SHA256: ${{ secrets.XRAY_BQ_LICENSE_EVIDENCE_SHA256 }}
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/provider_runner_access_audit.py --out "$RUNNER_TEMP/xray_runner_access_audit.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_runner_access_audit.json").read_text())
+          assert x["schema"]=="XRAY_PROVIDER_RUNNER_ACCESS_READINESS_V1"
+          assert x["provider_count"]==12 and len(x["providers"])==12
+          assert x["api_calls"]==0 and x["no_external_http"] is True
+          assert x["price_not_read"] is True
+          assert x["unknown_never_pass"] is True
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["primary_price_created"]==x["primary_mc_created"]==x["r92_created"]==0
+          assert all(y["production_primary_authority"] is False and
+                     y["independently_verified_legal_rights"] is False and
+                     y["price_source_pass"] is False and
+                     y["current_mc_primary_pass"] is False for y in x["providers"])
+          assert {y["id"] for y in x["providers"]}=={
+            "SEC_EDGAR","ALPACA","RALLIES","LONGBRIDGE","MASSIVE","FMP",
+            "ALPHA_VANTAGE","EODHD","TIINGO","NASDAQ_DATA_LINK_SHARADAR",
+            "OPENBB","BUSINESSQUANT"}
+          payload=json.dumps(x)
+          for name in ("XRAY_ALPACA_API_KEY_ID","XRAY_ALPACA_API_SECRET_KEY",
+                       "XRAY_MASSIVE_API_KEY","XRAY_BQ_API_KEY"):
+              key=os.environ.get(name,"")
+              if len(key)>=8:assert key not in payload
+          print("XRAY_LIVE_RUNNER_SOURCE_PRESENCE=PASS_12_ZERO_HTTP_ZERO_PRIMARY")
+          PY
       - name: PRICE-gated capacity diagnostic is separate and never required
         shell: bash
         run: |
@@ -186,5 +232,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_price_independent_provider_access.json
             ${{ runner.temp }}/xray_daily_mc_capacity_diagnostic.json
+            ${{ runner.temp }}/xray_runner_access_audit.json
           retention-days: 14
           if-no-files-found: error
