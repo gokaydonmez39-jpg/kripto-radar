@@ -166,15 +166,24 @@ def run(price,master,latest,env,getter=fetch):
 
 def selftest():
     from unittest.mock import patch
-    dates=[(dt.date(2026,8,31)+dt.timedelta(days=i)).isoformat() for i in range(43)]
-    # Use the project's CURRENT official-date list, not arbitrary calendar weekdays.
-    source=json.loads(PRICE.read_text())
-    master=json.loads(MASTER.read_text())
-    dates=source["expected30"]
-    validate_days=expected_sessions(source,master,source["asof_et"])
-    assert dates==validate_days
+    # Pin an OFFLINE historical fixture; live current PRICE is allowed to
+    # advance tomorrow, or eventually resolve all 540 UNKNOWN, without
+    # making a valid negative regression selftest suddenly fail.
+    import pandas_market_calendars as mcal
+    dates=[x.date().isoformat() for x in mcal.get_calendar("NASDAQ").valid_days(
+        start_date="2026-08-31",end_date="2026-10-12")]
+    assert len(dates)==30
+    source={"asof_et":"2026-10-12","execution":"NONE","real_money":"NO-GO",
+            "unknown_never_pass":True,"expected30":dates,"pass_symbols":[],
+            "pass_count":0,"unknown_symbols":list(SAMPLE),"unknown_count":5}
+    master={"asof_et":"2026-10-12","execution":"NONE","real_money":"NO-GO",
+            "unknown_never_pass":True,"pass_symbols":list(SAMPLE),"pass_count":5}
+    assert expected_sessions(source,master,source["asof_et"])==dates
     def bars():
-        return {"bars":{s:[{"t":d+"T04:00:00Z","o":10.0,"h":12.0,"l":9.0,"c":11.0,"v":100000}
+        def tick(day):
+            et=dt.datetime.combine(dt.date.fromisoformat(day),dt.time.min,NY)
+            return et.astimezone(dt.timezone.utc).isoformat().replace("+00:00","Z")
+        return {"bars":{s:[{"t":tick(d),"o":10.0,"h":12.0,"l":9.0,"c":11.0,"v":100000}
                            for d in dates] for s in SAMPLE},"next_page_token":None}
     good=validate(bars(),dates)
     assert len(good)==5 and all(x["positive_integer_volume"] for x in good.values())
@@ -195,7 +204,8 @@ def selftest():
         except (ValueError,TypeError):pass
         else:raise AssertionError("UNSAFE_SIP_BAR_ACCEPTED")
     assert request_params(dates)["feed"]=="sip" and request_params(dates)["adjustment"]=="raw"
-    assert request_params(dates)["end"]=="2026-10-13T00:00:00Z"
+    assert request_params(dates)["end"]==(
+        dt.date.fromisoformat(dates[-1])+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
     assert grant({}) is False
     assert grant({"XRAY_ALPACA_SIP_HISTORY_RESEARCH_LICENSE_OK":"true",
                   "XRAY_ALPACA_SIP_HISTORY_LICENSE_EVIDENCE_SHA256":"NONSENSE"}) is False
