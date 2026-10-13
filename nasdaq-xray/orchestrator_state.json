@@ -33,14 +33,14 @@
   "full_universe_identity": true,
   "g9_status": "BLOCKED",
   "history_asof_bar_missing_count": 34,
-  "history_provider_exception_exhausted_count": 28,
+  "history_provider_exception_exhausted_count": 27,
   "history_retry_reason": "NO_RETRYABLE_HISTORY_WORK_REMAINS",
   "history_retryable": false,
   "history_unknown_reason_counts": {
     "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 34,
     "EXACT30_SESSIONS_INCOMPLETE": 6,
-    "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 28,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 152
+    "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 27,
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 153
   },
   "late_asof_canary_probes_this_run": 0,
   "pending_late_asof_recheck": 0,
@@ -53,5 +53,5 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-13T03:52:02.830699+00:00"
+  "updated_at_utc": "2026-10-13T07:10:14.627855+00:00"
 }
