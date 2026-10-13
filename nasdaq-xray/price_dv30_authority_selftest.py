@@ -27,10 +27,47 @@ def primary_union(primary):
     )
 
 
+def verify_fractional_rallies_volume_guard(asof):
+    """Test-only: complete integer RTH samples must pass the mathematical
+    partition, but one fractional vendor volume poisons exact30 PASS.
+    These synthetic in-memory rows never enter canonical PRICE authority.
+    """
+    from price_dv30_recover_from_fullstate import (
+        build_c417_rallies_newscope_partition,
+        expected30,
+    )
+    symbol="__XRAY_VOLUME_INTEGRITY_TEST_ONLY__"
+    days=expected30(asof)
+    assert len(days)==30 and days[-1]==asof
+    rows=[{"date":day,"close":100.0,"volume":1_000_000.0} for day in days]
+    complete,complete_meta=build_c417_rallies_newscope_partition(
+        {symbol:rows},asof,[symbol],{}
+    )
+    assert complete_meta["scope_count"]==1
+    assert symbol in complete["pass_price_dv30"]
+    assert not complete["block_current_run"]
+    contaminated=[dict(row) for row in rows]
+    contaminated[4]["volume"]=1_000_000.25
+    rejected,rejected_meta=build_c417_rallies_newscope_partition(
+        {symbol:contaminated},asof,[symbol],{}
+    )
+    assert rejected_meta["scope_count"]==1
+    assert symbol not in rejected["pass_price_dv30"]
+    assert symbol not in rejected["fail_dv30"]
+    assert symbol in rejected["block_current_run"]
+    block=rejected["block_current_run"][symbol]
+    assert block["reason"]=="RALLIES_NEW_SCOPE_NONINTEGRAL_VOLUME_NOT_UNADJUSTED_RTH_PROOF"
+    assert block["observed_usable_sessions"]==29
+    assert block["missing_sessions"]==[days[4]]
+    assert block["nonintegral_volume_sessions"]==[days[4]]
+    print("XRAY_RALLIES_FRACTIONAL_VOLUME_RUNTIME_SELFTEST=PASS_POSITIVE_AND_NEGATIVE_TEST_ONLY")
+
+
 def main():
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     asof=str(master.get("asof_et") or "")
     assert len(asof)==10,asof
+    verify_fractional_rallies_volume_guard(asof)
     master_queue=list(master.get("pass_symbols") or [])
     assert master_queue and len(master_queue)==int(master.get("pass_count",-1))
 
