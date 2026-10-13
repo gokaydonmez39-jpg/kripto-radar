@@ -4,7 +4,6 @@
   "candidate_safety": {
     "active_halt_symbols": [
       "BKKT.W",
-      "BMBL",
       "EFTY",
       "HCHL",
       "LAWR",
@@ -56,7 +55,6 @@
       "BBBYW",
       "BKKT.W",
       "BLFS",
-      "BMBL",
       "COLA",
       "COLAR",
       "COLAU",
@@ -97,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-13T12:10:37.759970+00:00",
+  "generated_at_utc": "2026-10-13T12:59:29.507852+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -759,10 +757,9 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 12,
       "active_halt_symbols": [
         "BKKT.W",
-        "BMBL",
         "EFTY",
         "HCHL",
         "LAWR",
@@ -785,11 +782,11 @@
           "IssueSymbol": "BMBL",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">07:55:00.000</td><td valign=\"top\">BMBL</td><td valign=\"top\">Bumble Inc. Class A Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/13/2026",
+          "ResumptionQuoteTime": "08:40:00",
+          "ResumptionTradeTime": "08:45:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">07:55:00.000</td><td valign=\"top\">BMBL</td><td valign=\"top\">Bumble Inc. Class A Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">08:40:00                      </td><td valign=\"top\">08:45:00                      </td></tr></table>",
           "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
           "title": "BMBL"
         },
