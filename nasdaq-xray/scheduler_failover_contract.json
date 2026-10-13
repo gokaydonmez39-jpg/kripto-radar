@@ -16,13 +16,14 @@
     "No paid fallback, order, broker mutation, threshold change or provider entitlement upgrade.",
     "A kick write proves only trigger delivery; readiness requires observing the resulting workflow run and conclusion.",
     "Never CAS-kick over a recent queued/in_progress root or final run; active work outranks stale completed-success age.",
-    "Close commit-to-Actions visibility races: recent kick lease + second Actions snapshot are mandatory before CAS."
+    "Close commit-to-Actions visibility races: recent kick lease + second Actions snapshot are mandatory before CAS.",
+    "No automatic Health root CAS on observed Nasdaq exchange holidays even when ET weekday; exchange-calendar outage blocks CAS, not a signal."
   ],
   "health_policy": {
     "weekday_stale_kick": true,
     "weekend_stale_kick": false,
     "preopen_priority_window_et": "06:00-09:25",
-    "reason": "If latest completed-success root workflow is older than 4500 seconds on a U.S. weekday, Health may CAS increment the kick file once and then require observed workflow evidence before treating the schedule as recovered.",
+    "reason": "When last successful root is stale and double Actions read/lease predicates hold, Health may CAS root only during an official Nasdaq exchange session. US ET weekday alone is insufficient. This is control-plane-only; no alpha PASS or funded execution.",
     "active_run_suppression": true,
     "active_run_rule": "If a newer root/final run is queued or in_progress and its created_at age is within that workflow's active-run grace, Health MUST NOT kick. Mark recovery in progress and keep candidate emission fail-closed until a COMPLETED+SUCCESS witness exists.",
     "kick_cooldown_seconds": 180,
@@ -31,7 +32,13 @@
     "preopen_priority_window_is_gate": false,
     "stale_root_action": "CAS_KICK_REQUIRED_ON_US_WEEKDAY_WHEN_PREDICATES_TRUE",
     "health_action_omission_is_fault": true,
-    "weekend_age_only_kick_forbidden": true
+    "weekend_age_only_kick_forbidden": true,
+    "nasdaq_exchange_session_required_for_root_kick": true,
+    "exchange_closed_weekday_kick_forbidden": true,
+    "exchange_calendar_authority": "ROOT_WEEKEND_QUOTA_GUARD_PERMIT_COMPUTE_SCHEDULE",
+    "exchange_calendar_failure": "BLOCK_CAS_FAIL_CLOSED",
+    "exchange_session_predicate": "Use actual aware UTC runtime timestamp and pinned official Nasdaq calendar; Health ROOT CAS eligibility requires permit_compute(now_utc, 'schedule') == true, in addition to all prior lease, two-read and age conditions. A US weekday falling on a Nasdaq holiday is NOT kick eligible. Calendar unavailable/ambiguous => no CAS and UNKNOWN, never weekday fallback. Normal and early-close Nasdaq sessions remain eligible.",
+    "health_task_prompt_binding": "HEALTH_ROOT_FAILOVER_FIRST_V12 weekday-only prose is an incomplete legacy eligibility check; this repo contract supplies a stricter additional veto. Task prompt confirmation remains independent before claiming automation runtime compliance."
   },
   "updated_on": "2026-10-05",
   "final_workflow_name": "XRAY Canonical Current Final Factory",
