@@ -267,6 +267,25 @@ def selftest():
         raise AssertionError("MALFORMED_DATE_ACCEPTED")
     except ValueError:
         pass
+    # NEGATIVE REGRESSION: weekdays that are closed Nasdaq sessions may
+    # neither dispatch nor count a green no-compute root as a data heartbeat.
+    holiday=dt.datetime(2026,7,3,16,tzinfo=UTC)  # Independence Day observed, Friday
+    assert classify(holiday,stale)["decision"]=="EXCHANGE_HOLIDAY_OBSERVE_ONLY"
+    assert classify(holiday,stale)["dispatch_allowed"] is False
+    thanksgiving=dt.datetime(2026,11,26,16,tzinfo=UTC)
+    assert classify(thanksgiving,stale)["decision"]=="EXCHANGE_HOLIDAY_OBSERVE_ONLY"
+    christmas=dt.datetime(2026,12,25,16,tzinfo=UTC)
+    assert classify(christmas,stale)["dispatch_allowed"] is False
+    # Black Friday is an open (shortened) Nasdaq trading session.
+    assert classify(dt.datetime(2026,11,27,16,tzinfo=UTC),stale)["decision"]=="STALE_ROOT_ELIGIBLE"
+    # The U.S. stock exchange is open on Columbus Day (2026-10-12).
+    assert classify(dt.datetime(2026,10,12,16,tzinfo=UTC),stale)["dispatch_allowed"] is True
+    observed_holiday_green=r(402,"2026-07-03T19:00:00Z","completed","success")
+    thursday_green=r(401,"2026-07-02T20:30:00Z","completed","success")
+    next_monday=dt.datetime(2026,7,6,4,5,tzinfo=UTC)
+    after_holiday=classify(next_monday,[observed_holiday_green,thursday_green])
+    assert after_holiday["last_success_id"]==401
+    assert 402 in after_holiday["weekend_noop_root_ids_ignored_for_weekday_success"]
     print("XRAY_GITHUB_NATIVE_ROOT_WATCHDOG_SELFTEST=PASS ZERO_ALPHA")
 
 def main():
