@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py"
       - "nasdaq-xray/alpaca_rth_hourly_reconciliation_pilot.py"
       - "nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py"
+      - "nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py"
       - "nasdaq-xray/research/continuation_checkpoint_20261013_alpaca_540_anomaly_queue_v1.json"
       - "nasdaq-xray/alpaca_sip_legacy_key_mapping_selftest.py"
       - "nasdaq-xray/evidence/alpaca_connected_historical_sip_20261007_v1.json"
@@ -79,6 +80,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py
           python nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py --selftest
           python -O nasdaq-xray/alpaca_sip_dv30_upperbound_shadow.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py
+          python nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py --selftest
+          python -O nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
@@ -226,6 +230,38 @@ jobs:
               assert len(x[key])==64
           print("XRAY_SIP_540_UPPER_BOUND_CONFIRMED_SHADOW="+
                 json.dumps(x["daily_upper_bound_shadow"],sort_keys=True))
+          PY
+      - name: One-shot 30-day 30Min-versus-1Min RTH SIP lower-bound pilot
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run30mbound]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_sip_30min_rth_lower_bound_pilot.py --one-shot-frozen-20261012 --out "$RUNNER_TEMP/xray_30min_rth_lower_bound.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_30min_rth_lower_bound.json").read_text())
+          assert x["schema"]=="XRAY_SIP_EXACT30_30MIN_RTH_LOWER_BOUND_1MIN_CROSSCHECK_SHADOW_V1"
+          assert x["asof_et"]=="2026-10-12" and x["symbol"]=="AAPL"
+          assert x["historical_replay_not_current"] is True
+          assert 1<=x["api_calls"]<=8
+          assert x["primary_dv30_pass_created"] is False
+          assert x["primary_dv30_fail_created"] is False
+          assert x["primary_mc_created"] is False and x["r92_created"] is False
+          assert x["raw_ohlcv_stored"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["unknown_never_pass"] is True
+          assert x["status"] in ("SHADOW_FULL_30D_RTH_BAR_RECONCILIATION_NO_PRIMARY",
+              "BLOCKED_30DAY_BAR_INTEGRITY_OR_AGGREGATE_MISMATCH")
+          if x["status"]=="SHADOW_FULL_30D_RTH_BAR_RECONCILIATION_NO_PRIMARY":
+              assert x["official_session_count"]==30
+              assert x["rth_minute_count_verified"]==11700
+              assert x["rth_30min_count_verified"]==390
+              assert x["minute_to_30min_all_windows_exact"] is True
+              assert x["sip_daily_close_rth_official_settlement_independently_verified"] is False
+              assert x["source_automated_non_display_entitlement_verified"] is False
+          print("XRAY_30MIN_RTH_RECONCILIATION_RESULT="+x["status"])
           PY
       - name: Targeted only 27 frozen anomalies, one daily SIP page maximum
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run27shadow]') }}
@@ -430,5 +466,6 @@ jobs:
             ${{ runner.temp }}/xray_alpaca_27_dates_metadata.json
             ${{ runner.temp }}/xray_aaon_hourly_rth_pilot.json
             ${{ runner.temp }}/xray_540_upperbound.json
+            ${{ runner.temp }}/xray_30min_rth_lower_bound.json
           retention-days: 7
           if-no-files-found: error
