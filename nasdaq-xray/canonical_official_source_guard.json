@@ -5,6 +5,7 @@
     "active_halt_symbols": [
       "BKKT.W",
       "EFTY",
+      "FMFC",
       "HCHL",
       "LAWR",
       "MAGH",
@@ -60,6 +61,7 @@
       "COLAU",
       "DRCT",
       "EFTY",
+      "FMFC",
       "FSEA",
       "GFAIW",
       "HCHL",
@@ -95,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-12T23:13:26.343194+00:00",
+  "generated_at_utc": "2026-10-13T03:14:03.937680+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -798,10 +800,11 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 13,
       "active_halt_symbols": [
         "BKKT.W",
         "EFTY",
+        "FMFC",
         "HCHL",
         "LAWR",
         "MAGH",
@@ -814,8 +817,23 @@
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 114,
+      "item_count": 115,
       "items": [
+        {
+          "HaltDate": "10/12/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Kandal M Venture Cl A OS",
+          "IssueSymbol": "FMFC",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/12/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">FMFC</td><td valign=\"top\">Kandal M Venture Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 12 Oct 2026 04:00:00 GMT",
+          "title": "FMFC"
+        },
         {
           "HaltDate": "10/12/2026",
           "HaltTime": "15:50:26.306",
