@@ -28,7 +28,7 @@ def need(pred,code):
     if not pred:raise ValueError("HEALTH_RUNTIME_ATTESTATION_"+code)
 
 def validate_append(text):
-    need(isinstance(text,str) and text.startswith("HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND\\n".replace("\\\\n","\\n")),
+    need(isinstance(text,str) and bool(text.splitlines()) and text.splitlines()[0]==SENTINEL,
          "APPEND_HEAD_MISSING")
     need(text.count("HEALTH_NASDAQ_EXCHANGE_CAS_V21=BOUND")==1,
          "APPEND_DUPLICATE")
@@ -153,7 +153,7 @@ def selftest(att,contract):
     validate_append(block)
     broken=(
       block.replace("ROOT_CAS_VETO=","UNSAFE_ROOT_CAS_VETO="),
-      block.replace("permit_compute(now_utc,\\\"schedule\\\")","WEEKDAY_ONLY"),
+      block.replace('permit_compute(now_utc,"schedule")',"WEEKDAY_ONLY"),
       block.replace("DO NOT update scheduler_kick_dataplane.json","MAY update scheduler_kick_dataplane.json"),
       block.replace("Preserve every existing prompt byte","Replace with a shorter prompt"),
       block.replace("EXECUTION=NONE","EXECUTION=TRADE"),
