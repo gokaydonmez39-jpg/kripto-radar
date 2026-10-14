@@ -424,3 +424,79 @@ jobs:
           path: ${{ runner.temp }}/xray_sec_current_cik_personal.json
           if-no-files-found: warn
           retention-days: 14
+
+  six-gate-frozen-sip-replay:
+    name: Replay immutable completed 14-Oct six-gate inputs without vendor API calls
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact official Nasdaq calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify frozen replay is still current Nasdaq ASOF, otherwise safe no-op
+        id: epoch
+        run: |
+          python - <<'PY'
+          import sys,datetime as dt,os
+          sys.path.insert(0,"nasdaq-xray")
+          from source_epoch_freshness_guard import last_complete_session
+          same=last_complete_session(dt.datetime.now(dt.timezone.utc))=="2026-10-14"
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+              f.write("current="+("true" if same else "false")+"\n")
+          print("XRAY_FROZEN_REPLAY="+(
+              "CURRENT_DATE_ELIGIBLE" if same else
+              "SAFE_NOOP_FROZEN_ARTIFACT_OLD_ASOF"))
+          PY
+      - name: Fetch immutable previously successful SIP receipts from run 38645601178
+        if: steps.epoch.outputs.current == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 38645601178 --repo gokaydonmez39-jpg/kripto-radar -n xray-personal-full-universe-sip-coverage-no-ohlcv -D "$RUNNER_TEMP/replay/daily"
+          gh run download 38645601178 --repo gokaydonmez39-jpg/kripto-radar -n xray-personal-full-nasdaq-260-52-no-ohlcv -D "$RUNNER_TEMP/replay/history"
+          gh run download 38645601178 --repo gokaydonmez39-jpg/kripto-radar -n xray-personal-exact-root-sip-source-bridge-no-ohlcv -D "$RUNNER_TEMP/replay/bridge"
+          gh run download 38645601178 --repo gokaydonmez39-jpg/kripto-radar -n xray-personal-joint-260-daily30-rth30-no-ohlcv -D "$RUNNER_TEMP/replay/rth"
+      - name: Recompute 6-gate causal graph from pinned 900-call research without contacting vendor
+        if: steps.epoch.outputs.current == 'true'
+        run: |
+          python nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+          python nasdaq-xray/personal_six_gate_causal_breaker.py \
+            --daily "$RUNNER_TEMP/replay/daily/xray_personal_full_universe_sip_asof_coverage.json" \
+            --history "$RUNNER_TEMP/replay/history/xray_nasdaq_full_260_52_sip_shadow.json" \
+            --bridge "$RUNNER_TEMP/replay/bridge/xray_personal_sip_root_bridge.json" \
+            --rth "$RUNNER_TEMP/replay/rth/xray_personal_joint_rth30_shadow.json" \
+            --out "$RUNNER_TEMP/xray_six_gate_frozen_replay.json"
+      - name: Prove frozen replay did not authorize any primary gate
+        if: steps.epoch.outputs.current == 'true'
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_six_gate_frozen_replay.json").read_text())
+          assert d["scope_count"]==3186 and d["rth30_lower_bound_observed"]==406
+          assert len(d["per_symbol_causal_routing"])==3186
+          assert d["registered_r92_count"]==0
+          assert d["issuer_class_mc_current_attested"] is False
+          assert d["c417_price_dv30_primary_attested"] is False
+          assert d["technical_a_b_d_r1_event_regime_attested"] is False
+          assert d["no_canonical_mutations"] is True
+          print("XRAY_SIX_GATE_REPLAY=PASS_3186_406_UNMODIFIED_VENDOR_EVIDENCE")
+          PY
+      - name: Archive verified frozen six-gate causal action list
+        if: steps.epoch.outputs.current == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-six-gate-causal-replay-20261014-no-ohlcv
+          path: ${{ runner.temp }}/xray_six_gate_frozen_replay.json
+          if-no-files-found: error
+          retention-days: 14
