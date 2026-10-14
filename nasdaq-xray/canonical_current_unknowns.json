@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-13",
+  "asof_et": "2026-10-14",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3184
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3185
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3184
+    "UNKNOWN_STATIC": 3185
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1013202621:31|||||||",
+  "official_footer": "File Creation Time: 1014202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3184
+    "UNKNOWN_STATIC": 3185
   },
-  "source_queue_hash": "96868c1255f1417d367ed4ac223ab10781928f37ebd2e8dce19cb1074aa80751",
-  "source_state_hash": "f529f312d9e21e1da2b572afe2063ee3b3fba4b41a2f8e9dc896543ca263e629",
-  "source_unknown_count": 3184,
+  "source_queue_hash": "efcbb7f9b8ee0d417d601ca3df6938e899ace0fbc9e5ae4fad2d1c4b1ca5d747",
+  "source_state_hash": "86331522b1905262d3c5adbed900412412106f868a6c37de6c684ef1691b05cc",
+  "source_unknown_count": 3185,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3184,
+  "unknown_count": 3185,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -36899,6 +36899,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Nexus Advanced Technologies Inc. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NXDR": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Nextdoor Holdings, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "NXGL": {
