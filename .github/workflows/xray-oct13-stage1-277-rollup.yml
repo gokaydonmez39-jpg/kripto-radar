@@ -1,0 +1,88 @@
+name: XRAY Oct13 Full 277 SIP Stage1 Evidence Rollup
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_stage1_277_rollup.py"
+      - ".github/workflows/xray-oct13-stage1-277-rollup.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Oct13 Real SIP Stage1 Remaining 249 Source Research"
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-bound:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-sha negative and 10-page partition
+        run: |
+          python -m py_compile nasdaq-xray/candidate_local_oct13_stage1_277_rollup.py
+          python nasdaq-xray/candidate_local_oct13_stage1_277_rollup.py --selftest
+      - name: Gate on real 9-page historical SIP Actions success
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status="$(gh run view 38534612554 --repo "${{ github.repository }}" --json conclusion --jq '.conclusion')"
+          if [ "$status" = "success" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "XRAY_STAGE1_277_PAGES_SUCCESS=PASS"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_STAGE1_277_PAGES_NOT_COMPLETE=$status"
+          fi
+      - name: Fetch 10 immutable Stage1 source page artifacts and exact 277 upstream
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/first" "$RUNNER_TEMP/pages" "$RUNNER_TEMP/source" "$RUNNER_TEMP/download"
+          gh run download 38532588994 --repo "${{ github.repository }}" --name xray-20261013-real-545-404-source-rollup-no-r92 --dir "$RUNNER_TEMP/source"
+          gh run download 38533652716 --repo "${{ github.repository }}" --name xray-20261013-stage1-28-sip-260-shadow --dir "$RUNNER_TEMP/first"
+          for index in $(seq 1 9); do
+            gh run download 38534612554 --repo "${{ github.repository }}" --name "xray-oct13-stage1-sip277-page-$index" --dir "$RUNNER_TEMP/download"
+            mv "$RUNNER_TEMP/download/xray_stage1_page.json" "$RUNNER_TEMP/pages/stage1_$index.json"
+          done
+      - name: Independently reconcile all actual Stage1 states over 277 symbols
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          python nasdaq-xray/candidate_local_oct13_stage1_277_rollup.py \
+            --source "$RUNNER_TEMP/source/xray_full_same_asof_source_rollup.json" \
+            --first "$RUNNER_TEMP/first/xray_stage1_28.json" \
+            --pages-dir "$RUNNER_TEMP/pages" \
+            --out "$RUNNER_TEMP/xray_stage1_full277.json"
+      - name: Verify full Stage1 scope and never fake candidate release
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_stage1_full277.json").read_text())
+          assert d["schema"]=="XRAY_OCT13_STAGE1_277_FULL_RESEARCH_SOURCE_ROLLUP_V1"
+          assert d["asof_et"]=="2026-10-13"
+          assert d["total_source_scope"]==len(d["stage1_actual_symbol_statuses"])==277
+          assert sum(d["stage1_status_counts"].values())==277
+          assert len(d["stage1_page_sha256"])==10
+          assert d["stage1_pool_count"]==len(d["stage1_pool_symbols"])
+          assert d["registered_r92"]==0 and not d["iphone_receipt_verified"]
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_STAGE1_FULL_277_REAL_SOURCE_AND_PARTITION=PASS")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          name: xray-20261013-stage1-full277-sip-source-research
+          path: ${{ runner.temp }}/xray_stage1_full277.json
+          if-no-files-found: error
+          retention-days: 14
