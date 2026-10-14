@@ -1,0 +1,71 @@
+name: XRAY Oct13 FROG D Positive R1RR Official SEC Nasdaq IR Source
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py"
+      - ".github/workflows/xray-oct13-frog-official-pit-legal-halt.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  exact-positive-issuer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install frozen SEC session cutoff requirements
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Compile and adversarially test post-ASOF/uncertain halt source guards
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py
+          python nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py --selftest
+          python -O nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py --selftest
+      - name: Download actual immutable full 277 deep technical source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/deep"
+          gh run download 38536372509 --repo "${{ github.repository }}" \
+            --name xray-20261013-full277-stage1-deep-abd-r1rr-real \
+            --dir "$RUNNER_TEMP/deep"
+      - name: Inspect real SEC CIK issuer submissions PIT shares and official Nasdaq halt plus IR
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py \
+            --deep "$RUNNER_TEMP/deep/xray_deep277_real_full.json" \
+            --out "$RUNNER_TEMP/frog_oct13_official_source.json"
+      - name: Require real FROG D provenance and explicit release vetoes
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"frog_oct13_official_source.json").read_text())
+          assert j["schema"]=="XRAY_OCT13_FROG_D_POST_TRIGGER_SEC_NASDAQ_IR_OFFICIAL_RESEARCH_V1"
+          assert j["asof_et"]=="2026-10-13" and j["symbol"]=="FROG" and j["family"]=="D"
+          assert j["risk_geometry_pass"] and j["rr_basic_severe_pass"]
+          assert 0 <= j["provider_http_requests"] <= 5
+          assert j["issuer_legal_event_clear_pass"] is False
+          assert j["official_halt_live_guard_pass"] is False
+          assert j["share_class_asof_mc_primary_pass"] is False
+          assert j["exact_corrected_dv30_primary_pass"] is False
+          assert j["registered_r92_count"]==0 and not j["real_iphone_receipt_verified"]
+          assert j["canonical_files_mutated"] is False
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_FROG_REAL_SOURCE_PIT_OFFICIAL_PROBE=PASS_NO_R92_AUTHORITY")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-frog-true-trigger-sec-pit-halt-ir-evidence
+          path: ${{ runner.temp }}/frog_oct13_official_source.json
+          if-no-files-found: warn
+          retention-days: 14
