@@ -15,6 +15,10 @@ from pathlib import Path
 
 from alpaca_full_universe_asof_sip_availability import sha
 from source_epoch_freshness_guard import last_complete_session
+from alpaca_full_universe_30d_daily_proxy_shadow import (
+    SCHEMA as DAILY30, VALID as D30_HIGH,
+    LOW_PRICE as D30_LOW_PRICE, LOW_DV as D30_LOW_DV,
+)
 
 ROOT = Path(__file__).resolve().parent
 SCHEMA = "XRAY_PERSONAL_SIP_ROOT_SOURCE_BRIDGE_V1"
@@ -87,6 +91,31 @@ def build(root, sina, daily, history, now, root_sha, sina_sha):
                            "classification_counts", HISTORY)
     causes = check_partition(history, q, "symbol_nonpass_cause_classes",
                              "history_nonpass_cause_counts", HISTORY)
+    daily30_source = history.get("daily30_source_proxy")
+    daily30 = check_partition(daily30_source, q, "symbol_classifications",
+                              "classification_counts", DAILY30)
+    need(daily30_source.get("session_count") == 30 and
+         daily30_source.get("scope_count") == len(q) and
+         daily30_source.get("research_daily_proxy_not_official_rth_dv30") is True and
+         daily30_source.get("daily_close_not_canonical_price") is True and
+         daily30_source.get("corporate_action_adjustment_and_issuer_identity_unproven") is True and
+         daily30_source.get("no_vendor_ohlcv_persisted") is True and
+         daily30_source.get("registered_R92_count") == 0,
+         "DAILY30_NOT_AUTHORITY")
+    d30_valid = {D30_HIGH, D30_LOW_PRICE, D30_LOW_DV}
+    d30_valid_count = sum(v in d30_valid for v in daily30.values())
+    zero = [sym for sym in q if causes[sym] == "ZERO_OR_NEGATIVE_RECORDED_VOLUME"]
+    zero_old = sum(daily30[sym] in d30_valid for sym in zero)
+    zero_recent = sum(daily30[sym] == "UNKNOWN_DAILY30_ZERO_OR_NEGATIVE_VOLUME"
+                      for sym in zero)
+    need(d30_valid_count == daily30_source.get("source_daily_30_valid_price_volume_count")
+         and len(zero) == daily30_source.get("hist_260_zero_volume_symbols")
+         and zero_old == daily30_source.get("hist_260_zero_volume_outside_last30")
+         and zero_recent == daily30_source.get("hist_260_zero_volume_within_last30")
+         and len(zero)-zero_old-zero_recent == daily30_source.get(
+             "hist_260_zero_volume_other_30day_unknown")
+         and all(daily30[sym] in d30_valid for sym in q if hist[sym] == LONG),
+         "DAILY30_CAUSAL_PARTITION_MISMATCH")
     need(history.get("cause_labels_are_diagnostics_not_ticker_age_or_verified_history")
          is True and history.get("source_rights_not_inferred") is True and
          history.get("same_issuer_first_trade_not_independently_proven")
@@ -116,6 +145,12 @@ def build(root, sina, daily, history, now, root_sha, sina_sha):
         "daily_asof_unproven": len(q)-present,
         "260_daily_52_week_observed": long,
         "260_daily_52_week_unproven": len(q)-long,
+        "last30_sip_daily_valid_source_count": d30_valid_count,
+        "last30_sip_daily_proxy_threshold_ge50m_count": sum(
+            v == D30_HIGH for v in daily30.values()),
+        "historical_zero_volume_outside_latest30_count": zero_old,
+        "historical_zero_volume_within_latest30_count": zero_recent,
+        "daily30_source_proxy_not_official_rth_dv30": True,
         "official_first_trade_fail_only_veto_count":
             history["official_first_trade_fail_only_veto_count"],
         "nonpass_cause_counts": history["history_nonpass_cause_counts"],
@@ -171,11 +206,29 @@ def selftest():
                     "BSP": "OFFICIAL_SAME_ISSUER_FIRST_TRADE_LT260_VETO"},
                 history_nonpass_cause_counts={
                     "260_52_OBSERVED_RESEARCH_ONLY": 1,
-                    "OFFICIAL_SAME_ISSUER_FIRST_TRADE_LT260_VETO": 1})
+                    "OFFICIAL_SAME_ISSUER_FIRST_TRADE_LT260_VETO": 1},
+                daily30_source_proxy={
+                    "schema":DAILY30, "session_count":30, "scope_count":2,
+                    "research_daily_proxy_not_official_rth_dv30":True,
+                    "daily_close_not_canonical_price":True,
+                    "corporate_action_adjustment_and_issuer_identity_unproven":True,
+                    "no_vendor_ohlcv_persisted":True, "registered_R92_count":0,
+                    "source_daily_30_valid_price_volume_count":1,
+                    "hist_260_zero_volume_symbols":0,
+                    "hist_260_zero_volume_outside_last30":0,
+                    "hist_260_zero_volume_within_last30":0,
+                    "hist_260_zero_volume_other_30day_unknown":0,
+                    "symbol_classifications":{
+                        "AAPL":D30_LOW_DV,
+                        "BSP":"UNKNOWN_DAILY30_ASOF_MISSING"},
+                    "classification_counts":{
+                        D30_LOW_DV:1,
+                        "UNKNOWN_DAILY30_ASOF_MISSING":1}})
     import copy
     valid = build(root, sina, day, hist, now, "a"*40, "b"*40)
     need(valid["daily_asof_bar_observed"] == 1
          and valid["260_daily_52_week_observed"] == 1
+         and valid["last30_sip_daily_valid_source_count"] == 1
          and valid["no_c417_dv30_or_mc_pass"], "POSITIVE_NO_AUTHORITY")
     trials = [
         (lambda r,s,d,h: d.update(asof_et="2026-10-13"), "LATEST_SAME_SESSION"),
@@ -198,6 +251,12 @@ def selftest():
          "PROVIDER_SCOPE_NOT_EXACT"),
         (lambda r,s,d,h: h.update(official_rth_volume_not_attested=False),
          "NO_SOURCE_AUTHORITY"),
+        (lambda r,s,d,h: h["daily30_source_proxy"].update(
+            hist_260_zero_volume_outside_last30=1),
+         "DAILY30_CAUSAL_PARTITION_MISMATCH"),
+        (lambda r,s,d,h: h["daily30_source_proxy"].update(
+            research_daily_proxy_not_official_rth_dv30=False),
+         "DAILY30_NOT_AUTHORITY"),
     ]
     for change, reason in trials:
         r, s, d, h = (copy.deepcopy(x) for x in (root, sina, day, hist))
@@ -208,7 +267,7 @@ def selftest():
             need(reason in str(exc), "NEGATIVE_REASON_" + reason)
         else:
             raise AssertionError("UNSAFE_RESEARCH_BRIDGE_ACCEPTED_" + reason)
-    print("XRAY_PERSONAL_SIP_ROOT_BRIDGE_SELFTEST=PASS_9_NEGATIVES_EXACT_QUEUE_EPOCH_NO_ALPHA")
+    print("XRAY_PERSONAL_SIP_ROOT_BRIDGE_SELFTEST=PASS_11_NEGATIVES_EXACT_QUEUE_EPOCH_DAILY30_NO_ALPHA")
 
 
 def main():
@@ -239,6 +298,9 @@ def main():
         "identity": result["identity_scope_count"],
         "daily_observed": result["daily_asof_bar_observed"],
         "260_52_observed": result["260_daily_52_week_observed"],
+        "daily30_valid":result["last30_sip_daily_valid_source_count"],
+        "historical_zero_outside30":result["historical_zero_volume_outside_latest30_count"],
+        "historical_zero_inside30":result["historical_zero_volume_within_latest30_count"],
         "remaining": result["260_daily_52_week_unproven"]},sort_keys=True))
 
 
