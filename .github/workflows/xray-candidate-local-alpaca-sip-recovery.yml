@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
       - "nasdaq-xray/personal_swing_radar_daily_snapshot.py"
+      - "nasdaq-xray/personal_eod_github_cas_publisher.py"
       - "nasdaq-xray/personal_eod_source_epoch_preflight.py"
       - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
@@ -71,6 +72,11 @@ jobs:
               assert token in body,token
           print("XRAY_SINA_BSP_FIRST_TRADE_PIT_VETO_BINDING=PASS_NO_FAKE_260")
           PY
+      - name: Verify exact-source EOD publisher CAS regressions before market-data calls
+        run: |
+          python -m py_compile nasdaq-xray/personal_eod_github_cas_publisher.py
+          python nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
+          python -O nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
       - name: Probe ALL unresolved tracked names using real delayed historical SIP
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
@@ -299,66 +305,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python - <<'PY'
-          import base64,json,os,urllib.request,urllib.error
-          from pathlib import Path
-          data=Path(os.environ["RUNNER_TEMP"])/"personal_swing_radar_snapshot_no_vendor.json"
-          raw=data.read_bytes()
-          doc=json.loads(raw)
-          assert doc["schema"]=="XRAY_PERSONAL_SWING_RADAR_DAILY_SNAPSHOT_V1"
-          assert doc["completed_session_latest"] is True
-          assert doc["registered_R92_signal_count"]==0
-          assert doc["no_vendor_ohlcv_or_price_levels_persisted"] is True
-          assert doc["safety"]["execution"]=="NONE"
-          repo=os.environ["GITHUB_REPOSITORY"]
-          desired=os.environ["GITHUB_SHA"]
-          api="https://api.github.com/repos/"+repo
-          token=os.environ["GH_TOKEN"]
-          headers={"Authorization":"Bearer "+token,
-                   "Accept":"application/vnd.github+json",
-                   "X-GitHub-Api-Version":"2022-11-28",
-                   "User-Agent":"xray-personal-eod-single-file-cas"}
-          def call(path,method="GET",body=None):
-              content=None if body is None else json.dumps(body).encode()
-              req=urllib.request.Request(api+path,data=content,headers=headers,method=method)
-              if content is not None:req.add_header("Content-Type","application/json")
-              with urllib.request.urlopen(req,timeout=18) as res:
-                  return json.loads(res.read())
-          # A long 545-symbol scan may overlap unrelated canonical overlay
-          # commits. Branch-tip equality is not data-source equality: verify
-          # all three exact source Git blobs against the attested same-run
-          # snapshot, then use the GitHub Contents SHA compare-and-swap.
-          branch=call("/branches/main")
-          source_paths={
-              "nasdaq-xray/orchestrator_state.json":"orchestrator_blob_sha",
-              "nasdaq-xray/canonical_current_master_manifest.json":"master_blob_sha",
-              "nasdaq-xray/canonical_current_price_dv30.json":"canonical_price_blob_sha",
-          }
-          for source_path,sha_key in source_paths.items():
-              source=call("/contents/"+source_path+"?ref=main")
-              if source["sha"]!=doc["asof_proof"][sha_key]:
-                  raise SystemExit("XRAY_PERSONAL_SNAPSHOT_SOURCE_BLOB_DRIFT_NO_WRITE:"+sha_key)
-          print("XRAY_PERSONAL_SNAPSHOT_UNRELATED_BRANCH_COMMIT_SAFE_HEAD="+
-                branch["commit"]["sha"][:12])
-          path="/contents/nasdaq-xray/personal_swing_radar_current.json"
-          try:
-              previous=call(path+"?ref=main")
-          except urllib.error.HTTPError as exc:
-              if exc.code!=404:raise
-              previous=None
-          if previous is not None and base64.b64decode(previous["content"])==raw:
-              print("XRAY_PERSONAL_EOD_GITHUB_READBACK=PASS_ALREADY_EXACT")
-          else:
-              payload={"message":"chore(xray): persist verified personal EOD research status [skip ci]",
-                       "content":base64.b64encode(raw).decode(),
-                       "branch":"main"}
-              if previous is not None:payload["sha"]=previous["sha"]
-              call(path,"PUT",payload)
-              current=call(path+"?ref=main")
-              assert base64.b64decode(current["content"])==raw
-              print("XRAY_PERSONAL_EOD_GITHUB_READBACK=PASS_SAME_BYTES_SAME_ASOF")
-          print("XRAY_PERSONAL_EOD_SOURCE_PROOF="+doc["asof_proof"]["orchestrator_blob_sha"])
-          PY
+          python nasdaq-xray/personal_eod_github_cas_publisher.py \
+            --snapshot "$RUNNER_TEMP/personal_swing_radar_snapshot_no_vendor.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
