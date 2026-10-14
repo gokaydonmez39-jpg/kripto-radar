@@ -68,6 +68,45 @@ def add_minimal_watch_radar(out):
           " BUY=FALSE R92=FALSE",flush=True)
     return out
 
+def add_candidate_technical_funnel(out):
+    """Incrementally evaluate ALL watched candidates using actual 260/52 bars.
+
+    Technical observation is distinct from a C4.17 final AL release. Any
+    individual source error leaves the remainder's WATCH list operational.
+    """
+    from candidate_local_full_technical_funnel_v1 import (
+        progress, selftest as technical_funnel_selftest)
+    technical_funnel_selftest()
+    watch=out.get("watch_radar") or {}
+    if not watch.get("all_eligible_candidates_tracked"):
+        out["candidate_technical_funnel"]={
+            "status":"UNKNOWN_COMPLETE_WATCH_SOURCE_REQUIRED",
+            "registered_r92_count":0,
+            "final_buy_signals":[]}
+        return out
+    prev=readj("orchestrator_state.json")
+    try:
+        count=int(os.getenv("XRAY_CANDIDATE_TECH_BATCH","80"))
+        out["candidate_technical_funnel"]=progress(
+            watch, prev.get("candidate_technical_funnel"), batch_size=count)
+        q=out["candidate_technical_funnel"]
+        print("XRAY_CANDIDATE_LOCAL_C417_TECH="+
+              str(q["evaluated_count"])+"/"+str(q["candidate_count"])+
+              " TECH_WATCH="+str(q["preliminary_technical_watch_count"])+
+              " AL=0 R92=0",flush=True)
+    except Exception as exc:
+        out["candidate_technical_funnel"]={
+            "schema":"XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
+            "asof_et":watch.get("asof_et"),
+            "candidate_count":watch.get("watchlist_count"),
+            "status":"UNKNOWN_CANDIDATE_LOCAL_ENGINE",
+            "error_type":type(exc).__name__,
+            "registered_r92_count":0,"final_buy_signals":[],
+            "execution":"NONE","real_money":"NO-GO"}
+        print("XRAY_CANDIDATE_LOCAL_C417_TECH=UNKNOWN_"+
+              type(exc).__name__+" WATCH_LIST_PRESERVED",flush=True)
+    return out
+
 def readj(path):
     p=ROOT/path
     return json.loads(p.read_text()) if p.exists() else {}
@@ -662,6 +701,7 @@ def main():
           "downstream_invalidation":downstream_invalidation
         }
         out=add_minimal_watch_radar(out)
+        out=add_candidate_technical_funnel(out)
         STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
         print("XRAY_ORCHESTRATOR=PARTIAL_HISTORY")
         return
@@ -748,6 +788,7 @@ def main():
       "authority":"EXTERNAL_AUTONOMOUS_SUPPORT_DATA_PLANE_ONLY; CANONICAL_CANDIDATE_AUTHORITY_UNCHANGED"
     }
     out=add_minimal_watch_radar(out)
+    out=add_candidate_technical_funnel(out)
     STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
     print("XRAY_ORCHESTRATOR="+status)
     print(json.dumps({"asof":out["asof_et"],"core":core.get("current_core_count"),
