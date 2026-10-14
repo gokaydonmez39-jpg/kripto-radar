@@ -105,6 +105,10 @@ jobs:
           assert x["schema"]=="XRAY_PERSONAL_FULL_NASDAQ_SIP_260_DAILY_52_WEEK_RESEARCH_V1"
           assert x["scope_count"]==x["classified_count"]==len(x["symbol_classifications"])
           assert sum(x["classification_counts"].values())==x["scope_count"]
+          assert sum(x["history_nonpass_cause_counts"].values())==x["scope_count"]
+          assert set(x["symbol_nonpass_cause_classes"])==set(x["symbol_classifications"])
+          assert x["cause_labels_are_diagnostics_not_ticker_age_or_verified_history"] is True
+          assert x["official_first_trade_fail_only_veto_count"]==x["classification_counts"].get("FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE",0)
           assert x["full_history_260_52_observed_count"]+x["full_history_missing_or_unknown_count"]==x["scope_count"]
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["no_vendor_ohlcv_persisted"] and x["registered_R92_count"]==0
