@@ -45,7 +45,12 @@ jobs:
           assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
           assert d["no_deletions_inferred_from_static_scan"] is True
           assert d["chain"]["r92_issued_by_audit"]==0
+          release=d["chain"]["production_readiness"]
+          assert release["production_release_authorized_by_this_audit"] is False
+          assert release["device_receipt_verified_by_this_audit"] is False
+          assert release["r92_created_by_this_audit"] is False
           print("XRAY_REPO_HYGIENE_REPORT_EVIDENCE_ONLY=PASS")
+          print("XRAY_REPO_PRODUCTION_RELEASE="+release["status"])
           PY
           fi
       - uses: actions/upload-artifact@v4
