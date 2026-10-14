@@ -78,9 +78,16 @@ def cause_of_nonpass(rows, label, official_days):
             return "MISSING_CURRENT_ASOF_AND_" + (
                 "1_TO_5_DAYS" if n <= 5 else
                 "6_TO_30_DAYS" if n <= 30 else "OVER_30_DAYS")
-        return ("MISSING_PRIOR_1_TO_5_DAYS" if n <= 5 else
-                "MISSING_PRIOR_6_TO_30_DAYS" if n <= 30 else
-                "MISSING_PRIOR_OVER_30_DAYS")
+        # A leading-only gap is consistent with a newly listed issuer,
+        # BUT is not proof of an IPO or first trade. It needs official
+        # issuer evidence; an interior hole calls for source integrity work.
+        if set(official_days[:n]) == lacking:
+            return "MISSING_LEADING_ONLY_IPO_OR_MAPPING_UNPROVEN_" + (
+                "1_TO_5" if n <= 5 else
+                "6_TO_30" if n <= 30 else "OVER_30")
+        return ("MISSING_INTERIOR_OR_MIXED_1_TO_5_DAYS" if n <= 5 else
+                "MISSING_INTERIOR_OR_MIXED_6_TO_30_DAYS" if n <= 30 else
+                "MISSING_INTERIOR_OR_MIXED_OVER_30_DAYS")
     return label
 
 
@@ -226,8 +233,13 @@ def selftest():
     before_asof = good[1:]
     need(cause_of_nonpass(before_asof,
          classify(before_asof, daily, weekly, asof)[0], daily) ==
-         "MISSING_PRIOR_1_TO_5_DAYS",
-         "PRIOR_GAP_NOT_LATEST_ASOF")
+         "MISSING_LEADING_ONLY_IPO_OR_MAPPING_UNPROVEN_1_TO_5",
+         "LEADING_GAP_DOES_NOT_PROVE_IPO")
+    interior = good[:120] + good[121:]
+    need(cause_of_nonpass(interior,
+         classify(interior, daily, weekly, asof)[0], daily) ==
+         "MISSING_INTERIOR_OR_MIXED_1_TO_5_DAYS",
+         "INTERIOR_HOLE_NEEDS_INDEPENDENT_RETRY")
     # Even vendor-supplied 260 rows may belong to an unrelated prior issuer.
     # BSP's official 2026-07-01 first-trade proof vetoes that false history.
     def false_predecessor(group, expected, date):
