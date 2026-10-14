@@ -1,0 +1,85 @@
+name: XRAY Oct13 Candidate Local 277 54 7 SHA Bound Readiness
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_primary_readiness.py"
+      - ".github/workflows/xray-oct13-candidate-local-sha-bound-readiness.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-candidate-local-readiness-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  local-only-no-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bind checkout and exercise per-candidate negative controls
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_oct13_primary_readiness.py
+          python nasdaq-xray/candidate_local_oct13_primary_readiness.py --selftest
+          python -O nasdaq-xray/candidate_local_oct13_primary_readiness.py --selftest
+          echo "XRAY_LOCAL_CHECKOUT_SOURCE_SHA_EXACT=PASS"
+      - name: Verify two frozen actual GitHub artifact digests (no provider re-requests)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          d="$(gh api repos/${{ github.repository }}/actions/artifacts/11880391086 --jq '.digest')"
+          f="$(gh api repos/${{ github.repository }}/actions/artifacts/11880402289 --jq '.digest')"
+          test "$d" = "sha256:e4f755b04f1b571ca3dcb0be0c47f3815f557b7130d35f6d646c02efaf563eee"
+          test "$f" = "sha256:b90ba335c930e877acf69fe62a776189f92dbc5fd84a803f98d8b72d8d707729"
+          echo "XRAY_LOCAL_TWO_FROZEN_ZIP_DIGESTS=PASS"
+      - name: Download immutable genuine 277 deep and FROG official witnesses
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/deep" "$RUNNER_TEMP/frog"
+          gh run download 38536372509 --repo "${{ github.repository }}" \
+            --name xray-20261013-full277-stage1-deep-abd-r1rr-real \
+            --dir "$RUNNER_TEMP/deep"
+          gh run download 38537058724 --repo "${{ github.repository }}" \
+            --name xray-oct13-frog-true-trigger-sec-pit-halt-ir-evidence \
+            --dir "$RUNNER_TEMP/frog"
+      - name: Join candidate-local evidence and refuse UNKNOWN to PRIMARY/R92
+        run: |
+          python nasdaq-xray/candidate_local_oct13_primary_readiness.py \
+            --deep "$RUNNER_TEMP/deep/xray_deep277_real_full.json" \
+            --frog "$RUNNER_TEMP/frog/frog_oct13_official_source.json" \
+            --out "$RUNNER_TEMP/xray_candidate_local_readiness.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          a=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_candidate_local_readiness.json").read_text())
+          assert a["source_277_count"]==277 and a["source_stage1_pool_count"]==54
+          assert a["real_trigger_count"]==7 and a["real_risk_rr_survivor_count"]==1
+          assert a["canonical_primary_count"]==0 and a["registered_r92_count"]==0
+          assert a["candidate_local_independent_of_unrelated_unknowns"] is True
+          assert len(a["decisions"])==7
+          assert a["decisions"]["FROG|D"]["classification"]=="LOCAL_SOURCE_INCOMPLETE"
+          assert a["decisions"]["FROG|D"]["real_technical_risk_rr_pass"] is True
+          assert all(not x["candidate_local_readiness"]["local_complete"] for x in a["decisions"].values())
+          assert a["execution"]=="NONE" and a["real_money"]=="NO-GO"
+          assert a["research_gate_only"] is True and not a["canonical_mutated"]
+          print("XRAY_LOCAL_C417_READINESS=PASS_SHA_BOUND_SEVEN_PER_ISSUER_VETO_NO_R92")
+          PY
+      - name: Save operational gate evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-oct13-candidate-local-277-54-7-sha-readiness-no-primary
+          path: ${{ runner.temp }}/xray_candidate_local_readiness.json
+          retention-days: 14
+          if-no-files-found: warn
