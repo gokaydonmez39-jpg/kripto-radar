@@ -99,7 +99,19 @@ def run(doc,now,fetch):
         result["classification_counts"]={}
         return result
     start=days[0]+"T00:00:00Z"
-    end=(date.fromisoformat(asof)+timedelta(days=1)).isoformat()+"T00:00:00Z"
+    # SIP historical end MUST be >15min in the past on personal plans.
+    # Tomorrow 00:00Z can be in the future while today's Nasdaq RTH has
+    # already closed; that caused actual ALPACA_HTTP_403 on 2026-10-14.
+    # Resolve each session's official close (including shortened sessions).
+    import pandas_market_calendars as mcal
+    calendar=mcal.get_calendar("NASDAQ")
+    close_calendar=calendar.schedule(start_date=asof,end_date=asof)
+    need(len(close_calendar)==1,"OFFICIAL_NASDAQ_CLOSE_MISSING")
+    end_time=close_calendar.iloc[0]["market_close"].to_pydatetime()+timedelta(seconds=1)
+    need(end_time.tzinfo is not None and
+         end_time<=now-timedelta(minutes=16),
+         "SIP_HISTORICAL_END_WITHIN_RECENT_15_MIN_WINDOW")
+    end=end_time.isoformat().replace("+00:00","Z")
     try:
         result["api_batches_attempted"]+=1
         r=fetch(["QQQ"],start,end,asof)
