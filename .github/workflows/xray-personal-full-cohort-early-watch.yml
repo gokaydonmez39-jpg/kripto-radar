@@ -57,7 +57,7 @@ jobs:
               assert run["head_sha"]==os.environ["UPSTREAM_SHA"]
               assert run["conclusion"]=="success" and run["event"] in ("push","schedule","workflow_dispatch")
           else:
-              response=gh("repos/"+repo+"/actions/runs?per_page=50")
+              response=gh("repos/"+repo+"/actions/workflows/xray-personal-full-universe-sip-coverage.yml/runs?per_page=20")
               runs=[r for r in response["workflow_runs"] if
                    r.get("name")=="XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"
                    and r.get("status")=="completed" and r.get("conclusion")=="success"
