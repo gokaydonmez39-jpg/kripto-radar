@@ -66,6 +66,15 @@ def merge(current, incoming):
     rows = {k: dict(v) for k, v in current["deliveries"].items()}
     for key, next_row in incoming["deliveries"].items():
         older = rows.get(key)
+        # This GitHub merger can preserve independently attested platform
+        # receipts, but cannot manufacture one by accepting a fresh claim
+        # from a workflow/issue result. The actual device acknowledgment
+        # belongs to the ChatGPT platform, not the GitHub evidence store.
+        for field in ("chatgpt_notification", "email_notification"):
+            if (next_row.get(field) == "USER_RECEIPT_VERIFIED" and
+                    (older is None or
+                     older.get(field) != "USER_RECEIPT_VERIFIED")):
+                raise ValueError("PLATFORM_RECEIPT_PROMOTION_REQUIRES_SEPARATE_ATTESTATION")
         if older is None:
             rows[key] = dict(next_row)
             continue
@@ -208,7 +217,18 @@ def selftest():
     except ValueError as exc:
         assert str(exc)=="SUPPRESSED_CHANNEL_CANNOT_CLAIM_GITHUB_ISSUE_RECEIPT"
     else: raise AssertionError("SUPPRESSED_FAKE_ISSUE_ACCEPTED")
-    print("XRAY_LEDGER_MERGE_RACE_AND_CONFLICT_SELFTEST=PASS_CHRONOLOGICAL_RECHECK_SUPPRESSED_CHATGPT_ONLY")
+    # A forged positive notification receipt in incoming GitHub evidence
+    # cannot be promoted on a newly created or existing delivery key.
+    for target in ("NEW|D|1", "OLD|A|1"):
+        spoof=json.loads(json.dumps(b))
+        spoof["deliveries"][target]["chatgpt_notification"]="USER_RECEIPT_VERIFIED"
+        try:
+            merge(a,spoof)
+        except ValueError as exc:
+            assert str(exc)=="PLATFORM_RECEIPT_PROMOTION_REQUIRES_SEPARATE_ATTESTATION"
+        else:
+            raise AssertionError("FORGED_PLATFORM_RECEIPT_ACCEPTED:"+target)
+    print("XRAY_LEDGER_MERGE_RACE_AND_CONFLICT_SELFTEST=PASS_CHRONOLOGICAL_RECHECK_SUPPRESSED_CHATGPT_ONLY_PLATFORM_FORGERY_NEGATIVE")
 
 
 def main():
