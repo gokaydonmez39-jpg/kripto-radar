@@ -28866,10 +28866,10 @@
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
   "processed_late_asof_canary_this_run": 0,
-  "processed_late_asof_recheck_this_run": 0,
+  "processed_late_asof_recheck_this_run": 44,
   "processed_new_this_run": 0,
-  "processed_retry_this_run": 1,
-  "processed_transport_rescue_this_run": 0,
+  "processed_retry_this_run": 0,
+  "processed_transport_rescue_this_run": 28,
   "queue": [
     "AACG",
     "AAL",
@@ -32452,13 +32452,13 @@
       "updated_at_utc": "2026-10-14T04:46:53.007350+00:00"
     },
     "ACFN": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784153+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424771+00:00"
     },
     "ACGL": {
       "attempts": 1,
@@ -32752,13 +32752,13 @@
       "updated_at_utc": "2026-10-14T04:46:53.007410+00:00"
     },
     "ADAM": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784115+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424720+00:00"
     },
     "ADBE": {
       "attempts": 1,
@@ -33064,13 +33064,13 @@
       "updated_at_utc": "2026-10-14T04:46:53.007464+00:00"
     },
     "AEC": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784131+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424777+00:00"
     },
     "AEHL": {
       "attempts": 1,
@@ -33248,17 +33248,17 @@
       "updated_at_utc": "2026-10-14T04:46:53.007493+00:00"
     },
     "AFJK": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 488,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:46:53.007498+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424927+00:00"
     },
     "AFRI": {
       "attempts": 1,
@@ -33927,7 +33927,7 @@
       "updated_at_utc": "2026-10-14T04:46:53.007614+00:00"
     },
     "ALDF": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 325,
         "dates": [
@@ -33957,10 +33957,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:46:53.007604+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424921+00:00"
     },
     "ALDX": {
       "attempts": 1,
@@ -34348,13 +34348,13 @@
       "updated_at_utc": "2026-10-14T04:46:53.007676+00:00"
     },
     "ALTI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784124+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424754+00:00"
     },
     "ALTO": {
       "attempts": 1,
@@ -35097,17 +35097,17 @@
       "updated_at_utc": "2026-10-14T04:46:53.007795+00:00"
     },
     "APLM": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 859,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:46:53.007800+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424912+00:00"
     },
     "APMD": {
       "attempts": 1,
@@ -35221,17 +35221,17 @@
       "updated_at_utc": "2026-10-14T04:46:53.007817+00:00"
     },
     "APUR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 52,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:46:53.007812+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424932+00:00"
     },
     "APVO": {
       "attempts": 1,
@@ -35928,13 +35928,13 @@
       "updated_at_utc": "2026-10-14T04:47:43.577076+00:00"
     },
     "ASTI": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.592890+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424782+00:00"
     },
     "ASTL": {
       "attempts": 1,
@@ -38785,17 +38785,17 @@
       "updated_at_utc": "2026-10-14T04:47:43.577581+00:00"
     },
     "BRTM": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 22,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:47:43.577578+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424940+00:00"
     },
     "BRTX": {
       "attempts": 1,
@@ -40674,17 +40674,17 @@
       "updated_at_utc": "2026-10-14T04:48:35.966019+00:00"
     },
     "CEPS": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 106,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:48:35.966011+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424936+00:00"
     },
     "CEPV": {
       "attempts": 1,
@@ -41987,13 +41987,13 @@
       "updated_at_utc": "2026-10-14T04:48:35.966235+00:00"
     },
     "CNL": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215335+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424787+00:00"
     },
     "CNOB": {
       "attempts": 1,
@@ -42526,17 +42526,17 @@
       "updated_at_utc": "2026-10-14T04:48:35.966345+00:00"
     },
     "CPHC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2449,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:48:35.966350+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424957+00:00"
     },
     "CPIX": {
       "attempts": 1,
@@ -43507,17 +43507,17 @@
       "updated_at_utc": "2026-10-14T04:49:26.784179+00:00"
     },
     "CURX": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 284,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784159+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424952+00:00"
     },
     "CUVL": {
       "attempts": 1,
@@ -44616,17 +44616,17 @@
       "updated_at_utc": "2026-10-14T04:49:26.784396+00:00"
     },
     "DNMX": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 193,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784410+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424944+00:00"
     },
     "DNTH": {
       "attempts": 1,
@@ -44779,13 +44779,13 @@
       "updated_at_utc": "2026-10-14T04:49:26.784421+00:00"
     },
     "DPU": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072062+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424764+00:00"
     },
     "DPZ": {
       "attempts": 1,
@@ -45315,17 +45315,17 @@
       "updated_at_utc": "2026-10-14T04:49:26.784539+00:00"
     },
     "DYOR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 154,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784534+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424948+00:00"
     },
     "EBAY": {
       "attempts": 1,
@@ -45379,17 +45379,17 @@
       "updated_at_utc": "2026-10-14T04:49:26.784547+00:00"
     },
     "EBON": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1579,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784542+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424960+00:00"
     },
     "ECBK": {
       "attempts": 1,
@@ -45649,17 +45649,17 @@
       "updated_at_utc": "2026-10-14T04:49:26.784593+00:00"
     },
     "EFTY": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 40,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:49:26.784603+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424964+00:00"
     },
     "EGAN": {
       "attempts": 1,
@@ -46069,13 +46069,13 @@
       "updated_at_utc": "2026-10-14T04:49:26.784668+00:00"
     },
     "ENGN": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072073+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424699+00:00"
     },
     "ENGS": {
       "attempts": 1,
@@ -48411,17 +48411,17 @@
       "updated_at_utc": "2026-10-14T04:50:20.593208+00:00"
     },
     "FORTY": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 4363,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.593189+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424968+00:00"
     },
     "FOSL": {
       "attempts": 1,
@@ -49454,17 +49454,17 @@
       "updated_at_utc": "2026-10-14T04:50:20.593370+00:00"
     },
     "GCGR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 47,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.593382+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424973+00:00"
     },
     "GCL": {
       "attempts": 1,
@@ -49880,17 +49880,17 @@
       "updated_at_utc": "2026-10-14T04:50:20.593423+00:00"
     },
     "GHXI": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 34,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.593431+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424985+00:00"
     },
     "GIBO": {
       "attempts": 1,
@@ -50041,17 +50041,17 @@
       "updated_at_utc": "2026-10-14T04:50:20.593438+00:00"
     },
     "GIX": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 523,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.593453+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424977+00:00"
     },
     "GIXI": {
       "attempts": 1,
@@ -50633,7 +50633,7 @@
       "updated_at_utc": "2026-10-14T04:50:20.593557+00:00"
     },
     "GRAL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 577,
         "dates": [
@@ -50647,10 +50647,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:50:20.593547+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424981+00:00"
     },
     "GRAN": {
       "attempts": 1,
@@ -50992,17 +50992,17 @@
       "updated_at_utc": "2026-10-14T04:51:15.215341+00:00"
     },
     "GTEN": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 277,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215344+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424997+00:00"
     },
     "GTIM": {
       "attempts": 1,
@@ -51331,17 +51331,17 @@
       "updated_at_utc": "2026-10-14T04:51:15.215427+00:00"
     },
     "HBNB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 305,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215404+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424989+00:00"
     },
     "HBNC": {
       "attempts": 1,
@@ -51404,30 +51404,30 @@
       "updated_at_utc": "2026-10-14T04:51:15.215448+00:00"
     },
     "HCHL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 244,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215434+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.424993+00:00"
     },
     "HCIC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 537,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215442+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425001+00:00"
     },
     "HCKT": {
       "attempts": 1,
@@ -51624,17 +51624,17 @@
       "updated_at_utc": "2026-10-14T04:51:15.215495+00:00"
     },
     "HFBL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2951,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215521+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425004+00:00"
     },
     "HFFG": {
       "attempts": 1,
@@ -52340,13 +52340,13 @@
       "updated_at_utc": "2026-10-14T04:51:15.215666+00:00"
     },
     "HTCO": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.598035+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424795+00:00"
     },
     "HTCR": {
       "attempts": 1,
@@ -52628,17 +52628,17 @@
       "updated_at_utc": "2026-10-14T04:51:15.215711+00:00"
     },
     "HVMC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 152,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.215703+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425008+00:00"
     },
     "HWBK": {
       "attempts": 1,
@@ -54123,13 +54123,13 @@
       "updated_at_utc": "2026-10-14T04:51:15.215986+00:00"
     },
     "INV": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.598043+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424816+00:00"
     },
     "INVA": {
       "attempts": 1,
@@ -54364,17 +54364,17 @@
       "updated_at_utc": "2026-10-14T04:51:15.216021+00:00"
     },
     "IPVV": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 34,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:51:15.216047+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425012+00:00"
     },
     "IPW": {
       "attempts": 1,
@@ -54532,13 +54532,13 @@
       "updated_at_utc": "2026-10-14T04:51:15.216078+00:00"
     },
     "IRLA": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.597998+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424791+00:00"
     },
     "IRMD": {
       "attempts": 1,
@@ -55239,13 +55239,13 @@
       "updated_at_utc": "2026-10-14T04:52:09.072228+00:00"
     },
     "JONE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:54:23.374534+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424799+00:00"
     },
     "JOUT": {
       "attempts": 1,
@@ -56066,17 +56066,17 @@
       "updated_at_utc": "2026-10-14T04:52:09.072366+00:00"
     },
     "KRAQ": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 115,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072369+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425016+00:00"
     },
     "KRKR": {
       "attempts": 1,
@@ -56605,17 +56605,17 @@
       "updated_at_utc": "2026-10-14T04:52:09.072455+00:00"
     },
     "LAWR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 69,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072453+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425020+00:00"
     },
     "LBGJ": {
       "attempts": 1,
@@ -58096,17 +58096,17 @@
       "updated_at_utc": "2026-10-14T04:52:09.072676+00:00"
     },
     "LTGR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 28,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072686+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425024+00:00"
     },
     "LTRN": {
       "attempts": 1,
@@ -58435,26 +58435,26 @@
       "updated_at_utc": "2026-10-14T04:52:09.072746+00:00"
     },
     "MAGH": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 81,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:52:09.072739+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425028+00:00"
     },
     "MAKO": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:54:23.374620+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424806+00:00"
     },
     "MAMA": {
       "attempts": 1,
@@ -58615,17 +58615,17 @@
       "updated_at_utc": "2026-10-14T04:53:03.405946+00:00"
     },
     "MAYS": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2274,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:03.405920+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425046+00:00"
     },
     "MAZE": {
       "attempts": 1,
@@ -58923,17 +58923,17 @@
       "updated_at_utc": "2026-10-14T04:53:03.406000+00:00"
     },
     "MCTA": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 16,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:03.405951+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425049+00:00"
     },
     "MDAI": {
       "attempts": 1,
@@ -59052,17 +59052,17 @@
       "updated_at_utc": "2026-10-14T04:53:03.406035+00:00"
     },
     "MDRR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1840,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:03.406020+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425041+00:00"
     },
     "MDWD": {
       "attempts": 1,
@@ -61330,17 +61330,17 @@
       "updated_at_utc": "2026-10-14T04:53:03.406443+00:00"
     },
     "NCEW": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 411,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:03.406435+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425032+00:00"
     },
     "NCI": {
       "attempts": 1,
@@ -62202,7 +62202,7 @@
       "updated_at_utc": "2026-10-14T04:53:03.406603+00:00"
     },
     "NOEM": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 291,
         "dates": [
@@ -62233,10 +62233,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:03.406615+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425036+00:00"
     },
     "NOMA": {
       "attempts": 1,
@@ -62713,13 +62713,13 @@
       "updated_at_utc": "2026-10-14T04:53:49.598123+00:00"
     },
     "NUCL": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.265789+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424831+00:00"
     },
     "NUR": {
       "attempts": 1,
@@ -64304,17 +64304,17 @@
       "updated_at_utc": "2026-10-14T04:53:49.598410+00:00"
     },
     "ORIQ": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 150,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.598417+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425053+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -64462,17 +64462,17 @@
       "updated_at_utc": "2026-10-14T04:53:49.598438+00:00"
     },
     "OST": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 847,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.598456+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425057+00:00"
     },
     "OSUR": {
       "attempts": 1,
@@ -64749,13 +64749,13 @@
       "updated_at_utc": "2026-10-14T04:53:49.598501+00:00"
     },
     "PAMT": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.265760+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424824+00:00"
     },
     "PANL": {
       "attempts": 1,
@@ -65047,13 +65047,13 @@
       "updated_at_utc": "2026-10-14T04:53:49.598550+00:00"
     },
     "PBM": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.265778+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424851+00:00"
     },
     "PBYI": {
       "attempts": 1,
@@ -65073,17 +65073,17 @@
       "updated_at_utc": "2026-10-14T04:53:49.598540+00:00"
     },
     "PC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1808,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:53:49.598537+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425061+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -66421,7 +66421,7 @@
       "updated_at_utc": "2026-10-14T04:54:23.374653+00:00"
     },
     "PONO": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 295,
         "dates": [
@@ -66456,10 +66456,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:54:23.374672+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425065+00:00"
     },
     "PONY": {
       "attempts": 1,
@@ -68916,13 +68916,13 @@
       "updated_at_utc": "2026-10-14T04:54:23.375108+00:00"
     },
     "RJET": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:41.131126+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424865+00:00"
     },
     "RKDA": {
       "attempts": 1,
@@ -69221,13 +69221,13 @@
       "updated_at_utc": "2026-10-14T04:54:23.375161+00:00"
     },
     "RNTZ": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:41.131031+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424842+00:00"
     },
     "RNW": {
       "attempts": 1,
@@ -69598,13 +69598,13 @@
       "updated_at_utc": "2026-10-14T04:54:23.375215+00:00"
     },
     "RTSN": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:41.131068+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424858+00:00"
     },
     "RUBI": {
       "attempts": 1,
@@ -70391,17 +70391,17 @@
       "updated_at_utc": "2026-10-14T04:55:11.017779+00:00"
     },
     "SCPQ": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 48,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:55:11.017754+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425074+00:00"
     },
     "SCSC": {
       "attempts": 1,
@@ -70473,13 +70473,13 @@
       "updated_at_utc": "2026-10-14T04:55:11.017763+00:00"
     },
     "SDA": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:46.026471+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424887+00:00"
     },
     "SDGR": {
       "attempts": 1,
@@ -70649,17 +70649,17 @@
       "updated_at_utc": "2026-10-14T04:55:11.017802+00:00"
     },
     "SENEB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2977,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:55:11.017793+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425078+00:00"
     },
     "SENS": {
       "attempts": 1,
@@ -71244,17 +71244,17 @@
       "updated_at_utc": "2026-10-14T04:55:11.017911+00:00"
     },
     "SHOT": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 556,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:55:11.017902+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425081+00:00"
     },
     "SHPH": {
       "attempts": 1,
@@ -71613,13 +71613,13 @@
       "updated_at_utc": "2026-10-14T04:55:11.017999+00:00"
     },
     "SLBT": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:46.026429+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424883+00:00"
     },
     "SLDB": {
       "attempts": 1,
@@ -71669,13 +71669,13 @@
       "updated_at_utc": "2026-10-14T04:55:11.018002+00:00"
     },
     "SLE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:46.026437+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424891+00:00"
     },
     "SLGB": {
       "attempts": 1,
@@ -73331,13 +73331,13 @@
       "updated_at_utc": "2026-10-14T04:55:11.018312+00:00"
     },
     "SUNE": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:46.026450+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424895+00:00"
     },
     "SUNS": {
       "attempts": 1,
@@ -73404,13 +73404,13 @@
       "updated_at_utc": "2026-10-14T04:55:11.018329+00:00"
     },
     "SVA": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:46.026462+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424899+00:00"
     },
     "SVC": {
       "attempts": 1,
@@ -74751,13 +74751,13 @@
       "updated_at_utc": "2026-10-14T04:56:02.266011+00:00"
     },
     "TMS": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:48.502333+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424908+00:00"
     },
     "TMUS": {
       "attempts": 1,
@@ -75095,17 +75095,17 @@
       "updated_at_utc": "2026-10-14T04:56:02.266081+00:00"
     },
     "TRGS": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 59,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.266057+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425070+00:00"
     },
     "TRI": {
       "attempts": 1,
@@ -75407,13 +75407,13 @@
       "updated_at_utc": "2026-10-14T04:56:02.266116+00:00"
     },
     "TRXB": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "IndexError:list index out of range",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:48.502288+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424876+00:00"
     },
     "TSAT": {
       "attempts": 1,
@@ -75822,17 +75822,17 @@
       "updated_at_utc": "2026-10-14T04:56:02.266194+00:00"
     },
     "TWLV": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 790,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.266191+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425086+00:00"
     },
     "TWST": {
       "attempts": 1,
@@ -76027,17 +76027,17 @@
       "updated_at_utc": "2026-10-14T04:56:02.266223+00:00"
     },
     "UCFI": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:02.266221+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425089+00:00"
     },
     "UCL": {
       "attempts": 1,
@@ -77417,13 +77417,13 @@
       "updated_at_utc": "2026-10-14T04:56:02.266470+00:00"
     },
     "VMET": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:48.502327+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424903+00:00"
     },
     "VNCE": {
       "attempts": 1,
@@ -78269,13 +78269,13 @@
       "updated_at_utc": "2026-10-14T04:56:41.131276+00:00"
     },
     "WEST": {
-      "attempts": 4,
+      "attempts": 5,
       "info": "SyntaxError:invalid syntax (<string>, line 1)",
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_RETRY_EXHAUSTED",
-      "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:50.476167+00:00"
+      "transport_rescue_round": 1,
+      "updated_at_utc": "2026-10-14T06:09:24.424917+00:00"
     },
     "WETH": {
       "attempts": 1,
@@ -79687,17 +79687,17 @@
       "updated_at_utc": "2026-10-14T04:56:41.131524+00:00"
     },
     "YICC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 42,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-14T04:56:41.131509+00:00"
+      "updated_at_utc": "2026-10-14T06:09:24.425094+00:00"
     },
     "YJ": {
       "attempts": 1,
@@ -83450,12 +83450,12 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "1e372994cadc365501b2918ddf90eebb4f3de1a2a44166124d6656fc96a6b318",
+  "state_hash": "e65fa05bdbe906df5afe01721a6162a1d1e1b31e1996737b23e8f3742f7a2d67",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
   "unknown_count": 220,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-14T04:56:50.477625+00:00"
+  "updated_at_utc": "2026-10-14T06:09:24.426723+00:00"
 }
