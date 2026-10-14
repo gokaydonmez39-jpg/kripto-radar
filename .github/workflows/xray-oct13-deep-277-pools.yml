@@ -1,0 +1,90 @@
+name: XRAY Oct13 Full Stage1 Pools Real SIP Deep A B D R1 RR
+on:
+  workflow_run:
+    workflows:
+      - "XRAY Oct13 Real SIP Stage1 Remaining 249 Source Research"
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-oct13-277-deep-source-bound
+  cancel-in-progress: false
+jobs:
+  evaluate-stage1-pool-by-page:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        page: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Freeze dependencies of existing audited A B D final engine
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Exercise no-synthetic-history and no-false-trigger guards
+        run: |
+          python -m py_compile nasdaq-xray/candidate_local_oct13_deep277_page.py
+          python nasdaq-xray/candidate_local_oct13_deep277_page.py --selftest
+      - name: Require complete source Stage1 nine-page workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          outcome="$(gh run view 38534612554 --repo "${{ github.repository }}" --json conclusion --jq '.conclusion')"
+          test "$outcome" = "success"
+          echo "XRAY_REAL_277_STAGE1_ALL_NINE_PAGES=PASS"
+      - name: Download independent 277 and exact earlier Stage1 page artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAGE: ${{ matrix.page }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/rollup" "$RUNNER_TEMP/stage1"
+          gh run download 38532588994 --repo "${{ github.repository }}" \
+            --name xray-20261013-real-545-404-source-rollup-no-r92 --dir "$RUNNER_TEMP/rollup"
+          gh run download 38534612554 --repo "${{ github.repository }}" \
+            --name "xray-oct13-stage1-sip277-page-$PAGE" --dir "$RUNNER_TEMP/stage1"
+      - name: Run C4.17 actual historical QQQ and A B D setup geometry per Stage1 pool
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          PAGE: ${{ matrix.page }}
+        run: |
+          python nasdaq-xray/candidate_local_oct13_deep277_page.py \
+            --page "$PAGE" \
+            --source "$RUNNER_TEMP/rollup/xray_full_same_asof_source_rollup.json" \
+            --stage1 "$RUNNER_TEMP/stage1/xray_stage1_page.json" \
+            --out "$RUNNER_TEMP/xray_deep_page.json"
+      - name: Verify exact real candidate-local scopes and zero invented R92
+        env:
+          PAGE: ${{ matrix.page }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_deep_page.json").read_text())
+          assert d["schema"]=="XRAY_20261013_LOCAL_277_DEEP_ABD_R1RR_PAGE_SHADOW_V1"
+          assert d["asof_et"]=="2026-10-13" and d["page"]==int(os.environ["PAGE"])
+          assert len(d["evaluations"])==d["stage1_pool_count"]
+          assert sum(d["counts"].values())==d["stage1_pool_count"]
+          assert not d["other_global_unknown_blocks_local"]
+          assert not d["raw_ohlcv_exported"] and not d["canonical_mutated"]
+          assert d["r92_registered"]==0 and not d["iphone_receipt_verified"]
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_OCT13_DEEP_277_PAGE_REAL_SOURCE_NO_FALSE_R92=PASS")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-deep-277-page-${{ matrix.page }}
+          path: ${{ runner.temp }}/xray_deep_page.json
+          if-no-files-found: warn
+          retention-days: 14
