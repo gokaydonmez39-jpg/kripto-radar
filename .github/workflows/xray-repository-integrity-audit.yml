@@ -1,0 +1,54 @@
+name: XRAY Complete Source Integrity and Delivery Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/repository_integrity_audit.py"
+      - ".github/workflows/xray-repository-integrity-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-repository-integrity-audit
+  cancel-in-progress: false
+jobs:
+  full-source-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate exact invocation SHA
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Negative syntax JSON and tracked-garbage tests
+        run: PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --selftest
+      - name: Scan every tracked Python JSON workflow and candidate lifecycle source link
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --out "$RUNNER_TEMP/xray_repo_inventory.json"
+      - name: Verify report is evidence-only
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/xray_repo_inventory.json"; then
+            python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_repo_inventory.json").read_text())
+          assert d["schema"]=="XRAY_FULL_TRACKED_REPOSITORY_INTEGRITY_AUDIT_V1"
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["no_deletions_inferred_from_static_scan"] is True
+          assert d["chain"]["r92_issued_by_audit"]==0
+          print("XRAY_REPO_HYGIENE_REPORT_EVIDENCE_ONLY=PASS")
+          PY
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-repo-integrity-ast-json-workflows-research-only
+          path: ${{ runner.temp }}/xray_repo_inventory.json
+          if-no-files-found: ignore
+          retention-days: 7
