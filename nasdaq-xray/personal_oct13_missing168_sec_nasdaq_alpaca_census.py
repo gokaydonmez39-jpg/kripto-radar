@@ -221,8 +221,8 @@ def main():
             result["sec_requests"]+=1
             require(str(doc.get("cik","")).zfill(10)==cik,"SEC_CIK_RESPONSE_IDENTITY")
             result["sources"][sym]["sec_filing_vintage"]=sec_vintage(doc)
-            result["sources"][sym]["sec_submission_source_url"]=
-              "https://data.sec.gov/submissions/CIK"+cik+".json"
+            result["sources"][sym]["sec_submission_source_url"] = (
+                "https://data.sec.gov/submissions/CIK"+cik+".json")
         except ValueError as err:
             msg=str(err)
             result["sources"][sym]["sec_filing_error"]="HTTP_OR_IDENTITY"
