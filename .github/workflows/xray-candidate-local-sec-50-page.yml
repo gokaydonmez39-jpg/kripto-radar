@@ -1,0 +1,82 @@
+name: XRAY Candidate-Local SEC 404 Page of 50 Official PIT
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_sec_pit_50_page.py"
+      - ".github/workflows/xray-candidate-local-sec-50-page.yml"
+  workflow_dispatch:
+    inputs:
+      page:
+        description: "404 candidate cohort page index 0 through 8"
+        required: true
+        default: "0"
+        type: choice
+        options: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-candidate-local-sec-50-fair-access
+  cancel-in-progress: false
+jobs:
+  sec-bounded-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test all 404 source page partitions and official as-of PIT guards
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/candidate_local_sec_pit_50_page.py
+          python nasdaq-xray/candidate_local_sec_pit_50_page.py --selftest
+          python -O nasdaq-xray/candidate_local_sec_pit_50_page.py --selftest
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+      - name: Fetch immutable real 404 research cohort
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cohort"
+          gh run download 38528457369 --repo "${{ github.repository }}" \
+            --name xray-local-404-source-gated-and-50-recovery-queues \
+            --dir "$RUNNER_TEMP/cohort"
+      - name: Read real SEC company facts and acceptances for 50 candidate-local issuers
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          REQUEST_PAGE: ${{ inputs.page || '0' }}
+        run: |
+          python nasdaq-xray/candidate_local_sec_pit_50_page.py \
+            --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \
+            --page "$REQUEST_PAGE" \
+            --out "$RUNNER_TEMP/xray_candidate_local_sec50.json"
+      - name: Verify bounded real-source counts without fabricated PRIMARY
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_candidate_local_sec50.json"
+          j=json.loads(p.read_text())
+          assert j["schema"]=="XRAY_CANDIDATE_LOCAL_SEC50_SOURCE_VINTAGES_V1"
+          assert j["asof_et"]=="2026-10-13"
+          assert len(j["statuses"])==j["requested_count"]<=50
+          assert sum(j["status_counts"].values())==j["requested_count"]
+          assert j["api_calls"]<=101
+          assert not j["global_unknown_veto"]
+          assert j["primary_mc_approved"]==j["r92_registered"]==0
+          assert not j["canonical_modified"] and not j["primary_price_verified"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_SEC50_SOURCE_CENSUS=PASS_COMPLETED_OR_FAIR_ACCESS_STOP")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-candidate-local-sec50-pit-source
+          path: ${{ runner.temp }}/xray_candidate_local_sec50.json
+          if-no-files-found: warn
+          retention-days: 14
