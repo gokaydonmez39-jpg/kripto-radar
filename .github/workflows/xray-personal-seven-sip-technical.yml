@@ -47,7 +47,9 @@ jobs:
           assert d["schema"]=="XRAY_PERSONAL_SEVEN_SIP_TECHNICAL_SHADOW_V1"
           assert len(d["asof_et"])==10
           assert d["source"]=="ALPACA_HISTORICAL_SIP_PERSONAL_NONCOMMERCIAL"
-          assert 0<=d["scope_count"]==len(d["statuses"])<=11
+          assert d["scope_count"]==len(d["statuses"]) and d["scope_count"]>=0
+          assert d["pending_symbol_truncation"] is False
+          assert d["api_batch_count"]>=0
           assert set(d["statuses"])<=set(json.loads(
               Path("nasdaq-xray/orchestrator_state.json").read_text()
           )["candidate_technical_funnel"]["pending_symbols"])
