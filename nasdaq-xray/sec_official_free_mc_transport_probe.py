@@ -174,7 +174,7 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
         except (KeyError,ValueError,TypeError):
             diag["invalid_fact"]+=1
             continue
-        valid.append((accepted, end, acc, shares, age))
+        valid.append((accepted, end, acc, shares, age, matched["filed"]))
     if not valid:
         if not concept:
             # SEC companyfacts excludes dimensional facts; multiple-class
@@ -212,12 +212,13 @@ def select_shares(facts:dict,sub:dict,asof:str,expected_cik:str=CIK) -> dict:
         return {"status":"UNKNOWN",
                 "reason":"SEC_CONFLICTING_SAME_VINTAGE_SHARES",
                 "production_mc_primary_pass":False}
-    t,end,acc,shares,age=valid[-1]
+    t,end,acc,shares,age,filed_date=valid[-1]
     # SEC CompanyFacts can omit dimensional share-class facts. No class
     # cardinality, corporate actions, split-adjustment or price is asserted.
     return {"status":"SHADOW_SHARES_VINTAGE_ONLY",
             "reason":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
-            "selected_filing_date":t.date().isoformat(),
+            "selected_filing_date":filed_date,
+            "selected_acceptance_calendar_date":t.date().isoformat(),
             "observation_date":end.isoformat(),
             "shares_age_days":age,
             "accession_present":bool(acc),
@@ -239,6 +240,14 @@ def selftest():
     r=select_shares(fak,subs,asof)
     assert r["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
     assert r["observation_date"]=="2026-09-30"
+    # EDGAR official filed date is NOT the acceptance timestamp UTC date.
+    # SEC acceptance near midnight can be on the next UTC calendar date.
+    sub_next_utc=json.loads(json.dumps(subs))
+    sub_next_utc["filings"]["recent"]["acceptanceDateTime"][0]="2026-10-06T00:30:00Z"
+    utc_rollover=select_shares(fak,sub_next_utc,asof)
+    assert utc_rollover["status"]=="SHADOW_SHARES_VINTAGE_ONLY"
+    assert utc_rollover["selected_filing_date"]=="2026-10-05"
+    assert utc_rollover["selected_acceptance_calendar_date"]=="2026-10-06"
     assert r["production_mc_primary_pass"] is False
     # Duplicate accession rows with identical metadata are idempotent.
     # Conflicting acceptance stamps are an invalid PIT source, regardless
