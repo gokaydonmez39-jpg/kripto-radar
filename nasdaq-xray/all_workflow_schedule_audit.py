@@ -23,6 +23,7 @@ EXPECTED={
  "xray-account-gate-reconcile.yml":("12 * * * *",),
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
+ "xray-personal-full-universe-sip-coverage.yml":("10 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
@@ -48,6 +49,7 @@ EXPECTED={
 READONLY_PROVIDER_SCHEDULED={
  "xray-alpaca-delayed-sip-research.yml",
  "xray-candidate-local-alpaca-sip-recovery.yml",
+ "xray-personal-full-universe-sip-coverage.yml",
  "xray-massive-grouped-history-resume.yml",
  "xray-multi-provider-research-shadow.yml",
  "xray-sec-mirror-cik-shadow.yml",
@@ -167,6 +169,8 @@ def selftest():
     assert base["issue_writers"]==[]
     assert base["automated_schedules"]["xray-candidate-local-alpaca-sip-recovery.yml"]==["10 23 * * 1-5"]
     assert "xray-candidate-local-alpaca-sip-recovery.yml" in base["extra_readonly_provider_scheduled"]
+    assert base["automated_schedules"]["xray-personal-full-universe-sip-coverage.yml"]==["10 22 * * 1-5"]
+    assert "xray-personal-full-universe-sip-coverage.yml" in base["extra_readonly_provider_scheduled"]
     def bad(modify,want):
         sample=dict(actual)
         modify(sample)
