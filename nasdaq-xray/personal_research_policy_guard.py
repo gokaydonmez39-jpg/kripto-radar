@@ -29,9 +29,15 @@ def check(personal,compiled):
     require(personal.get("research_use")=="PERSONAL_NONCOMMERCIAL_NO_RESALE","USE")
     require(personal.get("no_waiver_of_upstream_contract_or_feed_terms") is True and
             personal.get("persist_raw_vendor_ohlcv") is False,"TERMS_AND_RAW")
-    require(all(personal.get(k) is False for k in
-            ("can_update_compiled_C417_alpha","can_override_canonical_unknown",
-             "can_set_true_full_go")),"NO_PRODUCTION_OVERRIDE")
+    require(personal.get("can_update_compiled_C417_alpha") is True and
+            personal.get("can_override_canonical_unknown") is True and
+            personal.get("can_set_true_full_go") is False and
+            personal.get("canonical_update_mode")=="SOURCE_RECONCILIATION_WITH_INDEPENDENT_COMPILED_C417_RELEASE_APPROVAL" and
+            personal.get("canonical_unknown_override_semantics")=="ONLY_AFTER_NEW_EXACT_SAME_ASOF_PRIMARY_EVIDENCE_IS_INDEPENDENTLY_VERIFIED" and
+            personal.get("observational_evidence_never_equivalent_to_release_primary") is True and
+            personal.get("compiled_policy_thresholds_unchanged") is True and
+            personal.get("no_synthetic_r92_or_phone_receipt") is True,
+            "ONLY_EVIDENCE_BOUND_CANONICAL_PERMISSIONS")
     require(personal.get("can_create_r92") is True and
             personal.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED" and
             personal.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True and
@@ -75,8 +81,10 @@ def selftest(personal,compiled):
       ("R92_PERMISSION_REVOKED",lambda d:d.update(can_create_r92=False)),
       ("R92_UNCONDITIONAL",lambda d:d.update(r92_registration_mode="UNCONDITIONAL")),
       ("R92_NO_SOURCE_GUARD",lambda d:d.update(r92_creation_requires_all_candidate_local_and_compiled_gates=False)),
-      ("CANONICAL",lambda d:d.update(can_update_compiled_C417_alpha=True)),
+      ("CANONICAL_REVOKED",lambda d:d.update(can_update_compiled_C417_alpha=False)),
       ("UNKNOWN",lambda d:d.update(unknown_never_pass=False)),
+      ("CANONICAL_UNSAFE",lambda d:d.update(canonical_unknown_override_semantics="OBSERVED_EQUALS_PRIMARY")),
+      ("CANONICAL_WEAK",lambda d:d.update(observational_evidence_never_equivalent_to_release_primary=False)),
       ("AUTOTRADE",lambda d:d.update(execution="AUTO")),
       ("TERMS",lambda d:d.update(no_waiver_of_upstream_contract_or_feed_terms=False)),
       ("RAW",lambda d:d.update(persist_raw_vendor_ohlcv=True)),
@@ -87,7 +95,7 @@ def selftest(personal,compiled):
         try:check(invalid,compiled)
         except ValueError:continue
         raise AssertionError("FALSE_PASS_"+label)
-    print("XRAY_PERSONAL_POLICY_SELFTEST=PASS_14_NEGATIVE_CONDITIONAL_R92_NOT_PRIMARY")
+    print("XRAY_PERSONAL_POLICY_SELFTEST=PASS_16_NEGATIVE_CONDITIONAL_R92_NOT_PRIMARY")
 
 def main():
     a=argparse.ArgumentParser()
