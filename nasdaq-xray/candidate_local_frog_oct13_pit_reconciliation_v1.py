@@ -44,7 +44,7 @@ def need(v, code):
 
 def blob_sha(path):
     b = path.read_bytes()
-    return hashlib.sha1(b"blob " + str(len(b)).encode() + b"\\0" + b).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(b)).encode() + bytes((0,)) + b).hexdigest()
 
 def sessions():
     all_days = [d.date().isoformat() for d in mcal.get_calendar("NASDAQ").valid_days(
@@ -297,7 +297,7 @@ def main():
       "canonical_files_modified":False,"raw_vendor_ohlcv_persisted":False,
       "raw_sec_share_values_persisted":False,"unknown_never_pass":True}
     def save():
-        x.out.write_text(json.dumps(state,sort_keys=True,indent=2)+"\\n")
+        x.out.write_text(json.dumps(state,sort_keys=True,indent=2)+chr(10))
     save()
     calls=[0]
     if key and secret:
