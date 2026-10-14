@@ -183,7 +183,11 @@ def selftest():
         (lambda r,s,d,h: r.update(queue_hash="z"*64), "SOURCE_IDENTITY_QUEUE"),
         (lambda r,s,d,h: d["symbol_classifications"].update(AAPL="UNKNOWN"),
          "COUNTS_NOT_PROVED"),
-        (lambda r,s,d,h: d["symbol_classifications"].update(BSP=PRESENT),
+        (lambda r,s,d,h: (
+            d["symbol_classifications"].update(
+                AAPL="UNKNOWN_DAILY_MISSING_OR_INTEGRITY"),
+            d["classification_counts"].update(
+                {PRESENT: 0, "UNKNOWN_DAILY_MISSING_OR_INTEGRITY": 2})),
          "PROVIDER_DAILY_VS_260_CONTRADICTION"),
         (lambda r,s,d,h: h.update(registered_R92_count=1),
          "NO_VENDOR_OR_ALPHA"),
