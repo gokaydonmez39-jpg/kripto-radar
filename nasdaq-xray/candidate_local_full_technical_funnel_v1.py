@@ -369,7 +369,7 @@ def selftest():
                  completed_sessions=["2026-07-01","2026-07-02"])
     need(listed["own_listed_history_short"] is True and
          listed["canonical_history_pass_created"] is False and
-         fence("AAPL","2026-10-13") is None,
+         fence("AAPL","2026-10-13") is None and
          terminal_record({"status":"FAIL_OFFICIAL_LISTED_HISTORY_LT260",
                           "technical_observation_ready":False,
                           "terminal_scan":True}) is True and
