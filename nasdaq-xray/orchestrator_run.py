@@ -88,7 +88,7 @@ def add_candidate_technical_funnel(out):
         return out
     prev=readj("orchestrator_state.json")
     try:
-        count=int(os.getenv("XRAY_CANDIDATE_TECH_BATCH","80"))
+        count=int(os.getenv("XRAY_CANDIDATE_TECH_BATCH","475"))
         out["candidate_technical_funnel"]=progress(
             watch, prev.get("candidate_technical_funnel"), batch_size=count)
         q=out["candidate_technical_funnel"]
