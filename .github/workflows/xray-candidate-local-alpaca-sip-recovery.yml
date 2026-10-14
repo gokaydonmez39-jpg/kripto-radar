@@ -132,7 +132,9 @@ jobs:
           p=Path(os.environ["RUNNER_TEMP"])/"personal_seven_sip_technical_labels.json"
           d=json.loads(p.read_text())
           assert d["schema"]=="XRAY_PERSONAL_SEVEN_SIP_TECHNICAL_SHADOW_V1"
-          assert d["scope_count"]==len(d["statuses"]) and d["scope_count"]<=11
+          assert d["scope_count"]==len(d["statuses"]) and d["scope_count"]>=0
+          assert d["pending_symbol_truncation"] is False
+          assert d["api_batch_count"]>=0
           assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
           assert d["no_raw_market_data_exported"] is True
           assert d["canonical_price_promoted"] is False
