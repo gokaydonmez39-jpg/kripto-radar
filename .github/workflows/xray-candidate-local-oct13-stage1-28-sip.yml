@@ -19,4 +19,37 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r nasdaq-xray/requirements-runtime.txt
-      - run: python nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py --selftest
+      - name: Compile and run offline negative guards
+        run: |
+          python -m py_compile nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py
+          python nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py --selftest
+      - name: Fetch actual immutable Oct13 source overlap
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/intersection"
+          gh run download 38532588994 --repo "${{ github.repository }}" --name xray-20261013-real-545-404-source-rollup-no-r92 --dir "$RUNNER_TEMP/intersection"
+      - name: Measure actual SIP 260-session and weekly Stage1 for 28 names
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py --source "$RUNNER_TEMP/intersection/xray_full_same_asof_source_rollup.json" --out "$RUNNER_TEMP/xray_stage1_28.json"
+      - name: Verify 28 exact outcomes no production release
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_stage1_28.json").read_text())
+          assert d["asof_et"]=="2026-10-13" and len(d["status_by_symbol"])==28
+          assert sum(d["result_counts"].values())==28
+          assert d["r92_registered"]==0 and not d["canonical_primary_created"]
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_STAGE1_28_SOURCE_READBACK=PASS_NO_FALSE_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-20261013-stage1-28-sip-260-shadow
+          path: ${{ runner.temp }}/xray_stage1_28.json
+          if-no-files-found: warn
