@@ -18,6 +18,11 @@ from decimal import Decimal
 from alpaca_rth_minute_integrity_shadow import official_window
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp,data_check,NY
 from alpaca_sip_4symbol_30min_rth_shadow import LIMIT
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def cached_cached_official_window(day):
+    return official_window(day)
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_PERSONAL_CURRENT_EXACT30_SIP_PRICE_RECHECK_V1"
 
@@ -99,7 +104,7 @@ def classify_mixed_full_and_early(daily,halfhour,days):
     expected={}
     windows={}
     for day in days:
-        start,close,minutes=official_window(day)
+        start,close,minutes=cached_official_window(day)
         require(minutes in (210,390) and minutes%30==0,
                 "OFFICIAL_SESSION_LENGTH")
         windows[day]=(start,minutes)
@@ -144,7 +149,7 @@ def classify_mixed_full_and_early(daily,halfhour,days):
 def dynamic_analyze(batch,daily,halfhour,days):
     require(set(daily)<=set(batch) and set(halfhour)<=set(batch),
             "FOREIGN_BATCH_KEY")
-    if all(official_window(d)[2]==390 for d in days):
+    if all(cached_official_window(d)[2]==390 for d in days):
         return archived_analyze(batch,daily,halfhour,days)
     found={}
     for sym in batch:
@@ -239,11 +244,11 @@ def selftest():
     # A future early close must not make every symbol UNKNOWN for 30 days.
     early_dates=dates30("2026-11-27")
     require("2026-11-27" in early_dates and
-            official_window("2026-11-27")[2]==210,
+            cached_official_window("2026-11-27")[2]==210,
             "OFFICIAL_13ET_EARLY_CLOSE")
     synth_day=[];synth_half=[]
     for day in early_dates:
-        start,close,minutes=official_window(day)
+        start,close,minutes=cached_official_window(day)
         midnight=dt.datetime.combine(dt.date.fromisoformat(day),dt.time(),
                                       NY).astimezone(dt.timezone.utc)
         synth_day.append({"t":midnight.isoformat(),"o":100.0,"h":101.0,
