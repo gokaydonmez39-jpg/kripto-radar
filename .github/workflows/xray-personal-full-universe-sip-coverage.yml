@@ -500,3 +500,32 @@ jobs:
           path: ${{ runner.temp }}/xray_six_gate_frozen_replay.json
           if-no-files-found: error
           retention-days: 14
+      - name: Resolve SEC current CIK candidates directly from frozen six-gate replay
+        if: steps.epoch.outputs.current == 'true'
+        run: |
+          python nasdaq-xray/personal_sec_current_cik_shadow.py --selftest
+          python nasdaq-xray/personal_sec_current_cik_shadow.py \
+            --causal "$RUNNER_TEMP/xray_six_gate_frozen_replay.json" \
+            --out "$RUNNER_TEMP/xray_sec_replay_current_cik.json"
+      - name: Prove frozen SEC current associations are not point-in-time market-cap pass
+        if: steps.epoch.outputs.current == 'true'
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_replay_current_cik.json").read_text())
+          assert x["scope_count"]==406
+          assert x["current_mc_2b_attested"] is False
+          assert x["sec_companyfacts_class_share_count_verified"] is False
+          assert x["issuer_class_and_corporate_actions_verified"] is False
+          assert x["registered_R92_count"]==0
+          print("XRAY_FROZEN_SEC_406=PASS_CIK_CANDIDATES_ONLY_NO_MC")
+          PY
+      - name: Archive immutable research-cohort SEC CIK candidate classifications
+        if: steps.epoch.outputs.current == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-cik-frozen-406-20261014-no-ohlcv
+          path: ${{ runner.temp }}/xray_sec_replay_current_cik.json
+          if-no-files-found: error
+          retention-days: 14
