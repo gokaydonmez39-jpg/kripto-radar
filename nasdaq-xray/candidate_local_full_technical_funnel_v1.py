@@ -52,8 +52,18 @@ def terminal_record(record):
     return (type(record) is dict
             and record.get("terminal_scan") is True
             and type(record.get("status")) is str
-            and not record["status"].startswith("UNKNOWN_")
+            and not record["status"].startswith("UNKNOWN")
             and record.get("status") not in RETRYABLE_HISTORY_STATUSES)
+
+def technical_disposition(ready, any_watch, any_unresolved_geometry):
+    """Retain valid candidate-local families; unresolved-only math stays retryable."""
+    if ready:
+        return "TECHNICAL_WATCH_NEEDS_PRIMARY", True
+    if any_unresolved_geometry:
+        return "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY", False
+    if any_watch:
+        return "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS", True
+    return "TECHNICAL_GEOMETRY_NOT_APPROVED", True
 
 
 def prepare(watch, old=None):
@@ -282,15 +292,14 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 "event_primary_status":"UNKNOWN",
                 "regime_primary_status":"UNKNOWN",
                 "final_AL":False}
-        return sym,{"status":"TECHNICAL_WATCH_NEEDS_PRIMARY" if ready else
-                         "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS" if any_watch
-                         else "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY" if any_unresolved_geometry
-                         else "TECHNICAL_GEOMETRY_NOT_APPROVED",
+        disposition, complete = technical_disposition(
+            ready, any_watch, any_unresolved_geometry)
+        return sym,{"status":disposition,
                     "family_results":family_results,
                     "confirmed_families":sorted(pass_families),
                     "technical_observation_ready":ready,
                     "completed_weeks":current_week.get("weeks",0),
-                    "history_source":source,"terminal_scan":True}
+                    "history_source":source,"terminal_scan":complete}
     except Exception as exc:
         return sym,{"status":"UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
                     "error_type":type(exc).__name__,
@@ -383,6 +392,24 @@ def selftest():
     else:raise AssertionError("TOP_N_ACCEPTED")
     need(BATCH_SIZE>=475 and MAX_WORKERS<=4,
          "FULL_SCOPE_BATCH_NO_UNBOUNDED_CONCURRENT_PROVIDER_CALLS")
+    for ready in (False, True):
+        for watch_hit in (False, True):
+            for unresolved in (False, True):
+                disposition, complete = technical_disposition(
+                    ready, watch_hit, unresolved)
+                if ready:
+                    need(disposition=="TECHNICAL_WATCH_NEEDS_PRIMARY"
+                         and complete, "VALID_FAMILY_MUST_NOT_BE_GLOBALLY_VETOED")
+                elif unresolved:
+                    need(disposition=="UNKNOWN_FROZEN_TECHNICAL_GEOMETRY"
+                         and not complete, "MIXED_UNKNOWN_MATH_CANNOT_TERMINATE")
+                else:
+                    need(disposition in ("WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
+                                         "TECHNICAL_GEOMETRY_NOT_APPROVED")
+                         and complete, "PROVEN_NONPASS_TERMINATES")
+    for status in ("UNKNOWN","UNKNOWN_LEGACY","UNKNOWN_PROVIDER_ERROR"):
+        need(not terminal_record({"status":status,"terminal_scan":True}),
+             "ALL_UNKNOWN_VARIANTS_REMAIN_RETRYABLE")
     # Regression: the previous version incorrectly accepted these as terminal.
     # This must fail for both new and already-persisted legacy rows.
     for status in RETRYABLE_HISTORY_STATUSES:
