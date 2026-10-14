@@ -1,0 +1,81 @@
+name: XRAY Oct13 All 277 Stage1 Deep A B D R1 RR Source Rollup
+on:
+  workflow_run:
+    workflows:
+      - "XRAY Oct13 Full Stage1 Pools Real SIP Deep A B D R1 RR"
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-join:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.id == 38535687938 && github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Independent source-alignment checks
+        run: |
+          python -m py_compile nasdaq-xray/candidate_local_oct13_deep277_rollup.py
+          python nasdaq-xray/candidate_local_oct13_deep277_rollup.py --selftest
+      - name: Require both exact prior jobs with real source evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          a="$(gh run view 38535687839 --repo "${{ github.repository }}" --json conclusion --jq .conclusion)"
+          b="$(gh run view 38535687938 --repo "${{ github.repository }}" --json conclusion --jq .conclusion)"
+          test "$a" = success
+          test "$b" = success
+          echo "XRAY_OCT13_REAL_STAGE1_277_DEEP_FULL_SOURCE_RUNS=SUCCESS"
+      - name: Fetch exact actual 277 Stage1 and ten Deep source artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stage1" "$RUNNER_TEMP/deep0" "$RUNNER_TEMP/pages" "$RUNNER_TEMP/download"
+          gh run download 38535687839 --repo "${{ github.repository }}" \
+            --name xray-20261013-stage1-full277-sip-source-research --dir "$RUNNER_TEMP/stage1"
+          gh run download 38534160546 --repo "${{ github.repository }}" \
+            --name xray-20261013-deep-seven-r1-rr-research --dir "$RUNNER_TEMP/deep0"
+          for p in $(seq 1 9); do
+            gh run download 38535687938 --repo "${{ github.repository }}" \
+              --name "xray-oct13-deep-277-page-$p" --dir "$RUNNER_TEMP/download"
+            mv "$RUNNER_TEMP/download/xray_deep_page.json" "$RUNNER_TEMP/pages/deep_$p.json"
+          done
+      - name: Compute exact 54-positive Stage1 to genuine A B D R1 RR transition
+        run: |
+          python nasdaq-xray/candidate_local_oct13_deep277_rollup.py \
+            --stage1 "$RUNNER_TEMP/stage1/xray_stage1_full277.json" \
+            --first "$RUNNER_TEMP/deep0/xray_deep7.json" \
+            --pages-dir "$RUNNER_TEMP/pages" \
+            --out "$RUNNER_TEMP/xray_deep277_real_full.json"
+      - name: Audit candidate-local truth and R92 release denial
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          o=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_deep277_real_full.json").read_text())
+          assert o["schema"]=="XRAY_OCT13_277_REAL_STAGE1_DEEP_R1RR_COMPLETE_SHADOW_V1"
+          assert o["asof_et"]=="2026-10-13" and o["source_277_stage1_count"]==277
+          assert o["stage1_pool_count"]==o["source_deep_evaluated_symbol_count"]==54
+          assert sum(o["deep_results"].values())==54
+          assert set(o["deep_page_sha256"])=={str(i) for i in range(10)}
+          assert o["registered_r92"]==0 and not o["iphone_delivery_receipt_verified"]
+          assert o["execution"]=="NONE" and o["real_money"]=="NO-GO"
+          print("XRAY_277_REAL_STAGE1_DEEP_SOURCE_EXACT_JOIN=PASS")
+          print("XRAY_ACTUAL_A_B_D_TRIGGER_COUNT="+str(o["actual_confirmed_recent_family_trigger_count"]))
+          print("XRAY_A_B_D_FROZEN_R1_RR_EVALUATED="+str(o["trigger_families_rr_evaluated"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-20261013-full277-stage1-deep-abd-r1rr-real
+          path: ${{ runner.temp }}/xray_deep277_real_full.json
+          retention-days: 14
+          if-no-files-found: warn
