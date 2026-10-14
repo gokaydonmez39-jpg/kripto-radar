@@ -77,6 +77,7 @@ jobs:
             -n xray-personal-six-gate-causal-worklist-no-ohlcv -D "$RUNNER_TEMP/causal"
       - name: Observe complete verified technical A/B/D watch scope, without vendor OHLCV export
         env:
+          XRAY_RESEARCH_UPSTREAM_RUN_ID: ${{ steps.source.outputs.upstream_run_id }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
@@ -84,6 +85,8 @@ jobs:
             --causal "$RUNNER_TEMP/causal/xray_six_gate_causal_breaker.json" \
             --out "$RUNNER_TEMP/xray_early_technical_watch_private.json"
       - name: Recheck no R92, untruncated scope, no invented WATCH on missing provider
+        env:
+          XRAY_RESEARCH_UPSTREAM_RUN_ID: ${{ steps.source.outputs.upstream_run_id }}
         run: |
           python - <<'PY'
           import json,os
@@ -98,6 +101,15 @@ jobs:
                sum(x["classification_counts"].values())==x["scope_count"],"EXACT_SCOPE")
           need(set(x["technical_setup_family_verified"])==
                set(x["technical_research_watch_symbols"]),"NO_FALSE_SETUP_FAMILY")
+          need(type(x.get("source_workflow_run_id")) is int and
+               x["source_workflow_run_id"]==int(os.environ["XRAY_RESEARCH_UPSTREAM_RUN_ID"]),
+               "EXACT_SIX_GATE_SOURCE_RUN_ID")
+          need(type(x.get("watch_membership_digest_sha256")) is str and
+               len(x["watch_membership_digest_sha256"])==64,
+               "EXACT_RESEARCH_WATCH_MEMBERSHIP_DIGEST")
+          need(x["user_notification_sent"] is False and
+               x["platform_notification_sent"] is False,
+               "NO_FORGED_CHATGPT_PLATFORM_ALERT")
           need(x["registered_r92_count"]==0 and not x["user_notification_sent"] and
                not x["iphone_delivery_receipt_attested"] and
                not x["source_independent_primary_mc_attested"] and
