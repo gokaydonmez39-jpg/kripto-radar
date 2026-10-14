@@ -1,0 +1,63 @@
+name: XRAY Oct13 Candidate Local SIP Remaining Ten 50 Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-candidate-local-price-oct13-remaining10.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-epoch13-frozen-sip-remaining-pages
+  cancel-in-progress: false
+jobs:
+  historical-sip-bounded:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        page: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify immutable same-ASOF and all 545 exactly disjoint 50-pages
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python nasdaq-xray/candidate_local_alpaca_price_50_page.py --selftest
+      - name: Recover independent real Oct13 SIP 30Min RTH source for page
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          PAGE: ${{ matrix.page }}
+        run: |
+          python nasdaq-xray/candidate_local_alpaca_price_50_page.py \
+            --page "$PAGE" --out "$RUNNER_TEMP/xray_sip_page.json"
+      - name: Validate all 50 per-symbol outcomes, never publish OHLCV or fake R92
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sip_page.json").read_text())
+          assert j["schema"]=="XRAY_OCT13_ALPACA_50_SINGLE_SYMBOL_SIP_RTH_BOUNDS_V1"
+          assert j["asof_et"]=="2026-10-13" and 1<=j["page"]<=10
+          assert j["target_count"]==len(j["statuses"])==sum(j["counts"].values())
+          assert j["target_count"]== (45 if j["page"]==10 else 50)
+          assert j["request_count"]<=160 and j["single_symbol_isolation"]
+          assert not j["price_primary_created"] and not j["r92_created"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_REMAINING_SIP_PAGE_AUDIT=PASS_RESEARCH_ONLY")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-sip-price-page-${{ matrix.page }}
+          path: ${{ runner.temp }}/xray_sip_page.json
+          retention-days: 14
+          if-no-files-found: warn
