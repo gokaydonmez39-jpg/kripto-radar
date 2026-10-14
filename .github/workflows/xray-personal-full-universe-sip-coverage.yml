@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
+      - "nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
   schedule:
     - cron: "10 22 * * 1-5"
@@ -64,5 +65,57 @@ jobs:
         with:
           name: xray-personal-full-universe-sip-coverage-no-ohlcv
           path: ${{ runner.temp }}/xray_personal_full_universe_sip_asof_coverage.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  history260:
+    name: Personal full NASDAQ SIP 260 daily and 52 weekly research
+    needs: [coverage]
+    if: ${{ needs.coverage.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify full-universe 260 daily and 52 week proof adversarial regressions
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py
+          python nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py --selftest
+      - name: Measure exact 260 official sessions for every Nasdaq symbol
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py \
+            --out "$RUNNER_TEMP/xray_nasdaq_full_260_52_sip_shadow.json"
+      - name: Validate complete no-alpha history research partition
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_nasdaq_full_260_52_sip_shadow.json").read_text())
+          assert x["schema"]=="XRAY_PERSONAL_FULL_NASDAQ_SIP_260_DAILY_52_WEEK_RESEARCH_V1"
+          assert x["scope_count"]==x["classified_count"]==len(x["symbol_classifications"])
+          assert sum(x["classification_counts"].values())==x["scope_count"]
+          assert x["full_history_260_52_observed_count"]+x["full_history_missing_or_unknown_count"]==x["scope_count"]
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert x["no_vendor_ohlcv_persisted"] and x["registered_R92_count"]==0
+          assert x["canonical_price_history_mc_untouched"]
+          print("XRAY_NASDAQ_260_52_FULL_SCOPE_SHADOW=PASS_COMPLETE_PARTITION_NOT_PRIMARY")
+          PY
+      - name: Preserve all 260/52 classifications but never OHLCV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-full-nasdaq-260-52-no-ohlcv
+          path: ${{ runner.temp }}/xray_nasdaq_full_260_52_sip_shadow.json
           if-no-files-found: warn
           retention-days: 14
