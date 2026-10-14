@@ -52,6 +52,34 @@ assert td["primary_mc_promotion_allowed"] is False
 assert td["price_dv30_positive_promotion_allowed"] is False
 assert td["r92_promotion_allowed"] is False and td["paid_upgrade_allowed"] is False
 assert td["execution"]=="NONE" and td["real_money"]=="NO-GO"
+massive=j["providers"]["MASSIVE"]
+def require(condition,reason):
+    if not condition:raise ValueError("XRAY_MASSIVE_"+reason)
+require(massive["role"]=="INDEPENDENT_INTERACTIVE_PRICE_CROSSCHECK_RESEARCH_ONLY",
+        "NOT_PRICE_CROSSCHECK_ONLY")
+require(massive["sample_daily_volume_integrity"]==
+        "FRACTIONAL_NOT_INTEGER_AAPL_OCT13","FRACTIONAL_EVIDENCE_LOST")
+require(massive["github_runner_api_key_and_entitlement"]=="NOT_ATTESTED"
+        and massive["automated_non_display_entitlement"]=="NOT_ATTESTED",
+        "RUNNER_PERMISSION_GUESSED")
+require(massive["positive_price_dv30_promotion_allowed"] is False
+        and massive["primary_mc_promotion_allowed"] is False
+        and massive["strict_g9_promotion_allowed"] is False
+        and massive["r92_promotion_allowed"] is False
+        and massive["paid_top_up_allowed"] is False,
+        "FALSE_PRIMARY_OR_LICENSE_SHORTCUT")
+# Synthetic adversarial v test: finite integer is mandatory for current
+# policy; fractional vendor daily volume must not be rounded.
+import math
+def valid_integer_volume(value):
+    return (type(value) in (int,float) and math.isfinite(value)
+            and value>0 and int(value)==value)
+require(valid_integer_volume(38983564) and
+        not valid_integer_volume(38983564.125) and
+        not valid_integer_volume(float("nan")) and
+        not valid_integer_volume(True),
+        "FRACTIONAL_OR_NONFINITE_VOLUME_ACCEPTED")
+print("XRAY_MASSIVE_BACKUP_SELFTEST=PASS_FRACTIONAL_QUARANTINE_4_NEGATIVES_NO_PRIMARY")
 print("XRAY_BACKUP_PROVIDER_BQ_TWELVE_SELFTEST=PASS_DOCUMENTED_FREE_NOT_ACTIVATED_RIGHTS_ASOF_AND_NO_PRIMARY")
 print("XRAY_PROVIDER_AUTOMATION_GOVERNANCE_SELFTEST=PASS")
 
