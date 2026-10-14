@@ -101,13 +101,16 @@ def run(doc,now,fetch):
     start=days[0]+"T00:00:00Z"
     end=(date.fromisoformat(asof)+timedelta(days=1)).isoformat()+"T00:00:00Z"
     try:
-        r=fetch(["QQQ"],start,end,asof)
         result["api_batches_attempted"]+=1
+        r=fetch(["QQQ"],start,end,asof)
         need(type(r) is dict and set(r)=={"QQQ"},"BENCHMARK_SCOPE")
         benchmark,qstate=quality(r["QQQ"],days,weeks,asof)
     except Exception as exc:
         benchmark=None
-        qstate="UNKNOWN_QQQ_SOURCE_"+type(exc).__name__
+        token=str(exc).split(":",1)[0]
+        token=token if (token.startswith(("ALPACA_","XRAY_EARLY_WATCH_"))
+            and token.replace("_","").isalnum() and len(token)<90) else type(exc).__name__
+        qstate="UNKNOWN_QQQ_SOURCE_"+token
     result["benchmark_status"]=qstate
     if qstate!="HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY":
         benchmark=None
