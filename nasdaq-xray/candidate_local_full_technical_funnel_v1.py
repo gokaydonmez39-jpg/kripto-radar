@@ -25,6 +25,20 @@ def need(ok, why):
         raise ValueError("XRAY_ALL_CANDIDATE_TECH_"+why)
 
 
+def engine_source_fingerprint():
+    """Invalidate stored candidate decisions if ANY technical engine changes."""
+    from pathlib import Path
+    root=Path(__file__).resolve().parent
+    names=("candidate_local_full_technical_funnel_v1.py",
+           "stage1_shadow.py","deep_pre_r1_shadow.py",
+           "final_tech_shadow.py","alpha_semantics.py")
+    data=[]
+    for name in names:
+        raw=(root/name).read_bytes()
+        data.append((name,hashlib.sha256(raw).hexdigest()))
+    return hashlib.sha256(json.dumps(data,separators=(",",":")).encode()).hexdigest()
+
+
 def prepare(watch, old=None):
     """Persistent state is invalidated when exact WATCH source or ASOF changes."""
     need(type(watch) is dict
@@ -42,6 +56,7 @@ def prepare(watch, old=None):
     asof=watch.get("asof_et")
     source=watch.get("source_candidates_sha256")
     digest=watch.get("watchlist_digest")
+    engine_sha=engine_source_fingerprint()
     need(type(asof) is str and len(asof)==10 and
          type(source) is str and len(source)==64 and
          type(digest) is str and len(digest)==64,
@@ -51,6 +66,7 @@ def prepare(watch, old=None):
         prev.get("asof_et")==asof and
         prev.get("source_candidates_sha256")==source and
         prev.get("watchlist_digest")==digest and
+        prev.get("engine_source_sha256")==engine_sha and
         prev.get("candidate_count")==len(rows))
     prior=prev.get("results") if reusable else {}
     prior=prior if type(prior) is dict else {}
@@ -58,6 +74,7 @@ def prepare(watch, old=None):
           if s in prior and type(prior[s]) is dict
           and prior[s].get("terminal_scan") is True}
     return {"schema":SCHEMA,"asof_et":asof,
+            "engine_source_sha256":engine_sha,
             "source_candidates_sha256":source,
             "watchlist_digest":digest,
             "candidate_count":len(rows),"results":kept,
@@ -75,12 +92,16 @@ def summarize(state, watch):
         r.get("status","UNKNOWN") for r in state["results"].values()).items()))
     preliminary=[s for s in expected
         if state["results"].get(s,{}).get("technical_observation_ready") is True]
+    triggered=[s for s in expected
+        if bool(state["results"].get(s,{}).get("confirmed_families"))]
     state.update({"evaluated_count":len(seen),"pending_count":len(pending),
                   "pending_symbols":pending,
                   "full_scope_scanned":not pending,
                   "status_counts":stats,
                   "preliminary_technical_watch_count":len(preliminary),
                   "preliminary_technical_watch_symbols":preliminary,
+                  "recent_a_b_d_trigger_count":len(triggered),
+                  "recent_a_b_d_trigger_symbols":triggered,
                   "final_buy_signals":[],
                   "final_buy_signal_count":0,
                   "last_batch_source_mode":"SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
@@ -204,11 +225,27 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 "trigger_date":g.get("trigger_date"),
                 "setup_id":z.get("setup_id"),
                 "source_r1_target":(z.get("target") or {}).get("source"),
+                "diagnostic_only_entry_stop_target":({
+                    "entry_model_usd":round(float(levels["entry_model"]),4),
+                    "stop_s0_usd":round(float(levels["S0"]),4),
+                    "target_t1_usd":round(float(levels["T1"]),4)}
+                    if eligible_levels and type(levels.get("entry_model"))
+                           in (int,float) and
+                           math.isfinite(levels["entry_model"]) and
+                           levels["entry_model"]>0 else None),
+                "diagnostic_blockers":list(z.get("diagnostic_blockers") or []),
                 "event_primary_status":"UNKNOWN",
                 "regime_primary_status":"UNKNOWN",
                 "final_AL":False}
+        any_watch=any(str(x.get("result","")).startswith("WATCH")
+                      for x in [final.eval_one(
+                          sym,fam,g,data,event_status="UNKNOWN",
+                          state_cap="WATCH",r92_eligible=False,
+                          regime_finalist_status="UNKNOWN")
+                          for fam,g in pass_families.items()])
         return sym,{"status":"TECHNICAL_WATCH_NEEDS_PRIMARY" if ready else
-                         "TECHNICAL_GEOMETRY_NOT_APPROVED",
+                         "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS" if any_watch
+                         else "TECHNICAL_GEOMETRY_NOT_APPROVED",
                     "family_results":family_results,
                     "confirmed_families":sorted(pass_families),
                     "technical_observation_ready":ready,
