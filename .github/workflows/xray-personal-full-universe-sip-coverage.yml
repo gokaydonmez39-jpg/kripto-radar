@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py"
       - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
       - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/personal_six_gate_causal_breaker.py"
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
   schedule:
@@ -278,5 +279,84 @@ jobs:
         with:
           name: xray-personal-joint-260-daily30-rth30-no-ohlcv
           path: ${{ runner.temp }}/xray_personal_joint_rth30_shadow.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  six-gate-causal-breaker:
+    name: Audit every issuer's first unresolved causal gate across all six links
+    needs: [coverage, history260, root-source-bridge, joint-rth30-shadow]
+    if: ${{ needs.coverage.result == 'success' && needs.history260.result == 'success' && needs.root-source-bridge.result == 'success' && needs.joint-rth30-shadow.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Nasdaq sessions calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Prove no forged MC, price, technical or R92 can be promoted through six gates
+        run: |
+          python -m py_compile nasdaq-xray/personal_six_gate_causal_breaker.py
+          python nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+          python -O nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-full-universe-sip-coverage-no-ohlcv
+          path: ${{ runner.temp }}/daily
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-full-nasdaq-260-52-no-ohlcv
+          path: ${{ runner.temp }}/history
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-exact-root-sip-source-bridge-no-ohlcv
+          path: ${{ runner.temp }}/bridge
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-joint-260-daily30-rth30-no-ohlcv
+          path: ${{ runner.temp }}/rth
+      - name: Construct exact-sha complete universe causal routing only from same-run receipts
+        run: |
+          python nasdaq-xray/personal_six_gate_causal_breaker.py \
+            --daily "$RUNNER_TEMP/daily/xray_personal_full_universe_sip_asof_coverage.json" \
+            --history "$RUNNER_TEMP/history/xray_nasdaq_full_260_52_sip_shadow.json" \
+            --bridge "$RUNNER_TEMP/bridge/xray_personal_sip_root_bridge.json" \
+            --rth "$RUNNER_TEMP/rth/xray_personal_joint_rth30_shadow.json" \
+            --out "$RUNNER_TEMP/xray_six_gate_causal_breaker.json"
+      - name: Assert every symbol has one next action and none authorizes AL
+        run: |
+          python - <<'PY'
+          import json,os
+          from collections import Counter
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_six_gate_causal_breaker.json").read_text())
+          assert d["schema"]=="XRAY_PERSONAL_SIX_GATE_CAUSAL_BREAKER_V1"
+          assert len(d["per_symbol_causal_routing"])==d["scope_count"]
+          assert sum(d["first_unresolved_gate_counts"].values())==d["scope_count"]
+          assert sum(d["next_safe_evidence_action_counts"].values())==d["scope_count"]
+          assert d["six_gate_dependency_order"]==["SOURCE","HISTORY","PRICE_DV30","MC","TECH","R92_DELIVERY"]
+          assert d["rth30_lower_bound_observed"]==len(d["next_gate_mc_sec_research_only_symbols"])
+          assert d["c417_price_dv30_primary_attested"] is False
+          assert d["issuer_class_mc_current_attested"] is False
+          assert d["technical_a_b_d_r1_event_regime_attested"] is False
+          assert d["registered_r92_count"]==0 and d["iphone_device_delivery_attested"] is False
+          assert d["no_vendor_ohlcv_persisted"] is True
+          assert d["no_canonical_mutations"] is True
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_SIX_GATE_CAUSAL_RESOLVER=PASS_COMPLETE_FIRST_BLOCKER_PARTITION_ZERO_FALSE_AL")
+          PY
+      - name: Retain SHA-bound causal worklist with no vendor market data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-six-gate-causal-worklist-no-ohlcv
+          path: ${{ runner.temp }}/xray_six_gate_causal_breaker.json
           if-no-files-found: warn
           retention-days: 14
