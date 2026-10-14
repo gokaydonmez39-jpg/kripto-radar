@@ -70,7 +70,7 @@ def assess(sym,df,qqq,asof,week_last):
 def run(now,fetch):
     root=json.loads(STATE.read_text())
     asof,names,days,weeks=source_scope(root,now)
-    need(0<len(names)<=11 and "QQQ" not in names and
+    need(len(names)<=11 and "QQQ" not in names and
          names==sorted(set(names)),"LATEST_UNRESOLVED_SCOPE")
     result={"schema":SCHEMA,"asof_et":asof,"scope_count":len(names),
        "source_state_git_blob_sha":blob_sha(STATE),
@@ -81,6 +81,10 @@ def run(now,fetch):
        "canonical_price_promoted":False,"canonical_history_promoted":False,
        "primary_mc_promoted":False,"true_r92_count":0,
        "final_buy_signals":[],"iphone_receipt_attested":False}
+    if not names:
+        result["benchmark_status"]="NOT_REQUIRED_NO_PENDING"
+        result["counts"]={}
+        return result
     scope=sorted(names+["QQQ"])
     start=days[0]+"T00:00:00Z"
     end=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
