@@ -1,0 +1,50 @@
+{
+  "asof_et": "2026-10-13",
+  "asof_proof": {
+    "canonical_price_blob_sha": "4bac485ade0477d419992cb6b36089c6b0896e4b",
+    "master_blob_sha": "64901add1736102b16b95597cf4d41beb2e8bc53",
+    "orchestrator_blob_sha": "a2e53e818595f59eeefaa5be88c7f679d00570ab",
+    "pending_scope_sha256": "f1c77eabcc6a5538c68a16d5ce7a57cb61d5fa483152db7c7fb074cacdad7921",
+    "price_unknown_scope_sha256": "04fb5bfda5b54d86db51e09026d58e406c5332829d4b647b65c9e0c425ca2e82"
+  },
+  "candidate_technical_watch_research_observed_count": 0,
+  "certified_C417_AL_signal_count": 0,
+  "completed_session_latest": true,
+  "data_for_user_signals": "COUNTS_ONLY;PRIVATE_ACTIONS_ARTIFACT_FOR_DETAILS",
+  "iphone_receipt_attested": false,
+  "no_false_primary_or_authorized_trading": true,
+  "no_market_order_capability": true,
+  "no_personal_account_access": true,
+  "no_vendor_ohlcv_or_price_levels_persisted": true,
+  "personal_price_exact30_research_counts": {
+    "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW": 91,
+    "LOWER_BOUND_GE_50M_SHADOW": 416,
+    "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW": 38
+  },
+  "personal_secondary_technical_counts": {
+    "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 6,
+    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1
+  },
+  "personal_source260_candidate_counts": {
+    "SHADOW_260_DAILY_52_WEEK_OBSERVED": 7
+  },
+  "registered_R92_signal_count": 0,
+  "research_scope": {
+    "all_candidate_watch": 474,
+    "canonical_price_unknown": 545,
+    "canonical_technical_evaluated": 467,
+    "master_pass": 3184,
+    "master_unknown": 10,
+    "secondary_local_pending_examined": 7,
+    "secondary_local_still_unknown_count": 1,
+    "secondary_local_technical_rejected_count": 6
+  },
+  "safety": {
+    "canonical_release_unchanged": true,
+    "execution": "NONE",
+    "personal_research_noncommercial": true,
+    "real_money": "NO-GO"
+  },
+  "schema": "XRAY_PERSONAL_SWING_RADAR_DAILY_SNAPSHOT_V1",
+  "status": "PERSONAL_EOD_RESEARCH_SCAN_ATTESTED_NOT_C417_AL"
+}
