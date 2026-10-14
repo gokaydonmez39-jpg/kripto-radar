@@ -29,16 +29,25 @@ def demand(ok,code):
     if not ok:
         raise ValueError("ROOT_260_SHADOW_"+code)
 
-def source_scope():
+def four_unknown_scope(rows):
+    return (type(rows) is dict and
+            all(type(rows.get(s)) is dict and
+                str(rows[s].get("status","")).startswith("UNKNOWN")
+                for s in SYMBOLS))
+
+def source_scope(*, require_four_unknown=True):
     state=json.loads((ROOT/"sina_state.json").read_text())
     demand(state.get("asof_et")==ASOF and state.get("status")=="HISTORY_PARTIAL"
            and state.get("unknown_never_pass") is True
            and state.get("execution")=="NONE" and state.get("real_money")=="NO-GO"
            and state.get("unknown_count")>0,"ROOT_EPOCH")
     rows=state.get("results")
-    demand(type(rows) is dict and all(s in rows and
-           rows[s].get("status","").startswith("UNKNOWN") for s in SYMBOLS),
-           "ROOT_FOUR_UNKNOWN_SCOPE")
+    demand(type(rows) is dict and all(type(rows.get(s)) is dict for s in SYMBOLS),
+           "ROOT_FOUR_SYMBOLS_MISSING")
+    if require_four_unknown:
+        # Vendor one-shot may target only actual current UNKNOWN; a PASS must
+        # never be reclassified as UNKNOWN merely to keep old research running.
+        demand(four_unknown_scope(rows),"ROOT_FOUR_UNKNOWN_SCOPE")
     daily,weeks=expected_dates(ASOF)
     demand(len(daily)==260 and daily[-1]==ASOF and
            len(weeks)==52 and weeks[-1]<=ASOF
@@ -101,7 +110,20 @@ def report(statuses,state,daily,weeks,source_status):
       "vendor_raw_ohlcv_persisted":False,**SAFE}
 
 def selftest():
-    daily,weeks,state=source_scope()
+    # Offline measurement fixtures may run after these four symbols recover.
+    # The live vendor entry point still requires current four-symbol UNKNOWN.
+    daily,weeks,state=source_scope(require_four_unknown=False)
+    fixture={s:{"status":"UNKNOWN_TEST_ONLY"} for s in SYMBOLS}
+    demand(four_unknown_scope(fixture),"OFFLINE_UNKNOWN_POSITIVE")
+    not_unknown={s:dict(row) for s,row in fixture.items()}
+    not_unknown["AAPL"]["status"]="PASS"
+    demand(not four_unknown_scope(not_unknown),"OFFLINE_PASS_MUST_NOT_BE_UNKNOWN")
+    absent=dict(fixture)
+    absent.pop("NVDA")
+    demand(not four_unknown_scope(absent),"OFFLINE_MISSING_SYMBOL")
+    malformed=dict(fixture)
+    malformed["AMZN"]={"status":None}
+    demand(not four_unknown_scope(malformed),"OFFLINE_MALFORMED_STATUS")
     def bar(day):
         midnight=dt.datetime.combine(
             dt.date.fromisoformat(day),dt.time(0,0),
@@ -129,7 +151,7 @@ def selftest():
            and out["expected_completed_week_closes"]==52
            and out["primary_history_created"] is False
            and out["r92_created"] is False,"NO_ALPHA")
-    print("XRAY_ROOT_260_ASOF_SELFTEST=PASS_POSITIVE_6_NEGATIVES_NO_PRIMARY")
+    print("XRAY_ROOT_260_ASOF_SELFTEST=PASS_POSITIVE_9_NEGATIVES_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
