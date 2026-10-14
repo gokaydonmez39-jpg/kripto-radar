@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
       - "nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py"
+      - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
   schedule:
@@ -87,6 +88,9 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Verify full-universe 260 daily and 52 week proof adversarial regressions
         run: |
+          python -m py_compile nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
+          python nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
+          python -O nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
           python -m py_compile nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py
           python nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py --selftest
           python -O nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py --selftest
@@ -114,6 +118,14 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           assert x["no_vendor_ohlcv_persisted"] and x["registered_R92_count"]==0
           assert x["canonical_price_history_mc_untouched"]
+          d=x["daily30_source_proxy"]
+          assert d["schema"]=="XRAY_FULL_UNIVERSE_30DAY_SIP_DAILY_PROXY_NO_RTH_AUTHORITY_V1"
+          assert d["scope_count"]==x["scope_count"]==len(d["symbol_classifications"])
+          assert sum(d["classification_counts"].values())==d["scope_count"]
+          assert d["research_daily_proxy_not_official_rth_dv30"] is True
+          assert d["corporate_action_adjustment_and_issuer_identity_unproven"] is True
+          assert d["no_vendor_ohlcv_persisted"] is True and d["registered_R92_count"]==0
+          assert d["hist_260_zero_volume_symbols"]==d["hist_260_zero_volume_outside_last30"]+d["hist_260_zero_volume_within_last30"]+d["hist_260_zero_volume_other_30day_unknown"]
           print("XRAY_NASDAQ_260_52_FULL_SCOPE_SHADOW=PASS_COMPLETE_PARTITION_NOT_PRIMARY")
           PY
       - name: Preserve all 260/52 classifications but never OHLCV
@@ -175,6 +187,9 @@ jobs:
           assert d["same_asof_same_universe_join"] is True
           assert d["research_observations_not_canonical_pass"] is True
           assert d["no_c417_dv30_or_mc_pass"] is True
+          assert d["daily30_source_proxy_not_official_rth_dv30"] is True
+          assert d["last30_sip_daily_valid_source_count"]>=d["260_daily_52_week_observed"]
+          assert d["historical_zero_volume_outside_latest30_count"]>=0
           assert d["no_official_rth_exact_volume"] is True
           assert d["no_technical_or_event_clear"] is True
           assert d["no_vetted_r92_or_delivery"] is True
