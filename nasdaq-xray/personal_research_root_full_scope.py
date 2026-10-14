@@ -39,7 +39,10 @@ def load():
     policy=json.loads(POLICY.read_text())
     need(policy["schema"]=="XRAY_PERSONAL_RESEARCH_TECHNICAL_AUTHORITY_V1"
          and policy["activation"]=="RESEARCH_OUTPUT_ONLY_NOT_PRODUCTION_SWITCH"
-         and policy["can_create_r92"] is False
+         and policy["can_create_r92"] is True
+         and policy.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED"
+         and policy.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True
+         and policy.get("can_update_compiled_C417_alpha") is False
          and policy["can_override_canonical_unknown"] is False
          and policy["unknown_never_pass"] is True,"POLICY")
     queue=state.get("queue")
