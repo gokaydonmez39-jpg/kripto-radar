@@ -8,18 +8,22 @@
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 475,
-    "engine_source_sha256": "7f9ee7061992ea83da47022673eb5a9910d5f94644572d47e7d6b24b6fde1d7b",
-    "evaluated_count": 475,
+    "engine_source_sha256": "c0c0ae9a6bbaba036d1554a633d4daa0ba78f4bf8635e5c2e5918bd8b9592084",
+    "evaluated_count": 472,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
-    "full_scope_scanned": true,
+    "full_scope_scanned": false,
     "independent_math_audit_count": 20,
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 19,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 0,
-    "pending_symbols": [],
+    "pending_count": 3,
+    "pending_symbols": [
+      "FISV",
+      "BSP",
+      "CCC"
+    ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
     "provider_credits_assumed_available": false,
@@ -426,7 +430,7 @@
       "BSP": {
         "history_source": "SINA_US_DAILY",
         "status": "UNKNOWN_260_OFFICIAL_HISTORY",
-        "terminal_scan": true
+        "terminal_scan": false
       },
       "BSY": {
         "completed_weeks": 54,
@@ -521,7 +525,7 @@
       "CCC": {
         "history_source": "SINA_US_DAILY",
         "status": "UNKNOWN_260_OFFICIAL_HISTORY",
-        "terminal_scan": true
+        "terminal_scan": false
       },
       "CCEP": {
         "completed_weeks": 54,
@@ -1104,7 +1108,7 @@
       "FISV": {
         "history_source": "SINA_US_DAILY",
         "status": "UNKNOWN_260_OFFICIAL_HISTORY",
-        "terminal_scan": true
+        "terminal_scan": false
       },
       "FIVE": {
         "completed_weeks": 54,
@@ -3915,7 +3919,7 @@
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
-    "transient_retry_count": 0,
+    "transient_retry_count": 3,
     "unknown_never_pass": true,
     "watchlist_digest": "7beebb329850099d35d5d5dceaa2235a07a1c25a38729b67538e4ddc5d14050d"
   },
@@ -3971,7 +3975,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T12:48:37.637977+00:00",
+  "updated_at_utc": "2026-10-14T13:00:15.789280+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
