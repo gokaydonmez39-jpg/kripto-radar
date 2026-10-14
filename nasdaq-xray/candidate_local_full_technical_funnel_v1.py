@@ -292,8 +292,8 @@ def main():
     if args.selftest:return selftest()
     need(args.watch and args.out,"WATCH_AND_OUTPUT_REQUIRED")
     watch=json.loads(args.watch.read_text())
-    prior=json.loads(args.previous.read_text()) if args.previous and
-         args.previous.is_file() else {}
+    prior=(json.loads(args.previous.read_text())
+           if args.previous and args.previous.is_file() else {})
     out=progress(watch,prior.get("candidate_technical_funnel"),args.batch_size)
     args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"scope":out["candidate_count"],
