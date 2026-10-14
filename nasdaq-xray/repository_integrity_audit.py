@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""Full tracked-source syntax/inventory and candidate-delivery guard audit.
+
+No vendor call, order, signal, workflow dispatch, mutation or deletion.
+Only checkout-tracked files count; runtime-generated caches are ignored.
+Orphan candidates and identical blobs are diagnostics, never deletion proof.
+"""
+from __future__ import annotations
+import argparse
+import ast
+from collections import Counter, defaultdict
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+
+REPO = Path(__file__).resolve().parent.parent
+ROOT = REPO / "nasdaq-xray"
+SCRIPT_RE = re.compile(r"nasdaq-xray/[A-Za-z0-9_./-]+\.py")
+
+def check(condition, label):
+    if not condition:
+        raise ValueError("XRAY_REPO_INTEGRITY_" + label)
+
+def sha256(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def tracked():
+    raw = subprocess.check_output(["git", "ls-files", "-z"], cwd=REPO)
+    return sorted(Path(x.decode("utf-8")) for x in raw.split(b"\0") if x)
+
+def census(paths, read_bytes):
+    """Classify every tracked Python, JSON, workflow and generated-bytecode file."""
+    errors, notices = [], []
+    counts = Counter()
+    source_hashes = defaultdict(list)
+    scripts = set()
+    workflow_sources = {}
+    import_edges = {}
+    for path in paths:
+        name = path.as_posix()
+        is_source = name.startswith("nasdaq-xray/") and path.suffix == ".py"
+        is_json = name.startswith("nasdaq-xray/") and path.suffix == ".json"
+        is_workflow = name.startswith(".github/workflows/") and path.suffix in {".yml", ".yaml"}
+        if name.endswith(".pyc") or "/__pycache__/" in name:
+            errors.append("TRACKED_COMPILED_BYTECODE:" + name)
+        if not (is_source or is_json or is_workflow):
+            continue
+        kind = "python" if is_source else "json" if is_json else "workflows"
+        counts[kind] += 1
+        try:
+            raw = read_bytes(path)
+            check(type(raw) is bytes and raw, "EMPTY_SOURCE")
+            source_hashes[sha256(raw)].append(name)
+            text = raw.decode("utf-8-sig")
+            if is_source:
+                scripts.add(name)
+                tree = ast.parse(text, filename=name)
+                deps = set()
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        deps.update(x.name.split(".")[0] for x in node.names)
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        deps.add(node.module.split(".")[0])
+                import_edges[name] = sorted(deps)
+            elif is_json:
+                json.loads(text)
+            else:
+                check(("on:" in text or "\non:" in text) and
+                      ("jobs:" in text or "\njobs:" in text),
+                      "WORKFLOW_TRIGGER_OR_JOB_MISSING")
+                workflow_sources[path.name] = text
+        except (OSError, UnicodeError, SyntaxError, ValueError, json.JSONDecodeError) as exc:
+            errors.append("UNREADABLE_OR_INVALID_" + kind.upper() + ":" + name
+                          + ":" + type(exc).__name__)
+    source_modules = {Path(x).stem for x in scripts}
+    used_modules = {dep for deps in import_edges.values() for dep in deps}
+    script_mentions = set()
+    for name, body in workflow_sources.items():
+        for match in SCRIPT_RE.findall(body):
+            script_mentions.add(match)
+            if match not in scripts:
+                notices.append("WORKFLOW_REFERENCE_REQUIRES_REVIEW:" + name + ":" + match)
+    # Dynamic imports, subprocesses and manual-only tests are not provable by
+    # static inspection: unreferenced here means REVIEW, not deletion.
+    orphan_review = sorted(x for x in scripts
+                           if Path(x).stem not in used_modules
+                           and x not in script_mentions)
+    identical = [p for p in source_hashes.values() if len(p) > 1]
+    report = {
+        "schema": "XRAY_FULL_TRACKED_REPOSITORY_INTEGRITY_AUDIT_V1",
+        "tracked_file_count": len(paths),
+        "python_ast_parsed_count": counts["python"],
+        "json_parsed_count": counts["json"],
+        "workflow_examined_count": counts["workflows"],
+        "duplicate_file_groups": sorted(identical),
+        "statically_unreferenced_python_review_count": len(orphan_review),
+        "statically_unreferenced_python_review": orphan_review,
+        "workflow_script_reference_count": len(script_mentions),
+        "workflow_reference_review": sorted(set(notices)),
+        "structural_errors": sorted(set(errors)),
+        "no_deletions_inferred_from_static_scan": True,
+        "execution": "NONE",
+        "real_money": "NO-GO",
+    }
+    return report, workflow_sources
+
+def source_integrity():
+    """One exact source epoch; a complete WATCH is not a complete terminal."""
+    candidate_bytes = (ROOT / "sina_candidates.json").read_bytes()
+    root = json.loads((ROOT / "orchestrator_state.json").read_text())
+    watch = root.get("watch_radar") or {}
+    technical = root.get("candidate_technical_funnel") or {}
+    ledger = json.loads((ROOT / "delivery_ledger.json").read_text())
+    registry = json.loads((ROOT / "canonical_candidate_lifecycle_registry.json").read_text())
+    terminal = json.loads((ROOT / "canonical_current_terminal.json").read_text())
+    count = watch.get("watchlist_count")
+    rows = watch.get("watchlist")
+    check(root.get("execution") == "NONE" and root.get("real_money") == "NO-GO",
+          "ROOT_SAFETY")
+    check(type(rows) is list and type(count) is int and
+          count == len(rows) == watch.get("price_liquidity_screened_count") and
+          watch.get("all_eligible_candidates_tracked") is True and
+          watch.get("watchlist_cap") is None, "WATCH_UNTRUNCATED")
+    check(sha256(candidate_bytes) == watch.get("source_candidates_sha256") ==
+          technical.get("source_candidates_sha256"), "CANDIDATE_SOURCE_SHA")
+    check(root.get("asof_et") == watch.get("asof_et") ==
+          technical.get("asof_et"), "ROOT_WATCH_TECH_ASOF")
+    check(watch.get("watchlist_digest") == technical.get("watchlist_digest"),
+          "WATCH_TECH_DIGEST")
+    symbols = [v["symbol"] for v in rows]
+    check(len(set(symbols)) == count, "DUPLICATE_WATCH")
+    results = technical.get("results")
+    check(type(results) is dict and set(results).issubset(set(symbols)),
+          "TECH_OUT_OF_SCOPE_RESULT")
+    completed = sum(type(v) is dict and v.get("terminal_scan") is True
+                    and type(v.get("status")) is str and
+                    not v["status"].startswith("UNKNOWN_")
+                    for v in results.values())
+    check(completed == technical.get("evaluated_count") and
+          count - completed == technical.get("pending_count") and
+          len(results) == technical.get("attempted_count"),
+          "TECH_COVERAGE_PARTITION")
+    check(ledger.get("schema") == "XRAY_DELIVERY_LEDGER_V1" and
+          type(ledger.get("deliveries")) is dict and
+          registry.get("schema") == "XRAY_CANDIDATE_LIFECYCLE_REGISTRY_V1" and
+          type(registry.get("records")) is dict, "DELIVERY_REGISTRY_SCHEMA")
+    check(all(x.get("execution") == "NONE" and
+              x.get("real_money") == "NO-GO"
+              for x in (ledger, registry, terminal)), "DELIVERY_SAFETY")
+    return {
+        "root_asof_et": root.get("asof_et"),
+        "watch_count": count,
+        "technical_evaluated": completed,
+        "technical_pending": count-completed,
+        "lifecycle_record_count": len(registry["records"]),
+        "delivery_ledger_count": len(ledger["deliveries"]),
+        "terminal_asof_et": terminal.get("asof_et"),
+        "terminal_same_asof": terminal.get("asof_et") == root.get("asof_et"),
+        "device_receipt_proven": False,
+        "r92_issued_by_audit": 0,
+    }
+
+def selftest():
+    sample = [Path("nasdaq-xray/good.py"), Path("nasdaq-xray/good.json"),
+              Path(".github/workflows/good.yml")]
+    data = {
+        sample[0]: b"import json\nX = 3\n",
+        sample[1]: b'{"status":"WATCH"}',
+        sample[2]: b"name: audit\non:\n  workflow_dispatch:\njobs:\n  checks:\n    runs-on: ubuntu-latest\n"}
+    one, _ = census(sample, data.__getitem__)
+    assert not one["structural_errors"] and one["python_ast_parsed_count"] == 1
+    assert one["json_parsed_count"] == one["workflow_examined_count"] == 1
+    bad = dict(data)
+    bad[sample[0]] = b"def wrong(: pass"
+    assert any("INVALID_PYTHON" in x for x in
+               census(sample, bad.__getitem__)[0]["structural_errors"])
+    bad = dict(data)
+    bad[sample[1]] = b'{"bad":'
+    assert any("INVALID_JSON" in x for x in
+               census(sample, bad.__getitem__)[0]["structural_errors"])
+    garbage = Path("nasdaq-xray/__pycache__/obsolete.pyc")
+    out, _ = census(sample + [garbage], lambda p: data.get(p, b"x"))
+    assert any("TRACKED_COMPILED_BYTECODE" in x
+               for x in out["structural_errors"])
+    print("XRAY_TRACKED_HYGIENE_SELFTEST=PASS_PY_AST_JSON_WORKFLOW_GENERATED_BYTECODE_NEGATIVES")
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--out", type=Path)
+    args = ap.parse_args()
+    if args.selftest:
+        return selftest()
+    result, workflows = census(tracked(), lambda p: (REPO / p).read_bytes())
+    from all_workflow_schedule_audit import inventory
+    schedules = inventory(workflows)
+    result["schedule_contract_status"] = schedules["contract_status"]
+    result["schedule_count"] = schedules["scheduled_count"]
+    result["schedule_blockers"] = schedules["blockers"]
+    result["chain"] = source_integrity()
+    result["status"] = ("PASS_SOURCE_STRUCTURE_AND_FAIL_CLOSED_CHAIN"
+                        if not result["structural_errors"] and
+                        schedules["contract_status"] == "PASS" else "FAIL")
+    if args.out:
+        check(not args.out.resolve().is_relative_to(REPO.resolve()),
+              "NO_REPO_REPORT_WRITE")
+        args.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+    print("XRAY_REPO_INVENTORY=" + json.dumps({
+        k: result[k] for k in
+        ("status","python_ast_parsed_count","json_parsed_count",
+         "workflow_examined_count","schedule_count",
+         "schedule_contract_status","statically_unreferenced_python_review_count",
+         "structural_errors")}, sort_keys=True))
+    print("XRAY_REPO_CANDIDATE_CHAIN=" + json.dumps(result["chain"],sort_keys=True))
+    if result["status"] != "PASS_SOURCE_STRUCTURE_AND_FAIL_CLOSED_CHAIN":
+        raise SystemExit(2)
+
+if __name__ == "__main__":
+    main()
