@@ -239,8 +239,12 @@ def selftest():
     need(limited_result["classification_counts"] ==
          {"UNKNOWN_SIP_HTTP_429_STOP": 3} and
          limited_result["source_circuit_breaker_open"], "HTTP429_FAIL_CLOSED")
-    negative(lambda: classify(asof, names, lambda sub, day: (
-        {"OUTSIDE": [record()]}, 1)), "FOREIGN_PROVIDER_SYMBOL")
+    foreign_labels, foreign_calls, foreign_circuit = classify(
+        asof, names, lambda sub, day: ({"OUTSIDE": [record()]}, 1))
+    need(foreign_circuit is True and foreign_calls == 1 and
+         set(foreign_labels.values()) ==
+             {"UNKNOWN_SIP_SOURCE_OR_INTEGRITY_ValueError"},
+         "FOREIGN_SYMBOL_FAIL_CLOSED_UNKNOWN")
     need(out["no_vendor_ohlcv_persisted"] is True and
          all("c" not in str(v) for v in out["symbol_classifications"].values()
              if False), "NO_RAW_VENDOR")
