@@ -10,7 +10,9 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 ROOT=Path(__file__).resolve().parent
-MASTER=ROOT/"canonical_current_master_manifest.json"
+MASTER=ROOT/"research/master_20261012_sec_pit_frozen_manifest.json"
+CURRENT_MASTER=ROOT/"canonical_current_master_manifest.json"
+FROZEN_MASTER_BLOB="fb64a44b79ced9dcda390f5661b796ee13a60f63"
 SOURCE=ROOT/"research/master_20261012_ten_sec_sic_pit_forensic_v1.json"
 SAFE={"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
 
@@ -25,7 +27,8 @@ def inspect(doc,master):
     m=json.loads(master)
     demand(doc.get("schema")=="XRAY_MASTER_TEN_SEC_PIT_FORENSIC_V1","SCHEMA")
     demand(doc.get("asof_et")==m.get("asof_et")=="2026-10-12","ASOF")
-    demand(doc.get("source_master_git_blob_sha")==gitsha(master),"MASTER_BLOB")
+    demand(doc.get("source_master_git_blob_sha")==gitsha(master)==FROZEN_MASTER_BLOB,
+           "MASTER_BLOB")
     demand(doc.get("source_master_expected_unknown_count")==m.get("unknown_count")==10,"COUNT")
     demand(all(doc.get(k)==v for k,v in SAFE.items()) and
            doc.get("no_auto_override") is True and
@@ -72,6 +75,8 @@ def inspect(doc,master):
            "EXPECTED_SOURCE_COHORT")
     return {"schema":"XRAY_TEN_SEC_PIT_FORENSIC_RESULT_V1",
             "asof_et":"2026-10-12",
+            "frozen_source_file":"nasdaq-xray/research/master_20261012_sec_pit_frozen_manifest.json",
+            "historic_source_only_not_current_master_evidence":True,
             "source_master_git_blob_sha":gitsha(master),
             "source_references":sources,"issuer_scope":len(rows),
             "issuer_identity_unresolved":unresolved,
@@ -83,6 +88,18 @@ def inspect(doc,master):
 
 def selftest(doc,raw):
     x=inspect(doc,raw)
+    demand(x["historic_source_only_not_current_master_evidence"] is True,
+           "ARCHIVE_MISTAKEN_FOR_CURRENT")
+    # The live 13-Oct (or successor) canonical MASTER must never be substituted
+    # into an immutable 12-Oct SEC PIT forensic regression.
+    current=CURRENT_MASTER.read_bytes()
+    if gitsha(current)!=FROZEN_MASTER_BLOB:
+        try:
+            inspect(doc,current)
+        except (ValueError,KeyError):
+            pass
+        else:
+            raise RuntimeError("CURRENT_MASTER_DRIFT_WAS_ACCEPTED")
     demand(x["canonical_unknown_unchanged"]==10 and
            x["source_references"]==10,"POSITIVE")
     tests=[
@@ -106,7 +123,7 @@ def selftest(doc,raw):
         except (ValueError,KeyError):
             continue
         raise RuntimeError("NEGATIVE_ACCEPTED_"+str(number))
-    print("XRAY_MASTER_TEN_SEC_PIT_SELFTEST=PASS_10_NEGATIVES_NO_PRIMARY")
+    print("XRAY_MASTER_TEN_SEC_PIT_SELFTEST=PASS_10_NEGATIVES_EXACT_ARCHIVE_NO_PRIMARY")
 
 def main():
     ap=argparse.ArgumentParser()
@@ -114,6 +131,7 @@ def main():
     ap.add_argument("--out",type=Path)
     args=ap.parse_args()
     raw=MASTER.read_bytes()
+    demand(gitsha(raw)==FROZEN_MASTER_BLOB,"FROZEN_ARCHIVE_INTEGRITY")
     doc=json.loads(SOURCE.read_text())
     if args.selftest:
         demand(args.out is None,"SELFTEST_OUTPUT")
