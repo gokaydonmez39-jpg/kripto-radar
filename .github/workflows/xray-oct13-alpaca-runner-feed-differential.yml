@@ -1,0 +1,16 @@
+name: XRAY Oct13 Runner Feed Differential Check
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py"
+      - ".github/workflows/xray-oct13-alpaca-runner-feed-differential.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py --selftest
