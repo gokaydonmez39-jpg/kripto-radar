@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",
-  "updated_on": "2026-10-13",
+  "updated_on": "2026-10-14",
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
@@ -95,6 +95,27 @@
       "price_dv30_positive_promotion_allowed": false,
       "r92_promotion_allowed": false,
       "paid_upgrade_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO"
+    },
+    "MASSIVE": {
+      "role": "INDEPENDENT_INTERACTIVE_PRICE_CROSSCHECK_RESEARCH_ONLY",
+      "official_raw_daily_aggregate_docs": "https://massive.com/docs/rest/stocks/aggregates/custom-bars",
+      "official_flat_file_access_docs": "https://massive.com/docs/flat-files/stocks/day-aggregates",
+      "connected_interactive_read_observed": "2026-10-14_AAPL_OCT13_UNADJUSTED_DAILY",
+      "aapl_oct13_close_crosscheck_with_alpaca": "OBSERVED_MATCH_RESEARCH_ONLY",
+      "sample_daily_volume_integrity": "FRACTIONAL_NOT_INTEGER_AAPL_OCT13",
+      "integer_volume_lineage_for_current_30_sessions": "NOT_ATTESTED",
+      "volume_integrity_rule": "Never round fractional vendor daily v, never infer integer RTH or primary DV30; per-symbol per-session integrity must be independently proven.",
+      "github_runner_api_key_and_entitlement": "NOT_ATTESTED",
+      "automated_non_display_entitlement": "NOT_ATTESTED",
+      "free_flat_file_day_aggregates_access": "NOT_INCLUDED_STOCKS_BASIC_FREE",
+      "positive_price_dv30_promotion_allowed": false,
+      "primary_mc_promotion_allowed": false,
+      "strict_g9_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "paid_top_up_allowed": false,
+      "no_raw_vendor_ohlcv_in_public_github": true,
       "execution": "NONE",
       "real_money": "NO-GO"
     }
