@@ -150,6 +150,14 @@ def selftest():
     else:
         raise AssertionError("TRUNCATED_SCOPE_ACCEPTED")
     fake["candidate_technical_funnel"]["candidate_count"] = 2
+    saved = fake["candidate_technical_funnel"]["results"].pop("BBB")
+    try:
+        source_scope(fake, now)
+    except ValueError as exc:
+        need("RESULT_PARTITION_INCOMPLETE" in str(exc), "MISSING_CANDIDATE_FAIL_CLOSED")
+    else:
+        raise AssertionError("UNATTEMPTED_CANDIDATE_SILENTLY_OMITTED")
+    fake["candidate_technical_funnel"]["results"]["BBB"] = saved
     fake["asof_et"] = "2026-10-12"
     try:
         source_scope(fake, now)
