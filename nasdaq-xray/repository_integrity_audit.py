@@ -111,6 +111,34 @@ def census(paths, read_bytes):
     }
     return report, workflow_sources
 
+def research_release_observability(root_asof, terminal_asof, history_unknown,
+                                    technical_pending, g9_state):
+    """Never confuse a clean repository with a cleared canonical AL gate.
+
+    This is a diagnostic only: not a G9 authority check or release engine.
+    """
+    blockers = []
+    if root_asof != terminal_asof:
+        blockers.append("CANONICAL_TERMINAL_ASOF_DRIFT")
+    if type(history_unknown) is not int or history_unknown != 0:
+        blockers.append("ROOT_HISTORY_NOT_FULLY_RESOLVED")
+    if type(technical_pending) is not int or technical_pending != 0:
+        blockers.append("CANDIDATE_TECHNICAL_SOURCE_PENDING")
+    if g9_state != "PROVEN_FROM_PRIMARY_SOURCE":
+        blockers.append("G9_REALTIME_CONSOLIDATED_ENTITLEMENT_UNPROVEN")
+    # Even with no diagnostic blockers, this audit cannot attest the full
+    # C4.17 FINAL, lifecycle, legal halt or a physical device receipt.
+    return {
+        "diagnostic_blockers": blockers,
+        "status": ("BLOCKED_DIAGNOSTICS" if blockers
+                   else "UNATTESTED_FINAL_REQUIRES_FULL_RELEASE_GATES"),
+        "production_release_authorized_by_this_audit": False,
+        "r92_created_by_this_audit": False,
+        "device_receipt_verified_by_this_audit": False,
+        "execution": "NONE", "real_money": "NO-GO"
+    }
+
+
 def source_integrity():
     """One exact source epoch; a complete WATCH is not a complete terminal."""
     candidate_bytes = (ROOT / "sina_candidates.json").read_bytes()
@@ -120,6 +148,9 @@ def source_integrity():
     ledger = json.loads((ROOT / "delivery_ledger.json").read_text())
     registry = json.loads((ROOT / "canonical_candidate_lifecycle_registry.json").read_text())
     terminal = json.loads((ROOT / "canonical_current_terminal.json").read_text())
+    g9 = json.loads((ROOT / "g9_entitlement_authority.json").read_text())
+    check(g9.get("execution") == "NONE" and g9.get("real_money") == "NO-GO",
+          "G9_STATE_SAFETY")
     count = watch.get("watchlist_count")
     rows = watch.get("watchlist")
     check(root.get("execution") == "NONE" and root.get("real_money") == "NO-GO",
@@ -163,6 +194,9 @@ def source_integrity():
         "delivery_ledger_count": len(ledger["deliveries"]),
         "terminal_asof_et": terminal.get("asof_et"),
         "terminal_same_asof": terminal.get("asof_et") == root.get("asof_et"),
+        "production_readiness": research_release_observability(
+            root.get("asof_et"), terminal.get("asof_et"),
+            root.get("unknown_count"), count-completed, g9.get("status")),
         "device_receipt_proven": False,
         "r92_issued_by_audit": 0,
     }
@@ -189,7 +223,23 @@ def selftest():
     out, _ = census(sample + [garbage], lambda p: data.get(p, b"x"))
     assert any("TRACKED_COMPILED_BYTECODE" in x
                for x in out["structural_errors"])
-    print("XRAY_TRACKED_HYGIENE_SELFTEST=PASS_PY_AST_JSON_WORKFLOW_GENERATED_BYTECODE_NEGATIVES")
+    blocked = research_release_observability(
+        "2026-10-13", "2026-10-07", 220, 4,
+        "BLOCKED_STRICT_PERMANENT_ZERO")
+    assert blocked["status"] == "BLOCKED_DIAGNOSTICS"
+    assert set(blocked["diagnostic_blockers"]) == {
+        "CANONICAL_TERMINAL_ASOF_DRIFT",
+        "ROOT_HISTORY_NOT_FULLY_RESOLVED",
+        "CANDIDATE_TECHNICAL_SOURCE_PENDING",
+        "G9_REALTIME_CONSOLIDATED_ENTITLEMENT_UNPROVEN",
+    }
+    assert blocked["production_release_authorized_by_this_audit"] is False
+    no_obvious = research_release_observability(
+        "2026-10-13", "2026-10-13", 0, 0,
+        "PROVEN_FROM_PRIMARY_SOURCE")
+    assert no_obvious["status"] == "UNATTESTED_FINAL_REQUIRES_FULL_RELEASE_GATES"
+    assert no_obvious["production_release_authorized_by_this_audit"] is False
+    print("XRAY_TRACKED_HYGIENE_SELFTEST=PASS_PY_AST_JSON_YAML_AND_PRODUCTION_DIAGNOSTIC_FAIL_CLOSED")
 
 def main():
     ap = argparse.ArgumentParser()
@@ -219,6 +269,8 @@ def main():
          "schedule_contract_status","statically_unreferenced_python_review_count",
          "structural_errors")}, sort_keys=True))
     print("XRAY_REPO_CANDIDATE_CHAIN=" + json.dumps(result["chain"],sort_keys=True))
+    print("XRAY_REPO_PRODUCTION_READINESS=" +
+          json.dumps(result["chain"]["production_readiness"], sort_keys=True))
     print("XRAY_STATIC_ORPHANS_REVIEW=" + json.dumps(result["statically_unreferenced_python_review"]))
     print("XRAY_EXACT_DUPLICATE_FILES=" + json.dumps(result["duplicate_file_groups"]))
     if result["status"] != "PASS_SOURCE_STRUCTURE_AND_FAIL_CLOSED_CHAIN":
