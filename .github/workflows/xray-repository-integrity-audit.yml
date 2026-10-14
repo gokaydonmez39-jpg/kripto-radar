@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned YAML parser for full GitHub workflow schema scan
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2
       - name: Validate exact invocation SHA
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Negative syntax JSON and tracked-garbage tests
