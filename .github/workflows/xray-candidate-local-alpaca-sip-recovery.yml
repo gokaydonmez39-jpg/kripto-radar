@@ -1,0 +1,76 @@
+name: XRAY Candidate Local 260 SIP Source Recovery (Shadow Only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
+      - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
+  schedule:
+    - cron: "10 23 * * 1-5"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-candidate-local-sip-recovery
+  cancel-in-progress: false
+jobs:
+  source-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify source epoch and adversarial candidate-local guards
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py
+          python nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
+          python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
+          python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
+      - name: Probe ALL unresolved tracked names using real delayed historical SIP
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --out "$RUNNER_TEMP/xray_candidate_sip_source_availability.json"
+      - name: Check no source authority or vendor data was exported
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_candidate_sip_source_availability.json"
+          if not p.is_file():
+              print("XRAY_CANDIDATE_SIP_NO_RESULT_FAIL_CLOSED")
+              raise SystemExit(1)
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_CANDIDATE_LOCAL_REAL_SIP_260_52_RECOVERY_SHADOW_V1"
+          assert d["scope_count"]==len(d["scope_symbols"])
+          assert d["measured_scope_count"]==len(d["observations"])
+          assert sum(d["classification_counts"].values())==d["measured_scope_count"]
+          assert d["source_market_data_rights_independently_attested"] is False
+          assert d["canonical_history_promoted"] is False
+          assert d["canonical_price_promoted"] is False
+          assert d["registered_r92_count"]==0 and not d["final_buy_signals"]
+          assert d["vendor_raw_bars_persisted"] is False
+          assert d["vendor_ohlcv_in_artifact"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_CANDIDATE_SIP_SHADOW_RESULT="+d["status"])
+          print("XRAY_CANDIDATE_SIP_COUNT_ONLY="+json.dumps(d["classification_counts"],sort_keys=True))
+          PY
+      - name: Archive ONLY symbols and source availability classifications
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-candidate-260-sip-availability-no-vendor-bars
+          path: ${{ runner.temp }}/xray_candidate_sip_source_availability.json
+          if-no-files-found: warn
+          retention-days: 14
