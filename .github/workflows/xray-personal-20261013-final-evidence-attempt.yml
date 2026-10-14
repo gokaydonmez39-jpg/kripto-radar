@@ -1,0 +1,131 @@
+name: XRAY Oct13 Strict PRIMARY MC Legal FINAL R92 Evidence Attempt
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-personal-20261013-final-evidence-attempt.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evidence-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run original Oct13 evidence engines and safety tests
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python nasdaq-xray/personal_research_primary_engine_v1.py --selftest
+          python nasdaq-xray/personal_research_same_asof_chain_audit.py --selftest
+          python nasdaq-xray/personal_research_same_asof_chain_audit.py --out "$RUNNER_TEMP/xray_oct13_existing_sha_chain.json"
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+      - name: Read actual Oct13 Alpaca SIP results, immutable Actions artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/xray_price13" "$RUNNER_TEMP/xray_history338"
+          gh run download 38487829247 --repo "${{ github.repository }}" \
+            --name xray-personal-20261013-price-exact30-sip-no-ohlcv --dir "$RUNNER_TEMP/xray_price13"
+          gh run download 38486920217 --repo "${{ github.repository }}" \
+            --name xray-20261013-338-reproduced-history-fail-no-r92 --dir "$RUNNER_TEMP/xray_history338"
+      - name: Query official SEC EDGAR PIT transport as-of Oct13 (canary only)
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --asof 2026-10-13 \
+            --output "$RUNNER_TEMP/xray_oct13_sec_primary_transport_canary.json"
+      - name: Exact source attestations, conditional SEC MC and R92 release denial
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          base=Path("nasdaq-xray")
+          tmp=Path(os.environ["RUNNER_TEMP"])
+          sha=lambda p:subprocess.check_output(["git","hash-object",str(p)],text=True).strip()
+          read=lambda p:json.loads(p.read_text())
+          m=read(base/"canonical_current_master_manifest.json")
+          p=read(base/"canonical_current_price_dv30.json")
+          h=read(base/"canonical_current_history.json")
+          l=read(base/"canonical_current_legal.json")
+          e=read(base/"canonical_current_event_state.json")
+          f=read(base/"canonical_current_final_tech.json")
+          t=read(base/"canonical_current_terminal.json")
+          price=read(tmp/"xray_price13/xray_personal_20261013_price_exact30_census.json")
+          hb=read(tmp/"xray_history338/xray_history_338_reproduced_source_fail.json")
+          audit=read(tmp/"xray_oct13_existing_sha_chain.json")
+          sec=read(tmp/"xray_oct13_sec_primary_transport_canary.json")
+          assert m["asof_et"]==p["asof_et"]=="2026-10-13"
+          assert price["asof_et"]=="2026-10-13"
+          assert price["canonical_price_git_blob_sha"]==sha(base/"canonical_current_price_dv30.json")
+          assert price["canonical_master_git_blob_sha"]==sha(base/"canonical_current_master_manifest.json")
+          assert hb["asof_et"]=="2026-10-13" and hb["technical_screen_fail_260_valid_daily_bar"]==338
+          assert p["pass_count"]==0 and not p["pass_symbols"]
+          assert t["counts"]["mc_primary_pass"]==0
+          assert not t["r92_candidates"] and t["candidate_local_research_pass"] is False
+          assert f["pre_g9_tech_pass_count"]==0
+          assert audit["r92_provable"] is False and audit["r92_created"] is False
+          assert sec["execution"]=="NONE" and sec["real_money"]=="NO-GO"
+          layers={"MASTER":m["asof_et"],"PRICE":p["asof_et"],"HISTORY":h["asof_et"],
+                  "LEGAL":l["asof_et"],"EVENT":e["asof_et"],"FINAL":f["asof_et"],
+                  "TERMINAL":t["asof_et"]}
+          report={
+            "schema":"XRAY_OCT13_STRICT_EVIDENCE_TO_R92_ATTEMPT_V1",
+            "trigger_commit_sha":os.environ["GITHUB_SHA"],
+            "asof_et_target":"2026-10-13",
+            "same_asof_master_price":True,
+            "same_asof_all_canonical_layers":len(set(layers.values()))==1,
+            "asof_by_layer":layers,
+            "source_git_blob_shas":{
+              "MASTER":sha(base/"canonical_current_master_manifest.json"),
+              "PRICE":sha(base/"canonical_current_price_dv30.json"),
+              "HISTORY":sha(base/"canonical_current_history.json"),
+              "LEGAL":sha(base/"canonical_current_legal.json"),
+              "EVENT":sha(base/"canonical_current_event_state.json"),
+              "FINAL":sha(base/"canonical_current_final_tech.json"),
+              "TERMINAL":sha(base/"canonical_current_terminal.json")},
+            "source_alpaca_price13_run_id":38487829247,
+            "source_alpaca_price13_status_counts":price["counts"],
+            "source_alpaca_price13_requests":price["api_calls"],
+            "source_alpaca_price13_actual_attempted":price["classified_count"],
+            "source_history338_run_id":38486920217,
+            "verified_history_260_raw_bar_fail":338,
+            "source_SEC_PIT_canary_status":sec.get("sec_transport"),
+            "source_SEC_PIT_canary_reason":sec.get("reason"),
+            "eligible_primary_price_symbols":p["pass_count"],
+            "eligible_primary_sec_mc_scope":0,
+            "eligible_primary_sec_mc_run_suppressed":"C417_EXACT_PRICE_DV30_PASS_SET_EMPTY",
+            "new_primary_mc_pass":0,
+            "legal_event_stage1_r1_rr_final_run_suppressed":"NO_SAME_ASOF_PRIMARY_PRICE_AND_SEC_MC",
+            "new_canonical_r92":0,
+            "r92_created":False,"candidate_lifecycle_mutated":False,
+            "canonical_files_mutated_by_this_job":False,
+            "pointer_mutated":False,
+            "primary_release":False,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+          }
+          (tmp/"xray_oct13_strict_release_attempt.json").write_text(
+            json.dumps(report,sort_keys=True,indent=2)+"\n")
+          print("XRAY_OCT13_STRICT_RELEASE_ATTEMPT="+
+                json.dumps({k:report[k] for k in
+                  ("same_asof_master_price","same_asof_all_canonical_layers",
+                   "eligible_primary_price_symbols","eligible_primary_sec_mc_scope",
+                   "new_canonical_r92","source_alpaca_price13_status_counts")},sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-exact-canonical-r92-release-evidence-attempt
+          path: |
+            ${{ runner.temp }}/xray_oct13_strict_release_attempt.json
+            ${{ runner.temp }}/xray_oct13_existing_sha_chain.json
+            ${{ runner.temp }}/xray_oct13_sec_primary_transport_canary.json
+          if-no-files-found: warn
+          retention-days: 14
