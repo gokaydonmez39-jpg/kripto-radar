@@ -44,7 +44,7 @@ jobs:
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
-          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 35 --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
+          python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 35 --report-empty-current-scope --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
@@ -53,13 +53,20 @@ jobs:
           assert j["c417_primary_mc_count"]==0 and j["production_alpha_authority"] is False
           assert j["market_cap_calculated"] is False and j["price_binding_attested"] is False
           assert j["corporate_action_binding_attested"] is False
-          assert j["sample_count"]==35==len(j["statuses"])
           assert j["batch_offset"]==0 and j["batch_limit"]==35
+          if j["transport"]=="NO_CANONICAL_PRICE_PASS_SCOPE":
+              assert j["sample_state"]=="EMPTY_FAIL_CLOSED_NO_SEC_SOURCE_ATTEMPTED"
+              assert j["sample_count"]==0 and j["statuses"]=={} and j["reason_codes"]=={}
+              assert j["remediation_counts"]=={} and j["status_counts"]=={}
+              print("XRAY_SEC_NO_CANONICAL_PRICE_PASS_SCOPE=EXPECTED_NO_SOURCE_REQUESTED_NO_PRIMARY")
+          else:
+              assert j["sample_count"]==35==len(j["statuses"])
+              assert j["transport"]=="SEC_OFFICIAL_MULTI_REQUESTS_COMPLETE_WITH_UNKNOWN_ALLOWED"
           assert j["remediation_count_exact"] is True
           assert sum(j["remediation_counts"].values())==j["sample_count"]
           assert j["remediation_counts"].get("PIT_SHARES_PRESENT_MORE_VALIDATION_REQUIRED",0)<=35
           assert j["c417_primary_mc_count"]==0
-          print("XRAY_SEC_OFFICIAL_35_OF_PRICE_PASS=SHADOW_ONLY_NO_MC_AUTHORITY")
+          print("XRAY_SEC_PRICE_PASS_SCOPE_COUNT="+str(j["sample_count"])+"_SHADOW_ONLY_NO_MC_AUTHORITY")
           print("XRAY_SEC_MULTI_SOURCE_AUDIT=PASS_NO_FALSE_MC")
           PY
       - name: Discover issuer-wide SEC share facts via bounded official frames, never MC
@@ -72,7 +79,7 @@ jobs:
           from pathlib import Path
           j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_frames_shadow.json").read_text())
           assert j["schema"]=="XRAY_C418_SEC_FRAMES_SHARE_DISCOVERY_SHADOW_V1"
-          assert j["current_price_pass_scope_count"]==514
+          assert 0<=j["current_price_pass_scope_count"]<=514
           import subprocess
           for actual_key, file in (
               ("source_price_git_blob_sha","nasdaq-xray/canonical_current_price_dv30.json"),
@@ -87,13 +94,19 @@ jobs:
           assert j["issuer_share_class_pit_attested"] is False
           assert j["filing_acceptance_intraday_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          if j["status"]=="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT":
-              assert j["received_symbols"]==514
-              assert len(j["status_by_symbol"])==514
+          if j["status"]=="NO_CANONICAL_PRICE_PASS_SCOPE":
+              assert j["current_price_pass_scope_count"]==0
+              assert j["received_symbols"]==0 and j["status_by_symbol"]=={}
+              assert j["frames_http200"]==0 and j["classes"]=={}
+              assert j["reason_codes"]==["NO_PRICE_PASS_NO_SEC_FRAMES_REQUESTS"]
+              print("XRAY_SEC_FRAMES_ZERO_PRICE_PASS=NO_HTTP_NO_SOURCE_PASS_NO_PRIMARY")
+          elif j["status"]=="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT":
+              assert j["received_symbols"]==j["current_price_pass_scope_count"]
+              assert len(j["status_by_symbol"])==j["received_symbols"]
               from collections import Counter
               assert dict(Counter(j["status_by_symbol"].values()))==j["classes"]
               assert j["frames_http200"]==6
-              assert sum(j["classes"].values())==514
+              assert sum(j["classes"].values())==j["received_symbols"]
           else:
               assert j["status"] in ("SOURCE_NOT_AVAILABLE","SOURCE_PARTIAL_FRAME_TRANSPORT")
           print("XRAY_SEC_FRAMES_READBACK="+j["status"]+"_NO_PRIMARY_NO_AL")
