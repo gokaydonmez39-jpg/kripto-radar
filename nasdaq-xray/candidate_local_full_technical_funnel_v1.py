@@ -20,6 +20,7 @@ SCHEMA="XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1"
 # daily/weekly history outcome as a completed scan, including legacy state.
 RETRYABLE_HISTORY_STATUSES=frozenset({
     "UNKNOWN_260_OFFICIAL_HISTORY",
+    "UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
     "UNKNOWN_52_COMPLETED_WEEKS",
     "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
 })
@@ -39,7 +40,9 @@ def engine_source_fingerprint():
     names=("candidate_local_full_technical_funnel_v1.py",
            "stage1_shadow.py","deep_pre_r1_shadow.py",
            "final_tech_shadow.py","alpha_semantics.py",
-           "candidate_local_independent_math_v1.py")
+           "candidate_local_independent_math_v1.py",
+           "official_first_trade_260_history_guard.py",
+           "evidence/bsp_20260701_official_first_trade_v1.json")
     data=[]
     for name in names:
         raw=(root/name).read_bytes()
@@ -199,6 +202,17 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
     from candidate_local_independent_math_v1 import audit as audit_final_geometry
     from alpha_semantics import mechanical_scale_breaks, mechanical_split_suspects
     try:
+        from official_first_trade_260_history_guard import fence
+        listing=fence(sym,asof)
+        if listing is not None and listing["own_listed_history_short"]:
+            return sym,{
+                "status":"UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
+                "history_source":"NASDAQ_OFFICIAL_FIRST_TRADE_FAIL_ONLY",
+                "first_traded_nasdaq_date":listing["first_traded_nasdaq_date"],
+                "completed_listed_sessions":listing["completed_listed_sessions"],
+                "source_evidence_blob_sha":listing["evidence_git_blob_sha"],
+                "technical_observation_ready":False,
+                "terminal_scan":False}
         data,source=stage.load_history(sym,asof)
         if not _history_ok(data,calendar_days):
             return sym,{"status":"UNKNOWN_260_OFFICIAL_HISTORY",
@@ -347,7 +361,14 @@ def progress(watch,old=None,batch_size=BATCH_SIZE):
 
 def selftest():
     from candidate_local_independent_math_v1 import selftest as math_selftest
+    from official_first_trade_260_history_guard import fence
     math_selftest()
+    listed=fence("BSP","2026-10-13",
+                 completed_sessions=["2026-07-01","2026-07-02"])
+    need(listed["own_listed_history_short"] is True and
+         listed["canonical_history_pass_created"] is False and
+         fence("AAPL","2026-10-13") is None,
+         "BSP_OFFICIAL_IPO_CANNOT_BECOME_SYNTHETIC_260_PASS")
     def w(asof="2026-10-13"):
         a=[{"symbol":s} for s in ("AAPL","FROG","NVDA")]
         return {"schema":"XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
@@ -449,7 +470,7 @@ def selftest():
          transient["pending_count"]==3 and
          transient["transient_retry_count"]==1,
          "NO_FALSE_COMPLETION_ON_RETRYABLE_PROVIDER_ERROR")
-    print("XRAY_ALL_CANDIDATE_C417_TECH_SELFTEST=PASS_LOCAL_RESUME_ALL_WATCHED_NO_FAKED_AL")
+    print("XRAY_ALL_CANDIDATE_C417_TECH_SELFTEST=PASS_LOCAL_RESUME_IPO_260_VETO_ALL_WATCHED_NO_FAKED_AL")
 
 
 def main():
