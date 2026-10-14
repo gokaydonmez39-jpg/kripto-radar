@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
       - "nasdaq-xray/personal_swing_radar_daily_snapshot.py"
+      - "nasdaq-xray/personal_eod_source_epoch_preflight.py"
       - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
@@ -36,6 +37,12 @@ jobs:
           python-version: "3.12"
       - name: Install pinned official Nasdaq session calendar
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Quarantine mixed latest root MASTER PRICE epochs before any SIP request
+        run: |
+          python -m py_compile nasdaq-xray/personal_eod_source_epoch_preflight.py
+          python nasdaq-xray/personal_eod_source_epoch_preflight.py --selftest
+          python -O nasdaq-xray/personal_eod_source_epoch_preflight.py --selftest
+          python nasdaq-xray/personal_eod_source_epoch_preflight.py
       - name: Verify source epoch and adversarial candidate-local guards
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -189,6 +196,10 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
           python -O nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
+      - name: Refuse stale mixed-epoch personal PRICE provider requests
+        run: |
+          python nasdaq-xray/personal_eod_source_epoch_preflight.py --selftest
+          python nasdaq-xray/personal_eod_source_epoch_preflight.py
       - name: Scan every CURRENT same-session canonical PRICE unresolved symbol with personal historical SIP
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
