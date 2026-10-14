@@ -2,9 +2,10 @@
 """Immutable-source rollup for 277 Oct13 SIP 260-session Stage1 results."""
 import argparse,collections,hashlib,json
 from pathlib import Path
-import candidate_local_oct13_stage1_sip28_shadow as base
+# Pure metadata reconciliation: do not import the pandas-heavy Stage1 engine.
 
 ASOF="2026-10-13"
+SOURCE_SHA="c05669e7fbd0a91c3f6fb9f652c330157066496747132dcfc291d121d99fb26c"
 STAGE0_SHA="114c04313f9763d485977a5b698986bef70363b2bbb613b7df31ad0c5597454d"
 FIRST_SCHEMA="XRAY_OCT13_28_REAL_SIP_260_STAGE1_RESEARCH_SHADOW_V1"
 REST_SCHEMA="XRAY_20261013_277_STAGE1_SIP_PAGE_RESEARCH_V1"
@@ -21,7 +22,7 @@ def check(x,msg):
 def sha(x):return hashlib.sha256(x).hexdigest()
 def make(source,first,pages):
     raw=source.read_bytes()
-    check(sha(raw)==base.SOURCE_SHA,"277_SOURCE_SHA")
+    check(sha(raw)==SOURCE_SHA,"277_SOURCE_SHA")
     doc=json.loads(raw)
     syms=doc["source_overlap_symbols"]
     check(len(syms)==277 and syms==sorted(set(syms))
@@ -30,6 +31,11 @@ def make(source,first,pages):
     for index in range(10):
         file=first if index==0 else pages/("stage1_"+str(index)+".json")
         buf=file.read_bytes();d=json.loads(buf)
+        if index==0:
+            check(sha(buf)==STAGE0_SHA,"IMMUTABLE_FIRST28_SHA")
+        check(d.get("source_277_json_sha256")==SOURCE_SHA,
+              "EXACT_UPSTREAM_SOURCE_LINK")
+        check(d.get("unknown_never_pass") is True,"FAIL_CLOSED_EACH_PAGE")
         check(d.get("schema")==(FIRST_SCHEMA if index==0 else REST_SCHEMA)
               and d.get("asof_et")==ASOF,"PAGE_SCHEMA_ASOF")
         check(index==0 or d.get("page")==index,"PAGE_ORDINAL")
@@ -38,6 +44,13 @@ def make(source,first,pages):
         check(d.get("target_symbols")==wanted and
               set(actual)==set(wanted),"PAGE_EXACT_SET")
         check(sum(d["result_counts"].values())==len(wanted),"PAGE_CLASSIFIED")
+        actual_counts=dict(collections.Counter(
+             row.get("status") for row in actual.values()))
+        check(actual_counts==d["result_counts"],"PAGE_COUNTS_RECOMPUTED")
+        if index==0:
+            check(d.get("raw_ohlcv_persisted") is False,"RAW_DATA_NOT_PUBLIC")
+        else:
+            check(d.get("no_raw_OHLCV_export") is True,"RAW_DATA_NOT_PUBLIC")
         check(d["r92_registered"]==0 and
               d.get("canonical_primary_created",False) is False
               and d.get("canonical_mutated",False) is False
