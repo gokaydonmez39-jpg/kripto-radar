@@ -148,6 +148,7 @@ def measure(asof,syms,days,source,now,pace=0):
     need(len(days)==30 and days[-1]==asof and
          syms==sorted(set(syms)), "MEASUREMENT_INPUT")
     status={s:"UNKNOWN_UNCHECKED" for s in syms}
+    integrity_causes={}
     calls=[0];stop=None;attempted=0
     # Close+5 must be in delayed historical SIP window, not a future ET midnight.
     _,end=historical_request_window(asof,now)
@@ -171,8 +172,19 @@ def measure(asof,syms,days,source,now,pace=0):
                         daily[name],half[name],days)
                     need(out in STATES,"EXACT30_CLASSIFIER_SET")
                     status[name]=out
-                except (ValueError,TypeError,KeyError,OverflowError):
+                except (ValueError,TypeError,KeyError,OverflowError) as exc:
                     status[name]=RTH_UNVERIFIED
+                    # No raw market response or prices are disclosed.
+                    v=str(exc)
+                    safe={
+                        "EXACT_30_DAILY_SET", "EARLY_AND_FULL_BAR_COUNTS_EXACT",
+                        "DAILY_VOLUME_BOUND", "DUPLICATE_DAILY",
+                        "DUPLICATE_30MIN", "CLOSE_PRICE", "BOUNDS_INVERSION",
+                        "BAR_SLOT_INTEGRITY", "OFFICIAL_SESSION_LENGTH",
+                    }
+                    code=v.removeprefix("XRAY_PERSONAL_CURRENT_PRICE_")
+                    integrity_causes[name]=(code if code in safe else
+                                            "RTH_UNCLASSIFIED_DATA_INTEGRITY")
             attempted+=len(group)
         except (RuntimeError,ValueError,TimeoutError,OSError) as exc:
             v=str(exc)
@@ -183,6 +195,9 @@ def measure(asof,syms,days,source,now,pace=0):
             for name in group:status[name]=PROVIDER_UNKNOWN
         if pace:time.sleep(pace)
     count=dict(sorted(Counter(status.values()).items()))
+    need(set(integrity_causes).issubset(
+         {k for k,v in status.items() if v==RTH_UNVERIFIED}),
+         "INTEGRITY_CAUSE_SCOPE")
     need(sum(count.values())==len(syms)
          and set(status)==set(syms)
          and set(count).issubset(
@@ -205,6 +220,9 @@ def measure(asof,syms,days,source,now,pace=0):
             count.get(RTH_UNVERIFIED,0)+count.get(PROVIDER_UNKNOWN,0)),
         "source_api_calls":calls[0],"source_call_budget":MAX_CALLS,
         "symbols_attempted_count":attempted,
+        "symbol_rth_integrity_failure_codes":dict(sorted(integrity_causes.items())),
+        "rth_integrity_cause_counts":dict(sorted(
+            Counter(integrity_causes.values()).items())),
         "source_stop_class":stop,
         "status":"RTH_30MIN_PERSONAL_SOURCE_SHADOW_NO_CANONICAL_AUTHORITY",
         "official_RTH_close_auction_volume_attested":False,
@@ -279,8 +297,10 @@ def selftest():
         return {"AAPL":daily if tf=="1Day" else bad_rth}
     y=measure(asof,symbols,dates,partial,now)
     need(y["rth_incomplete_or_unknown_count"]==1 and
-         y["rth_lower_bound_ge50m_shadow_count"]==0,
-         "MISSING_LAST_RTH_SLOT_NOT_PASS")
+         y["rth_lower_bound_ge50m_shadow_count"]==0 and
+         y["rth_integrity_cause_counts"] == {
+             "EARLY_AND_FULL_BAR_COUNTS_EXACT":1},
+         "MISSING_LAST_RTH_SLOT_DIAGNOSED_NOT_PASS")
     def blocked(*args):
         raise RuntimeError("ALPACA_HTTP_429")
     z=measure(asof,symbols,dates,blocked,now)
@@ -325,6 +345,7 @@ def main():
         "rth30_upper_bound_lt50m":out["rth_upper_bound_lt50m_shadow_count"],
         "rth30_ambiguous":out["rth_ambiguous_shadow_count"],
         "rth30_unknown":out["rth_incomplete_or_unknown_count"],
+        "rth30_integrity_causes":out["rth_integrity_cause_counts"],
         "api_calls":out["source_api_calls"],
         "transport_stop":out["source_stop_class"],
         "R92":0},sort_keys=True))
