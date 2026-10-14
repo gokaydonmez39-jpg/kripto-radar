@@ -67,8 +67,10 @@ def decide(cover,rollup,lastmile,policy):
             "IR_HTTP_SOURCE")
     require(policy.get("can_create_r92") is True and
             policy.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED" and
-            policy.get("can_update_compiled_C417_alpha") is False and
-            policy.get("can_override_canonical_unknown") is False and
+            policy.get("can_update_compiled_C417_alpha") is True and
+            policy.get("can_override_canonical_unknown") is True and
+            policy.get("observational_evidence_never_equivalent_to_release_primary") is True and
+            policy.get("canonical_unknown_override_semantics")=="ONLY_AFTER_NEW_EXACT_SAME_ASOF_PRIMARY_EVIDENCE_IS_INDEPENDENTLY_VERIFIED" and
             policy.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True,
             "CONDITIONAL_PERMISSION")
     # CAP_OLD > 10bn means at unchanged observed SIP price CAP_NEW <2bn
@@ -101,8 +103,7 @@ def decide(cover,rollup,lastmile,policy):
           halt.get("historical_complete_clear_pass") is True and
           halt.get("live_halt_clear_pass") is True,
       "regime_breadth_primary":False,
-      "compiled_c417_independent_release":
-          policy.get("can_update_compiled_C417_alpha") is True
+      "compiled_c417_independent_release":False  # permission alone cannot attest a final/terminal C4.17 witness
     }
     eligible=all(x is True for x in exact.values())
     return {"schema":SCHEMA,"symbol":"FROG","setup":"D","asof_et":ASOF,
@@ -154,7 +155,9 @@ def selftest():
              "issuer_event":{"pages":{"issuer_news":{"http_200":True},"issuer_events":{"http_200":True}}},
              "halt":{"snapshot_frog_veto":False,"observed_dates":{ASOF:{"http_200":True,"frog_halt_rows_observed":0}}}},
             {"can_create_r92":True,"r92_registration_mode":"INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED",
-             "can_update_compiled_C417_alpha":False,"can_override_canonical_unknown":False,
+             "can_update_compiled_C417_alpha":True,"can_override_canonical_unknown":True,
+             "observational_evidence_never_equivalent_to_release_primary":True,
+             "canonical_unknown_override_semantics":"ONLY_AFTER_NEW_EXACT_SAME_ASOF_PRIMARY_EVIDENCE_IS_INDEPENDENTLY_VERIFIED",
              "r92_creation_requires_all_candidate_local_and_compiled_gates":True,
              "execution":"NONE","real_money":"NO-GO"})
     a=sample()
