@@ -1,0 +1,69 @@
+name: XRAY Personal Seven SIP Technical Recheck (Noncommercial No-R92)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
+      - ".github/workflows/xray-personal-seven-sip-technical.yml"
+  schedule:
+    - cron: "42 23 * * 1-5"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-personal-seven-technical
+  cancel-in-progress: true
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing pinned technical dependencies
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Fail-closed noncommercial C4.17 source checks
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/alpaca_personal_seven_technical_shadow.py
+          python nasdaq-xray/alpaca_personal_seven_technical_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_personal_seven_technical_shadow.py --selftest
+      - name: Run actual SIP 260 daily/52 weekly A-B-D/R1 technical research
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: python nasdaq-xray/alpaca_personal_seven_technical_shadow.py --out "$RUNNER_TEMP/personal_seven_sip_technical_labels.json"
+      - name: Verify no canonical authorization or vendor OHLCV
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"personal_seven_sip_technical_labels.json"
+          if not p.is_file():raise SystemExit("XRAY_PERSONAL_SEVEN_NO_RESULT_FAIL_CLOSED")
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_PERSONAL_SEVEN_SIP_TECHNICAL_SHADOW_V1"
+          assert d["asof_et"]=="2026-10-13"
+          assert d["source"]=="ALPACA_HISTORICAL_SIP_PERSONAL_NONCOMMERCIAL"
+          assert d["scope_count"]==len(d["statuses"])==7
+          assert d["canonical_files_mutated"] is False
+          assert d["no_raw_market_data_exported"] is True
+          assert d["canonical_history_promoted"] is False
+          assert d["canonical_price_promoted"] is False
+          assert d["primary_mc_promoted"] is False
+          assert d["true_r92_count"]==0 and d["final_buy_signals"]==[]
+          assert d["iphone_receipt_attested"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_SEVEN_SECONDARY_TECH_AUDIT=PASS_NO_CANONICAL_NO_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-personal-seven-technical-labels-no-ohlcv
+          path: ${{ runner.temp }}/personal_seven_sip_technical_labels.json
+          if-no-files-found: warn
+          retention-days: 14
