@@ -14,13 +14,14 @@ ROOT=Path(__file__).resolve().parent.parent
 WF=ROOT/".github"/"workflows"
 SCHEMA="XRAY_ALL_GITHUB_WORKFLOW_SCHEDULE_PRIVILEGE_AUDIT_V1"
 
-# All 23 AUTOMATICALLY SCHEDULED workflows; discovered from 135 repo YAML files.
+# Reviewed automatic schedules, exact enumerated set; no silent new provider cron.
 # Root, preopen, delivery, E2E, account, G9 and other safety services are included.
 EXPECTED={
  "nasdaq-xray-daily.yml":("30 * * * *",),
  "nasdaq-xray-delivery.yml":("*/15 * * * 1-5","7 * * * 0,6"),
  "xray-account-gate-reconcile.yml":("12 * * * *",),
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
+ "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
@@ -45,6 +46,7 @@ EXPECTED={
 }
 READONLY_PROVIDER_SCHEDULED={
  "xray-alpaca-delayed-sip-research.yml",
+ "xray-candidate-local-alpaca-sip-recovery.yml",
  "xray-massive-grouped-history-resume.yml",
  "xray-multi-provider-research-shadow.yml",
  "xray-sec-mirror-cik-shadow.yml",
@@ -124,9 +126,11 @@ def selftest():
     actual=read_files()
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
-    assert base["scheduled_count"]==23
+    assert base["scheduled_count"]==24
     assert base["automated_schedules"]["xray-alpaca-delayed-sip-research.yml"]==["55 13 * * 1-5"]
     assert base["issue_writers"]==[]
+    assert base["automated_schedules"]["xray-candidate-local-alpaca-sip-recovery.yml"]==["10 23 * * 1-5"]
+    assert "xray-candidate-local-alpaca-sip-recovery.yml" in base["extra_readonly_provider_scheduled"]
     def bad(modify,want):
         sample=dict(actual)
         modify(sample)
@@ -170,7 +174,7 @@ def selftest():
             "if: steps.prep.outputs.ready == 'true' && false",
             "if: steps.prep.outputs.ready == 'true'")}),
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
-    print("XRAY_ALL_135_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_9_NEGATIVES_23_CRONS_ZERO_ISSUE_WRITERS")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_9_NEGATIVES_24_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
