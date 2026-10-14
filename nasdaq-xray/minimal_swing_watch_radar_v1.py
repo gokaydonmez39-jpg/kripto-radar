@@ -24,12 +24,12 @@ def need(ok,reason):
 def fingerprint(obj):
     return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).hexdigest()
 
-def take_watch_candidates(raw,max_items=12):
+def take_watch_candidates(raw,max_items=None):
     need(type(raw) is dict and raw.get("schema")=="XRAY_SINA_CANDIDATES_V2"
          and type(raw.get("asof_et")) is str,"SOURCE_SCHEMA")
     rows=raw.get("candidates")
     need(type(rows) is dict and raw.get("candidate_count")==len(rows),"CANDIDATE_TOTAL")
-    need(type(max_items) is int and 1<=max_items<=30,"LIMIT")
+    need(max_items is None or (type(max_items) is int and max_items>=1),"LIMIT")
     clean=[]
     rejected=0
     for symbol,record in sorted(rows.items()):
@@ -66,9 +66,9 @@ def take_watch_candidates(raw,max_items=12):
                       "buy_signal":False,
                       "classification":"WATCH_LIQUIDITY_PRE_SCREEN_ONLY"})
     clean.sort(key=lambda x:(-x["dv30_usd_observed"],x["symbol"]))
-    return clean[:max_items],len(clean),rejected
+    return (clean if max_items is None else clean[:max_items]),len(clean),rejected
 
-def compile_watch_radar(candidates,previous=None,source_sha256=None,max_items=12):
+def compile_watch_radar(candidates,previous=None,source_sha256=None,max_items=None):
     prev=previous if type(previous) is dict else {}
     top,n,rejected=take_watch_candidates(candidates,max_items)
     asof=candidates["asof_et"]
@@ -112,6 +112,8 @@ def compile_watch_radar(candidates,previous=None,source_sha256=None,max_items=12
          "source_candidates_sha256":source_sha256 or fingerprint(candidates),
          "watchlist":top,
          "watchlist_count":len(top),
+         "watchlist_cap":max_items,
+         "all_eligible_candidates_tracked":max_items is None and len(top)==n,
          "watchlist_digest":fingerprint_id,
          "new_watchlist_symbols":sorted(current-previous_set),
          "no_longer_in_top_watchlist":sorted(previous_set-current),
@@ -167,6 +169,23 @@ def selftest():
     future=compile_watch_radar(newer)
     need(future["candidate_local_special_review"] is None,
          "OLD_FROG_DEEP_NOT_REUSED_NEXT_SESSION")
+    # More than thirty independently source-qualified stocks must all remain
+    # in tracking; presentation-only top-N selections must never trim state.
+    large={"schema":"XRAY_SINA_CANDIDATES_V2","asof_et":ASOF_FROG,
+           "candidate_count":75,"candidates":{
+               "T"+str(i).zfill(4):rec("Ordinary Stock "+str(i), 10+i,
+                                         60_000_000+10_000*i)
+               for i in range(75)}}
+    full=compile_watch_radar(large)
+    need(full["watchlist_count"]==full["price_liquidity_screened_count"]==75
+         and len(full["new_watchlist_symbols"])==75
+         and full["all_eligible_candidates_tracked"] is True
+         and full["watchlist_cap"] is None,
+         "NO_SILENT_TOP12_OR_TOP30_TRUNCATION")
+    sample=compile_watch_radar(large,max_items=5)
+    need(sample["watchlist_count"]==5
+         and sample["all_eligible_candidates_tracked"] is False,
+         "OPTIONAL_PREVIEW_IS_NOT_FULL_WATCH")
     print("XRAY_MINIMAL_RADAR_SELFTEST=PASS_LOCAL_2_OF_5_TRACKING_NO_FAKE_AL")
 
 def main():
