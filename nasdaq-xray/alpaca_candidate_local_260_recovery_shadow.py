@@ -162,6 +162,17 @@ def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
                     need(type(status) is str and
                          type(count) is int and count >= 0,
                          "SOURCE_CLASSIFICATION_SCHEMA")
+                    # A syntactically present response with invalid OHLCV or
+                    # timestamps is an UNKNOWN provider observation, never
+                    # measured healthy history.
+                    allowed = {
+                        "SHADOW_260_DAILY_52_WEEK_OBSERVED",
+                        "MISSING_EXACT_COMPLETED_SESSIONS",
+                        "MISSING_52_COMPLETED_WEEK_CLOSES",
+                        "NO_BAR",
+                    }
+                    if status not in allowed:
+                        status, count = "UNKNOWN_SOURCE_ROW_INVALID", 0
                 except (RuntimeError, ValueError, TypeError, KeyError, IndexError):
                     status, count = "UNKNOWN_SOURCE_ROW_INVALID", 0
                 result[symbol] = {"source_availability": status,
@@ -316,6 +327,14 @@ def selftest():
     need(foreign["observations"]["SYM000"]["source_availability"] ==
          "UNKNOWN_SOURCE_PROVIDER_BATCH_SCOPE",
          "FOREIGN_SYMBOL_MUST_NEVER_BE_ACCEPTED")
+    def malformed_rows(sub, begin, finish, session):
+        return {sym: "THIS_IS_NOT_OHLCV" for sym in sub}
+    malformed = audit(asof, ["SYM000"], daily, weeks, "a"*40,
+                      malformed_rows, now)
+    need(malformed["observations"]["SYM000"]["source_availability"] ==
+         "UNKNOWN_SOURCE_ROW_INVALID"
+         and malformed["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
+         "MALFORMED_BAR_MUST_NEVER_LOOK_LIKE_COMPLETE_SOURCE")
     print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_SOURCE_EXACT_NO_PRIMARY_NO_R92")
 
 def main():
