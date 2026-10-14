@@ -1,0 +1,90 @@
+name: XRAY Oct13 Four Live Provider Runs Artifact SHA Ledger Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research/personal_oct13_live_multisource_execution_readback_v1.json"
+      - ".github/workflows/xray-personal-20261013-multisource-artifact-sha-ledger.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Source immutable script SHA audit
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          base=Path("nasdaq-xray")
+          x=json.loads((base/"research/personal_oct13_live_multisource_execution_readback_v1.json").read_text())
+          assert x["schema"]=="XRAY_PERSONAL_OCT13_LIVE_MULTISOURCE_EXECUTION_READBACK_V1"
+          paths={
+            "price":"alpaca_personal_price_20261013_exact30_census.py",
+            "missing168":"personal_oct13_missing168_sec_nasdaq_alpaca_census.py",
+            "master10":"personal_master_ten_20261013_sec_live_disposition.py",
+            "final":"personal_research_same_asof_chain_audit.py"}
+          for role,file in paths.items():
+              actual=subprocess.check_output(["git","hash-object",str(base/file)],text=True).strip()
+              assert actual==x["measured_actions"][role]["source_sha"],role
+          for role,file in {"MASTER":"canonical_current_master_manifest.json",
+                            "PRICE":"canonical_current_price_dv30.json",
+                            "HISTORY":"canonical_current_history.json",
+                            "LEGAL":"canonical_current_legal.json",
+                            "EVENT":"canonical_current_event_state.json",
+                            "FINAL":"canonical_current_final_tech.json",
+                            "TERMINAL":"canonical_current_terminal.json"}.items():
+              actual=subprocess.check_output(["git","hash-object",str(base/file)],text=True).strip()
+              assert actual==x["live_source_canonical"][role]["git_blob_sha"],role
+          print("XRAY_OCT13_SOURCES_SHA_11=PASS")
+          PY
+      - name: Download four real prior Actions artifacts, not synthetic fixtures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for x in price missing168 master10 final; do mkdir -p "$RUNNER_TEMP/$x"; done
+          gh run download 38487829247 --repo "${{ github.repository }}" --name xray-personal-20261013-price-exact30-sip-no-ohlcv --dir "$RUNNER_TEMP/price"
+          gh run download 38488092593 --repo "${{ github.repository }}" --name xray-oct13-missing168-sec-nasdaq-alpaca-no-ohlcv --dir "$RUNNER_TEMP/missing168"
+          gh run download 38488709655 --repo "${{ github.repository }}" --name xray-20261013-master-ten-sec-official-cik-sic-filing-witness --dir "$RUNNER_TEMP/master10"
+          gh run download 38488367352 --repo "${{ github.repository }}" --name xray-oct13-exact-canonical-r92-release-evidence-attempt --dir "$RUNNER_TEMP/final"
+      - name: Prove raw JSON SHA256 and real data counts exactly matching ledger
+        run: |
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          led=json.loads(Path("nasdaq-xray/research/personal_oct13_live_multisource_execution_readback_v1.json").read_text())
+          got={}
+          for role,decl in led["measured_actions"].items():
+            p=root/role/decl["artifact_json_file"]
+            raw=p.read_bytes()
+            assert hashlib.sha256(raw).hexdigest()==decl["artifact_json_sha256"],role
+            got[role]=json.loads(raw)
+          p,m,t,f=(got["price"],got["missing168"],got["master10"],got["final"])
+          assert p["counts"]=={"UNKNOWN_HTTP_403":8,"UNKNOWN_NOT_ATTEMPTED":537}
+          assert p["source_price_unknown_count"]==545 and p["api_calls"]==1
+          assert p["same_asof_history"]["history_asof_et"]=="2026-10-13"
+          assert m["total_symbols"]==168 and len(m["sources"])==168
+          assert m["sec_requests"]==166 and m["alpaca_calls"]==14 and m["nasdaq_requests"]==168
+          assert sum(bool(v.get("sec_filing_vintage")) for v in m["sources"].values())==165
+          assert sum(bool(v.get("alpaca_first_observed_in_260")) for v in m["sources"].values())==167
+          assert not any(v.get("nasdaq_candidate_listing_date") for v in m["sources"].values())
+          assert t["sec_submissions_attempted"]==10 and t["sec_8k_documents_attempted"]==10
+          assert t["rows"]["ALIS"]["latest_asof_filings"][0]["filed"]=="2026-10-13"
+          assert len(t["rows"])==10
+          assert f["source_SEC_PIT_canary_status"]=="HTTP_200_BOTH"
+          assert f["eligible_primary_price_symbols"]==f["eligible_primary_sec_mc_scope"]==f["new_canonical_r92"]==0
+          assert f["same_asof_master_price"] is True and f["same_asof_all_canonical_layers"] is False
+          assert all(not x["release_decision"][v] for x in
+             (led,) for v in ("same_asof_FULL_PRIMARY_CHAIN","canonical_unknown_zero_proven",
+                              "valid_primary_price_set_available","strict_all_required_evidence_pass"))
+          assert led["release_decision"]["real_money"]=="NO-GO"
+          print("XRAY_OCT13_FOUR_RUNS_REAL_JSON_SHA256_AND_COUNTS=PASS_NO_FALSE_RELEASE")
+          PY
