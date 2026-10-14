@@ -95,6 +95,8 @@ def add_candidate_technical_funnel(out):
         print("XRAY_CANDIDATE_LOCAL_C417_TECH="+
               str(q["evaluated_count"])+"/"+str(q["candidate_count"])+
               " TECH_WATCH="+str(q["preliminary_technical_watch_count"])+
+              " RETRY="+str(q["transient_retry_count"])+
+              " PENDING="+str(q["pending_count"])+
               " AL=0 R92=0",flush=True)
     except Exception as exc:
         out["candidate_technical_funnel"]={
