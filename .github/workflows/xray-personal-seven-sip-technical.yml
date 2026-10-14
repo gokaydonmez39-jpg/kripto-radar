@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
+      - "nasdaq-xray/personal_research_daily_attestation.py"
       - ".github/workflows/xray-personal-seven-sip-technical.yml"
   workflow_dispatch:
 permissions:
@@ -63,6 +64,13 @@ jobs:
           assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
           print("XRAY_PERSONAL_SEVEN_SECONDARY_TECH_AUDIT=PASS_NO_CANONICAL_NO_R92")
           PY
+      - name: Validate exact full personal watch cohort without canonical AL
+        if: success()
+        run: |
+          python -m py_compile nasdaq-xray/personal_research_daily_attestation.py
+          python nasdaq-xray/personal_research_daily_attestation.py --selftest
+          python -O nasdaq-xray/personal_research_daily_attestation.py --selftest
+          python nasdaq-xray/personal_research_daily_attestation.py --study "$RUNNER_TEMP/personal_seven_sip_technical_labels.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
