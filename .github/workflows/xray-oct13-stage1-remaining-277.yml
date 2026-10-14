@@ -1,0 +1,82 @@
+name: XRAY Oct13 Real SIP Stage1 Remaining 249 Source Research
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py"
+      - ".github/workflows/xray-oct13-stage1-remaining-277.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-oct13-stage1-rest-277-read-only
+  cancel-in-progress: false
+jobs:
+  stage1-260-52:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        page: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing frozen technical runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Compile source and check exact 277 disjoint paging and 260 date veto
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py
+          python nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py --selftest
+          python -O nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py --selftest
+      - name: Fetch immutable 277 October 13 source authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/source"
+          gh run download 38532588994 --repo "${{ github.repository }}" \
+            --name xray-20261013-real-545-404-source-rollup-no-r92 \
+            --dir "$RUNNER_TEMP/source"
+      - name: Execute actual 260 daily historical SIP and 52-week Stage1 source
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          PAGE: ${{ matrix.page }}
+        run: |
+          python nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py \
+            --page "$PAGE" \
+            --source "$RUNNER_TEMP/source/xray_full_same_asof_source_rollup.json" \
+            --out "$RUNNER_TEMP/xray_stage1_page.json"
+      - name: Verify exact page and safe symbol-specific non-pass states
+        env:
+          PAGE: ${{ matrix.page }}
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_stage1_page.json").read_text())
+          assert r["schema"]=="XRAY_20261013_277_STAGE1_SIP_PAGE_RESEARCH_V1"
+          assert r["asof_et"]=="2026-10-13"
+          assert r["page"]==int(os.environ["PAGE"])
+          assert r["scope_count"]==(25 if r["page"]==9 else 28)
+          assert len(r["status_by_symbol"])==sum(r["result_counts"].values())==r["scope_count"]
+          assert set(r["status_by_symbol"])==set(r["target_symbols"])
+          assert r["api_calls"]<=r["scope_count"]
+          assert r["r92_registered"]==0 and r["canonical_mutated"] is False
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          print("XRAY_STAGE1_277_REAL_PAGE=PASS_SOURCE_SHADOW_NOT_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-stage1-sip277-page-${{ matrix.page }}
+          path: ${{ runner.temp }}/xray_stage1_page.json
+          retention-days: 14
+          if-no-files-found: warn
