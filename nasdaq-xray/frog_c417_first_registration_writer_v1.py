@@ -121,6 +121,37 @@ def make_first_registration(report, terminal, registry, ledger, compiled):
             "registry_first_write_ready":True,"delivery_receipt_attested":False}
 
 
+def stage_first_registration_json(report, terminal, registry, ledger, compiled,
+                                  registry_output, ledger_output):
+    """Actually write BOTH registration and pending-delivery JSON to staging files.
+
+    Does not claim the platform delivered a message; GitHub CAS-commit/readback
+    and a separate genuine platform receipt remain downstream operations.
+    """
+    a=Path(registry_output).resolve()
+    b=Path(ledger_output).resolve()
+    require(a!=b and a.name.endswith(".json") and b.name.endswith(".json"),
+            "DISTINCT_JSON_OUTPUTS")
+    require(a.parent.is_dir() and b.parent.is_dir(),"OUTPUT_PARENTS")
+    require(not a.exists() and not b.exists(),"REFUSE_REPLACE_EXISTING_STAGED_FILES")
+    payload=make_first_registration(report,terminal,registry,ledger,compiled)
+    contents=((a,payload["registry"]),(b,payload["ledger"]))
+    written=[]
+    try:
+        for path,doc in contents:
+            path.write_text(json.dumps(doc,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+            written.append(path)
+        for path,doc in contents:
+            require(json.loads(path.read_text(encoding="utf-8"))==doc,"STAGE_READBACK")
+    except Exception:
+        for path in written:
+            path.unlink(missing_ok=True)
+        raise
+    return {"registry_staged":str(a),"ledger_pending_staged":str(b),
+            "registered_signal_id":payload["signal_id"],
+            "delivery_platform_receipt_verified":False}
+
+
 def read_registration(registry, terminal, compiled, source_sha256):
     """Registered is NOT contingent on a delivered phone message."""
     root=root_sha(source_sha256)
@@ -190,6 +221,16 @@ def selftest():
     try:make_first_registration(r,term,registry,fraud,compiled)
     except ValueError:pass
     else:raise AssertionError("FAKE_PREEXISTING_DELIVERY_ACCEPTED")
+    import tempfile
+    with tempfile.TemporaryDirectory() as t:
+        outa=Path(t)/"lifecycle.json"
+        outb=Path(t)/"delivery_pending.json"
+        staged=stage_first_registration_json(r,term,registry,ledger,compiled,outa,outb)
+        require(staged["delivery_platform_receipt_verified"] is False and
+                json.loads(outa.read_text())["records"][KEY]["registered_r92"] is True and
+                not json.loads(outb.read_text())["deliveries"] and
+                json.loads(outb.read_text())["pending"][KEY]["delivery_confirmed"] is False,
+                "TRUE_FIRST_WRITE_TO_STAGING_FILES_NO_FAKE_PLATFORM_DELIVERY")
     require(not registry["records"] and not ledger["deliveries"],"NO_TEST_WRITE_SIDE_EFFECTS")
     print("XRAY_FROG_FIRST_REGISTRATION_SELFTEST=PASS_EMPTY_REGISTRY_POSITIVE_7_NEGATIVE_STALE_SHA_NO_PUSH")
 
@@ -199,9 +240,12 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
     p.add_argument("--report",type=Path)
+    p.add_argument("--out-registry",type=Path)
+    p.add_argument("--out-ledger",type=Path)
     a=p.parse_args()
     if a.selftest:return selftest()
     require(a.report,"REPORT_REQUIRED")
+    require(bool(a.out_registry)==bool(a.out_ledger),"BOTH_OUTPUTS_OR_NONE")
     report=json.loads(a.report.read_text())
     registry=json.loads((ROOT/"canonical_candidate_lifecycle_registry.json").read_text())
     terminal=json.loads((ROOT/"canonical_current_terminal.json").read_text())
@@ -223,6 +267,11 @@ def main():
         prepared=make_first_registration(report,terminal,registry,ledger,compiled)
         print("XRAY_FROG_FIRST_REGISTRATION=PREPARED_NO_EXTERNAL_COMMIT_OR_PHONE_RECEIPT")
         print("XRAY_FROG_FIRST_SIGNAL_ID="+prepared["signal_id"])
+        if a.out_registry and a.out_ledger:
+            written=stage_first_registration_json(report,terminal,registry,ledger,compiled,
+                                                  a.out_registry,a.out_ledger)
+            print("XRAY_FROG_FIRST_REGISTRATION_STAGED_JSON_FILES="+
+                  json.dumps(written,sort_keys=True))
     else:
         print("XRAY_FROG_FIRST_REGISTRATION=NOT_READY_SEVEN_SOURCE_OR_SAME_ASOF_TERMINAL")
 
