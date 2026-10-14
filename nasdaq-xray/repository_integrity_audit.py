@@ -139,6 +139,40 @@ def research_release_observability(root_asof, terminal_asof, history_unknown,
     }
 
 
+def preopen_stale_noop_topology(raw):
+    """Stale workflow runs must skip every source/alert step, not certify data."""
+    doc = yaml.load(raw, Loader=yaml.BaseLoader)
+    if not isinstance(doc, dict):
+        raise ValueError("PREOPEN_YAML_INVALID")
+    steps = ((doc.get("jobs") or {}).get("audit") or {}).get("steps")
+    if not isinstance(steps, list):
+        raise ValueError("PREOPEN_STEPS_INVALID")
+    indexed = [i for i, row in enumerate(steps) if
+               isinstance(row, dict) and row.get("id") == "epoch_guard"]
+    if len(indexed) != 1 or indexed[0] != 1:
+        raise ValueError("PREOPEN_EPOCH_GUARD_NOT_FIRST_AFTER_CHECKOUT")
+    guard = steps[indexed[0]]
+    script = guard.get("run") or ""
+    for marker in ("git rev-parse HEAD", "git ls-remote origin refs/heads/main",
+                   "valid=false", "valid=true", "SAFE_NOOP_NO_EVIDENCE"):
+        if marker not in script:
+            raise ValueError("PREOPEN_GUARD_MISSING_" + marker.replace(" ", "_"))
+    if "XRAY_PREOPEN_UNEXPECTED_CHECKOUT_SHA_FAIL_CLOSED" not in script:
+        raise ValueError("PREOPEN_CHECKOUT_DRIFT_NOT_FATAL")
+    trailing = steps[indexed[0]+1:]
+    if len(trailing) < 12:
+        raise ValueError("PREOPEN_TRUNCATED_STEP_LIST")
+    expected = "steps.epoch_guard.outputs.valid == 'true'"
+    for step in trailing:
+        if not isinstance(step, dict) or step.get("if") != expected:
+            raise ValueError("PREOPEN_UNGUARDED_STEP:" +
+                             str(step.get("name") or step.get("uses")))
+    return {"status": "PASS_EXACT_STALE_NOOP_NO_EVIDENCE",
+            "guarded_after_epoch_count": len(trailing),
+            "stale_mixed_source_authorization": False,
+            "source_execution_requires_current_sha": True}
+
+
 def source_integrity():
     """One exact source epoch; a complete WATCH is not a complete terminal."""
     candidate_bytes = (ROOT / "sina_candidates.json").read_bytes()
@@ -239,6 +273,28 @@ def selftest():
         "PROVEN_FROM_PRIMARY_SOURCE")
     assert no_obvious["status"] == "UNATTESTED_FINAL_REQUIRES_FULL_RELEASE_GATES"
     assert no_obvious["production_release_authorized_by_this_audit"] is False
+    from copy import deepcopy
+    workflow = (REPO / ".github/workflows/xray-preopen-source-audit.yml").read_text()
+    verified = preopen_stale_noop_topology(workflow)
+    assert verified["status"] == "PASS_EXACT_STALE_NOOP_NO_EVIDENCE"
+    obj = yaml.load(workflow, Loader=yaml.BaseLoader)
+    broken = deepcopy(obj)
+    broken["jobs"]["audit"]["steps"][-1].pop("if", None)
+    try:
+        preopen_stale_noop_topology(yaml.safe_dump(broken))
+    except ValueError as exc:
+        assert str(exc).startswith("PREOPEN_UNGUARDED_STEP")
+    else:
+        raise AssertionError("UNGUARDED_STALE_PREOPEN_ACTION_ACCEPTED")
+    tampered = deepcopy(obj)
+    tampered["jobs"]["audit"]["steps"][1]["run"] = "echo valid=true"
+    try:
+        preopen_stale_noop_topology(yaml.safe_dump(tampered))
+    except ValueError as exc:
+        assert str(exc).startswith("PREOPEN_GUARD_MISSING")
+    else:
+        raise AssertionError("MISSING_SHA_BINDING_ACCEPTED")
+    print("XRAY_PREOPEN_STALE_SHA_NOOP_SELFTEST=PASS_ALL_DOWNSTREAM_FENCED")
     print("XRAY_TRACKED_HYGIENE_SELFTEST=PASS_PY_AST_JSON_YAML_AND_PRODUCTION_DIAGNOSTIC_FAIL_CLOSED")
 
 def main():
@@ -254,6 +310,8 @@ def main():
     result["schedule_contract_status"] = schedules["contract_status"]
     result["schedule_count"] = schedules["scheduled_count"]
     result["schedule_blockers"] = schedules["blockers"]
+    result["preopen_stale_epoch_topology"] = preopen_stale_noop_topology(
+        (REPO / ".github/workflows/xray-preopen-source-audit.yml").read_text())
     result["chain"] = source_integrity()
     result["status"] = ("PASS_SOURCE_STRUCTURE_AND_FAIL_CLOSED_CHAIN"
                         if not result["structural_errors"] and
@@ -269,6 +327,7 @@ def main():
          "schedule_contract_status","statically_unreferenced_python_review_count",
          "structural_errors")}, sort_keys=True))
     print("XRAY_REPO_CANDIDATE_CHAIN=" + json.dumps(result["chain"],sort_keys=True))
+    print("XRAY_PREOPEN_STALE_NOOP_TOPOLOGY=" + json.dumps(result["preopen_stale_epoch_topology"], sort_keys=True))
     print("XRAY_REPO_PRODUCTION_READINESS=" +
           json.dumps(result["chain"]["production_readiness"], sort_keys=True))
     print("XRAY_STATIC_ORPHANS_REVIEW=" + json.dumps(result["statically_unreferenced_python_review"]))
