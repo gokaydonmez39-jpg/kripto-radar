@@ -1,0 +1,54 @@
+# NASDAQ SWING X-RAY — CANONICAL CONTINUATION: post-277 Stage1 / Deep / FROG
+
+Date: 2026-10-14 (Europe/Istanbul). Repo: `gokaydonmez39-jpg/kripto-radar`; branch `main`.
+Live HEAD inspected before creation of this checkpoint: `675b9195189af30ef26e16e84a27a572825bf48d`. **The checkpoint commit itself will move HEAD; use live HEAD, never freeze the prior SHA.**
+
+## Next chat's absolutely first action
+
+1. Read THIS checkpoint in full, and also the original `nasdaq-xray/research/continuation_checkpoint_20261014_new_chat_research_start_v1.md` if further historic provenance needed.
+2. Get LIVE GitHub `main` ref, recent commits, all relevant GitHub Actions runs, job logs and artifacts. Never restart or repeat already proven work, never report Actions green as canonical C4.17 green.
+3. Resume actual engineering, focusing on the 7 real A/B/D trigger/geometry source rows, FROG official evidence, per-candidate SEC class-aware PIT market cap, exact current PRICE primary including close corrections, local issuer legal/event/halt, R1/RR/regime, truthful R92. Code + GitHub Actions proof, rather than recommendations alone.
+4. Preserve five existing ChatGPT automations. The user has reached active task limit: **do not create a sixth**, disable, or rewrite any unless directly requested. GitHub Actions are distinct from ChatGPT automations; use existing workflows within provider budgets and source rights.
+
+## Results actually finished and witnessed
+
+- 2026-10-13 full same-ASOF candidate-local PRICE/SEC/HISTORY source exploration: **545 historical Alpaca SIP PRICE**, **404 SEC EDGAR candidates**, **277 exact intersection**.
+- PRICE partition (545): 416 `LOWER_BOUND_GE_50M_SHADOW`, 91 ambiguous, 38 unknown/integrity; 1,537 actual historical HTTP calls. Source runs [first 50](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38529782918) + [remaining 495](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38530630522), SUCCESS.
+- SEC (404): 279 `SHADOW_SHARES_VINTAGE_ONLY`, 125 unknown; 817 actual HTTP calls. [first 50](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38529822940) + [remaining 354](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38530692893), SUCCESS. IMPORTANT: SEC `shares` vintage is NOT class-aware PIT market cap.
+- Real 277 exact-overlap artifact verified under [38532588994](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38532588994) SUCCESS; 20 exact symbol-membership pages (11 PRICE / 9 SEC) and canonical source blob cross-check, 5 adversarial false-PRIMARY tests. Immutable source artifact ID **11877839124**, artifact ZIP sha256 `6750ab0d4a10200232e1b5153e9dd29bcdc5cfea45600b2053ec0940b97c96e5`; underlying member JSON `xray_full_same_asof_source_rollup.json` sha256 `c05669e7fbd0a91c3f6fb9f652c330157066496747132dcfc291d121d99fb26c`. The lineage JSON is `nasdaq-xray/research/candidate_local_20261013_545_price_404_sec_277_intersection_v1.json`, validated by [38533068010](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38533068010) SUCCESS.
+- Stage1 real SIP 260 official completed trading sessions and 52 weekly bars, first 28 [38533652716](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38533652716) SUCCESS; remaining 249 over nine serial GitHub Actions pages [38534612554](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38534612554) SUCCESS; 277 full SHA-bound rollup [38535687839](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38535687839) SUCCESS. **277 total = 54 `STAGE1_RESEARCH_POOL_ONLY`, 145 `STAGE1_RESEARCH_WEEKLY_FAIL`, 74 `UNKNOWN_CORPORATE_ACTION_PIT_NOT_RECONCILED`, 4 `STAGE1_RESEARCH_WEEKLY_PASS_NO_POOL`**. This is a pure research shadow technical Stage1, not canonical PRIMARY.
+- First 7 Stage1 local symbols, true QQQ benchmark, deep A/B/D and R1/RR: [38534160546](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38534160546) SUCCESS, **0 confirmed new trigger**.
+- Remaining 47 Stage1 survivors deep scanned in 9 true SIP QQQ/260 sessions pages [38535687938](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38535687938) SUCCESS; complete full SHA-bound [38536372509](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38536372509) SUCCESS. Logs: **54 Stage1 pools scanned, 7 A/B/D confirmed recent family triggers, 7 frozen R1/RR evaluations**. Artifact ID **11880391086**, ZIP digest `e4f755b04f1b571ca3dcb0be0c47f3815f557b7130d35f6d646c02efaf563eee`, name `xray-20261013-full277-stage1-deep-abd-r1rr-real`. The research source is **not a trading signal**.
+- The 7-trigger set has **FROG family D**, whose frozen geometry / both R/R thresholds passed, but candidate is **`WATCH_EVENT_UNKNOWN_OR_BLOCKED`**. Others in preceding scan faced geometry/RR vetoes. Verify the entire 7-line artifact to evaluate other candidates, rather than assume FROG alone merits promotion.
+- FROG official legal/halt work [38536701561](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38536701561) and [38536754587](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38536754587) both SUCCESS. Latest FROG source research [38537058724](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38537058724) **SUCCESS**; proof: 5 genuine official SEC/Nasdaq/IR HTTP requests; SEC vintage `SHADOW_SHARES_VINTAGE_ONLY`; Nasdaq halt `NO_MATCH_IN_BOUNDED_RSS_NOT_HALT_CLEAR` (IMPORTANT: absence of matching entry is NOT a certified halt-clear); event `UNKNOWN_NO_EXPLICIT_PIT_EVENT_SCHEDULE_EVIDENCE`; R92=0. Relevant scripts: `nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py`, `nasdaq-xray/candidate_local_oct13_frog_official_event_halt_sec.py`; respective workflows `.github/workflows/xray-oct13-frog-d-real-sec-halt-event.yml` and `.github/workflows/xray-oct13-frog-official-pit-legal-halt.yml`. Do not read any post-2026-10-13 SEC filing as Oct13 PIT evidence.
+
+## Exact current canonical production caveat
+
+The real source research must NEVER be asserted as canonical:
+- MASTER `nasdaq-xray/canonical_current_master_manifest.json` asof 2026-10-13, blob `64901add1736102b16b95597cf4d41beb2e8bc53`: 3184 PASS_IDENTITY, 10 UNKNOWN.
+- PRICE `nasdaq-xray/canonical_current_price_dv30.json` asof 2026-10-13, blob `4bac485ade0477d419992cb6b36089c6b0896e4b`: 0 confirmed PASS for the 545 research exceptions (still UNKNOWN); other canonical cohorts may be FAIL.
+- HISTORY `nasdaq-xray/canonical_current_history.json` asof 2026-10-07 blob `28e182225c45c3adf4243e40eb7df7ebdb783884`, old 460 pass; not same-ASOF.
+- LEGAL `nasdaq-xray/canonical_current_legal.json` asof 2026-10-07 blob `b4fc5d1b0c072f763d74a61f7a69aa0a0ac51349`, shell-level pass, not specific Oct13 FROG resolution.
+- TERMINAL `nasdaq-xray/canonical_current_terminal.json` asof 2026-10-07 blob `ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f`: old `PARTIAL`, `mc_primary_pass=0`, `pre_g9_tech_pass=0`, `r92=0`. Its old `price_dv30_pass=510` belongs to stale chain, NEVER infer current primary.
+- Current MC PRIMARY, official market-cap share-class proof, exact price close corrections, current official legal/event/halt, cross-role same-ASOF, independent R92 iPhone receipt, G9 and account FULL GO remain unproven. **RESEARCH_START=YES; REAL_MONEY=NO-GO; EXECUTION=NONE.** No fabricated date rewrites or UNKNOWN->PASS.
+- Other earlier 13 Oct HISTORY frozen full 3185 evidence: 2679 observed 260/52 SHADOW, 338 verified feed daily nonpositive bar FAIL technical, 168 unresolved coverage. Official no-trade proof for all 338 not established; early 168 not all proven new listing. Full original sha256 `1d5bb3aaceb571fc84a631ab90e46fa15601067996a9062b2cc5ac6535563a9e` at run 38481474945.
+
+## Existing engineered files
+
+- `nasdaq-xray/candidate_local_full_404_source_rollup.py` plus `.github/workflows/xray-candidate-local-13oct-full-rollup.yml` (find exact workflow name if needed).
+- `nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py` and `nasdaq-xray/candidate_local_oct13_stage1_277_remaining.py`.
+- `nasdaq-xray/candidate_local_oct13_stage1_277_rollup.py`; `.github/workflows/xray-oct13-stage1-277-rollup.yml`.
+- `nasdaq-xray/candidate_local_oct13_deep7_r1rr_shadow.py` and `nasdaq-xray/candidate_local_oct13_deep277_page.py`.
+- `nasdaq-xray/candidate_local_oct13_deep277_rollup.py`; `.github/workflows/xray-oct13-deep-277-full-rollup.yml`.
+- FROG real official source scripts and workflows above.
+- Existing foundation: `nasdaq-xray/stage1_shadow.py`, `nasdaq-xray/deep_pre_r1_shadow.py`, `nasdaq-xray/final_tech_shadow.py`, `nasdaq-xray/build_candidate_legal_guard.py`, `nasdaq-xray/price_historical_halt_probe.py`.
+
+## Next engineering priority / truthful gate sequence
+
+1. Confirm newest main HEAD and whether any overlapping workflow_run duplicates [38536754748](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/38536754748) or other jobs are running; do not rerun verified successful 277 exploration.
+2. Read entire full deep artifact (7 exact triggers) and FROG latest official artifact, inspect precise per-issuer risk/R1RR statuses and source provenance. If additional risk+R/R positive candidates exist, prioritize candidate-local official SEC PIT legal/events/halt, Nasdaq official halts and real market-cap share class.
+3. Resolve per-symbol corporate-action PIT and close correction *without* promoting an uncorrected 30Min DV30 lower-bound to exact PRIMARY; for official SEC shares use actual legal class basis and acceptance timestamps no later than Oct13 close.
+4. Preserve isolated symbol decision: global unknowns of unrelated symbols must not veto a genuinely complete local candidate, but every selected symbol's own UNKNOWN must fail closed. R92 may be manually research-eligible if complete local C4.17 gates and legal/event/halt proof; G9/device full-account GO is separate and never to be invented.
+5. All source code commits are to GitHub main via actual connector and CAS, Actions logs + artifact SHA as proof. No production trade, orders, paid requests or iPhone push receipt assertions without real evidence.
+
+**Copy/paste next chat first user request:** "NASDAQ SWING X-RAY — KALDIĞIMIZ YERDEN DEVAM. Repo gokaydonmez39-jpg/kripto-radar main. İLK İŞ: nasdaq-xray/research/continuation_checkpoint_20261014_new_chat_post_277_stage1_deep_frog_v1.md dosyasını GitHub'dan eksiksiz oku. Güncel main HEAD ve Actions/log/artefaktlarını canlı doğrula; 277 full Stage1, 54 pool, 7 gerçek A/B/D trigger ve FROG official work zaten tamamlandı, tekrarlama. 7 adayın gerçek kaynaklarını, C4.17 per-symbol SEC PIT class-aware MC, legal/event/halt ve price primary eksiklerini gerçek kod/Actions ile ilerlet; sahte PRIMARY/R92 yok. Beş mevcut ChatGPT otomasyonu korunacak, altıncı açılmayacak. NO-GO/EXECUTION NONE. Bana gerçek commit/run kanıtlarını göster." 
