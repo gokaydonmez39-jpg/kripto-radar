@@ -32,7 +32,7 @@ def need(ok, why):
 
 def blob(path):
     b = path.read_bytes()
-    return hashlib.sha1(f"blob {len(b)}\\0".encode() + b).hexdigest()
+    return hashlib.sha1((f"blob {len(b)}" + chr(0)).encode() + b).hexdigest()
 
 
 def collect(root):
@@ -45,7 +45,7 @@ def collect(root):
         proof[name] = {
             "path": "nasdaq-xray/" + path.name,
             "git_blob_sha": hashlib.sha1(
-                f"blob {len(raw)}\\0".encode() + raw
+                (f"blob {len(raw)}" + chr(0)).encode() + raw
             ).hexdigest(),
         }
     return assess(documents, proof)
