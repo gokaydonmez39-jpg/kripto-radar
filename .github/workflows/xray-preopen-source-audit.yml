@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - "nasdaq-xray/repository_integrity_audit.py"
       - "nasdaq-xray/current_terminal_epoch_forensics.py"
+      - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -87,6 +88,12 @@ jobs:
       - name: Install pinned official NASDAQ calendar and source YAML parser
         if: steps.epoch_guard.outputs.valid == 'true'
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "PyYAML==6.0.2"
+      - name: Early exact-root personal SIP bridge adversarial selftests before provider calls
+        if: steps.epoch_guard.outputs.valid == 'true'
+        run: |
+          python -m py_compile nasdaq-xray/personal_full_universe_sip_root_bridge.py
+          python nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
+          python -O nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
       - name: Automatically inspect all tracked source and delivery links
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
