@@ -69,6 +69,26 @@ jobs:
           assert len(r["status_by_symbol"])==sum(r["result_counts"].values())==r["scope_count"]
           assert set(r["status_by_symbol"])==set(r["target_symbols"])
           assert r["api_calls"]<=r["scope_count"]
+          assert r["source_subset_is_sorted_exact"] is True
+          assert r["source_277_json_sha256"]=="c05669e7fbd0a91c3f6fb9f652c330157066496747132dcfc291d121d99fb26c"
+          assert r["source_history_exact_260_official"] is True
+          assert r["source_weekly_52_gate"]=="C417_STAGE1_EXISTING_ENGINE"
+          assert r["no_raw_OHLCV_export"] is True
+          assert r["corporate_action_pit_fully_reconciled"] is False
+          assert r["sec_class_aware_mc_primary"] is False
+          assert r["price_close_corrections_primary"] is False
+          assert r["official_event_halt_clear"] is False
+          assert r["regime_setup_r1_rr_primary"] is False
+          permitted={"STAGE1_RESEARCH_POOL_ONLY","STAGE1_RESEARCH_WEEKLY_FAIL",
+                    "STAGE1_RESEARCH_WEEKLY_PASS_NO_POOL",
+                    "UNKNOWN_CORPORATE_ACTION_PIT_NOT_RECONCILED",
+                    "UNKNOWN_INCOMPLETE_260_SIP",
+                    "UNKNOWN_SOURCE_OR_INTEGRITY",
+                    "UNKNOWN_NOT_ATTEMPTED_AFTER_PROVIDER_STOP"}
+          for sym,row in r["status_by_symbol"].items():
+              assert isinstance(row,dict) and isinstance(row.get("status"),str)
+              assert row["status"] in permitted or row["status"].startswith("UNKNOWN_HTTP_")
+              assert not row.get("r92_eligible",False)
           assert r["r92_registered"]==0 and r["canonical_mutated"] is False
           assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
           print("XRAY_STAGE1_277_REAL_PAGE=PASS_SOURCE_SHADOW_NOT_R92")
