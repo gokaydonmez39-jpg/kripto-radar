@@ -269,6 +269,9 @@ def selftest():
              "r92_creation_requires_all_candidate_local_and_compiled_gates":True,
              "execution":"NONE","real_money":"NO-GO"})
     a=sample()
+    sample_gates=seven_official_gate_readout(*a[:3])
+    require(sample_gates["pass_count"]==0 and len(sample_gates["missing"])==7,
+            "FIVE_OBSERVATIONS_NEVER_IMPLY_SEVEN_PRIMARY_RELEASE")
     result=decide(*a)
     require(result["policy_r92_conditional_permission_enabled"] and
             result["mathematical_vintage_scenario"]["required_minimum_share_cancellation_at_same_price"]==98641049 and
