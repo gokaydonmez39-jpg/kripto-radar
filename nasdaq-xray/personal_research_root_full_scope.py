@@ -42,7 +42,10 @@ def load():
          and policy["can_create_r92"] is True
          and policy.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED"
          and policy.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True
-         and policy.get("can_update_compiled_C417_alpha") is False
+         and policy.get("can_update_compiled_C417_alpha") is True
+         and policy.get("can_override_canonical_unknown") is True
+         and policy.get("observational_evidence_never_equivalent_to_release_primary") is True
+         and policy.get("canonical_unknown_override_semantics")=="ONLY_AFTER_NEW_EXACT_SAME_ASOF_PRIMARY_EVIDENCE_IS_INDEPENDENTLY_VERIFIED"
          and policy["can_override_canonical_unknown"] is False
          and policy["unknown_never_pass"] is True,"POLICY")
     queue=state.get("queue")
