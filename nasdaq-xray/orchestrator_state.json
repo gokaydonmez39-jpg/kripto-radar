@@ -8,7 +8,7 @@
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 475,
-    "engine_source_sha256": "1f183bb280d2a058874dab5403269e7b08cd3e5549e5c41f9fdae95ddb940c33",
+    "engine_source_sha256": "e15a638eb2b65145166b05f6d5be28d89f3d29bc38d925516a0d32216d817261",
     "evaluated_count": 471,
     "execution": "NONE",
     "final_buy_signal_count": 0,
@@ -429,8 +429,12 @@
         "terminal_scan": true
       },
       "BSP": {
-        "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_260_OFFICIAL_HISTORY",
+        "completed_listed_sessions": 73,
+        "first_traded_nasdaq_date": "2026-07-01",
+        "history_source": "NASDAQ_OFFICIAL_FIRST_TRADE_FAIL_ONLY",
+        "source_evidence_blob_sha": "4b4b36a47a13fd96cdea4692349a84981abcd971",
+        "status": "UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
+        "technical_observation_ready": false,
         "terminal_scan": false
       },
       "BSY": {
@@ -3916,8 +3920,9 @@
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 116,
       "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 337,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 17,
-      "UNKNOWN_260_OFFICIAL_HISTORY": 3,
+      "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
+      "UNKNOWN_OFFICIAL_FIRST_TRADE_LT260": 1,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
     "transient_retry_count": 4,
@@ -3976,7 +3981,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T17:19:49.334053+00:00",
+  "updated_at_utc": "2026-10-14T18:47:02.192621+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
