@@ -3,10 +3,12 @@
   "asof_et": "2026-10-13",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-13",
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 475,
+    "engine_source_sha256": "638bf27d23626e426bbf280141ecbda3ae52eaf1d4e4d691e2ca4edbd30f105e",
     "evaluated_count": 475,
     "execution": "NONE",
     "final_buy_signal_count": 0,
@@ -19,6 +21,28 @@
     "preliminary_technical_watch_symbols": [],
     "provider_credits_assumed_available": false,
     "real_money": "NO-GO",
+    "recent_a_b_d_trigger_count": 19,
+    "recent_a_b_d_trigger_symbols": [
+      "MU",
+      "MSFT",
+      "MRVL",
+      "PLTR",
+      "MRNA",
+      "MSTR",
+      "SMTC",
+      "TWST",
+      "MTSI",
+      "TXG",
+      "MXL",
+      "GTLB",
+      "VICR",
+      "XP",
+      "FROG",
+      "FSLY",
+      "MANH",
+      "CDNA",
+      "NVAX"
+    ],
     "registered_r92_count": 0,
     "remaining_primary_release_gates": [
       "EXACT_PRIMARY_MARKET_CAP",
@@ -37,8 +61,9 @@
         "terminal_scan": true
       },
       "AAOI": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "AAON": {
@@ -192,8 +217,9 @@
         "terminal_scan": true
       },
       "AMD": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "AMGN": {
@@ -233,8 +259,9 @@
         "terminal_scan": true
       },
       "APP": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "APPF": {
@@ -340,8 +367,9 @@
         "terminal_scan": true
       },
       "AXTI": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "BBIO": {
@@ -357,8 +385,9 @@
         "terminal_scan": true
       },
       "BKNG": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "BKR": {
@@ -505,6 +534,20 @@
         "family_results": {
           "A": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_RETEST_REQUIRED",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 65.305,
+              "stop_s0_usd": 60.522,
+              "target_t1_usd": 72.51
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -617,8 +660,9 @@
         "terminal_scan": true
       },
       "CIFR": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "CINF": {
@@ -748,8 +792,9 @@
         "terminal_scan": true
       },
       "CRWD": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "CRWV": {
@@ -831,8 +876,9 @@
         "terminal_scan": true
       },
       "DDOG": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "DKNG": {
@@ -1094,6 +1140,19 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 84.4093,
+              "stop_s0_usd": 78.5616,
+              "target_t1_usd": 100.38
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1113,7 +1172,7 @@
         "history_source": "SINA_US_DAILY",
         "official_issuer_eight_session_event_veto": true,
         "r92_blocker": "ISSUER_EVENT_OCT20_22_2026",
-        "status": "TECHNICAL_GEOMETRY_NOT_APPROVED",
+        "status": "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
         "technical_observation_ready": false,
         "terminal_scan": true
       },
@@ -1143,6 +1202,22 @@
         "family_results": {
           "B": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_RECONFIRMATION_REQUIRED",
+              "RISK_PERCENT_GT_8PCT",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 28.7891,
+              "stop_s0_usd": 23.7327,
+              "target_t1_usd": 28.28
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1256,6 +1331,21 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 35.5655,
+              "stop_s0_usd": 33.4777,
+              "target_t1_usd": 38.64
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1422,13 +1512,15 @@
         "terminal_scan": true
       },
       "INTC": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "INTU": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "IONS": {
@@ -1486,8 +1578,9 @@
         "terminal_scan": true
       },
       "KLAC": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "KLIC": {
@@ -1593,8 +1686,9 @@
         "terminal_scan": true
       },
       "LRCX": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "LSCC": {
@@ -1635,6 +1729,20 @@
         "family_results": {
           "B": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 211.5332,
+              "stop_s0_usd": 199.2534,
+              "target_t1_usd": 213.3
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1681,8 +1789,9 @@
         "terminal_scan": true
       },
       "MDB": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "MDGL": {
@@ -1770,8 +1879,48 @@
         "terminal_scan": true
       },
       "MRNA": {
+        "completed_weeks": 54,
+        "confirmed_families": [
+          "D"
+        ],
+        "family_results": {
+          "D": {
+            "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 63.1367,
+              "stop_s0_usd": 50.7603,
+              "target_t1_usd": 63.28
+            },
+            "entry_band_usd": null,
+            "entry_usd": null,
+            "event_primary_status": "UNKNOWN",
+            "final_AL": false,
+            "regime_primary_status": "UNKNOWN",
+            "risk_percent": null,
+            "risk_rr_geometry_observed": false,
+            "setup_id": "962c7fbd226b109da70b6d93",
+            "severe_rr": null,
+            "source_r1_target": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+            "status": "FAIL_RISK_GEOMETRY",
+            "structural_stop_usd": null,
+            "target_t1_usd": null,
+            "trigger_date": "2026-10-08"
+          }
+        },
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "TECHNICAL_GEOMETRY_NOT_APPROVED",
+        "technical_observation_ready": false,
         "terminal_scan": true
       },
       "MRVL": {
@@ -1782,6 +1931,20 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 271.0149,
+              "stop_s0_usd": 245.3135,
+              "target_t1_usd": 292.51
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1817,6 +1980,20 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 538.5755,
+              "stop_s0_usd": 516.4816,
+              "target_t1_usd": 553.72
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1846,6 +2023,22 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 142.0497,
+              "stop_s0_usd": 119.5642,
+              "target_t1_usd": 142.67
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1881,6 +2074,22 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 290.0236,
+              "stop_s0_usd": 263.1612,
+              "target_t1_usd": 285.95
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1910,6 +2119,21 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 940.4532,
+              "stop_s0_usd": 835.4414,
+              "target_t1_usd": 1097.0
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1939,6 +2163,21 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_RECONFIRMATION_REQUIRED",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 90.6963,
+              "stop_s0_usd": 78.3169,
+              "target_t1_usd": 94.55
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -1997,8 +2236,9 @@
         "terminal_scan": true
       },
       "NFLX": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "NKTR": {
@@ -2051,6 +2291,22 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 11.3196,
+              "stop_s0_usd": 10.1072,
+              "target_t1_usd": 11.61
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -2097,8 +2353,9 @@
         "terminal_scan": true
       },
       "NXPI": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "NXST": {
@@ -2120,8 +2377,9 @@
         "terminal_scan": true
       },
       "OKTA": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "OLED": {
@@ -2247,6 +2505,21 @@
         "family_results": {
           "B": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 196.2811,
+              "stop_s0_usd": 183.6091,
+              "target_t1_usd": 195.7
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -2264,6 +2537,21 @@
           },
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 196.1811,
+              "stop_s0_usd": 183.6091,
+              "target_t1_usd": 194.214
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -2346,8 +2634,9 @@
         "terminal_scan": true
       },
       "PYPL": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "QBTS": {
@@ -2621,8 +2910,9 @@
         "terminal_scan": true
       },
       "SMCI": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "SMMT": {
@@ -2639,6 +2929,21 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "S0_BREACHED",
+              "LIFECYCLE_INVALIDATED_S0",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 187.6963,
+              "stop_s0_usd": 172.8529,
+              "target_t1_usd": 201.99
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -2757,8 +3062,9 @@
         "terminal_scan": true
       },
       "TEAM": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "TECH": {
@@ -2919,6 +3225,8 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [],
+            "diagnostic_only_entry_stop_target": null,
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -2948,6 +3256,20 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 68.6251,
+              "stop_s0_usd": 57.3519,
+              "target_t1_usd": 95.16
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -3061,6 +3383,23 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 206.9177,
+              "stop_s0_usd": 172.9698,
+              "target_t1_usd": 204.1212
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -3240,6 +3579,23 @@
         "family_results": {
           "D": {
             "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "R1_ENTRY_BAND_OVERLAP",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 21.8896,
+              "stop_s0_usd": 19.5243,
+              "target_t1_usd": 21.57
+            },
             "entry_band_usd": null,
             "entry_usd": null,
             "event_primary_status": "UNKNOWN",
@@ -3286,20 +3642,22 @@
         "terminal_scan": true
       },
       "ZS": {
+        "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
-        "status": "UNKNOWN_CORPORATE_ACTION_PIT",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "0e9b8bf5405c15c9930ad06b0d8a8db98e53c3563ab8d493d695bbb33a9d7ba2",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 106,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 327,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 116,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 337,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 18,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
-      "UNKNOWN_CORPORATE_ACTION_PIT": 21
+      "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
+    "transient_retry_count": 0,
     "unknown_never_pass": true,
     "watchlist_digest": "7beebb329850099d35d5d5dceaa2235a07a1c25a38729b67538e4ddc5d14050d"
   },
@@ -3355,7 +3713,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T12:16:27.627998+00:00",
+  "updated_at_utc": "2026-10-14T12:23:50.591557+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
