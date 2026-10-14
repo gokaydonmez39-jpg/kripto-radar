@@ -45,7 +45,7 @@ jobs:
         if: always()
         run: |
           python - <<'PY'
-          import json,os
+          import hashlib,json,os
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])/"xray_candidate_sip_source_availability.json"
           if not p.is_file():
@@ -56,6 +56,28 @@ jobs:
           assert d["scope_count"]==len(d["scope_symbols"])
           assert d["measured_scope_count"]==len(d["observations"])
           assert sum(d["classification_counts"].values())==d["measured_scope_count"]
+          observed=d["research_history_source_observed_symbols"]
+          blocked=d["research_history_source_blocked_symbols"]
+          if d["measured_scope_count"]==d["scope_count"]:
+              assert sorted(set(observed+blocked))==sorted(d["scope_symbols"])
+              assert not set(observed)&set(blocked)
+              assert d["research_history_source_observed_count"]==len(observed)
+              assert d["research_history_source_blocked_count"]==len(blocked)
+              digest=lambda values:hashlib.sha256(("\\n".join(values)+"\\n").encode()).hexdigest()
+              assert observed==sorted(observed) and blocked==sorted(blocked)
+              assert d["research_history_source_observed_sha256"]==digest(observed)
+              assert d["research_history_source_blocked_sha256"]==digest(blocked)
+              for sym in observed:
+                  row=d["observations"][sym]
+                  assert row["source_availability"]=="SHADOW_260_DAILY_52_WEEK_OBSERVED"
+                  assert row["observed_official_session_count"]==260
+                  assert row["canonical_primary"] is False
+              if blocked and not any(k.startswith("UNKNOWN_") for k in d["classification_counts"]):
+                  assert d["status"]=="SHADOW_PARTIAL_HISTORY_SOURCE_NO_AUTHORITY"
+          else:
+              assert d["research_history_source_observed_count"]==0
+          assert d["research_source_only_not_technical_pass"] is True
+          assert d["research_source_only_not_canonical_history_pass"] is True
           assert d["source_market_data_rights_independently_attested"] is False
           assert d["canonical_history_promoted"] is False
           assert d["canonical_price_promoted"] is False
@@ -65,6 +87,9 @@ jobs:
           assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
           print("XRAY_CANDIDATE_SIP_SHADOW_RESULT="+d["status"])
           print("XRAY_CANDIDATE_SIP_COUNT_ONLY="+json.dumps(d["classification_counts"],sort_keys=True))
+          print("XRAY_CANDIDATE_SIP_RESEARCH_SOURCE_OBSERVED_COUNT="+str(d["research_history_source_observed_count"]))
+          print("XRAY_CANDIDATE_SIP_RESEARCH_SOURCE_BLOCKED_COUNT="+str(d["research_history_source_blocked_count"]))
+          print("XRAY_CANDIDATE_SIP_NO_TECHNICAL_PRIMARY_OR_R92=PASS")
           PY
       - name: Archive ONLY symbols and source availability classifications
         if: always()
