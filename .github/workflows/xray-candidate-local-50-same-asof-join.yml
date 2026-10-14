@@ -1,0 +1,69 @@
+name: XRAY Candidate-Local Oct13 50 Price SEC History Same-ASOF
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_price_sec_history_join50.py"
+      - ".github/workflows/xray-candidate-local-50-same-asof-join.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fail-closed exact ASOF and global UNKNOWN isolation regressions
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_oct13_price_sec_history_join50.py
+          python nasdaq-xray/candidate_local_oct13_price_sec_history_join50.py --selftest
+          python -O nasdaq-xray/candidate_local_oct13_price_sec_history_join50.py --selftest
+      - name: Download three real independent source artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/price" "$RUNNER_TEMP/sec" "$RUNNER_TEMP/history"
+          gh run download 38529782918 --repo "${{ github.repository }}" \
+            --name xray-oct13-candidate-local-single-sip-price50 --dir "$RUNNER_TEMP/price"
+          gh run download 38529822940 --repo "${{ github.repository }}" \
+            --name xray-candidate-local-sec50-pit-source --dir "$RUNNER_TEMP/sec"
+          gh run download 38481474945 --repo "${{ github.repository }}" \
+            --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/history"
+      - name: Join candidate-local actual Oct13 PRICE SEC PIT shares and HISTORY
+        run: |
+          python nasdaq-xray/candidate_local_oct13_price_sec_history_join50.py \
+            --price "$RUNNER_TEMP/price/xray_oct13_sip_price50.json" \
+            --sec "$RUNNER_TEMP/sec/xray_candidate_local_sec50.json" \
+            --history "$RUNNER_TEMP/history/xray_personal_root260_full_cohort.json" \
+            --out "$RUNNER_TEMP/xray_local_50_oct13_source_intersection.json"
+      - name: Verify exact real source binding and no fake technical or phone receipt
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_local_50_oct13_source_intersection.json").read_text())
+          assert j["schema"]=="XRAY_20261013_CANDIDATE_LOCAL_50_PIT_SOURCE_INTERSECTION_V1"
+          assert j["asof_et"]=="2026-10-13"
+          assert j["price_scope_count"]==50
+          assert j["source_local_same_asof_intersection_count"]==len(j["source_local_same_asof_intersection_symbols"])
+          assert j["other_symbols_global_unknown_do_not_veto"]
+          assert j["candidate_local_release_ready"] is False
+          assert j["r92_registered"]==0 and not j["real_iphone_device_receipt_verified"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_OCT13_LOCAL_REAL_SOURCE_INTERSECTION=PASS_NOT_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-20261013-candidate-local-50-price-sec-history-intersection
+          path: ${{ runner.temp }}/xray_local_50_oct13_source_intersection.json
+          if-no-files-found: warn
+          retention-days: 14
