@@ -52,11 +52,19 @@ def add_minimal_watch_radar(out):
                             "source_asof_et":snapshot.get("asof_et")}
         return out
     watch=compile_watch_radar(snapshot,previous,
-                             hashlib.sha256(candidate_raw).hexdigest())
+                             hashlib.sha256(candidate_raw).hexdigest(),
+                             max_items=None)
+    # An unrelated symbol's missing history must never silently truncate a
+    # source-qualified symbol's watch/tracking record.
+    if not (watch["all_eligible_candidates_tracked"] is True
+            and watch["watchlist_count"]==
+                watch["price_liquidity_screened_count"]
+            and len(watch["watchlist"])==watch["watchlist_count"]):
+        raise RuntimeError("XRAY_CANDIDATE_LOCAL_WATCH_TRUNCATION")
     out["watch_radar"]=watch
     print("XRAY_SIMPLE_WATCH_RADAR=READY asof="+str(watch["asof_et"])+
           " price_dv30_eligible="+str(watch["price_liquidity_screened_count"])+
-          " displayed="+str(watch["watchlist_count"])+
+          " fully_tracked="+str(watch["watchlist_count"])+
           " BUY=FALSE R92=FALSE",flush=True)
     return out
 
