@@ -682,10 +682,14 @@ def parse_hist(sym,asof,expected30):
         from official_first_trade_260_history_guard import fence
         first_trade=fence(sym,asof)
         if first_trade and first_trade["own_listed_history_short"]:
-            return "UNKNOWN_STATIC",{
-                "reason":"OFFICIAL_FIRST_TRADE_LT260_NO_PREDECESSOR_PROOF",
+            # Exact issuer's first public trade and official session census
+            # establish a hard 260-session INELIGIBILITY for this ASOF.
+            # This is FAIL-only; it cannot create a PRICE, HISTORY or AL PASS.
+            return "FAIL_HISTORY",{
+                "reason":"OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
                 "first_traded_nasdaq_date":first_trade["first_traded_nasdaq_date"],
                 "completed_listed_sessions":first_trade["completed_listed_sessions"],
+                "bars":first_trade["completed_listed_sessions"],
                 "required_own_history_sessions":first_trade["required_own_history_sessions"],
                 "source_evidence_blob_sha":first_trade["evidence_git_blob_sha"],
                 "no_synthetic_bar":True,
