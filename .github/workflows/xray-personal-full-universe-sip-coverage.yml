@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
       - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
       - "nasdaq-xray/personal_six_gate_causal_breaker.py"
+      - "nasdaq-xray/personal_sec_current_cik_shadow.py"
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
   schedule:
@@ -360,5 +361,66 @@ jobs:
         with:
           name: xray-personal-six-gate-causal-worklist-no-ohlcv
           path: ${{ runner.temp }}/xray_six_gate_causal_breaker.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  mc-sec-issuer-identity-shadow:
+    name: Map exact RTH research cohort to current SEC CIK candidates without MC assertion
+    needs: [six-gate-causal-breaker]
+    if: ${{ needs.six-gate-causal-breaker.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify exact cohort SHA and no false issuer class market-cap promotion
+        run: |
+          python -m py_compile nasdaq-xray/personal_sec_current_cik_shadow.py
+          python nasdaq-xray/personal_sec_current_cik_shadow.py --selftest
+          python -O nasdaq-xray/personal_sec_current_cik_shadow.py --selftest
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-six-gate-causal-worklist-no-ohlcv
+          path: ${{ runner.temp }}/causal
+      - name: Read once SEC current ticker exchange index for matching CIK candidates
+        run: |
+          python nasdaq-xray/personal_sec_current_cik_shadow.py \
+            --causal "$RUNNER_TEMP/causal/xray_six_gate_causal_breaker.json" \
+            --out "$RUNNER_TEMP/xray_sec_current_cik_personal.json"
+      - name: Ensure SEC current CIK is never construed as PIT shares or 2 billion MC
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_current_cik_personal.json").read_text())
+          assert x["schema"]=="XRAY_SEC_PERSONAL_MC_CURRENT_CIK_ASSOCIATION_SHADOW_V1"
+          assert sum(x["classification_counts"].values())==x["scope_count"]==len(x["classifications"])
+          assert x["sec_mapping_is_current_only_not_asof_pit"] is True
+          assert x["sec_companyfacts_class_share_count_verified"] is False
+          assert x["issuer_class_and_corporate_actions_verified"] is False
+          assert x["current_mc_2b_attested"] is False
+          assert x["c417_price_dv30_primary_attested"] is False
+          assert x["technical_pass_attested"] is False
+          assert x["registered_R92_count"]==0
+          assert x["vendor_ohlcv_persisted"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_SEC_CIK_PERSONAL_STAGE4=EVIDENCE_ONLY_NO_MC_OR_R92")
+          PY
+      - name: Archive issuer CIK candidate classifications only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-sec-current-cik-no-ohlcv-no-mc
+          path: ${{ runner.temp }}/xray_sec_current_cik_personal.json
           if-no-files-found: warn
           retention-days: 14
