@@ -70,17 +70,47 @@ def assess(d, proof):
     need(type(scope) is int and scope > 0 and
          root.get("queue_total") == price.get("source_master_count") == scope,
          "MASTER_PRICE_QUEUE_COUNT_MISMATCH")
+    symbols = master.get("pass_symbols")
+    need(isinstance(symbols, list) and len(symbols) == scope and
+         symbols == sorted(set(symbols)) and
+         master.get("pass_count") == scope and
+         hashlib.sha256("\n".join(symbols).encode()).hexdigest() ==
+             root["queue_hash"], "MASTER_QUEUE_INTEGRITY")
     rows = price.get("results")
-    unknown = price.get("unknown_symbols")
     need(isinstance(rows, dict) and len(rows) == scope,
          "PRICE_FULL_SCOPE_PARTITION_MISSING")
-    need(isinstance(unknown, list) and
-         len(unknown) == len(set(unknown)) and
+    need(set(rows) == set(symbols), "PRICE_MASTER_SYMBOL_SET_MISMATCH")
+    need(all(isinstance(v, dict) for v in rows.values()),
+         "PRICE_RESULT_RECORD_INVALID")
+    counts = collections.Counter(v.get("status") for v in rows.values())
+    need(all(isinstance(k, str) and
+             (k in {"UNKNOWN", "PASS_PRICE_DV30", "BLOCK_CURRENT_RUN"}
+              or k.startswith("FAIL_")) for k in counts),
+         "PRICE_RESULT_STATUS_INVALID")
+    need(price.get("counts") == dict(counts), "PRICE_COUNTS_MISMATCH")
+    unknown = price.get("unknown_symbols")
+    passing = price.get("pass_symbols")
+    blocked = price.get("blocked_symbols")
+    need(isinstance(unknown, list) and unknown == sorted(set(unknown)) and
          set(unknown) == {s for s, v in rows.items()
-                          if isinstance(v, dict) and v.get("status") == "UNKNOWN"},
+                          if v.get("status") == "UNKNOWN"},
          "PRICE_UNKNOWN_SET_MISMATCH")
     need(price.get("unknown_count") == len(unknown),
          "PRICE_UNKNOWN_COUNT_MISMATCH")
+    need(isinstance(passing, list) and passing == sorted(set(passing)) and
+         set(passing) == {s for s, v in rows.items()
+                          if v.get("status") == "PASS_PRICE_DV30"} and
+         price.get("pass_count") == len(passing) and
+         price.get("pass_hash") ==
+             hashlib.sha256("\n".join(passing).encode()).hexdigest(),
+         "PRICE_PASS_PARTITION_MISMATCH")
+    need(isinstance(blocked, list) and blocked == sorted(set(blocked)) and
+         set(blocked) == {s for s, v in rows.items()
+                          if v.get("status") == "BLOCK_CURRENT_RUN"} and
+         price.get("blocked_count", len(blocked)) == len(blocked),
+         "PRICE_BLOCK_PARTITION_MISMATCH")
+    need(not (set(passing) & (set(blocked) | set(unknown))),
+         "PRICE_PARTITION_OVERLAP")
     need(last_history["asof_et"] <= asof and last_terminal["asof_et"] <= asof,
          "FUTURE_DOWNSTREAM_EPOCH")
     reasons = collections.Counter(
@@ -146,19 +176,25 @@ def selftest():
         return {"task_id": TASK, "asof_et": asof,
                 "execution": "NONE", "real_money": "NO-GO"}
     root = base("root", "2026-10-13")
-    root.update(queue_total=2, queue_hash="Q", unknown_count=1,
+    queue_hash = hashlib.sha256("\n".join(symbols).encode()).hexdigest()
+    root.update(queue_total=2, queue_hash=queue_hash, unknown_count=1,
                 watch_radar={"watchlist_count": 2},
                 candidate_technical_funnel={
                     "evaluated_count": 1, "pending_count": 1,
                     "pending_symbols": ["BSP"]})
     master = base("master", "2026-10-13")
-    master.update(queue_total=2, queue_hash="Q", unknown_count=1)
+    master.update(queue_total=2, queue_hash=queue_hash, unknown_count=1,
+                  pass_count=2, pass_symbols=symbols)
     price = base("price", "2026-10-13")
-    price.update(source_master_count=2, source_master_queue_hash="Q",
+    price.update(source_master_count=2, source_master_queue_hash=queue_hash,
                  results={"AAPL": {"status": "UNKNOWN",
                                     "info": {"reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"}},
                           "BSP": {"status": "FAIL_DV30"}},
-                 unknown_symbols=["AAPL"], unknown_count=1, pass_count=0)
+                 unknown_symbols=["AAPL"], unknown_count=1,
+                 counts={"UNKNOWN": 1, "FAIL_DV30": 1},
+                 pass_count=0, pass_symbols=[],
+                 pass_hash=hashlib.sha256(b"").hexdigest(),
+                 blocked_count=0, blocked_symbols=[])
     docs = {"orchestrator": root, "master": master, "price": price,
             "history": base("history", "2026-10-07"),
             "terminal": base("terminal", "2026-10-07")}
@@ -182,6 +218,12 @@ def selftest():
         ("terminal_future", lambda v: v["terminal"].update(asof_et="2026-10-14")),
         ("candidate_partition", lambda v: v["orchestrator"]["candidate_technical_funnel"].update(evaluated_count=2)),
         ("unsafe_execution", lambda v: v["price"].update(execution="LIVE")),
+        ("master_queue_drift", lambda v: v["master"]["pass_symbols"].__setitem__(0, "ZZZ")),
+        ("pass_count_lie", lambda v: v["price"].update(pass_count=1)),
+        ("counts_lie", lambda v: v["price"]["counts"].update(UNKNOWN=0)),
+        ("pass_hash_lie", lambda v: v["price"].update(pass_hash="0" * 64)),
+        ("unrecognized_status", lambda v: v["price"]["results"]["BSP"].update(status="PASS")),
+        ("blocked_set_lie", lambda v: v["price"].update(blocked_symbols=["BSP"])),
     ):
         tampered = copy.deepcopy(docs)
         change(tampered)
@@ -195,7 +237,11 @@ def selftest():
     ready["master"]["unknown_count"] = 0
     ready["price"]["unknown_count"] = 0
     ready["price"]["unknown_symbols"] = []
-    ready["price"]["results"]["AAPL"] = {"status": "PASS"}
+    ready["price"]["results"]["AAPL"] = {"status": "PASS_PRICE_DV30"}
+    ready["price"]["counts"] = {"PASS_PRICE_DV30": 1, "FAIL_DV30": 1}
+    ready["price"]["pass_count"] = 1
+    ready["price"]["pass_symbols"] = ["AAPL"]
+    ready["price"]["pass_hash"] = hashlib.sha256(b"AAPL").hexdigest()
     ready["history"]["asof_et"] = ready["terminal"]["asof_et"] = "2026-10-13"
     ready["orchestrator"]["candidate_technical_funnel"].update(
         evaluated_count=2, pending_count=0, pending_symbols=[])
@@ -203,7 +249,7 @@ def selftest():
     need(clear["status"] == "UPSTREAM_DIAGNOSTICS_ONLY_FINAL_UNATTESTED"
          and clear["r92_created_by_report"] is False
          and clear["g9_approved_by_report"] is False, "DIAGNOSTIC_NEVER_FINAL_PASS")
-    print("XRAY_CURRENT_EPOCH_FORENSICS_SELFTEST=PASS_STALE_CAUSAL_MAP_8_NEGATIVES_NO_ALPHA")
+    print("XRAY_CURRENT_EPOCH_FORENSICS_SELFTEST=PASS_STALE_CAUSAL_MAP_13_NEGATIVES_NO_ALPHA")
 
 
 def main():
