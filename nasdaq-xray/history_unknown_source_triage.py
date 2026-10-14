@@ -81,8 +81,8 @@ def audit(state):
         raise ValueError("STATE_MUST_BE_OBJECT")
     if state.get("execution")!="NONE" or state.get("real_money")!="NO-GO":
         raise ValueError("STATE_SAFETY_INVALID")
-    queue=state.get("queue") or []
-    results=state.get("results") or {}
+    queue=state.get("queue")
+    results=state.get("results")
     if not isinstance(results,dict) or not isinstance(queue,list):
         raise ValueError("HISTORY_QUEUE_RESULTS_INVALID")
     if len(queue)!=len(set(queue)) or len(queue)!=int(state.get("queue_total",-1)):
@@ -90,8 +90,11 @@ def audit(state):
     cursor=int(state.get("cursor",-1))
     if cursor<0 or cursor>len(queue):
         raise ValueError("INVALID_HISTORY_CURSOR")
-    if not set(results).issubset(set(queue)):
-        raise ValueError("RESULT_OUTSIDE_AUTHORIZED_QUEUE")
+    # Cursor completion never proves source completeness unless every
+    # processed symbol has exactly one recorded result. A missing row could
+    # otherwise hide an UNKNOWN provider error and make the triage look green.
+    if set(results)!=set(queue[:cursor]) or len(results)!=cursor:
+        raise ValueError("RESULT_CURSOR_PARTITION_MISMATCH")
     counts=Counter((r.get("status") or "UNKNOWN_NO_STATUS") for r in results.values())
     official=state.get("counts") or {}
     for st,n in counts.items():
@@ -211,11 +214,32 @@ def selftest():
         try:audit(test)
         except ValueError:pass
         else:raise AssertionError("TRIAGE_INVALID_STATE_ACCEPTED_"+key)
+    # A completed cursor cannot silently hide a missing unresolved symbol.
+    missing=deepcopy(base)
+    del missing["results"]["C"]
+    missing["counts"].pop("UNKNOWN_RETRY_EXHAUSTED")
+    missing["unknown_count"]=1
+    try:audit(missing)
+    except ValueError as exc:
+        assert str(exc)=="RESULT_CURSOR_PARTITION_MISMATCH"
+    else:raise AssertionError("COMPLETED_CURSOR_WITH_MISSING_ROW_ACCEPTED")
+    # A result beyond the last processed cursor is also invalid.
+    future=deepcopy(base);future["cursor"]=2
+    try:audit(future)
+    except ValueError as exc:
+        assert str(exc)=="RESULT_CURSOR_PARTITION_MISMATCH"
+    else:raise AssertionError("OUT_OF_CURSOR_RESULT_ACCEPTED")
+    for bad_value in (None, [], ""):
+        malformed=deepcopy(base);malformed["results"]=bad_value
+        try:audit(malformed)
+        except ValueError as exc:
+            assert str(exc)=="HISTORY_QUEUE_RESULTS_INVALID"
+        else:raise AssertionError("MALFORMED_EMPTY_RESULTS_ACCEPTED")
     bad=deepcopy(base);bad["counts"]["PASS"]=9
     try:audit(bad)
     except ValueError:pass
     else:raise AssertionError("TRIAGE_BAD_COUNT_ACCEPTED")
-    print("XRAY_HISTORY_UNKNOWN_TRIAGE_SELFTEST=PASS_COUNTS_PARTITIONS_REASON_CLASSES_8_NEGATIVE")
+    print("XRAY_HISTORY_UNKNOWN_TRIAGE_SELFTEST=PASS_EXACT_CURSOR_PARTITION_FAIL_CLOSED_13_NEGATIVE")
 
 def main():
     p=argparse.ArgumentParser()
