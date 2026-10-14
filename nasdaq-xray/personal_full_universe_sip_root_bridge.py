@@ -105,6 +105,10 @@ def build(root, sina, daily, history, now, root_sha, sina_sha):
     d30_valid = {D30_HIGH, D30_LOW_PRICE, D30_LOW_DV}
     d30_valid_count = sum(v in d30_valid for v in daily30.values())
     zero = [sym for sym in q if causes[sym] == "ZERO_OR_NEGATIVE_RECORDED_VOLUME"]
+    joint = sorted(sym for sym in q if hist[sym] == LONG and
+                   daily30[sym] == D30_HIGH)
+    need(len(joint) <= long and len(joint) <= d30_valid_count,
+         "JOINT_RESEARCH_SCOPE_OUT_OF_BOUNDS")
     zero_old = sum(daily30[sym] in d30_valid for sym in zero)
     zero_recent = sum(daily30[sym] == "UNKNOWN_DAILY30_ZERO_OR_NEGATIVE_VOLUME"
                       for sym in zero)
@@ -148,6 +152,9 @@ def build(root, sina, daily, history, now, root_sha, sina_sha):
         "last30_sip_daily_valid_source_count": d30_valid_count,
         "last30_sip_daily_proxy_threshold_ge50m_count": sum(
             v == D30_HIGH for v in daily30.values()),
+        "260_52_and_daily30_ge50m_joint_research_count": len(joint),
+        "260_52_and_daily30_ge50m_joint_sha256": sha(joint),
+        "joint_scope_has_no_rth_mc_technical_or_signal_authority": True,
         "historical_zero_volume_outside_latest30_count": zero_old,
         "historical_zero_volume_within_latest30_count": zero_recent,
         "daily30_source_proxy_not_official_rth_dv30": True,
@@ -219,16 +226,18 @@ def selftest():
                     "hist_260_zero_volume_within_last30":0,
                     "hist_260_zero_volume_other_30day_unknown":0,
                     "symbol_classifications":{
-                        "AAPL":D30_LOW_DV,
+                        "AAPL":D30_HIGH,
                         "BSP":"UNKNOWN_DAILY30_ASOF_MISSING"},
                     "classification_counts":{
-                        D30_LOW_DV:1,
+                        D30_HIGH:1,
                         "UNKNOWN_DAILY30_ASOF_MISSING":1}})
     import copy
     valid = build(root, sina, day, hist, now, "a"*40, "b"*40)
     need(valid["daily_asof_bar_observed"] == 1
          and valid["260_daily_52_week_observed"] == 1
          and valid["last30_sip_daily_valid_source_count"] == 1
+         and valid["260_52_and_daily30_ge50m_joint_research_count"] == 1
+         and valid["260_52_and_daily30_ge50m_joint_sha256"] == sha(["AAPL"])
          and valid["no_c417_dv30_or_mc_pass"], "POSITIVE_NO_AUTHORITY")
     trials = [
         (lambda r,s,d,h: d.update(asof_et="2026-10-13"), "LATEST_SAME_SESSION"),
@@ -300,6 +309,7 @@ def main():
         "260_52_observed": result["260_daily_52_week_observed"],
         "daily30_valid":result["last30_sip_daily_valid_source_count"],
         "historical_zero_outside30":result["historical_zero_volume_outside_latest30_count"],
+        "joint260_daily30_proxy_high":result["260_52_and_daily30_ge50m_joint_research_count"],
         "historical_zero_inside30":result["historical_zero_volume_within_latest30_count"],
         "remaining": result["260_daily_52_week_unproven"]},sort_keys=True))
 
