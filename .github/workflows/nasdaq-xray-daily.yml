@@ -29,7 +29,6 @@ on:
       - "nasdaq-xray/stage1_shadow.py"
       - "nasdaq-xray/regime_breadth_shadow.py"
       - "nasdaq-xray/deep_pre_r1_shadow.py"
-      - "nasdaq-xray/final_tech_shadow.py"
       - "nasdaq-xray/candidate_local_full_technical_funnel_v1.py"
       - "nasdaq-xray/candidate_local_independent_math_v1.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
