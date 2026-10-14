@@ -139,7 +139,7 @@ def stage_first_registration_json(report, terminal, registry, ledger, compiled,
     written=[]
     try:
         for path,doc in contents:
-            path.write_text(json.dumps(doc,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+            path.write_text(json.dumps(doc,sort_keys=True,indent=2)+"\n",encoding="utf-8")
             written.append(path)
         for path,doc in contents:
             require(json.loads(path.read_text(encoding="utf-8"))==doc,"STAGE_READBACK")
