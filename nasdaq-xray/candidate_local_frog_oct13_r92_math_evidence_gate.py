@@ -230,6 +230,10 @@ def build_candidate_local_terminal(result):
             "eligible_for_c417_release":gates["pass_count"]==7 and
                 first.get("terminal_2026_10_13_c417_ready") is True,
             "first_registration_ready":first.get("may_mint_first_registration_without_prior_ledger") is True,
+            "first_registration_writer_staging_implemented":True,
+            "first_registration_writer_requires_source_proofs_and_current_c417_terminal":True,
+            "registration_does_not_require_prior_platform_delivery":True,
+            "platform_delivery_requires_separate_acknowledgement":True,
             "registered_r92":result.get("r92_registered") is True,
             "platform_phone_receipt_verified":result.get("iphone_delivery_receipt_attested") is True,
             "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
@@ -304,6 +308,8 @@ def selftest():
     rt=build_candidate_local_terminal(synthetic)
     require(rt["asof_et"]==ASOF and rt["primary_pass_count"]==1 and
          rt["global_c417_current_terminal_asof"]=="2026-10-07" and
+         rt["first_registration_writer_staging_implemented"] is True and
+         rt["platform_delivery_requires_separate_acknowledgement"] is True and
          rt["eligible_for_c417_release"] is False and
          rt["global_c417_current_terminal_reconstructed"] is False,
          "CANDIDATE_LOCAL_TERMINAL_NOT_TRANSPLANTED_GLOBAL")
