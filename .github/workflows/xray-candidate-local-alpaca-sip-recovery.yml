@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
+      - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/official_first_trade_260_history_guard.py"
       - "nasdaq-xray/evidence/bsp_20260701_official_first_trade_v1.json"
       - "nasdaq-xray/candidate_local_full_technical_funnel_v1.py"
@@ -143,6 +144,13 @@ jobs:
           assert d["true_r92_count"]==0 and not d["final_buy_signals"]
           print("XRAY_SCHEDULED_PERSONAL_TECH_GUARD=PASS_NO_PRIMARY_NO_R92")
           PY
+      - name: Validate complete personally research-bound watch cohort
+        if: success()
+        run: |
+          python -m py_compile nasdaq-xray/personal_research_daily_attestation.py
+          python nasdaq-xray/personal_research_daily_attestation.py --selftest
+          python -O nasdaq-xray/personal_research_daily_attestation.py --selftest
+          python nasdaq-xray/personal_research_daily_attestation.py --study "$RUNNER_TEMP/personal_seven_sip_technical_labels.json"
       - name: Archive private personal research classification labels without vendor bars
         if: always()
         uses: actions/upload-artifact@v4
