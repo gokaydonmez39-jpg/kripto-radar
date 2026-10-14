@@ -53,7 +53,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T11:51:11.954664+00:00",
+  "updated_at_utc": "2026-10-14T11:54:19.241608+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "asof_et": "2026-10-13",
@@ -77,20 +77,7 @@
     },
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
-    "new_watchlist_symbols": [
-      "AAPL",
-      "AMD",
-      "AMZN",
-      "AVGO",
-      "GOOG",
-      "GOOGL",
-      "INTC",
-      "META",
-      "MSFT",
-      "MU",
-      "NVDA",
-      "TSLA"
-    ],
+    "new_watchlist_symbols": [],
     "no_longer_in_top_watchlist": [],
     "orders": [],
     "price_liquidity_screened_count": 475,
@@ -110,10 +97,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Micron Technology, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -123,10 +111,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "NVIDIA Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVDA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -136,10 +125,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Meta Platforms, Inc. - Class A Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "META",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -149,10 +139,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Tesla, Inc.  - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TSLA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -162,10 +153,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Apple Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAPL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -175,10 +167,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Advanced Micro Devices, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -188,10 +181,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Intel Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INTC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -201,10 +195,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Microsoft Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MSFT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -214,10 +209,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Broadcom Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -227,10 +223,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Amazon.com, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMZN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -240,10 +237,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Alphabet Inc. - Class A Common Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -253,10 +251,11 @@
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Alphabet Inc. - Class C Capital Stock",
+        "previous_completed_session_change_pct": null,
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       }
     ],
     "watchlist_count": 12,
