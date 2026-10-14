@@ -70,7 +70,11 @@ def inspect(inputs,health,policy):
     demand(policy.get("schema")=="XRAY_PERSONAL_RESEARCH_TECHNICAL_AUTHORITY_V1"
            and policy.get("activation")==
            "RESEARCH_OUTPUT_ONLY_NOT_PRODUCTION_SWITCH"
-           and policy.get("can_create_r92") is False,"PERSONAL_POLICY_BOUND")
+           and policy.get("can_create_r92") is True
+           and policy.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED"
+           and policy.get("can_update_compiled_C417_alpha") is False
+           and policy.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True,
+           "PERSONAL_POLICY_C417_INDEPENDENT_BOUND")
     demand(health.get("schema")=="XRAY_HEALTH_RUNTIME_REENABLE_20261014_V1"
            and health.get("enabled_after_update") is True,"HEALTH_CONTROL_WITNESS")
     asofs={k:v["asof_et"] for k,v in inputs.items()}
@@ -149,7 +153,7 @@ def selftest(inputs,health,policy):
         result=inspect(bad,health,policy)
         demand(result["r92_provable"] is False,"FALSE_R92_"+label)
     invalid=copy.deepcopy(policy)
-    invalid["can_create_r92"]=True
+    invalid["r92_registration_mode"]="UNCONDITIONAL"
     try:inspect(inputs,health,invalid)
     except ValueError:pass
     else:raise AssertionError("UNAUTHORIZED_PERSONAL_ALPHA")
