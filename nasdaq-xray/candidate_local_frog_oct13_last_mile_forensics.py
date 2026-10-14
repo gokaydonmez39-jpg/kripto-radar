@@ -187,6 +187,57 @@ def halts_forensics(asof,following):
             result["observed_dates"][day]={"status":"UNKNOWN_RSS","error_type":type(e).__name__}
     return result
 
+def classify_close_window_update_lineage(rows, next_page_token):
+    """Actual Alpaca SIP trade-update semantics, with cancel/correction lineage.
+
+    Trade update field u is 'canceled', 'incorrect', or 'corrected'. A canceled
+    or incorrect print is NOT a valid closing-auction execution. A corrected
+    print is counted as a valid replacement but is tracked separately.
+    A four-second sample never certifies full-session corrected RTH volume.
+    """
+    need(type(rows) is list and len(rows)<=10000,"TRADE_SAMPLE_ROWS")
+    need(next_page_token in (None,""),"CLOSE_WINDOW_PAGE_INCOMPLETE")
+    ids=set()
+    states=collections.Counter()
+    total_auction=0
+    valid_auction=0
+    rejected_auction=0
+    for row in rows:
+        need(type(row) is dict and isinstance(row.get("t"),str),
+             "TRADE_UPDATE_ROW_SHAPE")
+        ident=row.get("i")
+        need(ident is not None and ident not in ids,"TRADE_UPDATE_ID_DUPLICATE")
+        ids.add(ident)
+        cond=row.get("c") or []
+        need(type(cond) is list,"TRADE_UPDATE_CONDITIONS")
+        raw_update=row.get("u")
+        need(raw_update is None or raw_update in
+             ("canceled","incorrect","corrected"),
+             "TRADE_UPDATE_UNKNOWN_STATE")
+        state=raw_update or "unmodified"
+        states[state]+=1
+        auction="6" in cond and row.get("x")=="Q"
+        if auction:
+            total_auction+=1
+            if state in ("canceled","incorrect"):
+                rejected_auction+=1
+            else:
+                valid_auction+=1
+    return {"status":"OBSERVED_WINDOW_ONLY",
+            "rows":len(rows),
+            "nasdaq_condition6_observed":valid_auction,
+            "condition6_all_prints_observed":total_auction,
+            "condition6_cancelled_or_incorrect_excluded":rejected_auction,
+            "trade_update_counts":dict(sorted(states.items())),
+            "sample_cancelled_or_incorrect_count":
+                states["canceled"]+states["incorrect"],
+            "sample_correction_replacement_count":states["corrected"],
+            "pagination_complete":True,
+            "four_second_sample_update_states_reviewed":True,
+            "corrections_complete":False,
+            "whole_session_volume_complete":False}
+
+
 def fetch_closing_sample(day,key,secret):
     start,close,_=official_window(day)
     params={"start":close.isoformat(),"end":(close+dt.timedelta(seconds=4)).isoformat(),
@@ -201,23 +252,8 @@ def fetch_closing_sample(day,key,secret):
     need(len(raw)<=3_000_000,"ALPACA_TRADES_RESPONSE")
     j=json.loads(raw)
     need(type(j) is dict and type(j.get("trades")) is list,"ALPACA_TRADES_JSON")
-    rows=j["trades"]
-    need(len(rows)<=10000,"ALPACA_TRADES_LIMIT")
-    n=0
-    ids=set()
-    for row in rows:
-        need(type(row) is dict and isinstance(row.get("t"),str),"ALPACA_TRADE_FORMAT")
-        flags=row.get("c") or []
-        need(type(flags) is list,"TRADE_CONDITIONS")
-        if "6" in flags and row.get("x")=="Q":
-            n+=1
-        ident=row.get("i")
-        need(ident not in ids,"TRADE_ID_DUPLICATE")
-        ids.add(ident)
-    return {"status":"OBSERVED_WINDOW_ONLY","rows":len(rows),
-            "nasdaq_condition6_observed":n,
-            "pagination_complete":not bool(j.get("next_page_token")),
-            "corrections_complete":False,"whole_session_volume_complete":False}
+    return classify_close_window_update_lineage(
+        j["trades"],j.get("next_page_token"))
 
 def closing_samples(days):
     key=(os.environ.get("XRAY_ALPACA_DATA_KEY_ID") or
@@ -237,6 +273,14 @@ def closing_samples(days):
         except (ValueError,TypeError,KeyError,urllib.error.URLError,OSError,TimeoutError) as e:
             result["session_observations"][day]={"status":"UNKNOWN_TRADE_SAMPLE",
                                                   "error_type":type(e).__name__}
+    result["four_second_trade_update_rows_by_state"]={
+        k:sum(v.get("trade_update_counts",{}).get(k,0)
+              for v in result["session_observations"].values())
+        for k in ("unmodified","canceled","incorrect","corrected")}
+    result["four_second_trade_update_completed_sessions"]=sum(
+        v.get("four_second_sample_update_states_reviewed") is True
+        for v in result["session_observations"].values())
+    result["full_session_trade_update_lineage_verified"]=False
     result["observed_sessions"]=sum(v.get("status")=="OBSERVED_WINDOW_ONLY"
                                     for v in result["session_observations"].values())
     result["observed_auction_condition6_sessions"]=sum(v.get("nasdaq_condition6_observed",0)>0
@@ -266,7 +310,34 @@ def evaluate_promotion(report,policy):
             "release_state":"R92_NOT_AUTHORIZED_INSUFFICIENT_EVIDENCE" if not complete else
                             "ELIGIBLE_FOR_SEPARATE_CANONICAL_RELEASE_REVIEW"}
 
+def selftest_close_update_lineage():
+    base=[
+        {"t":"2026-10-13T20:00:00Z","i":1,"c":["6"],"x":"Q"},
+        {"t":"2026-10-13T20:00:01Z","i":2,"c":["6"],"x":"Q",
+         "u":"canceled"},
+        {"t":"2026-10-13T20:00:02Z","i":3,"c":["6"],"x":"Q",
+         "u":"incorrect"},
+        {"t":"2026-10-13T20:00:03Z","i":4,"c":["6"],"x":"Q",
+         "u":"corrected"}]
+    result=classify_close_window_update_lineage(base,None)
+    need(result["condition6_all_prints_observed"]==4 and
+         result["nasdaq_condition6_observed"]==2 and
+         result["condition6_cancelled_or_incorrect_excluded"]==2 and
+         result["sample_correction_replacement_count"]==1 and
+         result["corrections_complete"] is False,
+         "CORRECTED_AUCTION_NOT_FALSE_POSITIVE")
+    for broken,token in (
+        (base,"MORE"),
+        (base+[base[0]],None),
+        ([dict(base[0],u="unknown")],None),
+        ([dict(base[0],c="6")],None)):
+        try:classify_close_window_update_lineage(broken,token)
+        except (ValueError,TypeError):pass
+        else:raise AssertionError("UNSAFE_TRADE_UPDATE_ACCEPTED")
+    print("XRAY_FROG_SIP_TRADE_UPDATE_SELFTEST=PASS_CANCEL_INCORRECT_CORRECTED_PAGINATION")
+
 def selftest():
+    selftest_close_update_lineage()
     docs={"filings":{"recent":{"accessionNumber":["0001193125-26-340294"],
         "form":["10-Q"],"filingDate":["2026-08-07"],
         "acceptanceDateTime":["2026-08-07T10:00:00Z"],
@@ -329,6 +400,7 @@ def run(deep,frog,out):
     print("XRAY_FROG_LAST_MILE_SEC_FORMS="+json.dumps(result["sec"].get("tracked_form_counts",{}),sort_keys=True))
     print("XRAY_FROG_LAST_MILE_IR="+result["issuer_event"]["status"])
     print("XRAY_FROG_LAST_MILE_CLOSE_SAMPLE_DAYS="+str(result["price"].get("observed_sessions",0)))
+    print("XRAY_FROG_SIP_TRADE_UPDATE_CENSUS="+json.dumps(result["price"].get("four_second_trade_update_rows_by_state",{}),sort_keys=True))
     print("XRAY_FROG_LAST_MILE_MISSING="+",".join(result["decision"]["missing"]))
     print("XRAY_FROG_LAST_MILE_R92=FALSE_CANONICAL_NOT_MUTATED")
 
