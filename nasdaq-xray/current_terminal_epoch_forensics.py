@@ -225,7 +225,8 @@ def selftest():
          and actual["latest_price_unknown_reason_counts"] ==
              {"AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED": 1}
          and actual["diagnostic_blockers"] ==
-             ["MASTER_IDENTITY_UNRESOLVED",
+             ["ROOT_HISTORY_NOT_FULLY_RESOLVED",
+              "MASTER_IDENTITY_UNRESOLVED",
               "PRICE_DV30_PRIMARY_SOURCE_UNRESOLVED",
               "HISTORY_NOT_CURRENT_ASOF",
               "TERMINAL_NOT_CURRENT_ASOF",
@@ -285,6 +286,7 @@ def selftest():
     else:
         raise AssertionError("BACKWARD_ROOT_EPOCH_ACCEPTED")
     ready = copy.deepcopy(docs)
+    ready["orchestrator"]["unknown_count"] = 0
     ready["master"]["unknown_count"] = 0
     ready["price"]["unknown_count"] = 0
     ready["price"]["unknown_symbols"] = []
