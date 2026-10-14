@@ -56,6 +56,13 @@ def source_scope(root, now):
     need(len(names) == len(rows) and len(set(names)) == len(names)
          and all(type(s) is str and s for s in names),
          "CANDIDATE_UNIVERSE_MALFORMED")
+    source_sha = watch.get("source_candidates_sha256")
+    digest = watch.get("watchlist_digest")
+    need(type(source_sha) is str and len(source_sha) == 64
+         and source_sha == funnel.get("source_candidates_sha256")
+         and type(digest) is str and len(digest) == 64
+         and digest == funnel.get("watchlist_digest"),
+         "CANDIDATE_SOURCE_AND_WATCH_DIGEST_MISMATCH")
     results = funnel.get("results")
     need(type(results) is dict and set(results) == set(names)
          and funnel.get("attempted_count") == len(names),
@@ -132,9 +139,22 @@ def selftest():
                  "candidate_count": 2, "attempted_count": 2, "results": {
                    "AAA": {"status": "UNKNOWN_260_OFFICIAL_HISTORY"},
                    "BBB": {"status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE"}}}}
+    fake["watch_radar"]["source_candidates_sha256"] = "a"*64
+    fake["watch_radar"]["watchlist_digest"] = "b"*64
+    fake["candidate_technical_funnel"]["source_candidates_sha256"] = "a"*64
+    fake["candidate_technical_funnel"]["watchlist_digest"] = "b"*64
     a, symbols, daily, weeks = source_scope(fake, now)
     need(a == asof and symbols == ["AAA"] and daily[-1] == asof
          and len(weeks) == 52, "ONLY_ACTUAL_UNKNOWN_LOCAL")
+    fake["candidate_technical_funnel"]["watchlist_digest"] = "c"*64
+    try:
+        source_scope(fake, now)
+    except ValueError as exc:
+        need("CANDIDATE_SOURCE_AND_WATCH_DIGEST_MISMATCH" in str(exc),
+             "WATCH_DIGEST_DRIFT_REASON")
+    else:
+        raise AssertionError("WATCH_DIGEST_DRIFT_ACCEPTED")
+    fake["candidate_technical_funnel"]["watchlist_digest"] = "b"*64
     report = base_report(asof, symbols, "a"*40)
     need(report["registered_r92_count"] == 0 and
          report["source_market_data_rights_independently_attested"] is False
