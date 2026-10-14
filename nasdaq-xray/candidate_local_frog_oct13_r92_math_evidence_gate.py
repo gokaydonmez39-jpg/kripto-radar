@@ -160,6 +160,106 @@ def decide(cover,rollup,lastmile,policy,source_sha256=None):
             "delivery_ledger_modified":False,
             "real_money":"NO-GO","execution":"NONE","unknown_never_pass":True}
 
+def exact_primary_source_component_matrix(cover,rollup,lastmile):
+    """No extrapolation: expose independently witnessed positives and missing releases.
+
+    Each named component distinguishes actually observed source rows from the
+    completion/authorization required by the compiled C4.17 primary gate.
+    """
+    s=lastmile["sec"]
+    p=lastmile["price"]
+    e=lastmile["issuer_event"]
+    h=lastmile["halt"]
+    r=rollup["price"]
+    a=rollup["corporate_actions"]
+    sec=rollup.get("sec_mc_legal_event") or {}
+    close=p.get("session_observations") or {}
+    future=lastmile.get("event_forward_8_official_sessions") or []
+    expected_future=["2026-10-14","2026-10-15","2026-10-16",
+                     "2026-10-19","2026-10-20","2026-10-21",
+                     "2026-10-22","2026-10-23"]
+    require(len(close)==30 and len(future)==8 and future==expected_future,
+            "EXACT_OFFICIAL_RTH_EVENT_SCOPE")
+    require(all(z.get("status")=="OBSERVED_WINDOW_ONLY" and
+                z.get("nasdaq_condition6_observed",0)>0
+                for z in close.values()),"REAL_AUCTION_OBSERVATIONS")
+    matrix={
+        "identity_and_share_class":{
+            "sec_cik_exact":sec.get("sec_cik_exact") is True,
+            "sec_10q_class_cover_jul31":cover.get("historical_sec_class_cover_verified") is True,
+            "issuer_class_current_on_oct13":s.get("current_class_shares_reconciled") is True},
+        "corrected_rth_close_dv30_condition6":{
+            "sip_daily_exact30_raw":r.get("raw_completed_days")==30,
+            "sip_daily_exact30_all_adjusted":r.get("all_adjusted_completed_days")==30,
+            "sip_30min_dv30_observed_lower_bound_ge50m":
+                r.get("observed_30min_lower_bound_state")=="LOWER_BOUND_GE_50M_SHADOW",
+            "all_30_nasdaq_condition6_auction_samples_observed":True,
+            "complete_corrected_close_tape_attested":
+                p.get("exact_consolidated_close_corrections_pass") is True,
+            "exact_c417_dv30_primary":p.get("exact_rth_dv30_primary_pass") is True},
+        "independent_corporate_actions_pit":{
+            "alpaca_ca_complete_one_page_zero_frog_events":
+                a.get("complete",{}).get("status")=="SOURCE_RESPONSES_COMPLETE_WITHIN_BUDGET"
+                and a.get("complete",{}).get("event_types")=={},
+            "alpaca_ca_all_one_page_zero_frog_events":
+                a.get("all",{}).get("status")=="SOURCE_RESPONSES_COMPLETE_WITHIN_BUDGET"
+                and a.get("all",{}).get("event_types")=={},
+            "alpaca_asof_publication_time_proved":
+                a.get("asof_publication_time_confirmed") is True,
+            "issuer_sec_ca_pit_independently_reconciled":
+                s.get("corporate_actions_independent_pit_pass") is True},
+        "same_asof_class_market_cap_ge_2b":{
+            "historical_july31_class_shares_verified":cover.get("cover_shares_observed")==SHARES,
+            "indicative_july31_shares_x_oct13_sip_close_ge10b":
+                cover.get("observed_vintage_cap_band")=="GE_10B_SHADOW",
+            "form4_form144_issuer_net_shares_rollforward_proved":
+                s.get("current_class_shares_reconciled") is True,
+            "issuer_net_cancellation_below_80pct_excluded":
+                s.get("absence_of_80pct_change_proved") is True,
+            "same_asof_corrected_market_cap_primary":
+                s.get("asof_mc_ge_2b_primary_pass") is True},
+        "history_260_52_setup_d_r1_rr_regime":{
+            "candidate_deep_trigger_sha_bound":
+                rollup.get("source_deep_sha256") is not None,
+            "frog_d_frozen_r1_rr_geometry_pass":rollup.get("risk_rr_geometry_pass") is True,
+            "stage1_260_52_observational_source_evaluated":
+                rollup.get("real_trigger") is True,
+            "full_history_corporate_actions_pit_primary":
+                lastmile.get("history_260_52_corporate_actions_primary_pass") is True,
+            "same_asof_regime_breadth_primary":
+                rollup.get("regime_breadth_primary_pass") is True and
+                lastmile.get("regime_breadth_primary_pass") is True},
+        "eight_session_official_event_clear":{
+            "issuer_news_and_events_http200":
+                all(z.get("http_200") is True
+                    for z in (e.get("pages") or {}).values())
+                and len(e.get("pages") or {})==2,
+            "eight_official_future_sessions_enumerated":future==expected_future,
+            "full_eight_session_ir_calendar_attested":
+                all(z.get("calendar_exact_eight_session_completeness_attested") is True
+                    for z in (e.get("pages") or {}).values()),
+            "future_material_issuer_events_explicitly_clear":
+                e.get("eight_day_event_calendar_clear") is True},
+        "sec_legal_and_historical_live_nasdaq_halt_clear":{
+            "seven_sec_legal_docs_reviewed":sec.get("primary_documents_read")==7,
+            "zero_severe_sec_legal_flags":sec.get("hard_legal_flag_count")==0,
+            "issuer_legal_review_primary":sec.get("official_legal_clear_pit") is True,
+            "oct13_nasdaq_halt_rss_http200_zero_frog":
+                (h.get("observed_dates") or {}).get(ASOF,{}).get("http_200") is True
+                and (h.get("observed_dates") or {}).get(ASOF,{}).get("frog_halt_rows_observed")==0,
+            "full_30_day_official_halt_attested":
+                h.get("historical_complete_clear_pass") is True,
+            "fresh_live_halt_clear_attested":h.get("live_halt_clear_pass") is True}
+    }
+    require(len(matrix)==7 and all(type(v) is bool
+                for group in matrix.values() for v in group.values()),
+                "BOOLEAN_COMPONENT_MATRIX")
+    return {key:{"components":group,
+                 "verified_positive_components":sum(v is True for v in group.values()),
+                 "required_components":len(group),
+                 "unknown_components":[n for n,v in group.items() if v is not True]}
+            for key,group in matrix.items()}
+
 def seven_official_gate_readout(cover,rollup,lastmile):
     """Seven release proofs, using source facts rather than five observational shortcuts."""
     price=rollup["price"]
@@ -337,6 +437,7 @@ def main():
     policy,sha_policy=load(ROOT/"personal_research_technical_policy_v1.json")
     result=decide(cover,rollup,lastmile,policy,{"sec_cover":sha_cover,"ca_price":sha_rollup,"sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy})
     result["seven_official_source_release_gates"]=seven_official_gate_readout(cover,rollup,lastmile)
+    result["source_component_provenance_matrix"]=exact_primary_source_component_matrix(cover,rollup,lastmile)
     from frog_c417_first_registration_writer_v1 import (
         release_proved, terminal_proved, read_registration)
     terminal=json.loads((ROOT/"canonical_current_terminal.json").read_text())
@@ -362,6 +463,7 @@ def main():
     print("XRAY_FROG_R92_MATH_SAME_PRICE_MIN_CANCELLATIONS="+str(result["mathematical_vintage_scenario"]["required_minimum_share_cancellation_at_same_price"]))
     print("XRAY_FROG_R92_SOURCE_OBSERVATIONS=5_PASS")
     print("XRAY_FROG_SEVEN_OFFICIAL_PRIMARY_PASS="+str(result["seven_official_source_release_gates"]["pass_count"])+"/7")
+    print("XRAY_FROG_SEVEN_GATE_SOURCE_COMPONENTS="+json.dumps({k:v["verified_positive_components"] for k,v in result["source_component_provenance_matrix"].items()},sort_keys=True))
     print("XRAY_FROG_R92_RELEASE_EVIDENCE_MISSING="+str(len(result["missing_release_evidence"])))
     print("XRAY_FROG_CANDIDATE_LOCAL_TERMINAL_ASOF="+
           result["candidate_local_terminal_20261013"]["asof_et"]+
