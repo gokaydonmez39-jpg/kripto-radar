@@ -176,7 +176,7 @@ def main():
     a=p.parse_args()
     if a.selftest:return selftest()
     require(a.study is not None and a.study.is_file(),"MISSING_STUDY")
-    raw=STATE.read_bytes() if False else (ROOT/"orchestrator_state.json").read_bytes()
+    raw=(ROOT/"orchestrator_state.json").read_bytes()
     study=json.loads(a.study.read_text())
     result=audit(json.loads(raw),study,blob(raw))
     print("XRAY_PERSONAL_RESEARCH_ACCEPTANCE="+result["status"])
