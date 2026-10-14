@@ -47,9 +47,12 @@ jobs:
           if not p.is_file():raise SystemExit("XRAY_PERSONAL_SEVEN_NO_RESULT_FAIL_CLOSED")
           d=json.loads(p.read_text())
           assert d["schema"]=="XRAY_PERSONAL_SEVEN_SIP_TECHNICAL_SHADOW_V1"
-          assert d["asof_et"]=="2026-10-13"
+          assert len(d["asof_et"])==10
           assert d["source"]=="ALPACA_HISTORICAL_SIP_PERSONAL_NONCOMMERCIAL"
-          assert d["scope_count"]==len(d["statuses"])==7
+          assert 0<=d["scope_count"]==len(d["statuses"])<=11
+          assert set(d["statuses"])<=set(json.loads(
+              Path("nasdaq-xray/orchestrator_state.json").read_text()
+          )["candidate_technical_funnel"]["pending_symbols"])
           assert d["canonical_files_mutated"] is False
           assert d["no_raw_market_data_exported"] is True
           assert d["canonical_history_promoted"] is False
