@@ -76,17 +76,36 @@ def analyze(obj,sha,now_utc):
     require(p.get("source_master_queue_hash")==m["queue_hash"]
             and p.get("source_master_count")==len(allowed_master),
             "MASTER_PRICE_LINEAGE")
-    require(p.get("unknown_count")==0 and p.get("blocked_count")==0
-            and not p.get("unknown_symbols") and not p.get("blocked_symbols"),
-            "PRICE_COHORT_INCOMPLETE")
+    unresolved=p.get("unknown_symbols")
+    blocked=p.get("blocked_symbols")
+    require(exact_symbols(unresolved) and exact_symbols(blocked)
+            and p.get("unknown_count")==len(unresolved)
+            and p.get("blocked_count")==len(blocked)
+            and not (set(unresolved)&set(blocked))
+            and not (set(screen)&(set(unresolved)|set(blocked))),
+            "PRICE_UNRESOLVED_PARTITION")
     counts=p.get("counts")
     require(type(counts) is dict and all(type(v) is int and v>=0
-            for v in counts.values())
-            and counts.get("PASS_PRICE_DV30")==len(screen)
-            and sum(counts.values())==len(allowed_master),"PRICE_PARTITION_COUNTS")
+            for v in counts.values()),"PRICE_PARTITION_COUNTS")
     rows=p.get("results")
     require(type(rows) is dict and set(rows)==set(allowed_master),
             "PRICE_CLASSIFICATION_SET")
+    observed={}
+    for symbol in allowed_master:
+        row=rows[symbol]
+        require(type(row) is dict,"PRICE_ROW_NOT_OBJECT")
+        state=row.get("status")
+        require(type(state) is str and
+                (state in {"PASS_PRICE_DV30","UNKNOWN","BLOCK_CURRENT_RUN"}
+                 or state.startswith("FAIL_")),"PRICE_ROW_STATUS_INVALID")
+        observed[state]=observed.get(state,0)+1
+    require(counts==observed and counts.get("PASS_PRICE_DV30",0)==len(screen),
+            "PRICE_PARTITION_COUNTS")
+    require(set(unresolved)=={s for s in allowed_master
+                             if rows[s]["status"]=="UNKNOWN"}
+            and set(blocked)=={s for s in allowed_master
+                               if rows[s]["status"]=="BLOCK_CURRENT_RUN"},
+            "PRICE_UNRESOLVED_ROW_MISMATCH")
     for symbol in screen:
         row=rows.get(symbol) or {}
         info=row.get("info") or {}
@@ -101,13 +120,20 @@ def analyze(obj,sha,now_utc):
         require((rows[symbol].get("status")=="PASS_PRICE_DV30")== (symbol in set(screen)),
                 "PRICE_ROW_PARTITION_"+symbol)
     last=last_complete_session(now_utc)
-    ready=p["asof_et"]==last
+    source_complete=not unresolved and not blocked
+    ready=source_complete and p["asof_et"]==last
     return {
         "schema":SCHEMA,
         "asof_et":p["asof_et"],
         "latest_completed_official_nasdaq_session":last,
-        "status":"EOD_PRICE_DV30_SCREEN_READY" if ready else "EOD_PRICE_DV30_SCREEN_STALE",
+        "status":("EOD_PRICE_DV30_SOURCE_BLOCKED" if not source_complete
+                  else "EOD_PRICE_DV30_SCREEN_READY" if ready
+                  else "EOD_PRICE_DV30_SCREEN_STALE"),
         "current_screen_ready":ready,
+        "source_cohort_complete":source_complete,
+        "price_unknown_count":len(unresolved),
+        "price_blocked_count":len(blocked),
+        "withheld_due_to_incomplete_source_count":len(screen) if not source_complete else 0,
         "scope":"EXACT_MASTER_IDENTITY_PASS",
         "master_identity_pass_count":len(allowed_master),
         "master_identity_unknown_count":len(unknown),
@@ -189,6 +215,30 @@ def selftest():
     assert got["execution"]=="NONE" and got["real_money"]=="NO-GO"
     stale=analyze(copy.deepcopy(base),hashes,dt.datetime(2026,10,12,21,0,tzinfo=dt.timezone.utc))
     assert stale["screen_symbols"]==[] and not stale["current_screen_ready"]
+    partial=copy.deepcopy(base)
+    partial["price"]["results"]["ZZZZ"]["status"]="UNKNOWN"
+    partial["price"]["counts"]={"PASS_PRICE_DV30":2,"UNKNOWN":1}
+    partial["price"]["unknown_count"]=1
+    partial["price"]["unknown_symbols"]=["ZZZZ"]
+    blocked_report=analyze(copy.deepcopy(partial),hashes,now)
+    assert blocked_report["status"]=="EOD_PRICE_DV30_SOURCE_BLOCKED"
+    assert not blocked_report["current_screen_ready"]
+    assert not blocked_report["source_cohort_complete"]
+    assert blocked_report["price_unknown_count"]==1
+    assert blocked_report["screen_symbols"]==[] and blocked_report["research_signals"]==[]
+    assert blocked_report["qualified_al_count"] is None and blocked_report["r92_registered_here"]==0
+    blocked_mutations=[
+        lambda x:x["price"]["counts"].update(UNKNOWN=0),
+        lambda x:x["price"].update(unknown_symbols=["AAPL"]),
+        lambda x:x["price"]["results"]["AAPL"]["info"].update(no_synthetic_bar=False),
+        lambda x:x["price"].update(blocked_symbols=["ZZZZ"],blocked_count=1),
+        lambda x:x["price"]["results"]["ZZZZ"].update(status="PASS"),
+    ]
+    for i,mutate in enumerate(blocked_mutations):
+        case=copy.deepcopy(partial);mutate(case)
+        try:analyze(case,hashes,now)
+        except ValueError:pass
+        else:raise RuntimeError("UNSAFE_PARTIAL_SCREEN_ACCEPTED:"+str(i))
     mutations=[
         lambda x:x["price"].update(pass_hash="0"*64),
         lambda x:x["price"]["results"]["AAPL"]["info"].update(known_session_count=29),
@@ -208,7 +258,7 @@ def selftest():
         try:analyze(case,hashes,now)
         except ValueError:pass
         else:raise RuntimeError("UNSAFE_SCREEN_MUTATION_ACCEPTED:"+str(i))
-    print("XRAY_EOD_SCREEN_SELFTEST=PASS_2_POSITIVE_12_NEGATIVE_NO_MC_NO_AL")
+    print("XRAY_EOD_SCREEN_SELFTEST=PASS_3_POSITIVE_17_NEGATIVE_NO_MC_NO_AL")
 
 def main():
     ap=argparse.ArgumentParser()
