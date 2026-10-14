@@ -61,7 +61,7 @@ def empty_report(asof,names,dates,master_blob,price_blob):
         "source_price_git_blob_sha":price_blob,
         "source_price_unknown_total":len(names),
         "source_price_unknown_symbols_sha256":hashlib.sha256(
-            ("\\n".join(names)+"\\n").encode()).hexdigest(),
+            ("\n".join(names)+"\n").encode()).hexdigest(),
         "exact30_dates":dates,"source":"ALPACA_HISTORICAL_SIP_PERSONAL",
         "source_minute_granularity":"30Min_RTH_09_30_TO_16_00",
         "classifications":dict.fromkeys(names,"UNKNOWN_NOT_ATTEMPTED"),
@@ -105,7 +105,7 @@ def census(now,credentials,output,fetcher=fetch):
         result["api_calls"]=counters[0]
         finalize(result)
         if output is not None:
-            output.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+            output.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
     checkpoint()
     for i in range(0,len(symbols),BATCH):
         block=symbols[i:i+BATCH]
