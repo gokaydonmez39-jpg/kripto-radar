@@ -75,6 +75,52 @@ def source_scope(root, now):
          "OFFICIAL_260_52")
     return asof, target, daily, weeks
 
+def candidate_local_source_partition(symbols, observations):
+    """Classify provider HISTORY coverage symbol-by-symbol, never alpha readiness.
+
+    All records must come from the completed same-run SIP audit. A complete
+    260-date *research* observation is not a technical R1/RR, corporate-action
+    proof, market-data rights attestation or production HISTORY/PASS.
+    """
+    need(type(symbols) is list and symbols == sorted(set(symbols)) and
+         all(type(s) is str and s for s in symbols),
+         "LOCAL_PARTITION_SCOPE_INVALID")
+    need(type(observations) is dict and set(observations) == set(symbols),
+         "LOCAL_PARTITION_UNEXPLAINED_SYMBOL")
+    ready = []
+    blocked = []
+    for sym in symbols:
+        rec = observations[sym]
+        need(type(rec) is dict and
+             rec.get("canonical_primary") is False and
+             type(rec.get("source_availability")) is str and
+             type(rec.get("observed_official_session_count")) is int and
+             0 <= rec["observed_official_session_count"] <= 260,
+             "LOCAL_PARTITION_RECORD_INVALID")
+        if rec["source_availability"] == "SHADOW_260_DAILY_52_WEEK_OBSERVED":
+            need(rec["observed_official_session_count"] == 260,
+                 "LOCAL_PARTITION_FALSE_EXACT260")
+            ready.append(sym)
+        else:
+            blocked.append(sym)
+    digest = lambda names: hashlib.sha256(
+        ("\n".join(names) + "\n").encode("utf-8")).hexdigest()
+    need(len(ready) + len(blocked) == len(symbols) and
+         not set(ready).intersection(blocked),
+         "LOCAL_PARTITION_LOST_SYMBOL")
+    return {
+        "research_history_source_observed_symbols": ready,
+        "research_history_source_observed_count": len(ready),
+        "research_history_source_observed_sha256": digest(ready),
+        "research_history_source_blocked_symbols": blocked,
+        "research_history_source_blocked_count": len(blocked),
+        "research_history_source_blocked_sha256": digest(blocked),
+        "research_source_only_not_technical_pass": True,
+        "research_source_only_not_canonical_history_pass": True,
+        "candidate_local_unrelated_unknown_never_vetoes_observed": True
+    }
+
+
 def base_report(asof, symbols, source_blob):
     return {
         "schema": SCHEMA, "asof_et": asof,
@@ -85,6 +131,13 @@ def base_report(asof, symbols, source_blob):
         "mode": "INDEPENDENT_SOURCE_AVAILABILITY_ONLY",
         "status": "UNKNOWN_UNMEASURED", "observations": {},
         "classification_counts": {}, "measured_scope_count": 0,
+        "research_history_source_observed_symbols": [],
+        "research_history_source_observed_count": 0,
+        "research_history_source_blocked_symbols": [],
+        "research_history_source_blocked_count": 0,
+        "research_source_only_not_technical_pass": True,
+        "research_source_only_not_canonical_history_pass": True,
+        "candidate_local_unrelated_unknown_never_vetoes_observed": True,
         "provider_observed_scope_count": 0, "failed_batch_count": 0,
         "upstream_request_count": 0, "source_circuit_breaker_open": False,
         "source_rate_limited": False,
@@ -189,6 +242,7 @@ def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
     report["upstream_request_count"] = requests
     report["source_circuit_breaker_open"] = circuit_open
     report["source_rate_limited"] = rate_limited
+    report.update(candidate_local_source_partition(symbols, result))
     need(len(result) == len(symbols) and
          sum(report["classification_counts"].values()) == len(symbols) and
          observed <= len(symbols), "SOURCE_EXACT_PARTITION")
@@ -197,7 +251,9 @@ def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
         "UNKNOWN_SOURCE_CIRCUIT_BREAKER_PARTIAL" if circuit_open else
         "UNKNOWN_SOURCE_PARTIAL_DATA" if any(
             name.startswith("UNKNOWN_") for name in report["classification_counts"])
-        else "SHADOW_SOURCE_AVAILABILITY_MEASURED_NO_AUTHORITY"
+        else "SHADOW_PARTIAL_HISTORY_SOURCE_NO_AUTHORITY" if
+            report["research_history_source_blocked_count"] else
+        "SHADOW_SOURCE_AVAILABILITY_MEASURED_NO_AUTHORITY"
     )
     return report
 
@@ -278,6 +334,40 @@ def selftest():
         raise AssertionError("MISMATCHED_ASOF_ACCEPTED")
     need(classify([], daily, weeks, asof)[0] == "NO_BAR",
          "MISSING_SIP_CANNOT_PASS")
+    # A single 260-session gap must not erase unrelated good source coverage.
+    test_scope = ["BSP", "CCC", "FISV", "TWST"]
+    test_rows = {
+        sym: {"source_availability":
+              ("MISSING_EXACT_COMPLETED_SESSIONS" if sym == "BSP"
+               else "SHADOW_260_DAILY_52_WEEK_OBSERVED"),
+              "observed_official_session_count": (259 if sym == "BSP" else 260),
+              "canonical_primary": False}
+        for sym in test_scope}
+    partition = candidate_local_source_partition(test_scope, test_rows)
+    need(partition["research_history_source_observed_symbols"] ==
+         ["CCC", "FISV", "TWST"] and
+         partition["research_history_source_blocked_symbols"] == ["BSP"] and
+         partition["research_source_only_not_technical_pass"] is True and
+         partition["research_history_source_observed_count"] == 3,
+         "BSP_GAP_MUST_NOT_BLOCK_THREE_INDEPENDENT_SYMBOLS")
+    for failure in ("INCOMPLETE_COUNTS", "CANONICAL_LEAK",
+                    "FOREIGN_SCOPE", "DUPLICATE_SCOPE"):
+        clone = {s: dict(v) for s, v in test_rows.items()}
+        scope = list(test_scope)
+        if failure == "INCOMPLETE_COUNTS":
+            clone["CCC"]["observed_official_session_count"] = 259
+        elif failure == "CANONICAL_LEAK":
+            clone["TWST"]["canonical_primary"] = True
+        elif failure == "FOREIGN_SCOPE":
+            clone["NEW"] = dict(clone["BSP"])
+        else:
+            scope[0] = scope[1]
+        try:
+            candidate_local_source_partition(scope, clone)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("LOCAL_SOURCE_NEGATIVE_ACCEPTED_" + failure)
     cohort = ["SYM%03d" % i for i in range(BATCH+1)]
     calls = []
     def one_failure(sub, begin, finish, session):
@@ -335,7 +425,7 @@ def selftest():
          "UNKNOWN_SOURCE_ROW_INVALID"
          and malformed["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
          "MALFORMED_BAR_MUST_NEVER_LOOK_LIKE_COMPLETE_SOURCE")
-    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_SOURCE_EXACT_NO_PRIMARY_NO_R92")
+    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_3_OBSERVED_1_GAP_4_NEGATIVES_SOURCE_EXACT_NO_PRIMARY_NO_R92")
 
 def main():
     p = argparse.ArgumentParser()
