@@ -89,6 +89,7 @@ def run(doc,now,fetch):
         "no_vendor_ohlcv_or_price_levels_persisted":True,
         "execution":"NONE","real_money":"NO-GO",
         "orders":[],"buy_signals":[],"user_notification_sent":False,
+        "platform_notification_sent":False,
         "benchmark_status":"UNKNOWN_NOT_QUERIED",
         "api_batches_attempted":0,
         "status":"STARTED_NOT_RELEASE_AUTHORITY",
@@ -190,6 +191,10 @@ def run(doc,now,fetch):
     need(set(detail)==set(names),"EXACT_SCOPE_NEVER_TRUNCATED")
     result["technical_research_watch_symbols"]=sorted(
         sym for sym,s in detail.items() if s==WATCH)
+    result["watch_membership_digest_sha256"]=sha256(json.dumps({
+        "asof_et":asof,
+        "technical_setup_family_verified":result["technical_setup_family_verified"]
+    },sort_keys=True,separators=(",",":")).encode()).hexdigest()
     need(set(result["technical_setup_family_verified"])==
          set(result["technical_research_watch_symbols"]),
          "NO_UNVERIFIED_WATCH_FAMILY")
@@ -264,6 +269,10 @@ def main():
     result=run(source,datetime.now(timezone.utc),
        lambda syms,start,end,asof:request_batch(
            syms,start,end,key,secret,adjustment="raw",asof=asof))
+    source_run=os.environ.get("XRAY_RESEARCH_UPSTREAM_RUN_ID","")
+    need(source_run.isdecimal() and int(source_run)>0,
+         "REQUIRE_PROVEN_UPSTREAM_GITHUB_RUN_ID")
+    result["source_workflow_run_id"]=int(source_run)
     opts.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
     print("XRAY_EARLY_TECH_RESEARCH="+json.dumps({
         "asof":result["asof_et"],"scope":result["scope_count"],
