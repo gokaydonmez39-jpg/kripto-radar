@@ -1,0 +1,67 @@
+name: XRAY Candidate-Local Eight SEC PIT As-Of Real Source
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_sec_pit_8_producer.py"
+      - ".github/workflows/xray-candidate-local-sec-8-pit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  candidate-local-sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify candidate-local and SEC PIT source guards
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/candidate_local_sec_pit_8_producer.py
+          python nasdaq-xray/candidate_local_sec_pit_8_producer.py --selftest
+          python -O nasdaq-xray/candidate_local_sec_pit_8_producer.py --selftest
+          python nasdaq-xray/sec_official_free_mc_transport_probe.py --selftest
+      - name: Fetch real earlier 404 local candidate Actions artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cohort"
+          gh run download 38528457369 --repo "${{ github.repository }}" \
+            --name xray-local-404-source-gated-and-50-recovery-queues \
+            --dir "$RUNNER_TEMP/cohort"
+      - name: Query actual SEC official companyfacts and submissions for eight candidate-local issuers
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/candidate_local_sec_pit_8_producer.py \
+            --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \
+            --out "$RUNNER_TEMP/xray_candidate_local_sec8_oct13.json"
+      - name: Verify local candidate scope and actual source transport classification
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_candidate_local_sec8_oct13.json").read_text())
+          assert j["schema"]=="XRAY_CANDIDATE_LOCAL_SEC8_OCT13_REAL_PIT_SHADOW_V1"
+          assert j["asof_et"]=="2026-10-13" and len(j["results"])==8
+          assert sum(j["class_counts"].values())==8 and j["http_calls"]<=17
+          assert j["global_unknown_not_a_veto"] is True
+          assert j["issuer_mc_primary_count"]==j["r92_registered"]==0
+          assert j["price_c417_primary_13oct_attested"] is False
+          assert j["real_money"]=="NO-GO" and j["execution"]=="NONE"
+          print("XRAY_LOCAL_SEC8_TRUE_DATA_SOURCE_ATTEMPT=VERIFIED_NO_PREMATURE_MC")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-candidate-local-sec-8-oct13-official-vintages
+          path: ${{ runner.temp }}/xray_candidate_local_sec8_oct13.json
+          if-no-files-found: warn
+          retention-days: 14
