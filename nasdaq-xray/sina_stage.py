@@ -1410,6 +1410,15 @@ def main():
               "updated_at_utc":datetime.now(timezone.utc).isoformat(),
             }
 
+    # Same-ASOF historical PASS is cached. If an authoritative first-trade
+    # witness arrives later, retroactively quarantine pre-IPO ticker reuse;
+    # otherwise a policy correction would never affect cached PASS rows.
+    from official_first_trade_260_history_guard import rebind_existing_research_results
+    state["official_first_trade_history_rebound_count"]=(
+        rebind_existing_research_results(results,asof))
+    if state["official_first_trade_history_rebound_count"]:
+        print("XRAY_OFFICIAL_FIRST_TRADE_OLD_PASS_DEMOTED_FAIL_HISTORY_BSP=1")
+
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
     state["processed_retry_this_run"]=len(retry)
