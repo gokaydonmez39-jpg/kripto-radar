@@ -46,13 +46,46 @@ jobs:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass \
+            --report-empty-current-scope \
             --output "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
       - name: Verify full SEC scope, Git blobs, all reason counts and zero PRIMARY without Python assert
         shell: bash
         run: |
           set -euo pipefail
-          python nasdaq-xray/sec_full_scope_release_guard.py --artifact "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
-          python -O nasdaq-xray/sec_full_scope_release_guard.py --artifact "$RUNNER_TEMP/xray_sec_full_price_pass_vintage_operational.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          path=Path(os.environ["RUNNER_TEMP"])/"xray_sec_full_price_pass_vintage_operational.json"
+          j=json.loads(path.read_text())
+          if j["transport"]=="NO_CANONICAL_PRICE_PASS_SCOPE":
+              price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+              master=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
+              def need(ok,reason):
+                  if not ok:raise ValueError("XRAY_SEC_FULL_EMPTY_"+reason)
+              need(price["pass_count"]==0 and price["pass_symbols"]==[],"CURRENT_PRICE_IS_NOT_EMPTY")
+              need(price["asof_et"]==master["asof_et"]==j["asof_et"],"ASOF")
+              need(j["full_current_price_pass_scope"] is True,"MODE")
+              need(j["sample_count"]==0 and j["batch_offset"]==0,"EMPTY_COUNT")
+              need(j["statuses"]=={} and j["status_counts"]=={},"EMPTY_STATUSES")
+              need(j["remediation_counts"]=={} and j["reason_codes"]=={},"EMPTY_REMEDIATION")
+              need(j["c417_primary_mc_count"]==0 and j["market_cap_calculated"] is False,"NO_PRIMARY")
+              need(j["production_alpha_authority"] is False and j["price_binding_attested"] is False,"NO_PRODUCTION")
+              need(j["corporate_action_binding_attested"] is False,"NO_CORPORATE_ACTION_PROOF")
+              need(j["execution"]=="NONE" and j["real_money"]=="NO-GO","NO_EXECUTION")
+              for key,file in (("master_git_blob_sha","nasdaq-xray/canonical_current_master_manifest.json"),
+                               ("price_git_blob_sha","nasdaq-xray/canonical_current_price_dv30.json")):
+                  blob=subprocess.check_output(["git","hash-object",file],text=True).strip()
+                  need(blob==j[key],"CANONICAL_BLOB_SHA")
+              print("XRAY_SEC_FULL_EMPTY=VERIFIED_ZERO_SCOPE_NO_SEC_REQUESTS_NO_MC_NO_R92")
+              print("XRAY_SEC_FULL_C417_RELEASE=NOT_ELIGIBLE_NO_PRICE_PASS")
+          else:
+              # Leave all existing full-source strict validators in authority.
+              for args in (["python"],["python","-O"]):
+                  subprocess.check_call(args+[
+                      "nasdaq-xray/sec_full_scope_release_guard.py",
+                      "--artifact",str(path)])
+              print("XRAY_SEC_FULL_NONEMPTY_STRICT_RELEASE_GUARD=PASS")
+          PY
       - name: Preserve operational metadata, no raw filing shares or licensed vendor price
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
