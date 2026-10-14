@@ -96,7 +96,19 @@ def summarize(state, watch):
         if state["results"].get(s,{}).get("technical_observation_ready") is True]
     triggered=[s for s in expected
         if bool(state["results"].get(s,{}).get("confirmed_families"))]
+    audits=[
+        family["independent_geometry_audit"]
+        for record in state["results"].values()
+        if isinstance(record,dict)
+        for family in (record.get("family_results") or {}).values()
+        if isinstance(family,dict)
+        and isinstance(family.get("independent_geometry_audit"),dict)
+    ]
+    verified=sum(a.get("independently_verified") is True for a in audits)
     state.update({"attempted_count":len(state["results"]),
+                  "independent_math_audit_count":len(audits),
+                  "independent_math_audit_verified_count":verified,
+                  "independent_math_audit_unresolved_count":len(audits)-verified,
                   "transient_retry_count":len(state["results"])-len(seen),
                   "evaluated_count":len(seen),"pending_count":len(pending),
                   "pending_symbols":pending,
@@ -322,13 +334,25 @@ def selftest():
     need(len(a["results"])==0 and
          summarize(a,w())["pending_count"]==3,"INITIAL_ALL_PENDING")
     a["results"]["NVDA"]={"status":"TECHNICAL_WATCH_NEEDS_PRIMARY",
-          "terminal_scan":True,"technical_observation_ready":True}
+          "terminal_scan":True,"technical_observation_ready":True,
+          "family_results":{"D":{"independent_geometry_audit":
+                                     {"independently_verified":True}}}}
     b=prepare(w(),a)
     full=summarize(b,w())
     need(full["evaluated_count"]==1 and
          full["pending_count"]==2 and
          full["preliminary_technical_watch_symbols"]==["NVDA"]
          and not full["final_buy_signals"],"PARTIAL_PROGRESS_WITHOUT_FAKE_BUY")
+    need(full["independent_math_audit_count"]==1
+         and full["independent_math_audit_verified_count"]==1
+         and full["independent_math_audit_unresolved_count"]==0,
+         "INDEPENDENT_MATH_AUDIT_COUNTS")
+    a["results"]["NVDA"]["family_results"]["D"]["independent_geometry_audit"]={
+        "independently_verified":False}
+    unresolved=summarize(a,w())
+    need(unresolved["independent_math_audit_unresolved_count"]==1
+         and unresolved["independent_math_audit_verified_count"]==0,
+         "UNRESOLVED_MATH_NEVER_COUNTED_AS_VERIFIED")
     changed=prepare(w("2026-10-14"),a)
     need(changed["results"]=={},"ASOF_INVALIDATES_STALE_TRIGGERS")
     malformed=w()
