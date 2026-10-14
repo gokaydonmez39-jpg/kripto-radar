@@ -676,6 +676,21 @@ def completed_sessions():
 
 def parse_hist(sym,asof,expected30):
     try:
+        # An official first-trade date limits the issuer's OWN history.
+        # Same-ticker predecessor bars from an unrelated issuer must not
+        # manufacture 260 sessions or a C4.17 research PASS.
+        from official_first_trade_260_history_guard import fence
+        first_trade=fence(sym,asof)
+        if first_trade and first_trade["own_listed_history_short"]:
+            return "UNKNOWN_STATIC",{
+                "reason":"OFFICIAL_FIRST_TRADE_LT260_NO_PREDECESSOR_PROOF",
+                "first_traded_nasdaq_date":first_trade["first_traded_nasdaq_date"],
+                "completed_listed_sessions":first_trade["completed_listed_sessions"],
+                "required_own_history_sessions":first_trade["required_own_history_sessions"],
+                "source_evidence_blob_sha":first_trade["evidence_git_blob_sha"],
+                "no_synthetic_bar":True,
+                "unknown_never_pass":True,
+            }
         df=ak.stock_us_daily(symbol=sym,adjust="")
         if df is None or df.empty:
             return "UNKNOWN_STATIC","SINA_HISTORY_EMPTY"
@@ -690,6 +705,11 @@ def parse_hist(sym,asof,expected30):
                 continue
             if day<=asof and close>0 and volume>0 and math.isfinite(close) and math.isfinite(volume):
                 by[day]=(close,volume)
+        # Still enforce same-issuer start date AFTER 260 listed sessions exist;
+        # historical provider bars predating the first trade remain untrusted.
+        if first_trade:
+            by={day:values for day,values in by.items()
+                if day>=first_trade["first_traded_nasdaq_date"]}
         bars=len(by)
         # PRICE may short-circuit from an exact same-ASOF close. A short Sina
         # history alone is not enough to terminally FAIL HISTORY because provider
