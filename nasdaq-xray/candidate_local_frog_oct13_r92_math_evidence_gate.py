@@ -203,6 +203,37 @@ def seven_official_gate_readout(cover,rollup,lastmile):
     return {"states":states,"pass_count":sum(x=="PASS" for x in states.values()),
             "required":7,"missing":[k for k,v in states.items() if v!="PASS"]}
 
+def build_candidate_local_terminal(result):
+    """Derive an Oct13 research terminal without transplanting the Oct07 global canonical chain."""
+    from frog_c417_first_registration_writer_v1 import root_sha
+    source=result.get("source_json_sha256")
+    gates=result.get("seven_official_source_release_gates") or {}
+    states=gates.get("states") or {}
+    require(type(source) is dict and len(source)==4,"CANDIDATE_SOURCE_SHA_SET")
+    require(result.get("asof_et")==ASOF and result.get("symbol")=="FROG"
+            and result.get("setup")=="D","CANDIDATE_TERMINAL_IDENTITY")
+    require(len(states)==7 and gates.get("required")==7 and
+            gates.get("pass_count")==sum(x=="PASS" for x in states.values()),
+            "CANDIDATE_TERMINAL_SOURCE_GATE_COUNTS")
+    require(set(states.values()).issubset({"PASS","UNKNOWN"}),
+            "CANDIDATE_TERMINAL_GATE_STATES")
+    first=result.get("first_registration_readiness") or {}
+    return {"schema":"XRAY_FROG_ASOF_CANDIDATE_LOCAL_RESEARCH_TERMINAL_V1",
+            "symbol":"FROG","setup":"D","asof_et":ASOF,
+            "source_sha256":source,"evidence_root_sha256":root_sha(source),
+            "observational_source_pass_count":len(result["observed_source_checks"]),
+            "primary_gates":states,"primary_pass_count":gates["pass_count"],
+            "primary_required_count":7,"primary_missing":gates["missing"],
+            "candidate_source_asof_verified":True,
+            "global_c417_current_terminal_reconstructed":False,
+            "global_c417_current_terminal_asof":first.get("terminal_asof_et"),
+            "eligible_for_c417_release":gates["pass_count"]==7 and
+                first.get("terminal_2026_10_13_c417_ready") is True,
+            "first_registration_ready":first.get("may_mint_first_registration_without_prior_ledger") is True,
+            "registered_r92":result.get("r92_registered") is True,
+            "platform_phone_receipt_verified":result.get("iphone_delivery_receipt_attested") is True,
+            "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
+
 def selftest():
     from copy import deepcopy
     def sample():
@@ -247,6 +278,35 @@ def selftest():
         try:decide(*bad)
         except ValueError:pass
         else:raise AssertionError("FALSE_POSITIVE_"+label)
+    synthetic={"schema":SCHEMA,"symbol":"FROG","setup":"D","asof_et":ASOF,
+        "source_json_sha256":{z:"a"*64 for z in
+             ("sec_cover","ca_price","sec_halt_event_auction","conditional_policy")},
+        "observed_source_checks":{"a":"PASS_OBSERVED"},
+        "seven_official_source_release_gates":{"states":{
+             "identity_and_share_class":"PASS",
+             "corrected_rth_close_dv30_condition6":"UNKNOWN",
+             "independent_corporate_actions_pit":"UNKNOWN",
+             "same_asof_class_market_cap_ge_2b":"UNKNOWN",
+             "history_260_52_setup_d_r1_rr_regime":"UNKNOWN",
+             "eight_session_official_event_clear":"UNKNOWN",
+             "sec_legal_and_historical_live_nasdaq_halt_clear":"UNKNOWN"},
+            "pass_count":1,"required":7,"missing":[
+             "corrected_rth_close_dv30_condition6",
+             "independent_corporate_actions_pit",
+             "same_asof_class_market_cap_ge_2b",
+             "history_260_52_setup_d_r1_rr_regime",
+             "eight_session_official_event_clear",
+             "sec_legal_and_historical_live_nasdaq_halt_clear"]},
+        "first_registration_readiness":{"terminal_asof_et":"2026-10-07",
+           "terminal_2026_10_13_c417_ready":False,
+           "may_mint_first_registration_without_prior_ledger":False},
+        "r92_registered":False,"iphone_delivery_receipt_attested":False}
+    rt=build_candidate_local_terminal(synthetic)
+    require(rt["asof_et"]==ASOF and rt["primary_pass_count"]==1 and
+         rt["global_c417_current_terminal_asof"]=="2026-10-07" and
+         rt["eligible_for_c417_release"] is False and
+         rt["global_c417_current_terminal_reconstructed"] is False,
+         "CANDIDATE_LOCAL_TERMINAL_NOT_TRANSPLANTED_GLOBAL")
     from frog_c417_first_registration_writer_v1 import selftest as first_registry_selftest
     first_registry_selftest()
     print("XRAY_FROG_R92_MATH_SELFTEST=PASS_5_NEGATIVE_80PCT_CONDITIONAL_ONLY")
@@ -288,11 +348,15 @@ def main():
         "registry_asof_et":registry.get("asof_et")}
     result["source_json_sha256"]={"sec_cover":sha_cover,"ca_price":sha_rollup,
                                   "sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy}
+    result["candidate_local_terminal_20261013"]=build_candidate_local_terminal(result)
     x.out.write_text(json.dumps(result,indent=2,sort_keys=True)+chr(10))
     print("XRAY_FROG_R92_MATH_SAME_PRICE_MIN_CANCELLATIONS="+str(result["mathematical_vintage_scenario"]["required_minimum_share_cancellation_at_same_price"]))
     print("XRAY_FROG_R92_SOURCE_OBSERVATIONS=5_PASS")
     print("XRAY_FROG_SEVEN_OFFICIAL_PRIMARY_PASS="+str(result["seven_official_source_release_gates"]["pass_count"])+"/7")
     print("XRAY_FROG_R92_RELEASE_EVIDENCE_MISSING="+str(len(result["missing_release_evidence"])))
+    print("XRAY_FROG_CANDIDATE_LOCAL_TERMINAL_ASOF="+
+          result["candidate_local_terminal_20261013"]["asof_et"]+
+          "_NOT_GLOBAL_CANONICAL_CURRENT")
     print("XRAY_FROG_FIRST_REGISTRATION_READY="+
           str(result["first_registration_readiness"]["may_mint_first_registration_without_prior_ledger"]).upper())
     print("XRAY_FROG_R92_CANONICAL=BLOCKED_INDEPENDENT_C417_R92_FALSE")
