@@ -161,6 +161,49 @@ def decide(cover,rollup,lastmile,policy,source_sha256=None):
             "delivery_ledger_modified":False,
             "real_money":"NO-GO","execution":"NONE","unknown_never_pass":True}
 
+def seven_official_gate_readout(cover,rollup,lastmile):
+    """Seven release proofs, using source facts rather than five observational shortcuts."""
+    price=rollup["price"]
+    corp=rollup["corporate_actions"]
+    s=lastmile["sec"]
+    p=lastmile["price"]
+    e=lastmile["issuer_event"]
+    h=lastmile["halt"]
+    checks={
+        "identity_and_share_class": (
+            cover.get("historical_sec_class_cover_verified") is True and
+            cover.get("cover_shares_observed")==123301311 and
+            rollup.get("sec_mc_legal_event",{}).get("sec_cik_exact") is True),
+        "corrected_rth_close_dv30_condition6": (
+            price.get("dv30_primary_pass") is True and
+            price.get("independent_close_corrections_verified") is True and
+            p.get("exact_rth_dv30_primary_pass") is True and
+            p.get("observed_auction_condition6_sessions")==30),
+        "independent_corporate_actions_pit": (
+            corp.get("ca_primary_pass") is True and
+            s.get("corporate_actions_independent_pit_pass") is True),
+        "same_asof_class_market_cap_ge_2b": (
+            cover.get("class_aware_exact_asof_shares") is True and
+            s.get("current_class_shares_reconciled") is True and
+            s.get("asof_mc_ge_2b_primary_pass") is True),
+        "history_260_52_setup_d_r1_rr_regime": (
+            rollup.get("risk_rr_geometry_pass") is True and
+            lastmile.get("regime_breadth_primary_pass") is True and
+            lastmile.get("history_260_52_corporate_actions_primary_pass") is True),
+        "eight_session_official_event_clear": (
+            e.get("eight_day_event_calendar_clear") is True and
+            e.get("all_material_8k_primary_review_complete") is True),
+        "sec_legal_and_historical_live_nasdaq_halt_clear": (
+            rollup.get("sec_mc_legal_event",{}).get("official_legal_review_status")=="PASS" and
+            h.get("historical_complete_clear_pass") is True and
+            h.get("live_halt_clear_pass") is True)
+    }
+    require(len(checks)==7,"SEVEN_EXACT_SOURCE_GATES")
+    states={name:("PASS" if passed is True else "UNKNOWN")
+            for name,passed in checks.items()}
+    return {"states":states,"pass_count":sum(x=="PASS" for x in states.values()),
+            "required":7,"missing":[k for k,v in states.items() if v!="PASS"]}
+
 def selftest():
     from copy import deepcopy
     def sample():
@@ -223,11 +266,13 @@ def main():
     lastmile,sha_lastmile=load(x.lastmile)
     policy,sha_policy=load(ROOT/"personal_research_technical_policy_v1.json")
     result=decide(cover,rollup,lastmile,policy,{"sec_cover":sha_cover,"ca_price":sha_rollup,"sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy})
+    result["seven_official_source_release_gates"]=seven_official_gate_readout(cover,rollup,lastmile)
     result["source_json_sha256"]={"sec_cover":sha_cover,"ca_price":sha_rollup,
                                   "sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy}
     x.out.write_text(json.dumps(result,indent=2,sort_keys=True)+chr(10))
     print("XRAY_FROG_R92_MATH_SAME_PRICE_MIN_CANCELLATIONS="+str(result["mathematical_vintage_scenario"]["required_minimum_share_cancellation_at_same_price"]))
     print("XRAY_FROG_R92_SOURCE_OBSERVATIONS=5_PASS")
+    print("XRAY_FROG_SEVEN_OFFICIAL_PRIMARY_PASS="+str(result["seven_official_source_release_gates"]["pass_count"])+"/7")
     print("XRAY_FROG_R92_RELEASE_EVIDENCE_MISSING="+str(len(result["missing_release_evidence"])))
     print("XRAY_FROG_R92_CANONICAL=BLOCKED_INDEPENDENT_C417_R92_FALSE")
 
