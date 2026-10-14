@@ -1,0 +1,77 @@
+name: XRAY Oct13 Missing168 SEC Nasdaq SIP Listing Date Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_oct13_missing168_sec_nasdaq_alpaca_census.py"
+      - ".github/workflows/xray-personal-20261013-missing168-multisource.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-once-20261013-168-multisource
+  cancel-in-progress: false
+jobs:
+  sec-nasdaq-alpaca:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-specific listing-date and PIT negative tests
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/personal_oct13_missing168_sec_nasdaq_alpaca_census.py
+          python nasdaq-xray/personal_oct13_missing168_sec_nasdaq_alpaca_census.py --selftest
+          python -O nasdaq-xray/personal_oct13_missing168_sec_nasdaq_alpaca_census.py --selftest
+      - name: Fetch exact source 3185 identity and 168-date cohort without OHLCV
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run168multi]') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/xray_history"
+          gh run download 38481474945 --repo "${{ github.repository }}" --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/xray_history"
+      - name: Actual official SEC submissions, Nasdaq listing and Alpaca SIP source probe
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run168multi]') }}
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/personal_oct13_missing168_sec_nasdaq_alpaca_census.py \
+            --frozen-root "$RUNNER_TEMP/xray_history/xray_personal_root260_full_cohort.json" \
+            --out "$RUNNER_TEMP/xray_168_official_sources.json"
+      - name: Verify true source status not fabricated 168 IPO history failure
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[run168multi]') }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_168_official_sources.json").read_text())
+          assert r["schema"]=="XRAY_168_ASOF13_THREE_SOURCE_DATE_CENSUS_V1"
+          assert r["asof_et"]=="2026-10-13" and r["total_symbols"]==168
+          assert len(r["status"])==len(r["sources"])==168
+          assert sum(r["counts"].values())==168
+          assert r["alpaca_calls"]<=14 and r["sec_requests"]<=169
+          assert r["nasdaq_requests"]<=168
+          assert r["proven_lt260_listing"]==0 or r["proven_lt260_listing"]<=168
+          assert r["same_asof_history_primary_created"] is False
+          assert r["canonical_master_written"] is False and r["r92_created"] is False
+          assert r["real_money"]=="NO-GO" and r["execution"]=="NONE"
+          print("XRAY_168_THREE_SOURCE_CENSUS_GATES=PASS_NO_FALSE_IPO")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-missing168-sec-nasdaq-alpaca-no-ohlcv
+          path: ${{ runner.temp }}/xray_168_official_sources.json
+          if-no-files-found: warn
+          retention-days: 14
