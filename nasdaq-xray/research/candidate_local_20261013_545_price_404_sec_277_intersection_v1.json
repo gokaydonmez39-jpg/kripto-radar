@@ -1,0 +1,80 @@
+{
+  "schema": "XRAY_CANDIDATE_LOCAL_20261013_COMPLETE_REAL_545_404_SOURCE_LEDGER_V1",
+  "asof_et": "2026-10-13",
+  "asof_session_status": "COMPLETED",
+  "source_type": "HISTORICAL_RESEARCH_SHADOW_NOT_CANONICAL_C417_RELEASE",
+  "source_price": {
+    "first50_run_id": 38529782918,
+    "remaining495_run_id": 38530630522,
+    "scope_count": 545,
+    "positive_rth_30m_lower_bound_count": 416,
+    "ambiguous_bounded_count": 91,
+    "unknown_incomplete_or_integrity_count": 38,
+    "actual_provider_http_requests": 1537,
+    "provider": "ALPACA_HISTORICAL_SIP_ONE_TICKER_PAGE_AT_A_TIME",
+    "canonical_price_git_blob_sha": "4bac485ade0477d419992cb6b36089c6b0896e4b",
+    "raw_vendor_ohlcv_persisted": false
+  },
+  "source_sec": {
+    "first50_run_id": 38529822940,
+    "remaining354_run_id": 38530692893,
+    "scope_count": 404,
+    "shadow_official_shares_vintage_count": 279,
+    "unknown_unreconciled_count": 125,
+    "actual_provider_http_requests": 817,
+    "provider": "SEC_EDGAR_OFFICIAL_COMPANYFACTS_AND_SUBMISSIONS",
+    "share_class_mc_primary_count": 0,
+    "raw_share_facts_persisted": false
+  },
+  "source_history": {
+    "asof_et": "2026-10-13",
+    "original_full3185_run_id": 38481474945,
+    "original_full3185_json_sha256": "1d5bb3aaceb571fc84a631ab90e46fa15601067996a9062b2cc5ac6535563a9e",
+    "positive_observed_history_shadow_count": 2679,
+    "source_history_primary_count": 0
+  },
+  "source_cohort": {
+    "run_id": 38528457369,
+    "cross_asof_historical_candidate_cohort_count": 404,
+    "same_asof_price_history_is_not_inferred_from_old_price": true
+  },
+  "exact_source_join": {
+    "run_id": 38532588994,
+    "run_commit_sha": "618cfc908b04fc7a9f4ab2a6c1807b1ff8519d82",
+    "artifact_id": 11877839124,
+    "artifact_name": "xray-20261013-real-545-404-source-rollup-no-r92",
+    "artifact_zip_sha256": "6750ab0d4a10200232e1b5153e9dd29bcdc5cfea45600b2053ec0940b97c96e5",
+    "artifact_member": "xray_full_same_asof_source_rollup.json",
+    "artifact_json_sha256": "c05669e7fbd0a91c3f6fb9f652c330157066496747132dcfc291d121d99fb26c",
+    "overlap_source_count": 277,
+    "source_pages_price": 11,
+    "source_pages_sec": 9,
+    "exact_page_set_verified": true,
+    "exact_canonical_blob_sha_verified": true,
+    "negative_adversarial_tests_passed": 5,
+    "upstream_separate_run_ids_verified": true
+  },
+  "canonical_release": {
+    "master_unknown_unrelated_veto_disabled_for_candidate_local": true,
+    "global_universe_source_coverage_full": false,
+    "all_same_asof_primary_price_count": 0,
+    "same_asof_issuer_class_mc_pass_count": 0,
+    "same_asof_legal_event_halt_final_rr_pass_count": 0,
+    "registered_r92_count": 0,
+    "iphone_notification_receipt_verified": false,
+    "canonical_files_promoted": false,
+    "research_start": "YES",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true
+  },
+  "limitations": [
+    "30Minute RTH volume median is a lower bound, not corrected consolidated exact RTH DV30 primary",
+    "SEC PIT EntityCommonStockSharesOutstanding vintage is not class-specific shares or current market cap",
+    "Original 404 cross-ASOF cohort uses Oct12 PRICE shadow and Oct13 HISTORY shadow; revalidated Oct13 source overlap is 277",
+    "No official halt legal events Stage1 regime setup or R1/RR candidate-local completed release chain",
+    "No real R92 can be registered without exact current independent per-symbol gates",
+    "No actual iPhone device push receipt has been independently witnessed"
+  ],
+  "task_topology": "REUSE_THE_FIVE_EXISTING_XRAY_AUTOMATIONS_NO_SIXTH_TASK"
+}
