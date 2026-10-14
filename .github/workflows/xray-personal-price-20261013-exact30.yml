@@ -1,0 +1,79 @@
+name: XRAY 2026-10-13 Exact30 PRICE Real SIP Source Census
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
+      - ".github/workflows/xray-personal-price-20261013-exact30.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-one-shot-price-20261013-source
+  cancel-in-progress: false
+jobs:
+  exact30-personal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact commit official Nasdaq date and adversarial checks
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py
+          python nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py --selftest
+          python -O nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py --selftest
+      - name: Fetch source-matched 3185 HISTORY symbol states, never raw OHLCV
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runprice13]') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/xray_history"
+          gh run download 38481474945 --repo "${{ github.repository }}" --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/xray_history"
+      - name: Query actual Oct13 Alpaca SIP bars for all current canonical PRICE UNKNOWN
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runprice13]') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py --oct13-census \
+            --history-artifact "$RUNNER_TEMP/xray_history/xray_personal_root260_full_cohort.json" \
+            --out "$RUNNER_TEMP/xray_personal_20261013_price_exact30_census.json"
+      - name: Verify measured Oct13 dates and exact source SHA, never claim fake PRIMARY
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[runprice13]') }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_personal_20261013_price_exact30_census.json").read_text())
+          assert d["schema"]=="XRAY_ALPACA_20261013_FULL_UNKNOWN_SCOPE_30MIN_SHADOW_V1"
+          assert d["asof_et"]=="2026-10-13"
+          assert len(d["exact30_dates"])==30 and d["exact30_dates"][-1]=="2026-10-13"
+          assert d["canonical_master_git_blob_sha"]==subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
+          assert d["canonical_price_git_blob_sha"]==subprocess.check_output(["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
+          assert len(d["symbol_statuses"])==d["source_price_unknown_count"]
+          assert sum(d["counts"].values())==d["source_price_unknown_count"]
+          assert d["same_asof_history"]["history_asof_et"]=="2026-10-13"
+          assert d["same_asof_history"]["claim_primary"] is False
+          assert d["primary_price_count"]==d["primary_mc_count"]==0
+          assert d["r92_created"] is False and d["canonical_files_mutated"] is False
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_REAL_20261013_PRICE_METADATA_AUDIT=PASS")
+          print("XRAY_REAL_20261013_COUNTS="+json.dumps(d["counts"],sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-personal-20261013-price-exact30-sip-no-ohlcv
+          path: ${{ runner.temp }}/xray_personal_20261013_price_exact30_census.json
+          if-no-files-found: warn
+          retention-days: 14
