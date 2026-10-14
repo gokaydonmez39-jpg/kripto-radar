@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install pinned Nasdaq calendar and technical math dependencies
-        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "pandas==2.2.3"
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
       - name: Verify negative controls and reject fabricated candidate or stale cohort in both runtimes
         run: |
           python -m py_compile nasdaq-xray/personal_full_cohort_early_technical_watch.py
