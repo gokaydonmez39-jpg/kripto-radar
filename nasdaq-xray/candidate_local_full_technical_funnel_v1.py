@@ -86,7 +86,8 @@ def prepare(watch, old=None):
 
 def summarize(state, watch):
     expected=[r["symbol"] for r in watch["watchlist"]]
-    seen=set(state["results"])
+    seen={s for s,r in state["results"].items()
+          if type(r) is dict and r.get("terminal_scan") is True}
     pending=[s for s in expected if s not in seen]
     stats=dict(sorted(collections.Counter(
         r.get("status","UNKNOWN") for r in state["results"].values()).items()))
@@ -94,7 +95,9 @@ def summarize(state, watch):
         if state["results"].get(s,{}).get("technical_observation_ready") is True]
     triggered=[s for s in expected
         if bool(state["results"].get(s,{}).get("confirmed_families"))]
-    state.update({"evaluated_count":len(seen),"pending_count":len(pending),
+    state.update({"attempted_count":len(state["results"]),
+                  "transient_retry_count":len(state["results"])-len(seen),
+                  "evaluated_count":len(seen),"pending_count":len(pending),
                   "pending_symbols":pending,
                   "full_scope_scanned":not pending,
                   "status_counts":stats,
@@ -168,7 +171,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
             if not str(ca_status).startswith("PASS") or not _history_ok(updated,calendar_days):
                 return sym,{"status":"UNKNOWN_CORPORATE_ACTION_PIT",
                             "split_reconciliation_status":ca_status,
-                            "history_source":source,"terminal_scan":True}
+                            "history_source":source,"terminal_scan":False}
             data=updated.reset_index(drop=True)
         current_week=stage.weekly_gate(data,asof,week_last)
         eligible,ctx=stage.recent_weekly_context(data,week_last)
@@ -325,6 +328,15 @@ def selftest():
     else:raise AssertionError("TOP_N_ACCEPTED")
     need(BATCH_SIZE>=475 and MAX_WORKERS<=4,
          "FULL_SCOPE_BATCH_NO_UNBOUNDED_CONCURRENT_PROVIDER_CALLS")
+    with_transient=prepare(w())
+    with_transient["results"]["AAPL"]={
+        "status":"UNKNOWN_CORPORATE_ACTION_PIT","terminal_scan":False}
+    transient=summarize(with_transient,w())
+    need(transient["attempted_count"]==1 and
+         transient["evaluated_count"]==0 and
+         transient["pending_count"]==3 and
+         transient["transient_retry_count"]==1,
+         "NO_FALSE_COMPLETION_ON_RETRYABLE_PROVIDER_ERROR")
     print("XRAY_ALL_CANDIDATE_C417_TECH_SELFTEST=PASS_LOCAL_RESUME_ALL_WATCHED_NO_FAKED_AL")
 
 
