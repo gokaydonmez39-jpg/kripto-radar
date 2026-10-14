@@ -8,8 +8,8 @@
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 475,
-    "engine_source_sha256": "c0c0ae9a6bbaba036d1554a633d4daa0ba78f4bf8635e5c2e5918bd8b9592084",
-    "evaluated_count": 472,
+    "engine_source_sha256": "9673f8e648b0b308ec76b461005abdf47c0cb7e69b096274483ba9a737464899",
+    "evaluated_count": 471,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,8 +18,9 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 19,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 3,
+    "pending_count": 4,
     "pending_symbols": [
+      "TWST",
       "FISV",
       "BSP",
       "CCC"
@@ -3919,7 +3920,7 @@
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
-    "transient_retry_count": 3,
+    "transient_retry_count": 4,
     "unknown_never_pass": true,
     "watchlist_digest": "7beebb329850099d35d5d5dceaa2235a07a1c25a38729b67538e4ddc5d14050d"
   },
@@ -3975,7 +3976,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T13:00:15.789280+00:00",
+  "updated_at_utc": "2026-10-14T13:14:10.402689+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
