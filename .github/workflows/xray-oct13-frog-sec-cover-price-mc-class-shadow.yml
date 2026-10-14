@@ -1,0 +1,68 @@
+name: XRAY Oct13 FROG SEC 10Q Cover Class vs SIP Price MC Shadow
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py"
+      - ".github/workflows/xray-oct13-frog-sec-cover-price-mc-class-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-oct13-frog-sec-cover-price
+  cancel-in-progress: false
+jobs:
+  class-aware-vintage-no-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install exact official calendar runtime
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Compile and fail malformed official share-class cover
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py
+          python nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py --selftest
+          python -O nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py --selftest
+      - name: Official SEC actual cover vs exact October13 SIP daily close
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || vars.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || vars.XRAY_ALPACA_DATA_SECRET_KEY }}
+          XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID || vars.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY || vars.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py \
+            --out "$RUNNER_TEMP/frog_sec_cover_class_mc_shadow.json"
+      - name: Ensure old quarter cover is never reported as October13 MC PRIMARY
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"frog_sec_cover_class_mc_shadow.json").read_text())
+          def need(value,msg):
+              if not value:raise ValueError("FROG_SEC_COVER_FAIL_CLOSED_"+msg)
+          need(j["symbol"]=="FROG" and j["asof_et"]=="2026-10-13","PIT_ID")
+          need(j["mc_primary_ge_2b"] is False and
+               j["class_aware_exact_asof_shares"] is False,"NO_PRIMARY")
+          need(j["corporate_actions_pit_reconciled"] is False and
+               j["exact_corrected_rth_close_attested"] is False,"CORRECTIONS")
+          need(j["r92_registered"]==0 and j["canonical_modified"] is False,"NO_R92")
+          need(j["raw_alpaca_quotes_persisted"] is False and
+               j["execution"]=="NONE" and j["real_money"]=="NO-GO","SOURCE_SAFETY")
+          print("XRAY_FROG_COVER_10Q_SIP_SHADOW=NO_FALSE_CLASS_ASOF_MC_OR_R92")
+          PY
+      - name: Upload counts and class vintage only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: xray-oct13-frog-real-10q-class-cover-price-mc-research
+          path: ${{ runner.temp }}/frog_sec_cover_class_mc_shadow.json
+          retention-days: 14
+          if-no-files-found: warn
