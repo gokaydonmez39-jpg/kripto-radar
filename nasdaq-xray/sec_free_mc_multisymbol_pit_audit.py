@@ -84,6 +84,10 @@ def load_scope(offset:int=0,limit:int=0,*,full_current:bool=False,
         if offset!=0 or limit!=0:
             raise ValueError("FULL_SCOPE_REJECTS_OFFSET_AND_LIMIT")
         if not p or len(p)>MAX_FULL_PRICE_PASS_SCOPE:
+            # Only an explicit operational zero-data request may report zero.
+            # An overlarge non-empty full census must NEVER be truncated.
+            if allow_empty_current_scope and not p:
+                return asof,[]
             raise ValueError("FULL_PRICE_PASS_EXCEEDS_BOUNDED_SEC_CENSUS")
         symbols=sorted(p)
     # A representative test is not a full-Nasdaq data coverage attestation.
@@ -191,6 +195,10 @@ def selftest():
                 raise
         else:
             raise AssertionError("ZERO_PRICE_PASS_MISLABELED_AS_MC_SCOPE")
+        empty_asof,empty_full=load_scope(full_current=True,
+            allow_empty_current_scope=True)
+        assert empty_asof==price["asof_et"] and empty_full==[],(
+            "ZERO_FULL_SCOPE_NOT_PRESERVED")
     else:
         asof,full=load_scope(full_current=True)
         assert asof==price["asof_et"]
