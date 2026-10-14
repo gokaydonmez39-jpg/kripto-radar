@@ -85,6 +85,9 @@ def base_report(asof, symbols, source_blob):
         "mode": "INDEPENDENT_SOURCE_AVAILABILITY_ONLY",
         "status": "UNKNOWN_UNMEASURED", "observations": {},
         "classification_counts": {}, "measured_scope_count": 0,
+        "provider_observed_scope_count": 0, "failed_batch_count": 0,
+        "upstream_request_count": 0, "source_circuit_breaker_open": False,
+        "source_rate_limited": False,
         "unattended_runner_data_access_credential_present": False,
         "source_market_data_rights_independently_attested": False,
         "issuer_corporate_actions_pit_reconciled": False,
@@ -98,6 +101,13 @@ def base_report(asof, symbols, source_blob):
     }
 
 def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
+    """Batch-local source resilience with an exact UNKNOWN census.
+
+    One failing group never erases successful independent-source findings.
+    Stop after HTTP 429 or two consecutive failed groups; mark every
+    unqueried symbol explicitly UNKNOWN. This output cannot establish any
+    canonical production authority.
+    """
     report = base_report(asof, symbols, source_blob)
     need(now.tzinfo is not None and sufficient_delay(asof, now),
          "20MIN_OFFICIAL_CLOSE_HOLDBACK")
@@ -105,25 +115,79 @@ def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
     start = daily[0] + "T00:00:00Z"
     end = (dt.date.fromisoformat(asof) + dt.timedelta(days=1)).isoformat() + "T00:00:00Z"
     result = {}
+    requests = 0
+    observed = 0
+    failures = 0
+    consecutive_failures = 0
+    rate_limited = False
+    circuit_open = False
     for offset in range(0, len(symbols), BATCH):
         subset = symbols[offset:offset+BATCH]
-        raw = fetch(subset, start, end, asof)
-        need(type(raw) is dict and set(raw) == set(subset),
-             "PARTIAL_OR_FOREIGN_SOURCE_BATCH")
-        for symbol in subset:
-            status, count = classify(raw[symbol], daily, weeks, asof)
-            result[symbol] = {"source_availability": status,
-                              "observed_official_session_count": count,
-                              "canonical_primary": False}
-        del raw
+        if rate_limited or circuit_open:
+            why = ("UNKNOWN_SOURCE_RATE_LIMIT_NOT_QUERIED"
+                   if rate_limited else "UNKNOWN_SOURCE_CIRCUIT_OPEN_NOT_QUERIED")
+            for symbol in subset:
+                result[symbol] = {"source_availability": why,
+                                  "observed_official_session_count": 0,
+                                  "canonical_primary": False}
+            continue
+        requests += 1
+        data = None
+        failure = None
+        try:
+            data = fetch(subset, start, end, asof)
+        except (RuntimeError, ValueError, OSError, TimeoutError) as exc:
+            code = str(exc).upper()
+            if "429" in code or "RATE_LIMIT" in code:
+                failure = "UNKNOWN_SOURCE_HTTP_429"
+                rate_limited = True
+            else:
+                failure = "UNKNOWN_SOURCE_PROVIDER_BATCH_TRANSPORT"
+        if failure is None and (type(data) is not dict or set(data) != set(subset)):
+            failure = "UNKNOWN_SOURCE_PROVIDER_BATCH_SCOPE"
+        if failure is not None:
+            failures += 1
+            consecutive_failures += 1
+            for symbol in subset:
+                result[symbol] = {"source_availability": failure,
+                                  "observed_official_session_count": 0,
+                                  "canonical_primary": False}
+            if consecutive_failures >= 2:
+                circuit_open = True
+        else:
+            consecutive_failures = 0
+            for symbol in subset:
+                try:
+                    status, count = classify(data[symbol], daily, weeks, asof)
+                    need(type(status) is str and
+                         type(count) is int and count >= 0,
+                         "SOURCE_CLASSIFICATION_SCHEMA")
+                except (RuntimeError, ValueError, TypeError, KeyError, IndexError):
+                    status, count = "UNKNOWN_SOURCE_ROW_INVALID", 0
+                result[symbol] = {"source_availability": status,
+                                  "observed_official_session_count": count,
+                                  "canonical_primary": False}
+                observed += int(status != "UNKNOWN_SOURCE_ROW_INVALID")
+        del data
     report["observations"] = result
     report["classification_counts"] = dict(sorted(
         collections.Counter(r["source_availability"] for r in result.values()).items()))
     report["measured_scope_count"] = len(result)
+    report["provider_observed_scope_count"] = observed
+    report["failed_batch_count"] = failures
+    report["upstream_request_count"] = requests
+    report["source_circuit_breaker_open"] = circuit_open
+    report["source_rate_limited"] = rate_limited
     need(len(result) == len(symbols) and
-         sum(report["classification_counts"].values()) == len(symbols),
-         "SOURCE_EXACT_PARTITION")
-    report["status"] = "SHADOW_SOURCE_AVAILABILITY_MEASURED_NO_AUTHORITY"
+         sum(report["classification_counts"].values()) == len(symbols) and
+         observed <= len(symbols), "SOURCE_EXACT_PARTITION")
+    report["status"] = (
+        "UNKNOWN_SOURCE_RATE_LIMIT_PARTIAL" if rate_limited else
+        "UNKNOWN_SOURCE_CIRCUIT_BREAKER_PARTIAL" if circuit_open else
+        "UNKNOWN_SOURCE_PARTIAL_DATA" if any(
+            name.startswith("UNKNOWN_") for name in report["classification_counts"])
+        else "SHADOW_SOURCE_AVAILABILITY_MEASURED_NO_AUTHORITY"
+    )
     return report
 
 def selftest():
@@ -203,6 +267,55 @@ def selftest():
         raise AssertionError("MISMATCHED_ASOF_ACCEPTED")
     need(classify([], daily, weeks, asof)[0] == "NO_BAR",
          "MISSING_SIP_CANNOT_PASS")
+    cohort = ["SYM%03d" % i for i in range(BATCH+1)]
+    calls = []
+    def one_failure(sub, begin, finish, session):
+        calls.append(tuple(sub))
+        if len(calls) == 1:
+            raise RuntimeError("ALPACA_HTTP_503_TRANSIENT")
+        return {sym: [] for sym in sub}
+    partial = audit(asof, cohort, daily, weeks, "a"*40,
+                    one_failure, now)
+    need(len(calls) == 2
+         and partial["failed_batch_count"] == 1
+         and partial["upstream_request_count"] == 2
+         and partial["measured_scope_count"] == len(cohort)
+         and partial["classification_counts"]["UNKNOWN_SOURCE_PROVIDER_BATCH_TRANSPORT"] == BATCH
+         and partial["classification_counts"]["NO_BAR"] == 1
+         and partial["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
+         "ONE_FAILED_BATCH_MUST_NOT_ERASE_OTHER_BATCH")
+    calls.clear()
+    def all_limited(sub, begin, finish, session):
+        calls.append(tuple(sub))
+        raise RuntimeError("ALPACA_HTTP_429_TOO_MANY_REQUESTS")
+    limited = audit(asof, cohort, daily, weeks, "a"*40,
+                    all_limited, now)
+    need(len(calls) == 1 and limited["source_rate_limited"]
+         and limited["failed_batch_count"] == 1
+         and limited["classification_counts"]["UNKNOWN_SOURCE_HTTP_429"] == BATCH
+         and limited["classification_counts"]["UNKNOWN_SOURCE_RATE_LIMIT_NOT_QUERIED"] == 1
+         and limited["status"] == "UNKNOWN_SOURCE_RATE_LIMIT_PARTIAL",
+         "HTTP_429_MUST_HALT_FURTHER_VENDOR_CALLS")
+    huge = ["SYM%03d" % i for i in range(BATCH*2+1)]
+    calls.clear()
+    def transient_outage(sub, begin, finish, session):
+        calls.append(tuple(sub))
+        raise RuntimeError("ALPACA_HTTP_503")
+    cliff = audit(asof, huge, daily, weeks, "a"*40,
+                  transient_outage, now)
+    need(len(calls) == 2 and cliff["source_circuit_breaker_open"]
+         and cliff["failed_batch_count"] == 2
+         and cliff["measured_scope_count"] == len(huge)
+         and cliff["classification_counts"]["UNKNOWN_SOURCE_CIRCUIT_OPEN_NOT_QUERIED"] == 1
+         and cliff["status"] == "UNKNOWN_SOURCE_CIRCUIT_BREAKER_PARTIAL",
+         "UPSTREAM_CLIFF_MUST_STOP_WITH_EXACT_UNQUERIED_SET")
+    def injected_foreign(sub, begin, finish, session):
+        return {**{sym: [] for sym in sub}, "FOREIGN": []}
+    foreign = audit(asof, ["SYM000"], daily, weeks, "a"*40,
+                    injected_foreign, now)
+    need(foreign["observations"]["SYM000"]["source_availability"] ==
+         "UNKNOWN_SOURCE_PROVIDER_BATCH_SCOPE",
+         "FOREIGN_SYMBOL_MUST_NEVER_BE_ACCEPTED")
     print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_SOURCE_EXACT_NO_PRIMARY_NO_R92")
 
 def main():
