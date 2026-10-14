@@ -206,13 +206,15 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
         listing=fence(sym,asof)
         if listing is not None and listing["own_listed_history_short"]:
             return sym,{
-                "status":"UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
+                "status":"FAIL_OFFICIAL_LISTED_HISTORY_LT260",
                 "history_source":"NASDAQ_OFFICIAL_FIRST_TRADE_FAIL_ONLY",
                 "first_traded_nasdaq_date":listing["first_traded_nasdaq_date"],
                 "completed_listed_sessions":listing["completed_listed_sessions"],
                 "source_evidence_blob_sha":listing["evidence_git_blob_sha"],
                 "technical_observation_ready":False,
-                "terminal_scan":False}
+                "terminal_scan":True,
+                "final_AL":False,
+                "registered_r92_count":0}
         data,source=stage.load_history(sym,asof)
         if not _history_ok(data,calendar_days):
             return sym,{"status":"UNKNOWN_260_OFFICIAL_HISTORY",
@@ -368,6 +370,12 @@ def selftest():
     need(listed["own_listed_history_short"] is True and
          listed["canonical_history_pass_created"] is False and
          fence("AAPL","2026-10-13") is None,
+         terminal_record({"status":"FAIL_OFFICIAL_LISTED_HISTORY_LT260",
+                          "technical_observation_ready":False,
+                          "terminal_scan":True}) is True and
+         not terminal_record({"status":"UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
+                              "technical_observation_ready":False,
+                              "terminal_scan":False}),
          "BSP_OFFICIAL_IPO_CANNOT_BECOME_SYNTHETIC_260_PASS")
     def w(asof="2026-10-13"):
         a=[{"symbol":s} for s in ("AAPL","FROG","NVDA")]
