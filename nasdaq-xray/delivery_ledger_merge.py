@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 SCHEMA = "XRAY_DELIVERY_LEDGER_V1"
@@ -30,7 +30,12 @@ def _checked_at(row):
         raise ValueError("ISSUE_READBACK_TIMESTAMP_INVALID") from exc
     if t.tzinfo is None:
         raise ValueError("ISSUE_READBACK_TIMESTAMP_UNZONED")
-    return t.astimezone(timezone.utc)
+    utc_time = t.astimezone(timezone.utc)
+    # A future-dated forged observation must not outrank real readbacks
+    # indefinitely. Tolerate at most one minute of worker clock skew.
+    if utc_time > datetime.now(timezone.utc) + timedelta(seconds=60):
+        raise ValueError("ISSUE_READBACK_TIMESTAMP_FUTURE")
+    return utc_time
 
 
 def _check(ledger):
@@ -190,13 +195,15 @@ def selftest():
         assert str(exc) == "DELIVERY_EQUAL_TIMESTAMP_RECEIPT_CONFLICT"
     else:
         raise AssertionError("EQUAL_TIMESTAMP_STATUS_CONFLICT_ACCEPTED")
-    for bad in ("2026-10-11T16:50:00", "NOT_A_DATE", 123):
+    for bad in ("2026-10-11T16:50:00", "NOT_A_DATE", 123,
+                "2099-01-01T00:00:00Z"):
         x = json.loads(json.dumps(b_later))
         x["deliveries"]["OLD|A|1"]["last_checked_at_utc"] = bad
         try:
             merge(a_new, x)
-        except ValueError:
-            pass
+        except ValueError as exc:
+            if bad == "2099-01-01T00:00:00Z":
+                assert str(exc) == "ISSUE_READBACK_TIMESTAMP_FUTURE"
         else:
             raise AssertionError("INVALID_RECEIPT_CLOCK_ACCEPTED")
     # Prior separately attested platform receipts are never minted or erased.
