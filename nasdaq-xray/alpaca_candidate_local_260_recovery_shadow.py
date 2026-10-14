@@ -24,7 +24,6 @@ ROOT = Path(__file__).resolve().parent
 STATE = ROOT / "orchestrator_state.json"
 SCHEMA = "XRAY_CANDIDATE_LOCAL_REAL_SIP_260_52_RECOVERY_SHADOW_V1"
 UTC = dt.timezone.utc
-MAX_SCOPE = 96
 BATCH = 12
 
 def need(valid, why):
@@ -70,7 +69,7 @@ def source_scope(root, now):
     target = sorted(sym for sym in names if type(results.get(sym)) is dict
                     and type(results[sym].get("status")) is str
                     and results[sym]["status"].startswith("UNKNOWN_"))
-    need(len(target) <= MAX_SCOPE, "NO_SILENT_SCOPE_TRUNCATION")
+    need(len(target) <= len(names), "TARGETS_OUTSIDE_WATCH_SCOPE")
     daily, weeks = expected_dates(asof)
     need(len(daily) == 260 and len(weeks) == 52 and daily[-1] == asof,
          "OFFICIAL_260_52")
@@ -155,6 +154,23 @@ def selftest():
     else:
         raise AssertionError("WATCH_DIGEST_DRIFT_ACCEPTED")
     fake["candidate_technical_funnel"]["watchlist_digest"] = "b"*64
+    # All 120 local history UNKNOWN rows must be admitted in one source audit.
+    expanded = {
+        "execution": "NONE", "real_money": "NO-GO", "asof_et": asof,
+        "watch_radar": dict(fake["watch_radar"]),
+        "candidate_technical_funnel": dict(fake["candidate_technical_funnel"])
+    }
+    expanded_names = ["SYM%03d" % i for i in range(120)]
+    expanded["watch_radar"]["watchlist"] = [
+        {"symbol": sym} for sym in expanded_names]
+    expanded["watch_radar"]["watchlist_count"] = len(expanded_names)
+    expanded["candidate_technical_funnel"]["candidate_count"] = len(expanded_names)
+    expanded["candidate_technical_funnel"]["attempted_count"] = len(expanded_names)
+    expanded["candidate_technical_funnel"]["results"] = {
+        sym: {"status": "UNKNOWN_260_OFFICIAL_HISTORY"}
+        for sym in expanded_names}
+    need(len(source_scope(expanded, now)[1]) == 120,
+         "ALL_120_UNKNOWNS_NOT_TRUNCATED")
     report = base_report(asof, symbols, "a"*40)
     need(report["registered_r92_count"] == 0 and
          report["source_market_data_rights_independently_attested"] is False
