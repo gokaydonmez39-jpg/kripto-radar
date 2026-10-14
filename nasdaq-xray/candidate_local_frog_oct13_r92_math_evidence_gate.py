@@ -23,7 +23,37 @@ def load(path):
     b=path.read_bytes()
     return json.loads(b),hashlib.sha256(b).hexdigest()
 
-def decide(cover,rollup,lastmile,policy):
+def canonical_release_readback(source_sha256):
+    """Only an independently source-bound same-ASOF terminal + registry + ledger certifies registration."""
+    try:
+        terminal=json.loads((ROOT/"canonical_current_terminal.json").read_text())
+        registry=json.loads((ROOT/"canonical_candidate_lifecycle_registry.json").read_text())
+        ledger=json.loads((ROOT/"delivery_ledger.json").read_text())
+        compiled=json.loads((ROOT/"chatgpt_compiled_policy_v3.json").read_text())
+    except (OSError, ValueError, KeyError):
+        return {"terminal":False,"registered":False}
+    evidence_id=hashlib.sha256(json.dumps(source_sha256,sort_keys=True).encode()).hexdigest()
+    item=(terminal.get("candidate_releases") or {}).get("FROG|D") or {}
+    terminal_ok=(terminal.get("asof_et")==ASOF and
+                 terminal.get("compiled_policy_hash")==compiled.get("policy_hash") and
+                 item.get("asof_et")==ASOF and
+                 item.get("evidence_root_sha256")==evidence_id and
+                 item.get("independent_c417_release_pass") is True)
+    key="FROG|D|"+ASOF
+    rec=(registry.get("records") or {}).get(key) or {}
+    sent=(ledger.get("deliveries") or {}).get(key) or {}
+    signal=rec.get("signal_id")
+    registered=terminal_ok and bool(signal) and all((
+        registry.get("asof_et")==ASOF,
+        rec.get("registered_r92") is True,
+        rec.get("evidence_root_sha256")==evidence_id,
+        sent.get("r92") is True,
+        sent.get("signal_id")==signal,
+        sent.get("evidence_root_sha256")==evidence_id,
+    ))
+    return {"terminal":bool(terminal_ok),"registered":bool(registered)}
+
+def decide(cover,rollup,lastmile,policy,source_sha256=None):
     require(cover.get("schema")=="XRAY_FROG_OCT13_CLASS_SPECIFIC_10Q_COVER_AND_SIP_MC_SHADOW_V1","COVER_SCHEMA")
     require(rollup.get("schema")=="XRAY_FROG_20261013_CANDIDATE_LOCAL_LIVE_SOURCE_RECONCILIATION_V1","PRICE_SCHEMA")
     require(lastmile.get("schema")=="XRAY_FROG_OCT13_LAST_MILE_SEC_FORM4_CA_EVENT_HALT_TRADE_SHADOW_V1","LAST_MILE_SCHEMA")
@@ -88,6 +118,7 @@ def decide(cover,rollup,lastmile,policy):
       "nasdaq_halt_rss_snapshot":"PASS_OBSERVED_NO_FROG",
       "issuer_ir_two_http_pages":"PASS_OBSERVED_ACCESSIBLE"
     }
+    certification=canonical_release_readback(source_sha256 or {})
     exact={
       "same_asof_sec_class_outstanding_lower_bound":
           sec.get("current_class_shares_reconciled") is True,
@@ -103,7 +134,7 @@ def decide(cover,rollup,lastmile,policy):
           halt.get("historical_complete_clear_pass") is True and
           halt.get("live_halt_clear_pass") is True,
       "regime_breadth_primary":False,
-      "compiled_c417_independent_release":False  # permission alone cannot attest a final/terminal C4.17 witness
+      "compiled_c417_independent_release":certification["terminal"]
     }
     eligible=all(x is True for x in exact.values())
     return {"schema":SCHEMA,"symbol":"FROG","setup":"D","asof_et":ASOF,
@@ -124,7 +155,7 @@ def decide(cover,rollup,lastmile,policy):
             "independent_release_evidence_gates":exact,
             "missing_release_evidence":[k for k,v in exact.items() if v is not True],
             "eligible_c417_primary":eligible,
-            "r92_registered":eligible,
+            "r92_registered":bool(eligible and certification["registered"]),
             "iphone_delivery_receipt_attested":False,
             "canonical_files_modified":False,
             "delivery_ledger_modified":False,
@@ -191,7 +222,7 @@ def main():
     rollup,sha_rollup=load(x.rollup)
     lastmile,sha_lastmile=load(x.lastmile)
     policy,sha_policy=load(ROOT/"personal_research_technical_policy_v1.json")
-    result=decide(cover,rollup,lastmile,policy)
+    result=decide(cover,rollup,lastmile,policy,{"sec_cover":sha_cover,"ca_price":sha_rollup,"sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy})
     result["source_json_sha256"]={"sec_cover":sha_cover,"ca_price":sha_rollup,
                                   "sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy}
     x.out.write_text(json.dumps(result,indent=2,sort_keys=True)+chr(10))
