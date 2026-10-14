@@ -28,7 +28,7 @@ def need(ok, reason):
 
 def git_blob(path):
     b = path.read_bytes()
-    return hashlib.sha1(b"blob " + str(len(b)).encode() + b"\\0" + b).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(b)).encode() + bytes([0]) + b).hexdigest()
 
 def validate_evidence(doc):
     need(type(doc) is dict and doc.get("schema") == SCHEMA, "SCHEMA")
