@@ -270,6 +270,8 @@ jobs:
           assert x["vendor_ohlcv_persisted"] is False
           assert x["source_rights_not_inferred"] is True
           assert x["registered_R92_count"]==0
+          assert sum(x["rth_integrity_cause_counts"].values())==len(x["symbol_rth_integrity_failure_codes"])
+          assert set(x["symbol_rth_integrity_failure_codes"]).issubset({k for k,v in x["classifications"].items() if v=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"})
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_PERSONAL_JOINT_260_RTH30=PASS_RESEARCH_ONLY_NOT_PRIMARY")
           PY
