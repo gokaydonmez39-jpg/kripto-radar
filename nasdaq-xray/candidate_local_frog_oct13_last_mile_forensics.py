@@ -36,6 +36,10 @@ SEC_TYPES={"8-K","8-K/A","6-K","10-K","10-Q","S-3","S-3/A","424B2",
 IR_NEWS="https://investors.jfrog.com/news/"
 IR_EVENTS="https://investors.jfrog.com/events-and-presentations/"
 NY=ZoneInfo("America/New_York")
+IR_OFFICIAL_SWAMPUP_AUG24=(
+    "https://investors.jfrog.com/news/news-details/2026/"
+    "JFrog-to-Host-Investor-and-Financial-Analyst-Event-at-swampUP-2026/"
+    "default.aspx")
 
 def need(test,name):
     if not test:raise ValueError("FROG_LAST_MILE_"+name)
@@ -138,6 +142,57 @@ def sec_forensics(useragent):
     except (ValueError,KeyError,TypeError,urllib.error.URLError,OSError) as e:
         state["status"]="UNKNOWN_SEC_INVENTORY_OR_TRANSPORT"
         state["error_type"]=type(e).__name__
+    return state
+
+def classify_issuer_press_release_events(html_doc, next_eight):
+    """Parse a dated official issuer release and intersect official sessions.
+
+    An official user conference isn't independently proved to be an earnings
+    announcement. Nevertheless it invalidates an assertion that NO known
+    issuer-announced event occurs in the eight-session window.
+    """
+    import html as htmlmod
+    import re
+    flat=htmlmod.unescape(re.sub(r"(?s)<[^>]+>"," ",html_doc))
+    flat=re.sub(r"\\s+"," ",flat).lower()
+    date_ok=("august 24, 2026" in flat and
+             "swampup 2026" in flat and
+             "barcelona" in flat and
+             "october 20-22" in flat)
+    hit=[d for d in next_eight if
+         "2026-10-20"<=d<="2026-10-22"] if date_ok else []
+    return {"announcement_date_verified_pre_asof":date_ok,
+            "issuer_announced_event_type":"SWAMPUP_BARCELONA_CONFERENCE",
+            "financial_earnings_event_not_inferred_from_conference":True,
+            "official_source_event_overlap_session_dates":hit,
+            "known_issuer_event_inside_eight_sessions":bool(hit),
+            "issuer_event_horizon_no_known_events":False if hit else None,
+            "event_evidence_source":"ISSUER_IR_AUG24_OFFICIAL_RELEASE",
+            "not_sufficient_for_full_eight_session_calendar_clear":True}
+
+def probe_issuer_press_release_events(next_eight):
+    """One bounded HTTP request; no scraper retry, no false event-clear."""
+    import urllib.request
+    state={"source_url":IR_OFFICIAL_SWAMPUP_AUG24,
+           "status":"UNKNOWN_IR_PRESS_RELEASE_TRANSPORT",
+           "eight_day_calendar_completely_attested":False}
+    try:
+        req=urllib.request.Request(IR_OFFICIAL_SWAMPUP_AUG24,
+            headers={"User-Agent":"NASDAQ-SWING-XRAY/1.0 source research",
+                     "Accept":"text/html"})
+        with urllib.request.urlopen(req,timeout=20) as response:
+            raw=response.read(550001)
+            need(response.status==200 and 0<len(raw)<=550000,
+                 "IR_RELEASE_HTTP_SIZE")
+        probe=classify_issuer_press_release_events(
+            raw.decode("utf-8","replace"),next_eight)
+        state.update(probe)
+        state["status"]=("ISSUER_PRESS_RELEASE_HORIZON_EVENT_OBSERVED"
+            if probe["known_issuer_event_inside_eight_sessions"]
+            else "ISSUER_PRESS_RELEASE_SCANNED_NO_POSITIVE_EVENT")
+        state["source_body_sha256"]=sha(raw)
+    except (ValueError,urllib.error.URLError,OSError,TimeoutError) as exc:
+        state["error_type"]=type(exc).__name__
     return state
 
 def issuer_ir():
@@ -336,7 +391,26 @@ def selftest_close_update_lineage():
         else:raise AssertionError("UNSAFE_TRADE_UPDATE_ACCEPTED")
     print("XRAY_FROG_SIP_TRADE_UPDATE_SELFTEST=PASS_CANCEL_INCORRECT_CORRECTED_PAGINATION")
 
+def selftest_issuer_press_release_horizon():
+    event=("August 24, 2026 JFrog to Host Investor and Financial Analyst "
+           "Event at swampUP 2026. Barcelona October 20-22.")
+    _,future=sessions()
+    full=classify_issuer_press_release_events(event,future)
+    need(full["announcement_date_verified_pre_asof"] is True and
+         full["official_source_event_overlap_session_dates"]==
+         ["2026-10-20","2026-10-21","2026-10-22"] and
+         full["issuer_event_horizon_no_known_events"] is False,
+         "OFFICIAL_IR_CONFERENCE_IN_EIGHT_SESSIONS")
+    for tampered in (event.replace("August 24, 2026","August 24, 2027"),
+                     event.replace("Barcelona","New York"),
+                     event.replace("October 20-22","October 30-31")):
+        invalid=classify_issuer_press_release_events(tampered,future)
+        need(invalid["known_issuer_event_inside_eight_sessions"] is False,
+             "FUTURE_EVENT_FALSE_POSITIVE")
+    print("XRAY_FROG_IR_OFFICIAL_EIGHT_DAY_EVENT_SELFTEST=PASS_3_NEGATIVE")
+
 def selftest():
+    selftest_issuer_press_release_horizon()
     selftest_close_update_lineage()
     docs={"filings":{"recent":{"accessionNumber":["0001193125-26-340294"],
         "form":["10-Q"],"filingDate":["2026-08-07"],
@@ -386,6 +460,7 @@ def run(deep,frog,out):
     result["sec"]=sec_forensics(os.getenv("XRAY_SEC_USER_AGENT","").strip())
     save()
     result["issuer_event"]=issuer_ir()
+    result["issuer_event"]["dated_official_press_release"]=probe_issuer_press_release_events(future)
     save()
     result["halt"]=halts_forensics(ASOF,future)
     save()
@@ -399,6 +474,7 @@ def run(deep,frog,out):
     print("XRAY_FROG_LAST_MILE_SEC="+result["sec"]["status"])
     print("XRAY_FROG_LAST_MILE_SEC_FORMS="+json.dumps(result["sec"].get("tracked_form_counts",{}),sort_keys=True))
     print("XRAY_FROG_LAST_MILE_IR="+result["issuer_event"]["status"])
+    print("XRAY_FROG_IR_DATED_PRESS_RELEASE_EVENT="+result["issuer_event"]["dated_official_press_release"]["status"])
     print("XRAY_FROG_LAST_MILE_CLOSE_SAMPLE_DAYS="+str(result["price"].get("observed_sessions",0)))
     print("XRAY_FROG_SIP_TRADE_UPDATE_CENSUS="+json.dumps(result["price"].get("four_second_trade_update_rows_by_state",{}),sort_keys=True))
     print("XRAY_FROG_LAST_MILE_MISSING="+",".join(result["decision"]["missing"]))
