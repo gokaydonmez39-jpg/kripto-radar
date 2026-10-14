@@ -1,0 +1,54 @@
+name: XRAY Oct13 True SIP Seven Deep A B D R1 RR Research
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_deep7_r1rr_shadow.py"
+      - ".github/workflows/xray-candidate-local-oct13-deep7-r1rr.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-bound-deep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r nasdaq-xray/requirements-runtime.txt
+      - run: python nasdaq-xray/candidate_local_oct13_deep7_r1rr_shadow.py --selftest
+      - name: Fetch genuine prior 28 Stage1 source SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stage1"
+          gh run download 38533652716 --repo "${{ github.repository }}" --name xray-20261013-stage1-28-sip-260-shadow --dir "$RUNNER_TEMP/stage1"
+      - name: Reobserve seven symbols and QQQ, compute C4.17 A B D plus R1 RR
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/candidate_local_oct13_deep7_r1rr_shadow.py --stage1 "$RUNNER_TEMP/stage1/xray_stage1_28.json" --out "$RUNNER_TEMP/xray_deep7.json"
+      - name: Guard no fabricated R92 or delivery receipt
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_deep7.json").read_text())
+          assert d["asof_et"]=="2026-10-13" and len(d["rows"])==len(d["symbols"])==7
+          assert sum(d["counts"].values())==7
+          assert d["registered_r92_count"]==0
+          assert not d["real_iphone_receipt_proven"]
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          print("XRAY_SEVEN_DEEP_TRUE_SOURCE=PASS_SHADOW_NO_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-20261013-deep-seven-r1-rr-research
+          path: ${{ runner.temp }}/xray_deep7.json
+          if-no-files-found: warn
+          retention-days: 14
