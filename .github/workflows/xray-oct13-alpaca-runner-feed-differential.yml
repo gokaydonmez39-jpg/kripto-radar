@@ -13,4 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py --selftest
+      - name: Validate offline feed date and entitlement guards
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py
+          python nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py --selftest
+      - name: Test real Oct13 feed access from configured runner
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_oct13_runner_feed_diagnostic.py --out "$RUNNER_TEMP/xray_feed_diagnostic.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-runner-three-feed-readback
+          path: ${{ runner.temp }}/xray_feed_diagnostic.json
+          if-no-files-found: warn
