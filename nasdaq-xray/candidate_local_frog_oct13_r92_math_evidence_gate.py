@@ -160,6 +160,94 @@ def decide(cover,rollup,lastmile,policy,source_sha256=None):
             "delivery_ledger_modified":False,
             "real_money":"NO-GO","execution":"NONE","unknown_never_pass":True}
 
+def non_alphastocks_mc_pair_watch(rallies, longbridge_static, longbridge_quote):
+    """Compare two actual connector sources without demanding AlphaStocks.
+
+    Does NOT make this a C4.17 PRIMARY market-cap witness: both observations
+    require explicit as-of timestamps, issuer share roll-forward and compiled
+    final binding, not just two similar positive market-cap numbers.
+    Inputs remain transient and no proprietary vendor quotes are persisted.
+    """
+    from decimal import Decimal, InvalidOperation
+    from datetime import datetime, timezone
+    def dec(value):
+        try:
+            out=Decimal(str(value))
+            require(out.is_finite() and out>0,"MC_PAIR_NONFINITE")
+            return out
+        except (InvalidOperation, TypeError):
+            raise ValueError("FROG_R92_MATH_MC_PAIR_BAD_NUMBER")
+    require(type(rallies) is dict and type(longbridge_static) is dict
+            and type(longbridge_quote) is dict,"MC_PAIR_SHAPE")
+    require(rallies.get("ticker")=="FROG" and
+            rallies.get("exchange")=="XNAS" and
+            longbridge_static.get("symbol")=="FROG.US" and
+            longbridge_static.get("exchange")=="NASD" and
+            longbridge_static.get("currency")=="USD" and
+            longbridge_quote.get("symbol")=="FROG.US",
+            "MC_PAIR_EXACT_IDENTITY")
+    shares=dec(longbridge_static.get("total_shares"))
+    price=dec(longbridge_quote.get("last_done"))
+    provider_mc=dec(rallies.get("market_cap"))
+    require(shares==SHARES,"MC_PAIR_ISSUER_SHARES_SNAPSHOT_MATCH")
+    at=datetime.fromisoformat(str(longbridge_quote.get("timestamp","")).replace("Z","+00:00"))
+    require(at.tzinfo is not None and
+            at.astimezone(timezone.utc).date().isoformat()==ASOF,
+            "MC_PAIR_LONG_BRIDGE_NOT_ASOF")
+    calculated=shares*price
+    diff=abs(calculated-provider_mc)/max(calculated,provider_mc)
+    pair_floor=(calculated>=Decimal("2100000000") and
+                provider_mc>=Decimal("2100000000") and
+                diff<=Decimal("0.10"))
+    rall_asof=rallies.get("asof_et")==ASOF
+    return {
+        "schema":"XRAY_FROG_NON_ALPHASTOCKS_MC_PAIR_DIAGNOSTIC_V1",
+        "symbol":"FROG","asof_et":ASOF,
+        "rallies_nasdaq_identity_verified":True,
+        "longbridge_nasd_usd_identity_verified":True,
+        "longbridge_oct13_regular_quote_date_verified":True,
+        "sec_july31_class_shares_match_longbridge_static":True,
+        "rallies_exact_oct13_timestamp_verified":rall_asof,
+        "two_source_mc_ge_2p1b_within_10pct":bool(pair_floor),
+        "market_cap_pair_difference_basis_points":
+            int((diff*Decimal(10000)).to_integral_value()),
+        "asof_class_issuer_rollforward_primary_verified":False,
+        "c417_primary_mc_pass":False,
+        "registered_r92":False,
+        "status":("PAIR_MATCH_TIMESTAMP_OR_SHARE_ROLLFORWARD_UNBOUND"
+                  if pair_floor else "PAIR_MISMATCH_OR_BELOW_THRESHOLD"),
+        "execution":"NONE","real_money":"NO-GO"
+    }
+
+def selftest_non_alphastocks_mc_pair():
+    from copy import deepcopy
+    source={"ticker":"FROG","exchange":"XNAS","market_cap":12000000000}
+    static={"symbol":"FROG.US","exchange":"NASD","currency":"USD",
+            "total_shares":str(SHARES)}
+    quote={"symbol":"FROG.US","last_done":"99",
+           "timestamp":"2026-10-13T20:00:01Z"}
+    good=non_alphastocks_mc_pair_watch(source,static,quote)
+    require(good["two_source_mc_ge_2p1b_within_10pct"] is True and
+            good["rallies_exact_oct13_timestamp_verified"] is False and
+            good["c417_primary_mc_pass"] is False and
+            good["registered_r92"] is False,
+            "ALT_PAIR_NO_FALSE_PRIMARY_OR_R92")
+    for data,label,part in (({"exchange":"NYSE"},"WRONG_EXCHANGE",0),
+         ({"total_shares":"0"},"INVALID_SHARES",1),
+         ({"total_shares":"123301312"},"MISMATCH_SEC_SHARES",1),
+         ({"timestamp":"2026-10-12T20:00:01Z"},"WRONG_ASOF",2)):
+        x=[deepcopy(source),deepcopy(static),deepcopy(quote)]
+        x[part].update(data)
+        try: non_alphastocks_mc_pair_watch(*x)
+        except ValueError: pass
+        else: raise AssertionError("ALTERNATIVE_MC_ACCEPTED_"+label)
+    mismatch=deepcopy(source)
+    mismatch["market_cap"]=2500000000
+    result=non_alphastocks_mc_pair_watch(mismatch,static,quote)
+    require(result["two_source_mc_ge_2p1b_within_10pct"] is False and
+            result["c417_primary_mc_pass"] is False,"MC_10PCT_MISMATCH")
+    print("XRAY_FROG_ALPHASTOCKS_FREE_MC_FALLBACK_SELFTEST=PASS_5_NEGATIVE_WATCH_ONLY")
+
 def exact_primary_source_component_matrix(cover,rollup,lastmile):
     """No extrapolation: expose independently witnessed positives and missing releases.
 
@@ -417,6 +505,7 @@ def selftest():
          rt["eligible_for_c417_release"] is False and
          rt["global_c417_current_terminal_reconstructed"] is False,
          "CANDIDATE_LOCAL_TERMINAL_NOT_TRANSPLANTED_GLOBAL")
+    selftest_non_alphastocks_mc_pair()
     from frog_c417_first_registration_writer_v1 import selftest as first_registry_selftest
     first_registry_selftest()
     print("XRAY_FROG_R92_MATH_SELFTEST=PASS_5_NEGATIVE_80PCT_CONDITIONAL_ONLY")
