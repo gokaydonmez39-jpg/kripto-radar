@@ -12,8 +12,12 @@ from pathlib import Path
 import pandas_market_calendars as mcal
 from source_epoch_freshness_guard import last_complete_session
 from alpaca_personal_price_20261013_exact30_census import (
-    analyze,fetch,BATCH,CALL_BUDGET,STATES,
+    analyze as archived_analyze,fetch,BATCH,CALL_BUDGET,STATES,
 )
+from decimal import Decimal
+from alpaca_rth_minute_integrity_shadow import official_window
+from alpaca_sip_30min_rth_lower_bound_pilot import stamp,data_check,NY
+from alpaca_sip_4symbol_30min_rth_shadow import LIMIT
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_PERSONAL_CURRENT_EXACT30_SIP_PRICE_RECHECK_V1"
 
@@ -90,6 +94,69 @@ def finalize(report):
             "NO_PARTIAL_SCOPE_PASS")
     return report
 
+def classify_mixed_full_and_early(daily,halfhour,days):
+    """True NASDAQ 13:00 early-close support, never force 390-minute assumptions."""
+    expected={}
+    windows={}
+    for day in days:
+        start,close,minutes=official_window(day)
+        require(minutes in (210,390) and minutes%30==0,
+                "OFFICIAL_SESSION_LENGTH")
+        windows[day]=(start,minutes)
+        for i in range(minutes//30):
+            t=start+dt.timedelta(minutes=i*30)
+            require(t not in expected and t<close,"BAR_SLOT_INTEGRITY")
+            expected[t]=day
+    daybars={}
+    for bar in daily:
+        at=stamp(bar).astimezone(NY).date().isoformat()
+        if at in windows:
+            require(at not in daybars,"DUPLICATE_DAILY")
+            data_check(bar)
+            daybars[at]=bar
+    require(set(daybars)==set(days),"EXACT_30_DAILY_SET")
+    half={}
+    for bar in halfhour:
+        at=stamp(bar)
+        if at in expected:
+            require(at not in half,"DUPLICATE_30MIN")
+            half[at]=data_check(bar)
+    require(set(half)==set(expected),"EARLY_AND_FULL_BAR_COUNTS_EXACT")
+    lower=[];upper=[]
+    for day in days:
+        start,n=windows[day]
+        rth=sum(half[start+dt.timedelta(minutes=i*30)]
+                for i in range(n//30))
+        daily_volume=data_check(daybars[day])
+        require(rth<=daily_volume,"DAILY_VOLUME_BOUND")
+        close=Decimal(str(daybars[day]["c"]))
+        require(close.is_finite() and close>0,"CLOSE_PRICE")
+        lower.append(close*rth)
+        upper.append(close*daily_volume)
+    lower.sort();upper.sort()
+    lo=(lower[14]+lower[15])/Decimal(2)
+    hi=(upper[14]+upper[15])/Decimal(2)
+    require(lo<=hi,"BOUNDS_INVERSION")
+    if lo>=LIMIT:return "LOWER_BOUND_GE_50M_SHADOW"
+    if hi<LIMIT:return "UPPER_BOUND_LT_50M_SHADOW"
+    return "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW"
+
+def dynamic_analyze(batch,daily,halfhour,days):
+    require(set(daily)<=set(batch) and set(halfhour)<=set(batch),
+            "FOREIGN_BATCH_KEY")
+    if all(official_window(d)[2]==390 for d in days):
+        return archived_analyze(batch,daily,halfhour,days)
+    found={}
+    for sym in batch:
+        try:
+            found[sym]=classify_mixed_full_and_early(
+                daily.get(sym,[]),halfhour.get(sym,[]),days)
+        except (ValueError,TypeError,KeyError,OverflowError):
+            found[sym]="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"
+    require(set(found)==set(batch) and set(found.values())<=STATES,
+            "COMPLETE_MIXED_CLASSIFICATION")
+    return found
+
 def census(now,credentials,output,fetcher=fetch):
     master_raw=(ROOT/"canonical_current_master_manifest.json").read_bytes()
     price_raw=(ROOT/"canonical_current_price_dv30.json").read_bytes()
@@ -111,7 +178,7 @@ def census(now,credentials,output,fetcher=fetch):
         block=symbols[i:i+BATCH]
         try:
             one,two=fetcher(block,dates,credentials,counters,asof=asof)
-            measured=analyze(block,one,two,dates)
+            measured=dynamic_analyze(block,one,two,dates)
             require(set(measured)==set(block),"FULL_BATCH_PARTITION")
             result["classifications"].update(measured)
         except (urllib.error.HTTPError,urllib.error.URLError,
@@ -169,7 +236,30 @@ def selftest():
     finalize(obj)
     require(obj["research_lower_bound_ge_50m_count"]==1 and
             obj["price_primary_pass_count"]==0,"FALSE_PRIMARY")
-    print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_DYNAMIC_ASOF_FULL_SCOPE_FIVE_NEGATIVES_NO_PRIMARY")
+    # A future early close must not make every symbol UNKNOWN for 30 days.
+    early_dates=dates30("2026-11-27")
+    require("2026-11-27" in early_dates and
+            official_window("2026-11-27")[2]==210,
+            "OFFICIAL_13ET_EARLY_CLOSE")
+    synth_day=[];synth_half=[]
+    for day in early_dates:
+        start,close,minutes=official_window(day)
+        midnight=dt.datetime.combine(dt.date.fromisoformat(day),dt.time(),
+                                      NY).astimezone(dt.timezone.utc)
+        synth_day.append({"t":midnight.isoformat(),"o":100.0,"h":101.0,
+            "l":99.0,"c":100.0,"v":600000})
+        for i in range(minutes//30):
+            t=start+dt.timedelta(minutes=i*30)
+            synth_half.append({"t":t.isoformat(),"o":100.0,"h":101.0,
+                "l":99.0,"c":100.0,"v":1000})
+    observed=classify_mixed_full_and_early(synth_day,synth_half,early_dates)
+    require(observed=="AMBIGUOUS_BETWEEN_BOUNDS_SHADOW",
+            "EARLY_CLOSE_COVERAGE_NOT_FALSE_UNKNOWN")
+    broken=synth_half[:-1]
+    try:classify_mixed_full_and_early(synth_day,broken,early_dates)
+    except ValueError:pass
+    else:raise AssertionError("MISSING_13ET_HALF_HOUR_NOT_REJECTED")
+    print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_DYNAMIC_ASOF_FULL_SCOPE_EARLY_CLOSE_7_NEGATIVES_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
