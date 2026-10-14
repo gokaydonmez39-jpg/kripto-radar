@@ -16,5 +16,24 @@
   "no_synthetic_user_notification": true,
   "unknown_never_pass": true,
   "execution": "NONE",
-  "real_money": "NO-GO"
+  "real_money": "NO-GO",
+  "emoji_alert_contract": {
+    "schema": "XRAY_PERSONAL_EMOJI_WATCH_AND_AL_PRESENTATION_V1",
+    "responsible_channel": "EXISTING_CANONICAL_CHATGPT_TASK_ONLY",
+    "watch": "👀 İZLE — TEKNİK ÖN ADAY (AL DEĞİL)",
+    "early": "📈 ERKEN TAKİP — ARAŞTIRMA (AL DEĞİL)",
+    "liquidity": "🔎 LİKİDİTE ARAŞTIRMASI — TEKNİK İZLE/AL DEĞİL",
+    "r92": "🟢 AL — DOĞRULANMIŞ R92",
+    "source_fault": "⚠️ KANIT EKSİK",
+    "data_fault": "🛑 VERİ ENGELİ",
+    "wait": "⏳ BEKLEMEDE",
+    "technical_watch_source": "ONLY_INDEPENDENTLY_VERIFIED_SAME_ASOF_A_B_D_NO_CANONICAL_AL_PROMOTION",
+    "genuine_r92_required_for_al": true,
+    "raw_ohlcv_or_unverified_price_level_in_alert": false,
+    "gh_actions_success_is_not_device_delivery": true,
+    "iphone_ack_verification_status": "UNVERIFIED",
+    "no_push_claim_without_platform_ack": true,
+    "no_new_notification_channel": true,
+    "watch_candidates_must_not_be_converted_to_buy": true
+  }
 }
