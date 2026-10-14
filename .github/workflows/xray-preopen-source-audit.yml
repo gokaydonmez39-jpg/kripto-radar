@@ -57,34 +57,49 @@ jobs:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 1
       - name: Reject mixed commit evidence before preopen checks
+        id: epoch_guard
         shell: bash
         env:
           XRAY_EXPECTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
-          [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || exit 2
-          now_main="$(git ls-remote origin refs/heads/main | cut -f1)"
-          [[ -n "$now_main" && "$now_main" == "$XRAY_EXPECTED_SHA" ]] || {
-            echo "XRAY_PREOPEN_STALE_INVOCATION_SHA_FAIL_CLOSED"
+          [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || {
+            echo "XRAY_PREOPEN_UNEXPECTED_CHECKOUT_SHA_FAIL_CLOSED" >&2
             exit 2
           }
+          now_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ -n "$now_main" ]] || {
+            echo "XRAY_PREOPEN_MAIN_SHA_UNAVAILABLE_FAIL_CLOSED" >&2
+            exit 2
+          }
+          if [[ "$now_main" != "$XRAY_EXPECTED_SHA" ]]; then
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_PREOPEN_STALE_INVOCATION=SAFE_NOOP_NO_EVIDENCE"
+            exit 0
+          fi
+          echo "valid=true" >> "$GITHUB_OUTPUT"
           echo "XRAY_PREOPEN_CURRENT_MAIN_SHA_EXACT=PASS"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        if: steps.epoch_guard.outputs.valid == 'true'
         with:
           python-version: "3.12"
       - name: Install pinned official NASDAQ calendar and source YAML parser
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "PyYAML==6.0.2"
       - name: Automatically inspect all tracked source and delivery links
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --selftest
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --out "$RUNNER_TEMP/xray_repo_inventory.json"
       - name: Verify zero-dollar BusinessQuant and Twelve backups remain fail-closed
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/provider_automation_governance_selftest.py
           python nasdaq-xray/provider_automation_governance_selftest.py
           python -O nasdaq-xray/provider_automation_governance_selftest.py
           echo "XRAY_BACKUP_BQ_TWELVE_AUTHORITY=DOCUMENTED_RESEARCH_ONLY_RUNNER_RIGHTS_NOT_ATTESTED_NO_PRIMARY"
       - name: Monday launch root/stage/delivery/notification-chain contract microaudit
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/monday_launch_microaudit.py
           python nasdaq-xray/monday_launch_microaudit.py --selftest
@@ -104,6 +119,7 @@ jobs:
           print("XRAY_MONDAY_LAUNCH_TOPOLOGY_CONTRACT=PASS_NOT_PRODUCTION_GO")
           PY
       - name: Exact-history forensic recovery + verifiable state hash regressions
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/root_history_recovery_microaudit.py nasdaq-xray/sina_state_hash_guard.py
           python nasdaq-xray/sina_state_hash_guard.py
@@ -131,6 +147,7 @@ jobs:
           print("XRAY_ROOT_HISTORY_DIAGNOSTIC=VERIFIED_COUNTS_WITHOUT_MARKET_PASS")
           PY
       - name: Full 135-workflow automatic schedule, privilege and licensing topology
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
           python nasdaq-xray/all_workflow_schedule_audit.py --selftest
@@ -149,6 +166,7 @@ jobs:
           print("XRAY_ALL_WORKFLOW_TRIGGER_PRIVILEGE=PASS_TOPOLOGY_NOT_DATA_GO")
           PY
       - name: Inspect real root, stages, preopen, E2E and delivery Actions receipts
+        if: steps.epoch_guard.outputs.valid == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -169,12 +187,14 @@ jobs:
           print("XRAY_MONDAY_LIVE_ACTIONS_REPORT=RECORDED_NOT_PROVIDER_OR_DEVICE_RELEASE")
           PY
       - name: Compile and test true positive/negative proof boundaries
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/research_preopen_source_audit.py nasdaq-xray/e2e_production_readiness.py nasdaq-xray/preopen_live_release_gate.py
           python nasdaq-xray/research_preopen_source_audit.py --selftest
           python nasdaq-xray/e2e_production_readiness.py --selftest
           python nasdaq-xray/preopen_live_release_gate.py --selftest
       - name: Verify exact current Git source blobs and blocked classifications
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python nasdaq-xray/research_preopen_source_audit.py --output "$RUNNER_TEMP/xray_preopen_source_readiness.json"
           python - <<'PY'
@@ -191,6 +211,7 @@ jobs:
           print("XRAY_PREOPEN_SOURCE_GUARDS=PASS_NO_ALPHA_NO_REAL_MONEY_NO_LICENSE_INFERENCE")
           PY
       - name: Refresh official halt and suspension evidence in this preopen audit (ephemeral only)
+        if: steps.epoch_guard.outputs.valid == 'true'
         shell: bash
         timeout-minutes: 4
         run: |
@@ -229,6 +250,7 @@ jobs:
           print("XRAY_PREOPEN_OFFICIAL_REFRESH=EPHEMERAL_NOT_COMMITTED_NO_ALPHA")
           PY
       - name: Current NASDAQ official preopen truth report, never false release
+        if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python nasdaq-xray/preopen_live_release_gate.py --out "$RUNNER_TEMP/xray_current_preopen.json"
           python - <<'PY'
@@ -257,6 +279,7 @@ jobs:
           print("XRAY_PREOPEN_OPERATIONAL_TRUTH="+r["status"])
           PY
       - name: Upload public operational counts only
+        if: steps.epoch_guard.outputs.valid == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-preopen-source-readiness-v1
