@@ -38,6 +38,11 @@ jobs:
           python-version: "3.12"
       - name: Install pinned official Nasdaq session calendar
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify exact-source EOD publisher CAS regressions before market-data calls
+        run: |
+          python -m py_compile nasdaq-xray/personal_eod_github_cas_publisher.py
+          python nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
+          python -O nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
       - name: Quarantine mixed latest root MASTER PRICE epochs before any SIP request
         run: |
           python -m py_compile nasdaq-xray/personal_eod_source_epoch_preflight.py
@@ -72,11 +77,6 @@ jobs:
               assert token in body,token
           print("XRAY_SINA_BSP_FIRST_TRADE_PIT_VETO_BINDING=PASS_NO_FAKE_260")
           PY
-      - name: Verify exact-source EOD publisher CAS regressions before market-data calls
-        run: |
-          python -m py_compile nasdaq-xray/personal_eod_github_cas_publisher.py
-          python nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
-          python -O nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
       - name: Probe ALL unresolved tracked names using real delayed historical SIP
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
