@@ -9,6 +9,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+import yaml
 
 ROOT=Path(__file__).resolve().parent.parent
 WF=ROOT/".github"/"workflows"
@@ -84,10 +85,45 @@ def inventory(files):
         if re.search(r'^\s+issues:\s*write\s*$',source,re.M):
             writer_names.append(name)
         if name in READONLY_PROVIDER_SCHEDULED:
-            if not re.search(r'^\s+contents:\s*read\s*$',source,re.M):
-                errors.append("SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY:"+name)
-            if re.search(r'^\s+contents:\s*write\s*$',source,re.M):
-                errors.append("SCHEDULED_SHADOW_WRITE_PRIVILEGE:"+name)
+            # Scheduled source jobs are read-only. Only the dedicated
+            # snapshot publisher may have a job-scoped contents:write grant.
+            # Inspect effective scopes rather than searching for any "write".
+            try:
+                document=yaml.load(source,Loader=yaml.BaseLoader)
+                top=document.get("permissions") if isinstance(document,dict) else None
+                jobs=document.get("jobs") if isinstance(document,dict) else None
+                if not isinstance(top,dict) or top.get("contents")!="read":
+                    errors.append("SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY:"+name)
+                if not isinstance(jobs,dict) or not jobs:
+                    errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name)
+                    continue
+                publisher="personal-eod-verified-snapshot"
+                is_snapshot=name=="xray-candidate-local-alpaca-sip-recovery.yml"
+                for job_id,job in jobs.items():
+                    if not isinstance(job,dict):
+                        errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name+":"+str(job_id))
+                        continue
+                    permission=job.get("permissions",{})
+                    if not isinstance(permission,dict):
+                        errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name+":"+str(job_id))
+                        continue
+                    level=permission.get("contents")
+                    if level not in (None,"read","write"):
+                        errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name+":"+str(job_id))
+                    if level=="write" and not (is_snapshot and job_id==publisher):
+                        errors.append("SCHEDULED_SHADOW_WRITE_PRIVILEGE:"+name+":"+str(job_id))
+                if is_snapshot:
+                    publish=jobs.get(publisher)
+                    if (not isinstance(publish,dict) or
+                        not isinstance(publish.get("permissions"),dict) or
+                        publish["permissions"].get("contents")!="write"):
+                        errors.append("SCHEDULED_SHADOW_PUBLISHER_SCOPE_DRIFT:"+name)
+                    elif (publish.get("needs")!=["source-recovery","personal-price-current-exact30"] or
+                          "needs.source-recovery.result == 'success'" not in publish.get("if","") or
+                          "needs.personal-price-current-exact30.result == 'success'" not in publish.get("if","")):
+                        errors.append("SCHEDULED_SHADOW_PUBLISHER_DEPENDENCIES_DRIFT:"+name)
+            except (yaml.YAMLError,AttributeError,TypeError,ValueError):
+                errors.append("SCHEDULED_SHADOW_YAML_SCOPE_INVALID:"+name)
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -151,6 +187,20 @@ def selftest():
         x["xray-twelve-history-resume.yml"].replace(
             "BLOCKED_SOURCE_LICENSE_OR_KEY","UNCONDITIONAL_CALL")}),
         "SCHEDULED_VENDOR_ENTITLEMENT_GUARD_DRIFT")
+    # Negative tests: global write, source-job write, and broken publisher
+    # dependencies MUST fail despite valid existing scoped publisher access.
+    recovery="xray-candidate-local-alpaca-sip-recovery.yml"
+    bad(lambda x:x.update({recovery:x[recovery].replace(
+        "permissions:\n  contents: read","permissions:\n  contents: write",1)}),
+        "SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY")
+    bad(lambda x:x.update({recovery:x[recovery].replace(
+        "  source-recovery:\n    runs-on",
+        "  source-recovery:\n    permissions:\n      contents: write\n    runs-on",1)}),
+        "SCHEDULED_SHADOW_WRITE_PRIVILEGE")
+    bad(lambda x:x.update({recovery:x[recovery].replace(
+        "needs: [source-recovery, personal-price-current-exact30]",
+        "needs: [source-recovery]",1)}),
+        "SCHEDULED_SHADOW_PUBLISHER_DEPENDENCIES_DRIFT")
     bad(lambda x:x.update({"xray-alpaca-delayed-sip-research.yml":
         x["xray-alpaca-delayed-sip-research.yml"].replace(
             '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
@@ -174,7 +224,7 @@ def selftest():
             "if: steps.prep.outputs.ready == 'true' && false",
             "if: steps.prep.outputs.ready == 'true'")}),
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
-    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_9_NEGATIVES_24_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_12_NEGATIVES_24_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
