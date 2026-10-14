@@ -51,7 +51,8 @@ status="PASS" if any(r.get("sina_pass") for r in results.values()) else "FAIL"
 out={
  "updated_at_utc":datetime.now(timezone.utc).isoformat(),
  "status":status,
- "results":results,\n "spot_probe":spot_probe,
+ "results":results,
+ "spot_probe":spot_probe,
  "execution":"NONE","real_money":"NO-GO"
 }
 OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n",encoding="utf-8")
