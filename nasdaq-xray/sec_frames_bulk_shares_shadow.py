@@ -158,13 +158,19 @@ def report(asof,count,status,classification=None,reason=None):
         one_issuer_not_one_tradeable_share_class=True)
 
 def execute():
-    asof,symbols=core.load_scope(0,514)
+    asof,symbols=core.load_scope(0,514,allow_empty_current_scope=True)
     r=report(asof,len(symbols),"SOURCE_NOT_AVAILABLE")
     # Bind this public count-only discovery to exact immutable current inputs.
     r["source_price_git_blob_sha"]=core.git_blob_sha(
         (ROOT/"canonical_current_price_dv30.json").read_bytes())
     r["source_master_git_blob_sha"]=core.git_blob_sha(
         (ROOT/"canonical_current_master_manifest.json").read_bytes())
+    if not symbols:
+        # This is a legitimate zero-data state, NOT an SEC frames success.
+        # No HTTP calls and no share/MC authority can be created.
+        return dict(r,status="NO_CANONICAL_PRICE_PASS_SCOPE",
+                    reason_codes=["NO_PRICE_PASS_NO_SEC_FRAMES_REQUESTS"],
+                    frames_http200=0)
     useragent=os.getenv("XRAY_SEC_USER_AGENT","")
     if not sec.valid_operator_contact(useragent):
         r["reason_codes"]=["SEC_OPERATOR_CONTACT_MISSING"]
@@ -200,7 +206,7 @@ def execute():
         groups["NO_CURRENT_SEC_CIK_ROUTE"]=missing_map
         per_symbol.update({s:"NO_CURRENT_SEC_CIK_ROUTE" for s in symbols if s not in mapped})
     if sum(groups.values())!=len(symbols) or len(per_symbol)!=len(symbols):
-        return dict(r,reason_codes=["NOT_EXACT_514_SCOPE_PARTITION"])
+        return dict(r,reason_codes=["NOT_EXACT_SELECTED_PRICE_SCOPE_PARTITION"])
     return dict(r,status="SHADOW_FRAME_DISCOVERY_COMPLETE_NOT_PIT",
         received_symbols=len(symbols),classes=groups,
         status_by_symbol=dict(sorted(per_symbol.items())),
