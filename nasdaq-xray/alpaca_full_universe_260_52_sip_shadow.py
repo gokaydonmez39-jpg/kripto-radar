@@ -23,6 +23,10 @@ from alpaca_free_sip_shadow_guard import request_batch
 from alpaca_sip_paginated_transport_shadow import SYMBOL_RE
 from current_history_source_request import expected_dates
 from official_first_trade_260_history_guard import fence as official_first_trade_fence
+from alpaca_full_universe_30d_daily_proxy_shadow import (
+    classify as daily30_classify, summarize as daily30_summarize,
+    UNKNOWN_PROVIDER as DAILY30_UNKNOWN_PROVIDER,
+)
 
 ROOT = Path(__file__).resolve().parent
 SCHEMA = "XRAY_PERSONAL_FULL_NASDAQ_SIP_260_DAILY_52_WEEK_RESEARCH_V1"
@@ -92,7 +96,7 @@ def cause_of_nonpass(rows, label, official_days):
 
 
 def audit(asof, symbols, daily, weekly, fetch, pacing=0,
-          cause_labels=None):
+          cause_labels=None, daily30_labels=None):
     need(len(symbols) > 0 and len(symbols) <= MAX_SYMBOLS
          and symbols == sorted(set(symbols)), "IDENTITY_SCOPE")
     need(len(daily) == 260 and daily[-1] == asof and
@@ -108,6 +112,8 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
                 labels[name] = transport
                 if cause_labels is not None:
                     cause_labels[name] = transport
+                if daily30_labels is not None:
+                    daily30_labels[name] = DAILY30_UNKNOWN_PROVIDER
             continue
         valid = [sym for sym in group if SYMBOL_RE.fullmatch(sym)]
         for sym in group:
@@ -115,6 +121,8 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
                 labels[sym] = "UNKNOWN_SYMBOL_MALFORMED_FOR_PROVIDER"
                 if cause_labels is not None:
                     cause_labels[sym] = "UNKNOWN_SYMBOL_MALFORMED_FOR_PROVIDER"
+                if daily30_labels is not None:
+                    daily30_labels[sym] = DAILY30_UNKNOWN_PROVIDER
         if not valid:
             continue
         try:
@@ -141,6 +149,9 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
                         if status == "FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE"
                         else cause_of_nonpass(
                             received.get(sym, []), status, daily))
+                if daily30_labels is not None:
+                    daily30_labels[sym] = daily30_classify(
+                        received.get(sym, []), daily)
         except (RuntimeError, ValueError, TimeoutError, OSError) as e:
             v = str(e)
             # Preserve known HTTP and pagination classes, never raw responses.
@@ -150,6 +161,8 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
                 labels[sym] = transport
                 if cause_labels is not None:
                     cause_labels[sym] = transport
+                if daily30_labels is not None:
+                    daily30_labels[sym] = DAILY30_UNKNOWN_PROVIDER
         if pacing:
             time.sleep(pacing)
     need(set(labels) == set(symbols), "ALL_IDENTITY_PARTITION_REQUIRED")
@@ -159,8 +172,11 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
 
 def report(asof, names, daily, weekly, fetch, pacing=0):
     causes = {}
+    daily30_labels = {}
     labels, counts, calls, transport = audit(
-        asof, names, daily, weekly, fetch, pacing, cause_labels=causes)
+        asof, names, daily, weekly, fetch, pacing, cause_labels=causes,
+        daily30_labels=daily30_labels)
+    daily30 = daily30_summarize(daily30_labels, labels, causes)
     need(set(causes) == set(labels), "ALL_CAUSES_PARTITION")
     cause_counts = dict(sorted(collections.Counter(causes.values()).items()))
     need(sum(cause_counts.values()) == len(names), "CAUSE_COUNTS")
@@ -179,6 +195,7 @@ def report(asof, names, daily, weekly, fetch, pacing=0):
             "FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE", 0),
         "classification_counts": counts,
         "history_nonpass_cause_counts": cause_counts,
+        "daily30_source_proxy": daily30,
         "symbol_nonpass_cause_classes": dict(sorted(causes.items())),
         "cause_labels_are_diagnostics_not_ticker_age_or_verified_history": True,
         "symbol_classifications": dict(sorted(labels.items())),
@@ -213,6 +230,10 @@ def selftest():
         return {sym: (good if sym == "AAA" else good[:-1])
                 for sym in group}
     result = report(asof, ["AAA", "BBB"], daily, weekly, fake)
+    need(result["daily30_source_proxy"]["source_daily_30_valid_price_volume_count"] == 1
+         and result["daily30_source_proxy"]["symbol_classifications"]["BBB"] ==
+             "UNKNOWN_DAILY30_ASOF_MISSING",
+         "30D_SOURCE_PARTITION_INDEPENDENT_OF_260")
     need(result["history_nonpass_cause_counts"] == {
         "260_52_OBSERVED_RESEARCH_ONLY": 1,
         "MISSING_CURRENT_ASOF_AND_1_TO_5_DAYS": 1},
@@ -221,6 +242,15 @@ def selftest():
          result["classification_counts"]["MISSING_EXACT_COMPLETED_SESSIONS"] == 1
          and result["registered_R92_count"] == 0, "POSITIVE_AND_MISSING")
     zero_volume = [dict(good[0], v=0)] + good[1:]
+    def old_zero_fetch(group, required, date):
+        return {"AAA": zero_volume}
+    zero_bridge = report(asof, ["AAA"], daily, weekly, old_zero_fetch)
+    need(zero_bridge["full_history_260_52_observed_count"] == 0 and
+         zero_bridge["daily30_source_proxy"][\
+             "hist_260_zero_volume_outside_last30"] == 1 and
+         zero_bridge["daily30_source_proxy"][\
+             "source_daily_30_valid_price_volume_count"] == 1,
+         "ZERO_OLD_REMAINS_HISTORY_FAIL_BUT_RECENT30_SOURCE_VALID")
     need(cause_of_nonpass(zero_volume,
          classify(zero_volume, daily, weekly, asof)[0], daily) ==
          "ZERO_OR_NEGATIVE_RECORDED_VOLUME",
@@ -274,7 +304,7 @@ def selftest():
     need(start.endswith("-04:00") and
          end == "2026-10-14T20:05:00+00:00",
          "OFFICIAL_CLOSE_NO_FUTURE")
-    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_ISSUER_FIRST_TRADE_FAIL_ONLY_CAUSAL_DISAGGREGATION_NO_ALPHA")
+    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_CAUSAL_LAST30_PROXY_NO_RTH_NO_ALPHA")
 
 
 def main():
@@ -312,6 +342,11 @@ def main():
             result["official_first_trade_fail_only_veto_count"],
         "counts":result["classification_counts"],
         "cause_counts":result["history_nonpass_cause_counts"],
+        "daily30_counts":result["daily30_source_proxy"]["classification_counts"],
+        "old_zero_outside_last30":result["daily30_source_proxy"][
+            "hist_260_zero_volume_outside_last30"],
+        "recent_zero_inside_last30":result["daily30_source_proxy"][
+            "hist_260_zero_volume_within_last30"],
         "source_stop":result["transport_stop_class"],
         "api_calls":result["api_batch_calls"]},sort_keys=True))
 
