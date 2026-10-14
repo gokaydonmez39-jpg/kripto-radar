@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
+      - "nasdaq-xray/personal_swing_radar_daily_snapshot.py"
       - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
@@ -236,5 +237,108 @@ jobs:
         with:
           name: xray-personal-daily-current-price-exact30-no-ohlcv
           path: ${{ runner.temp }}/xray_personal_current_price_exact30_no_bars.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  personal-eod-verified-snapshot:
+    name: Publish only complete personal NASDAQ swing research status
+    needs: [source-recovery, personal-price-current-exact30]
+    if: ${{ needs.source-recovery.result == 'success' && needs.personal-price-current-exact30.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: xray-personal-eod-status-main
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare exact source-bound personal research
+        run: |
+          python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+          python -m py_compile nasdaq-xray/personal_swing_radar_daily_snapshot.py
+          python nasdaq-xray/personal_swing_radar_daily_snapshot.py --selftest
+          python -O nasdaq-xray/personal_swing_radar_daily_snapshot.py --selftest
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-scheduled-personal-technical-labels-no-ohlcv
+          path: ${{ runner.temp }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-candidate-260-sip-availability-no-vendor-bars
+          path: ${{ runner.temp }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-daily-current-price-exact30-no-ohlcv
+          path: ${{ runner.temp }}
+      - name: Combine exact Git blobs, all 474 technical and all 545 PRICE researches
+        run: |
+          python nasdaq-xray/personal_swing_radar_daily_snapshot.py \
+            --technical "$RUNNER_TEMP/personal_seven_sip_technical_labels.json" \
+            --availability "$RUNNER_TEMP/xray_candidate_sip_source_availability.json" \
+            --price "$RUNNER_TEMP/xray_personal_current_price_exact30_no_bars.json" \
+            --out "$RUNNER_TEMP/personal_swing_radar_snapshot_no_vendor.json"
+      - name: Persist verified personal status on main, never touch canonical or vendor bars
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64,json,os,urllib.request,urllib.error
+          from pathlib import Path
+          data=Path(os.environ["RUNNER_TEMP"])/"personal_swing_radar_snapshot_no_vendor.json"
+          raw=data.read_bytes()
+          doc=json.loads(raw)
+          assert doc["schema"]=="XRAY_PERSONAL_SWING_RADAR_DAILY_SNAPSHOT_V1"
+          assert doc["completed_session_latest"] is True
+          assert doc["registered_R92_signal_count"]==0
+          assert doc["no_vendor_ohlcv_or_price_levels_persisted"] is True
+          assert doc["safety"]["execution"]=="NONE"
+          repo=os.environ["GITHUB_REPOSITORY"]
+          desired=os.environ["GITHUB_SHA"]
+          api="https://api.github.com/repos/"+repo
+          token=os.environ["GH_TOKEN"]
+          headers={"Authorization":"Bearer "+token,
+                   "Accept":"application/vnd.github+json",
+                   "X-GitHub-Api-Version":"2022-11-28",
+                   "User-Agent":"xray-personal-eod-single-file-cas"}
+          def call(path,method="GET",body=None):
+              content=None if body is None else json.dumps(body).encode()
+              req=urllib.request.Request(api+path,data=content,headers=headers,method=method)
+              if content is not None:req.add_header("Content-Type","application/json")
+              with urllib.request.urlopen(req,timeout=18) as res:
+                  return json.loads(res.read())
+          branch=call("/branches/main")
+          if branch["commit"]["sha"]!=desired:
+              raise SystemExit("XRAY_PERSONAL_SNAPSHOT_SOURCE_HEAD_DRIFT_NO_WRITE")
+          path="/contents/nasdaq-xray/personal_swing_radar_current.json"
+          try:
+              previous=call(path+"?ref=main")
+          except urllib.error.HTTPError as exc:
+              if exc.code!=404:raise
+              previous=None
+          if previous is not None and base64.b64decode(previous["content"])==raw:
+              print("XRAY_PERSONAL_EOD_GITHUB_READBACK=PASS_ALREADY_EXACT")
+          else:
+              payload={"message":"chore(xray): persist verified personal EOD research status [skip ci]",
+                       "content":base64.b64encode(raw).decode(),
+                       "branch":"main"}
+              if previous is not None:payload["sha"]=previous["sha"]
+              call(path,"PUT",payload)
+              current=call(path+"?ref=main")
+              assert base64.b64decode(current["content"])==raw
+              print("XRAY_PERSONAL_EOD_GITHUB_READBACK=PASS_SAME_BYTES_SAME_ASOF")
+          print("XRAY_PERSONAL_EOD_SOURCE_PROOF="+doc["asof_proof"]["orchestrator_blob_sha"])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-personal-eod-snapshot-aggregate-no-vendor
+          path: ${{ runner.temp }}/personal_swing_radar_snapshot_no_vendor.json
           if-no-files-found: warn
           retention-days: 14
