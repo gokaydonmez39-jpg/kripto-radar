@@ -1,0 +1,73 @@
+name: XRAY Oct13 Candidate Local SEC Remaining Eight 50 Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-candidate-local-sec-oct13-remaining8.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-epoch13-sec-fair-access-remaining-pages
+  cancel-in-progress: false
+jobs:
+  sec-pit-bounded:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        page: [1, 2, 3, 4, 5, 6, 7, 8]
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source SHA and exact 404 50-page partition semantics
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python nasdaq-xray/candidate_local_sec_pit_50_page.py --selftest
+      - name: Read real previously proved 404 candidate-local names
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/cohort"
+          gh run download 38528457369 --repo "${{ github.repository }}" \
+            --name xray-local-404-source-gated-and-50-recovery-queues \
+            --dir "$RUNNER_TEMP/cohort"
+      - name: One-by-one official SEC PIT shares and acceptance checks
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          PAGE: ${{ matrix.page }}
+        run: |
+          python nasdaq-xray/candidate_local_sec_pit_50_page.py \
+            --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \
+            --page "$PAGE" --out "$RUNNER_TEMP/xray_sec_page.json"
+      - name: Ensure actual per-symbol statuses and no unauthorized C4.17 promotion
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_page.json").read_text())
+          assert j["schema"]=="XRAY_CANDIDATE_LOCAL_SEC50_SOURCE_VINTAGES_V1"
+          assert j["asof_et"]=="2026-10-13" and 1<=j["page"]<=8
+          assert j["requested_count"]==len(j["statuses"])==sum(j["status_counts"].values())
+          assert j["requested_count"]==(4 if j["page"]==8 else 50)
+          assert j["api_calls"]<=101 and not j["global_unknown_veto"]
+          assert j["primary_mc_approved"]==j["r92_registered"]==0
+          assert not j["canonical_modified"]
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          print("XRAY_REMAINING_SEC_PAGE_AUDIT=PASS_NO_FALSE_MC")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-sec-pit-page-${{ matrix.page }}
+          path: ${{ runner.temp }}/xray_sec_page.json
+          retention-days: 14
+          if-no-files-found: warn
