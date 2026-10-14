@@ -223,26 +223,37 @@ def test():
     shas["sina_candidates.json"]={"raw":raw,"sha":blob(raw)}
     good=emit(paths,shas,d)
     codes={x["code"] for x in good["repair_order"]}
-    assert {"NO_CANONICAL_SOURCE_CANDIDATES","NO_EVIDENCE_BACKED_WATCH_ROWS",
-            "NO_VERIFIED_TECHNICAL_WATCH","CANONICAL_TERMINAL_EPOCH_BEHIND",
-            "PERSONAL_SNAPSHOT_STALE_OR_SHA_DRIFT",
-            "NO_REGISTERED_R92","NO_DELIVERY_LEDGER_RECEIPTS",
-            "CHATGPT_PHONE_ACK_NOT_OBSERVABLE_FROM_GITHUB"}.issubset(codes)
-    assert good["current_release_status"]=="NO_CURRENT_TECHNICAL_WATCH_AND_NO_R92"
-    assert not good["user_notification_sent"] and not good["iphone_push_ack_independently_attested_by_this_run"]
+    def prove(ok,code):
+        if not ok:raise AssertionError("XRAY_WATCH_MICROAUDIT_TEST_"+code)
+    prove({"NO_CANONICAL_SOURCE_CANDIDATES","NO_EVIDENCE_BACKED_WATCH_ROWS",
+           "NO_VERIFIED_TECHNICAL_WATCH","CANONICAL_TERMINAL_EPOCH_BEHIND",
+           "PERSONAL_SNAPSHOT_STALE_OR_SHA_DRIFT",
+           "NO_REGISTERED_R92","NO_DELIVERY_LEDGER_RECEIPTS",
+           "CHATGPT_PHONE_ACK_NOT_OBSERVABLE_FROM_GITHUB"}.issubset(codes),
+          "BLOCKER_CAUSAL_COVERAGE")
+    prove(good["current_release_status"]==
+          "NO_CURRENT_TECHNICAL_WATCH_AND_NO_R92","NO_TECH_WATCH_NO_AL")
+    prove(not good["user_notification_sent"] and
+          not good["iphone_push_ack_independently_attested_by_this_run"],
+          "NO_FALSE_DEVICE_RECEIPT")
     # A WATCH observation is distinct from BUY/R92 and cannot prove delivery.
     paths["orchestrator_state.json"]["candidate_technical_funnel"].update(
         preliminary_technical_watch_count=1,
         preliminary_technical_watch_symbols=["AAPL"])
     observed=emit(paths,shas,d)
-    assert observed["claimed_technical_watch_count"]==1
-    assert observed["current_release_status"]=="UNRELEASED_RESEARCH_TECHNICAL_WATCH"
-    assert observed["canonical_pointer_r92_count"]==0
-    assert not observed["user_notification_sent"]
+    prove(observed["claimed_technical_watch_count"]==1,
+          "PRE_AL_WATCH_COUNT_NOT_SUPPRESSED")
+    prove(observed["current_release_status"]==
+          "UNRELEASED_RESEARCH_TECHNICAL_WATCH",
+          "WATCH_CLASS_SEPARATE_FROM_R92")
+    prove(observed["canonical_pointer_r92_count"]==0 and
+          not observed["user_notification_sent"],
+          "WATCH_NEVER_CLAIMS_AL_OR_PLATFORM_SEND")
     # A fake phone-receipt boolean in repository policy is never accepted.
     paths["notification_channel_policy_v1.json"]["platform_iphone_receipt_attested"]=True
     false_receipt=emit(paths,shas,d)
-    assert not false_receipt["iphone_push_ack_independently_attested_by_this_run"]
+    prove(not false_receipt["iphone_push_ack_independently_attested_by_this_run"],
+          "FORGED_REPO_PLATFORM_ACK_REJECTED")
     print("XRAY_WATCH_DELIVERY_MICROAUDIT_SELFTEST=PASS_EPOCH_ISSUE_GUARDS_WATCH_VS_R92_NO_PUSH_CLAIM")
 
 
