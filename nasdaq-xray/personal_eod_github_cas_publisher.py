@@ -169,7 +169,7 @@ def selftest():
                     return None
                 return {"sha": "e" * 40,
                         "content": base64.b64encode(self.data + (b"!" if
-                                    self.corrupt else b"")).decode()}
+                                    self.corrupt and self.writes else b"")).decode()}
             if path == TARGET and method == "PUT":
                 require(body.get("sha") == ("e" * 40 if self.data is not None else None),
                         "MOCK_CAS_MISSING")
