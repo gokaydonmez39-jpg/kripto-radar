@@ -1,0 +1,68 @@
+name: XRAY Personal Full-Universe SIP EOD Coverage (Research Only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
+      - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
+  schedule:
+    - cron: "10 22 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-personal-full-universe-sip-coverage
+  cancel-in-progress: false
+
+jobs:
+  coverage:
+    name: Verify every source symbol's delayed SIP session-day availability
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: \${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned NASDAQ trading calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify full-scope, no-false-source and 429 negatives
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_full_universe_asof_sip_availability.py
+          python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+          python -O nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+      - name: Measure all current Nasdaq root symbols without storing prices
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: \${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: \${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py \
+            --out "$RUNNER_TEMP/xray_personal_full_universe_sip_asof_coverage.json"
+      - name: Verify exact full coverage classifications and zero alpha
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_personal_full_universe_sip_asof_coverage.json"
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_ALPACA_PERSONAL_UNIVERSE_ASOF_SIP_COVERAGE_V1"
+          assert d["source_sina_queue_count"]==d["measured_scope_count"]==len(d["symbol_classifications"])
+          assert d["source_sina_queue_count"]==sum(d["classification_counts"].values())
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["no_vendor_ohlcv_persisted"] is True and d["no_canonical_promotion"] is True
+          assert d["registered_R92_count"]==0
+          print("XRAY_PERSONAL_SIP_FULL_UNIVERSE_PARTITION=PASS_EVIDENCE_ONLY")
+          PY
+      - name: Archive source availability flags without vendor OHLCV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-full-universe-sip-coverage-no-ohlcv
+          path: \${{ runner.temp }}/xray_personal_full_universe_sip_asof_coverage.json
+          if-no-files-found: warn
+          retention-days: 14
