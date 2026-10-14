@@ -1,0 +1,126 @@
+{
+  "schema": "XRAY_PERSONAL_OCT13_LIVE_MULTISOURCE_EXECUTION_READBACK_V1",
+  "target_asof_et": "2026-10-13",
+  "assembled_from": "REAL_GITHUB_ACTIONS_RUNS_AND_DOWNLOADED_ARTIFACT_JSON_SHA256",
+  "live_source_canonical": {
+    "MASTER": {
+      "asof_et": "2026-10-13",
+      "git_blob_sha": "ec66913017dfe29a5c7326db522e276fa9d8e4bc",
+      "pass_identity": 3184,
+      "unknown": 10
+    },
+    "PRICE": {
+      "asof_et": "2026-10-13",
+      "git_blob_sha": "954879fb8a7d3cc1762fdd5cf841e44cd22ce8f4",
+      "primary_pass": 0,
+      "unknown": 545
+    },
+    "HISTORY": {
+      "asof_et": "2026-10-07",
+      "git_blob_sha": "28e182225c45c3adf4243e40ebdb783884"
+    },
+    "LEGAL": {
+      "asof_et": "2026-10-07",
+      "git_blob_sha": "b4fc5d1b0c072f763d74a61f7a69aa0a0ac51349"
+    },
+    "EVENT": {
+      "asof_et": "2026-10-07",
+      "git_blob_sha": "9e795a30c9cb219ae6f14bb2bca6140173ee4a82"
+    },
+    "FINAL": {
+      "asof_et": "2026-10-07",
+      "git_blob_sha": "4d220717a8e8a8f266ef5224ed31e8eb5090e34a"
+    },
+    "TERMINAL": {
+      "asof_et": "2026-10-07",
+      "git_blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+    }
+  },
+  "measured_actions": {
+    "price": {
+      "run_id": 38487829247,
+      "run_head": "6afc385e6bb9efd78566887207e7c9818d1d17a7",
+      "result": "SUCCESS_SOFTWARE_BLOCKED_VENDOR_HTTP_403",
+      "artifact_name": "xray-personal-20261013-price-exact30-sip-no-ohlcv",
+      "artifact_json_file": "xray_personal_20261013_price_exact30_census.json",
+      "artifact_json_sha256": "a2bcde3cd5061e5504ecc04385b011c1dab23ac0f2e993e4f4ae3736f80890cb",
+      "source_sha": "3af1f15ada59503a7b969a796f5fd2c2c7c8b96f",
+      "alpaca_sip_http_requests": 1,
+      "scope": 545,
+      "unknown_http_403": 8,
+      "unattempted": 537,
+      "technical_primary_price_promotions": 0
+    },
+    "missing168": {
+      "run_id": 38488092593,
+      "run_head": "e03c89dd9cf60fdffac80c3eed4ac9dd3c7ae94e",
+      "result": "SUCCESS_MULTISOURCE_CENSUS_HISTORIC_LISTING_UNPROVEN",
+      "artifact_name": "xray-oct13-missing168-sec-nasdaq-alpaca-no-ohlcv",
+      "artifact_json_file": "xray_168_official_sources.json",
+      "artifact_json_sha256": "5ee1d900be37fdb43622b02cbb0a3b23a1f7600b1b55ee8a59bc46f18427e24e",
+      "source_sha": "6e0099f200861b78f980c0094da6518a25162205",
+      "scope": 168,
+      "alpaca_calls": 14,
+      "alpaca_first_observed_in_260": 167,
+      "sec_requests": 166,
+      "sec_exact_current_cik_submissions_success": 165,
+      "nasdaq_requests": 168,
+      "nasdaq_independently_confirmed_listing_dates": 0,
+      "status_count_unknown_early_gap": 167,
+      "status_count_unknown_source": 1,
+      "listing_history_lt260_definitively_proven": 0
+    },
+    "master10": {
+      "run_id": 38488709655,
+      "run_head": "a0371db4fcb7cab36db6adac52c94b967aa9add9",
+      "result": "SUCCESS_SEC_LIVE_CIK_SIC_FILING_CENSUS_DE_SPAC_UNRESOLVED",
+      "artifact_name": "xray-20261013-master-ten-sec-official-cik-sic-filing-witness",
+      "artifact_json_file": "xray_oct13_master_ten_live_sec.json",
+      "artifact_json_sha256": "6393c93ec3ed9407aad8d25beb57fa4945300d153bb47cbec4127e198d95e054",
+      "source_sha": "3b03796244b97e6d5d750a8603d4a3fa31009139",
+      "scope": 10,
+      "sec_submissions_attempted": 10,
+      "latest_8k_documents_attempted": 10,
+      "new_official_alis_8k_date": "2026-10-13",
+      "proven_completed_mergers": 0,
+      "canonical_master_unknown_remains": 10
+    },
+    "final": {
+      "run_id": 38488367352,
+      "run_head": "dd4d048e76b0ae5f03d3d79951bf36321ef8c594",
+      "result": "SUCCESS_FAIL_CLOSED_NO_R92",
+      "artifact_name": "xray-oct13-exact-canonical-r92-release-evidence-attempt",
+      "artifact_json_file": "xray_oct13_strict_release_attempt.json",
+      "artifact_json_sha256": "5efc45a79adbedc53ac8a714c58bff34d2bd1ecceb090c26c9775f957923bc08",
+      "source_sha": "9292796e15d68f554b6b07dd74278cae24a5c311",
+      "sec_edgar_transport": "HTTP_200_BOTH",
+      "sec_shares_status": "SHADOW_SHARES_VINTAGE_ONLY",
+      "primary_sec_pit_class_reconciled": 0,
+      "canonical_r92_new": 0
+    }
+  },
+  "previous_history_338": {
+    "run_id": 38486920217,
+    "source_status": "FAIL_HISTORY_VERIFIED_SOURCE_NONPOSITIVE_DAILY_VOLUME",
+    "proven_technical_raw_bar_failed_symbols": 338,
+    "official_exchange_zero_trade_for_all_not_proven": true
+  },
+  "release_decision": {
+    "same_asof_MASTER_PRICE": true,
+    "same_asof_FULL_PRIMARY_CHAIN": false,
+    "canonical_unknown_zero_proven": false,
+    "valid_primary_price_set_available": false,
+    "primary_price_promotions": 0,
+    "primary_mc_verified": 0,
+    "r92_registered": 0,
+    "canonical_files_mutated_by_this_execution": false,
+    "technical_history_338_screen_fail_proven": true,
+    "strict_all_required_evidence_pass": false,
+    "research_start": "YES",
+    "true_full_go": "NO-GO",
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true
+  },
+  "interpretation": "SOURCE_AND_SOFTWARE_EVIDENCE_PASS_DOES_NOT_MEAN_CONTRACTUAL_PRIMARY_MARKET_DATA_OR_REGISTERED_R92;NO_BROKER_EXECUTION"
+}
