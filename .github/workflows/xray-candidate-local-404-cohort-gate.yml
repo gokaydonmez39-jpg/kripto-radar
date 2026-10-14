@@ -1,0 +1,69 @@
+name: XRAY Candidate-Local 404 Provenance and 50 Recovery Queues
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_cohort_gate.py"
+      - ".github/workflows/xray-candidate-local-404-cohort-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  candidate-local-source-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile and verify global-UNKNOWN isolation and candidate-local vetoes
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/candidate_local_oct13_cohort_gate.py
+          python nasdaq-xray/candidate_local_oct13_cohort_gate.py --selftest
+          python -O nasdaq-xray/candidate_local_oct13_cohort_gate.py --selftest
+      - name: Download immutable 404-source artifacts from actual prior runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/price" "$RUNNER_TEMP/history"
+          gh run download 38483078540 --repo "${{ github.repository }}" \
+            --name xray-personal-frozen-price540-30min-metadata --dir "$RUNNER_TEMP/price"
+          gh run download 38481474945 --repo "${{ github.repository }}" \
+            --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/history"
+      - name: Evaluate real exact-source 404 cohort and unresolved queues
+        run: |
+          python nasdaq-xray/candidate_local_oct13_cohort_gate.py \
+            --price-artifact "$RUNNER_TEMP/price/xray_personal_price540_30min_bounds.json" \
+            --history-artifact "$RUNNER_TEMP/history/xray_personal_root260_full_cohort.json" \
+            --out "$RUNNER_TEMP/xray_candidate_local_404_oct13.json"
+      - name: Candidate-local 404 and 50-by-50 complete no-unsafe-release witness
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_candidate_local_404_oct13.json").read_text())
+          assert x["schema"]=="XRAY_CANDIDATE_LOCAL_404_20261013_SOURCE_GATED_V1"
+          assert x["cohort_size"]==404 and len(x["candidate_symbols"])==404
+          assert len(x["price_unknown_chunks_50"])==11
+          assert sum(map(len,x["price_unknown_chunks_50"]))==545
+          assert len(x["master_unknown_chunks_50"])==1
+          assert len(x["master_unknown_chunks_50"][0])==10
+          assert x["global_unknown_not_a_candidate_local_veto"]
+          assert x["candidate_local_primary_pass_count"]==0
+          assert x["r92_registered"]==0 and not x["device_receipt_attested"]
+          assert x["cross_asof_shadow_only"] and not x["canonical_mutated"]
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_LOCAL_404_COHORT_AND_50_QUEUES=PASS_404_545_10_NO_FALSE_R92")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-local-404-source-gated-and-50-recovery-queues
+          path: ${{ runner.temp }}/xray_candidate_local_404_oct13.json
+          if-no-files-found: warn
+          retention-days: 14
