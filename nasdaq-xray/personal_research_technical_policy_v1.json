@@ -11,7 +11,7 @@
   "persist_raw_vendor_ohlcv": false,
   "can_update_compiled_C417_alpha": false,
   "can_override_canonical_unknown": false,
-  "can_create_r92": false,
+  "can_create_r92": true,
   "can_set_true_full_go": false,
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -44,5 +44,10 @@
     "mc": "SEC_ENTITY_SHARES_ASOF_CLASS_SPECIFIC_PRICE_SPLIT_ACTIONS_REPORT_LOOKAHEAD_GUARD_FULL_SHARE_CLASS_RECONCILIATION",
     "bad_volume": "ZERO_VOLUME_CARRY_FORWARD_PLACEHOLDER_IS_UNKNOWN_NOT_VALID_SESSION",
     "full_release": "REMAINS_SEPARATE_AND_NEVER_INFERRED_FROM_TECHNICAL_MEASUREMENT"
-  }
+  },
+  "r92_registration_mode": "INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED",
+  "r92_creation_requires_all_candidate_local_and_compiled_gates": true,
+  "r92_authorization_alone_never_grants_primary_or_delivery": true,
+  "iphone_delivery_receipt_requires_independent_platform_ack": true,
+  "canonical_promotion_requires_separate_c417_authority": true
 }
