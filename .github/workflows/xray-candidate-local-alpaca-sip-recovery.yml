@@ -313,9 +313,22 @@ jobs:
               if content is not None:req.add_header("Content-Type","application/json")
               with urllib.request.urlopen(req,timeout=18) as res:
                   return json.loads(res.read())
+          # A long 545-symbol scan may overlap unrelated canonical overlay
+          # commits. Branch-tip equality is not data-source equality: verify
+          # all three exact source Git blobs against the attested same-run
+          # snapshot, then use the GitHub Contents SHA compare-and-swap.
           branch=call("/branches/main")
-          if branch["commit"]["sha"]!=desired:
-              raise SystemExit("XRAY_PERSONAL_SNAPSHOT_SOURCE_HEAD_DRIFT_NO_WRITE")
+          source_paths={
+              "nasdaq-xray/orchestrator_state.json":"orchestrator_blob_sha",
+              "nasdaq-xray/canonical_current_master_manifest.json":"master_blob_sha",
+              "nasdaq-xray/canonical_current_price_dv30.json":"canonical_price_blob_sha",
+          }
+          for source_path,sha_key in source_paths.items():
+              source=call("/contents/"+source_path+"?ref=main")
+              if source["sha"]!=doc["asof_proof"][sha_key]:
+                  raise SystemExit("XRAY_PERSONAL_SNAPSHOT_SOURCE_BLOB_DRIFT_NO_WRITE:"+sha_key)
+          print("XRAY_PERSONAL_SNAPSHOT_UNRELATED_BRANCH_COMMIT_SAFE_HEAD="+
+                branch["commit"]["sha"][:12])
           path="/contents/nasdaq-xray/personal_swing_radar_current.json"
           try:
               previous=call(path+"?ref=main")
