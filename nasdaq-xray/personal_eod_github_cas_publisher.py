@@ -56,7 +56,9 @@ def decode_contents(row):
             "DESTINATION_READ_INVALID")
     content = row.get("content")
     require(type(content) is str, "DESTINATION_BYTES_MISSING")
-    return base64.b64decode(content, validate=True)
+    # GitHub Contents API may wrap base64 with embedded newlines.
+    # Strip ASCII whitespace only, then enforce strict alphabet validation.
+    return base64.b64decode("".join(content.split()), validate=True)
 
 
 def source_matches(call, doc):
@@ -169,7 +171,8 @@ def selftest():
                     return None
                 return {"sha": "e" * 40,
                         "content": base64.b64encode(self.data + (b"!" if
-                                    self.corrupt and self.writes else b"")).decode()}
+                                    self.corrupt and self.writes else b"")).decode()
+                                    .replace("A", "A\n", 1)}
             if path == TARGET and method == "PUT":
                 require(body.get("sha") == ("e" * 40 if self.data is not None else None),
                         "MOCK_CAS_MISSING")
