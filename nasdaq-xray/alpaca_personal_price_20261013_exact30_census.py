@@ -31,7 +31,7 @@ def demand(value,code):
 
 def blobsha(p):
     b=p.read_bytes()
-    return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\\0"+b).hexdigest()
+    return hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
 
 def dates30():
     import pandas_market_calendars as mcal
@@ -137,8 +137,6 @@ def analyze(batch,daily,halfhour,dates):
 def selftest():
     d=dates30()
     demand(d[-1]==ASOF and len(d)==30,"TEST_30")
-    demand(pilot.classify_one([],[],d) != "LOWER_BOUND_GE_50M_SHADOW" if False else True,
-           "NO_FALSE_DATA")
     b=["AAPL","MSFT"]
     demand(analyze(b,{}, {},d)==dict.fromkeys(b,"UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"),
            "MISSING_PRICE_NEVER_PASS")
@@ -164,7 +162,7 @@ def main():
     r={"schema":SCHEMA,"asof_et":ASOF,"canonical_master_git_blob_sha":master_sha,
        "canonical_price_git_blob_sha":price_sha,"source_price_unknown_count":len(syms),
        "exact30_dates":dates,
-       "exact30_calendar_sha256":hashlib.sha256(("\\n".join(dates)+"\\n").encode()).hexdigest(),
+       "exact30_calendar_sha256":hashlib.sha256(("\n".join(dates)+"\n").encode()).hexdigest(),
        "provider":"ALPACA_HISTORICAL_SIP_PERSONAL",
        "symbol_statuses":statuses,"api_calls":0,"call_budget":CALL_BUDGET,
        "official_close_auction_price_independently_verified":False,
@@ -181,7 +179,7 @@ def main():
         r["classified_count"]=sum(s!="UNKNOWN_NOT_ATTEMPTED" for s in statuses.values())
         r["all_scope_attempted"]=r["classified_count"]==len(syms)
         r["same_asof_history"]=history_join(a.history_artifact,syms,statuses)
-        a.out.write_text(json.dumps(r,sort_keys=True,indent=2)+"\\n")
+        a.out.write_text(json.dumps(r,sort_keys=True,indent=2)+"\n")
     save()
     key=(os.getenv("XRAY_ALPACA_DATA_KEY_ID") or os.getenv("XRAY_ALPACA_API_KEY_ID") or "").strip()
     secret=(os.getenv("XRAY_ALPACA_DATA_SECRET_KEY") or os.getenv("XRAY_ALPACA_API_SECRET_KEY") or "").strip()
