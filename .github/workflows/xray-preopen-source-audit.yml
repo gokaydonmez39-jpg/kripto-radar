@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/repository_integrity_audit.py"
       - "nasdaq-xray/current_terminal_epoch_forensics.py"
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
+      - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -91,6 +92,8 @@ jobs:
       - name: Early exact-root personal SIP bridge adversarial selftests before provider calls
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
+          python nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
+          python -O nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
           python -m py_compile nasdaq-xray/personal_full_universe_sip_root_bridge.py
           python nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
           python -O nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
