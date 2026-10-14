@@ -39,7 +39,9 @@ def quality(rows,days,weeks,asof):
     df=pd.DataFrame(out)
     df["date"]=pd.to_datetime(df["date"])
     if mechanical_scale_breaks(df,260) or mechanical_split_suspects(df,260):
-        return None,"UNKNOWN_CORPORATE_ACTION_PIT"
+        # Return bars in RAM only for independent event reconciliation.
+        # Callers MUST NOT calculate technical PASS until events are checked.
+        return df,"UNKNOWN_CORPORATE_ACTION_PIT"
     return df,"HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY"
 def assess(sym,df,qqq,asof,week_last):
     base=stage.weekly_gate(df,asof,week_last)
@@ -91,6 +93,8 @@ def run(now,fetch):
     raw=fetch(scope,start,end,asof)
     need(type(raw) is dict and set(raw)==set(scope),"FULL_SOURCE_PARTITION")
     qqq,qstate=quality(raw["QQQ"],days,weeks,asof)
+    if qstate!="HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY":
+        qqq=None
     result["benchmark_status"]=qstate
     last_weeks=stage.build_week_last(asof) if qqq is not None else None
     for sym in names:
@@ -101,6 +105,17 @@ def run(now,fetch):
                 continue
             df,history=quality(raw[sym],days,weeks,asof)
             if df is None:result["statuses"][sym]=history;continue
+            if history=="UNKNOWN_CORPORATE_ACTION_PIT":
+                # Existing issuer-specific declared split evidence; a
+                # mechanical 2x price move alone is not a split proof.
+                corrected,ca_status,events=stage.split_consistent_history(sym,df,260)
+                from candidate_local_full_technical_funnel_v1 import _history_ok
+                if not str(ca_status).startswith("PASS") or not _history_ok(corrected,days):
+                    result["statuses"][sym]="UNKNOWN_CORPORATE_ACTION_PIT"
+                    continue
+                df=corrected
+                # Still secondary research; correction lookup cannot grant
+                # canonical PRICE, MC, G9, true AL or R92 authority.
             if qqq is None:
                 result["statuses"][sym]="UNKNOWN_QQQ_260_52";continue
             status,count=assess(sym,df,qqq,asof,last_weeks)
@@ -131,7 +146,16 @@ def selftest():
     x,error=quality(bad,dates,weeks,"2026-10-13")
     need(x is None and error=="MISSING_EXACT_COMPLETED_SESSIONS",
          "MISSING_DATE_NOT_PROMOTED")
-    print("XRAY_PERSONAL_SEVEN_TECH_SELFTEST=PASS_260_52_TWO_NEGATIVES_NO_R92")
+    # Artificial 2x gap must stay UNKNOWN until issuer-event evidence
+    # separately reconciles it, regardless of syntactically valid OHLCV.
+    suspect=[dict(row) for row in bars]
+    for i in range(130,len(suspect)):
+        for k in ("o","h","l","c"):
+            suspect[i][k]=suspect[i][k]*2.0
+    unresolved,reason=quality(suspect,dates,weeks,"2026-10-13")
+    need(unresolved is not None and reason=="UNKNOWN_CORPORATE_ACTION_PIT",
+         "MECHANICAL_GAP_CANNOT_SKIP_CA_PIT")
+    print("XRAY_PERSONAL_SEVEN_TECH_SELFTEST=PASS_260_52_THREE_NEGATIVES_NO_R92")
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--selftest",action="store_true")
