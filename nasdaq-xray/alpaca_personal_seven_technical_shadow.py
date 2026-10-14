@@ -114,7 +114,12 @@ def run(now,fetch):
 def selftest():
     from current_history_source_request import expected_dates
     dates,weeks=expected_dates("2026-10-13")
-    bars=[{"t":day+"T04:00:00Z","o":10,"h":11,
+    from zoneinfo import ZoneInfo
+    def midnight_et_utc(day):
+        t=dt.datetime.combine(dt.date.fromisoformat(day),dt.time(),
+                              ZoneInfo("America/New_York"))
+        return t.astimezone(dt.timezone.utc).isoformat()
+    bars=[{"t":midnight_et_utc(day),"o":10,"h":11,
            "l":9,"c":10.5,"v":100} for day in dates]
     valid,status=quality(bars,dates,weeks,"2026-10-13")
     need(valid is not None and len(valid)==260,"FULL_260_HISTORY")
