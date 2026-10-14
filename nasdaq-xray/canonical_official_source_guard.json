@@ -4,7 +4,6 @@
   "candidate_safety": {
     "active_halt_symbols": [
       "AZTR",
-      "BKKT.W",
       "EFTY",
       "HCHL",
       "LAWR",
@@ -12,7 +11,6 @@
       "MCTA",
       "OST",
       "PC",
-      "SKIN",
       "SVA",
       "UCFI",
       "UCFIW",
@@ -56,7 +54,6 @@
       "ARBEW",
       "AZTR",
       "BBBYW",
-      "BKKT.W",
       "BLFS",
       "COLA",
       "COLAR",
@@ -81,7 +78,6 @@
       "PC",
       "PSKY",
       "QRVO",
-      "SKIN",
       "SLP",
       "SPKL",
       "SPKLU",
@@ -99,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-14T10:39:55.747106+00:00",
+  "generated_at_utc": "2026-10-14T11:51:47.477389+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -761,10 +757,9 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 14,
+      "active_halt_count": 12,
       "active_halt_symbols": [
         "AZTR",
-        "BKKT.W",
         "EFTY",
         "HCHL",
         "LAWR",
@@ -772,15 +767,29 @@
         "MCTA",
         "OST",
         "PC",
-        "SKIN",
         "SVA",
         "UCFI",
         "UCFIW",
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 14,
+      "item_count": 15,
       "items": [
+        {
+          "HaltDate": "10/14/2026",
+          "HaltTime": "07:25:00.000",
+          "IssueName": "Faraday Fut Int El Cmn A",
+          "IssueSymbol": "FFAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/14/2026",
+          "ResumptionQuoteTime": "07:45:00",
+          "ResumptionTradeTime": "07:50:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">07:25:00.000</td><td valign=\"top\">FFAI</td><td valign=\"top\">Faraday Fut Int El Cmn A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">07:45:00                      </td><td valign=\"top\">07:50:00                      </td></tr></table>",
+          "pubDate": "Wed, 14 Oct 2026 04:00:00 GMT",
+          "title": "FFAI"
+        },
         {
           "HaltDate": "10/13/2026",
           "HaltTime": "19:50:00.000",
@@ -788,11 +797,11 @@
           "IssueSymbol": "SKIN",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">SKIN</td><td valign=\"top\">SkinHealth Systm Cl A Comm Stk</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/14/2026",
+          "ResumptionQuoteTime": "08:55:00",
+          "ResumptionTradeTime": "09:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">SKIN</td><td valign=\"top\">SkinHealth Systm Cl A Comm Stk</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">08:55:00                      </td><td valign=\"top\">09:00:00                      </td></tr></table>",
           "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
           "title": "SKIN"
         },
@@ -833,11 +842,11 @@
           "IssueSymbol": "BKKT.W",
           "Market": "NYSE",
           "PauseThresholdPrice": "",
-          "ReasonCode": "H11",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">09/22/2026                    </td><td valign=\"top\">16:15:52.638</td><td valign=\"top\">BKKT.W</td><td valign=\"top\">Bakkt, Inc. Warrants to purchase Class A Common Stock, each Warrant entitles a holder to purchase 1/</td><td valign=\"top\">NYSE</td><td valign=\"top\">H11</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "D",
+          "ResumptionDate": "10/14/2026",
+          "ResumptionQuoteTime": "00:00:01",
+          "ResumptionTradeTime": "00:00:01",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">09/22/2026                    </td><td valign=\"top\">16:15:52.638</td><td valign=\"top\">BKKT.W</td><td valign=\"top\">Bakkt, Inc. Warrants to purchase Class A Common Stock, each Warrant entitles a holder to purchase 1/</td><td valign=\"top\">NYSE</td><td valign=\"top\">D</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">00:00:01                      </td><td valign=\"top\">00:00:01                      </td></tr></table>",
           "pubDate": "Tue, 22 Sep 2026 04:00:00 GMT",
           "title": "BKKT.W"
         },
