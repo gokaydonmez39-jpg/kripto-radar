@@ -109,8 +109,10 @@ def evaluate_readiness(now_utc,contract,root_kick,final_kick,root_runs,final_run
         or any(not isinstance(r,dict) or r.get("head_branch")!="main"
                for r in root_runs+final_runs)):
         return False,"ACTIONS_MAIN_BRANCH_RUN_IDENTITY_UNVERIFIED"
-    if now_utc.tzinfo is None:
-        now_utc=now_utc.replace(tzinfo=timezone.utc)
+    # A timezone-naive clock has no provable exchange-session identity.
+    # Do not silently interpret local wall time as UTC and release alerts.
+    if not isinstance(now_utc, datetime) or now_utc.tzinfo is None or now_utc.utcoffset() is None:
+        return False,"DELIVERY_CLOCK_TIMEZONE_UNVERIFIED"
     now_utc=now_utc.astimezone(timezone.utc)
     if contract.get("schema")!="XRAY_SCHEDULER_FAILOVER_CONTRACT_V1":
         return False,"CONTRACT_SCHEMA"
