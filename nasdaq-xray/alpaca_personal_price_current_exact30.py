@@ -21,7 +21,7 @@ from alpaca_sip_4symbol_30min_rth_shadow import LIMIT
 from functools import lru_cache
 
 @lru_cache(maxsize=128)
-def cached_cached_official_window(day):
+def cached_official_window(day):
     return official_window(day)
 ROOT=Path(__file__).resolve().parent
 SCHEMA="XRAY_PERSONAL_CURRENT_EXACT30_SIP_PRICE_RECHECK_V1"
