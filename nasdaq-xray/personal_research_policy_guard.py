@@ -31,7 +31,14 @@ def check(personal,compiled):
             personal.get("persist_raw_vendor_ohlcv") is False,"TERMS_AND_RAW")
     require(all(personal.get(k) is False for k in
             ("can_update_compiled_C417_alpha","can_override_canonical_unknown",
-             "can_create_r92","can_set_true_full_go")),"NO_PROMOTION")
+             "can_set_true_full_go")),"NO_PRODUCTION_OVERRIDE")
+    require(personal.get("can_create_r92") is True and
+            personal.get("r92_registration_mode")=="INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED" and
+            personal.get("r92_creation_requires_all_candidate_local_and_compiled_gates") is True and
+            personal.get("r92_authorization_alone_never_grants_primary_or_delivery") is True and
+            personal.get("canonical_promotion_requires_separate_c417_authority") is True and
+            personal.get("iphone_delivery_receipt_requires_independent_platform_ack") is True,
+            "R92_CONDITIONAL_PERMISSION_NOT_C417_RELEASE")
     require(personal.get("execution")=="NONE" and personal.get("real_money")=="NO-GO"
             and personal.get("unknown_never_pass") is True,"NO_EXECUTION")
     require(p["execution"]=="NONE" and p["real_money"]=="NO-GO","COMPILED_SAFETY")
@@ -65,7 +72,9 @@ def selftest(personal,compiled):
       ("MC",lambda d:d.update(mc_usd_min=1999999999)),
       ("DAILY",lambda d:d.update(history_days_min=259)),
       ("WEEKLY",lambda d:d.update(history_completed_weeks_min=51)),
-      ("R92",lambda d:d.update(can_create_r92=True)),
+      ("R92_PERMISSION_REVOKED",lambda d:d.update(can_create_r92=False)),
+      ("R92_UNCONDITIONAL",lambda d:d.update(r92_registration_mode="UNCONDITIONAL")),
+      ("R92_NO_SOURCE_GUARD",lambda d:d.update(r92_creation_requires_all_candidate_local_and_compiled_gates=False)),
       ("CANONICAL",lambda d:d.update(can_update_compiled_C417_alpha=True)),
       ("UNKNOWN",lambda d:d.update(unknown_never_pass=False)),
       ("AUTOTRADE",lambda d:d.update(execution="AUTO")),
@@ -78,7 +87,7 @@ def selftest(personal,compiled):
         try:check(invalid,compiled)
         except ValueError:continue
         raise AssertionError("FALSE_PASS_"+label)
-    print("XRAY_PERSONAL_POLICY_SELFTEST=PASS_12_NEGATIVE_RESEARCH_ONLY")
+    print("XRAY_PERSONAL_POLICY_SELFTEST=PASS_14_NEGATIVE_CONDITIONAL_R92_NOT_PRIMARY")
 
 def main():
     a=argparse.ArgumentParser()
@@ -94,7 +103,7 @@ def main():
     require(args.out is not None and not
             args.out.resolve().is_relative_to(ROOT.parent.resolve()),"OUTPUT_LOCATION")
     args.out.write_text(json.dumps(check(personal,compiled),sort_keys=True,indent=2)+"\n")
-    print("XRAY_PERSONAL_POLICY=PASS_NO_CANONICAL_OR_R92_PROMOTION")
+    print("XRAY_PERSONAL_POLICY=PASS_CONDITIONAL_R92_PERMISSION_NO_C417_RELEASE")
 
 if __name__=="__main__":
     main()
