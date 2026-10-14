@@ -1,0 +1,93 @@
+name: XRAY Oct13 Candidate Local 277 Immutable Source Ledger Audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research/candidate_local_20261013_545_price_404_sec_277_intersection_v1.json"
+      - ".github/workflows/xray-oct13-local-277-immutable-ledger-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit-real-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Validate referenced completed source runs are real
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for run in 38529782918 38530630522 38529822940 38530692893 38528457369 38532588994; do
+            actual="$(gh run view "$run" --repo "${{ github.repository }}" --json conclusion --jq '.conclusion')"
+            if [ "$actual" != "success" ]; then
+              echo "XRAY_IMMUTABLE_LEDGER_SOURCE_NOT_SUCCESS=$run:$actual"
+              exit 1
+            fi
+          done
+          echo "XRAY_LEDGER_SIX_REAL_ACTIONS_SUCCESS=PASS"
+      - name: Download actual verified 277 source intersection artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/real277"
+          gh run download 38532588994 --repo "${{ github.repository }}" \
+            --name xray-20261013-real-545-404-source-rollup-no-r92 \
+            --dir "$RUNNER_TEMP/real277"
+      - name: Verify exact JSON SHA256, 20 page pins, 277 identity set and release veto
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,re
+          from pathlib import Path
+          manifest=json.loads(Path("nasdaq-xray/research/candidate_local_20261013_545_price_404_sec_277_intersection_v1.json").read_text())
+          assert manifest["schema"]=="XRAY_CANDIDATE_LOCAL_20261013_COMPLETE_REAL_545_404_SOURCE_LEDGER_V1"
+          d=manifest["exact_source_join"]
+          p=Path(os.environ["RUNNER_TEMP"])/"real277"/d["artifact_member"]
+          raw=p.read_bytes()
+          assert hashlib.sha256(raw).hexdigest()==d["artifact_json_sha256"]
+          artifact=json.loads(raw)
+          assert artifact["schema"]=="XRAY_OCT13_LOCAL_404_SIP_SEC_HISTORY_REAL_SOURCE_ROLLUP_V1"
+          assert manifest["asof_et"]==artifact["asof_et"]=="2026-10-13"
+          assert artifact["source_overlap_count"]==d["overlap_source_count"]==277
+          symbols=artifact["source_overlap_symbols"]
+          assert len(symbols)==len(set(symbols))==277
+          assert symbols==sorted(symbols)
+          assert artifact["price_source_scope"]==manifest["source_price"]["scope_count"]==545
+          assert artifact["sec_source_scope"]==manifest["source_sec"]["scope_count"]==404
+          assert artifact["history_source_scope"]==3185
+          assert artifact["exact_page_and_current_blob_coverage_verified"] is True
+          pages=artifact["source_page_sha256"]
+          assert set(pages["price"])=={str(i) for i in range(11)}
+          assert set(pages["sec"])=={str(i) for i in range(9)}
+          assert all(re.fullmatch(r"[0-9a-f]{64}",v) for part in pages.values() for v in part.values())
+          assert artifact["canonical_pass_created"] is False
+          assert artifact["issuer_share_class_mc_primary_verified"] is False
+          assert artifact["official_close_corrections_verified"] is False
+          assert artifact["regime_setup_r1_rr_event_halt_verified"] is False
+          assert artifact["r92_registered"]==0 and artifact["iphone_receipt_verified"] is False
+          assert artifact["unrelated_global_unknown_blocks_local"] is False
+          assert manifest["source_price"]["positive_rth_30m_lower_bound_count"]==416
+          assert manifest["source_price"]["ambiguous_bounded_count"]==91
+          assert manifest["source_price"]["unknown_incomplete_or_integrity_count"]==38
+          assert manifest["source_sec"]["shadow_official_shares_vintage_count"]==279
+          assert manifest["source_sec"]["unknown_unreconciled_count"]==125
+          assert manifest["source_price"]["actual_provider_http_requests"]==1537
+          assert manifest["source_sec"]["actual_provider_http_requests"]==817
+          assert sum(manifest["source_price"][k] for k in (
+            "positive_rth_30m_lower_bound_count","ambiguous_bounded_count",
+            "unknown_incomplete_or_integrity_count"))==545
+          assert manifest["source_sec"]["shadow_official_shares_vintage_count"]+manifest["source_sec"]["unknown_unreconciled_count"]==404
+          release=manifest["canonical_release"]
+          assert release["all_same_asof_primary_price_count"]==0
+          assert release["same_asof_issuer_class_mc_pass_count"]==0
+          assert release["registered_r92_count"]==0
+          assert not release["iphone_notification_receipt_verified"]
+          assert release["execution"]=="NONE" and release["real_money"]=="NO-GO"
+          assert release["unknown_never_pass"] is True
+          print("XRAY_OCT13_EXACT_277_SOURCE_LEDGER_SHA256=PASS")
+          print("XRAY_OCT13_FULL_PRICE_545_SEC_404_HISTORY_3185=PASS_METADATA")
+          print("XRAY_OCT13_PRIMARY_MC_R92_DEVICE=NOT_ATTESTED_NO_FABRICATION")
+          PY
