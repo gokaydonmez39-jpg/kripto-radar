@@ -16,6 +16,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 
 SCHEMA="XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1"
+# Provider history can recover within the same ASOF. Never freeze an unresolved
+# daily/weekly history outcome as a completed scan, including legacy state.
+RETRYABLE_HISTORY_STATUSES=frozenset({
+    "UNKNOWN_260_OFFICIAL_HISTORY",
+    "UNKNOWN_52_COMPLETED_WEEKS",
+})
 BATCH_SIZE=475
 MAX_WORKERS=4
 
@@ -38,6 +44,13 @@ def engine_source_fingerprint():
         raw=(root/name).read_bytes()
         data.append((name,hashlib.sha256(raw).hexdigest()))
     return hashlib.sha256(json.dumps(data,separators=(",",":")).encode()).hexdigest()
+
+
+def terminal_record(record):
+    """A provider-history UNKNOWN must remain retryable, even in legacy state."""
+    return (type(record) is dict
+            and record.get("terminal_scan") is True
+            and record.get("status") not in RETRYABLE_HISTORY_STATUSES)
 
 
 def prepare(watch, old=None):
@@ -72,8 +85,7 @@ def prepare(watch, old=None):
     prior=prev.get("results") if reusable else {}
     prior=prior if type(prior) is dict else {}
     kept={s:prior[s] for s in syms
-          if s in prior and type(prior[s]) is dict
-          and prior[s].get("terminal_scan") is True}
+          if s in prior and terminal_record(prior[s])}
     return {"schema":SCHEMA,"asof_et":asof,
             "engine_source_sha256":engine_sha,
             "source_candidates_sha256":source,
@@ -88,7 +100,7 @@ def prepare(watch, old=None):
 def summarize(state, watch):
     expected=[r["symbol"] for r in watch["watchlist"]]
     seen={s for s,r in state["results"].items()
-          if type(r) is dict and r.get("terminal_scan") is True}
+          if terminal_record(r)}
     pending=[s for s in expected if s not in seen]
     stats=dict(sorted(collections.Counter(
         r.get("status","UNKNOWN") for r in state["results"].values()).items()))
@@ -176,7 +188,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
         data,source=stage.load_history(sym,asof)
         if not _history_ok(data,calendar_days):
             return sym,{"status":"UNKNOWN_260_OFFICIAL_HISTORY",
-                        "history_source":source,"terminal_scan":True}
+                        "history_source":source,"terminal_scan":False}
         data=data.iloc[-260:].reset_index(drop=True)
         anomalies=mechanical_scale_breaks(data,260) or mechanical_split_suspects(data,260)
         ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
@@ -192,7 +204,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
         if current_week.get("weeks",0)<52:
             return sym,{"status":"UNKNOWN_52_COMPLETED_WEEKS",
                         "completed_weeks":current_week.get("weeks",0),
-                        "history_source":source,"terminal_scan":True}
+                        "history_source":source,"terminal_scan":False}
         if not eligible:
             return sym,{"status":"NO_CURRENT_OR_RECENT_WEEKLY_GATE",
                         "completed_weeks":current_week.get("weeks",0),
@@ -367,6 +379,24 @@ def selftest():
     else:raise AssertionError("TOP_N_ACCEPTED")
     need(BATCH_SIZE>=475 and MAX_WORKERS<=4,
          "FULL_SCOPE_BATCH_NO_UNBOUNDED_CONCURRENT_PROVIDER_CALLS")
+    # Regression: the previous version incorrectly accepted these as terminal.
+    # This must fail for both new and already-persisted legacy rows.
+    for status in RETRYABLE_HISTORY_STATUSES:
+        historical=prepare(w())
+        historical["results"]["AAPL"]={"status":status,"terminal_scan":True}
+        reloaded=prepare(w(),historical)
+        need("AAPL" not in reloaded["results"],
+             "LEGACY_HISTORY_UNKNOWN_MUST_RETRY_"+status)
+        checked=summarize(historical,w())
+        need(checked["evaluated_count"]==0
+             and checked["pending_count"]==3
+             and checked["transient_retry_count"]==1,
+             "HISTORY_UNKNOWN_CANNOT_COUNT_COMPLETE_"+status)
+    reliable=prepare(w())
+    reliable["results"]["AAPL"]={"status":"NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+                                 "terminal_scan":True}
+    need("AAPL" in prepare(w(),reliable)["results"],
+         "REAL_TERMINAL_CLASSIFICATION_MUST_REUSE")
     with_transient=prepare(w())
     with_transient["results"]["AAPL"]={
         "status":"UNKNOWN_CORPORATE_ACTION_PIT","terminal_scan":False}
