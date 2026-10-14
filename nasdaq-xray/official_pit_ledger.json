@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-14T12:01:53.442252+00:00",
+  "last_ingest_at_utc": "2026-10-14T12:14:45.986030+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 87,
+  "snapshot_count": 88,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -44120,6 +44120,227 @@
       },
       "payload_sha256": "c00e9e656cae0eb4112d4b5e5a7028dc5e995987f94a05b1ef5426d96514c581",
       "source": "system_status_ipo",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-14T12:14:44.627713+00:00",
+      "observed_at_utc": "2026-10-14T12:14:45.985992+00:00",
+      "payload": {
+        "row_count": 23,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "ACHP"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Bakkt, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "BKKT+"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "BSR Real Estate Investment Trust",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "N",
+            "Symbol": "BSRT"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Clear Channel Outdoor Holdings, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "CCO"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "DFA Investment Dimensions Group Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "DFGV"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "EA Series Trust",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "EMSC"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Frazier Life Sciences Acquisition Corp. II",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "FLSC"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Harbour Island Acquisition Corp. I",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "HRIAU"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Voya Asia Pacific High Dividend Equity Income Fund",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "IAE"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Voya Emerging Markets High Income Dividend Equity Fund",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "IHD"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Themes ETF Trust",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "MGOL"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Nextdoor Holdings, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "NXDR"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Nextdoor Holdings, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "NXDR"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "REX ETF Trust",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "PEPT"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Priority Income Fund, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "PRIF-L"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Quetta Acquisition Corporation",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "S",
+            "Symbol": "QETA"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Quetta Acquisition Corporation",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "S",
+            "Symbol": "QETAR"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Quetta Acquisition Corporation",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "S",
+            "Symbol": "QETAU"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "The RBB Fund, Inc.",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "RTHY"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Select Sector SPDR Trust (The)",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "XLEM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Select Sector SPDR Trust (The)",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "XLKM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Select Sector SPDR Trust (The)",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "XLPM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Select Sector SPDR Trust (The)",
+            "Effective Date": "10/14/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "XLYM"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "71dc6932007984d0fc9bf1ae117870279743249b48b53fe8082ca159257edccc",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
