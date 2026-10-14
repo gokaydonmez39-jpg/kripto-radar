@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned Nasdaq session calendar needed by root watchdog
+        run: python -m pip install --disable-pip-version-check pandas==2.2.3 pandas_market_calendars==5.4.0
       - name: Compile root/watchdog and zero-alpha stage relay
         run: |
           python -m py_compile nasdaq-xray/github_native_stage_relay.py nasdaq-xray/github_native_root_watchdog.py
