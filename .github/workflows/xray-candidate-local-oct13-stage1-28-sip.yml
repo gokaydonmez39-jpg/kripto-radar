@@ -1,0 +1,22 @@
+name: XRAY Oct13 Real SIP Stage1 28 Source Research
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py"
+      - ".github/workflows/xray-candidate-local-oct13-stage1-28-sip.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r nasdaq-xray/requirements-runtime.txt
+      - run: python nasdaq-xray/candidate_local_oct13_stage1_sip28_shadow.py --selftest
