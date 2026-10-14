@@ -26,7 +26,7 @@ ENGINE_FILES=[
  "deep_pre_r1_shadow.py",
  "minimal_swing_watch_radar_v1.py",
  "candidate_local_full_technical_funnel_v1.py",
- "minimal_swing_watch_radar_v1.py",
+ "candidate_local_independent_math_v1.py",
  "history_official_identity_evidence.json",
  "requirements-runtime.txt",
 ]
