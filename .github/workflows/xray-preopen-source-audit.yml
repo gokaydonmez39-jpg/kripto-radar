@@ -91,6 +91,7 @@ jobs:
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --selftest
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/all_workflow_schedule_audit.py --selftest
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --out "$RUNNER_TEMP/xray_repo_inventory.json"
       - name: Explain exact current terminal drift without rewriting last authoritative epoch
         if: steps.epoch_guard.outputs.valid == 'true'
