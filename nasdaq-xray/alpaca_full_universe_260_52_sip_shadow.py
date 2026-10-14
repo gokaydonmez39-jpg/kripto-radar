@@ -22,6 +22,7 @@ import math
 from alpaca_free_sip_shadow_guard import request_batch
 from alpaca_sip_paginated_transport_shadow import SYMBOL_RE
 from current_history_source_request import expected_dates
+from official_first_trade_260_history_guard import fence as official_first_trade_fence
 
 ROOT = Path(__file__).resolve().parent
 SCHEMA = "XRAY_PERSONAL_FULL_NASDAQ_SIP_260_DAILY_52_WEEK_RESEARCH_V1"
@@ -120,10 +121,19 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0,
                 need(type(status) is str and
                      type(observed) is int and 0 <= observed <= 260,
                      "HISTORY_CLASSIFIER_INVALID")
+                # Alpaca historical asof symbol mapping can return bars
+                # belonging to a predecessor ticker occupant. A hard official
+                # first-trade fence is FAIL-only and supersedes vendor count.
+                issuer = official_first_trade_fence(sym, asof)
+                if issuer and issuer["own_listed_history_short"]:
+                    status = "FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE"
                 labels[sym] = status
                 if cause_labels is not None:
-                    cause_labels[sym] = cause_of_nonpass(
-                        received.get(sym, []), status, daily)
+                    cause_labels[sym] = (
+                        "OFFICIAL_SAME_ISSUER_FIRST_TRADE_LT260_VETO"
+                        if status == "FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE"
+                        else cause_of_nonpass(
+                            received.get(sym, []), status, daily))
         except (RuntimeError, ValueError, TimeoutError, OSError) as e:
             v = str(e)
             # Preserve known HTTP and pagination classes, never raw responses.
@@ -158,6 +168,8 @@ def report(asof, names, daily, weekly, fetch, pacing=0):
         "source": "ALPACA_HISTORICAL_SIP_RAW_ADJUSTMENT",
         "full_history_260_52_observed_count": ready,
         "full_history_missing_or_unknown_count": len(names)-ready,
+        "official_first_trade_fail_only_veto_count": counts.get(
+            "FAIL_OWN_ISSUER_LT260_OFFICIAL_FIRST_TRADE", 0),
         "classification_counts": counts,
         "history_nonpass_cause_counts": cause_counts,
         "symbol_nonpass_cause_classes": dict(sorted(causes.items())),
@@ -216,6 +228,16 @@ def selftest():
          classify(before_asof, daily, weekly, asof)[0], daily) ==
          "MISSING_PRIOR_1_TO_5_DAYS",
          "PRIOR_GAP_NOT_LATEST_ASOF")
+    # Even vendor-supplied 260 rows may belong to an unrelated prior issuer.
+    # BSP's official 2026-07-01 first-trade proof vetoes that false history.
+    def false_predecessor(group, expected, date):
+        return {sym: good for sym in group}
+    issuer_test = report(asof, ["BSP"], daily, weekly, false_predecessor)
+    need(issuer_test["full_history_260_52_observed_count"] == 0 and
+         issuer_test["official_first_trade_fail_only_veto_count"] == 1 and
+         issuer_test["symbol_nonpass_cause_classes"]["BSP"] ==
+           "OFFICIAL_SAME_ISSUER_FIRST_TRADE_LT260_VETO",
+         "TICKER_REUSE_NOT_ISSUER_HISTORY_PASS")
     def limited(group, expected, date):
         raise RuntimeError("ALPACA_HTTP_429")
     z = report(asof, ["AAA", "BBB"], daily, weekly, limited)
@@ -240,7 +262,7 @@ def selftest():
     need(start.endswith("-04:00") and
          end == "2026-10-14T20:05:00+00:00",
          "OFFICIAL_CLOSE_NO_FUTURE")
-    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_FAIL_CLOSED_CAUSAL_DISAGGREGATION_RATE_LIMIT_NO_ALPHA")
+    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_ISSUER_FIRST_TRADE_FAIL_ONLY_CAUSAL_DISAGGREGATION_NO_ALPHA")
 
 
 def main():
@@ -274,6 +296,8 @@ def main():
         "asof_et":asof, "scope":result["scope_count"],
         "observed":result["full_history_260_52_observed_count"],
         "not_proven":result["full_history_missing_or_unknown_count"],
+        "official_first_trade_fail_veto":
+            result["official_first_trade_fail_only_veto_count"],
         "counts":result["classification_counts"],
         "cause_counts":result["history_nonpass_cause_counts"],
         "source_stop":result["transport_stop_class"],
