@@ -12,6 +12,7 @@
       "MCTA",
       "OST",
       "PC",
+      "SKIN",
       "SVA",
       "UCFI",
       "UCFIW",
@@ -80,6 +81,7 @@
       "PC",
       "PSKY",
       "QRVO",
+      "SKIN",
       "SLP",
       "SPKL",
       "SPKLU",
@@ -97,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-13T23:33:04.484542+00:00",
+  "generated_at_utc": "2026-10-14T01:00:07.837371+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -759,7 +761,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 14,
       "active_halt_symbols": [
         "AZTR",
         "BKKT.W",
@@ -770,14 +772,30 @@
         "MCTA",
         "OST",
         "PC",
+        "SKIN",
         "SVA",
         "UCFI",
         "UCFIW",
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 74,
+      "item_count": 75,
       "items": [
+        {
+          "HaltDate": "10/13/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "SkinHealth Systm Cl A Comm Stk",
+          "IssueSymbol": "SKIN",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/13/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">SKIN</td><td valign=\"top\">SkinHealth Systm Cl A Comm Stk</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 13 Oct 2026 04:00:00 GMT",
+          "title": "SKIN"
+        },
         {
           "HaltDate": "10/13/2026",
           "HaltTime": "15:07:54.306",
