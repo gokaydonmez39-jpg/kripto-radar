@@ -189,6 +189,9 @@ jobs:
           assert d["no_c417_dv30_or_mc_pass"] is True
           assert d["daily30_source_proxy_not_official_rth_dv30"] is True
           assert d["last30_sip_daily_valid_source_count"]>=d["260_daily_52_week_observed"]
+          assert 0<=d["260_52_and_daily30_ge50m_joint_research_count"]<=d["260_daily_52_week_observed"]
+          assert d["joint_scope_has_no_rth_mc_technical_or_signal_authority"] is True
+          assert len(d["260_52_and_daily30_ge50m_joint_sha256"])==64
           assert d["historical_zero_volume_outside_latest30_count"]>=0
           assert d["no_official_rth_exact_volume"] is True
           assert d["no_technical_or_event_clear"] is True
