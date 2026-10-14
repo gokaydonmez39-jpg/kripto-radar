@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
       - "nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py"
       - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
   schedule:
@@ -206,5 +207,76 @@ jobs:
         with:
           name: xray-personal-exact-root-sip-source-bridge-no-ohlcv
           path: ${{ runner.temp }}/xray_personal_sip_root_bridge.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  joint-rth30-shadow:
+    name: Personal joint 260-session and daily30 research cohort 30Min RTH bound
+    needs: [coverage, history260, root-source-bridge]
+    if: ${{ needs.coverage.result == 'success' && needs.history260.result == 'success' && needs.root-source-bridge.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Reject stale SHA cohort, missing RTH slots and throttled provider false positives
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py
+          python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+      - name: Download exact latest 260/52 plus daily30 source flags
+        uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-full-nasdaq-260-52-no-ohlcv
+          path: ${{ runner.temp }}/history
+      - name: Download SHA-bound source bridge from this identical run
+        uses: actions/download-artifact@v4
+        with:
+          name: xray-personal-exact-root-sip-source-bridge-no-ohlcv
+          path: ${{ runner.temp }}/bridge
+      - name: Measure official 30-minute RTH completed-session lower bound on exact joint cohort
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py \
+            --history "$RUNNER_TEMP/history/xray_nasdaq_full_260_52_sip_shadow.json" \
+            --bridge "$RUNNER_TEMP/bridge/xray_personal_sip_root_bridge.json" \
+            --out "$RUNNER_TEMP/xray_personal_joint_rth30_shadow.json"
+      - name: Enforce zero primary, no persisted vendor OHLCV and complete subset partition
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_personal_joint_rth30_shadow.json").read_text())
+          assert x["schema"]=="XRAY_PERSONAL_JOINT_HISTORY_DAILY30_EXACT_RTH30_BOUND_V1"
+          assert x["joint_cohort_count"]==sum(x["classification_counts"].values())==len(x["classifications"])
+          assert x["rth_lower_bound_ge50m_shadow_count"]+x["rth_upper_bound_lt50m_shadow_count"]+x["rth_ambiguous_shadow_count"]+x["rth_incomplete_or_unknown_count"]==x["joint_cohort_count"]
+          assert x["official_c417_primary_dv30_attested"] is False
+          assert x["official_RTH_close_auction_volume_attested"] is False
+          assert x["official_RTH_corrections_attested"] is False
+          assert x["canonical_master_price_history_mc_untouched"] is True
+          assert x["vendor_ohlcv_persisted"] is False
+          assert x["source_rights_not_inferred"] is True
+          assert x["registered_R92_count"]==0
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_JOINT_260_RTH30=PASS_RESEARCH_ONLY_NOT_PRIMARY")
+          PY
+      - name: Preserve only categorical 30Min research evidence, no raw market data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-joint-260-daily30-rth30-no-ohlcv
+          path: ${{ runner.temp }}/xray_personal_joint_rth30_shadow.json
           if-no-files-found: warn
           retention-days: 14
