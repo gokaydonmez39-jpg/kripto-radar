@@ -1,0 +1,124 @@
+name: XRAY Personal Early Technical WATCH 406 (No AL)
+on:
+  workflow_run:
+    workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
+    types: [completed]
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "42 22 * * 1-5"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-personal-full-cohort-early-watch
+  cancel-in-progress: false
+jobs:
+  technical-watch:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Nasdaq calendar and technical math dependencies
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "pandas==2.2.3"
+      - name: Verify negative controls and reject fabricated candidate or stale cohort in both runtimes
+        run: |
+          python -m py_compile nasdaq-xray/personal_full_cohort_early_technical_watch.py
+          python nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+          python -O nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+      - name: Select completed-success exact research cohort, not stale or failed source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          UPSTREAM_ID: ${{ github.event.workflow_run.id }}
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+          CURRENT_REPO: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          def gh(*args):
+              return json.loads(subprocess.check_output(
+                  ["gh","api",*args],text=True))
+          repo=os.environ["CURRENT_REPO"]
+          if os.environ["EVENT_NAME"]=="workflow_run":
+              run_id=int(os.environ["UPSTREAM_ID"])
+              run=gh("repos/"+repo+"/actions/runs/"+str(run_id))
+              assert run["head_sha"]==os.environ["UPSTREAM_SHA"]
+              assert run["conclusion"]=="success" and run["event"] in ("push","schedule","workflow_dispatch")
+          else:
+              response=gh("repos/"+repo+"/actions/runs?per_page=50")
+              runs=[r for r in response["workflow_runs"] if
+                   r.get("name")=="XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"
+                   and r.get("status")=="completed" and r.get("conclusion")=="success"
+                   and r.get("head_branch")=="main"]
+              assert runs,"NO_SUCCESSFUL_FULL_UNIVERSE_SIP_RESEARCH_RUN"
+              run_id=runs[0]["id"]
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+              out.write("upstream_run_id="+str(run_id)+"\n")
+          print("XRAY_EARLY_WATCH_SOURCE_RUN_ID="+str(run_id))
+          PY
+      - name: Download exact 6-gate same-run history/RTH research classifications only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_RUN: ${{ steps.source.outputs.upstream_run_id }}
+        run: |
+          gh run download "$UPSTREAM_RUN" --repo "$GITHUB_REPOSITORY" \
+            -n xray-personal-six-gate-causal-worklist-no-ohlcv -D "$RUNNER_TEMP/causal"
+      - name: Observe complete verified technical A/B/D watch scope, without vendor OHLCV export
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/personal_full_cohort_early_technical_watch.py \
+            --causal "$RUNNER_TEMP/causal/xray_six_gate_causal_breaker.json" \
+            --out "$RUNNER_TEMP/xray_early_technical_watch_private.json"
+      - name: Recheck no R92, untruncated scope, no invented WATCH on missing provider
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_early_technical_watch_private.json"
+          x=json.loads(p.read_text())
+          def need(ok,reason):
+              if not ok:raise ValueError("XRAY_EARLY_WATCH_CI_"+reason)
+          need(x["schema"]=="XRAY_PERSONAL_FULL_COHORT_EARLY_TECH_WATCH_V1","SCHEMA")
+          need(x["scope_count"]==len(x["technical_status_by_symbol"]) and
+               x["all_symbols_classified"] is True and
+               sum(x["classification_counts"].values())==x["scope_count"],"EXACT_SCOPE")
+          need(set(x["technical_setup_family_verified"])==
+               set(x["technical_research_watch_symbols"]),"NO_FALSE_SETUP_FAMILY")
+          need(x["registered_r92_count"]==0 and not x["user_notification_sent"] and
+               not x["iphone_delivery_receipt_attested"] and
+               not x["source_independent_primary_mc_attested"] and
+               not x["source_event_and_regime_release_attested"],"NEVER_ALPHA")
+          need(x["no_vendor_ohlcv_or_price_levels_persisted"] and
+               x["orders"]==x["buy_signals"]==[] and
+               x["execution"]=="NONE" and x["real_money"]=="NO-GO","SAFETY")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("# 👀 NASDAQ Personal Early Technical WATCH — AL değil\n\n")
+              f.write("ASOF ET: "+x["asof_et"]+"; cohort "+str(x["scope_count"])+"\n\n")
+              f.write("Fresh A/B/D technical observations: **"+
+                      str(len(x["technical_research_watch_symbols"]))+"**\n\n")
+              f.write("Primary MC, canonical DV30, G9, issuer events and R92: **UNVERIFIED**.\n\n")
+              f.write("This private artifact is not a platform notification or iPhone receipt.\n")
+          print("XRAY_EARLY_WATCH=SOURCE_BOUND_COHORT_CLASSIFIED_NO_FALSE_BUY")
+          PY
+      - name: Retain only private symbolic research findings; no OHLCV or price levels
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-early-technical-watch-private-no-ohlcv
+          path: ${{ runner.temp }}/xray_early_technical_watch_private.json
+          retention-days: 7
+          if-no-files-found: warn
