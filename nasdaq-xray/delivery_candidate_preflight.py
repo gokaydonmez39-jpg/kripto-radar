@@ -43,13 +43,20 @@ def classify(pointer:dict)->str:
     if not r92:
         # Old CONTROL and NO_CONFIRMED_SETUP keys do not indicate a real R92.
         return "NO_REGISTERED_R92"
+    if len(r92) > 3:
+        raise ValueError("R92_COUNT_EXCEEDS_MAX3")
+    seen = set()
     for row in r92:
         if not isinstance(row,dict) or row.get("schema")!="XRAY_RESEARCH_CANDIDATE_R92_V1":
             raise ValueError("MALFORMED_R92_REGISTRY")
         if row.get("execution")!="NONE" or row.get("real_money")!="NO-GO":
             raise ValueError("R92_SAFETY_UNVERIFIED")
-        if row.get("delivery_key") not in keys:
+        key = row.get("delivery_key")
+        if not isinstance(key, str) or not key or key not in keys:
             raise ValueError("R92_KEY_NOT_REGISTERED")
+        if key in seen:
+            raise ValueError("DUPLICATE_R92_DELIVERY_KEY")
+        seen.add(key)
     return "REGISTERED_R92_REQUIRES_FULL_SCHEDULER_AND_DELIVERY_GATES"
 
 def selftest():
@@ -86,12 +93,30 @@ def selftest():
             "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1",
             "delivery_key":"FORGED","execution":"NONE","real_money":"NO-GO"}]),
     ]
+    # Same key repeated in an otherwise valid, fully hashed pointer must
+    # never qualify for multiple delivery attempts or ledger updates.
+    for transformation, expected in (
+        (lambda x:x["state_json"]["r92"].append(
+            copy.deepcopy(x["state_json"]["r92"][0])), "DUPLICATE_R92_DELIVERY_KEY"),
+        (lambda x:x["state_json"]["r92"].extend([
+            copy.deepcopy(x["state_json"]["r92"][0]) for _ in range(3)]),
+         "R92_COUNT_EXCEEDS_MAX3"),
+    ):
+        forged=copy.deepcopy(p)
+        transformation(forged)
+        seal(forged)
+        try:
+            classify(forged)
+        except ValueError as exc:
+            assert str(exc)==expected,(str(exc),expected)
+        else:
+            raise AssertionError("DUPLICATE_R92_ACCEPTED")
     for i,fn in enumerate(cases):
         x=deepcopy(base);fn(x)
         try:classify(x)
         except (ValueError,TypeError,KeyError):pass
         else:raise AssertionError("R92_PREFLIGHT_INVALID_ACCEPTED:"+str(i))
-    print("XRAY_DELIVERY_CANDIDATE_PREFLIGHT_SELFTEST=PASS_REAL_R92_FENCED_SHA256_11_NEGATIVES")
+    print("XRAY_DELIVERY_CANDIDATE_PREFLIGHT_SELFTEST=PASS_REAL_R92_FENCED_SHA256_13_NEGATIVES_DUPLICATE_GUARD")
 
 def main():
     ap=argparse.ArgumentParser()
