@@ -41,7 +41,13 @@ def dates30():
     demand(len(d)==30 and d[-1]==ASOF and len(set(d))==30,"OFFICIAL_30_CALENDAR")
     return d
 
-def scope():
+def scope(now=None):
+    # Fail closed on a stale session: an old frozen census is never evidence
+    # for the latest market date, even when the vendor endpoint still serves it.
+    from source_epoch_freshness_guard import last_complete_session
+    now=now or dt.datetime.now(dt.timezone.utc)
+    demand(now.tzinfo is not None and
+           last_complete_session(now)==ASOF,"NOT_LATEST_COMPLETED_ASOF")
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     demand(master.get("asof_et")==price.get("asof_et")==ASOF,"EXACT_SOURCE_ASOF")
@@ -137,13 +143,23 @@ def analyze(batch,daily,halfhour,dates):
 def selftest():
     d=dates30()
     demand(d[-1]==ASOF and len(d)==30,"TEST_30")
+    # Current 3184/545 source partition, not the earlier 3185-issuer
+    # independent HISTORY cohort. Never infer PRICE primary from their join.
+    now=dt.datetime(2026,10,14,18,0,tzinfo=dt.timezone.utc)
+    symbols,days,master_sha,price_sha=scope(now)
+    demand(len(symbols)==545 and days==d and
+           len(master_sha)==len(price_sha)==40,"CURRENT_545_SHA_SCOPE")
+    try:scope(dt.datetime(2026,10,15,21,0,tzinfo=dt.timezone.utc))
+    except ValueError as exc:
+        demand("NOT_LATEST_COMPLETED_ASOF" in str(exc),"STALE_REASON")
+    else:raise AssertionError("OLD_13OCT_SCOPE_ACCEPTED_ON_15OCT")
     b=["AAPL","MSFT"]
     demand(analyze(b,{}, {},d)==dict.fromkeys(b,"UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"),
            "MISSING_PRICE_NEVER_PASS")
     try:analyze(["AAPL"],{"OTHER":[]},{},d)
     except ValueError:pass
     else:raise AssertionError("FOREIGN_NOT_BLOCKED")
-    print("XRAY_PRICE13_OFFLINE_SELFTEST=PASS_30_OFFICIAL_SESSIONS_NO_FALSE_PRIMARY")
+    print("XRAY_PRICE13_OFFLINE_SELFTEST=PASS_REAL_545_SCOPE_FRESHNESS_SHA_30_SESSIONS_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
