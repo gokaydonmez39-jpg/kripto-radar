@@ -1,0 +1,69 @@
+name: XRAY Candidate-Local 13Oct SIP PRICE 50 Page
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_alpaca_price_50_page.py"
+      - ".github/workflows/xray-candidate-local-price-50-page.yml"
+  workflow_dispatch:
+    inputs:
+      page:
+        description: "Index 0 through 10, 50 current PRICE unknown per page"
+        type: choice
+        required: true
+        default: "0"
+        options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+permissions:
+  contents: read
+concurrency:
+  group: xray-price-50-single-symbol-sip-epoch13
+  cancel-in-progress: false
+jobs:
+  real-sip-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify official Nasdaq calendar and exact 545 50-batches
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python -m py_compile nasdaq-xray/candidate_local_alpaca_price_50_page.py
+          python nasdaq-xray/candidate_local_alpaca_price_50_page.py --selftest
+          python -O nasdaq-xray/candidate_local_alpaca_price_50_page.py --selftest
+      - name: One-ticker historical SIP 1Day plus 30Min official 30 sessions
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+          REQUEST_PAGE: ${{ inputs.page || '0' }}
+        run: |
+          python nasdaq-xray/candidate_local_alpaca_price_50_page.py \
+            --page "$REQUEST_PAGE" \
+            --out "$RUNNER_TEMP/xray_oct13_sip_price50.json"
+      - name: Assert 50-symbol complete evidence partition and no false R92
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_oct13_sip_price50.json").read_text())
+          assert j["schema"]=="XRAY_OCT13_ALPACA_50_SINGLE_SYMBOL_SIP_RTH_BOUNDS_V1"
+          assert j["asof_et"]=="2026-10-13" and j["target_count"]<=50
+          assert len(j["statuses"])==sum(j["counts"].values())==j["target_count"]
+          assert j["request_count"]<=160 and j["single_symbol_isolation"] is True
+          assert not j["price_primary_created"] and not j["mc_primary_created"]
+          assert j["r92_created"] is False and j["execution"]=="NONE"
+          assert j["real_money"]=="NO-GO"
+          print("XRAY_SIP_PRICE50_REAL_SOURCE_RESULT=PASS_METADATA_WITHOUT_FALSE_PRIMARY")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-oct13-candidate-local-single-sip-price50
+          path: ${{ runner.temp }}/xray_oct13_sip_price50.json
+          if-no-files-found: warn
+          retention-days: 14
