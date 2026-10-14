@@ -69,15 +69,25 @@ def assess(sym,df,qqq,asof,week_last):
         else:unresolved+=1
     if unresolved:return "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",verified
     return "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN",verified
+def chunks(names,n=12):
+    need(type(names) is list and names==sorted(set(names)) and
+         type(n) is int and 1<=n<=12,"EXACT_BATCH_PARTITION")
+    out=[names[k:k+n] for k in range(0,len(names),n)]
+    need([v for group in out for v in group]==names and
+         all(1<=len(group)<=n for group in out),
+         "EVERY_PENDING_SYMBOL_RETAINED")
+    return out
+
 def run(now,fetch):
     root=json.loads(STATE.read_text())
     asof,names,days,weeks=source_scope(root,now)
-    need(len(names)<=11 and "QQQ" not in names and
-         names==sorted(set(names)),"LATEST_UNRESOLVED_SCOPE")
+    need("QQQ" not in names and names==sorted(set(names)),
+         "LATEST_ALL_UNRESOLVED_NO_TRUNCATION")
     result={"schema":SCHEMA,"asof_et":asof,"scope_count":len(names),
        "source_state_git_blob_sha":blob_sha(STATE),
        "source":"ALPACA_HISTORICAL_SIP_PERSONAL_NONCOMMERCIAL",
-       "statuses":{},"benchmark_status":"UNKNOWN",
+       "statuses":{},"benchmark_status":"UNKNOWN","api_batch_count":0,
+       "pending_symbol_truncation":False,
        "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
        "no_raw_market_data_exported":True,"canonical_files_mutated":False,
        "canonical_price_promoted":False,"canonical_history_promoted":False,
@@ -87,45 +97,69 @@ def run(now,fetch):
         result["benchmark_status"]="NOT_REQUIRED_NO_PENDING"
         result["counts"]={}
         return result
-    scope=sorted(names+["QQQ"])
     start=days[0]+"T00:00:00Z"
     end=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
-    raw=fetch(scope,start,end,asof)
-    need(type(raw) is dict and set(raw)==set(scope),"FULL_SOURCE_PARTITION")
-    qqq,qstate=quality(raw["QQQ"],days,weeks,asof)
+    try:
+        qbars=fetch(["QQQ"],start,end,asof)
+        result["api_batch_count"]+=1
+        need(type(qbars) is dict and set(qbars)=={"QQQ"},
+             "BENCHMARK_SOURCE_SCOPE")
+        qqq,qstate=quality(qbars["QQQ"],days,weeks,asof)
+    except Exception:
+        qqq=None
+        qstate="UNKNOWN_QQQ_PROVIDER_OR_SCOPE"
     if qstate!="HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY":
         qqq=None
     result["benchmark_status"]=qstate
-    last_weeks=stage.build_week_last(asof) if qqq is not None else None
-    for sym in names:
+    if qqq is None:
+        result["statuses"]={sym:"UNKNOWN_QQQ_260_52" for sym in names}
+        result["counts"]={"UNKNOWN_QQQ_260_52":len(names)}
+        return result
+    last_weeks=stage.build_week_last(asof)
+    groups=chunks(names)
+    for i,block in enumerate(groups):
         try:
-            listing=fence(sym,asof)
-            if listing and listing["own_listed_history_short"]:
-                result["statuses"][sym]="FAIL_OFFICIAL_LISTED_HISTORY_LT260"
-                continue
-            df,history=quality(raw[sym],days,weeks,asof)
-            if df is None:result["statuses"][sym]=history;continue
-            if history=="UNKNOWN_CORPORATE_ACTION_PIT":
-                # Existing issuer-specific declared split evidence; a
-                # mechanical 2x price move alone is not a split proof.
-                corrected,ca_status,events=stage.split_consistent_history(sym,df,260)
-                from candidate_local_full_technical_funnel_v1 import _history_ok
-                if not str(ca_status).startswith("PASS") or not _history_ok(corrected,days):
-                    result["statuses"][sym]="UNKNOWN_CORPORATE_ACTION_PIT"
+            raw=fetch(block,start,end,asof)
+            result["api_batch_count"]+=1
+            need(type(raw) is dict and set(raw)==set(block),
+                 "PROVIDER_BATCH_SCOPE")
+        except Exception as exc:
+            for sym in block:
+                result["statuses"][sym]="UNKNOWN_BATCH_TRANSPORT_OR_SCOPE"
+            if "429" in str(exc) or "RATE_LIMIT" in str(exc):
+                for remainder in groups[i+1:]:
+                    for sym in remainder:
+                        result["statuses"][sym]="UNKNOWN_RATE_LIMIT_NOT_QUERIED"
+                break
+            continue
+        for sym in block:
+            try:
+                listing=fence(sym,asof)
+                if listing and listing["own_listed_history_short"]:
+                    result["statuses"][sym]="FAIL_OFFICIAL_LISTED_HISTORY_LT260"
                     continue
-                df=corrected
-                # Still secondary research; correction lookup cannot grant
-                # canonical PRICE, MC, G9, true AL or R92 authority.
-            if qqq is None:
-                result["statuses"][sym]="UNKNOWN_QQQ_260_52";continue
-            status,count=assess(sym,df,qqq,asof,last_weeks)
-            result["statuses"][sym]=status
-        except Exception:
-            result["statuses"][sym]="UNKNOWN_SECONDARY_ENGINE_OR_PROVIDER"
-    del raw
-    need(set(result["statuses"])==set(names),"EXACT_LOCAL_STATUS_PARTITION")
-    result["counts"]=dict(sorted(collections.Counter(result["statuses"].values()).items()))
+                df,history=quality(raw[sym],days,weeks,asof)
+                if df is None:
+                    result["statuses"][sym]=history
+                    continue
+                if history=="UNKNOWN_CORPORATE_ACTION_PIT":
+                    corrected,ca_status,events=stage.split_consistent_history(sym,df,260)
+                    from candidate_local_full_technical_funnel_v1 import _history_ok
+                    if not str(ca_status).startswith("PASS") or not _history_ok(corrected,days):
+                        result["statuses"][sym]="UNKNOWN_CORPORATE_ACTION_PIT"
+                        continue
+                    df=corrected
+                status,count=assess(sym,df,qqq,asof,last_weeks)
+                result["statuses"][sym]=status
+            except Exception:
+                result["statuses"][sym]="UNKNOWN_SECONDARY_ENGINE_OR_PROVIDER"
+        del raw
+    need(set(result["statuses"])==set(names),
+         "EXACT_ALL_PENDING_STATUS_PARTITION")
+    result["counts"]=dict(sorted(collections.Counter(
+        result["statuses"].values()).items()))
     return result
+
 def selftest():
     from current_history_source_request import expected_dates
     dates,weeks=expected_dates("2026-10-13")
@@ -155,7 +189,11 @@ def selftest():
     unresolved,reason=quality(suspect,dates,weeks,"2026-10-13")
     need(unresolved is not None and reason=="UNKNOWN_CORPORATE_ACTION_PIT",
          "MECHANICAL_GAP_CANNOT_SKIP_CA_PIT")
-    print("XRAY_PERSONAL_SEVEN_TECH_SELFTEST=PASS_260_52_THREE_NEGATIVES_NO_R92")
+    samples=["SYM%03d"%i for i in range(120)]
+    groups=chunks(samples)
+    need(len(groups)==10 and [s for group in groups for s in group]==samples,
+         "NO_TOP_N_OR_GLOBAL_11_CEILING")
+    print("XRAY_PERSONAL_TECH_SELFTEST=PASS_ALL_120_NO_TRUNCATION_SPLIT_PIT_3_NEGATIVES_NO_R92")
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--selftest",action="store_true")
