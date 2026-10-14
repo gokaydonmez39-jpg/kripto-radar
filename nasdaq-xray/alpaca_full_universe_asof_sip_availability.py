@@ -21,6 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from zoneinfo import ZoneInfo
+import pandas_market_calendars as mcal
 
 from source_epoch_freshness_guard import last_complete_session
 
@@ -77,18 +78,33 @@ def validate_one(bar, asof):
         return False
 
 
+def historical_request_window(asof, now):
+    """Basic historical SIP: never request into the future or last 15 minutes.
+
+    Use the actual official exchange close, including 13:00 ET early closes.
+    An end at 23:59 ET can be IN THE FUTURE and yield HTTP 403 on Basic.
+    """
+    need(now.tzinfo is not None, "NAIVE_CLOCK")
+    now = now.astimezone(dt.timezone.utc)
+    expected = last_complete_session(now)
+    need(asof == expected, "STALE_EPOCH_FOR_PROVIDER_CALL")
+    rows = mcal.get_calendar("NASDAQ").schedule(
+        start_date=asof, end_date=asof)
+    need(len(rows) == 1, "OFFICIAL_SESSION_NOT_FOUND")
+    close = rows.iloc[0]["market_close"].to_pydatetime()
+    start = dt.datetime.combine(dt.date.fromisoformat(asof), dt.time(), NY)
+    end = close + dt.timedelta(minutes=5)
+    need(start < end and end <= now-dt.timedelta(minutes=15),
+         "BASIC_HISTORICAL_15M_DELAY_HORIZON")
+    return start.isoformat(timespec="seconds"), end.isoformat(timespec="seconds")
+
+
 def query_sip(symbols, asof, key, secret, opener=urllib.request.urlopen,
               page_cap=8):
     """One bounded multi-symbol request family; honour all returned pages."""
     need(bool(key and secret), "ALPACA_CREDENTIALS_NOT_CONFIGURED")
-    start = f"{asof}T00:00:00-04:00"
-    end = f"{asof}T23:59:59-04:00"
-    # October EOD is EDT; UTC/ET DST handling must be calendar-derived.
-    d = dt.date.fromisoformat(asof)
-    offset = dt.datetime.combine(d, dt.time(12), NY).strftime("%z")
-    offs = offset[:3] + ":" + offset[3:]
-    start = f"{asof}T00:00:00{offs}"
-    end = f"{asof}T23:59:59{offs}"
+    start, end = historical_request_window(
+        asof, dt.datetime.now(dt.timezone.utc))
     base = "https://data.alpaca.markets/v2/stocks/bars"
     pages, output, token = 0, {}, None
     while True:
@@ -211,6 +227,10 @@ def selftest():
         "UNKNOWN_DAILY_MISSING_OR_INTEGRITY": 1} and
         out["registered_R92_count"] == 0 and
         out["upstream_page_requests"] == 1, "POSITIVE_NO_ALPHA")
+    req_start, req_end = historical_request_window(asof, now)
+    need(req_end.startswith("2026-10-14T20:05:00+00:00")
+         and req_start.startswith("2026-10-14T00:00:00-04:00"),
+         "NO_FUTURE_END_HORIZON")
     need(validate_one(record(v=1.5), asof) is False and
          validate_one(record(c=-1), asof) is False and
          validate_one({"t": "2026-10-13T04:00:00Z", "c": 1, "v": 1}, asof)
