@@ -72,10 +72,21 @@ def compile_watch_radar(candidates,previous=None,source_sha256=None,max_items=12
     prev=previous if type(previous) is dict else {}
     top,n,rejected=take_watch_candidates(candidates,max_items)
     asof=candidates["asof_et"]
-    previous_rows=(prev.get("watch_radar") or {}).get("watchlist") or []
-    prev_syms={x.get("symbol") for x in previous_rows if type(x) is dict}
+    previous_radar=prev.get("watch_radar") or {}
+    previous_rows=previous_radar.get("watchlist") or []
+    prior_by_symbol={x.get("symbol"):x for x in previous_rows if type(x) is dict}
+    prev_syms=set(prior_by_symbol)
+    previous_asof=previous_radar.get("asof_et")
     for v in top:
-        v["tracking_state"]="PERSISTING" if v["symbol"] in prev_syms else "NEW_ON_WATCHLIST"
+        old=prior_by_symbol.get(v["symbol"])
+        v["tracking_state"]="PERSISTING" if old is not None else "NEW_ON_WATCHLIST"
+        old_price=old.get("close_usd_observed") if old else None
+        v["previous_completed_session_change_pct"]=None
+        if (previous_asof and previous_asof!=asof and
+                type(old_price) in (int,float) and
+                math.isfinite(old_price) and old_price>0):
+            v["previous_completed_session_change_pct"]=round(
+                100*(v["close_usd_observed"]/old_price-1),2)
     previous_set=prev_syms
     current={x["symbol"] for x in top}
     fingerprint_id=fingerprint({"asof_et":asof,"watchlist":
@@ -135,6 +146,15 @@ def selftest():
     need(same["new_watchlist_symbols"]==[] and
          all(x["tracking_state"]=="PERSISTING" for x in same["watchlist"]),
          "TRACKING_STABLE")
+    tomorrow=json.loads(json.dumps(data))
+    tomorrow["asof_et"]="2026-10-14"
+    tomorrow["candidates"]["AAPL"]["price"]=129.15
+    changed=compile_watch_radar(tomorrow,{"watch_radar":r})
+    apple=next(x for x in changed["watchlist"] if x["symbol"]=="AAPL")
+    need(apple["previous_completed_session_change_pct"]==5.0
+         and apple["tracking_state"]=="PERSISTING"
+         and changed["candidate_local_special_review"] is None,
+         "NEXT_SESSION_TRACKS_TRUE_PRICE_CHANGE_NO_STALE_DEEP")
     for name,breakit in [
       ("SOURCE_PARTITION",lambda x:x.update(candidate_count=4)),
       ("SOURCE_SCHEMA",lambda x:x.update(schema="BAD"))]:
