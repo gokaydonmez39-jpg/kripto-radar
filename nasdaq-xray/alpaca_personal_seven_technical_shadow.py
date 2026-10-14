@@ -98,7 +98,15 @@ def run(now,fetch):
         result["counts"]={}
         return result
     start=days[0]+"T00:00:00Z"
-    end=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
+    # Free historical SIP endpoints must end >15m before request time.
+    # Next UTC midnight is not a safe historical end during US evening.
+    import pandas_market_calendars as mcal
+    close=mcal.get_calendar("NASDAQ").schedule(start_date=asof,end_date=asof)
+    need(len(close)==1,"OFFICIAL_NASDAQ_CLOSE_UNKNOWN")
+    end_time=close.iloc[0]["market_close"].to_pydatetime()+dt.timedelta(seconds=1)
+    need(end_time<=now-dt.timedelta(minutes=16),
+         "SIP_HISTORICAL_END_INSIDE_15M_WINDOW")
+    end=end_time.isoformat().replace("+00:00","Z")
     try:
         qbars=fetch(["QQQ"],start,end,asof)
         result["api_batch_count"]+=1
