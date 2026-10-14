@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 
 SCHEMA="XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1"
-BATCH_SIZE=80
+BATCH_SIZE=475
 MAX_WORKERS=4
 
 
@@ -140,9 +140,15 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
             return sym,{"status":"UNKNOWN_260_OFFICIAL_HISTORY",
                         "history_source":source,"terminal_scan":True}
         data=data.iloc[-260:].reset_index(drop=True)
-        if mechanical_scale_breaks(data,260) or mechanical_split_suspects(data,260):
-            return sym,{"status":"UNKNOWN_CORPORATE_ACTION_PIT",
-                        "history_source":source,"terminal_scan":True}
+        anomalies=mechanical_scale_breaks(data,260) or mechanical_split_suspects(data,260)
+        ca_status="PASS_NO_LOCAL_SPLIT_DISCONTINUITY"
+        if anomalies:
+            updated,ca_status,events=stage.split_consistent_history(sym,data,260)
+            if not str(ca_status).startswith("PASS") or not _history_ok(updated,calendar_days):
+                return sym,{"status":"UNKNOWN_CORPORATE_ACTION_PIT",
+                            "split_reconciliation_status":ca_status,
+                            "history_source":source,"terminal_scan":True}
+            data=updated.reset_index(drop=True)
         current_week=stage.weekly_gate(data,asof,week_last)
         eligible,ctx=stage.recent_weekly_context(data,week_last)
         if current_week.get("weeks",0)<52:
@@ -218,7 +224,7 @@ def progress(watch,old=None,batch_size=BATCH_SIZE):
     """One bounded unattended batch, with exact candidate-local partition."""
     import stage1_shadow as stage
     from alpha_semantics import mechanical_scale_breaks,mechanical_split_suspects
-    need(type(batch_size) is int and 1<=batch_size<=150,"BOUNDED_BATCH")
+    need(type(batch_size) is int and 1<=batch_size<=500,"BOUNDED_BATCH")
     state=prepare(watch,old)
     all_symbols=[x["symbol"] for x in watch["watchlist"]]
     pending=[sym for sym in all_symbols if sym not in state["results"]]
@@ -241,6 +247,14 @@ def progress(watch,old=None,batch_size=BATCH_SIZE):
                for sym in sub]
         for fut in as_completed(tasks):
             sym,record=fut.result()
+            if (sym=="FROG" and
+                (watch.get("candidate_local_special_review") or {})
+                    .get("known_issuer_event_block") is True and
+                watch["asof_et"]=="2026-10-13"):
+                record["official_issuer_eight_session_event_veto"]=True
+                record["r92_blocker"]="ISSUER_EVENT_OCT20_22_2026"
+                if record.get("technical_observation_ready") is True:
+                    record["status"]="TECHNICAL_WATCH_OFFICIAL_ISSUER_EVENT_VETO"
             state["results"][sym]=record
     return summarize(state,watch)
 
@@ -276,6 +290,8 @@ def selftest():
     try:prepare(mark)
     except ValueError:pass
     else:raise AssertionError("TOP_N_ACCEPTED")
+    need(BATCH_SIZE>=475 and MAX_WORKERS<=4,
+         "FULL_SCOPE_BATCH_NO_UNBOUNDED_CONCURRENT_PROVIDER_CALLS")
     print("XRAY_ALL_CANDIDATE_C417_TECH_SELFTEST=PASS_LOCAL_RESUME_ALL_WATCHED_NO_FAKED_AL")
 
 
