@@ -97,6 +97,9 @@ def add_candidate_technical_funnel(out):
               " TECH_WATCH="+str(q["preliminary_technical_watch_count"])+
               " RETRY="+str(q["transient_retry_count"])+
               " PENDING="+str(q["pending_count"])+
+              " MATH_VERIFIED="+str(q.get("independent_math_audit_verified_count",0))+
+              "/"+str(q.get("independent_math_audit_count",0))+
+              " MATH_UNRESOLVED="+str(q.get("independent_math_audit_unresolved_count",0))+
               " AL=0 R92=0",flush=True)
     except Exception as exc:
         out["candidate_technical_funnel"]={
