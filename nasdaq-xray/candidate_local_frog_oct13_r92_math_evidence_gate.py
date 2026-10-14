@@ -24,34 +24,31 @@ def load(path):
     return json.loads(b),hashlib.sha256(b).hexdigest()
 
 def canonical_release_readback(source_sha256):
-    """Only an independently source-bound same-ASOF terminal + registry + ledger certifies registration."""
+    """Registration can be minted first; actual phone delivery is a separate fact."""
+    from frog_c417_first_registration_writer_v1 import read_registration, root_sha
     try:
         terminal=json.loads((ROOT/"canonical_current_terminal.json").read_text())
         registry=json.loads((ROOT/"canonical_candidate_lifecycle_registry.json").read_text())
         ledger=json.loads((ROOT/"delivery_ledger.json").read_text())
         compiled=json.loads((ROOT/"chatgpt_compiled_policy_v3.json").read_text())
-    except (OSError, ValueError, KeyError):
-        return {"terminal":False,"registered":False}
-    evidence_id=hashlib.sha256(json.dumps(source_sha256,sort_keys=True).encode()).hexdigest()
-    item=(terminal.get("candidate_releases") or {}).get("FROG|D") or {}
-    terminal_ok=(terminal.get("asof_et")==ASOF and
-                 terminal.get("compiled_policy_hash")==compiled.get("policy_hash") and
-                 item.get("asof_et")==ASOF and
-                 item.get("evidence_root_sha256")==evidence_id and
-                 item.get("independent_c417_release_pass") is True)
-    key="FROG|D|"+ASOF
-    rec=(registry.get("records") or {}).get(key) or {}
-    sent=(ledger.get("deliveries") or {}).get(key) or {}
-    signal=rec.get("signal_id")
-    registered=terminal_ok and bool(signal) and all((
-        registry.get("asof_et")==ASOF,
-        rec.get("registered_r92") is True,
-        rec.get("evidence_root_sha256")==evidence_id,
-        sent.get("r92") is True,
-        sent.get("signal_id")==signal,
-        sent.get("evidence_root_sha256")==evidence_id,
-    ))
-    return {"terminal":bool(terminal_ok),"registered":bool(registered)}
+        evidence_id=root_sha(source_sha256)
+        item=(terminal.get("candidate_releases") or {}).get("FROG|D") or {}
+        terminal_ok=(terminal.get("asof_et")==ASOF and
+            terminal.get("compiled_policy_hash")==compiled.get("policy_hash") and
+            item.get("asof_et")==ASOF and
+            item.get("evidence_root_sha256")==evidence_id and
+            item.get("independent_c417_release_pass") is True)
+        registered=read_registration(registry,terminal,compiled,source_sha256)
+        key="FROG|D|"+ASOF
+        rec=(registry.get("records") or {}).get(key) or {}
+        delivery=(ledger.get("deliveries") or {}).get(key) or {}
+        delivered=bool(registered and delivery.get("signal_id")==rec.get("signal_id")
+            and delivery.get("evidence_root_sha256")==evidence_id and
+            delivery.get("platform_receipt_verified") is True)
+        return {"terminal":bool(terminal_ok),"registered":bool(registered),
+                "delivered":bool(delivered)}
+    except (OSError,ValueError,TypeError,KeyError):
+        return {"terminal":False,"registered":False,"delivered":False}
 
 def decide(cover,rollup,lastmile,policy,source_sha256=None):
     require(cover.get("schema")=="XRAY_FROG_OCT13_CLASS_SPECIFIC_10Q_COVER_AND_SIP_MC_SHADOW_V1","COVER_SCHEMA")
@@ -133,7 +130,9 @@ def decide(cover,rollup,lastmile,policy,source_sha256=None):
       "complete_historical_and_live_halt_clear":
           halt.get("historical_complete_clear_pass") is True and
           halt.get("live_halt_clear_pass") is True,
-      "regime_breadth_primary":False,
+      "regime_breadth_primary":
+          rollup.get("regime_breadth_primary") is True and
+          lastmile.get("regime_breadth_primary_pass") is True,
       "compiled_c417_independent_release":certification["terminal"]
     }
     eligible=all(x is True for x in exact.values())
@@ -156,7 +155,7 @@ def decide(cover,rollup,lastmile,policy,source_sha256=None):
             "missing_release_evidence":[k for k,v in exact.items() if v is not True],
             "eligible_c417_primary":eligible,
             "r92_registered":bool(eligible and certification["registered"]),
-            "iphone_delivery_receipt_attested":False,
+            "iphone_delivery_receipt_attested":certification["delivered"],
             "canonical_files_modified":False,
             "delivery_ledger_modified":False,
             "real_money":"NO-GO","execution":"NONE","unknown_never_pass":True}
@@ -248,6 +247,8 @@ def selftest():
         try:decide(*bad)
         except ValueError:pass
         else:raise AssertionError("FALSE_POSITIVE_"+label)
+    from frog_c417_first_registration_writer_v1 import selftest as first_registry_selftest
+    first_registry_selftest()
     print("XRAY_FROG_R92_MATH_SELFTEST=PASS_5_NEGATIVE_80PCT_CONDITIONAL_ONLY")
 
 def main():
@@ -267,6 +268,24 @@ def main():
     policy,sha_policy=load(ROOT/"personal_research_technical_policy_v1.json")
     result=decide(cover,rollup,lastmile,policy,{"sec_cover":sha_cover,"ca_price":sha_rollup,"sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy})
     result["seven_official_source_release_gates"]=seven_official_gate_readout(cover,rollup,lastmile)
+    from frog_c417_first_registration_writer_v1 import (
+        release_proved, terminal_proved, read_registration)
+    terminal=json.loads((ROOT/"canonical_current_terminal.json").read_text())
+    registry=json.loads((ROOT/"canonical_candidate_lifecycle_registry.json").read_text())
+    compiled=json.loads((ROOT/"chatgpt_compiled_policy_v3.json").read_text())
+    source_hashes={"sec_cover":sha_cover,"ca_price":sha_rollup,
+                   "sec_halt_event_auction":sha_lastmile,
+                   "conditional_policy":sha_policy}
+    candidate_release=release_proved(result)
+    terminal_release=terminal_proved(result,terminal,compiled) if candidate_release else False
+    result["first_registration_readiness"]={
+        "independent_seven_gates_ready":candidate_release,
+        "terminal_2026_10_13_c417_ready":terminal_release,
+        "may_mint_first_registration_without_prior_ledger":bool(candidate_release and terminal_release),
+        "registration_in_actual_registry":read_registration(registry,terminal,compiled,source_hashes),
+        "platform_delivery_acknowledged":result["iphone_delivery_receipt_attested"],
+        "terminal_asof_et":terminal.get("asof_et"),
+        "registry_asof_et":registry.get("asof_et")}
     result["source_json_sha256"]={"sec_cover":sha_cover,"ca_price":sha_rollup,
                                   "sec_halt_event_auction":sha_lastmile,"conditional_policy":sha_policy}
     x.out.write_text(json.dumps(result,indent=2,sort_keys=True)+chr(10))
@@ -274,6 +293,8 @@ def main():
     print("XRAY_FROG_R92_SOURCE_OBSERVATIONS=5_PASS")
     print("XRAY_FROG_SEVEN_OFFICIAL_PRIMARY_PASS="+str(result["seven_official_source_release_gates"]["pass_count"])+"/7")
     print("XRAY_FROG_R92_RELEASE_EVIDENCE_MISSING="+str(len(result["missing_release_evidence"])))
+    print("XRAY_FROG_FIRST_REGISTRATION_READY="+
+          str(result["first_registration_readiness"]["may_mint_first_registration_without_prior_ledger"]).upper())
     print("XRAY_FROG_R92_CANONICAL=BLOCKED_INDEPENDENT_C417_R92_FALSE")
 
 if __name__=="__main__":main()
