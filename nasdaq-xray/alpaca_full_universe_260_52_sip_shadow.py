@@ -17,6 +17,8 @@ import time
 from alpaca_full_universe_asof_sip_availability import (
     scope, historical_request_window, sha)
 from alpaca_full_scope_260_shadow import classify
+from alpaca_free_sip_shadow_guard import timestamp_date
+import math
 from alpaca_free_sip_shadow_guard import request_batch
 from alpaca_sip_paginated_transport_shadow import SYMBOL_RE
 from current_history_source_request import expected_dates
@@ -32,7 +34,57 @@ def need(ok, reason):
         raise ValueError("XRAY_FULL_NASDAQ_SIP_260_" + reason)
 
 
-def audit(asof, symbols, daily, weekly, fetch, pacing=0):
+def cause_of_nonpass(rows, label, official_days):
+    """Partition negative history cases by exact defect; never upgrade to PASS.
+
+    Returns only labels; vendor values and timestamps stay ephemeral in memory.
+    """
+    if label == "SHADOW_260_DAILY_52_WEEK_OBSERVED":
+        return "260_52_OBSERVED_RESEARCH_ONLY"
+    if label == "NO_BAR":
+        return "NO_SOURCE_BAR"
+    if label == "INVALID_OHLCV_OR_ZERO_VOLUME":
+        flags = set()
+        for row in rows:
+            if not isinstance(row, dict):
+                return "BAD_BAR_OBJECT"
+            try:
+                o, h, l, c, v = (row[k] for k in ("o", "h", "l", "c", "v"))
+                if any(isinstance(x, bool) or not isinstance(x, (int, float))
+                       or not math.isfinite(x) for x in (o, h, l, c, v)):
+                    return "MALFORMED_OR_NONFINITE_BAR"
+                if v <= 0:
+                    flags.add("ZERO_OR_NEGATIVE_RECORDED_VOLUME")
+                if min(o, h, l, c) <= 0:
+                    flags.add("NONPOSITIVE_RECORDED_PRICE")
+                if h < max(o, l, c) or l > min(o, c):
+                    flags.add("OHLC_GEOMETRY_CONFLICT")
+            except (KeyError, ValueError, TypeError):
+                return "MALFORMED_BAR_FIELDS"
+        return "+".join(sorted(flags)) if flags else "INVALID_CAUSE_NOT_REPRODUCED"
+    if label == "MISSING_EXACT_COMPLETED_SESSIONS":
+        observed = set()
+        for row in rows:
+            try:
+                observed.add(timestamp_date(row["t"]).isoformat())
+            except (KeyError, TypeError, ValueError, OverflowError):
+                return "MISSING_WITH_BAD_TIMESTAMPS"
+        lacking = set(official_days) - observed
+        n = len(lacking)
+        if n == 0:
+            return "MISSING_REASON_NOT_REPRODUCED"
+        if official_days[-1] in lacking:
+            return "MISSING_CURRENT_ASOF_AND_" + (
+                "1_TO_5_DAYS" if n <= 5 else
+                "6_TO_30_DAYS" if n <= 30 else "OVER_30_DAYS")
+        return ("MISSING_PRIOR_1_TO_5_DAYS" if n <= 5 else
+                "MISSING_PRIOR_6_TO_30_DAYS" if n <= 30 else
+                "MISSING_PRIOR_OVER_30_DAYS")
+    return label
+
+
+def audit(asof, symbols, daily, weekly, fetch, pacing=0,
+          cause_labels=None):
     need(len(symbols) > 0 and len(symbols) <= MAX_SYMBOLS
          and symbols == sorted(set(symbols)), "IDENTITY_SCOPE")
     need(len(daily) == 260 and daily[-1] == asof and
@@ -46,11 +98,15 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0):
         if transport is not None:
             for name in group:
                 labels[name] = transport
+                if cause_labels is not None:
+                    cause_labels[name] = transport
             continue
         valid = [sym for sym in group if SYMBOL_RE.fullmatch(sym)]
         for sym in group:
             if sym not in valid:
                 labels[sym] = "UNKNOWN_SYMBOL_MALFORMED_FOR_PROVIDER"
+                if cause_labels is not None:
+                    cause_labels[sym] = "UNKNOWN_SYMBOL_MALFORMED_FOR_PROVIDER"
         if not valid:
             continue
         try:
@@ -65,6 +121,9 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0):
                      type(observed) is int and 0 <= observed <= 260,
                      "HISTORY_CLASSIFIER_INVALID")
                 labels[sym] = status
+                if cause_labels is not None:
+                    cause_labels[sym] = cause_of_nonpass(
+                        received.get(sym, []), status, daily)
         except (RuntimeError, ValueError, TimeoutError, OSError) as e:
             v = str(e)
             # Preserve known HTTP and pagination classes, never raw responses.
@@ -72,6 +131,8 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0):
                          else "UNKNOWN_PROVIDER_TRANSPORT_OR_INTEGRITY")
             for sym in valid:
                 labels[sym] = transport
+                if cause_labels is not None:
+                    cause_labels[sym] = transport
         if pacing:
             time.sleep(pacing)
     need(set(labels) == set(symbols), "ALL_IDENTITY_PARTITION_REQUIRED")
@@ -80,8 +141,12 @@ def audit(asof, symbols, daily, weekly, fetch, pacing=0):
 
 
 def report(asof, names, daily, weekly, fetch, pacing=0):
+    causes = {}
     labels, counts, calls, transport = audit(
-        asof, names, daily, weekly, fetch, pacing)
+        asof, names, daily, weekly, fetch, pacing, cause_labels=causes)
+    need(set(causes) == set(labels), "ALL_CAUSES_PARTITION")
+    cause_counts = dict(sorted(collections.Counter(causes.values()).items()))
+    need(sum(cause_counts.values()) == len(names), "CAUSE_COUNTS")
     ready = counts.get("SHADOW_260_DAILY_52_WEEK_OBSERVED", 0)
     need(sum(counts.values()) == len(names) and
          ready <= len(names), "COUNTS")
@@ -94,6 +159,9 @@ def report(asof, names, daily, weekly, fetch, pacing=0):
         "full_history_260_52_observed_count": ready,
         "full_history_missing_or_unknown_count": len(names)-ready,
         "classification_counts": counts,
+        "history_nonpass_cause_counts": cause_counts,
+        "symbol_nonpass_cause_classes": dict(sorted(causes.items())),
+        "cause_labels_are_diagnostics_not_ticker_age_or_verified_history": True,
         "symbol_classifications": dict(sorted(labels.items())),
         "api_batch_calls": calls, "transport_stop_class": transport,
         "status": ("SHADOW_FULL_IDENTITY_MEASURED_NO_AUTHORITY"
@@ -126,9 +194,28 @@ def selftest():
         return {sym: (good if sym == "AAA" else good[:-1])
                 for sym in group}
     result = report(asof, ["AAA", "BBB"], daily, weekly, fake)
+    need(result["history_nonpass_cause_counts"] == {
+        "260_52_OBSERVED_RESEARCH_ONLY": 1,
+        "MISSING_CURRENT_ASOF_AND_1_TO_5_DAYS": 1},
+        "MISSING_SINGLE_CURRENT_DATE_CAUSE")
     need(result["full_history_260_52_observed_count"] == 1 and
          result["classification_counts"]["MISSING_EXACT_COMPLETED_SESSIONS"] == 1
          and result["registered_R92_count"] == 0, "POSITIVE_AND_MISSING")
+    zero_volume = [dict(good[0], v=0)] + good[1:]
+    need(cause_of_nonpass(zero_volume,
+         classify(zero_volume, daily, weekly, asof)[0], daily) ==
+         "ZERO_OR_NEGATIVE_RECORDED_VOLUME",
+         "ZERO_RECORDED_VOLUME_NOT_OTHER_DEFECT")
+    bad_geom = [dict(good[0], h=8)] + good[1:]
+    need(cause_of_nonpass(bad_geom,
+         classify(bad_geom, daily, weekly, asof)[0], daily) ==
+         "OHLC_GEOMETRY_CONFLICT",
+         "OHLC_GEOMETRY_NOT_VOLUME")
+    before_asof = good[1:]
+    need(cause_of_nonpass(before_asof,
+         classify(before_asof, daily, weekly, asof)[0], daily) ==
+         "MISSING_PRIOR_1_TO_5_DAYS",
+         "PRIOR_GAP_NOT_LATEST_ASOF")
     def limited(group, expected, date):
         raise RuntimeError("ALPACA_HTTP_429")
     z = report(asof, ["AAA", "BBB"], daily, weekly, limited)
@@ -153,7 +240,7 @@ def selftest():
     need(start.endswith("-04:00") and
          end == "2026-10-14T20:05:00+00:00",
          "OFFICIAL_CLOSE_NO_FUTURE")
-    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_FAIL_CLOSED_RATE_LIMIT_NO_ALPHA")
+    print("XRAY_FULL_NASDAQ_260_52_SIP_SELFTEST=PASS_260_52_FAIL_CLOSED_CAUSAL_DISAGGREGATION_RATE_LIMIT_NO_ALPHA")
 
 
 def main():
@@ -188,6 +275,7 @@ def main():
         "observed":result["full_history_260_52_observed_count"],
         "not_proven":result["full_history_missing_or_unknown_count"],
         "counts":result["classification_counts"],
+        "cause_counts":result["history_nonpass_cause_counts"],
         "source_stop":result["transport_stop_class"],
         "api_calls":result["api_batch_calls"]},sort_keys=True))
 
