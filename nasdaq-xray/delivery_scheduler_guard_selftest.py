@@ -21,6 +21,12 @@ final=[run(created="2026-10-05T20:25:00Z",updated="2026-10-05T20:40:00Z")]
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,root,final)
 assert ok and why=="PASS",(ok,why)
 
+# An unzoned clock must never be guessed to mean UTC, even at a valid hour.
+ok,why=evaluate_readiness(NOW.replace(tzinfo=None),CONTRACT,root_kick,final_kick,root,final)
+assert not ok and why=="DELIVERY_CLOCK_TIMEZONE_UNVERIFIED",(ok,why)
+ok,why=evaluate_readiness(None,CONTRACT,root_kick,final_kick,root,final)
+assert not ok and why=="DELIVERY_CLOCK_TIMEZONE_UNVERIFIED",(ok,why)
+
 ok,why=evaluate_readiness(NOW,CONTRACT,root_kick,final_kick,root+[run(status="queued",conclusion=None)],final)
 assert not ok and why=="ROOT_RECOVERY_ACTIVE",(ok,why)
 
