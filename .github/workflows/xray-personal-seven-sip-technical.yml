@@ -5,8 +5,6 @@ on:
     paths:
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
       - ".github/workflows/xray-personal-seven-sip-technical.yml"
-  schedule:
-    - cron: "42 23 * * 1-5"
   workflow_dispatch:
 permissions:
   contents: read
