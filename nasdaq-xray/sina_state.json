@@ -3,8 +3,9 @@
   "build": "2026-10-02.1",
   "counts": {
     "FAIL_DV30": 1157,
+    "FAIL_HISTORY": 1,
     "FAIL_PRICE": 1314,
-    "PASS": 493,
+    "PASS": 492,
     "UNKNOWN_RETRY_EXHAUSTED": 28,
     "UNKNOWN_STATIC": 192
   },
@@ -28862,6 +28863,7 @@
     "MMTX",
     "WTG"
   ],
+  "official_first_trade_history_rebound_count": 1,
   "official_footer": "File Creation Time: 1013202621:31|||||||",
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
@@ -38916,17 +38918,21 @@
     "BSP": {
       "attempts": 1,
       "info": {
-        "bars": 3757,
-        "dv30": 80009959.26750001,
-        "known_session_count": 30,
-        "missing_sessions": [],
+        "bars": 73,
+        "completed_listed_sessions": 73,
+        "first_traded_nasdaq_date": "2026-07-01",
         "no_synthetic_bar": true,
-        "price": 37.86,
-        "proof": "EXACT30_MEDIAN"
+        "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+        "required_own_history_sessions": 260,
+        "source_evidence_blob_sha": "4b4b36a47a13fd96cdea4692349a84981abcd971",
+        "unknown_never_pass": true,
+        "vendor_history_pre_ipo_quarantined": true
       },
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
-      "status": "PASS",
+      "official_first_trade_failonly_rebound": true,
+      "prior_untrusted_status": "PASS",
+      "status": "FAIL_HISTORY",
       "transport_rescue_round": 0,
       "updated_at_utc": "2026-10-14T04:47:43.577603+00:00"
     },
@@ -83450,12 +83456,12 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "3c098aee41cf7801e1fcfcc372e8717d5ba0ab424764271b30782429163f15d7",
+  "state_hash": "12827469d4bb0ef08d8a1192af265e404ec5dfed4dc5bc282411502c218a0405",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
   "unknown_count": 220,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-14T18:47:01.740420+00:00"
+  "updated_at_utc": "2026-10-14T18:52:09.928113+00:00"
 }

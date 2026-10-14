@@ -3,13 +3,13 @@
   "asof_et": "2026-10-13",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-13",
-    "attempted_count": 475,
+    "attempted_count": 474,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
-    "candidate_count": 475,
-    "engine_source_sha256": "e15a638eb2b65145166b05f6d5be28d89f3d29bc38d925516a0d32216d817261",
-    "evaluated_count": 471,
+    "candidate_count": 474,
+    "engine_source_sha256": "f2bf052ec1709049285ed8f6b3001571da463e782ccc25b8c90397afea2b8c7b",
+    "evaluated_count": 467,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,11 +18,14 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 19,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 4,
+    "pending_count": 7,
     "pending_symbols": [
+      "ASTS",
       "TWST",
       "FISV",
-      "BSP",
+      "FOXA",
+      "TLN",
+      "KYMR",
       "CCC"
     ],
     "preliminary_technical_watch_count": 0,
@@ -315,10 +318,9 @@
         "terminal_scan": true
       },
       "ASTS": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
+        "error_type": "ConnectionError",
+        "status": "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
+        "terminal_scan": false
       },
       "ATRC": {
         "completed_weeks": 54,
@@ -427,15 +429,6 @@
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
-      },
-      "BSP": {
-        "completed_listed_sessions": 73,
-        "first_traded_nasdaq_date": "2026-07-01",
-        "history_source": "NASDAQ_OFFICIAL_FIRST_TRADE_FAIL_ONLY",
-        "source_evidence_blob_sha": "4b4b36a47a13fd96cdea4692349a84981abcd971",
-        "status": "UNKNOWN_OFFICIAL_FIRST_TRADE_LT260",
-        "technical_observation_ready": false,
-        "terminal_scan": false
       },
       "BSY": {
         "completed_weeks": 54,
@@ -1152,10 +1145,9 @@
         "terminal_scan": true
       },
       "FOXA": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
+        "error_type": "ConnectionError",
+        "status": "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
+        "terminal_scan": false
       },
       "FROG": {
         "completed_weeks": 54,
@@ -1672,10 +1664,9 @@
         "terminal_scan": true
       },
       "KYMR": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
+        "error_type": "ConnectionError",
+        "status": "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
+        "terminal_scan": false
       },
       "LAMR": {
         "completed_weeks": 54,
@@ -3324,10 +3315,9 @@
         "terminal_scan": true
       },
       "TLN": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
+        "error_type": "ConnectionError",
+        "status": "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
+        "terminal_scan": false
       },
       "TMDX": {
         "completed_weeks": 54,
@@ -3915,19 +3905,19 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "0e9b8bf5405c15c9930ad06b0d8a8db98e53c3563ab8d493d695bbb33a9d7ba2",
+    "source_candidates_sha256": "efdc72591946f6f2f427256c1133c9659468443b7bba77c78da5737e72afebc7",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 116,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 337,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 333,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 17,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
-      "UNKNOWN_OFFICIAL_FIRST_TRADE_LT260": 1,
+      "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE": 4,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
-    "transient_retry_count": 4,
+    "transient_retry_count": 7,
     "unknown_never_pass": true,
-    "watchlist_digest": "7beebb329850099d35d5d5dceaa2235a07a1c25a38729b67538e4ddc5d14050d"
+    "watchlist_digest": "0243b5016800fa87e1e7e278da036310689518df20922b5643365fd7758c52a0"
   },
   "cursor": 3184,
   "downstream_invalidation": {
@@ -3981,13 +3971,13 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-14T18:47:02.192621+00:00",
+  "updated_at_utc": "2026-10-14T18:52:10.395473+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
     "asof_et": "2026-10-13",
     "authority": "OPEN_PRICE_LIQUIDITY_RESEARCH_WATCH_ONLY",
-    "candidate_count_from_source": 493,
+    "candidate_count_from_source": 492,
     "candidate_local_special_review": {
       "known_issuer_event_block": true,
       "official_event_dates": [
@@ -4007,14 +3997,16 @@
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
     "new_watchlist_symbols": [],
-    "no_longer_in_top_watchlist": [],
+    "no_longer_in_top_watchlist": [
+      "BSP"
+    ],
     "orders": [],
-    "price_liquidity_screened_count": 475,
+    "price_liquidity_screened_count": 474,
     "real_money": "NO-GO",
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "0e9b8bf5405c15c9930ad06b0d8a8db98e53c3563ab8d493d695bbb33a9d7ba2",
+    "source_candidates_sha256": "efdc72591946f6f2f427256c1133c9659468443b7bba77c78da5737e72afebc7",
     "source_rows_excluded": 18,
     "unknown_never_pass": true,
     "watchlist": [
@@ -8879,20 +8871,6 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 37.86,
-        "dv30_usd_observed": 80009959.27,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Bending Spoons S.p.A. - Ordinary Shares",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "BSP",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 78.2,
         "dv30_usd_observed": 79486383.58,
         "exact_completed_sessions": 30,
@@ -10670,7 +10648,7 @@
       }
     ],
     "watchlist_cap": null,
-    "watchlist_count": 475,
-    "watchlist_digest": "7beebb329850099d35d5d5dceaa2235a07a1c25a38729b67538e4ddc5d14050d"
+    "watchlist_count": 474,
+    "watchlist_digest": "0243b5016800fa87e1e7e278da036310689518df20922b5643365fd7758c52a0"
   }
 }
