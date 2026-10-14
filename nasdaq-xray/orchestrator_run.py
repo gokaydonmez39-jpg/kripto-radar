@@ -28,6 +28,37 @@ ENGINE_FILES=[
  "requirements-runtime.txt",
 ]
 
+def add_minimal_watch_radar(out):
+    """Always publish healthy-symbol watch rows, even if global HISTORY is partial.
+
+    WATCH records are research observations, not canonical Alpha/R92 authority.
+    A candidate with exact price/volume can be tracked independently of 220
+    unrelated missing-history symbols. No new data-provider calls.
+    """
+    from minimal_swing_watch_radar_v1 import (
+        compile_watch_radar, selftest as minimal_watch_selftest)
+    minimal_watch_selftest()
+    source=ROOT/"sina_candidates.json"
+    previous=json.loads(STATE.read_text()) if STATE.exists() else {}
+    if not source.is_file():
+        out["watch_radar"]={"status":"UNKNOWN_NO_CANDIDATE_FILE"}
+        return out
+    candidate_raw=source.read_bytes()
+    snapshot=json.loads(candidate_raw)
+    if snapshot.get("asof_et")!=out.get("asof_et"):
+        out["watch_radar"]={"status":"UNKNOWN_STALE_PRICE_SOURCE",
+                            "expected_asof_et":out.get("asof_et"),
+                            "source_asof_et":snapshot.get("asof_et")}
+        return out
+    watch=compile_watch_radar(snapshot,previous,
+                             hashlib.sha256(candidate_raw).hexdigest())
+    out["watch_radar"]=watch
+    print("XRAY_SIMPLE_WATCH_RADAR=READY asof="+str(watch["asof_et"])+
+          " price_dv30_eligible="+str(watch["price_liquidity_screened_count"])+
+          " displayed="+str(watch["watchlist_count"])+
+          " BUY=FALSE R92=FALSE",flush=True)
+    return out
+
 def readj(path):
     p=ROOT/path
     return json.loads(p.read_text()) if p.exists() else {}
@@ -621,6 +652,7 @@ def main():
           "g9_status":"BLOCKED","account_gate":"UNKNOWN_NOT_CONFIGURED",
           "downstream_invalidation":downstream_invalidation
         }
+        out=add_minimal_watch_radar(out)
         STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
         print("XRAY_ORCHESTRATOR=PARTIAL_HISTORY")
         return
@@ -706,6 +738,7 @@ def main():
       "full_go_blockers":blockers,
       "authority":"EXTERNAL_AUTONOMOUS_SUPPORT_DATA_PLANE_ONLY; CANONICAL_CANDIDATE_AUTHORITY_UNCHANGED"
     }
+    out=add_minimal_watch_radar(out)
     STATE.write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
     print("XRAY_ORCHESTRATOR="+status)
     print(json.dumps({"asof":out["asof_et"],"core":core.get("current_core_count"),
