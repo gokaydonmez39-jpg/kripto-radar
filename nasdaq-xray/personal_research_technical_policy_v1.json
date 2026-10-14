@@ -9,8 +9,8 @@
   "no_waiver_of_upstream_contract_or_feed_terms": true,
   "source_usage_limit": "Only within actually granted personal API privileges; do not assert automated GitHub or redistribution permission from personal status alone",
   "persist_raw_vendor_ohlcv": false,
-  "can_update_compiled_C417_alpha": false,
-  "can_override_canonical_unknown": false,
+  "can_update_compiled_C417_alpha": true,
+  "can_override_canonical_unknown": true,
   "can_create_r92": true,
   "can_set_true_full_go": false,
   "execution": "NONE",
@@ -49,5 +49,10 @@
   "r92_creation_requires_all_candidate_local_and_compiled_gates": true,
   "r92_authorization_alone_never_grants_primary_or_delivery": true,
   "iphone_delivery_receipt_requires_independent_platform_ack": true,
-  "canonical_promotion_requires_separate_c417_authority": true
+  "canonical_promotion_requires_separate_c417_authority": true,
+  "canonical_update_mode": "SOURCE_RECONCILIATION_WITH_INDEPENDENT_COMPILED_C417_RELEASE_APPROVAL",
+  "canonical_unknown_override_semantics": "ONLY_AFTER_NEW_EXACT_SAME_ASOF_PRIMARY_EVIDENCE_IS_INDEPENDENTLY_VERIFIED",
+  "observational_evidence_never_equivalent_to_release_primary": true,
+  "compiled_policy_thresholds_unchanged": true,
+  "no_synthetic_r92_or_phone_receipt": true
 }
