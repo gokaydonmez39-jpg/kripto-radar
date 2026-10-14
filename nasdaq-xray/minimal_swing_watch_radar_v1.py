@@ -25,7 +25,7 @@ def fingerprint(obj):
     return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).hexdigest()
 
 def take_watch_candidates(raw,max_items=12):
-    need(type(raw) is dict and raw.get("schema")=="XRAY_SINA_CANDIDATES_V1"
+    need(type(raw) is dict and raw.get("schema")=="XRAY_SINA_CANDIDATES_V2"
          and type(raw.get("asof_et")) is str,"SOURCE_SCHEMA")
     rows=raw.get("candidates")
     need(type(rows) is dict and raw.get("candidate_count")==len(rows),"CANDIDATE_TOTAL")
@@ -118,7 +118,7 @@ def selftest():
                 "proof":"EXACT30_MEDIAN" if ok else "UNKNOWN",
                 "known_session_count":30,"missing_sessions":[],
                 "no_synthetic_bar":True}
-    data={"schema":"XRAY_SINA_CANDIDATES_V1","asof_et":ASOF_FROG,
+    data={"schema":"XRAY_SINA_CANDIDATES_V2","asof_et":ASOF_FROG,
         "candidate_count":5,
         "candidates":{
            "AAPL":rec("Apple Inc - Common Stock",123,100_000_000),
