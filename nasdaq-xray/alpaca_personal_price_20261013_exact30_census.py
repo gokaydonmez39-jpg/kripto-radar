@@ -63,14 +63,14 @@ def scope(now=None):
            "MASTER_AND_PRICE_SAFETY")
     return symbols,dates30(),blobsha(ROOT/"canonical_current_master_manifest.json"),blobsha(ROOT/"canonical_current_price_dv30.json")
 
-def fetch(batch,dates,creds,calls):
+def fetch(batch,dates,creds,calls,asof=ASOF):
     base="https://data.alpaca.markets/v2/stocks/bars"
     out=[]
     # Start at the first session's ET midnight, finish after the exact target.
     from zoneinfo import ZoneInfo
     ny=ZoneInfo("America/New_York")
     first=dt.datetime.combine(dt.date.fromisoformat(dates[0]),dt.time(0),tzinfo=ny)
-    last=dt.datetime.combine(dt.date.fromisoformat(ASOF)+dt.timedelta(days=1),
+    last=dt.datetime.combine(dt.date.fromisoformat(asof)+dt.timedelta(days=1),
                              dt.time(0),tzinfo=ny)
     for tf in ("1Day","30Min"):
         token=None
