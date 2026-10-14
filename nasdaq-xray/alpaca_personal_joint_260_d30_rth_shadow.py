@@ -33,7 +33,7 @@ NY=ZoneInfo("America/New_York")
 BASE="https://data.alpaca.markets/v2/stocks/bars"
 BATCH=8
 PAGES=32
-MAX_CALLS=280
+MAX_CALLS=900
 MAX_SYMBOL_ROWS=1200
 MAX_RESPONSE_BYTES=3500000
 PROVIDER_UNKNOWN="UNKNOWN_HISTORICAL_SIP_RTH_PROVIDER_STOP"
@@ -176,8 +176,10 @@ def measure(asof,syms,days,source,now,pace=0):
             attempted+=len(group)
         except (RuntimeError,ValueError,TimeoutError,OSError) as exc:
             v=str(exc)
-            stop=v if v.startswith(("ALPACA_HTTP_","ALPACA_PAGE_")) else (
-                "UNKNOWN_RTH_30MIN_TRANSPORT_OR_INTEGRITY")
+            stop=(v if v.startswith(("ALPACA_HTTP_","ALPACA_PAGE_"))
+                  else "SOURCE_CALL_BUDGET_REACHED_NO_RTH"
+                  if "SOURCE_CALL_BUDGET" in v
+                  else "UNKNOWN_RTH_30MIN_TRANSPORT_OR_INTEGRITY")
             for name in group:status[name]=PROVIDER_UNKNOWN
         if pace:time.sleep(pace)
     count=dict(sorted(Counter(status.values()).items()))
@@ -284,7 +286,13 @@ def selftest():
     z=measure(asof,symbols,dates,blocked,now)
     need(z["source_stop_class"]=="ALPACA_HTTP_429" and
          z["rth_incomplete_or_unknown_count"]==1,"RATE_LIMIT_NEVER_PASS")
-    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_BOUND_MISSING_30MIN_SLOT_429_SHA_NO_PRIMARY")
+    def budget(*args):
+        raise ValueError("XRAY_PERSONAL_JOINT_RTH30_SOURCE_CALL_BUDGET")
+    limited=measure(asof,symbols,dates,budget,now)
+    need(limited["source_stop_class"]=="SOURCE_CALL_BUDGET_REACHED_NO_RTH"
+         and limited["rth_lower_bound_ge50m_shadow_count"]==0,
+         "CALL_BUDGET_EXHAUSTION_NOT_VENDOR_INTEGRITY")
+    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_900_BUDGET_DIAGNOSTIC_RTH_BOUND_SHA_NO_PRIMARY")
 
 
 def main():
