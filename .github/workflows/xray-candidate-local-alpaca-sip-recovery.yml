@@ -44,6 +44,7 @@ jobs:
           python nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
           python -O nasdaq-xray/personal_eod_github_cas_publisher.py --selftest
       - name: Quarantine mixed latest root MASTER PRICE epochs before any SIP request
+        id: source_epoch_preflight
         run: |
           python -m py_compile nasdaq-xray/personal_eod_source_epoch_preflight.py
           python nasdaq-xray/personal_eod_source_epoch_preflight.py --selftest
@@ -84,7 +85,7 @@ jobs:
         run: |
           python nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --out "$RUNNER_TEMP/xray_candidate_sip_source_availability.json"
       - name: Check no source authority or vendor data was exported
-        if: always()
+        if: always() && steps.source_epoch_preflight.outcome == 'success'
         run: |
           python - <<'PY'
           import hashlib,json,os
@@ -203,6 +204,7 @@ jobs:
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
           python -O nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
       - name: Refuse stale mixed-epoch personal PRICE provider requests
+        id: price_epoch_preflight
         run: |
           python nasdaq-xray/personal_eod_source_epoch_preflight.py --selftest
           python nasdaq-xray/personal_eod_source_epoch_preflight.py
@@ -214,7 +216,7 @@ jobs:
           python nasdaq-xray/alpaca_personal_price_current_exact30.py \
             --out "$RUNNER_TEMP/xray_personal_current_price_exact30_no_bars.json"
       - name: Require exact full scope or fail-closed partial; never canonicalize lower bound
-        if: always()
+        if: always() && steps.price_epoch_preflight.outcome == 'success'
         run: |
           python - <<'PY'
           import json,os,subprocess
