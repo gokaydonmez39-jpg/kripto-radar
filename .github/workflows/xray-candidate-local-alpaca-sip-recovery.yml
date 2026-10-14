@@ -6,6 +6,8 @@ on:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_personal_seven_technical_shadow.py"
       - "nasdaq-xray/personal_research_daily_attestation.py"
+      - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
+      - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
       - "nasdaq-xray/official_first_trade_260_history_guard.py"
       - "nasdaq-xray/evidence/bsp_20260701_official_first_trade_v1.json"
       - "nasdaq-xray/candidate_local_full_technical_funnel_v1.py"
@@ -165,5 +167,74 @@ jobs:
         with:
           name: xray-candidate-260-sip-availability-no-vendor-bars
           path: ${{ runner.temp }}/xray_candidate_sip_source_availability.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  personal-price-current-exact30:
+    runs-on: ubuntu-latest
+    timeout-minutes: 37
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate dynamic Nasdaq completed session, full PRICE unknown set and no fake primary
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+          python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py
+          python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
+          python -O nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
+      - name: Scan every CURRENT same-session canonical PRICE unresolved symbol with personal historical SIP
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_personal_price_current_exact30.py \
+            --out "$RUNNER_TEMP/xray_personal_current_price_exact30_no_bars.json"
+      - name: Require exact full scope or fail-closed partial; never canonicalize lower bound
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          output=Path(os.environ["RUNNER_TEMP"])/"xray_personal_current_price_exact30_no_bars.json"
+          if not output.exists():raise SystemExit("XRAY_PERSONAL_CURRENT_PRICE_UNAVAILABLE_FAIL_CLOSED")
+          report=json.loads(output.read_text())
+          assert report["schema"]=="XRAY_PERSONAL_CURRENT_EXACT30_SIP_PRICE_RECHECK_V1"
+          assert report["source_master_git_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],
+              text=True).strip()
+          assert report["source_price_git_blob_sha"]==subprocess.check_output(
+              ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
+              text=True).strip()
+          assert report["scope_total"]==len(report["classifications"])
+          assert report["scope_total"]==report["source_price_unknown_total"]
+          assert report["scope_truncated"] is False
+          assert sum(report["counts"].values())==report["scope_total"]
+          assert len(report["exact30_dates"])==30
+          assert report["exact30_dates"][-1]==report["asof_et"]
+          assert report["personal_research_only"] is True
+          assert report["price_primary_pass_count"]==0
+          assert report["registered_R92_created"] is False
+          assert report["canonical_price_promoted"] is False
+          assert report["canonical_mc_promoted"] is False
+          assert report["vendor_raw_OHLCV_written"] is False
+          assert report["execution"]=="NONE" and report["real_money"]=="NO-GO"
+          print("XRAY_PERSONAL_DAILY_PRICE_SCOPE="+str(
+             report["classified_count"])+"/"+str(report["scope_total"]))
+          print("XRAY_PERSONAL_DAILY_PRICE_SHADOW_COUNTS="+json.dumps(
+              report["counts"],sort_keys=True))
+          print("XRAY_PERSONAL_DAILY_PRICE_NO_CANONICAL_R92=PASS")
+          PY
+      - name: Archive bounded personal exact30 research classifications, never vendor OHLCV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-daily-current-price-exact30-no-ohlcv
+          path: ${{ runner.temp }}/xray_personal_current_price_exact30_no_bars.json
           if-no-files-found: warn
           retention-days: 14
