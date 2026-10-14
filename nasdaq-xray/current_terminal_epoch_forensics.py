@@ -63,19 +63,28 @@ def assess(d, proof):
     root, master, price = (d["orchestrator"], d["master"], d["price"])
     last_history, last_terminal = d["history"], d["terminal"]
     asof = root["asof_et"]
-    need(master["asof_et"] == price["asof_et"] == asof, "ROOT_MASTER_PRICE_EPOCH_DRIFT")
-    need(root.get("queue_hash") == master.get("queue_hash") ==
-         price.get("source_master_queue_hash"), "MASTER_PRICE_QUEUE_HASH_MISMATCH")
+    # The daily root may legitimately advance while canonical master/price
+    # remain on the last settled session. Diagnose this as a BLOCKER rather
+    # than throwing before a read-only stale-terminal report can be emitted.
+    # Master and PRICE must STILL form an internally exact single epoch.
+    need(master["asof_et"] == price["asof_et"], "MASTER_PRICE_EPOCH_DRIFT")
+    root_epoch_aligned = master["asof_et"] == asof
+    if not root_epoch_aligned:
+        need(asof > master["asof_et"], "ROOT_OLDER_THAN_CANONICAL_SOURCES")
+    need(master.get("queue_hash") == price.get("source_master_queue_hash") and
+         (not root_epoch_aligned or root.get("queue_hash") == master.get("queue_hash")),
+         "MASTER_PRICE_QUEUE_HASH_MISMATCH")
     scope = master.get("queue_total")
     need(type(scope) is int and scope > 0 and
-         root.get("queue_total") == price.get("source_master_count") == scope,
+         price.get("source_master_count") == scope and
+         (not root_epoch_aligned or root.get("queue_total") == scope),
          "MASTER_PRICE_QUEUE_COUNT_MISMATCH")
     symbols = master.get("pass_symbols")
     need(isinstance(symbols, list) and len(symbols) == scope and
          symbols == sorted(set(symbols)) and
          master.get("pass_count") == scope and
          hashlib.sha256("\n".join(symbols).encode()).hexdigest() ==
-             root["queue_hash"], "MASTER_QUEUE_INTEGRITY")
+             master["queue_hash"], "MASTER_QUEUE_INTEGRITY")
     rows = price.get("results")
     need(isinstance(rows, dict) and len(rows) == scope,
          "PRICE_FULL_SCOPE_PARTITION_MISSING")
@@ -129,6 +138,10 @@ def assess(d, proof):
     need(len(pending_syms) == pending and
          len(set(pending_syms)) == pending, "PENDING_SET_MISMATCH")
     blockers = []
+    if not root_epoch_aligned:
+        blockers.append("ROOT_MASTER_PRICE_EPOCH_DRIFT")
+    if root.get("unknown_count") != 0:
+        blockers.append("ROOT_HISTORY_NOT_FULLY_RESOLVED")
     if master.get("unknown_count") != 0:
         blockers.append("MASTER_IDENTITY_UNRESOLVED")
     if len(unknown):
@@ -143,12 +156,18 @@ def assess(d, proof):
     return {
         "schema": SCHEMA,
         "source_asof_et": asof,
+        "canonical_master_asof_et": master["asof_et"],
+        "canonical_price_asof_et": price["asof_et"],
+        "current_root_master_price_epoch_aligned": root_epoch_aligned,
         "last_authoritative_terminal_asof_et": last_terminal["asof_et"],
         "last_canonical_history_asof_et": last_history["asof_et"],
         "latest_master_unknown_count": master.get("unknown_count"),
         "latest_price_unknown_count": len(unknown),
         "latest_price_unknown_reason_counts": dict(sorted(reasons.items())),
-        "current_price_primary_pass_count": price.get("pass_count"),
+        "current_price_primary_pass_count": (price.get("pass_count")
+                                              if root_epoch_aligned else None),
+        "previous_epoch_price_pass_count": (price.get("pass_count")
+                                             if not root_epoch_aligned else None),
         "root_history_unknown_count": root.get("unknown_count"),
         "research_watch_count": total_watch,
         "research_evaluated_count": done,
@@ -157,7 +176,9 @@ def assess(d, proof):
         "current_asof_terminal_generated": False,
         "historical_terminal_not_current_evidence": last_terminal["asof_et"] != asof,
         "diagnostic_blockers": blockers,
-        "status": ("CURRENT_UPSTREAM_BLOCKED_LAST_TERMINAL_STALE"
+        "status": ("MIXED_SOURCE_EPOCH_FAIL_CLOSED_LAST_TERMINAL_STALE"
+                   if not root_epoch_aligned else
+                   "CURRENT_UPSTREAM_BLOCKED_LAST_TERMINAL_STALE"
                    if blockers else "UPSTREAM_DIAGNOSTICS_ONLY_FINAL_UNATTESTED"),
         "source_git_blobs": proof,
         "canonical_terminal_overwritten": False,
@@ -217,6 +238,7 @@ def selftest():
         ("queue_hash", lambda v: v["master"].update(queue_hash="OTHER")),
         ("terminal_future", lambda v: v["terminal"].update(asof_et="2026-10-14")),
         ("candidate_partition", lambda v: v["orchestrator"]["candidate_technical_funnel"].update(evaluated_count=2)),
+        ("master_price_epoch", lambda v: v["price"].update(asof_et="2026-10-12")),
         ("unsafe_execution", lambda v: v["price"].update(execution="LIVE")),
         ("master_queue_drift", lambda v: v["master"]["pass_symbols"].__setitem__(0, "ZZZ")),
         ("pass_count_lie", lambda v: v["price"].update(pass_count=1)),
@@ -233,6 +255,35 @@ def selftest():
             pass
         else:
             raise AssertionError("MALFORMED_FORENSICS_ACCEPTED_" + label)
+    # A rollover on the root alone must emit a meaningful blocker report.
+    # It may never import stale canonical PRICE into the current epoch.
+    mixed = copy.deepcopy(docs)
+    mixed["orchestrator"]["asof_et"] = "2026-10-14"
+    mixed["orchestrator"]["queue_hash"] = "new-session-unsettled"
+    mixed["orchestrator"]["queue_total"] = 3186
+    mixed["orchestrator"]["unknown_count"] = 3185
+    mixed_result = assess(mixed, proof)
+    need(mixed_result["status"] ==
+         "MIXED_SOURCE_EPOCH_FAIL_CLOSED_LAST_TERMINAL_STALE"
+         and mixed_result["current_root_master_price_epoch_aligned"] is False
+         and mixed_result["current_price_primary_pass_count"] is None
+         and mixed_result["previous_epoch_price_pass_count"] == 0
+         and mixed_result["diagnostic_blockers"][0] ==
+         "ROOT_MASTER_PRICE_EPOCH_DRIFT"
+         and "ROOT_HISTORY_NOT_FULLY_RESOLVED" in
+         mixed_result["diagnostic_blockers"]
+         and mixed_result["r92_created_by_report"] is False,
+         "MIXED_EPOCH_FAIL_CLOSED_DIAGNOSTIC")
+    # A canonical input from the FUTURE relative to root is corruption.
+    mixed_bad = copy.deepcopy(docs)
+    mixed_bad["orchestrator"]["asof_et"] = "2026-10-12"
+    try:
+        assess(mixed_bad, proof)
+    except ValueError as exc:
+        need("ROOT_OLDER_THAN_CANONICAL_SOURCES" in str(exc),
+             "MIXED_EPOCH_NEGATIVE_REASON")
+    else:
+        raise AssertionError("BACKWARD_ROOT_EPOCH_ACCEPTED")
     ready = copy.deepcopy(docs)
     ready["master"]["unknown_count"] = 0
     ready["price"]["unknown_count"] = 0
@@ -249,7 +300,7 @@ def selftest():
     need(clear["status"] == "UPSTREAM_DIAGNOSTICS_ONLY_FINAL_UNATTESTED"
          and clear["r92_created_by_report"] is False
          and clear["g9_approved_by_report"] is False, "DIAGNOSTIC_NEVER_FINAL_PASS")
-    print("XRAY_CURRENT_EPOCH_FORENSICS_SELFTEST=PASS_STALE_CAUSAL_MAP_13_NEGATIVES_NO_ALPHA")
+    print("XRAY_CURRENT_EPOCH_FORENSICS_SELFTEST=PASS_MIXED_EPOCH_DIAGNOSTIC_15_NEGATIVES_NO_ALPHA")
 
 
 def main():
