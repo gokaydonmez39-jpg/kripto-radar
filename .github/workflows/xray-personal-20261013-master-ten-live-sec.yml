@@ -1,0 +1,58 @@
+name: XRAY Oct13 MASTER 10 Live SEC CIK SIC 8K Proof
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py"
+      - ".github/workflows/xray-personal-20261013-master-ten-live-sec.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official-sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify fixed Oct13 MASTER source and SEC filing clock selftests
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py
+          python nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py --selftest
+          python -O nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py --selftest
+      - name: Fetch actual current SEC submissions and latest accepted 8Ks for all ten
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py \
+            --out "$RUNNER_TEMP/xray_oct13_master_ten_live_sec.json"
+      - name: Require official 10-of-10 vintage states and no false de-SPAC
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          doc=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_oct13_master_ten_live_sec.json").read_text())
+          assert doc["schema"]=="XRAY_MASTER_TEN_OCT13_LIVE_SEC_VINTAGE_V1"
+          assert doc["asof_et"]=="2026-10-13"
+          assert len(doc["rows"])==len(doc["symbols"])==doc["sec_cik_mapped_count"]==10
+          assert sum(doc["classification_counts"].values())==10
+          assert doc["master_git_blob_sha"]==subprocess.check_output(
+            ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],
+            text=True).strip()
+          assert doc["production_master_unknown_count_after"]==10
+          assert not doc["production_master_modified"] and doc["new_operating_pass_created"]==0
+          assert doc["execution"]=="NONE" and doc["real_money"]=="NO-GO"
+          print("XRAY_OCT13_MASTER_TEN_OFFICIAL_CIK_AND_VINTAGE_CENSUS=PASS_NO_FALSE_PROMOTION")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xray-20261013-master-ten-sec-official-cik-sic-filing-witness
+          path: ${{ runner.temp }}/xray_oct13_master_ten_live_sec.json
+          if-no-files-found: error
+          retention-days: 14
