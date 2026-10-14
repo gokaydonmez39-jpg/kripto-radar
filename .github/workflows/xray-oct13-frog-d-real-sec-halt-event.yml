@@ -1,0 +1,18 @@
+name: XRAY Oct13 FROG Official Legal Halt
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_oct13_frog_official_event_halt_sec.py"
+      - ".github/workflows/xray-oct13-frog-d-real-sec-halt-event.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install pandas_market_calendars==5.4.0
+      - run: python nasdaq-xray/candidate_local_oct13_frog_official_event_halt_sec.py --selftest
