@@ -1,7 +1,7 @@
 {
   "account_gate": "UNKNOWN_NOT_CONFIGURED",
   "asof_et": "2026-10-13",
-  "cursor": 3185,
+  "cursor": 3184,
   "downstream_invalidation": {
     "deep_pre_r1_shadow.json": {
       "asof_et": "2026-10-13",
@@ -32,26 +32,26 @@
   "execution": "NONE",
   "full_universe_identity": true,
   "g9_status": "BLOCKED",
-  "history_asof_bar_missing_count": 1372,
+  "history_asof_bar_missing_count": 40,
   "history_provider_exception_exhausted_count": 28,
   "history_retry_reason": "NO_RETRYABLE_HISTORY_WORK_REMAINS",
   "history_retryable": false,
   "history_unknown_reason_counts": {
-    "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 1372,
-    "EXACT30_SESSIONS_INCOMPLETE": 3,
+    "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 40,
+    "EXACT30_SESSIONS_INCOMPLETE": 4,
     "PROVIDER_EXCEPTION_RETRY_EXHAUSTED": 28,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 84
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 148
   },
   "late_asof_canary_probes_this_run": 0,
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
-  "queue_hash": "4e8f2b62af1b106cdc1639f9f5353725be93b4cbd7c7df05f3b111dda4298d47",
-  "queue_total": 3185,
+  "queue_hash": "96868c1255f1417d367ed4ac223ab10781928f37ebd2e8dce19cb1074aa80751",
+  "queue_total": 3184,
   "real_money": "NO-GO",
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 1487,
+  "unknown_count": 220,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-13T23:32:30.785996+00:00"
+  "updated_at_utc": "2026-10-14T00:59:28.573740+00:00"
 }
