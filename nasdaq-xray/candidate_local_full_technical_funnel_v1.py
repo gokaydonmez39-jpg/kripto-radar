@@ -211,7 +211,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
     except Exception as exc:
         return sym,{"status":"UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
                     "error_type":type(exc).__name__,
-                    "terminal_scan":True}
+                    "terminal_scan":False}
 
 
 def progress(watch,old=None,batch_size=BATCH_SIZE):
