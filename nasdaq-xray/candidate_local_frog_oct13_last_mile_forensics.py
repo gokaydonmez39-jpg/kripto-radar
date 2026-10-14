@@ -274,7 +274,14 @@ def selftest():
     rows,complete=safe_filings(docs)
     need(rows[0]["form"]=="10-Q" and rows[0]["filed"]==START,
          "TEST_SEC_ROW")
-    need(not complete,"TEST_MISSING_OLD_BOUNDARY")
+    need(complete,"TEST_PRESENT_START_BOUNDARY")
+    incomplete={"filings":{"recent":{
+        "accessionNumber":["0001193125-26-340295"],
+        "form":["8-K"],"filingDate":["2026-08-08"],
+        "acceptanceDateTime":["2026-08-08T10:00:00Z"],
+        "primaryDocument":["event.htm"]}}}
+    _,too_recent=safe_filings(incomplete)
+    need(not too_recent,"TEST_MISSING_OLD_BOUNDARY")
     d,f=sessions()
     need(len(d)==30 and len(f)==8 and d[-1]==ASOF,"TEST_30_PLUS8")
     report={"sec":{"current_class_shares_reconciled":False,
