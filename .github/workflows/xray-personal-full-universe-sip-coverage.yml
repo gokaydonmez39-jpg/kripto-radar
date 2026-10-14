@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
@@ -38,8 +38,8 @@ jobs:
           python -O nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
       - name: Measure all current Nasdaq root symbols without storing prices
         env:
-          XRAY_ALPACA_DATA_KEY_ID: \${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
-          XRAY_ALPACA_DATA_SECRET_KEY: \${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
           python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py \
             --out "$RUNNER_TEMP/xray_personal_full_universe_sip_asof_coverage.json"
@@ -63,6 +63,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-personal-full-universe-sip-coverage-no-ohlcv
-          path: \${{ runner.temp }}/xray_personal_full_universe_sip_asof_coverage.json
+          path: ${{ runner.temp }}/xray_personal_full_universe_sip_asof_coverage.json
           if-no-files-found: warn
           retention-days: 14
