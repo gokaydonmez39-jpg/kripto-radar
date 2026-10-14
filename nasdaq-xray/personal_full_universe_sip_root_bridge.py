@@ -107,7 +107,8 @@ def build(root, sina, daily, history, now, root_sha, sina_sha):
     zero = [sym for sym in q if causes[sym] == "ZERO_OR_NEGATIVE_RECORDED_VOLUME"]
     joint = sorted(sym for sym in q if hist[sym] == LONG and
                    daily30[sym] == D30_HIGH)
-    need(len(joint) <= long and len(joint) <= d30_valid_count,
+    need(len(joint) <= sum(v == LONG for v in hist.values())
+         and len(joint) <= d30_valid_count,
          "JOINT_RESEARCH_SCOPE_OUT_OF_BOUNDS")
     zero_old = sum(daily30[sym] in d30_valid for sym in zero)
     zero_recent = sum(daily30[sym] == "UNKNOWN_DAILY30_ZERO_OR_NEGATIVE_VOLUME"
