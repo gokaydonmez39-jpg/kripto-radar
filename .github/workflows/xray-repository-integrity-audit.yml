@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/repository_integrity_audit.py"
+      - "nasdaq-xray/alt_history_probe.py"
       - ".github/workflows/xray-repository-integrity-audit.yml"
   workflow_dispatch:
 permissions:
