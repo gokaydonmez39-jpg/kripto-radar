@@ -164,7 +164,7 @@ def selftest():
     actual=read_files()
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
-    assert base["scheduled_count"]==24
+    assert base["scheduled_count"]==len(EXPECTED)
     assert base["automated_schedules"]["xray-alpaca-delayed-sip-research.yml"]==["55 13 * * 1-5"]
     assert base["issue_writers"]==[]
     assert base["automated_schedules"]["xray-candidate-local-alpaca-sip-recovery.yml"]==["10 23 * * 1-5"]
@@ -228,7 +228,7 @@ def selftest():
             "if: steps.prep.outputs.ready == 'true' && false",
             "if: steps.prep.outputs.ready == 'true'")}),
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
-    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_12_NEGATIVES_24_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_12_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
