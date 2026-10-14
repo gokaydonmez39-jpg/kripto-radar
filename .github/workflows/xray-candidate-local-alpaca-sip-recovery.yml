@@ -63,7 +63,7 @@ jobs:
               assert not set(observed)&set(blocked)
               assert d["research_history_source_observed_count"]==len(observed)
               assert d["research_history_source_blocked_count"]==len(blocked)
-              digest=lambda values:hashlib.sha256(("\\n".join(values)+"\\n").encode()).hexdigest()
+              digest=lambda values:hashlib.sha256(("\n".join(values)+"\n").encode()).hexdigest()
               assert observed==sorted(observed) and blocked==sorted(blocked)
               assert d["research_history_source_observed_sha256"]==digest(observed)
               assert d["research_history_source_blocked_sha256"]==digest(blocked)
