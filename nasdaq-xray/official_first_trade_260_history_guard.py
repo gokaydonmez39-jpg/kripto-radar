@@ -177,6 +177,14 @@ def selftest():
     # The stage reconciliation itself is exercised by Actions at fixed ASOF.
     need("BSP" in prior and prior["BSP"]["status"] == "PASS",
          "TEST_OLD_PASS_PRECONDITION")
+    changed = rebind_existing_research_results(prior, "2026-10-13")
+    need(changed == 1 and prior["BSP"]["status"] == "FAIL_HISTORY"
+         and prior["BSP"]["info"]["bars"] < LIMIT
+         and prior["BSP"]["info"]["vendor_history_pre_ipo_quarantined"]
+         and prior["BSP"]["prior_untrusted_status"] == "PASS"
+         and prior["AAPL"]["status"] == "PASS"
+         and rebind_existing_research_results(prior, "2026-10-13") == 0,
+         "FROZEN_OLD_PASS_MUST_DEMOTE_IDEMPOTENTLY")
     mutants = [
         ("EARLY_SOURCE", lambda d: d.update(source_publication_date="2026-06-30")),
         ("FOREIGN_URL", lambda d: d.update(source_url="https://example.net")),
@@ -194,7 +202,7 @@ def selftest():
             pass
         else:
             raise AssertionError("BAD_EVIDENCE_ACCEPTED_" + name)
-    print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_CALENDAR_DAY_UPPER_BOUND_5_NEGATIVES_NO_HIST_PASS_R92")
+    print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
 
 def main():
     ap = argparse.ArgumentParser()
