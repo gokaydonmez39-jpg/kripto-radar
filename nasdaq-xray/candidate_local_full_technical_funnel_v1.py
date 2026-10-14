@@ -192,10 +192,12 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                         "history_source":source,"terminal_scan":True}
         family_results={}
         ready=False
+        any_watch=False
         for family,g in pass_families.items():
             z=final.eval_one(sym,family,g,data,
                 event_status="UNKNOWN",state_cap="WATCH",
                 r92_eligible=False,regime_finalist_status="UNKNOWN")
+            any_watch=any_watch or str(z.get("result","")).startswith("WATCH")
             levels=z.get("levels") or {}
             rr=z.get("rr") or {}
             eligible_levels=all(type(levels.get(k)) in (int,float)
@@ -237,12 +239,6 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 "event_primary_status":"UNKNOWN",
                 "regime_primary_status":"UNKNOWN",
                 "final_AL":False}
-        any_watch=any(str(x.get("result","")).startswith("WATCH")
-                      for x in [final.eval_one(
-                          sym,fam,g,data,event_status="UNKNOWN",
-                          state_cap="WATCH",r92_eligible=False,
-                          regime_finalist_status="UNKNOWN")
-                          for fam,g in pass_families.items()])
         return sym,{"status":"TECHNICAL_WATCH_NEEDS_PRIMARY" if ready else
                          "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS" if any_watch
                          else "TECHNICAL_GEOMETRY_NOT_APPROVED",
