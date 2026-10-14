@@ -18,7 +18,7 @@ def page(c,i):
     require(type(i) is int and 0<=i<=8,"PAGE_RANGE")
     return names[i*PAGE_SIZE:(i+1)*PAGE_SIZE]
 def selftest():
-    names=[f"T{n:04d}" for n in range(404)]
+    names=sorted(["AAPL","MSFT","NVDA","AAON","AMD","AMZN","GOOGL","META"]+[f"T{n:04d}" for n in range(396)])
     c={"schema":"XRAY_CANDIDATE_LOCAL_404_20261013_SOURCE_GATED_V1",
        "cohort_size":404,"candidate_symbols":names,
        "r92_registered":0,"cross_asof_shadow_only":True,
