@@ -65,7 +65,8 @@ def map_ciks(source:dict)->dict:
 def git_blob_sha(data:bytes)->str:
     return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
 
-def load_scope(offset:int=0,limit:int=0,*,full_current:bool=False)->tuple[str,list[str]]:
+def load_scope(offset:int=0,limit:int=0,*,full_current:bool=False,
+               allow_empty_current_scope:bool=False)->tuple[str,list[str]]:
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
     asof=price.get("asof_et")
@@ -94,6 +95,12 @@ def load_scope(offset:int=0,limit:int=0,*,full_current:bool=False)->tuple[str,li
         # Deterministic, unique, bounded slice; source identity always binds
         # to the exact PRICE/Master PASS intersection in the checked-out main.
         if not (0<=offset<len(p) and 1<=limit<=514):
+            # An *explicitly requested* no-data operational report is safe
+            # only for an otherwise valid first batch of a genuinely empty,
+            # fully validated current canonical PRICE PASS partition.
+            # All other invalid slices still fail closed.
+            if allow_empty_current_scope and not p and offset==0 and 1<=limit<=514:
+                return asof,[]
             raise ValueError("INVALID_BOUNDED_BATCH")
         symbols=sorted(p)[offset:offset+limit]
         if not symbols: raise ValueError("EMPTY_SEC_BATCH")
@@ -156,6 +163,17 @@ def selftest():
         try:map_ciks(bad)
         except ValueError:pass
         else:raise AssertionError("SEC_MAP_INVALID_SCHEMA_ACCEPTED")
+    price_asof=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    if price_asof["pass_count"]==0:
+        empty_asof,empty=load_scope(0,35,allow_empty_current_scope=True)
+        assert empty_asof==price_asof["asof_et"] and empty==[]
+        for bad_o,bad_l in ((1,35),(-1,35),(0,515),(0,0)):
+            try:load_scope(bad_o,bad_l,allow_empty_current_scope=True)
+            except ValueError:pass
+            else:raise AssertionError("EMPTY_SCOPE_UNSAFE_SLICE_ACCEPTED")
+        try:load_scope(0,35)
+        except ValueError as e:assert str(e)=="INVALID_BOUNDED_BATCH"
+        else:raise AssertionError("EMPTY_SCOPE_RELABELED_AS_35_REAL_SYMBOLS")
     for bad_offset,bad_limit in ((-1,1),(0,-1),(0,515)):
         try:load_scope(bad_offset,bad_limit)
         except ValueError:pass
@@ -203,8 +221,10 @@ def selftest():
     assert root_cause_class("UNKNOWN","UNCLASSIFIED")=="UNRESOLVED_SOURCE"
     print("XRAY_SEC_MULTI_SCOPE_SELFTEST=PASS_CIK_EXCHANGE_DUPLICATE_FDIC110_EXACT_CASE_FAIL_CLOSED")
 
-def run(offset:int=0,limit:int=0,*,full_current:bool=False)->dict:
-    asof,syms=load_scope(offset,limit,full_current=full_current)
+def run(offset:int=0,limit:int=0,*,full_current:bool=False,
+        allow_empty_current_scope:bool=False)->dict:
+    asof,syms=load_scope(offset,limit,full_current=full_current,
+                         allow_empty_current_scope=allow_empty_current_scope)
     result={"schema":"XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1",
             "master_git_blob_sha":git_blob_sha((ROOT/"canonical_current_master_manifest.json").read_bytes()),
             "price_git_blob_sha":git_blob_sha((ROOT/"canonical_current_price_dv30.json").read_bytes()),
@@ -222,6 +242,12 @@ def run(offset:int=0,limit:int=0,*,full_current:bool=False)->dict:
             "no_real_candidate_claim":True,
             "official_exchange_current_mapping_only":True,
             "statuses":{},"status_counts":{},"transport":"NOT_RUN"}
+    if not syms:
+        # No SEC request is made, and no source-coverage success is asserted.
+        return dict(result,transport="NO_CANONICAL_PRICE_PASS_SCOPE",
+                    sample_state="EMPTY_FAIL_CLOSED_NO_SEC_SOURCE_ATTEMPTED",
+                    reason_codes={},reason_counts={},remediation_counts={},
+                    remediation_count_exact=True)
     ua=os.environ.get("XRAY_SEC_USER_AGENT","")
     if not sec.valid_operator_contact(ua):
         return dict(result,transport="BLOCKED_CONFIG",status_counts={"CONTACT_MISSING_OR_INVALID":len(syms)})
@@ -285,11 +311,14 @@ def main():
     p.add_argument("--offset",type=int,default=0)
     p.add_argument("--limit",type=int,default=0)
     p.add_argument("--all-price-pass",action="store_true")
+    p.add_argument("--report-empty-current-scope",action="store_true",
+                   help="Produce zero-count NO_SCOPE evidence only for an empty canonical PRICE PASS; no PRIMARY")
     args=p.parse_args()
     if args.selftest:
         selftest()
         return
-    out=run(args.offset,args.limit,full_current=args.all_price_pass)
+    out=run(args.offset,args.limit,full_current=args.all_price_pass,
+            allow_empty_current_scope=args.report_empty_current_scope)
     if args.output:
         args.output.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print("XRAY_SEC_MULTI_TRANSPORT="+out["transport"])
