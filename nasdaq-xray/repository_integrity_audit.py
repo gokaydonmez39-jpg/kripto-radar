@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import yaml
 
 REPO = Path(__file__).resolve().parent.parent
 ROOT = REPO / "nasdaq-xray"
@@ -67,11 +68,15 @@ def census(paths, read_bytes):
             elif is_json:
                 json.loads(text)
             else:
-                check(("on:" in text or "\non:" in text) and
-                      ("jobs:" in text or "\njobs:" in text),
-                      "WORKFLOW_TRIGGER_OR_JOB_MISSING")
+                # BaseLoader preserves GitHub\u0027s YAML 1.2 on: key as a string;
+                # SafeLoader in YAML 1.1 treats it as boolean True.
+                parsed = yaml.load(text, Loader=yaml.BaseLoader)
+                check(isinstance(parsed, dict) and "on" in parsed and
+                      isinstance(parsed.get("jobs"), dict) and
+                      len(parsed["jobs"]) > 0,
+                      "WORKFLOW_YAML_TRIGGER_OR_JOB_MISSING")
                 workflow_sources[path.name] = text
-        except (OSError, UnicodeError, SyntaxError, ValueError, json.JSONDecodeError) as exc:
+        except (OSError, UnicodeError, SyntaxError, ValueError, json.JSONDecodeError, yaml.YAMLError) as exc:
             errors.append("UNREADABLE_OR_INVALID_" + kind.upper() + ":" + name
                           + ":" + type(exc).__name__)
     source_modules = {Path(x).stem for x in scripts}
@@ -214,6 +219,8 @@ def main():
          "schedule_contract_status","statically_unreferenced_python_review_count",
          "structural_errors")}, sort_keys=True))
     print("XRAY_REPO_CANDIDATE_CHAIN=" + json.dumps(result["chain"],sort_keys=True))
+    print("XRAY_STATIC_ORPHANS_REVIEW=" + json.dumps(result["statically_unreferenced_python_review"]))
+    print("XRAY_EXACT_DUPLICATE_FILES=" + json.dumps(result["duplicate_file_groups"]))
     if result["status"] != "PASS_SOURCE_STRUCTURE_AND_FAIL_CLOSED_CHAIN":
         raise SystemExit(2)
 
