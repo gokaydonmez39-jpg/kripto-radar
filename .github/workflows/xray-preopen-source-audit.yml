@@ -12,6 +12,7 @@ on:
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - "nasdaq-xray/repository_integrity_audit.py"
       - "nasdaq-xray/root_history_recovery_microaudit.py"
+      - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
       - "nasdaq-xray/sina_stage.py"
       - ".github/workflows/**"
@@ -108,12 +109,20 @@ jobs:
           python nasdaq-xray/sina_state_hash_guard.py
           python nasdaq-xray/sina_transport_rescue.py
           python nasdaq-xray/root_history_recovery_microaudit.py --selftest
+          python nasdaq-xray/history_unknown_source_triage.py --selftest
+          python nasdaq-xray/history_unknown_source_triage.py --output "$RUNNER_TEMP/xray_history_unknown_triage.json"
           python nasdaq-xray/root_history_recovery_microaudit.py --out "$RUNNER_TEMP/xray_root_history_recovery.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_root_history_recovery.json").read_text())
           assert x["schema"]=="XRAY_ROOT_HISTORY_RECOVERY_MICROAUDIT_V1"
+          triage=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_history_unknown_triage.json").read_text())
+          assert triage["schema"]=="XRAY_HISTORY_UNKNOWN_SOURCE_TRIAGE_V1"
+          assert triage["unknown_count"]==x["unknown_count"]
+          assert triage["cursor"]==triage["classifications"]==triage["total_scope"]
+          assert triage["alpha_authority"] is False
+          print("XRAY_HISTORY_CURSOR_UNDERCOUNT_GUARD=PASS_EXACT_RESULTS")
           assert x["unknown_count"]==sum(x["unknown_reason_counts"].values())
           assert x["source_state_hash_integrity"] in ("PASS_DETERMINISTIC_BLOB_INTERNAL","LEGACY_HASH_NOT_INDEPENDENTLY_VERIFIABLE")
           assert x["eligible_single_round_real_provider_retries_now"]<=32
