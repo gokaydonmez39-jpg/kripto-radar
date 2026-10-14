@@ -31,7 +31,8 @@ def engine_source_fingerprint():
     root=Path(__file__).resolve().parent
     names=("candidate_local_full_technical_funnel_v1.py",
            "stage1_shadow.py","deep_pre_r1_shadow.py",
-           "final_tech_shadow.py","alpha_semantics.py")
+           "final_tech_shadow.py","alpha_semantics.py",
+           "candidate_local_independent_math_v1.py")
     data=[]
     for name in names:
         raw=(root/name).read_bytes()
@@ -157,6 +158,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
     import stage1_shadow as stage
     import deep_pre_r1_shadow as deep
     import final_tech_shadow as final
+    from candidate_local_independent_math_v1 import audit as audit_final_geometry
     from alpha_semantics import mechanical_scale_breaks, mechanical_split_suspects
     try:
         data,source=stage.load_history(sym,asof)
@@ -196,11 +198,17 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
         family_results={}
         ready=False
         any_watch=False
+        any_unresolved_geometry=False
         for family,g in pass_families.items():
             z=final.eval_one(sym,family,g,data,
                 event_status="UNKNOWN",state_cap="WATCH",
                 r92_eligible=False,regime_finalist_status="UNKNOWN")
             any_watch=any_watch or str(z.get("result","")).startswith("WATCH")
+            # Independent fail-closed arithmetic and historical stop audit.
+            # R1 source-zone discovery and issuer corporate actions stay separate.
+            math_audit=audit_final_geometry(family,g,z,data)
+            any_unresolved_geometry=(any_unresolved_geometry or
+                math_audit.get("independently_verified") is not True)
             levels=z.get("levels") or {}
             rr=z.get("rr") or {}
             eligible_levels=all(type(levels.get(k)) in (int,float)
@@ -213,7 +221,8 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 z.get("extension_veto") is False and
                 z.get("lifecycle") in {"ENTRY_BAND","RETEST_ENTRY_BAND"}
                 and not (z.get("invalidation") or {}).get("breached")
-                and eligible_levels)
+                and eligible_levels
+                and math_audit.get("independently_verified") is True)
             ready=ready or risk
             family_results[family]={
                 "status":"WATCH_R1_RR_TECHNICAL_ONLY" if risk else z.get("result","UNKNOWN"),
@@ -230,6 +239,9 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 "trigger_date":g.get("trigger_date"),
                 "setup_id":z.get("setup_id"),
                 "source_r1_target":(z.get("target") or {}).get("source"),
+                "independent_geometry_audit":math_audit,
+                "diagnostic_only_reason":z.get("reason"),
+                "diagnostic_only_not_trade_signal":True,
                 "diagnostic_only_entry_stop_target":({
                     "entry_model_usd":round(float(levels["entry_model"]),4),
                     "stop_s0_usd":round(float(levels["S0"]),4),
@@ -244,6 +256,7 @@ def evaluate_one(sym, asof, calendar_days, week_last, qqq):
                 "final_AL":False}
         return sym,{"status":"TECHNICAL_WATCH_NEEDS_PRIMARY" if ready else
                          "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS" if any_watch
+                         else "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY" if any_unresolved_geometry
                          else "TECHNICAL_GEOMETRY_NOT_APPROVED",
                     "family_results":family_results,
                     "confirmed_families":sorted(pass_families),
@@ -296,6 +309,8 @@ def progress(watch,old=None,batch_size=BATCH_SIZE):
 
 
 def selftest():
+    from candidate_local_independent_math_v1 import selftest as math_selftest
+    math_selftest()
     def w(asof="2026-10-13"):
         a=[{"symbol":s} for s in ("AAPL","FROG","NVDA")]
         return {"schema":"XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
