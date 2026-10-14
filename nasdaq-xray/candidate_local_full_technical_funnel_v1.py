@@ -21,6 +21,7 @@ SCHEMA="XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1"
 RETRYABLE_HISTORY_STATUSES=frozenset({
     "UNKNOWN_260_OFFICIAL_HISTORY",
     "UNKNOWN_52_COMPLETED_WEEKS",
+    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
 })
 BATCH_SIZE=475
 MAX_WORKERS=4
@@ -50,6 +51,8 @@ def terminal_record(record):
     """A provider-history UNKNOWN must remain retryable, even in legacy state."""
     return (type(record) is dict
             and record.get("terminal_scan") is True
+            and type(record.get("status")) is str
+            and not record["status"].startswith("UNKNOWN_")
             and record.get("status") not in RETRYABLE_HISTORY_STATUSES)
 
 
@@ -105,7 +108,8 @@ def summarize(state, watch):
     stats=dict(sorted(collections.Counter(
         r.get("status","UNKNOWN") for r in state["results"].values()).items()))
     preliminary=[s for s in expected
-        if state["results"].get(s,{}).get("technical_observation_ready") is True]
+        if terminal_record(state["results"].get(s))
+        and state["results"][s].get("technical_observation_ready") is True]
     triggered=[s for s in expected
         if bool(state["results"].get(s,{}).get("confirmed_families"))]
     audits=[
@@ -397,6 +401,18 @@ def selftest():
                                  "terminal_scan":True}
     need("AAPL" in prepare(w(),reliable)["results"],
          "REAL_TERMINAL_CLASSIFICATION_MUST_REUSE")
+    for status in ("UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE",
+                   "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY"):
+        legacy=prepare(w())
+        legacy["results"]["AAPL"]={"status":status,"terminal_scan":True,
+                                   "technical_observation_ready":True}
+        checked=summarize(legacy,w())
+        need(checked["pending_count"]==3 and
+             checked["evaluated_count"]==0 and
+             checked["preliminary_technical_watch_count"]==0,
+             "UNKNOWN_NEVER_TERMINAL_OR_READY_"+status)
+        need(not prepare(w(),legacy)["results"],
+             "UNKNOWN_LEGACY_RETRY_"+status)
     with_transient=prepare(w())
     with_transient["results"]["AAPL"]={
         "status":"UNKNOWN_CORPORATE_ACTION_PIT","terminal_scan":False}
