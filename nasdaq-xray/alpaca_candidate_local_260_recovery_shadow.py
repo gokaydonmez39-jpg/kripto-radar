@@ -57,8 +57,9 @@ def source_scope(root, now):
          and all(type(s) is str and s for s in names),
          "CANDIDATE_UNIVERSE_MALFORMED")
     results = funnel.get("results")
-    need(type(results) is dict and set(results).issubset(set(names)),
-         "RESULT_PARTITION_INVALID")
+    need(type(results) is dict and set(results) == set(names)
+         and funnel.get("attempted_count") == len(names),
+         "RESULT_PARTITION_INCOMPLETE")
     target = sorted(sym for sym in names if type(results.get(sym)) is dict
                     and type(results[sym].get("status")) is str
                     and results[sym]["status"].startswith("UNKNOWN_"))
@@ -128,7 +129,7 @@ def selftest():
                  "watchlist_count": 2, "watchlist_cap": None,
                  "all_eligible_candidates_tracked": True},
             "candidate_technical_funnel": {"asof_et": asof,
-                 "candidate_count": 2, "results": {
+                 "candidate_count": 2, "attempted_count": 2, "results": {
                    "AAA": {"status": "UNKNOWN_260_OFFICIAL_HISTORY"},
                    "BBB": {"status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE"}}}}
     a, symbols, daily, weeks = source_scope(fake, now)
