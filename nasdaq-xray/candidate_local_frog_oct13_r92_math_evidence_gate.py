@@ -220,10 +220,11 @@ def exact_primary_source_component_matrix(cover,rollup,lastmile):
                 s.get("asof_mc_ge_2b_primary_pass") is True},
         "history_260_52_setup_d_r1_rr_regime":{
             "candidate_deep_trigger_sha_bound":
-                rollup.get("source_deep_sha256") is not None,
+                rollup.get("source_deep_sha256")=="ed9cc814c488fb743f52227d42c18f8c81876d67c9167ebc1128738a8406c855",
             "frog_d_frozen_r1_rr_geometry_pass":rollup.get("risk_rr_geometry_pass") is True,
             "stage1_260_52_observational_source_evaluated":
-                rollup.get("real_trigger") is True,
+                rollup.get("real_trigger")=="D" and
+                rollup.get("source_deep_sha256")=="ed9cc814c488fb743f52227d42c18f8c81876d67c9167ebc1128738a8406c855",
             "full_history_corporate_actions_pit_primary":
                 lastmile.get("history_260_52_corporate_actions_primary_pass") is True,
             "same_asof_regime_breadth_primary":
