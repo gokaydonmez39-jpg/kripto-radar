@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/monday_launch_microaudit.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - "nasdaq-xray/repository_integrity_audit.py"
+      - "nasdaq-xray/current_terminal_epoch_forensics.py"
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -91,6 +92,22 @@ jobs:
         run: |
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --selftest
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/repository_integrity_audit.py --out "$RUNNER_TEMP/xray_repo_inventory.json"
+      - name: Explain exact current terminal drift without rewriting last authoritative epoch
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/current_terminal_epoch_forensics.py --selftest
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/current_terminal_epoch_forensics.py --out "$RUNNER_TEMP/xray_current_terminal_epoch_forensics.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          v=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_current_terminal_epoch_forensics.json").read_text())
+          assert v["schema"]=="XRAY_CURRENT_TERMINAL_EPOCH_FORENSICS_V1"
+          assert v["canonical_terminal_overwritten"] is False
+          assert v["current_asof_terminal_generated"] is False
+          assert v["g9_approved_by_report"] is False
+          assert v["r92_created_by_report"] is False
+          assert v["execution"]=="NONE" and v["real_money"]=="NO-GO"
+          print("XRAY_CURRENT_TERMINAL_EPOCH_CAUSAL_REPORT="+v["status"])
+          PY
       - name: Verify zero-dollar BusinessQuant and Twelve backups remain fail-closed
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
@@ -291,5 +308,6 @@ jobs:
             ${{ runner.temp }}/xray_all_workflow_schedule_audit.json
             ${{ runner.temp }}/xray_root_history_recovery.json
             ${{ runner.temp }}/xray_repo_inventory.json
+            ${{ runner.temp }}/xray_current_terminal_epoch_forensics.json
           retention-days: 14
           if-no-files-found: error
