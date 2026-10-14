@@ -4,6 +4,7 @@
   "candidate_safety": {
     "active_halt_symbols": [
       "AZTR",
+      "CCM",
       "EFTY",
       "HCHL",
       "LAWR",
@@ -56,6 +57,7 @@
       "AZTR",
       "BBBYW",
       "BLFS",
+      "CCM",
       "COLA",
       "COLAR",
       "COLAU",
@@ -97,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-14T13:56:21.387655+00:00",
+  "generated_at_utc": "2026-10-14T14:02:16.727846+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -790,9 +792,10 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 14,
       "active_halt_symbols": [
         "AZTR",
+        "CCM",
         "EFTY",
         "HCHL",
         "LAWR",
@@ -807,8 +810,38 @@
         "YRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 32,
+      "item_count": 34,
       "items": [
+        {
+          "HaltDate": "10/14/2026",
+          "HaltTime": "09:59:48.176",
+          "IssueName": "Ribbon Acq Cp Ord A",
+          "IssueSymbol": "RIBB",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/14/2026",
+          "ResumptionQuoteTime": "09:59:48",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:59:48.176</td><td valign=\"top\">RIBB</td><td valign=\"top\">Ribbon Acq Cp Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:59:48                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 14 Oct 2026 04:00:00 GMT",
+          "title": "RIBB"
+        },
+        {
+          "HaltDate": "10/14/2026",
+          "HaltTime": "09:59:12.733",
+          "IssueName": "Concord Medical Services Holdings Limited American Depositary Shares (Each represents thirty (30) Class A ordinary shares)",
+          "IssueSymbol": "CCM",
+          "Market": "NYSE",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:59:12.733</td><td valign=\"top\">CCM</td><td valign=\"top\">Concord Medical Services Holdings Limited American Depositary Shares (Each represents thirty (30) Class A ordinary shares)</td><td valign=\"top\">NYSE</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 14 Oct 2026 04:00:00 GMT",
+          "title": "CCM"
+        },
         {
           "HaltDate": "10/14/2026",
           "HaltTime": "09:55:09.633",
@@ -849,8 +882,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/14/2026",
           "ResumptionQuoteTime": "09:46:32",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:46:32.436</td><td valign=\"top\">RIBB</td><td valign=\"top\">Ribbon Acq Cp Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:46:32                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "09:56:32",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:46:32.436</td><td valign=\"top\">RIBB</td><td valign=\"top\">Ribbon Acq Cp Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/14/2026                    </td><td valign=\"top\">09:46:32                      </td><td valign=\"top\">09:56:32                      </td></tr></table>",
           "pubDate": "Wed, 14 Oct 2026 04:00:00 GMT",
           "title": "RIBB"
         },
