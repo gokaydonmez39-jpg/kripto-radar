@@ -352,7 +352,11 @@ def evaluate_promotion(report,policy):
     gates["source_sec_pit_share_class"]=report["sec"]["current_class_shares_reconciled"]
     gates["source_ca_pit_independent"]=report["sec"]["corporate_actions_independent_pit_pass"]
     gates["source_exact_corrected_dv30"]=report["price"]["exact_rth_dv30_primary_pass"]
-    gates["source_future_events"]=report["issuer_event"]["eight_day_event_calendar_clear"]
+    official_probe=report["issuer_event"].get("dated_official_press_release") or {}
+    has_known_horizon_event=official_probe.get("known_issuer_event_inside_eight_sessions") is True
+    gates["source_future_events"]=(
+        report["issuer_event"]["eight_day_event_calendar_clear"] is True
+        and not has_known_horizon_event)
     gates["source_full_historical_live_halt"]=(
         report["halt"]["historical_complete_clear_pass"] and
         report["halt"]["live_halt_clear_pass"])
@@ -362,8 +366,14 @@ def evaluate_promotion(report,policy):
     complete=all(v is True for v in gates.values())
     return {"gates":gates,"missing":[k for k,v in gates.items() if v is not True],
             "eligible_primary":complete,"registered_r92":bool(complete),
-            "release_state":"R92_NOT_AUTHORIZED_INSUFFICIENT_EVIDENCE" if not complete else
-                            "ELIGIBLE_FOR_SEPARATE_CANONICAL_RELEASE_REVIEW"}
+            "official_issuer_horizon_event_veto":has_known_horizon_event,
+            "official_issuer_horizon_event_dates":
+                official_probe.get("official_source_event_overlap_session_dates",[]),
+            "release_state":("BLOCKED_ISSUER_OFFICIAL_EVENT_WITHIN_EIGHT_SESSIONS"
+                            if has_known_horizon_event else
+                            "R92_NOT_AUTHORIZED_INSUFFICIENT_EVIDENCE"
+                            if not complete else
+                            "ELIGIBLE_FOR_SEPARATE_CANONICAL_RELEASE_REVIEW")}
 
 def selftest_close_update_lineage():
     base=[
@@ -441,6 +451,17 @@ def selftest():
     report["sec"]["current_class_shares_reconciled"]=True
     value=evaluate_promotion(report,p)
     need(not value["eligible_primary"],"TEST_ONE_PASS_NOT_EVERY_PASS")
+    report["issuer_event"]["dated_official_press_release"]={
+        "known_issuer_event_inside_eight_sessions":True,
+        "official_source_event_overlap_session_dates":
+            ["2026-10-20","2026-10-21","2026-10-22"]}
+    event_veto=evaluate_promotion(report,p)
+    need(event_veto["official_issuer_horizon_event_veto"] is True and
+         event_veto["gates"]["source_future_events"] is False and
+         event_veto["registered_r92"] is False and
+         event_veto["release_state"]==
+            "BLOCKED_ISSUER_OFFICIAL_EVENT_WITHIN_EIGHT_SESSIONS",
+         "TEST_KNOWN_ISSUER_EVENT_OVERRIDES_ANY_EARNINGS_UNKNOWN")
     print("XRAY_FROG_LAST_MILE_SELFTEST=PASS_30_SESSIONS_8_EVENT_DAYS_SEC_DATE_NO_FALSE_R92")
 
 def run(deep,frog,out):
@@ -478,6 +499,8 @@ def run(deep,frog,out):
     print("XRAY_FROG_LAST_MILE_CLOSE_SAMPLE_DAYS="+str(result["price"].get("observed_sessions",0)))
     print("XRAY_FROG_SIP_TRADE_UPDATE_CENSUS="+json.dumps(result["price"].get("four_second_trade_update_rows_by_state",{}),sort_keys=True))
     print("XRAY_FROG_LAST_MILE_MISSING="+",".join(result["decision"]["missing"]))
+    print("XRAY_FROG_ISSUER_OFFICIAL_EIGHT_SESSION_EVENT_VETO="+
+          str(result["decision"]["official_issuer_horizon_event_veto"]).upper())
     print("XRAY_FROG_LAST_MILE_R92=FALSE_CANONICAL_NOT_MUTATED")
 
 def main():
