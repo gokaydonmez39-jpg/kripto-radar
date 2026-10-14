@@ -14,7 +14,8 @@ CURRENT_MASTER=ROOT/"canonical_current_master_manifest.json"
 FROZEN_MASTER_SHA="fb64a44b79ced9dcda390f5661b796ee13a60f63"
 SEC=ROOT/"research/master_ten_sec_cik_sic_resolution_20261012_v1.json"
 RESEARCH=ROOT/"research/personal_master_20261012_sec_cik_exclusion_v1.json"
-POLICY=ROOT/"personal_research_technical_policy_v1.json"
+POLICY=ROOT/"research/personal_20261012_technical_policy_frozen.json"
+FROZEN_POLICY_SHA="ba1774944430af1442a4c37b03ce3f9565a1a2b4"
 def blob(path):
     raw=path.read_bytes()
     return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
@@ -22,6 +23,7 @@ def must(ok,reason):
     if not ok:raise ValueError("MASTER_TEN_PERSONAL_"+reason)
 def validate(m,s,p,o,blobs):
     must(blobs["master"]==FROZEN_MASTER_SHA,"HISTORICAL_MASTER_IMMUTABLE_SHA")
+    must(blobs["policy"]==FROZEN_POLICY_SHA,"HISTORICAL_POLICY_IMMUTABLE_SHA")
     keys=sorted(m["unknown_symbols"])
     must(len(keys)==10 and m["unknown_count"]==10,"SOURCE")
     must(s.get("asof_et")==m.get("asof_et")==o.get("asof_et")=="2026-10-12","ASOF")
