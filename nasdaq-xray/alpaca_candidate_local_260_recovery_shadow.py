@@ -198,6 +198,10 @@ def main():
     print("XRAY_SIP_CANDIDATE_LOCAL_STATUS=" + report["status"])
     print("XRAY_SIP_CANDIDATE_LOCAL_COUNTS=" +
           json.dumps(report["classification_counts"], sort_keys=True))
+    print("XRAY_SIP_CANDIDATE_LOCAL_PER_SYMBOL=" +
+          json.dumps({symbol: item["source_availability"]
+                      for symbol,item in sorted(report["observations"].items())},
+                     sort_keys=True))
     if report["status"].startswith("UNKNOWN_"):
         raise SystemExit(2)
 
