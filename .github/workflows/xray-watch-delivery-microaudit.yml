@@ -1,0 +1,79 @@
+name: XRAY WATCH vs AL and ChatGPT Delivery Microaudit
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "35 22 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_watch_delivery_microaudit.py"
+      - "nasdaq-xray/orchestrator_state.json"
+      - "nasdaq-xray/sina_candidates.json"
+      - "nasdaq-xray/personal_swing_radar_current.json"
+      - "nasdaq-xray/notification_channel_policy_v1.json"
+      - "nasdaq-xray/delivery_ledger.json"
+      - "nasdaq-xray/canonical_current_terminal.json"
+      - ".github/workflows/xray-watch-delivery-microaudit.yml"
+permissions:
+  contents: read
+concurrency:
+  group: xray-watch-delivery-microaudit
+  cancel-in-progress: true
+jobs:
+  watch-delivery-microaudit:
+    name: Source-proofed WATCH, registered AL and platform receipt are distinct
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Adversarial negative cases in standard and optimized Python
+        run: |
+          python -m py_compile nasdaq-xray/personal_watch_delivery_microaudit.py
+          python nasdaq-xray/personal_watch_delivery_microaudit.py --selftest
+          python -O nasdaq-xray/personal_watch_delivery_microaudit.py --selftest
+      - name: Verify live source epochs, watch count, R92 registry and GitHub-to-ChatGPT boundaries
+        run: |
+          python nasdaq-xray/personal_watch_delivery_microaudit.py --out "$RUNNER_TEMP/xray_watch_delivery_microaudit.json"
+      - name: Publish explicit health vs delivered separation, never fabricate WATCH or phone acknowledgment
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_watch_delivery_microaudit.json"
+          d=json.loads(p.read_text())
+          assert d["schema"]=="XRAY_PERSONAL_WATCH_NOTIFICATION_MICROAUDIT_V1"
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["orders"]==[] and d["new_r92"]==[]
+          assert d["user_notification_sent"] is False
+          assert d["iphone_push_ack_independently_attested_by_this_run"] is False
+          assert d["delivery_workflow_is_not_an_iphone_push_channel"] is True
+          assert d["research_liquidity_is_not_a_rising_stock_prediction"] is True
+          assert d["blocker_count"]==len(d["repair_order"])
+          assert len(set(x["code"] for x in d["repair_order"]))==d["blocker_count"]
+          summary=Path(os.environ["GITHUB_STEP_SUMMARY"])
+          with summary.open("a") as f:
+              f.write("# WATCH/AL/Delivery microaudit — zero false BUY\n\n")
+              f.write("Last completed NASDAQ session: **"+str(d["expected_last_completed_nasdaq_session"])+"**\n\n")
+              f.write("Root WATCH: **"+str(d["current_price_liquidity_prescreen_watch_count"])+
+                      "**; technical WATCH: **"+str(d["claimed_technical_watch_count"])+
+                      "**; registered R92: **"+str(d["canonical_pointer_r92_count"])+"**\n\n")
+              f.write("Unresolved audit findings: **"+str(d["blocker_count"])+"**\n\n")
+              f.write("GitHub delivery CI success != ChatGPT message/phone receipt.\n\n")
+              f.write("| Fault | Exact repair requirement |\n|---|---|\n")
+              for row in d["repair_order"]:
+                  f.write("| "+row["code"]+" | "+row["repair_key"]+" |\n")
+          print("XRAY_WATCH_ALERT_AUDIT=PASS_FRAUD_RESISTANT_STATUS_NOT_NOTIFICATION")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-watch-delivery-microaudit-no-ohlcv
+          path: ${{ runner.temp }}/xray_watch_delivery_microaudit.json
+          if-no-files-found: error
+          retention-days: 14
