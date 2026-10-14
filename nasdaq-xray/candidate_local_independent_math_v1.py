@@ -46,7 +46,7 @@ def audit(family, source_geometry, final_row, history=None):
     for key, val in expected.items():
         require(equal(v.get(key), val), "PRICE_LEVEL_" + key.upper())
     if source_geometry:
-        for key, val in (("P", p), ("anchor", anchor)):
+        for key, val in (("P", p), ("anchor", anchor), ("A", a)):
             require(equal(source_geometry.get(key), val), "SOURCE_" + key.upper())
     risk, x = entry - stop, (p - anchor) / a
     risk_pct, risk_atr = risk / entry, risk / a
@@ -133,7 +133,7 @@ def selftest():
         "target_overlap": False, "family_geometry_pass": True,
         "risk_pass": True}
     for family in THRESHOLDS:
-        src = {"P": p, "anchor": anchor}
+        src = {"P": p, "anchor": anchor, "A": a}
         if family == "A":
             src.update({"depth": 3.0, "prelow_near_hl": True})
         require(audit(family, src, row)["independently_verified"],
@@ -146,11 +146,20 @@ def selftest():
         bad = copy.deepcopy(row)
         bad[field][key] = wrong
         try:
-            audit("D", {"P": p, "anchor": anchor}, bad)
+            audit("D", {"P": p, "anchor": anchor, "A": a}, bad)
         except ValueError:
             pass
         else:
             raise AssertionError("INDEPENDENT_AUDIT_FALSE_PASS:" + key)
+    for source_key in ("P", "anchor", "A"):
+        incorrect_source = {"P": p, "anchor": anchor, "A": a}
+        incorrect_source[source_key] += .01
+        try:
+            audit("D", incorrect_source, row)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("INDEPENDENT_AUDIT_FALSE_SOURCE_PASS:" + source_key)
     require(not audit("D", {}, {"result": "UNKNOWN",
                                "reason": "NO_R1"})["independently_verified"],
             "UNKNOWN_MUST_NOT_PASS")
