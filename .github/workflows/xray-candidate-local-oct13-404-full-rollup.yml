@@ -1,0 +1,88 @@
+name: XRAY Candidate Local Oct13 545 SIP and 404 SEC Full Rollup
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_full_404_source_rollup.py"
+      - ".github/workflows/xray-candidate-local-oct13-404-full-rollup.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Oct13 Candidate Local SIP Remaining Ten 50 Pages"
+      - "XRAY Oct13 Candidate Local SEC Remaining Eight 50 Pages"
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  complete-frozen-source-rollup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Source-local negative test no global UNKNOWN promotion
+        run: |
+          python -m py_compile nasdaq-xray/candidate_local_full_404_source_rollup.py
+          python nasdaq-xray/candidate_local_full_404_source_rollup.py --selftest
+      - name: Require both frozen source batch workflows independently green
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          p="$(gh run view 38530630522 --repo "${{ github.repository }}" --json conclusion --jq '.conclusion')"
+          s="$(gh run view 38530692893 --repo "${{ github.repository }}" --json conclusion --jq '.conclusion')"
+          if [ "$p" = "success" ] && [ "$s" = "success" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "XRAY_LOCAL_FULL_BOTH_SOURCE_RUNS=SUCCESS"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_LOCAL_FULL_SOURCE_NOT_COMPLETE_P=${p}_S=${s}"
+          fi
+      - name: Retrieve 11 actual SIP and 9 SEC source artifacts
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/price" "$RUNNER_TEMP/sec" "$RUNNER_TEMP/history" "$RUNNER_TEMP/cohort"
+          gh run download 38529782918 --repo "${{ github.repository }}" \
+            --name xray-oct13-candidate-local-single-sip-price50 --dir "$RUNNER_TEMP/price"
+          mv "$RUNNER_TEMP/price/xray_oct13_sip_price50.json" "$RUNNER_TEMP/price/price_0.json"
+          gh run download 38529822940 --repo "${{ github.repository }}" \
+            --name xray-candidate-local-sec50-pit-source --dir "$RUNNER_TEMP/sec"
+          mv "$RUNNER_TEMP/sec/xray_candidate_local_sec50.json" "$RUNNER_TEMP/sec/sec_0.json"
+          for p in $(seq 1 10); do
+            mkdir -p "$RUNNER_TEMP/temp_price"
+            gh run download 38530630522 --repo "${{ github.repository }}" \
+              --name "xray-oct13-sip-price-page-$p" --dir "$RUNNER_TEMP/temp_price"
+            mv "$RUNNER_TEMP/temp_price/xray_sip_page.json" "$RUNNER_TEMP/price/price_$p.json"
+          done
+          for p in $(seq 1 8); do
+            mkdir -p "$RUNNER_TEMP/temp_sec"
+            gh run download 38530692893 --repo "${{ github.repository }}" \
+              --name "xray-oct13-sec-pit-page-$p" --dir "$RUNNER_TEMP/temp_sec"
+            mv "$RUNNER_TEMP/temp_sec/xray_sec_page.json" "$RUNNER_TEMP/sec/sec_$p.json"
+          done
+          gh run download 38481474945 --repo "${{ github.repository }}" \
+            --name xray-personal-root260-full-scope-status-no-ohlcv --dir "$RUNNER_TEMP/history"
+          gh run download 38528457369 --repo "${{ github.repository }}" \
+            --name xray-local-404-source-gated-and-50-recovery-queues --dir "$RUNNER_TEMP/cohort"
+      - name: Compute real 404 same-ASOF source intersection without fake R92
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          python nasdaq-xray/candidate_local_full_404_source_rollup.py \
+            --price-dir "$RUNNER_TEMP/price" --sec-dir "$RUNNER_TEMP/sec" \
+            --history "$RUNNER_TEMP/history/xray_personal_root260_full_cohort.json" \
+            --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \
+            --out "$RUNNER_TEMP/xray_full_same_asof_source_rollup.json"
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          name: xray-20261013-real-545-404-source-rollup-no-r92
+          path: ${{ runner.temp }}/xray_full_same_asof_source_rollup.json
+          if-no-files-found: error
+          retention-days: 14
