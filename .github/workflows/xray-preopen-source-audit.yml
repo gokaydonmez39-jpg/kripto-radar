@@ -15,6 +15,7 @@ on:
       - "nasdaq-xray/personal_full_universe_sip_root_bridge.py"
       - "nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py"
       - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/personal_six_gate_causal_breaker.py"
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -97,6 +98,8 @@ jobs:
           python -O nasdaq-xray/alpaca_full_universe_30d_daily_proxy_shadow.py
           python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
           python -O nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+          python nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+          python -O nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
           python -m py_compile nasdaq-xray/personal_full_universe_sip_root_bridge.py
           python nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
           python -O nasdaq-xray/personal_full_universe_sip_root_bridge.py --selftest
