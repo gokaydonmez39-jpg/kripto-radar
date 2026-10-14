@@ -9,7 +9,9 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
 ROOT=Path(__file__).resolve().parent
-MASTER=ROOT/"canonical_current_master_manifest.json"
+MASTER=ROOT/"research/master_20261012_sec_pit_frozen_manifest.json"
+CURRENT_MASTER=ROOT/"canonical_current_master_manifest.json"
+FROZEN_MASTER_SHA="fb64a44b79ced9dcda390f5661b796ee13a60f63"
 SEC=ROOT/"research/master_ten_sec_cik_sic_resolution_20261012_v1.json"
 RESEARCH=ROOT/"research/personal_master_20261012_sec_cik_exclusion_v1.json"
 POLICY=ROOT/"personal_research_technical_policy_v1.json"
@@ -19,6 +21,7 @@ def blob(path):
 def must(ok,reason):
     if not ok:raise ValueError("MASTER_TEN_PERSONAL_"+reason)
 def validate(m,s,p,o,blobs):
+    must(blobs["master"]==FROZEN_MASTER_SHA,"HISTORICAL_MASTER_IMMUTABLE_SHA")
     keys=sorted(m["unknown_symbols"])
     must(len(keys)==10 and m["unknown_count"]==10,"SOURCE")
     must(s.get("asof_et")==m.get("asof_et")==o.get("asof_et")=="2026-10-12","ASOF")
@@ -75,6 +78,14 @@ def validate(m,s,p,o,blobs):
             "r92_created":False,"real_money":"NO-GO"}
 def selftest(m,s,p,o,sha):
     validate(m,s,p,o,sha)
+    current=json.loads(CURRENT_MASTER.read_text())
+    if current.get("asof_et")!="2026-10-12":
+        try:
+            validate(current,s,p,o,{**sha,"master":blob(CURRENT_MASTER)})
+        except (ValueError,KeyError):
+            pass
+        else:
+            raise RuntimeError("LIVE_MASTER_REUSED_AS_HISTORICAL_PIT")
     tests=[
       lambda x:x["o"].update(personal_research_unknown_identity_count=1),
       lambda x:x["o"].update(source_master_blob_sha="0"*40),
@@ -93,7 +104,7 @@ def selftest(m,s,p,o,sha):
         try:validate(x["m"],x["s"],x["p"],x["o"],x["sha"])
         except (ValueError,KeyError):continue
         raise AssertionError("FALSE_RESEARCH_PASS_"+str(i))
-    print("XRAY_PERSONAL_TEN_CIK_SPAC_SELFTEST=PASS_10_NEGATIVES")
+    print("XRAY_PERSONAL_TEN_CIK_SPAC_SELFTEST=PASS_10_NEGATIVES_IMMUTABLE_OCT12_ARCHIVE")
 
 def main():
     parser=argparse.ArgumentParser()
