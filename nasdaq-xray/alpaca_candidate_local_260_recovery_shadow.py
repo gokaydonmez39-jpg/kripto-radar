@@ -218,6 +218,10 @@ def main():
          "EPHEMERAL_OUTPUT_ONLY")
     now = dt.datetime.now(UTC)
     root = json.loads(STATE.read_text())
+    candidate_bytes = (ROOT / "sina_candidates.json").read_bytes()
+    expected_sha = (root.get("watch_radar") or {}).get("source_candidates_sha256")
+    need(hashlib.sha256(candidate_bytes).hexdigest() == expected_sha,
+         "CANONICAL_CANDIDATE_FILE_NOT_BOUND_TO_TECHNICAL_SOURCE")
     asof, symbols, daily, weeks = source_scope(root, now)
     key = (os.getenv("XRAY_ALPACA_DATA_KEY_ID") or
            os.getenv("XRAY_ALPACA_API_KEY_ID") or "").strip()
