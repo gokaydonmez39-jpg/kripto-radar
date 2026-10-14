@@ -302,6 +302,23 @@ def selftest():
         for sym in expanded_names}
     need(len(source_scope(expanded, now)[1]) == 120,
          "ALL_120_UNKNOWNS_NOT_TRUNCATED")
+    # Same-ASOF mixed retry cohort: history, geometry and transport errors.
+    # All seven must remain independently eligible for source recovery.
+    seven=["ASTS","CCC","FISV","FOXA","KYMR","TLN","TWST"]
+    seven_watch={"asof_et":asof,"watchlist":[{"symbol":s} for s in seven],
+       "watchlist_count":7,"watchlist_cap":None,
+       "all_eligible_candidates_tracked":True,
+       "source_candidates_sha256":"a"*64,"watchlist_digest":"b"*64}
+    seven_funnel={"asof_et":asof,"candidate_count":7,"attempted_count":7,
+       "source_candidates_sha256":"a"*64,"watchlist_digest":"b"*64,
+       "results":{s:{"status":(
+          "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY" if s=="TWST"
+          else "UNKNOWN_260_OFFICIAL_HISTORY" if s in ("CCC","FISV")
+          else "UNKNOWN_TECHNICAL_PROVIDER_OR_ENGINE")} for s in seven}}
+    seven_root={"execution":"NONE","real_money":"NO-GO","asof_et":asof,
+                "watch_radar":seven_watch,"candidate_technical_funnel":seven_funnel}
+    need(source_scope(seven_root,now)[1]==seven,
+         "MIXED_SEVEN_LOCAL_PENDING_NOT_EXACT")
     report = base_report(asof, symbols, "a"*40)
     need(report["registered_r92_count"] == 0 and
          report["source_market_data_rights_independently_attested"] is False
@@ -425,7 +442,7 @@ def selftest():
          "UNKNOWN_SOURCE_ROW_INVALID"
          and malformed["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
          "MALFORMED_BAR_MUST_NEVER_LOOK_LIKE_COMPLETE_SOURCE")
-    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_3_OBSERVED_1_GAP_4_NEGATIVES_SOURCE_EXACT_NO_PRIMARY_NO_R92")
+    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_SEVEN_PENDING_3_OBSERVED_1_GAP_4_NEGATIVES_NO_PRIMARY_R92")
 
 def main():
     p = argparse.ArgumentParser()
