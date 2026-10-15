@@ -42,7 +42,7 @@ jobs:
           python nasdaq-xray/sec_frames_bulk_shares_shadow.py --selftest
       - name: Sample official SEC share vintages, never classify PRIMARY MC
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --offset 0 --limit 35 --report-empty-current-scope --output "$RUNNER_TEMP/xray_sec_multisymbol_pit_shadow.json"
           python - <<'PY'
@@ -71,7 +71,7 @@ jobs:
           PY
       - name: Discover issuer-wide SEC share facts via bounded official frames, never MC
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_frames_bulk_shares_shadow.py --out "$RUNNER_TEMP/xray_sec_frames_shadow.json"
           python - <<'PY'
