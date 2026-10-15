@@ -175,14 +175,57 @@ def dynamic_analyze(batch,daily,halfhour,days):
             "COMPLETE_MIXED_CLASSIFICATION")
     return found
 
+# Publicly admissible operational labels only. Never emit vendor errors,
+# symbol IDs, day stamps, OHLCV, missing minute positions or raw bar metadata.
+GAP_REASON_CODES={
+    "DAILY_30_SESSION_GAP",
+    "RTH_30MIN_SESSION_GAP",
+    "DUPLICATE_SOURCE_BAR",
+    "OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",
+    "RTH_VOLUME_EXCEEDS_DAILY",
+    "OTHER_STRUCTURAL_SOURCE_REJECTION",
+    "NO_VERIFIABLE_SOURCE_BARS",
+    "PROVIDER_AUTH_OR_RATE_LIMIT",
+    "PROVIDER_TRANSPORT_FAILURE",
+    "UNATTEMPTED_BUDGET_OR_LIMIT",
+}
+
+
+def isolated_gap_reason(daily,halfhour,days):
+    """Re-validate only to *diagnose*, never to change HISTORY/PRICE PASS."""
+    if not daily and not halfhour:
+        return "NO_VERIFIABLE_SOURCE_BARS"
+    try:
+        if all(cached_official_window(d)[2]==390 for d in days):
+            from alpaca_sip_4symbol_30min_rth_shadow import classify_one
+            classify_one(daily,halfhour,days)
+        else:
+            classify_mixed_full_and_early(daily,halfhour,days)
+    except (ValueError,KeyError,TypeError,OverflowError) as e:
+        if isinstance(e,ValueError):
+            code=str(e)
+            if code.endswith(("EXACT30_DAILY_MISSING","EXACT_30_DAILY_SET")):
+                return "DAILY_30_SESSION_GAP"
+            if code.endswith(("EXACT390_30MIN_MISSING",
+                              "EARLY_AND_FULL_BAR_COUNTS_EXACT")):
+                return "RTH_30MIN_SESSION_GAP"
+            if code.endswith(("DUPLICATE_DAILY","DUPLICATE_30MIN")):
+                return "DUPLICATE_SOURCE_BAR"
+            if code.endswith(("DAILY_NOT_AN_UPPER_BOUND",
+                              "DAILY_VOLUME_BOUND")):
+                return "RTH_VOLUME_EXCEEDS_DAILY"
+            if code.endswith(("INVALID_OHLC","OHLC_ORDER","VOLUME_INTEGRITY",
+                              "BAR_TIMESTAMP","NAIVE_BAR","CLOSE_NONFINITE",
+                              "CLOSE_INVALID","INVALID_OHLC","CLOSE_PRICE")):
+                return "OHLCV_SCHEMA_OR_TIMESTAMP_INVALID"
+        return "OTHER_STRUCTURAL_SOURCE_REJECTION"
+    return "OTHER_STRUCTURAL_SOURCE_REJECTION"
+
+
 def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                                analyzer=dynamic_analyze,checkpoint=None,
                                *,max_rechecks=MAX_INTEGRITY_RECHECKS):
-    """One bounded, single-symbol retry for malformed/missing 30-day SIP bars.
-
-    A retry is purely research-level. It cannot repair an auction/rights/
-    corporate-action authority gap, create PRICE PASS, or rewrite canonical.
-    """
+    """Recheck bounded source gaps and record only safe aggregate reason counts."""
     require(type(max_rechecks) is int and 0<=max_rechecks<=MAX_INTEGRITY_RECHECKS,
             "ISOLATED_RECHECK_CAP")
     statuses=report["classifications"]
@@ -190,6 +233,7 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
     report["integrity_recheck_candidate_count"]=len(candidates)
     report["integrity_recheck_unresolved"]=len(candidates)
     report["integrity_recheck_status"]="NO_GAPS" if not candidates else "BOUNDED_RESEARCH_RECHECK"
+    failure_reasons={}
     for sym in candidates[:max_rechecks]:
         if counters[0]>=CALL_BUDGET:
             report["integrity_recheck_status"]="GLOBAL_BUDGET_EXHAUSTED"
@@ -209,11 +253,16 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                         "ISOLATED_ONLY_PREVIOUS_UNKNOWN")
                 statuses[sym]=observed
                 report["integrity_recheck_recovered"]+=1
+            else:
+                failure_reasons[sym]=isolated_gap_reason(
+                    daily.get(sym,[]),half.get(sym,[]),dates)
         except (urllib.error.HTTPError,urllib.error.URLError,ValueError,
                 TimeoutError,OSError) as exc:
             if isinstance(exc,urllib.error.HTTPError) and exc.code in (401,403,429):
+                failure_reasons[sym]="PROVIDER_AUTH_OR_RATE_LIMIT"
                 report["integrity_recheck_status"]="PROVIDER_AUTH_OR_RATE_LIMIT_STOP"
                 break
+            failure_reasons[sym]="PROVIDER_TRANSPORT_FAILURE"
             report["integrity_recheck_status"]="SOME_SOURCE_GAPS_UNRESOLVED"
         finally:
             require(before<=counters[0]<=CALL_BUDGET,
@@ -224,20 +273,26 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
             finalize(report)
             if checkpoint is not None:
                 checkpoint()
-    require(report["integrity_recheck_recovered"]+
-            report["integrity_recheck_unresolved"]==
-            report["integrity_recheck_candidate_count"],
+    unresolved={s for s in candidates if statuses[s]==INTEGRITY_UNKNOWN}
+    for sym in unresolved:
+        failure_reasons.setdefault(sym,"UNATTEMPTED_BUDGET_OR_LIMIT")
+    require(set(failure_reasons)==unresolved,"ISOLATED_REASONS_SCOPE_EXACT")
+    report["integrity_recheck_unresolved_reason_counts"]=dict(sorted(
+        collections.Counter(failure_reasons.values()).items()))
+    require(set(report["integrity_recheck_unresolved_reason_counts"])<=GAP_REASON_CODES
+            and sum(report["integrity_recheck_unresolved_reason_counts"].values())
+                  ==len(unresolved),
+            "ISOLATED_REASON_PARTITION_INVALID")
+    require(report["integrity_recheck_recovered"]+len(unresolved)==len(candidates),
             "ISOLATED_GAP_ACCOUNTING")
     if report["integrity_recheck_status"]=="BOUNDED_RESEARCH_RECHECK":
         report["integrity_recheck_status"]=(
             "ALL_ISOLATED_GAPS_REMEASURED_SHADOW"
-            if report["integrity_recheck_unresolved"]==0 else
-            "SOME_SOURCE_GAPS_UNRESOLVED")
+            if not unresolved else "SOME_SOURCE_GAPS_UNRESOLVED")
     require(report.get("price_primary_pass_count")==0 and
             report.get("registered_R92_created") is False,
             "ISOLATED_NEVER_PRIMARY")
     return report
-
 
 def census(now,credentials,output,fetcher=fetch):
     master_raw=(ROOT/"canonical_current_master_manifest.json").read_bytes()
@@ -396,7 +451,36 @@ def selftest():
             and auth["integrity_recheck_unresolved"]==2
             and auth["price_primary_pass_count"]==0,
             "RECHECK_PROVIDER_CLIFF_NEVER_PASS")
-    print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_DYNAMIC_ASOF_EARLY_CLOSE_ISOLATED_RECOVERY_BUDGET_AUTH_NEGATIVES_NO_PRIMARY")
+    require(recovered["integrity_recheck_unresolved_reason_counts"]==
+            {"NO_VERIFIABLE_SOURCE_BARS":1} and
+            exhausted["integrity_recheck_unresolved_reason_counts"]==
+            {"UNATTEMPTED_BUDGET_OR_LIMIT":1} and
+            auth["integrity_recheck_unresolved_reason_counts"]==
+            {"PROVIDER_AUTH_OR_RATE_LIMIT":1,
+             "UNATTEMPTED_BUDGET_OR_LIMIT":1},
+            "RECHECK_DIAGNOSTIC_AGGREGATION")
+    # Verify real guard reasons on synthetic complete/missing daily and slots,
+    # without ever manufacturing a vendor observation or making a PRIMARY claim.
+    need_good=lambda v: {"t":v.isoformat(),"o":10.,"h":11.,
+                         "l":9.,"c":10.,"v":1000}
+    daily_rows=[]
+    half_rows=[]
+    for day in d:
+        start,_,minutes=cached_official_window(day)
+        daily_rows.append(need_good(dt.datetime.combine(
+            dt.date.fromisoformat(day),dt.time(),NY)))
+        for n in range(minutes//30):
+            half_rows.append(need_good(start+dt.timedelta(minutes=30*n)))
+    require(isolated_gap_reason(daily_rows[:-1],half_rows,d)=="DAILY_30_SESSION_GAP",
+            "DAILY_REASON_NOT_CLASSIFIED")
+    require(isolated_gap_reason(daily_rows,half_rows[:-1],d)=="RTH_30MIN_SESSION_GAP",
+            "RTH_REASON_NOT_CLASSIFIED")
+    duplicated=half_rows+[half_rows[0]]
+    require(isolated_gap_reason(daily_rows,duplicated,d)=="DUPLICATE_SOURCE_BAR",
+            "DUPLICATE_REASON_NOT_CLASSIFIED")
+    require(isolated_gap_reason([],[],d)=="NO_VERIFIABLE_SOURCE_BARS",
+            "NO_BARS_REASON_NOT_CLASSIFIED")
+    print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_ISOLATED_GAP_SOURCE_REASONS_DAILY_RTH_DUPLICATE_AUTH_BUDGET_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
@@ -414,6 +498,8 @@ def main():
     print("XRAY_PERSONAL_CURRENT_PRICE_SCOPE="+str(
         out["classified_count"])+"/"+str(out["scope_total"]))
     print("XRAY_PERSONAL_CURRENT_PRICE_COUNTS="+json.dumps(out["counts"],sort_keys=True))
+    print("XRAY_PERSONAL_CURRENT_PRICE_INTEGRITY_RECHECK_COUNTS="+json.dumps(
+        out["integrity_recheck_unresolved_reason_counts"],sort_keys=True))
     print("XRAY_PERSONAL_CURRENT_PRICE_ASOF="+out["asof_et"])
     print("XRAY_PERSONAL_CURRENT_PRICE_NO_PRIMARY_R92=PASS")
 if __name__=="__main__":main()
