@@ -82,10 +82,22 @@ jobs:
           assert j["alpha_authority"] is False and j["r92_registered"] is False
           assert j["published_vendor_raw_ohlcv"] is False
           assert j["published_symbol_classifications"] is False
+          reasons=j.get("integrity_recheck_unresolved_reason_counts",{})
+          assert isinstance(reasons,dict)
+          assert all(k in {
+              "DAILY_30_SESSION_GAP","RTH_30MIN_SESSION_GAP",
+              "DUPLICATE_SOURCE_BAR","OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",
+              "RTH_VOLUME_EXCEEDS_DAILY","OTHER_STRUCTURAL_SOURCE_REJECTION",
+              "NO_VERIFIABLE_SOURCE_BARS","PROVIDER_AUTH_OR_RATE_LIMIT",
+              "PROVIDER_TRANSPORT_FAILURE","UNATTEMPTED_BUDGET_OR_LIMIT",
+          } and isinstance(v,int) for k,v in reasons.items())
           print("XRAY_CURRENT_SIP_COUNTS_ONLY="+json.dumps({
               "asof_et":j["asof_et"],"status":j["status"],
               "scope":j["exact_source_unknown_scope_count"],
               "counts":j["counts"],"source_price_sha":j["source_price_blob_sha"],
+              "gap_reasons":reasons,
+              "isolated_recheck_attempted":j.get("integrity_recheck_attempted",0),
+              "isolated_recheck_recovered":j.get("integrity_recheck_recovered",0),
           },sort_keys=True))
           PY
       - name: Archive sanitized counts only; source test success is not AL or R92
