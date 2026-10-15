@@ -93,6 +93,9 @@ def main():
                   "0":{"ticker":"TLAC","cik_str":2128462,"title":"Three Lions Acquisition Corp."},
                   "1":{"ticker":"OPER","cik_str":1234567,"title":"Operating Corp."},
                   "2":{"ticker":"CONFLICT","cik_str":333,"title":"Conflict Corp."},
+                  # Provider ticker case may distinguish two issuer identities.
+                  "3":{"ticker":"BCPC","cik_str":5550001,"title":"Case A"},
+                  "4":{"ticker":"BCpC","cik_str":5550002,"title":"Case B"},
                 }
             if url==m.SEC_TICKERS_EXCHANGE:
                 return {
@@ -105,6 +108,8 @@ def main():
                     [444,"Conflict Other Corp.","CONFLICT","Nasdaq"],
                     [555,"Different Corp.","DUP","Nasdaq"],
                     [556,"Another Corp.","DUP","Nasdaq"],
+                    [5550001,"Case A","BCPC","Nasdaq"],
+                    [5550002,"Case B","BCpC","Nasdaq"],
                     [111,"Non Nasdaq","NONNAS","NYSE"]
                   ]
                 }
@@ -113,6 +118,15 @@ def main():
                   "tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks",
                   "filings":{"recent":{"filingDate":["2026-09-30","2026-10-07"],"acceptanceDateTime":["2026-09-30T18:10:00Z","2026-10-07T18:10:00Z"]}},
                 }
+            if "CIK0005550001.json" in url:
+                # Deliberately wrong-case ticker for CIK 5550001.
+                return {"tickers":["BCpC"],"sic":"6770","sicDescription":"Blank Checks",
+                        "filings":{"recent":{"filingDate":["2026-09-30"],
+                        "acceptanceDateTime":["2026-09-30T18:10:00Z"]}}}
+            if "CIK0005550002.json" in url:
+                return {"tickers":["BCPC"],"sic":"3571","sicDescription":"Electronic Computers",
+                        "filings":{"recent":{"filingDate":["2026-09-30"],
+                        "acceptanceDateTime":["2026-09-30T18:10:00Z"]}}}
             if "CIK0001234567.json" in url:
                 return {
                   "tickers":["OPER"],"sic":"3571","sicDescription":"Electronic Computers",
@@ -122,6 +136,7 @@ def main():
         m.load_json_url=fake_load
         cmap=m.sec_ticker_cik_map()
         assert cmap["TLAC"]==2128462 and cmap["OPER"]==1234567
+        assert cmap["BCPC"]==5550001 and cmap["BCpC"]==5550002, "SEC_CASE_VARIANTS_MERGED"
         assert cmap["TLACU"]==2128462 and "NONNAS" not in cmap
         assert "CONFLICT" not in cmap and "DUP" not in cmap
         assert m.SEC_CIK_DISCOVERY_DIAGNOSTICS["exchange_added_count"]==1
@@ -198,6 +213,16 @@ def main():
         assert m.sec_current_classification("WRONG","2026-10-06",cmap["OPER"]) is None
         assert m.sec_current_row("TLAC","2026-10-06",cmap["TLAC"],True)["sic"]==6770
         assert m.sec_current_row("TLAC","2026-10-06",cmap["TLAC"],False) is None
+        # CIK response for one exact ticker deliberately lists only the
+        # other ticker; previous upper() code falsely accepted its SIC.
+        assert m.sec_current_classification("BCPC","2026-10-06",cmap["BCPC"]) is None
+        assert m.sec_current_classification("BCpC","2026-10-06",cmap["BCpC"]) is None
+        assert m.sec_current_row("BCPC","2026-10-06",cmap["BCPC"],True) is None
+        assert m.sec_current_row("BCpC","2026-10-06",cmap["BCpC"],False) is None
+        assert m._nasdaq_exchange_cik_map({"fields":["cik","ticker","exchange"],
+          "data":[[5550001,"BCPC","Nasdaq"],[5550002,"BCpC","Nasdaq"]]})[0]=={
+            "BCPC":5550001,"BCpC":5550002}
+        print("XRAY_SEC_EXACT_CASE_CIK=PASS_DISTINCT_TICKER_ROUTING_AND_WRONG_ISSUER_VETO")
         # A valid CIK/ticker and recent filing cannot compensate for missing SIC.
         def missing_sic(url):
             if "CIK0001234567.json" in url:
