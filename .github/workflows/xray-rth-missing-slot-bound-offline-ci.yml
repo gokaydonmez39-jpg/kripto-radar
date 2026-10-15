@@ -1,0 +1,37 @@
+name: XRAY RTH Missing-Slot Bound Offline CI (No Provider Calls)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - ".github/workflows/xray-rth-missing-slot-bound-offline-ci.yml"
+permissions:
+  contents: read
+jobs:
+  partial-bound-never-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned trading-session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Test exact RTH and adversarial partial-slot bounds without network
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py
+          python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+      - name: Keep missing RTH bars UNKNOWN, preserve no orders and no primary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          x=Path("nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py").read_text()
+          assert 'status[name]=RTH_UNVERIFIED' in x
+          assert '"partial_research_never_promotes_strict_rth":True' in x
+          assert '"official_c417_primary_dv30_attested":False' in x
+          assert '"registered_R92_count":0' in x
+          assert '"execution":"NONE","real_money":"NO-GO"' in x
+          print("XRAY_RTH_497_RESEARCH_DIAGNOSTIC_NO_PRIMARY_NO_AL=PASS")
+          PY
