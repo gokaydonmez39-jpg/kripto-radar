@@ -1,0 +1,63 @@
+name: XRAY Research WATCH Completed-Session Regression (No Orders)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research_watch_radar.py"
+      - "nasdaq-xray/preentry_watch_observer.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
+      - ".github/workflows/xray-research-watch-epoch-selftest.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research_watch_radar.py"
+      - "nasdaq-xray/preentry_watch_observer.py"
+      - "nasdaq-xray/source_epoch_freshness_guard.py"
+      - ".github/workflows/xray-research-watch-epoch-selftest.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-current-nasdaq-epoch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official NASDAQ session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Run stale-perfect-SHA and session-bound WATCH regressions
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/research_watch_radar.py nasdaq-xray/preentry_watch_observer.py
+          python nasdaq-xray/research_watch_radar.py --selftest
+          python -O nasdaq-xray/research_watch_radar.py --selftest
+          python nasdaq-xray/preentry_watch_observer.py --selftest
+      - name: Verify actual terminal cannot be promoted from stale epoch
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/research_watch_radar.py --out "$RUNNER_TEMP/xray_research_watch_epoch.json"
+          python - <<'PY'
+          import datetime,json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from source_epoch_freshness_guard import last_complete_session
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_research_watch_epoch.json").read_text())
+          latest=last_complete_session(datetime.datetime.now(datetime.timezone.utc))
+          assert j["latest_completed_nasdaq_session"]==latest
+          assert j["terminal_epoch_current"]==(j["asof_et"]==latest)
+          assert j["buy_candidates"]==[] and not j["go"] and j["orders"]==[]
+          assert j["alpha_authority"] is False and j["real_money"]=="NO-GO"
+          if j["asof_et"]!=latest:
+              assert not j["source_exact"],"STALE_TERMINAL_MISREPORTED_CURRENT"
+              assert not j["research_watch"] and j["live_watch_count"]==0
+              assert j["status"]=="STALE_SNAPSHOT_WATCH_BLOCKED"
+              assert "TERMINAL_NOT_LATEST_COMPLETED_NASDAQ_SESSION" in j["binding_discrepancies"]
+          print("XRAY_LIVE_WATCH_EPOCH_GUARD=PASS_NO_STALE_SIGNAL_NO_AL")
+          PY
