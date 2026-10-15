@@ -66,6 +66,7 @@ def main():
     opt=x.parse_args()
     if opt.selftest:
         selftest()
+        return
     bad=scan()
     if bad:
         for name,reasons in bad:
