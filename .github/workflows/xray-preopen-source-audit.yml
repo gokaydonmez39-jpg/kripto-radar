@@ -184,7 +184,7 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_ROOT_HISTORY_DIAGNOSTIC=VERIFIED_COUNTS_WITHOUT_MARKET_PASS")
           PY
-      - name: Full 135-workflow automatic schedule, privilege and licensing topology
+      - name: Complete automatic workflow schedule, privilege and licensing topology
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
           python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
@@ -197,7 +197,7 @@ jobs:
           j=json.loads(p.read_text())
           assert j["schema"]=="XRAY_ALL_GITHUB_WORKFLOW_SCHEDULE_PRIVILEGE_AUDIT_V1"
           assert j["contract_status"]=="PASS" and not j["blockers"]
-          assert j["scheduled_count"]==25 and j["expected_scheduled_count"]==25 and len(j["automated_schedules"])==25
+          assert j["scheduled_count"]==27 and j["expected_scheduled_count"]==27 and len(j["automated_schedules"])==27
           assert j["issue_writers"]==[]  # User preference: ChatGPT-only; zero GitHub Issue writers
           assert j["alpha_authority"] is False and j["device_delivery_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
