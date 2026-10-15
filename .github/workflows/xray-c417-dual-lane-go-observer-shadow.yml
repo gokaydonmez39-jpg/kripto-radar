@@ -46,7 +46,7 @@ jobs:
           import hashlib,json,os
           from pathlib import Path
           root=Path("nasdaq-xray")
-          def digest(xs): return hashlib.sha256("\\n".join(xs).encode()).hexdigest()
+          def digest(xs): return hashlib.sha256("\n".join(xs).encode()).hexdigest()
           def need(ok,reason):
               if not ok: raise ValueError("XRAY_DUAL_LANE_COHORT_GUARD:"+reason)
           def assess(m,p):
@@ -94,11 +94,11 @@ jobs:
           actual_m=json.loads((root/"canonical_current_master_manifest.json").read_text())
           actual_p=json.loads((root/"canonical_current_price_dv30.json").read_text())
           cohort=assess(actual_m,actual_p)
-          with open(os.environ["GITHUB_OUTPUT"],"a") as out:out.write("cohort="+cohort+"\\n")
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:out.write("cohort="+cohort+"\n")
           if cohort=="empty":
               print("XRAY_DUAL_LANE=BLOCKED_NO_PRICE_PASS_SCOPE_NO_HISTORY_REQUEST_NO_AL")
               with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
-                  out.write("XRAY zero PRICE PASS: validated empty cohort; no history request, no shadow GO or device ACK.\\n")
+                  out.write("XRAY zero PRICE PASS: validated empty cohort; no history request, no shadow GO or device ACK.\n")
           else:
               print("XRAY_DUAL_LANE=NONEMPTY_COHORT_PROVENANCE_CHECK_CONTINUES")
           print("XRAY_DUAL_LANE_ZERO_PASS_GUARD_SELFTEST=PASS_POSITIVE_SIX_NEGATIVES")
