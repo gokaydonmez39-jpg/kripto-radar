@@ -27,7 +27,7 @@ jobs:
           python -O nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py --selftest
       - name: Fetch actual current SEC submissions and latest accepted 8Ks for all ten
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/personal_master_ten_20261013_sec_live_disposition.py \
             --out "$RUNNER_TEMP/xray_oct13_master_ten_live_sec.json"
