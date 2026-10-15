@@ -42,7 +42,7 @@ jobs:
             --dir "$RUNNER_TEMP/cohort"
       - name: One-by-one official SEC PIT shares and acceptance checks
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           PAGE: ${{ matrix.page }}
         run: |
           python nasdaq-xray/candidate_local_sec_pit_50_page.py \
