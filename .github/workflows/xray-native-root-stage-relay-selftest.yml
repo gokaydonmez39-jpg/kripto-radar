@@ -1,6 +1,10 @@
 name: XRAY Root Stage Relay Regression (No Dispatch)
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "nasdaq-xray/github_native_stage_relay.py"
+      - ".github/workflows/xray-native-root-stage-relay-selftest.yml"
   push:
     branches: [main]
     paths:
@@ -15,8 +19,6 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -26,23 +28,33 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/github_native_stage_relay.py nasdaq-xray/github_native_root_watchdog.py
           python nasdaq-xray/github_native_stage_relay.py --selftest
-      - name: Verify live 8 Oct root versus authoritative terminal (read only)
+      - name: Verify actual root-to-canonical epoch rollover is an audit trigger, not AL
         run: |
           python - <<'PY'
-          import json
+          import json,sys
+          from datetime import date,datetime,timezone
           from pathlib import Path
           b=Path("nasdaq-xray")
+          sys.path.insert(0,str(b))
+          from github_native_stage_relay import classify
           root=json.loads((b/"orchestrator_state.json").read_text())
           master=json.loads((b/"canonical_current_master_manifest.json").read_text())
           price=json.loads((b/"canonical_current_price_dv30.json").read_text())
           terminal=json.loads((b/"canonical_current_terminal.json").read_text())
           assert root["execution"]=="NONE" and root["real_money"]=="NO-GO"
-          assert root["asof_et"]==master["asof_et"]==price["asof_et"]
-          print("XRAY_ROOT_CURRENT_ASOF="+root["asof_et"])
-          print("XRAY_TERMINAL_CURRENT_ASOF="+terminal["asof_et"])
-          print("XRAY_TERMINAL_LAG="+str(root["asof_et"]!=terminal["asof_et"]))
-          if root["asof_et"]!=terminal["asof_et"]:
-              print("XRAY_RELAY_REGRESSION=PASS_GATES_ONLY_CURRENT_TERMINAL_STALE")
+          assert master["unknown_never_pass"] is True
+          assert price["unknown_never_pass"] is True
+          assert master["asof_et"]==price["asof_et"]
+          assert date.fromisoformat(master["asof_et"])<=date.fromisoformat(root["asof_et"])
+          reason,eligible=classify(datetime.now(timezone.utc),root,master,price,terminal,[])
+          if master["asof_et"]<root["asof_et"]:
+              assert (reason,eligible)==("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE",True)
+          elif terminal["asof_et"]==root["asof_et"] and terminal.get("full_end_to_end_research_pass") is True:
+              assert not eligible
           else:
-              print("XRAY_RELAY_REGRESSION=PASS_GATES_ONLY_CANNOT_CLAIM_AL")
+              assert eligible and reason=="EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE"
+          print("XRAY_ROOT_CURRENT_ASOF="+root["asof_et"])
+          print("XRAY_CANONICAL_MASTER_PRICE_ASOF="+master["asof_et"])
+          print("XRAY_TERMINAL_LAST_ASOF="+terminal["asof_et"])
+          print("XRAY_PREMC_DISPATCH_DECISION="+reason+"; NO_SOURCE_PROMOTION_NO_TRADES")
           PY
