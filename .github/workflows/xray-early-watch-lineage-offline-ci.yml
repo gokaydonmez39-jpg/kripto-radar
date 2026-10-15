@@ -43,7 +43,37 @@ jobs:
               assert required in t, required
           assert 'run["event"] in ("push","schedule","workflow_dispatch")' not in t
           for required in (
-              'CURRENT_HEAD_SHA: ${{ github.sha }}',
+              'CURRENT_HEAD_SHA: ' + ',
+              'r.get("head_sha")==os.environ["CURRENT_HEAD_SHA"]',
+              'out.write("ready=false',
+              'out.write("ready=true',
+              "XRAY_EARLY_WATCH_SAFE_SKIP_PENDING_SAME_SHA_SOURCE",
+              "if: steps.source.outputs.ready == 'true'",
+              "if: " + ',
+          ):
+              assert required in t, required
+          assert t.count("if: steps.source.outputs.ready == 'true'")==3
+          print("XRAY_EARLY_WATCH_WORKFLOW_WIRING=PASS_CHAINED_SOURCE_AND_SAME_SHA_PUSH_RACE")
+          PY
+ + '{{ github.sha }}',
+              'r.get("head_sha")==os.environ["CURRENT_HEAD_SHA"]',
+              'out.write("ready=false',
+              'out.write("ready=true',
+              "XRAY_EARLY_WATCH_SAFE_SKIP_PENDING_SAME_SHA_SOURCE",
+              "if: steps.source.outputs.ready == 'true'",
+              "if: ${{ always() && steps.source.outputs.ready == 'true' }}",
+          ):
+              assert required in t, required
+          assert t.count("if: steps.source.outputs.ready == 'true'")==3
+          print("XRAY_EARLY_WATCH_WORKFLOW_WIRING=PASS_CHAINED_SOURCE_AND_SAME_SHA_PUSH_RACE")
+          PY
+ + "{{ always() && steps.source.outputs.ready == 'true' }}",
+          ):
+              assert required in t, required
+          assert t.count("if: steps.source.outputs.ready == 'true'")==3
+          print("XRAY_EARLY_WATCH_WORKFLOW_WIRING=PASS_CHAINED_SOURCE_AND_SAME_SHA_PUSH_RACE")
+          PY
+ + '{{ github.sha }}',
               'r.get("head_sha")==os.environ["CURRENT_HEAD_SHA"]',
               'out.write("ready=false',
               'out.write("ready=true',
