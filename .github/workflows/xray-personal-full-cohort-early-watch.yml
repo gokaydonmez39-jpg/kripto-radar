@@ -45,8 +45,10 @@ jobs:
           CURRENT_REPO: ${{ github.repository }}
         run: |
           python - <<'PY'
-          import json,os,subprocess
+          import json,os,subprocess,sys
           from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from personal_watch_run_lineage_guard import verify_run
           def gh(*args):
               return json.loads(subprocess.check_output(
                   ["gh","api",*args],text=True))
@@ -54,16 +56,18 @@ jobs:
           if os.environ["EVENT_NAME"]=="workflow_run":
               run_id=int(os.environ["UPSTREAM_ID"])
               run=gh("repos/"+repo+"/actions/runs/"+str(run_id))
-              assert run["head_sha"]==os.environ["UPSTREAM_SHA"]
-              assert run["conclusion"]=="success" and run["event"] in ("push","schedule","workflow_dispatch")
+              verify_run(run,repo,expected_run_id=run_id,
+                         expected_head_sha=os.environ["UPSTREAM_SHA"])
           else:
               response=gh("repos/"+repo+"/actions/workflows/xray-personal-full-universe-sip-coverage.yml/runs?per_page=20")
               runs=[r for r in response["workflow_runs"] if
-                   r.get("name")=="XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"
-                   and r.get("status")=="completed" and r.get("conclusion")=="success"
+                   r.get("status")=="completed" and r.get("conclusion")=="success"
                    and r.get("head_branch")=="main"]
               assert runs,"NO_SUCCESSFUL_FULL_UNIVERSE_SIP_RESEARCH_RUN"
-              run_id=runs[0]["id"]
+              run_id=int(runs[0]["id"])
+              run=gh("repos/"+repo+"/actions/runs/"+str(run_id))
+              verify_run(run,repo,expected_run_id=run_id,
+                         expected_head_sha=run["head_sha"])
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write("upstream_run_id="+str(run_id)+"\n")
           print("XRAY_EARLY_WATCH_SOURCE_RUN_ID="+str(run_id))
