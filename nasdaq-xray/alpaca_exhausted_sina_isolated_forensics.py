@@ -146,7 +146,9 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
                 categories[reason(rows, days, asof, latest)] += 1
         except (RuntimeError, ValueError, TypeError, KeyError, OSError):
             categories["ISOLATED_PROVIDER_TRANSPORT_UNVERIFIED"] += 1
-    categories["UNATTEMPTED_ISOLATION_BUDGET"] += len(failures) - output["isolated_attempted"]
+    remaining = len(failures) - output["isolated_attempted"]
+    if remaining:
+        categories["UNATTEMPTED_ISOLATION_BUDGET"] += remaining
     need(set(categories) <= ALLOWED_REASONS
          and sum(categories.values()) == len(failures), "ISOLATED_PARTITION")
     need(output["isolated_attempted"] <= MAX_ISOLATED
@@ -191,6 +193,8 @@ def selftest():
     want = {"ZERO_VOLUME_DAILY_BAR":1,"MISSING_LATEST_COMPLETED_SESSION":1,
             "NO_BAR_CONFIRMED_SINGLE_SYMBOL":1,"INVALID_OHLCV_VALUES":1}
     need(result["isolated_recheck_reason_counts"]==want
+         and result["status"]=="SHADOW_FORENSICS_MEASURED_NOT_CANONICAL"
+         and "UNATTEMPTED_ISOLATION_BUDGET" not in result["isolated_recheck_reason_counts"]
          and result["first_pass_counts"][OBSERVED]==1
          and result["requests_attempted"]==5
          and calls==[tuple(selected),("BBB",),("CCC",),("DDD",),("EEE",)]
