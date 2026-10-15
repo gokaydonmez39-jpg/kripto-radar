@@ -15,6 +15,7 @@ import json
 import re
 from pathlib import Path
 from alpaca_minute_source_response_diagnostics import SCHEMA_CODES
+from alpaca_minute_null_multiroute_shadow import STATUS as MULTI_ROUTE_STATUS
 
 ROOT = Path(__file__).resolve().parent
 MASTER = ROOT / "canonical_current_master_manifest.json"
@@ -39,6 +40,7 @@ MINUTE_WITNESS_CODES = {
     "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
     "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
     *SCHEMA_CODES,
+    *MULTI_ROUTE_STATUS,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
