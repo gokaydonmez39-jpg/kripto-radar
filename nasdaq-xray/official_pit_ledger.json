@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-15T06:27:08.889447+00:00",
+  "last_ingest_at_utc": "2026-10-15T08:48:53.498170+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 110,
+  "snapshot_count": 111,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -58171,6 +58171,128 @@
       },
       "payload_sha256": "0c27dbf00752608fda92f0c5dea5c5b75e11ca99d059b87e326b89bf93d5a4b7",
       "source": "trade_halts",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-15T08:48:52.091997+00:00",
+      "observed_at_utc": "2026-10-15T08:48:53.498134+00:00",
+      "payload": {
+        "row_count": 12,
+        "rows": [
+          {
+            "BX Action": "Delete",
+            "Company Name": "Clear Channel Outdoor Holdings, Inc.",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": ""
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "abrdn Global Infrastructure Income Fund",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "ASGI^"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "American Century ETF Trust",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "AVUC"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Black Mammoth Metals Corporation",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "BMMX"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Bitwise Dogecoin ETF",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "BWOW"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Managed Portfolio Series",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "GANZ"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Iambic Therapeutics, Inc.",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Q",
+            "Symbol": "IAM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "SPACCircle Acquisition Corp.",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "SCQCU"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "SMRZ"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Santander Holdings USA, Inc.",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "SNUS-I"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "William Blair ETF Trust",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "WBEM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "William Blair ETF Trust",
+            "Effective Date": "10/15/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "WBIE"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "4c489c6a3dc62b1614782363e1c9b73b0412b521d2346000fa217609593187e6",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],

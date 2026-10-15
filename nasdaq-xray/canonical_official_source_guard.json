@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-15T06:27:07.831973+00:00",
+  "generated_at_utc": "2026-10-15T08:48:52.091997+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -978,223 +978,115 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 24,
+      "row_count": 12,
       "rows": [
         {
-          "BX Action": "Add",
+          "BX Action": "Delete",
           "Company Name": "Clear Channel Outdoor Holdings, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "N",
           "Symbol": ""
         },
         {
+          "BX Action": "Delete",
+          "Company Name": "abrdn Global Infrastructure Income Fund",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "N",
+          "Symbol": "ASGI^"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "American Century ETF Trust",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "AVUC"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Black Mammoth Metals Corporation",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "BMMX"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Bitwise Dogecoin ETF",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "BWOW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Managed Portfolio Series",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "GANZ"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Iambic Therapeutics, Inc.",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Q",
+          "Symbol": "IAM"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "SPACCircle Acquisition Corp.",
+          "Effective Date": "10/15/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCQCU"
+        },
+        {
           "BX Action": "Add",
           "Company Name": "Global X Funds",
-          "Effective Date": "10/14/2026",
+          "Effective Date": "10/15/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ACHP"
+          "Primary Listing Market": "Z",
+          "Symbol": "SMRZ"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Bakkt, Inc.",
-          "Effective Date": "10/14/2026",
+          "Company Name": "Santander Holdings USA, Inc.",
+          "Effective Date": "10/15/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "N",
-          "Symbol": "BKKT+"
+          "Symbol": "SNUS-I"
         },
         {
           "BX Action": "Add",
-          "Company Name": "BSR Real Estate Investment Trust",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "BSRT"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Clear Channel Outdoor Holdings, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "CCO"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "DFA Investment Dimensions Group Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "DFGV"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "EA Series Trust",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "EMSC"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Frazier Life Sciences Acquisition Corp. II",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "FLSC"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Harbour Island Acquisition Corp. I",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "HRIAU"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Voya Asia Pacific High Dividend Equity Income Fund",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "IAE"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Voya Emerging Markets High Income Dividend Equity Fund",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "IHD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Themes ETF Trust",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "MGOL"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Nextdoor Holdings, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "NXDR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Nextdoor Holdings, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "NXDR"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "REX ETF Trust",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "PEPT"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Priority Income Fund, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "PRIF-L"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Quetta Acquisition Corporation",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "QETA"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Quetta Acquisition Corporation",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "QETAR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Quetta Acquisition Corporation",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "QETAU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "The RBB Fund, Inc.",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "RTHY"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Select Sector SPDR Trust (The)",
-          "Effective Date": "10/14/2026",
+          "Company Name": "William Blair ETF Trust",
+          "Effective Date": "10/15/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "XLEM"
+          "Symbol": "WBEM"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Select Sector SPDR Trust (The)",
-          "Effective Date": "10/14/2026",
+          "Company Name": "William Blair ETF Trust",
+          "Effective Date": "10/15/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "XLKM"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Select Sector SPDR Trust (The)",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "XLPM"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Select Sector SPDR Trust (The)",
-          "Effective Date": "10/14/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "XLYM"
+          "Symbol": "WBIE"
         }
       ],
       "status": "PASS",
