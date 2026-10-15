@@ -25,6 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install pinned Nasdaq session calendar for transitive root watchdog import
+        run: python -m pip install --disable-pip-version-check pandas==2.2.3 pandas_market_calendars==5.4.0
       - name: Regress source epoch and active-run gates
         run: |
           python -m py_compile nasdaq-xray/github_native_stage_relay.py
