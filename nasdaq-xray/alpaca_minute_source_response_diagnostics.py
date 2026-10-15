@@ -12,7 +12,10 @@ import datetime as dt
 
 SCHEMA_CODES = frozenset({
     "MINUTE_SCHEMA_DOC_INVALID",
-    "MINUTE_SCHEMA_BARS_NOT_LIST",
+    "MINUTE_SCHEMA_BARS_FIELD_MISSING",
+    "MINUTE_SCHEMA_BARS_NULL",
+    "MINUTE_SCHEMA_BARS_MAPPING_NOT_LIST",
+    "MINUTE_SCHEMA_BARS_SCALAR_NOT_LIST",
     "MINUTE_SCHEMA_SYMBOL_MISMATCH",
     "MINUTE_SCHEMA_UNEXPECTED_PAGE_CURSOR",
     "MINUTE_SCHEMA_BAR_COUNT_EXCEEDED",
@@ -33,8 +36,14 @@ def classify_minute_document(doc, *, symbol, start, end_exclusive,
     """Validate the entire returned page before classifying any observed bars."""
     if (type(doc) is not dict):
         return "MINUTE_SCHEMA_DOC_INVALID"
-    if type(doc.get("bars")) is not list:
-        return "MINUTE_SCHEMA_BARS_NOT_LIST"
+    if "bars" not in doc:
+        return "MINUTE_SCHEMA_BARS_FIELD_MISSING"
+    if doc["bars"] is None:
+        return "MINUTE_SCHEMA_BARS_NULL"
+    if type(doc["bars"]) is dict:
+        return "MINUTE_SCHEMA_BARS_MAPPING_NOT_LIST"
+    if type(doc["bars"]) is not list:
+        return "MINUTE_SCHEMA_BARS_SCALAR_NOT_LIST"
     if doc.get("symbol") is not None and doc["symbol"] != symbol:
         return "MINUTE_SCHEMA_SYMBOL_MISMATCH"
     if doc.get("next_page_token") is not None:
@@ -73,7 +82,16 @@ def selftest():
     assert classify_minute_document(good,**kwargs)=="PRESENT_SHADOW"
     assert classify_minute_document(dict(good,bars=[]),**kwargs)=="EMPTY_UNKNOWN"
     assert classify_minute_document(None,**kwargs)=="MINUTE_SCHEMA_DOC_INVALID"
-    assert classify_minute_document(dict(good,bars={}),**kwargs)=="MINUTE_SCHEMA_BARS_NOT_LIST"
+    assert classify_minute_document(dict(good,bars={}),**kwargs)==(
+           "MINUTE_SCHEMA_BARS_MAPPING_NOT_LIST")
+    assert classify_minute_document(dict(good,bars=None),**kwargs)==(
+           "MINUTE_SCHEMA_BARS_NULL")
+    assert classify_minute_document(dict(good,bars=""),**kwargs)==(
+           "MINUTE_SCHEMA_BARS_SCALAR_NOT_LIST")
+    missing=dict(good)
+    del missing["bars"]
+    assert classify_minute_document(missing,**kwargs)==(
+           "MINUTE_SCHEMA_BARS_FIELD_MISSING")
     assert classify_minute_document(dict(good,symbol="BBB"),**kwargs)=="MINUTE_SCHEMA_SYMBOL_MISMATCH"
     assert classify_minute_document(dict(good,next_page_token="secret"),**kwargs)==(
            "MINUTE_SCHEMA_UNEXPECTED_PAGE_CURSOR")
@@ -92,8 +110,8 @@ def selftest():
             dict(good,bars=[{"t":t.isoformat(),"v":volume}]),**kwargs)==(
             "MINUTE_SCHEMA_VOLUME_NOT_POSITIVE_INT")
     assert all(s.startswith("MINUTE_SCHEMA_") for s in SCHEMA_CODES)
-    assert len(SCHEMA_CODES)==13
-    print("XRAY_SHARED_SIP_MINUTE_SCHEMA_SELFTEST=PASS_13_ROOT_REASONS_NO_RAW_NO_PRIMARY")
+    assert len(SCHEMA_CODES)==16
+    print("XRAY_SHARED_SIP_MINUTE_SCHEMA_SELFTEST=PASS_16_ROOT_REASONS_NULL_VS_MISSING_NO_RAW_NO_PRIMARY")
 
 if __name__=="__main__":
     selftest()
