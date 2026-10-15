@@ -5,7 +5,7 @@ on:
     types: [completed]
     branches: [main]
   push:
-    branches: [main, xray/technical-cohort-coverage-proof-20261015] # TEMP_TEST_TRIGGER_REMOVE_AFTER_RECEIPT
+    branches: [main]
     paths:
       - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
       - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
