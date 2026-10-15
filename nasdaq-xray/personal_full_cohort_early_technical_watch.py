@@ -92,6 +92,11 @@ def run(doc,now,fetch):
         "source_causal_digest_sha256":sha256(json.dumps(
             doc,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
         "source_causal_scope_count":doc["scope_count"],
+        "research_partial_rth_source_count":
+            doc["rth30_partial_missing_slot_high_research_only_count"],
+        "research_complete_rth_source_count":
+            doc["rth30_strict_complete_slot_lower_bound_observed"],
+        "partial_source_is_not_c417_primary":True,
         "full_identity_source_partition_checked":True,
         "technical_cohort_is_universe_count":len(names)==doc["scope_count"],
         "outside_technical_cohort_count":outside_count,
@@ -384,6 +389,8 @@ def main():
         "asof":result["asof_et"],"scope":result["scope_count"],
         "verified_technical_research_watch_count":
             len(result["technical_research_watch_symbols"]),
+        "partial_rth_research_scope_count":
+            result["research_partial_rth_source_count"],
         "classification_counts":result["classification_counts"],
         "R92":0,"notification_sent":False},sort_keys=True))
 
