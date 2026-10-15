@@ -35,26 +35,36 @@ STASHGAMMA_WEEKLY_REQUESTS = 4000
 STRESS_SESSIONS_PER_MONTH = 22  # conservative calendar stress scenario, NOT a forecast
 
 
+def need(ok:bool, reason:str)->None:
+    if not ok: raise ValueError("XRAY_HISTORY_SOURCE_PREFLIGHT_"+reason)
+
+
 def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_REFERENCE) -> dict:
-    symbols = price.get("pass_symbols")
-    assert isinstance(symbols, list) and bool(symbols)
-    assert symbols == sorted(set(symbols)), "PRICE_DUPLICATE_OR_UNSORTED"
-    assert len(symbols) == price.get("pass_count"), "PRICE_COUNT_DRIFT"
-    assert hashlib.sha256("\n".join(symbols).encode()).hexdigest() == price.get("pass_hash"), "PRICE_HASH_DRIFT"
-    # Estimate only independently proven PASS symbols; global UNKNOWN rows
-    # are not converted to PASS and cannot starve source-quota research.
-    unknown=price.get("unknown_symbols", [])
-    blocked=price.get("blocked_symbols", [])
-    assert isinstance(unknown,list) and unknown==sorted(set(unknown)), "UNKNOWN_SCOPE_INVALID"
-    assert isinstance(blocked,list) and blocked==sorted(set(blocked)), "BLOCKED_SCOPE_INVALID"
-    assert type(price.get("unknown_count")) is int and price["unknown_count"]==len(unknown), "UNKNOWN_COUNT_MISMATCH"
-    assert type(price.get("blocked_count",0)) is int and price.get("blocked_count",0)==len(blocked), "BLOCKED_COUNT_MISMATCH"
-    assert not (set(symbols)&set(unknown) or set(symbols)&set(blocked) or set(unknown)&set(blocked)), "PRICE_SCOPE_OVERLAP"
-    assert price.get("execution") == "NONE" and price.get("real_money") == "NO-GO", "SAFETY_MISMATCH"
-    asof = price.get("asof_et")
-    assert isinstance(asof, str) and len(asof) == 10, "ASOF_INVALID"
-    assert isinstance(source_blob_sha, str) and len(source_blob_sha) == 40, "BLOB_UNVERIFIED"
-    assert type(universe_count) is int and universe_count >= len(symbols)
+    need(type(price) is dict, "PRICE_NOT_OBJECT")
+    symbols=price.get("pass_symbols")
+    need(type(symbols) is list and symbols==sorted(set(symbols)), "PRICE_DUPLICATE_OR_UNSORTED")
+    need(type(price.get("pass_count")) is int and len(symbols)==price["pass_count"],
+         "PRICE_COUNT_DRIFT")
+    need(hashlib.sha256("\n".join(symbols).encode()).hexdigest()==price.get("pass_hash"),
+         "PRICE_HASH_DRIFT")
+    unknown=price.get("unknown_symbols",[])
+    blocked=price.get("blocked_symbols",[])
+    need(type(unknown) is list and unknown==sorted(set(unknown)), "UNKNOWN_SCOPE_INVALID")
+    need(type(blocked) is list and blocked==sorted(set(blocked)), "BLOCKED_SCOPE_INVALID")
+    need(type(price.get("unknown_count")) is int and
+         price["unknown_count"]==len(unknown), "UNKNOWN_COUNT_MISMATCH")
+    need(type(price.get("blocked_count",0)) is int and
+         price.get("blocked_count",0)==len(blocked), "BLOCKED_COUNT_MISMATCH")
+    need(not (set(symbols)&set(unknown) or set(symbols)&set(blocked)
+              or set(unknown)&set(blocked)), "PRICE_SCOPE_OVERLAP")
+    need(price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
+         and price.get("unknown_never_pass") is not False, "SAFETY_MISMATCH")
+    asof=price.get("asof_et")
+    need(isinstance(asof,str) and len(asof)==10, "ASOF_INVALID")
+    need(isinstance(source_blob_sha,str) and len(source_blob_sha)==40,
+         "BLOB_UNVERIFIED")
+    need(type(universe_count) is int and universe_count>=len(symbols),
+         "UNIVERSE_COUNT_INVALID")
     count = len(symbols)
     credits = count * SERIES_COST_PER_SYMBOL
     # QQQ benchmark is distinct from the PRICE equity cohort.
@@ -63,7 +73,10 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
     bq_calls = math.ceil(history_targets / BUSINESSQUANT_MAX_FREE_TICKERS_PER_REQUEST)
     bq_required_batch_one_day = math.ceil(history_targets / BUSINESSQUANT_DAILY_REQUESTS)
     return {
-        "schema": SCHEMA, "status": "RESEARCH_QUOTA_FEASIBLE_ENTITLEMENT_AND_BARS_UNVERIFIED",
+        "schema": SCHEMA,
+        "status": ("RESEARCH_QUOTA_FEASIBLE_ENTITLEMENT_AND_BARS_UNVERIFIED"
+                   if count else "BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_DEMAND"),
+        "history_scope_has_equity_candidates":count>0,
         "asof_et": asof, "policy": "C4.17", "control": "C4.27",
         "source_price_path": PRICE, "source_price_blob_sha": source_blob_sha,
         "price_pass_count": count, "price_pass_hash": price["pass_hash"],
@@ -81,7 +94,7 @@ def make(price: dict, source_blob_sha: str, universe_count: int = FULL_UNIVERSE_
         "required_independent_completed_daily_sessions": 260,
         "required_completed_week_closes": 52,
         "scope_initial_credit_estimate": credits,
-        "scope_fits_published_daily_budget": credits <= BASIC_DAILY,
+        "scope_fits_published_daily_budget": bool(count and credits <= BASIC_DAILY),
         "scope_lower_bound_minutes_at_published_rate": math.ceil(credits / BASIC_PER_MINUTE),
         "universe_initial_credit_estimate": universe_count * SERIES_COST_PER_SYMBOL,
         "universe_min_calendar_days_at_published_daily_limit":
@@ -259,6 +272,23 @@ def selftest() -> None:
     assert sg514["initial_scope_fits_published_daily_limit"] is True
     assert sg514["minimum_hours_for_initial_scope"]==2
     assert sg514["production_authority"] is False
+    # Production zero-PASS is an observed safe NO-GO, not an available
+    # 0-credit vendor success or a data-source entitlement.
+    zero=dict(p,pass_symbols=[],pass_count=0,
+              pass_hash=hashlib.sha256(b"").hexdigest(),
+              unknown_count=2,unknown_symbols=["AAA","BBB"])
+    z=make(zero,"a"*40)
+    need(z["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_DEMAND"
+         and z["price_pass_count"]==0
+         and z["scope_initial_credit_estimate"]==0
+         and z["scope_fits_published_daily_budget"] is False
+         and z["history_authoritative"] is False
+         and z["can_register_R92"] is False,
+         "ZERO_PASS_QUOTA_FALSE_FEASIBILITY")
+    mutated=dict(zero,pass_hash="0"*64)
+    try:make(mutated,"a"*40)
+    except ValueError:pass
+    else:raise AssertionError("ZERO_PASS_HASH_NOT_GUARDED")
     corruptions = [
         dict(p, pass_count=3),
         dict(p, pass_hash="0" * 64),
@@ -271,10 +301,10 @@ def selftest() -> None:
     for bad in corruptions:
         try:
             make(bad, "a" * 40)
-        except AssertionError:
+        except ValueError:
             continue
         raise AssertionError("ACCEPTED_BAD_PRICE_SCOPE_OR_SAFETY")
-    print("XRAY_TWELVE_FREE_HISTORY_PREFLIGHT_SELFTEST=PASS_2_QUOTA_CASES_5_NEGATIVES_NO_VENDOR_OR_ALPHA_AUTHORITY")
+    print("XRAY_TWELVE_FREE_HISTORY_PREFLIGHT_SELFTEST=PASS_ZERO_PASS_QUOTA_9_NEGATIVES_NO_VENDOR_OR_ALPHA_AUTHORITY")
 
 
 def main() -> None:
