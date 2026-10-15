@@ -56,7 +56,7 @@ jobs:
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || vars.XRAY_ALPACA_DATA_SECRET_KEY }}
           XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID || vars.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_API_SECRET_KEY: ${{ secrets.XRAY_ALPACA_API_SECRET_KEY || vars.XRAY_ALPACA_API_SECRET_KEY }}
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/candidate_local_frog_oct13_pit_reconciliation_v1.py \
             --deep "$RUNNER_TEMP/deep/xray_deep277_real_full.json" \
