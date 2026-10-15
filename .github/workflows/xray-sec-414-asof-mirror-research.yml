@@ -1,0 +1,138 @@
+name: XRAY SEC 414 Same-ASOF Mirror CIK Research (No MC)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - nasdaq-xray/personal_sec_mirror_414_cik_research.py
+      - .github/workflows/xray-sec-414-asof-mirror-research.yml
+  push:
+    branches: [main]
+    paths:
+      - nasdaq-xray/personal_sec_mirror_414_cik_research.py
+      - .github/workflows/xray-sec-414-asof-mirror-research.yml
+  workflow_run:
+    workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-sec-414-mirror-research
+  cancel-in-progress: false
+jobs:
+  offline:
+    name: SEC snapshot SHA + ASOF + forged-MC negatives (zero HTTP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing locked official exchange calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Test immutable mirror, failure isolation and no-alpha in normal and optimized Python
+        run: |
+          python -m py_compile nasdaq-xray/personal_sec_mirror_414_cik_research.py
+          python nasdaq-xray/personal_sec_mirror_414_cik_research.py --selftest
+          python -O nasdaq-xray/personal_sec_mirror_414_cik_research.py --selftest
+
+  immutable-source-live:
+    name: Read frozen current 414 cohort and exact-ASOF SHA mirror (no vendor calls)
+    needs: offline
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official Nasdaq calendar for latest ASOF gate
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Verify producer repo, SHA, branch and workflow identity before fetching artifact
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from personal_watch_run_lineage_guard import verify_run
+          def gh(path):
+              return json.loads(subprocess.check_output(
+                  ["gh","api","repos/"+os.environ["REPO"]+"/"+path],text=True))
+          if os.environ["EVENT"]=="workflow_run":
+              ident=int(os.environ["SOURCE_RUN"])
+              candidate=gh("actions/runs/"+str(ident))
+              verify_run(candidate,os.environ["REPO"],expected_run_id=ident,
+                         expected_head_sha=os.environ["SOURCE_SHA"])
+          else:
+              attempts=gh("actions/workflows/xray-personal-full-universe-sip-coverage.yml/runs?per_page=30")["workflow_runs"]
+              success=[x for x in attempts if x["status"]=="completed"
+                       and x["conclusion"]=="success" and x["head_branch"]=="main"]
+              if not success:
+                  with open(os.environ["GITHUB_OUTPUT"],"a") as f:f.write("ready=false\n")
+                  print("XRAY_SEC_MIRROR_SAFE_SKIP_NO_SUCCESSFUL_SIP_PARENT")
+                  raise SystemExit(0)
+              ident=success[0]["id"]
+              candidate=gh("actions/runs/"+str(ident))
+              verify_run(candidate,os.environ["REPO"],expected_run_id=ident,
+                         expected_head_sha=candidate["head_sha"])
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+              f.write("ready=true\nsource_run="+str(ident)+"\n")
+          print("XRAY_SEC_MIRROR_BOUND_SOURCE_RUN="+str(ident))
+          PY
+      - name: Download exact proven source cohort, not the vendor OHLCV
+        if: steps.source.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ steps.source.outputs.source_run }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/causal"
+          gh run download "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" \
+            -n xray-personal-six-gate-causal-worklist-no-ohlcv -D "$RUNNER_TEMP/causal"
+      - name: Match only secondary SEC CIK identities from SHA-locked asof manifest
+        if: steps.source.outputs.ready == 'true'
+        run: |
+          python nasdaq-xray/personal_sec_mirror_414_cik_research.py \
+            --causal "$RUNNER_TEMP/causal/xray_six_gate_causal_breaker.json" \
+            --out "$RUNNER_TEMP/xray_sec_414_mirror_research.json"
+      - name: Require research-only/no fake C4.17 price, PIT shares, MC or R92
+        if: steps.source.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import json,os,sys
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from alpaca_full_universe_asof_sip_availability import sha
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_sec_414_mirror_research.json").read_text())
+          assert x["schema"]=="XRAY_PERSONAL_SEC_ASOF_MIRROR_414_DISCOVERY_RESEARCH_V1"
+          assert x["scope_count"]==len(x["classifications"])==sum(x["classification_counts"].values())
+          assert x["source_causal_cohort_sha256"]==sha(sorted(x["classifications"]))
+          assert x["mirror_found_count"]==len(x["ciK_secondary_discovery_only"])
+          assert x["exchange_listing_asof_pit_attested"] is False
+          assert x["independent_official_sec_lookup_pass"] is False
+          assert x["market_cap_2b_attested"] is False
+          assert x["official_c417_primary_price_dv30_attested"] is False
+          assert x["registered_R92_count"]==0
+          assert x["iphone_delivery_receipt_attested"] is False
+          assert x["canonical_files_mutated"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_SEC_MIRROR_414_LIVE=VERIFIED_SECONDARY_ONLY_NO_CANONICAL")
+          PY
+      - name: Save SHA-verified categorical discovery, no market bars
+        if: ${{ always() && steps.source.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sec-414-asof-immutable-mirror-no-mc
+          path: ${{ runner.temp }}/xray_sec_414_mirror_research.json
+          if-no-files-found: warn
+          retention-days: 7
