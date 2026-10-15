@@ -7,6 +7,11 @@ PRICE="LOWER_BOUND_GE_50M_SHADOW"
 SEC="SHADOW_SHARES_VINTAGE_ONLY"
 HIST={"OBSERVED_RAW_260_52_SIP_SHADOW_NOT_PRIMARY",
       "PRIOR_VERIFIED_260_52_SIP_SHADOW_NOT_PRIMARY"}
+# Immutable historical Git blobs from the actual 13-Oct source-run checkout.
+# Never bind archival pages to the moving canonical_current pointers.
+FROZEN_MASTER_BLOB="64901add1736102b16b95597cf4d41beb2e8bc53"
+FROZEN_PRICE_BLOB="4bac485ade0477d419992cb6b36089c6b0896e4b"
+FROZEN_ASOF="2026-10-13"
 def gate(ok,code):
     if not ok:raise ValueError("XRAY_ALL_LOCAL_"+code)
 def verify_page(obj, kind, index, expected, master_sha=None, price_sha=None,
@@ -65,6 +70,13 @@ def verify_page(obj, kind, index, expected, master_sha=None, price_sha=None,
         "UNKNOWN_CLASSIFICATION")
     return True
 
+def verify_frozen_source_binding(master,price,master_sha,price_sha):
+    gate(master_sha==FROZEN_MASTER_BLOB and price_sha==FROZEN_PRICE_BLOB,
+         "FROZEN_SOURCE_BLOB_SHA")
+    gate(master.get("asof_et")==price.get("asof_et")==FROZEN_ASOF,
+         "FROZEN_SOURCE_ASOF")
+    return True
+
 def read_pages(folder,pages,kind,expected,master_sha=None,price_sha=None,
                cohort_sha=None):
     gate(type(expected) is list and len(set(expected))==len(expected),
@@ -99,12 +111,16 @@ def compile_report(price,sec,history,master,cohort):
        "regime_setup_r1_rr_event_halt_verified":False,
        "canonical_pass_created":False,"r92_registered":0,
        "iphone_receipt_verified":False,
+       "source_lifecycle":"IMMUTABLE_HISTORICAL_RESEARCH_NOT_CURRENT",
+       "current_asof_attested":False,"alpha_authority":False,
        "execution":"NONE","real_money":"NO-GO"}
 def main():
     a=argparse.ArgumentParser()
     a.add_argument("--selftest",action="store_true")
     a.add_argument("--price-dir",type=Path);a.add_argument("--sec-dir",type=Path)
     a.add_argument("--history",type=Path);a.add_argument("--cohort",type=Path)
+    a.add_argument("--master-source",type=Path)
+    a.add_argument("--price-source",type=Path)
     a.add_argument("--out",type=Path)
     x=a.parse_args()
     if x.selftest:
@@ -126,19 +142,33 @@ def main():
             try:verify_page(mutated,"price",0,expect)
             except ValueError:pass
             else:raise AssertionError("XRAY_ALL_LOCAL_NEGATIVE_ACCEPTED_"+name)
-        print("XRAY_ALL_LOCAL_SELFTEST=PASS_5_ADVERSARIAL_VETOES_NO_GLOBAL_UNKNOWN_OR_FAKE_R92")
+        assert verify_frozen_source_binding(
+            {"asof_et":FROZEN_ASOF},{"asof_et":FROZEN_ASOF},
+            FROZEN_MASTER_BLOB,FROZEN_PRICE_BLOB)
+        for master,price,ms,ps in [
+            ({"asof_et":"2026-10-14"},{"asof_et":FROZEN_ASOF},
+             FROZEN_MASTER_BLOB,FROZEN_PRICE_BLOB),
+            ({"asof_et":FROZEN_ASOF},{"asof_et":FROZEN_ASOF},
+             "a"*40,FROZEN_PRICE_BLOB),
+            ({"asof_et":FROZEN_ASOF},{"asof_et":FROZEN_ASOF},
+             FROZEN_MASTER_BLOB,"b"*40),
+        ]:
+            try:verify_frozen_source_binding(master,price,ms,ps)
+            except ValueError:pass
+            else:raise AssertionError("UNBOUND_ARCHIVAL_SOURCE_ACCEPTED")
+        print("XRAY_ALL_LOCAL_SELFTEST=PASS_5_PAGE_VETOES_3_FROZEN_VETOES_NO_FAKE_R92")
         return
-    gate(x.price_dir and x.sec_dir and x.history and x.cohort and x.out,"ARGS")
+    gate(x.price_dir and x.sec_dir and x.history and x.cohort and x.out
+         and x.master_source and x.price_source,"ARGS_REQUIRE_FROZEN_SOURCE")
     import subprocess
-    master_path=ROOT/"canonical_current_master_manifest.json"
-    price_path=ROOT/"canonical_current_price_dv30.json"
+    master_path=x.master_source
+    price_path=x.price_source
     sha=lambda z:subprocess.check_output(["git","hash-object",str(z)],text=True).strip()
     m=json.loads(master_path.read_bytes())
     price=json.loads(price_path.read_bytes())
     cohort_raw=x.cohort.read_bytes()
     cohort=json.loads(cohort_raw)
-    gate(m.get("asof_et")==price.get("asof_et")=="2026-10-13",
-         "CANONICAL_SOURCE_ASOF")
+    verify_frozen_source_binding(m,price,sha(master_path),sha(price_path))
     gate(cohort.get("schema")=="XRAY_CANDIDATE_LOCAL_404_20261013_SOURCE_GATED_V1"
          and cohort.get("cross_asof_shadow_only") is True,
          "FROZEN_404_SOURCE_ONLY")
@@ -158,7 +188,10 @@ def main():
          and len(history.get("symbol_statuses") or {})==3185,
          "IMMUTABLE_3185_HISTORY_MEMBERSHIP")
     report=compile_report(p,s,history,m,cohort)
-    report["exact_page_and_current_blob_coverage_verified"]=True
+    report["exact_page_and_current_blob_coverage_verified"]=False
+    report["exact_page_and_frozen_blob_coverage_verified"]=True
+    report["frozen_master_blob_sha"]=FROZEN_MASTER_BLOB
+    report["frozen_price_blob_sha"]=FROZEN_PRICE_BLOB
     report["source_page_sha256"]={"price":ps,"sec":ss}
     gate(not x.out.resolve().is_relative_to(ROOT.parent.resolve()),"NO_REPO_WRITE")
     x.out.write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")

@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-      - name: Checkout current default-branch code; bind upstream artifact by canonical blobs
+      - name: Verify immutable checkout; validate upstream by canonical blobs, not moving ref
         shell: bash
         env:
           XRAY_EXPECTED_SHA: ${{ github.sha }}
@@ -34,11 +34,15 @@ jobs:
           set -euo pipefail
           [[ "$(git rev-parse HEAD)" == "$XRAY_EXPECTED_SHA" ]] || exit 2
           current_main="$(git ls-remote origin refs/heads/main | cut -f1)"
-          [[ -n "$current_main" && "$current_main" == "$XRAY_EXPECTED_SHA" ]] || {
-            echo "XRAY_SEC_TRANSIENT_TRIGGER_NOT_CURRENT_MAIN_FAIL_CLOSED" >&2
-            exit 2
-          }
-          echo "XRAY_SEC_TRANSIENT_TRIGGER_SHA=PASS_EXACT_MAIN_CURRENT"
+          [[ -n "$current_main" ]] || { echo "XRAY_SEC_TRANSIENT_REMOTE_MAIN_UNAVAILABLE_FAIL_CLOSED" >&2; exit 2; }
+          if [[ "$current_main" != "$XRAY_EXPECTED_SHA" ]]; then
+            echo "XRAY_SEC_TRANSIENT_EPOCH=ARCHIVED_CHECKOUT_MAIN_ADVANCED_NO_PRIMARY_AUTHORITY"
+          else
+            echo "XRAY_SEC_TRANSIENT_EPOCH=CURRENT_AT_PRECHECK_RESEARCH_ONLY"
+          fi
+          # A moving main ref is not source provenance. The next job step
+          # requires exact master, PRICE, ASOF and symbol-set artifact binding.
+          echo "XRAY_SEC_TRANSIENT_TRIGGER_SHA=PASS_IMMUTABLE_EVENT_SNAPSHOT"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
