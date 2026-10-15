@@ -64,6 +64,28 @@ def classify(now, root, master, price, terminal, runs, target="pre-mc"):
         or len(p)!=len(set(p))
         or not set(p).issubset(set(master.get("pass_symbols") or []))):
         return "CANONICAL_PASS_PARTITION_UNTRUSTED",False
+    if target=="post-mc":
+        # The full-scope Post-MC handoff explicitly requires zero PRICE
+        # UNKNOWN. Dispatching while any remain creates a known-failing
+        # workflow rather than resolving data. Pre-MC remains available to
+        # rebuild its source; confirmed FAIL-only residuals may still enter
+        # Post-MC after all UNKNOWN are resolved.
+        unknown=price.get("unknown_symbols")
+        blocked=price.get("blocked_symbols")
+        if (not isinstance(unknown,list) or not isinstance(blocked,list)
+            or type(price.get("unknown_count")) is not int
+            or type(price.get("blocked_count")) is not int
+            or price["unknown_count"]!=len(unknown)
+            or price["blocked_count"]!=len(blocked)
+            or any(type(s) is not str or not s for s in unknown+blocked)
+            or len(unknown)!=len(set(unknown))
+            or len(blocked)!=len(set(blocked))
+            or unknown!=sorted(unknown) or blocked!=sorted(blocked)
+            or bool(set(unknown)&(set(blocked)|set(p)))
+            or bool(set(blocked)&set(p))):
+            return "POST_MC_PRICE_PARTITION_UNTRUSTED",False
+        if unknown:
+            return "POST_MC_PRICE_UNKNOWN_NO_DISPATCH",False
     if terminal.get("asof_et")==asof and terminal.get("full_end_to_end_research_pass") is True:
         # Current terminal is already final; do not churn the factory.
         return "CURRENT_FULL_TERMINAL_ALREADY_PRESENT",False
@@ -117,6 +139,33 @@ def selftest():
     t={"asof_et":"2026-10-07","full_end_to_end_research_pass":False}
     assert classify(now,r,m,p,t,[])==(
         "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    # Actual Oct 15: 548 canonical PRICE UNKNOWN and zero certified PRICE
+    # survivors. Post-MC's full-scope resolver cannot run, so wake only
+    # Pre-MC; never dispatch a predictably failing downstream release job.
+    waiting_price=dict(p,unknown_symbols=["B"],unknown_count=1,
+                       blocked_symbols=[],blocked_count=0)
+    assert classify(now,r,m,waiting_price,t,[],target="post-mc")==(
+        "POST_MC_PRICE_UNKNOWN_NO_DISPATCH",False)
+    assert classify(now,r,m,waiting_price,t,[],target="pre-mc")==(
+        "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    # A complete PRICE pass and an exact FAIL-only residual remain eligible.
+    fully_resolved=dict(p,unknown_symbols=[],unknown_count=0,
+                        blocked_symbols=[],blocked_count=0)
+    assert classify(now,r,m,fully_resolved,t,[],target="post-mc")==(
+        "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    fail_residual=dict(fully_resolved,blocked_symbols=["B"],blocked_count=1)
+    assert classify(now,r,m,fail_residual,t,[],target="post-mc")==(
+        "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    duplicated=dict(waiting_price,unknown_symbols=["B","B"],unknown_count=2)
+    assert classify(now,r,m,duplicated,t,[],target="post-mc")==(
+        "POST_MC_PRICE_PARTITION_UNTRUSTED",False)
+    overlapping=dict(waiting_price,unknown_symbols=["A"],unknown_count=1)
+    assert classify(now,r,m,overlapping,t,[],target="post-mc")==(
+        "POST_MC_PRICE_PARTITION_UNTRUSTED",False)
+    malformed_price=dict(waiting_price,unknown_count=0)
+    assert classify(now,r,m,malformed_price,t,[],target="post-mc")==(
+        "POST_MC_PRICE_PARTITION_UNTRUSTED",False)
+
     # Regression from 15 Oct 2026 live root: root moved to Oct 15 while
     # canonical MASTER and PRICE remained on Oct 14. Pre-MC must be allowed
     # to REBUILD them; this must never count as downstream source proof.

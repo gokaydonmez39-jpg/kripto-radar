@@ -186,6 +186,9 @@ def validate_contract(files:dict[str,str], *, relay_source:str|None=None)->dict:
         'return ("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE" if stale_canonical',
         'if root_date>now.astimezone(ZoneInfo("America/New_York")).date():',
         "if canonical_date>root_date:",
+        'if target=="post-mc":',
+        'return "POST_MC_PRICE_PARTITION_UNTRUSTED",False',
+        'return "POST_MC_PRICE_UNKNOWN_NO_DISPATCH",False',
         'if root.get("execution")!="NONE" or root.get("real_money")!="NO-GO":',
         'if terminal.get("asof_et")==asof and terminal.get("full_end_to_end_research_pass") is True:',
         "if run.get(\"status\") not in ACTIVE:",
@@ -321,6 +324,9 @@ def selftest():
         'return ("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE" if stale_canonical',
         'if root_date>now.astimezone(ZoneInfo("America/New_York")).date():',
         "if canonical_date>root_date:",
+        'if target=="post-mc":',
+        'return "POST_MC_PRICE_PARTITION_UNTRUSTED",False',
+        'return "POST_MC_PRICE_UNKNOWN_NO_DISPATCH",False',
         'if root.get("execution")!="NONE" or root.get("real_money")!="NO-GO":',
         'if terminal.get("asof_et")==asof and terminal.get("full_end_to_end_research_pass") is True:',
         'if run.get("status") not in ACTIVE:',
@@ -334,7 +340,7 @@ def selftest():
             for e in failure["errors"]
         ),("REMOVED_RELAY_GUARD_NOT_CAUGHT",needle)
     assert session_timeline()
-    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_18_WORKFLOW_NEGATIVES_13_RELAY_NEGATIVES_NO_PRIMARY_NO_ALPHA")
+    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_18_WORKFLOW_NEGATIVES_16_RELAY_NEGATIVES_NO_PRIMARY_NO_ALPHA")
 
 def main():
     parser=argparse.ArgumentParser()
