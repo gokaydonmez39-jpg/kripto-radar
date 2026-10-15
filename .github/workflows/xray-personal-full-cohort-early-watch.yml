@@ -118,6 +118,12 @@ jobs:
                and x["full_identity_technical_scan_attested"]==
                    (x["outside_technical_cohort_count"]==0 and x["all_symbols_classified"]),
                "FULL_IDENTITY_VS_COHORT_NOT_CONFLATED")
+          need(x["research_partial_rth_source_count"]>=0 and
+               x["research_complete_rth_source_count"]>=0 and
+               x["partial_source_is_not_c417_primary"] is True and
+               x["research_partial_rth_source_count"]+
+                   x["research_complete_rth_source_count"]==x["scope_count"],
+               "SOURCE_PARTIAL_AND_COMPLETE_RESEARCH_SCOPE_ONLY")
           need(set(x["technical_setup_family_verified"])==
                set(x["technical_research_watch_symbols"]),"NO_FALSE_SETUP_FAMILY")
           need(type(x.get("source_workflow_run_id")) is int and
@@ -139,6 +145,11 @@ jobs:
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
               f.write("# 👀 NASDAQ Personal Early Technical WATCH — AL değil\n\n")
               f.write("ASOF ET: "+x["asof_et"]+"; cohort "+str(x["scope_count"])+"\n\n")
+              f.write("Source lower-bound research only: **"+
+                      str(x["research_partial_rth_source_count"])+
+                      "** partial RTH + **"+
+                      str(x["research_complete_rth_source_count"])+
+                      "** complete RTH. All incomplete exact slots remain UNKNOWN.\n\n")
               f.write("Fresh A/B/D technical observations: **"+
                       str(len(x["technical_research_watch_symbols"]))+"**\n\n")
               f.write("Source identity count: **"+str(x["source_causal_scope_count"])+
