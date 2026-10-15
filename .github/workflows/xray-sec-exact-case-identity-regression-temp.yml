@@ -1,0 +1,36 @@
+name: XRAY SEC Exact-Case Identity Isolated Regression TEMP
+on:
+  push:
+    branches: [xray/sec-exact-case-issuer-identity-20261015]
+    paths:
+      - ".github/workflows/xray-sec-exact-case-identity-regression-temp.yml"
+permissions:
+  contents: read
+jobs:
+  identity-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install pinned official calendar only
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Exact case SEC issuer route and filed-on-before-ASOF negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/build_current_identity_proofs.py nasdaq-xray/current_identity_proof_selftest.py
+          python nasdaq-xray/current_identity_proof_selftest.py
+          python nasdaq-xray/master_spac_operating_guard.py
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("nasdaq-xray/build_current_identity_proofs.py").read_text()
+          assert 'sym=str(row.get("ticker") or "").strip().upper()' not in s
+          assert 'sym=str(row[pos["ticker"]] or "").strip().upper()' not in s
+          assert 'tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]' not in s
+          assert "if sym not in tickers:" in s
+          assert 're.escape(sym)' in s
+          print("XRAY_SEC_CIK_EXACT_CASE_GUARD=PASS_NO_CASEFOLDING_NO_PRIMARY_PROMOTION")
+          PY
