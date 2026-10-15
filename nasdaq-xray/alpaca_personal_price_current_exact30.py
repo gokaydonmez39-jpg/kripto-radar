@@ -89,6 +89,7 @@ def empty_report(asof,names,dates,master_blob,price_blob):
         "integrity_recheck_recovered":0,
         "integrity_recheck_unresolved":0,
         "integrity_recheck_status":"NOT_STARTED",
+        "integrity_recheck_detail_counts":{},
         "canonical_price_promoted":False,"canonical_mc_promoted":False,
         "canonical_files_mutated":False,"strict_live_G9_satisfied":False,
         "registered_R92_created":False,"personal_research_only":True,
@@ -222,6 +223,54 @@ def isolated_gap_reason(daily,halfhour,days):
     return "OTHER_STRUCTURAL_SOURCE_REJECTION"
 
 
+# These are structural properties of the remeasured source response, not
+# explanations of whether a vendor omitted legitimate non-trading intervals.
+GAP_DETAIL_CODES={
+    "RTH_ONE_30MIN_SLOT_MISSING",
+    "RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION",
+    "RTH_30MIN_GAPS_ACROSS_SESSIONS",
+    "RTH_MISSING_SLOT_TIMESTAMP_UNVERIFIED",
+    "RTH_MISSING_SLOT_COUNT_UNVERIFIED",
+    "BAR_TIMESTAMP_OR_TIMEZONE_UNVERIFIED",
+    "BAR_OHLCV_VALUES_UNVERIFIED",
+    "BAR_OTHER_SCHEMA_OR_BOUNDARY_UNVERIFIED",
+}
+
+
+def isolated_gap_detail(daily,halfhour,days,root_reason):
+    """Private evidence -> coarse non-identifying counts; never fabricate bars."""
+    if root_reason=="RTH_30MIN_SESSION_GAP":
+        expected={}
+        for day in days:
+            start,_,minutes=cached_official_window(day)
+            for i in range(minutes//30):
+                expected[start+dt.timedelta(minutes=30*i)]=day
+        try:
+            seen={stamp(bar) for bar in halfhour}
+        except (ValueError,KeyError,TypeError,OverflowError):
+            return "RTH_MISSING_SLOT_TIMESTAMP_UNVERIFIED"
+        missing=set(expected)-seen
+        if not missing:
+            return "RTH_MISSING_SLOT_COUNT_UNVERIFIED"
+        if len(missing)==1:
+            return "RTH_ONE_30MIN_SLOT_MISSING"
+        if len({expected[t] for t in missing})==1:
+            return "RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION"
+        return "RTH_30MIN_GAPS_ACROSS_SESSIONS"
+    if root_reason=="OHLCV_SCHEMA_OR_TIMESTAMP_INVALID":
+        for bar in list(daily)+list(halfhour):
+            try:
+                stamp(bar)
+            except (ValueError,KeyError,TypeError,OverflowError):
+                return "BAR_TIMESTAMP_OR_TIMEZONE_UNVERIFIED"
+            try:
+                data_check(bar)
+            except (ValueError,KeyError,TypeError,OverflowError):
+                return "BAR_OHLCV_VALUES_UNVERIFIED"
+        return "BAR_OTHER_SCHEMA_OR_BOUNDARY_UNVERIFIED"
+    return None
+
+
 def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                                analyzer=dynamic_analyze,checkpoint=None,
                                *,max_rechecks=MAX_INTEGRITY_RECHECKS):
@@ -234,6 +283,7 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
     report["integrity_recheck_unresolved"]=len(candidates)
     report["integrity_recheck_status"]="NO_GAPS" if not candidates else "BOUNDED_RESEARCH_RECHECK"
     failure_reasons={}
+    failure_details={}
     for sym in candidates[:max_rechecks]:
         if counters[0]>=CALL_BUDGET:
             report["integrity_recheck_status"]="GLOBAL_BUDGET_EXHAUSTED"
@@ -256,6 +306,10 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
             else:
                 failure_reasons[sym]=isolated_gap_reason(
                     daily.get(sym,[]),half.get(sym,[]),dates)
+                detail=isolated_gap_detail(daily.get(sym,[]),
+                    half.get(sym,[]),dates,failure_reasons[sym])
+                if detail is not None:
+                    failure_details[sym]=detail
         except (urllib.error.HTTPError,urllib.error.URLError,ValueError,
                 TimeoutError,OSError) as exc:
             if isinstance(exc,urllib.error.HTTPError) and exc.code in (401,403,429):
@@ -277,6 +331,15 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
     for sym in unresolved:
         failure_reasons.setdefault(sym,"UNATTEMPTED_BUDGET_OR_LIMIT")
     require(set(failure_reasons)==unresolved,"ISOLATED_REASONS_SCOPE_EXACT")
+    require(set(failure_details)<=unresolved,"ISOLATED_DETAIL_SCOPE_EXACT")
+    report["integrity_recheck_detail_counts"]=dict(sorted(
+        collections.Counter(failure_details.values()).items()))
+    require(set(report["integrity_recheck_detail_counts"])<=GAP_DETAIL_CODES
+            and sum(report["integrity_recheck_detail_counts"].values())
+            ==sum(code in {"RTH_30MIN_SESSION_GAP",
+                          "OHLCV_SCHEMA_OR_TIMESTAMP_INVALID"}
+                   for code in failure_reasons.values()),
+            "DETAIL_COUNTS_MUST_MATCH_DERIVED_REASONS")
     report["integrity_recheck_unresolved_reason_counts"]=dict(sorted(
         collections.Counter(failure_reasons.values()).items()))
     require(set(report["integrity_recheck_unresolved_reason_counts"])<=GAP_REASON_CODES
@@ -480,6 +543,28 @@ def selftest():
             "DUPLICATE_REASON_NOT_CLASSIFIED")
     require(isolated_gap_reason([],[],d)=="NO_VERIFIABLE_SOURCE_BARS",
             "NO_BARS_REASON_NOT_CLASSIFIED")
+    require(isolated_gap_detail(daily_rows,half_rows[:-1],d,
+            "RTH_30MIN_SESSION_GAP")=="RTH_ONE_30MIN_SLOT_MISSING",
+            "ONE_SOURCE_SLOT_NOT_ISOLATED")
+    require(isolated_gap_detail(daily_rows,half_rows[:-2],d,
+            "RTH_30MIN_SESSION_GAP")=="RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION",
+            "TWO_SLOTS_ONE_SESSION_NOT_ISOLATED")
+    require(isolated_gap_detail(daily_rows,
+            [x for x in half_rows if x["t"] not in
+             {half_rows[0]["t"],half_rows[-1]["t"]}],d,
+            "RTH_30MIN_SESSION_GAP")=="RTH_30MIN_GAPS_ACROSS_SESSIONS",
+            "MULTIPLE_OFFICIAL_SESSIONS_NOT_ISOLATED")
+    invalid_bar=[dict(half_rows[0],v=0)]+half_rows[1:]
+    require(isolated_gap_detail(daily_rows,invalid_bar,d,
+            "OHLCV_SCHEMA_OR_TIMESTAMP_INVALID")=="BAR_OHLCV_VALUES_UNVERIFIED",
+            "VOLUME_BAR_NOT_DIAGNOSED")
+    invalid_stamp=[dict(half_rows[0],t="invalid")]+half_rows[1:]
+    require(isolated_gap_detail(daily_rows,invalid_stamp,d,
+            "OHLCV_SCHEMA_OR_TIMESTAMP_INVALID")=="BAR_TIMESTAMP_OR_TIMEZONE_UNVERIFIED",
+            "INVALID_TIMESTAMP_NOT_DIAGNOSED")
+    require(isolated_gap_detail(daily_rows,half_rows,d,
+            "OTHER_STRUCTURAL_SOURCE_REJECTION") is None,
+            "OTHER_STRUCTURAL_MUST_NOT_BE_GUESSED")
     print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_ISOLATED_GAP_SOURCE_REASONS_DAILY_RTH_DUPLICATE_AUTH_BUDGET_NO_PRIMARY")
 
 def main():
@@ -500,6 +585,8 @@ def main():
     print("XRAY_PERSONAL_CURRENT_PRICE_COUNTS="+json.dumps(out["counts"],sort_keys=True))
     print("XRAY_PERSONAL_CURRENT_PRICE_INTEGRITY_RECHECK_COUNTS="+json.dumps(
         out["integrity_recheck_unresolved_reason_counts"],sort_keys=True))
+    print("XRAY_PERSONAL_CURRENT_PRICE_INTEGRITY_DETAIL_COUNTS="+json.dumps(
+        out["integrity_recheck_detail_counts"],sort_keys=True))
     print("XRAY_PERSONAL_CURRENT_PRICE_ASOF="+out["asof_et"])
     print("XRAY_PERSONAL_CURRENT_PRICE_NO_PRIMARY_R92=PASS")
 if __name__=="__main__":main()
