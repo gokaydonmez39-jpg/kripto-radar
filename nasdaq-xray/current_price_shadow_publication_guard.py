@@ -34,6 +34,16 @@ SAFE = {"execution": "NONE", "real_money": "NO-GO",
         "unknown_never_pass": True}
 # Strict enumeration of derived incident labels; never copy exception text,
 # symbol IDs, missing bar positions, per-session values or provider payloads.
+GAP_DETAIL_CODES = {
+    "RTH_ONE_30MIN_SLOT_MISSING",
+    "RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION",
+    "RTH_30MIN_GAPS_ACROSS_SESSIONS",
+    "RTH_MISSING_SLOT_TIMESTAMP_UNVERIFIED",
+    "RTH_MISSING_SLOT_COUNT_UNVERIFIED",
+    "BAR_TIMESTAMP_OR_TIMEZONE_UNVERIFIED",
+    "BAR_OHLCV_VALUES_UNVERIFIED",
+    "BAR_OTHER_SCHEMA_OR_BOUNDARY_UNVERIFIED",
+}
 GAP_REASONS = {
     "DAILY_30_SESSION_GAP","RTH_30MIN_SESSION_GAP",
     "DUPLICATE_SOURCE_BAR","OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",
@@ -96,6 +106,7 @@ def baseline(asof: str, symbols: list[str],
         "measured_research_bound_count": 0,
         "unresolved_shadow_source_count": len(symbols),
         "integrity_recheck_unresolved_reason_counts": {},
+        "integrity_recheck_detail_counts": {},
         "source_authority": "SHADOW_RTH_30MIN_LOWER_BOUND_NOT_CANONICAL",
         "data_rights_independently_attested": False,
         "closing_auction_and_corrections_attested": False,
@@ -200,6 +211,17 @@ def sanitize(j: dict, master: dict, price: dict, mb: bytes, pb: bytes,
         result["integrity_recheck_attempted"]=attempts
         result["integrity_recheck_recovered"]=recovered
         result["integrity_recheck_unresolved"]=unknown
+        if "integrity_recheck_detail_counts" in j:
+            details=j["integrity_recheck_detail_counts"]
+            demand(type(details) is dict and all(
+                type(k) is str and k in GAP_DETAIL_CODES and
+                type(v) is int and v>=0 for k,v in details.items()),
+                "GAP_DETAIL_ENUM_INVALID")
+            demand(sum(details.values())==(
+                categories.get("RTH_30MIN_SESSION_GAP",0)+
+                categories.get("OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",0)),
+                "GAP_DETAIL_ROOT_PARTITION_MISMATCH")
+            result["integrity_recheck_detail_counts"]=dict(sorted(details.items()))
     return result
 
 
@@ -266,10 +288,14 @@ def selftest() -> None:
                       integrity_recheck_recovered=0,
                       integrity_recheck_unresolved=1,
                       integrity_recheck_unresolved_reason_counts={
-                         "RTH_30MIN_SESSION_GAP":1})
+                         "RTH_30MIN_SESSION_GAP":1},
+                      integrity_recheck_detail_counts={
+                         "RTH_ONE_30MIN_SLOT_MISSING":1})
     safe_diag=sanitize(diagnostic,master,price,mb,pb,"2026-10-14")
     demand(safe_diag["integrity_recheck_unresolved_reason_counts"]==
            {"RTH_30MIN_SESSION_GAP":1}
+           and safe_diag["integrity_recheck_detail_counts"]==
+           {"RTH_ONE_30MIN_SLOT_MISSING":1}
            and safe_diag["unresolved_shadow_source_count"]==1
            and safe_diag["published_symbol_classifications"] is False,
            "SOURCE_DIAGNOSTIC_LEAK_OR_MISMATCH")
@@ -279,6 +305,8 @@ def selftest() -> None:
         dict(diagnostic,integrity_recheck_unresolved_reason_counts={
              "RTH_30MIN_SESSION_GAP":2}),
         dict(diagnostic,integrity_recheck_recovered=1),
+        dict(diagnostic,integrity_recheck_detail_counts={"UNSAFE_SYMBOL_AAPL":1}),
+        dict(diagnostic,integrity_recheck_detail_counts={}),
     ):
         try:sanitize(tamper,master,price,mb,pb,"2026-10-14")
         except ValueError:pass
