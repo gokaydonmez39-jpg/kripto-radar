@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
+      - "nasdaq-xray/alpaca_minute_null_multiroute_shadow.py"
       - "nasdaq-xray/alpaca_minute_source_response_diagnostics.py"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
   push:
@@ -14,6 +15,7 @@ on:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
+      - "nasdaq-xray/alpaca_minute_null_multiroute_shadow.py"
       - "nasdaq-xray/alpaca_minute_source_response_diagnostics.py"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - "nasdaq-xray/canonical_current_price_dv30.json"
@@ -49,6 +51,8 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py nasdaq-xray/alpaca_price_gap_minute_witness.py
           python nasdaq-xray/alpaca_minute_source_response_diagnostics.py
           python -O nasdaq-xray/alpaca_minute_source_response_diagnostics.py
+          python nasdaq-xray/alpaca_minute_null_multiroute_shadow.py
+          python -O nasdaq-xray/alpaca_minute_null_multiroute_shadow.py
           python nasdaq-xray/alpaca_price_gap_minute_witness.py
           python -O nasdaq-xray/alpaca_price_gap_minute_witness.py
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest

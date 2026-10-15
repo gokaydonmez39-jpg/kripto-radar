@@ -20,7 +20,6 @@ import urllib.parse
 import urllib.request
 
 from alpaca_minute_source_response_diagnostics import classify_minute_document
-from alpaca_rth_minute_integrity_shadow import official_window
 
 MAX_BYTES=300_000
 VALID_SYMBOL=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
@@ -32,7 +31,8 @@ STATUS=frozenset({
     "MULTI_ROUTE_INVALID_INPUT_NO_CALL",
 })
 
-def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen):
+def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen, *,
+          window_start=None, window_end=None):
     if (type(symbol) is not str or VALID_SYMBOL.fullmatch(symbol) is None
         or type(day) is not str or type(asof) is not str
         or type(credentials) is not tuple or len(credentials)!=2
@@ -40,17 +40,33 @@ def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen):
         or day>asof):
         return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
     try:
+        from alpaca_rth_minute_integrity_shadow import official_window
         start,close,minutes=official_window(day)
         if minutes not in (390,210) or close-start != dt.timedelta(minutes=minutes):
             return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
+        if (window_start is None)!=(window_end is None):
+            return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
+        if window_start is not None:
+            if (type(window_start) is not dt.datetime
+                or type(window_end) is not dt.datetime
+                or window_start.tzinfo is None or window_end.tzinfo is None
+                or not(start<=window_start<window_end<=close)
+                or window_end-window_start!=dt.timedelta(minutes=30)
+                or (window_start-start)%dt.timedelta(minutes=30)!=dt.timedelta(0)):
+                return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
+            request_start,request_end=window_start,window_end
+            expected_max=30
+        else:
+            request_start,request_end=start,close
+            expected_max=minutes
     except (TypeError,ValueError,OverflowError):
         return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
     args={
         "symbols":symbol,"timeframe":"1Min","feed":"sip",
         "adjustment":"raw","sort":"asc","asof":asof,
         "limit":"1000",
-        "start":start.isoformat().replace("+00:00","Z"),
-        "end":(close-dt.timedelta(minutes=1)).isoformat().replace("+00:00","Z"),
+        "start":request_start.isoformat().replace("+00:00","Z"),
+        "end":(request_end-dt.timedelta(minutes=1)).isoformat().replace("+00:00","Z"),
     }
     url="https://data.alpaca.markets/v2/stocks/bars?"+urllib.parse.urlencode(args)
     request=urllib.request.Request(url,headers={
@@ -77,7 +93,7 @@ def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen):
             return "MULTI_ROUTE_NO_ELIGIBLE_BAR_OBSERVED_UNKNOWN"
         result=classify_minute_document(
             {"bars":bars,"symbol":symbol,"next_page_token":None},
-            symbol=symbol,start=start,end_exclusive=close,max_bars=minutes,
+            symbol=symbol,start=request_start,end_exclusive=request_end,max_bars=expected_max,
             present_code="MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW",
             empty_code="MULTI_ROUTE_NO_ELIGIBLE_BAR_OBSERVED_UNKNOWN")
         if result=="MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW":
@@ -100,6 +116,7 @@ def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen):
         return "MULTI_ROUTE_INCOMPLETE_OR_INVALID_RESPONSE_UNKNOWN"
 
 def selftest():
+    from alpaca_rth_minute_integrity_shadow import official_window
     start,close,minutes=official_window("2026-10-14")
     bar={"t":start.isoformat(),"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":15}
     invoked=[]
@@ -156,6 +173,22 @@ def selftest():
     assert probe("AAA","2026-10-14","2026-10-14",auth,forbidden)==(
         "MULTI_ROUTE_HTTP_OR_NETWORK_UNKNOWN")
     assert len(invoked)==before+1
+    slot=start+dt.timedelta(minutes=30)
+    def slot_source(req,timeout):
+        q=urllib.parse.parse_qs(urllib.parse.urlsplit(req.full_url).query)
+        assert q["start"]==[slot.isoformat().replace("+00:00","Z")]
+        assert q["end"]==[(slot+dt.timedelta(minutes=29)).isoformat().replace("+00:00","Z")]
+        return Response({"bars":{"AAA":[{
+            "t":slot.isoformat(),"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":2
+        }]},"next_page_token":None})
+    assert probe("AAA","2026-10-14","2026-10-14",auth,slot_source,
+                 window_start=slot,window_end=slot+dt.timedelta(minutes=30))==(
+                 "MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW")
+    before=len(invoked)
+    assert probe("AAA","2026-10-14","2026-10-14",auth,source({}),
+                 window_start=slot,window_end=slot+dt.timedelta(minutes=60))==(
+                 "MULTI_ROUTE_INVALID_INPUT_NO_CALL")
+    assert len(invoked)==before
     assert len(STATUS)==5
     print("XRAY_NULL_BAR_ALTERNATE_ROUTE_SELFTEST=PASS_EXACT_ONE_REQUEST_PER_CALL_4_POSITIVE_6_NEGATIVE_DENIAL_NO_PRIMARY")
 
