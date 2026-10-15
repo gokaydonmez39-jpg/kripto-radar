@@ -24,7 +24,12 @@ SRE=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 WITNESS_CODES={
     "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
     "MINUTE_NO_RTH_BARS_STILL_UNKNOWN",
-    "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN",
+    "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+    "MINUTE_HTTP_400_INVALID_REQUEST",
+    "MINUTE_HTTP_401_403_DENIED",
+    "MINUTE_HTTP_429_THROTTLED",
+    "MINUTE_HTTP_OTHER_ERROR",
+    "MINUTE_NETWORK_OR_TIMEOUT",
     "MINUTE_OFFICIAL_ZERO_DAY_UNVERIFIED",
 }
 
@@ -53,13 +58,13 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
         or type(creds) is not tuple or len(creds)!=2
         or not all(type(x) is str and x for x in creds)
         or day>asof):
-        return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     try:
         start,close,minutes=official_window(day)
         if minutes not in (210,390) or not start<close:
-            return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     except (ValueError,TypeError,OverflowError):
-        return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     params={
         "timeframe":"1Min","feed":"sip","adjustment":"raw",
         "limit":"500","sort":"asc","asof":asof,
@@ -75,31 +80,41 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
             "User-Agent":"NASDAQ-XRAY-ReadOnly-Sina-Exception-Witness/1.0"})
         with urlopen(req,timeout=22) as reply:
             if reply.status!=200:
-                return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             raw=reply.read(MAX_BYTES+1)
         if len(raw)>MAX_BYTES:
-            return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
         doc=json.loads(raw)
         if (type(doc) is not dict or type(doc.get("bars")) is not list
             or (doc.get("symbol") is not None and doc["symbol"]!=symbol)
             or doc.get("next_page_token") is not None
             or len(doc["bars"])>minutes):
-            return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
         seen=set()
         for bar in doc["bars"]:
             if type(bar) is not dict:
-                return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             at=stamp(bar)
             if (not(start<=at<close) or at.second!=0
                 or at.microsecond!=0 or at in seen
                 or type(bar.get("v")) is not int or bar["v"]<=0):
-                return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             seen.add(at)
         return ("MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW" if seen
                 else "MINUTE_NO_RTH_BARS_STILL_UNKNOWN")
-    except (urllib.error.URLError,TimeoutError,OSError,
-            ValueError,TypeError,KeyError,OverflowError):
-        return "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+    except urllib.error.HTTPError as error:
+        # No response text, URL, provider timestamp or credentials are logged.
+        if error.code==400:
+            return "MINUTE_HTTP_400_INVALID_REQUEST"
+        if error.code in (401,403):
+            return "MINUTE_HTTP_401_403_DENIED"
+        if error.code==429:
+            return "MINUTE_HTTP_429_THROTTLED"
+        return "MINUTE_HTTP_OTHER_ERROR"
+    except (urllib.error.URLError,TimeoutError,OSError):
+        return "MINUTE_NETWORK_OR_TIMEOUT"
+    except (ValueError,TypeError,KeyError,OverflowError):
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
 
 def selftest():
     from alpaca_free_sip_shadow_guard import EST
@@ -132,14 +147,14 @@ def selftest():
         "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW")
     assert len(seen)==1
     assert observe("../SECRET",day,day,("KEY","SECRET"),fake)==(
-        "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN")
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
     assert len(seen)==1
     for rows,expected in [
         ([],"MINUTE_NO_RTH_BARS_STILL_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":0}],"MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":1}]*2,"MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"),
-        ([{"t":close.isoformat(),"v":1}],"MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":True}],"MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"),
+        ([{"t":start.isoformat(),"v":0}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+        ([{"t":start.isoformat(),"v":1}]*2,"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+        ([{"t":close.isoformat(),"v":1}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+        ([{"t":start.isoformat(),"v":True}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
     ]:
         def getter(req,timeout):
             return Reply({"symbol":"AAA","bars":rows,"next_page_token":None})
@@ -147,7 +162,20 @@ def selftest():
     def paged(req,timeout):
         return Reply({"symbol":"AAA","bars":[],"next_page_token":"other"})
     assert observe("AAA",day,day,("KEY","SECRET"),paged)==(
-        "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN")
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+    for code,expected in [
+        (400,"MINUTE_HTTP_400_INVALID_REQUEST"),
+        (403,"MINUTE_HTTP_401_403_DENIED"),
+        (429,"MINUTE_HTTP_429_THROTTLED"),
+        (500,"MINUTE_HTTP_OTHER_ERROR"),
+    ]:
+        def failed(req,timeout,code=code):
+            raise urllib.error.HTTPError(req.full_url,code,"private",{},None)
+        assert observe("AAA",day,day,("KEY","SECRET"),failed)==expected
+    def offline(req,timeout):
+        raise urllib.error.URLError("private")
+    assert observe("AAA",day,day,("KEY","SECRET"),offline)==(
+        "MINUTE_NETWORK_OR_TIMEOUT")
     print("XRAY_SINA_DAILY_ZERO_MINUTE_SELFTEST=PASS_ONE_BOUND_SESSION_POSITIVE_NEGATIVES_NO_RAW_NO_PRIMARY")
 
 if __name__=="__main__":

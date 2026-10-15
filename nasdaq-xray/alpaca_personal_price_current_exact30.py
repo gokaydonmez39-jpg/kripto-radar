@@ -326,7 +326,7 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                             witness=minute_probe(sym,slot,credentials,counters,report["asof_et"])
                         except (urllib.error.HTTPError,urllib.error.URLError,
                                 ValueError,TypeError,TimeoutError,OSError):
-                            witness="MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+                            witness="MINUTE_NETWORK_OR_TIMEOUT"
                         require(witness in WITNESS_CODES,"MINUTE_PROBE_INVALID_ENUM")
                         witness_counts[witness]+=1
         except (urllib.error.HTTPError,urllib.error.URLError,ValueError,
