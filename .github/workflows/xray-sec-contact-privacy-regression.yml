@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - xray/sec-contact-permanent-ci-20261015 # TEMP_ACCEPTANCE_ONLY_REMOVE
     paths:
       - ".github/workflows/**"
       - "nasdaq-xray/sec_operator_contact_secret_only_guard.py"
