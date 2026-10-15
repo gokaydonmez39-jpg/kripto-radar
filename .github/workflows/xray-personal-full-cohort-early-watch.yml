@@ -43,6 +43,7 @@ jobs:
           UPSTREAM_ID: ${{ github.event.workflow_run.id }}
           UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
           CURRENT_REPO: ${{ github.repository }}
+          CURRENT_HEAD_SHA: ${{ github.sha }}
         run: |
           python - <<'PY'
           import json,os,subprocess,sys
@@ -62,17 +63,27 @@ jobs:
               response=gh("repos/"+repo+"/actions/workflows/xray-personal-full-universe-sip-coverage.yml/runs?per_page=20")
               runs=[r for r in response["workflow_runs"] if
                    r.get("status")=="completed" and r.get("conclusion")=="success"
-                   and r.get("head_branch")=="main"]
-              assert runs,"NO_SUCCESSFUL_FULL_UNIVERSE_SIP_RESEARCH_RUN"
+                   and r.get("head_branch")=="main"
+                   and r.get("head_sha")==os.environ["CURRENT_HEAD_SHA"]]
+              if not runs:
+                  # The source full-universe pipeline may take longer than the
+                  # push-triggered consumer. Never reuse prior-source schema.
+                  # Exact workflow_run completion is the authoritative retry.
+                  with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+                      out.write("ready=false\n")
+                  print("XRAY_EARLY_WATCH_SAFE_SKIP_PENDING_SAME_SHA_SOURCE")
+                  raise SystemExit(0)
               run_id=int(runs[0]["id"])
               run=gh("repos/"+repo+"/actions/runs/"+str(run_id))
               verify_run(run,repo,expected_run_id=run_id,
                          expected_head_sha=run["head_sha"])
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+              out.write("ready=true\n")
               out.write("upstream_run_id="+str(run_id)+"\n")
           print("XRAY_EARLY_WATCH_SOURCE_RUN_ID="+str(run_id))
           PY
       - name: Download exact 6-gate same-run history/RTH research classifications only
+        if: steps.source.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           UPSTREAM_RUN: ${{ steps.source.outputs.upstream_run_id }}
@@ -80,6 +91,7 @@ jobs:
           gh run download "$UPSTREAM_RUN" --repo "$GITHUB_REPOSITORY" \
             -n xray-personal-six-gate-causal-worklist-no-ohlcv -D "$RUNNER_TEMP/causal"
       - name: Observe complete verified technical A/B/D watch scope, without vendor OHLCV export
+        if: steps.source.outputs.ready == 'true'
         env:
           XRAY_RESEARCH_UPSTREAM_RUN_ID: ${{ steps.source.outputs.upstream_run_id }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
@@ -89,6 +101,7 @@ jobs:
             --causal "$RUNNER_TEMP/causal/xray_six_gate_causal_breaker.json" \
             --out "$RUNNER_TEMP/xray_early_technical_watch_private.json"
       - name: Recheck no R92, untruncated scope, no invented WATCH on missing provider
+        if: steps.source.outputs.ready == 'true'
         env:
           XRAY_RESEARCH_UPSTREAM_RUN_ID: ${{ steps.source.outputs.upstream_run_id }}
         run: |
@@ -162,7 +175,7 @@ jobs:
           print("XRAY_EARLY_WATCH=SOURCE_BOUND_COHORT_CLASSIFIED_NO_FALSE_BUY")
           PY
       - name: Retain only private symbolic research findings; no OHLCV or price levels
-        if: always()
+        if: ${{ always() && steps.source.outputs.ready == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: xray-personal-early-technical-watch-private-no-ohlcv
