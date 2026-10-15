@@ -65,12 +65,21 @@ def main():
         outputdir=tmp/"private-raw"
         exported=export_completed_private_csv(decrypted,ss,outputdir)
         assert exported["symbol_csv_private"]==len(ss["targets"])
-        # Real PRICE UNKNOWN is a correct hard STOP, never weaken ingress.
+        # UNKNOWN tickers outside a valid PRICE PASS set may be omitted
+        # from research-only HISTORY preparation. If PRICE has zero PASS,
+        # current vendor transport MUST return an explicit safe blocked
+        # report rather than fail as if any primary HISTORY were established.
         if price.get("unknown_count",0)!=0:
-            try:evaluate(price,ss["price_sha"],outputdir)
-            except ValueError as exc:
-                assert str(exc)=="PRICE_SCOPE_OR_SAFETY_INVALID"
-            else:raise AssertionError("REAL_UNKNOWN_WAS_ACCEPTED")
+            current=evaluate(price,ss["price_sha"],outputdir)
+            if price["pass_count"]==0:
+                assert current["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_PRIVATE_HISTORY_INPUT"
+                assert current["private_transport_tickers_checked"]==0
+                assert current["structural_private_transport_complete"] is False
+            else:
+                assert current["source_price_unknown_count"]==price["unknown_count"]
+            assert current["current_history_authority_proven"] is False
+            assert current["canonical_history_pass_created"]==0
+            assert current["can_register_R92"] is False
         # Pure synthetic control fixture; no real vendor proof or authority.
         fixture=copy.deepcopy(price)
         fixture["unknown_count"]=0
@@ -109,7 +118,7 @@ def main():
         corrupt=evaluate(fixture,fixture_sha,outputdir)
         assert corrupt["counts"]["invalid_or_unreadable"]==1
         assert not corrupt["can_register_R92"]
-    print("XRAY_CURRENT_SCOPE_XNAS_260D_52W_ENCRYPTED_PIPELINE_SELFTEST=PASS_SYNTHETIC_ONLY_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY")
+    print("XRAY_CURRENT_SCOPE_XNAS_260D_52W_ENCRYPTED_PIPELINE_SELFTEST=PASS_REAL_ZERO_SOURCE_BLOCKED_SYNTHETIC_2_NEGATIVES_0_HISTORY_MC_AL_AUTHORITY")
 
 if __name__=="__main__":
     main()
