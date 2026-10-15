@@ -205,12 +205,14 @@ def _nasdaq_exchange_cik_map(raw):
     pos={k:fields.index(k) for k in ("cik","ticker","exchange")}
     required=max(pos.values())
     out={}; conflicts=set()
+    # This route is advisory, but its symbol identity MUST be byte-exact.
+    # Distinct case variants (e.g. BCPC and BCpC) are not interchangeable.
     for row in rows:
         if not isinstance(row,list) or len(row)<=required:
             continue
         if str(row[pos["exchange"]] or "").strip().lower()!="nasdaq":
             continue
-        sym=str(row[pos["ticker"]] or "").strip().upper()
+        sym=str(row[pos["ticker"]] or "").strip()
         try:cik=int(row[pos["cik"]])
         except (ValueError,TypeError):continue
         if not sym or cik<=0:continue
@@ -270,6 +272,8 @@ def sec_ticker_cik_map(asof=None,subjects=None):
       "conflict_count":0,"classification_authority":False,
       "exact_asof_proof_required":True,
     }
+    # Do not uppercase provider tickers: SEC can contain securities whose
+    # symbols differ only in case, which would forge a CIK/issuer binding.
     primary_ok=False; secondary_ok=False
     try:
         raw=load_json_url(SEC_TICKERS)
@@ -278,7 +282,7 @@ def sec_ticker_cik_map(asof=None,subjects=None):
         primary_ok=True
         for row in raw.values():
             if not isinstance(row,dict):continue
-            sym=str(row.get("ticker") or "").strip().upper()
+            sym=str(row.get("ticker") or "").strip()
             try:cik=int(row.get("cik_str"))
             except (TypeError,ValueError):continue
             if sym and cik>0:
@@ -360,8 +364,8 @@ def sec_current_classification(sym:str,asof:str,cik:int|None):
     """One same-run SEC submissions read returning blank/nonblank classification."""
     if cik is None:return None
     sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
-    tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
-    if str(sym).upper() not in tickers:return None
+    tickers=[str(x).strip() for x in (sub.get("tickers") or [])]
+    if sym not in tickers:return None
     official=official_sec_sic(sub)
     if official is None:return None
     sic,desc=official
@@ -572,10 +576,11 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
     raw=request_bytes(url,SEC_UA,35).decode("utf-8","ignore")
     text=html.unescape(re.sub(r"<[^>]+>"," ",raw))
     text=re.sub(r"\s+"," ",text)
-    upper=text.upper()
+    # SEC landing fallback must bind the exact exchange ticker, including
+    # case; a case-folded ticker can silently identify another class.
     if f"{int(cik):010d}" not in text and str(int(cik)) not in text:
         return None
-    if re.search(rf"(?<![A-Z0-9]){re.escape(str(sym).upper())}(?![A-Z0-9])",upper) is None:
+    if re.search(rf"(?<![A-Za-z0-9]){re.escape(sym)}(?![A-Za-z0-9])",text) is None:
         return None
     m=re.search(r"SIC\s*:\s*(?:\([^)]*\)\s*)?(\d{4})\s*[-–]?\s*([^<]{0,80})",text,re.I)
     if m:
@@ -608,7 +613,7 @@ def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence
         sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
     except Exception:
         return sec_entity_landing_row(sym,asof,cik,want_blank,prior_evidence_date)
-    tickers=[str(x).strip().upper() for x in (sub.get("tickers") or [])]
+    tickers=[str(x).strip() for x in (sub.get("tickers") or [])]
     if sym not in tickers:
         return None
     official=official_sec_sic(sub)
