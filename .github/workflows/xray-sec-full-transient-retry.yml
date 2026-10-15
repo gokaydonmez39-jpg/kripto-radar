@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/sec_full_transient_retry.py"
+      - "nasdaq-xray/shadow_source_scope_preflight.py"
       - ".github/workflows/xray-sec-full-transient-retry.yml"
 permissions:
   contents: read
@@ -50,6 +51,13 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/sec_full_transient_retry.py
           python nasdaq-xray/sec_full_transient_retry.py --selftest
+      - name: Require nonempty exact canonical PRICE scope before SEC artifact discovery
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/shadow_source_scope_preflight.py
+          python nasdaq-xray/shadow_source_scope_preflight.py --selftest
+          python -O nasdaq-xray/shadow_source_scope_preflight.py --selftest
+          python nasdaq-xray/shadow_source_scope_preflight.py --live
       - name: Discover most recent same-ASOF exact-source SEC census; reject old immutable vintages
         shell: bash
         env:
