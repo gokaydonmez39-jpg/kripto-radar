@@ -1,6 +1,11 @@
 name: XRAY C4.18 SEC-Alpaca Provenance Intersection (No Production)
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
+      - "nasdaq-xray/shadow_source_scope_preflight.py"
   push:
     branches: [main]
     paths:
@@ -56,14 +61,79 @@ jobs:
           python -m py_compile nasdaq-xray/c418_crossfeed_dailybar_shadow.py
           python nasdaq-xray/c418_crossfeed_dailybar_shadow.py --selftest
           python -O nasdaq-xray/c418_crossfeed_dailybar_shadow.py --selftest
-      - name: Require nonempty canonical PRICE scope before any SEC-Alpaca join
+      - name: Require exact current PRICE scope or explicitly block 0-PASS join
+        id: source_scope
         run: |
           set -euo pipefail
           python -m py_compile nasdaq-xray/shadow_source_scope_preflight.py
           python nasdaq-xray/shadow_source_scope_preflight.py --selftest
           python -O nasdaq-xray/shadow_source_scope_preflight.py --selftest
-          python nasdaq-xray/shadow_source_scope_preflight.py --live
+          python - <<'PY'
+          import hashlib,json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from shadow_source_scope_preflight import verify
+          root=Path("nasdaq-xray")
+          master=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          price=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          try:
+              verified=verify(master,price)
+          except ValueError as exc:
+              if str(exc)!="NO_CANONICAL_PRICE_PASS_SCOPE":
+                  raise
+              # Only an exact, internally consistent canonical zero-PASS
+              # partition is a safe expected NO-JOIN. Never catch a bad
+              # SHA, date, execution, missing source, or invented PASS.
+              assert price["pass_symbols"]==[] and price["pass_count"]==0
+              assert price["pass_hash"]==hashlib.sha256(b"").hexdigest()
+              unknown=price["unknown_symbols"]
+              blocked=price.get("blocked_symbols",[])
+              full=master["pass_symbols"]
+              assert isinstance(unknown,list) and unknown==sorted(set(unknown))
+              assert len(unknown)==price["unknown_count"]
+              assert isinstance(blocked,list) and blocked==sorted(set(blocked))
+              assert len(blocked)==price.get("blocked_count",0)
+              assert set(unknown).isdisjoint(blocked)
+              assert set(unknown)|set(blocked) <= set(full)
+              rows=price["results"]
+              assert isinstance(rows,dict) and all(
+                  isinstance(rows.get(sym),dict) and
+                  rows[sym].get("status")!="PASS_PRICE_DV30"
+                  for sym in unknown+blocked)
+              def sha(path):
+                  return subprocess.check_output(
+                      ["git","hash-object",str(path)],text=True).strip()
+              doc={
+                  "schema":"XRAY_C418_PREOPEN_EXACT_PARTITION_SHADOW_V1",
+                  "status":"BLOCKED_ZERO_PRICE_PASS_NO_INTERSECTION",
+                  "asof_et":price["asof_et"],"price_pass_scope":0,
+                  "price_unknown_scope":len(unknown),
+                  "source_price_blob_sha":sha(root/"canonical_current_price_dv30.json"),
+                  "source_master_blob_sha":sha(root/"canonical_current_master_manifest.json"),
+                  "sec_alpaca_join_attempted":False,
+                  "technical_intersection":0,
+                  "can_create_PRIMARY":False,
+                  "can_create_HISTORY_PASS":False,
+                  "can_register_R92":False,
+                  "production_authority":False,
+                  "vendor_raw_bars_exported":False,
+                  "raw_share_counts_exported":False,
+                  "execution":"NONE","real_money":"NO-GO",
+                  "unknown_never_pass":True,
+              }
+              (Path(os.environ["RUNNER_TEMP"])/"xray_c418_exact_partition.json").write_text(
+                  json.dumps(doc,sort_keys=True,indent=2)+"\n")
+              with open(os.environ["GITHUB_OUTPUT"],"a") as output:
+                  output.write("eligible=false\n")
+              print("XRAY_C418_ZERO_PRICE=NO_SEC_ALPACA_JOIN_NO_SOURCE_AUTHORITY_NO_R92")
+          else:
+              assert verified["price_pass_count"]>0
+              with open(os.environ["GITHUB_OUTPUT"],"a") as output:
+                  output.write("eligible=true\n")
+              print("XRAY_C418_NONEMPTY_COHORT=SOURCE_WITNESSES_STILL_REQUIRED")
+          PY
       - name: Download latest matching SANITIZED full-scope SEC and Alpaca source witnesses
+        if: steps.source_scope.outputs.eligible == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -128,6 +198,7 @@ jobs:
             fi
           done
       - name: Evaluate current 260x52 and SEC shares-vintage exact set intersection
+        if: steps.source_scope.outputs.eligible == 'true'
         shell: bash
         run: |
           set -euo pipefail
