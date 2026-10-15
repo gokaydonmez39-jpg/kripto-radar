@@ -1,0 +1,83 @@
+name: XRAY Runner SIP ASOF Three-Symbol Canary (Research Only)
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_sip_asof_three_symbol_canary.py"
+      - ".github/workflows/xray-runner-sip-asof-three-symbol-canary.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_sip_asof_three_symbol_canary.py"
+      - ".github/workflows/xray-runner-sip-asof-three-symbol-canary.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-runner-sip-asof-three-symbol-canary-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    name: Exact current runner credential vs independent SIP daily source
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official NASDAQ session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Test SOURCE_ASOF and real-bar contract without network or secrets
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/personal_sip_asof_three_symbol_canary.py
+          python nasdaq-xray/personal_sip_asof_three_symbol_canary.py --selftest
+          python -O nasdaq-xray/personal_sip_asof_three_symbol_canary.py --selftest
+      - name: Main-only bounded SIP canary, never full-universe blind retry
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/personal_sip_asof_three_symbol_canary.py \
+            --live --out "$RUNNER_TEMP/xray_three_symbol_sip_canary_counts.json"
+      - name: Prove published observation cannot promote AL, PRICE, MC or HISTORY
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_three_symbol_sip_canary_counts.json").read_text())
+          assert d["schema"]=="XRAY_THREE_SYMBOL_RUNNER_SIP_ASOF_CANARY_V1"
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["no_vendor_ohlcv_persisted"] and d["no_canonical_mutations"]
+          assert d["canonical_price_dv30_attested"] is False
+          assert d["canonical_history_260_52_attested"] is False
+          assert d["mc_authority_attested"] is False
+          assert d["registered_r92"] is False and d["device_receipt_attested"] is False
+          assert set(d["counts"])=={
+            "sina_asof_missing_sampled","independent_sip_daily_observed",
+            "independent_sip_daily_unknown"}
+          assert sum(d["counts"][k] for k in
+            ("independent_sip_daily_observed","independent_sip_daily_unknown")
+          )==d["counts"]["sina_asof_missing_sampled"]
+          assert d["sample_size"]==3 and d["provider_page_requests"]<=2
+          assert not any(k in d for k in
+            ("bars","quotes","prices","volumes","symbols","ohlcv","credentials"))
+          print("XRAY_SIP_RUNNER_PUBLIC_COUNTS_VERIFIED_NO_ALPHA=PASS")
+          PY
+      - name: Keep sanitized counts only; never store provider response
+        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-three-symbol-sip-asof-canary-counts-no-ohlcv
+          path: ${{ runner.temp }}/xray_three_symbol_sip_canary_counts.json
+          retention-days: 7
+          if-no-files-found: warn
