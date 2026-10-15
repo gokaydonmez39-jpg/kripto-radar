@@ -1,0 +1,53 @@
+name: XRAY Shadow PRICE Source Scope Preflight Regression (No Alpha)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/shadow_source_scope_preflight.py"
+      - "nasdaq-xray/sec_full_transient_retry.py"
+      - ".github/workflows/xray-sec-full-transient-retry.yml"
+      - ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
+      - ".github/workflows/xray-shadow-source-scope-preflight-test.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/shadow_source_scope_preflight.py"
+      - "nasdaq-xray/sec_full_transient_retry.py"
+      - ".github/workflows/xray-sec-full-transient-retry.yml"
+      - ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml"
+      - ".github/workflows/xray-shadow-source-scope-preflight-test.yml"
+permissions:
+  contents: read
+jobs:
+  source-scope-safety-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Compile and prove positive + negative zero-scope fences
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/shadow_source_scope_preflight.py
+          python nasdaq-xray/shadow_source_scope_preflight.py --selftest
+          python -O nasdaq-xray/shadow_source_scope_preflight.py --selftest
+          python -m py_compile nasdaq-xray/sec_full_transient_retry.py
+          python nasdaq-xray/sec_full_transient_retry.py --selftest
+      - name: Classify actual checked-out source without converting blocker to PASS
+        run: |
+          set -euo pipefail
+          set +e
+          python nasdaq-xray/shadow_source_scope_preflight.py --live
+          observed=$?
+          set -e
+          if [[ "$observed" = 2 ]]; then
+            echo "XRAY_SHADOW_SCOPE_REGRESSION=GUARD_CORRECTLY_BLOCKED_THIS_SOURCE"
+          elif [[ "$observed" = 0 ]]; then
+            echo "XRAY_SHADOW_SCOPE_REGRESSION=VALID_NONEMPTY_SOURCE_NO_ALPHA"
+          else
+            echo "XRAY_SHADOW_SCOPE_REGRESSION=UNEXPECTED_EXIT_${observed}" >&2
+            exit 2
+          fi
+          echo "XRAY_SHADOW_SCOPE_PRIMARY_MC=false AL=false R92=false DELIVERY=false"
