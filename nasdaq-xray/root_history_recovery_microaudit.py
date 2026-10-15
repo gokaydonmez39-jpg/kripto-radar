@@ -22,6 +22,7 @@ STATIC={
     "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
     "ASOF_MISSING_REQUIRES_RESOLUTION",
     "EXACT30_INCOMPLETE_NEVER_PASS",
+    "SINA_HISTORY_EMPTY",
 }
 TRANSIENT=("SyntaxError:","IndexError:","JSONDecodeError:","TimeoutError:",
            "ConnectionError:","HTTPError:")
@@ -74,7 +75,13 @@ def audit(state,root,now):
         bystatus[status]+=1
         if status=="UNKNOWN_STATIC":
             info=row.get("info")
-            reason=info.get("reason") if isinstance(info,dict) else None
+            # Sina's direct empty response is emitted as a string, unlike
+            # its structured ASOF/short-history reasons. Preserve only this
+            # exact legacy source value; do not accept arbitrary strings.
+            if info=="SINA_HISTORY_EMPTY":
+                reason="SINA_HISTORY_EMPTY"
+            else:
+                reason=info.get("reason") if isinstance(info,dict) else None
             if reason not in STATIC:
                 raise ValueError("UNKNOWN_STATIC_REASON_UNCLASSIFIED:"+symbol)
             classified[reason]+=1
@@ -160,6 +167,7 @@ def audit(state,root,now):
             classified["SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"]
             +classified["ASOF_MISSING_REQUIRES_RESOLUTION"]
             +classified["EXACT30_INCOMPLETE_NEVER_PASS"]
+            +classified["SINA_HISTORY_EMPTY"]
             +other_exhausted),
         "eligible_single_round_real_provider_retries_now":len(rescue),
         "eligible_retry_symbol_count_only":len(rescue),
@@ -203,6 +211,27 @@ def selftest():
     assert yes["unknown_count"]==2 and not yes["alpha_authority"]
     assert yes["known_status_counts"]==s["counts"]
     import copy
+    # Exact source->root contract: parse_hist emits
+    # ("UNKNOWN_STATIC","SINA_HISTORY_EMPTY") for a null/empty Sina frame,
+    # and orchestrator explicitly classifies that as SOURCE_RETURNED_EMPTY_HISTORY.
+    empty_source=copy.deepcopy(s)
+    empty_source["results"]["CCC"]["info"]="SINA_HISTORY_EMPTY"
+    seal_state(empty_source)
+    empty_audit=audit(empty_source,r,now)
+    assert empty_audit["unknown_reason_counts"]["SINA_HISTORY_EMPTY"]==1
+    assert empty_audit["independent_history_or_asof_proof_required_count"]==1
+    assert empty_audit["unknown_count"]==2
+    assert empty_audit["eligible_single_round_real_provider_retries_now"]==1
+    assert empty_audit["alpha_authority"] is False
+    assert empty_audit["source_proof_full_history_attested"] is False
+    malicious_empty=copy.deepcopy(s)
+    malicious_empty["results"]["CCC"]["info"]="SINA_HISTORY_EMPTY_SUCCESS"
+    seal_state(malicious_empty)
+    try:audit(malicious_empty,r,now)
+    except ValueError as ex:
+        assert "UNKNOWN_STATIC_REASON_UNCLASSIFIED" in str(ex)
+    else:raise AssertionError("UNSUPPORTED_STATIC_STRING_WAS_ACCEPTED")
+
     # Reproduces the real 15 Oct data-plane failure:
     # retry-exhausted ValueError must remain UNKNOWN but must NOT abort the
     # full-root microaudit or become eligible for transient rescue.
@@ -297,7 +326,7 @@ def selftest():
     try:audit(s,r,now.replace(tzinfo=None))
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_NONTRANSIENT_EXHAUSTED_REMAINS_UNKNOWN_TRANSIENT_RESCUE_ONLY_MALFORMED_DENIED_NO_R92")
+    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_EXACT_SINA_EMPTY_SOURCE_CONTRACT_NONTRANSIENT_EXHAUSTED_UNKNOWN_NO_R92")
 
 def main():
     p=argparse.ArgumentParser()
