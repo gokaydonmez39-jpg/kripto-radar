@@ -30,7 +30,7 @@ jobs:
           python -O nasdaq-xray/p0_sec_12_split_original_documents_shadow.py --selftest
       - name: Query SEC official accession archives fairly, no private share data persisted
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/p0_sec_12_split_original_documents_shadow.py \
             --out "$RUNNER_TEMP/xray_sec_12_split_original_documents_shadow.json"
