@@ -1,0 +1,52 @@
+name: XRAY Single Early WATCH Zero-Cohort Regression
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
+      - ".github/workflows/xray-early-watch-zero-cohort-selftest.yml"
+      - ".github/workflows/xray-independent-sip-early-technical-followup.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
+      - ".github/workflows/xray-early-watch-zero-cohort-selftest.yml"
+      - ".github/workflows/xray-independent-sip-early-technical-followup.yml"
+permissions:
+  contents: read
+jobs:
+  zero-cohort:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing pinned personal technical math
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Regression for empty technical subset after incomplete RTH
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/personal_full_cohort_early_technical_watch.py
+          python nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+          python -O nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+      - name: Confirm exactly one automatic full-cohort technical successor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          legacy=Path(".github/workflows/xray-personal-full-cohort-early-watch.yml")
+          duplicate=Path(".github/workflows/xray-independent-sip-early-technical-followup.yml")
+          assert legacy.is_file()
+          assert not duplicate.exists(),"REDUNDANT_PROVIDER_SCAN_MUST_BE_REMOVED"
+          old=legacy.read_text()
+          assert 'XRAY Personal Full-Universe SIP EOD Coverage (Research Only)' in old
+          assert 'github.event.workflow_run.conclusion == \'success\'' in old
+          assert "XRAY_EARLY_WATCH_CI_EXACT_RESEARCH_WATCH_MEMBERSHIP_DIGEST" in old
+          print("XRAY_SINGLE_EARLY_TECH_WATCH=PASS_ONE_CHAIN_ZERO_COHORT_DIGEST_NO_AL")
+          PY
