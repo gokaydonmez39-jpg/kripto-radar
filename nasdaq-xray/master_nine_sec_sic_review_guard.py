@@ -103,15 +103,16 @@ def check(doc: dict, master: dict, master_blob: str) -> dict:
             blank.append(symbol)
         else:
             nonblank.append(symbol)
-    require(len(nonblank) == 6 and len(blank) == 1 and len(without) == 2,
+    require(len(nonblank) == 8 and len(blank) == 1 and len(without) == 0,
             "RESEARCH_COVERAGE_REQUIRES_REVIEW")
     return {
         "schema": "XRAY_NINE_SEC_REVIEW_DIAGNOSTIC_V1",
         "asof_et": ASOF,
         "official_index_metadata_rows": len(nonblank) + len(blank),
+        "source_indexes_not_runner_fetched": True,
         "sec_sic_non6770_acquisition_name_count": len(nonblank),
         "sec_sic_6770_no_current_override_count": len(blank),
-        "source_not_attested_count": len(without),
+        "source_index_metadata_missing_count": len(without),
         "canonical_identity_unknown_preserved": len(EXPECTED),
         "all_nine_still_unknown": True,
         "live_sec_network_proven": False,
@@ -148,7 +149,7 @@ def selftest() -> None:
     mutate(lambda j, m: j["records"]["BSAA"].update(
         source_url=j["records"]["BSAA"]["source_url"].replace("2051587", "2051588")))
     mutate(lambda j, m: j["records"]["BSAA"].update(filing_date="2026-10-16"))
-    mutate(lambda j, m: j["records"]["FACT"].update(cik="0002028935"))
+    mutate(lambda j, m: j["records"]["FACT"].update(cik="0002028936"))
     mutate(lambda j, m: m.update(unknown_symbols=["ALIS"]))
     mutate(lambda j, m: m["unknown_detail"]["FVN"].update(unknown_never_pass=False))
     mutate(lambda j, m: j["records"].pop("WTG"))
