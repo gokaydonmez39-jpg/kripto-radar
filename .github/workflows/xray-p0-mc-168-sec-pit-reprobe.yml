@@ -39,7 +39,7 @@ jobs:
           test -s "$RUNNER_TEMP/original/xray_mc_full_514_union.json"
       - name: Re-probe SEC official PIT reasons, never MC PRIMARY
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           set -euo pipefail
           python nasdaq-xray/p0_mc_168_sec_pit_reason_reprobe.py \
