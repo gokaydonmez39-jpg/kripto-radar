@@ -19,6 +19,7 @@ import urllib.request
 from alpaca_rth_minute_integrity_shadow import official_window
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp
 from alpaca_minute_source_response_diagnostics import classify_minute_document, SCHEMA_CODES
+from alpaca_minute_null_multiroute_shadow import probe as multi_probe, STATUS as MULTI_ROUTE_STATUS
 
 SLOT=dt.timedelta(minutes=30)
 MAX_BODY_BYTES=150000
@@ -27,6 +28,7 @@ WITNESS_CODES={
     "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
     "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
     *SCHEMA_CODES,
+    *MULTI_ROUTE_STATUS,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
@@ -102,6 +104,17 @@ def observe(symbol,slot,asof,credentials,counter,limit,
             doc=json.loads(raw)
         except (ValueError,TypeError):
             return "MINUTE_SCHEMA_JSON_INVALID"
+        # Exact one extra GET only for a valid single-route 200 `bars:null`.
+        # The multi-route window is the SAME missing 30Min RTH interval.
+        # The same vendor never confers an independent PRIMARY assertion.
+        if (type(doc) is dict and doc.get("bars","UNSET") is None
+            and doc.get("next_page_token") is None
+            and doc.get("symbol") in (None,symbol)):
+            if counter[0]>=limit:
+                return "MINUTE_GLOBAL_BUDGET_BLOCKED"
+            counter[0]+=1
+            return multi_probe(symbol,day,asof,credentials,urlopen,
+                               window_start=slot,window_end=end)
         return classify_minute_document(
             doc,symbol=symbol,start=slot,end_exclusive=end,max_bars=30,
             present_code="MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
@@ -190,10 +203,39 @@ def selftest():
         raise urllib.error.URLError("private")
     assert observe("AAA",slot,"2026-10-14",("a","b"),[0],1,offline)==(
         "MINUTE_NETWORK_OR_TIMEOUT")
+    # bars:null -> exactly one extra same-vendor multi-symbol request.
+    calls2=[]
+    def alt(req,timeout):
+        calls2.append(req.full_url)
+        if "/v2/stocks/AAA/bars?" in req.full_url:
+            return Response({"symbol":"AAA","bars":None,"next_page_token":None})
+        assert "/v2/stocks/bars?" in req.full_url
+        return Response({"bars":{"AAA":[{
+            "t":slot.isoformat(),"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":5
+        }]},"next_page_token":None})
+    used=[0]
+    assert observe("AAA",slot,"2026-10-14",("a","b"),used,2,alt)==(
+        "MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW")
+    assert used==[2] and len(calls2)==2
+    used=[0]
+    calls2.clear()
+    assert observe("AAA",slot,"2026-10-14",("a","b"),used,1,alt)==(
+        "MINUTE_GLOBAL_BUDGET_BLOCKED")
+    assert used==[1] and len(calls2)==1
+    calls2.clear()
+    def alt_empty(req,timeout):
+        calls2.append(req.full_url)
+        if "/v2/stocks/AAA/bars?" in req.full_url:
+            return Response({"symbol":"AAA","bars":None,"next_page_token":None})
+        return Response({"bars":{},"next_page_token":None})
+    assert observe("AAA",slot,"2026-10-14",("a","b"),[0],2,alt_empty)==(
+        "MULTI_ROUTE_NO_ELIGIBLE_BAR_OBSERVED_UNKNOWN")
+    assert len(calls2)==2
     assert WITNESS_CODES=={
         "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
         "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
         *SCHEMA_CODES,
+        *MULTI_ROUTE_STATUS,
         "MINUTE_HTTP_400_INVALID_REQUEST",
         "MINUTE_HTTP_401_403_DENIED",
         "MINUTE_HTTP_429_THROTTLED",
