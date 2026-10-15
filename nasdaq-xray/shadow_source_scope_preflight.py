@@ -74,11 +74,13 @@ def selftest() -> None:
         "pass_count": 1, "execution": "NONE",
         "real_money": "NO-GO", "unknown_never_pass": True,
     }
-    assert verify(master, price)["price_pass_count"] == 1
+    if verify(master, price)["price_pass_count"] != 1:
+        raise AssertionError("ONE_PASS_VALID_SOURCE_REJECTED")
     both = copy.deepcopy(price)
     both["pass_symbols"] = ["AAPL", "MSFT"]
     both["pass_count"] = 2
-    assert verify(master, both)["price_pass_count"] == 2
+    if verify(master, both)["price_pass_count"] != 2:
+        raise AssertionError("TWO_PASS_VALID_SOURCE_REJECTED")
     negative = [
         (master, dict(price, pass_symbols=[], pass_count=0)),
         (master, dict(price, pass_symbols=[], pass_count=1)),
