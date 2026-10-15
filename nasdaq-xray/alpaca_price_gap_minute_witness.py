@@ -25,7 +25,12 @@ SYMBOL_RE=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 WITNESS_CODES={
     "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
     "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-    "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN",
+    "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+    "MINUTE_HTTP_400_INVALID_REQUEST",
+    "MINUTE_HTTP_401_403_DENIED",
+    "MINUTE_HTTP_429_THROTTLED",
+    "MINUTE_HTTP_OTHER_ERROR",
+    "MINUTE_NETWORK_OR_TIMEOUT",
     "MINUTE_GLOBAL_BUDGET_BLOCKED",
 }
 
@@ -59,7 +64,7 @@ def observe(symbol,slot,asof,credentials,counter,limit,
         or not isinstance(counter,list) or len(counter)!=1
         or type(counter[0]) is not int or type(limit) is not int
         or not 0<=counter[0]<=limit):
-        return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     try:
         official_day=slot.astimezone(dt.timezone.utc)
         # Requested window is exactly one RTH 30Min interval. Return nothing
@@ -69,9 +74,9 @@ def observe(symbol,slot,asof,credentials,counter,limit,
         start,close,n=official_window(day)
         if day>asof or not (start<=slot<close and
                            (slot-start)%SLOT==dt.timedelta(0) and slot+SLOT<=close):
-            return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     except (ValueError,TypeError,OverflowError):
-        return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
     if counter[0]>=limit:
         return "MINUTE_GLOBAL_BUDGET_BLOCKED"
     end=slot+SLOT-dt.timedelta(minutes=1)
@@ -91,33 +96,42 @@ def observe(symbol,slot,asof,credentials,counter,limit,
         req=urllib.request.Request(url,headers=headers)
         with urlopen(req,timeout=22) as response:
             if response.status!=200:
-                return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             raw=response.read(MAX_BODY_BYTES+1)
         if len(raw)>MAX_BODY_BYTES:
-            return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
         doc=json.loads(raw)
         if (type(doc) is not dict or not isinstance(doc.get("bars"),list)
                 or doc.get("next_page_token") is not None
                 or (doc.get("symbol") is not None and doc["symbol"]!=symbol)):
-            return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
         bars=doc["bars"]
         if len(bars)>30:
-            return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
         seen=set()
         for bar in bars:
             if type(bar) is not dict:
-                return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             t=stamp(bar)
             if (t<slot or t>slot+SLOT-dt.timedelta(minutes=1)
                 or t.second!=0 or t.microsecond!=0 or t in seen
                 or type(bar.get("v")) is not int or bar["v"]<=0):
-                return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
             seen.add(t)
         return ("MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW" if bars else
                 "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN")
-    except (ValueError,KeyError,TypeError,OverflowError,
-            urllib.error.URLError,TimeoutError,OSError):
-        return "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+    except urllib.error.HTTPError as error:
+        if error.code==400:
+            return "MINUTE_HTTP_400_INVALID_REQUEST"
+        if error.code in (401,403):
+            return "MINUTE_HTTP_401_403_DENIED"
+        if error.code==429:
+            return "MINUTE_HTTP_429_THROTTLED"
+        return "MINUTE_HTTP_OTHER_ERROR"
+    except (urllib.error.URLError,TimeoutError,OSError):
+        return "MINUTE_NETWORK_OR_TIMEOUT"
+    except (ValueError,KeyError,TypeError,OverflowError):
+        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
 
 def selftest():
     from unittest.mock import patch
@@ -155,32 +169,50 @@ def selftest():
                    count,1,fake)=="MINUTE_GLOBAL_BUDGET_BLOCKED"
     assert count==[1] and len(calls)==1
     assert observe("AAA",slot,"2026-10-14",("",""),[0],1,fake)==(
-        "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN")
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
     assert observe("../SECRET",slot,"2026-10-14",("a","b"),[0],1,fake)==(
-        "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN")
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
     assert observe("AAA",close,"2026-10-14",("a","b"),[0],1,fake)==(
-        "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN")
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
     def reply(data):
         return lambda *_a,**_kw:Response(data)
     for doc,category in [
         ({"symbol":"AAA","bars":[],"next_page_token":None},
          "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":3}],
-          "next_page_token":"MORE"},"MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"),
+          "next_page_token":"MORE"},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
         ({"symbol":"ZZZ","bars":[],"next_page_token":None},
-         "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"),
+         "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":0}],
-          "next_page_token":None},"MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":3}]*2,
-          "next_page_token":None},"MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
         ({"symbol":"AAA","bars":[{"t":(slot+SLOT).isoformat(),"v":3}],
-          "next_page_token":None},"MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
     ]:
         assert observe("AAA",slot,"2026-10-14",("a","b"),[0],1,reply(doc))==category
+    for code,label in [
+        (400,"MINUTE_HTTP_400_INVALID_REQUEST"),
+        (403,"MINUTE_HTTP_401_403_DENIED"),
+        (429,"MINUTE_HTTP_429_THROTTLED"),
+        (500,"MINUTE_HTTP_OTHER_ERROR"),
+    ]:
+        def denied(req,timeout,code=code):
+            raise urllib.error.HTTPError(req.full_url,code,"private",{},None)
+        assert observe("AAA",slot,"2026-10-14",("a","b"),[0],1,denied)==label
+    def offline(req,timeout):
+        raise urllib.error.URLError("private")
+    assert observe("AAA",slot,"2026-10-14",("a","b"),[0],1,offline)==(
+        "MINUTE_NETWORK_OR_TIMEOUT")
     assert WITNESS_CODES=={
         "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
         "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-        "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN",
+        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+        "MINUTE_HTTP_400_INVALID_REQUEST",
+        "MINUTE_HTTP_401_403_DENIED",
+        "MINUTE_HTTP_429_THROTTLED",
+        "MINUTE_HTTP_OTHER_ERROR",
+        "MINUTE_NETWORK_OR_TIMEOUT",
         "MINUTE_GLOBAL_BUDGET_BLOCKED",
     }
     print("XRAY_PRICE_1MIN_PRIVATE_WITNESS_SELFTEST=PASS_SOURCE_BOUND_ONE_CALL_6_NEGATIVE_BUDGET_PRIVACY_NO_ALPHA")
