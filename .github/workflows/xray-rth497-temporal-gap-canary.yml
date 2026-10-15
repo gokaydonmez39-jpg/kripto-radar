@@ -1,0 +1,98 @@
+name: XRAY RTH497 Temporal SIP Gap Canary (8 Symbols, No Alpha)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
+      - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
+      - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  offline:
+    name: SHA-bound 8-symbol canary adversarial regressions (no API)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Test sample bounds, timestamp duplicates, stale epoch, market GO guards
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_rth497_temporal_gap_canary.py
+          python nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
+          python -O nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
+      - name: Keep only aggregate research evidence, never signal or trade
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("nasdaq-xray/alpaca_rth497_temporal_gap_canary.py").read_text()
+          for evidence in ("CANARY=8","MAX_CALLS=16",
+                           '"official_rth_integrity_pass":False',
+                           '"no_missing_bar_zero_fill":True',
+                           '"registered_R92_count":0',
+                           '"execution":"NONE","real_money":"NO-GO"'):
+              assert evidence in s,evidence
+          print("XRAY_RTH497_CANARY_GUARDS=PASS_NO_PRIMARY_NO_R92")
+          PY
+  bounded-live:
+    name: Measure only 8 source-bound SIP symbols, at most 16 HTTP calls
+    needs: offline
+    if: \${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Reuse frozen 497 RTH artifact, never fetch whole source universe
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/parent"
+          gh run download 38819985875 \
+            --repo gokaydonmez39-jpg/kripto-radar \
+            -n xray-personal-joint-260-daily30-rth30-no-ohlcv \
+            -D "$RUNNER_TEMP/parent"
+      - name: Diagnose latest-session and earlier RTH missing slot clustering
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: \${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: \${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_rth497_temporal_gap_canary.py \
+            --parent "$RUNNER_TEMP/parent/xray_personal_joint_rth30_shadow.json" \
+            --out "$RUNNER_TEMP/xray_rth497_temporal_canary.json"
+      - name: Require bounded aggregated evidence without C4.17 or technical promotion
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_rth497_temporal_canary.json").read_text())
+          assert r["schema"]=="XRAY_RTH497_TEMPORAL_CLUSTER_RESEARCH_V1"
+          assert r["sample_size"]==8 and r["source_api_calls"]<=16
+          assert r["sample_missing_30min_slots"]==r["latest_session_missing_slots"]+r["earlier_sessions_missing_slots"]
+          assert r["raw_vendor_ohlcv_stored"] is False
+          assert r["official_rth_integrity_pass"] is False
+          assert r["watch_created"] is False and r["registered_R92_count"]==0
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          print("XRAY_RTH497_TEMPORAL_LIVE_CANARY=SAFE_AGGREGATES_ONLY")
+          PY
+      - name: Upload only aggregate missing-slot evidence; no OHLCV or ticker identities
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-rth497-temporal-gap-canary-no-ohlcv
+          path: \${{ runner.temp }}/xray_rth497_temporal_canary.json
+          if-no-files-found: warn
+          retention-days: 7
