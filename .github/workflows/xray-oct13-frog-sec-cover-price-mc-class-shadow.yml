@@ -32,7 +32,7 @@ jobs:
           python -O nasdaq-xray/candidate_local_frog_oct13_sec_cover_mc_class_v1.py --selftest
       - name: Official SEC actual cover vs exact October13 SIP daily close
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || vars.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || vars.XRAY_ALPACA_DATA_SECRET_KEY }}
           XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID || vars.XRAY_ALPACA_API_KEY_ID }}
