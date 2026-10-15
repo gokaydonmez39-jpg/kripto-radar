@@ -93,6 +93,17 @@ def selftest():
     t={"asof_et":"2026-10-07","full_end_to_end_research_pass":False}
     assert classify(now,r,m,p,t,[])==(
         "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    # Regression from 15 Oct 2026 live root: root moved to Oct 15 while
+    # canonical MASTER and PRICE remained on Oct 14. Pre-MC must be allowed
+    # to REBUILD them; this must never count as downstream source proof.
+    rollover_now=dt.datetime(2026,10,16,0,30,tzinfo=UTC)
+    rollover_root=dict(r,asof_et="2026-10-15")
+    old_master=dict(m,asof_et="2026-10-14")
+    old_price=dict(p,asof_et="2026-10-14")
+    assert classify(rollover_now,rollover_root,old_master,old_price,t,[])==(
+        "STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE",True), (
+        "ROOT_NEWER_THAN_CANONICAL_MUST_WAKE_PRE_MC_NOT_FREEZE")
+
     def one(run_status,created):
         return [{"status":run_status,"created_at":created,"id":1}]
     assert classify(now,r,m,p,t,one("in_progress","2026-10-09T08:45:00Z"))==(
