@@ -24,6 +24,7 @@ EXPECTED={
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
  "xray-personal-full-universe-sip-coverage.yml":("10 22 * * 1-5",),
+ "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
@@ -38,18 +39,20 @@ EXPECTED={
  "xray-preopen-source-audit.yml":("5 12 * * 1-5","25 12 * * 1-5",
                                     "5 13 * * 1-5","15 13 * * 1-5",
                                     "15 14 * * 1-5"),
- "xray-research-watch-radar.yml":("17 15,20,23 * * 1-5",),
+ "xray-research-watch-radar.yml":("0 13 * * 1-5","17 15,20,23 * * 1-5"),
  "xray-resilience-observability.yml":("47 * * * 1-5","47 */3 * * 0,6"),
  "xray-sec-mirror-cik-shadow.yml":("37 13 * * 1-5",),
  "xray-sec-transport-matrix-probe.yml":("23 12 * * 1-5",),
  "xray-strict-g9-gate.yml":("32 * * * 1-5",),
  "xray-twelve-history-resume.yml":("53 * * * *",),
  "xray-zero-cost-four-stage-verification.yml":("17 13 * * 1-5",),
+ "xray-watch-delivery-microaudit.yml":("5 13 * * 1-5","35 22 * * 1-5"),
 }
 READONLY_PROVIDER_SCHEDULED={
  "xray-alpaca-delayed-sip-research.yml",
  "xray-candidate-local-alpaca-sip-recovery.yml",
  "xray-personal-full-universe-sip-coverage.yml",
+  "xray-personal-full-cohort-early-watch.yml",
  "xray-massive-grouped-history-resume.yml",
  "xray-multi-provider-research-shadow.yml",
  "xray-sec-mirror-cik-shadow.yml",
@@ -70,7 +73,7 @@ PROVIDER_RIGHTS={
 }
 
 def crons(source):
-    return tuple(re.findall(r"""^\s*- cron: ["']([^"']+)["']\s*$""",source,re.M))
+    return tuple(re.findall(r"""^\s*- cron: ["']([^"']+)["'](?:\s*\#[^\n]*)?$""",source,re.M))
 
 def inventory(files):
     errors=[]
@@ -170,6 +173,10 @@ def selftest():
     assert base["automated_schedules"]["xray-candidate-local-alpaca-sip-recovery.yml"]==["10 23 * * 1-5"]
     assert "xray-candidate-local-alpaca-sip-recovery.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-personal-full-universe-sip-coverage.yml"]==["10 22 * * 1-5"]
+    assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
+    assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
+    assert base["automated_schedules"]["xray-watch-delivery-microaudit.yml"]==["5 13 * * 1-5","35 22 * * 1-5"]
+    assert "xray-personal-full-cohort-early-watch.yml" in base["extra_readonly_provider_scheduled"]
     assert "xray-personal-full-universe-sip-coverage.yml" in base["extra_readonly_provider_scheduled"]
     def bad(modify,want):
         sample=dict(actual)
