@@ -46,7 +46,7 @@ jobs:
   bounded-live:
     name: Measure only 8 source-bound SIP symbols, at most 16 HTTP calls
     needs: offline
-    if: \${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -58,7 +58,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Reuse frozen 497 RTH artifact, never fetch whole source universe
         env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p "$RUNNER_TEMP/parent"
           gh run download 38819985875 \
@@ -67,8 +67,8 @@ jobs:
             -D "$RUNNER_TEMP/parent"
       - name: Diagnose latest-session and earlier RTH missing slot clustering
         env:
-          XRAY_ALPACA_DATA_KEY_ID: \${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
-          XRAY_ALPACA_DATA_SECRET_KEY: \${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
           python nasdaq-xray/alpaca_rth497_temporal_gap_canary.py \
             --parent "$RUNNER_TEMP/parent/xray_personal_joint_rth30_shadow.json" \
@@ -93,6 +93,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-rth497-temporal-gap-canary-no-ohlcv
-          path: \${{ runner.temp }}/xray_rth497_temporal_canary.json
+          path: ${{ runner.temp }}/xray_rth497_temporal_canary.json
           if-no-files-found: warn
           retention-days: 7
