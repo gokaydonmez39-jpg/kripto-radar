@@ -169,12 +169,28 @@ def classify(asof, symbols, provider, batch=BATCH):
                     if len(good) == 1 and len(rows) == 1
                     else "UNKNOWN_DAILY_MISSING_OR_INTEGRITY")
         except urllib.error.HTTPError as e:
+            # Bad request for one group does not prove the next group empty.
+            # Auth, throttle, and server trouble still stop the entire run.
+            local = e.code in (400, 404, 422)
             reason = ("UNKNOWN_SIP_HTTP_429_STOP" if e.code == 429 else
                       "UNKNOWN_SIP_HTTP_" + str(e.code))
-            circuit = True
+            if not local:
+                circuit = True
             for sym in group:
                 labels[sym] = reason
-        except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
+        except (ValueError, TypeError) as e:
+            # Invalid provider payload affects this batch only; never PASS.
+            # Exceeding the shared call budget must stop every further call.
+            budget = isinstance(e, ValueError) and (
+                str(e) == "XRAY_PERSONAL_FULL_UNIVERSE_SIP_CALL_BUDGET")
+            reason = ("UNKNOWN_SIP_CALL_BUDGET_STOP" if budget else
+                      "UNKNOWN_SIP_SOURCE_OR_INTEGRITY_" + type(e).__name__)
+            if budget:
+                circuit = True
+            for sym in group:
+                labels[sym] = reason
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            # Transport outage: stop rather than burning repeated credits.
             reason = "UNKNOWN_SIP_SOURCE_OR_INTEGRITY_" + type(e).__name__
             circuit = True
             for sym in group:
@@ -261,14 +277,64 @@ def selftest():
          limited_result["source_circuit_breaker_open"], "HTTP429_FAIL_CLOSED")
     foreign_labels, foreign_calls, foreign_circuit = classify(
         asof, names, lambda sub, day: ({"OUTSIDE": [record()]}, 1))
-    need(foreign_circuit is True and foreign_calls == 1 and
+    need(foreign_circuit is False and foreign_calls == 1 and
          set(foreign_labels.values()) ==
              {"UNKNOWN_SIP_SOURCE_OR_INTEGRITY_ValueError"},
-         "FOREIGN_SYMBOL_FAIL_CLOSED_UNKNOWN")
+         "FOREIGN_SYMBOL_LOCAL_UNKNOWN")
+    four = ["AAPL","BSP","NVDA","QQQ"]
+    good = lambda sub,day: ({sym:[record()] for sym in sub},1)
+    batches = []
+    def broken_first(sub,day):
+        batches.append(tuple(sub))
+        if "AAPL" in sub: raise ValueError("bad provider payload")
+        return good(sub,day)
+    isolated,used,stopped = classify(asof,four,broken_first,batch=2)
+    need(not stopped and used == 1 and len(batches) == 2
+         and isolated["AAPL"] == isolated["BSP"] ==
+             "UNKNOWN_SIP_SOURCE_OR_INTEGRITY_ValueError"
+         and isolated["NVDA"] == isolated["QQQ"] ==
+             "OBSERVED_SIP_DAILY_ASOF_SHADOW",
+         "SCHEMA_FAILURE_MUST_NOT_ERASE_OTHER_BATCH")
+    def bad_request(sub,day):
+        if "AAPL" in sub:
+            raise urllib.error.HTTPError("https://example.invalid",400,
+                                        "bad one batch",{},None)
+        return good(sub,day)
+    h400,used,stopped = classify(asof,four,bad_request,batch=2)
+    need(not stopped and used == 1
+         and h400["AAPL"] == "UNKNOWN_SIP_HTTP_400"
+         and h400["NVDA"] == "OBSERVED_SIP_DAILY_ASOF_SHADOW",
+         "HTTP400_BATCH_ISOLATION")
+    def denied(sub,day):
+        raise urllib.error.HTTPError("https://example.invalid",403,
+                                    "denied",{},None)
+    auth,used,stopped = classify(asof,four,denied,batch=2)
+    need(stopped and used == 0 and set(auth.values()) ==
+         {"UNKNOWN_SIP_HTTP_403"},"AUTH403_GLOBAL_STOP")
+    def unavailable(sub,day):
+        raise urllib.error.URLError("endpoint unavailable")
+    transport,used,stopped = classify(asof,four,unavailable,batch=2)
+    need(stopped and used == 0 and set(transport.values()) ==
+         {"UNKNOWN_SIP_SOURCE_OR_INTEGRITY_URLError"},
+         "NETWORK_GLOBAL_STOP")
+    global MAX_REQUESTS
+    old_cap = MAX_REQUESTS
+    try:
+        MAX_REQUESTS = 1
+        def too_many(sub,day):
+            return good(sub,day) if "AAPL" in sub else (
+                good(sub,day)[0],2)
+        budget,used,stopped = classify(asof,four,too_many,batch=2)
+        need(stopped and used == 3
+             and budget["AAPL"] == "OBSERVED_SIP_DAILY_ASOF_SHADOW"
+             and budget["QQQ"] == "UNKNOWN_SIP_CALL_BUDGET_STOP",
+             "BUDGET_EXHAUSTION_GLOBAL_STOP")
+    finally:
+        MAX_REQUESTS = old_cap
     need(out["no_vendor_ohlcv_persisted"] is True and
          all("c" not in str(v) for v in out["symbol_classifications"].values()
              if False), "NO_RAW_VENDOR")
-    print("XRAY_PERSONAL_FULL_UNIVERSE_SIP_SELFTEST=PASS_SCOPE_DATE_RATE_LIMIT_FOREIGN_NO_ALPHA")
+    print("XRAY_PERSONAL_FULL_UNIVERSE_SIP_SELFTEST=PASS_BATCH_SCHEMA_HTTP400_ISOLATION_QUOTA_AUTH_TRANSPORT_FAIL_CLOSE")
 
 
 def main():
