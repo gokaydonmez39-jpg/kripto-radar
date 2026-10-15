@@ -41,6 +41,7 @@ def emit(docs,shas,session):
     pointer=docs["chatgpt_canonical_state_v2.json"]
     notification=docs["notification_channel_policy_v1.json"]
     ledger=docs["delivery_ledger.json"]
+    price=docs["canonical_current_price_dv30.json"]
     watch=root.get("watch_radar") or {}
     tech=root.get("candidate_technical_funnel") or {}
     state=pointer.get("state_json") or {}
@@ -119,6 +120,33 @@ def emit(docs,shas,session):
         issue("PERSONAL_SNAPSHOT_STALE_OR_SHA_DRIFT",
               "ASOF and source blob proofs not simultaneously current",
               "REGENERATE_SNAPSHOT_FROM_EXACT_CURRENT_OR_REPORT_UNAVAILABLE")
+    # A 474-symbol liquidity prescreen is NOT an exact C4.17 price/DV30 PASS.
+    # The primary PRICE artifact can have an unresolved residual subset;
+    # NEVER mislabel that subset as the full 3,185-symbol universe.
+    price_pass=price.get("pass_symbols")
+    price_unknown=price.get("unknown_symbols")
+    price_blocked=price.get("blocked_symbols")
+    phase_exact=(price.get("schema")=="XRAY_CANONICAL_PRICE_DV30_V1"
+                 and price.get("asof_et")==session
+                 and price.get("asof_et")==master.get("asof_et")
+                 and price.get("source_master_count")==master.get("pass_count")
+                 and isinstance(price_pass,list) and isinstance(price_unknown,list)
+                 and isinstance(price_blocked,list)
+                 and price.get("pass_count")==len(price_pass)
+                 and price.get("unknown_count")==len(price_unknown)
+                 and price.get("blocked_count")==len(price_blocked)
+                 and not (set(price_pass)&set(price_unknown)
+                          or set(price_pass)&set(price_blocked)
+                          or set(price_unknown)&set(price_blocked)))
+    if not phase_exact:
+        issue("CANONICAL_PRICE_PARTITION_OR_EPOCH_UNPROVEN",
+              "Current C4.17 PRICE/DV30 ASOF, master scope or partition invalid",
+              "REBUILD_PRIMARY_PRICE_WITH_ACTUAL_OFFICIAL_RTH_DV30_PROOFS")
+    elif price.get("unknown_count"):
+        issue("PRIMARY_PRICE_DV30_RESIDUAL_UNRESOLVED",
+              "C4.17 primary residual unknown="+str(price["unknown_count"]) +
+              " (this is NOT the full Nasdaq universe)",
+              "QUALIFY_EXACT30_OFFICIAL_RTH_INTEGER_VOLUME_WITH_LAWFUL_RIGHTS")
     if master.get("asof_et")!=session or terminal.get("asof_et")!=session:
         issue("CANONICAL_TERMINAL_EPOCH_BEHIND",
               "master="+str(master.get("asof_et"))+
@@ -163,6 +191,14 @@ def emit(docs,shas,session):
         "schema":SCHEMA,"expected_last_completed_nasdaq_session":session,
         "asof_by_source":reported,
         "full_root_queue_total":root.get("queue_total"),
+        "canonical_price_dv30_asof":price.get("asof_et"),
+        "canonical_price_dv30_pass_count":price.get("pass_count"),
+        "canonical_price_dv30_residual_unknown_count":price.get("unknown_count"),
+        "canonical_price_source_partition_verified":phase_exact,
+        "live_opening_quote_feed_independently_verified":False,
+        "current_research_mode":"COMPLETED_SESSION_EOD_ONLY_NO_INTRADAY_PROMISE",
+        "liquidity_prescreen_is_not_a_technical_watch":True,
+        "independent_personal_technical_watch_requires_separate_exact_run_artifact":True,
         "root_history_unknown_count":root.get("unknown_count"),
         "root_source_candidate_count":count,
         "current_price_liquidity_prescreen_watch_count":len(watchlist),
@@ -254,6 +290,31 @@ def test():
     false_receipt=emit(paths,shas,d)
     prove(not false_receipt["iphone_push_ack_independently_attested_by_this_run"],
           "FORGED_REPO_PLATFORM_ACK_REJECTED")
+    prove(not good["live_opening_quote_feed_independently_verified"] and
+          good["current_research_mode"]=="COMPLETED_SESSION_EOD_ONLY_NO_INTRADAY_PROMISE" and
+          good["liquidity_prescreen_is_not_a_technical_watch"],
+          "NO_FABRICATED_MARKET_OPEN_LIVE_ALERT")
+    prove("CANONICAL_PRICE_PARTITION_OR_EPOCH_UNPROVEN" in codes,
+          "MISSING_CANONICAL_PRICE_FAIL_CLOSED")
+    paths["canonical_current_price_dv30.json"].update(
+        schema="XRAY_CANONICAL_PRICE_DV30_V1",asof_et=d,
+        source_master_count=10, pass_count=0, pass_symbols=[],
+        unknown_count=1,unknown_symbols=["AAPL"],
+        blocked_count=0,blocked_symbols=[])
+    paths["canonical_current_master_manifest.json"]["pass_count"]=10
+    repaired_price=emit(paths,shas,d)
+    price_codes={i["code"] for i in repaired_price["repair_order"]}
+    prove(repaired_price["canonical_price_source_partition_verified"] and
+          repaired_price["canonical_price_dv30_pass_count"]==0 and
+          repaired_price["canonical_price_dv30_residual_unknown_count"]==1 and
+          "PRIMARY_PRICE_DV30_RESIDUAL_UNRESOLVED" in price_codes,
+          "CURRENT_PRIMARY_RESIDUAL_IS_NOT_AN_ALPHA_PASS")
+    paths["canonical_current_price_dv30.json"]["pass_count"]=1
+    forged_pass=emit(paths,shas,d)
+    prove(not forged_pass["canonical_price_source_partition_verified"] and
+          "CANONICAL_PRICE_PARTITION_OR_EPOCH_UNPROVEN" in
+          {i["code"] for i in forged_pass["repair_order"]},
+          "FORGED_PRICE_COUNT_REJECTED")
     print("XRAY_WATCH_DELIVERY_MICROAUDIT_SELFTEST=PASS_EPOCH_ISSUE_GUARDS_WATCH_VS_R92_NO_PUSH_CLAIM")
 
 
