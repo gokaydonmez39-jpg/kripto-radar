@@ -91,11 +91,26 @@ jobs:
               "NO_VERIFIABLE_SOURCE_BARS","PROVIDER_AUTH_OR_RATE_LIMIT",
               "PROVIDER_TRANSPORT_FAILURE","UNATTEMPTED_BUDGET_OR_LIMIT",
           } and isinstance(v,int) for k,v in reasons.items())
+          details=j.get("integrity_recheck_detail_counts",{})
+          assert isinstance(details,dict)
+          assert all(k in {
+              "RTH_ONE_30MIN_SLOT_MISSING",
+              "RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION",
+              "RTH_30MIN_GAPS_ACROSS_SESSIONS",
+              "RTH_MISSING_SLOT_TIMESTAMP_UNVERIFIED",
+              "RTH_MISSING_SLOT_COUNT_UNVERIFIED",
+              "BAR_TIMESTAMP_OR_TIMEZONE_UNVERIFIED",
+              "BAR_OHLCV_VALUES_UNVERIFIED",
+              "BAR_OTHER_SCHEMA_OR_BOUNDARY_UNVERIFIED",
+          } and isinstance(v,int) and v>=0 for k,v in details.items())
+          assert sum(details.values()) == (reasons.get("RTH_30MIN_SESSION_GAP",0)
+                 + reasons.get("OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",0))
           print("XRAY_CURRENT_SIP_COUNTS_ONLY="+json.dumps({
               "asof_et":j["asof_et"],"status":j["status"],
               "scope":j["exact_source_unknown_scope_count"],
               "counts":j["counts"],"source_price_sha":j["source_price_blob_sha"],
               "gap_reasons":reasons,
+              "gap_details_counts_only":details,
               "isolated_recheck_attempted":j.get("integrity_recheck_attempted",0),
               "isolated_recheck_recovered":j.get("integrity_recheck_recovered",0),
           },sort_keys=True))
