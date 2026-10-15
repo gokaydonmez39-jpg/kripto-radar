@@ -25,14 +25,20 @@ def inspect(obj,asof,symbols):
             "scope_covered":len(set(symbols)&valid),"scope_complete":set(symbols)<=valid}
 def probe(price,key,licensed,proof,transport=None):
     asof=price["asof_et"];scope=price["pass_symbols"]
-    assert price["execution"]=="NONE" and price["real_money"]=="NO-GO"
-    assert len(scope)==price["pass_count"] and len(scope)==len(set(scope))
+    if not (price["execution"]=="NONE" and price["real_money"]=="NO-GO"
+            and type(scope) is list and scope==sorted(set(scope))
+            and type(price.get("pass_count")) is int and
+            len(scope)==price["pass_count"]):
+        raise ValueError("INVALID_PRICE_SCOPE_OR_SAFETY")
     out={"schema":"XRAY_MASSIVE_GROUPED_EOD_SHADOW_V1","asof_et":asof,
          "status":"BLOCKED_RIGHTS_OR_KEY","calls":0,"scope_count":len(scope),
          "all_market_rows":0,"scope_covered":0,"scope_complete":False,
          "HISTORY_PASS":False,"MC_PASS":False,"R92_AL":False,
          "source_independent_of_RALLIES":False,
          "vendor_bars_persisted":False,"execution":"NONE","real_money":"NO-GO"}
+    if not scope:
+        out["status"]="BLOCKED_ZERO_PRICE_PASS_NO_GROUPED_SOURCE_SCOPE"
+        return out
     if not (key and licensed=="true" and len(proof)==64):
         return out
     out["calls"]=1
@@ -51,6 +57,14 @@ def selftest():
     p={"asof_et":asof,"pass_symbols":["AAPL","FSLY"],"pass_count":2,"execution":"NONE","real_money":"NO-GO"}
     a={"status":"OK","adjusted":False,"results":[{"T":x,"o":20,"h":21,"l":19,"c":20,"v":12.5,"t":ms} for x in ("AAPL","FSLY")]}
     assert probe(p,"","","")["calls"]==0
+    zero=dict(p,pass_symbols=[],pass_count=0)
+    def forbid_transport():
+        raise AssertionError("ZERO_PRICE_TRIGGERED_VENDOR_CALL")
+    blocked=probe(zero,"example","true","a"*64,forbid_transport)
+    if not (blocked["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_GROUPED_SOURCE_SCOPE"
+            and blocked["calls"]==0 and blocked["scope_complete"] is False
+            and blocked["MC_PASS"] is False and blocked["R92_AL"] is False):
+        raise AssertionError("ZERO_PRICE_FALSE_GROUPED_SCOPE")
     ok=probe(p,"example","true","a"*64,lambda:a)
     assert ok["scope_complete"] and not ok["R92_AL"] and not ok["source_independent_of_RALLIES"]
     from copy import deepcopy

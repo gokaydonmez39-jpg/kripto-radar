@@ -55,7 +55,7 @@ def build(price,master,price_sha):
     if not (master.get("asof_et")==asof): raise ValueError("MASTER_PRICE_ASOF_DRIFT")
     if not (all(x.get("execution")=="NONE" and x.get("real_money")=="NO-GO" for x in (price,master))): raise ValueError("C417_EXPLICIT_GUARD_LINE_55")
     symbols=price.get("pass_symbols")
-    if not (isinstance(symbols,list) and symbols==sorted(set(symbols)) and symbols): raise ValueError("PRICE_PASS_SYMBOL_SET_INVALID")
+    if not (isinstance(symbols,list) and symbols==sorted(set(symbols))): raise ValueError("PRICE_PASS_SYMBOL_SET_INVALID")
     if not (len(symbols)==price.get("pass_count")): raise ValueError("PRICE_PASS_COUNT_DRIFT")
     if not (sha256_lines(symbols)==price.get("pass_hash")): raise ValueError("PRICE_PASS_HASH_DRIFT")
     # UNKNOWN/BLOCKED outside the independently established PASS set may
@@ -93,7 +93,8 @@ def build(price,master,price_sha):
     # until an authorized provider has supplied date-scoped evidence.
     return {
         "schema":SCHEMA,
-        "status":"RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED",
+        "status":("RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
+                  if symbols else "BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_SOURCE_REQUEST"),
         "asof_et":asof,"policy":"C4.17","control":"C4.27",
         "source_price_path":PRICE,"source_price_blob_sha":price_sha,
         "source_price_pass_count":len(symbols),
@@ -108,6 +109,8 @@ def build(price,master,price_sha):
         "required_completed_week_closes":weekly,
         "required_daily_count":260,"required_completed_week_count":52,
         "source_bar_count_measured":0,
+        "history_source_request_eligible":bool(symbols),
+        "zero_price_pass_fail_closed":not bool(symbols),
         "source_entitlement_proven":False,
         "canonical_history_pass_created":0,
         "current_history_authority_proven":False,
@@ -142,6 +145,24 @@ def selftest():
     assert partial["global_price_partition_complete"] is False
     assert partial["canonical_history_pass_created"]==0 and partial["can_register_R92"] is False
     assert partial["current_history_authority_proven"] is False
+    # Real canonical PRICE has zero pass: no source request must be opened.
+    zero=copy.deepcopy(p)
+    zero.update(pass_symbols=[],pass_count=0,
+                pass_hash=sha256_lines([]),unknown_symbols=["AAA","BBB"],
+                unknown_count=2)
+    zero["results"]={s:{"status":"UNKNOWN"} for s in ("AAA","BBB")}
+    z=build(zero,m,"c"*40)
+    if not (z["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_SOURCE_REQUEST"
+            and z["symbol_scope"]==[] and z["source_price_unknown_count"]==2
+            and z["canonical_history_pass_created"]==0
+            and z["history_source_request_eligible"] is False
+            and z["can_register_R92"] is False):
+        raise AssertionError("ZERO_PRICE_SOURCE_REQUEST_FALSE_READY")
+    damaged=copy.deepcopy(zero)
+    damaged["pass_hash"]="0"*64
+    try:build(damaged,m,"c"*40)
+    except ValueError:pass
+    else:raise AssertionError("ZERO_PASS_HASH_DRIFT_ACCEPTED")
     cases=[
        ("ASOF_DRIFT",lambda a,b:b.update(asof_et="2026-10-07")),
        ("PRICE_HASH_DRIFT",lambda a,b:a.update(pass_hash="0"*64)),
@@ -168,7 +189,7 @@ def selftest():
         try:build(a,b,("z"*40 if name=="PRICE_BLOB_NOT_HEX" else "a"*40))
         except (AssertionError,ValueError):continue
         raise AssertionError("INVALID_CURRENT_HISTORY_REQUEST_ACCEPTED:"+name)
-    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_TWO_POSITIVES_SIXTEEN_FAIL_CLOSED_EXPLICIT_OPT_SAFE")
+    print("XRAY_CURRENT_HISTORY_REQUEST_SELFTEST=PASS_ZERO_PASS_2_POSITIVES_SEVENTEEN_FAIL_CLOSED_OPT_SAFE")
 
 def main():
     ap=argparse.ArgumentParser()

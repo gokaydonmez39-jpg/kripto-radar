@@ -1,5 +1,13 @@
 name: XRAY Current PRICE Scope History Source Request (Research Only)
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/current_history_source_request.py"
+      - "nasdaq-xray/free_history_source_preflight.py"
+      - "nasdaq-xray/qualified_history_ingress_shadow.py"
+      - "nasdaq-xray/massive_grouped_one_day.py"
+      - ".github/workflows/xray-current-history-source-request.yml"
   push:
     branches: [main]
     paths:
@@ -49,6 +57,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/free_history_source_preflight.py
           python nasdaq-xray/free_history_source_preflight.py --selftest
+          python -O nasdaq-xray/free_history_source_preflight.py --selftest
           python nasdaq-xray/free_history_source_preflight.py --out "$RUNNER_TEMP/xray_twelve_data_free_scope_preflight.json"
           python - <<'PY'
           import json,os
@@ -58,7 +67,11 @@ jobs:
           assert x["source_price_blob_sha"]==__import__("subprocess").check_output(
               ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert x["scope_initial_credit_estimate"]==x["price_pass_count"]
-          assert x["scope_fits_published_daily_budget"] is True
+          assert x["scope_fits_published_daily_budget"] is (0<x["price_pass_count"]<=800)
+          if x["price_pass_count"]==0:
+              assert x["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_DEMAND"
+              assert x["history_scope_has_equity_candidates"] is False
+              print("XRAY_HISTORY_TWELVE_ZERO_PASS_NO_SOURCE_QUOTA_SPEND=PASS")
           assert x["universe_full_daily_refresh_fits_one_key"] is False
           assert x["history_authoritative"] is False
           assert x["actual_260_daily_52_week_source_proven"] is False
@@ -83,6 +96,11 @@ jobs:
           assert x["source_price_blob_sha"]==subprocess.check_output(
               ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],
               text=True).strip()
+          if x["price_pass_count"]==0:
+              assert x["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_PRIVATE_HISTORY_INPUT"
+              assert x["history_source_input_eligible"] is False
+              assert x["private_transport_tickers_checked"]==0
+              assert x["structural_private_transport_complete"] is False
           assert x["expected_daily_count"]==260 and x["expected_completed_week_closes"]==52
           assert x["counts"]["missing_file"]==x["private_transport_tickers_checked"]
           assert x["structural_private_transport_complete"] is False
@@ -142,8 +160,15 @@ jobs:
           from pathlib import Path
           doc=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_current_history_source_request.json").read_text())
           assert doc["schema"]=="XRAY_C417_CURRENT_HISTORY_SOURCE_REQUEST_V1"
-          assert doc["status"]=="RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
+          assert doc["status"]==(
+              "RESEARCH_HISTORY_REQUEST_READY_NO_MARKET_HISTORY_MEASURED"
+              if doc["source_price_pass_count"]>0 else
+              "BLOCKED_ZERO_PRICE_PASS_NO_HISTORY_SOURCE_REQUEST")
           assert doc["source_price_pass_count"]==len(doc["symbol_scope"])
+          if doc["source_price_pass_count"]==0:
+              assert doc["history_source_request_eligible"] is False
+              assert doc["zero_price_pass_fail_closed"] is True
+              print("XRAY_HISTORY_ZERO_PRICE_SOURCE_REQUEST_NO_GO=PASS")
           assert hashlib.sha256(chr(10).join(doc["symbol_scope"]).encode()).hexdigest()==doc["source_price_pass_hash"]
           assert len(doc["required_daily_official_sessions"])==260
           assert len(doc["required_completed_week_closes"])==52
