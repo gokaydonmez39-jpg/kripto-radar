@@ -32,6 +32,15 @@ NONPASS = {
 }
 SAFE = {"execution": "NONE", "real_money": "NO-GO",
         "unknown_never_pass": True}
+# Strict enumeration of derived incident labels; never copy exception text,
+# symbol IDs, missing bar positions, per-session values or provider payloads.
+GAP_REASONS = {
+    "DAILY_30_SESSION_GAP","RTH_30MIN_SESSION_GAP",
+    "DUPLICATE_SOURCE_BAR","OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",
+    "RTH_VOLUME_EXCEEDS_DAILY","OTHER_STRUCTURAL_SOURCE_REJECTION",
+    "NO_VERIFIABLE_SOURCE_BARS","PROVIDER_AUTH_OR_RATE_LIMIT",
+    "PROVIDER_TRANSPORT_FAILURE","UNATTEMPTED_BUDGET_OR_LIMIT",
+}
 
 
 def demand(value: bool, code: str) -> None:
@@ -86,6 +95,7 @@ def baseline(asof: str, symbols: list[str],
         "all_symbol_dispositions_recorded": False,
         "measured_research_bound_count": 0,
         "unresolved_shadow_source_count": len(symbols),
+        "integrity_recheck_unresolved_reason_counts": {},
         "source_authority": "SHADOW_RTH_30MIN_LOWER_BOUND_NOT_CANONICAL",
         "data_rights_independently_attested": False,
         "closing_auction_and_corrections_attested": False,
@@ -168,6 +178,28 @@ def sanitize(j: dict, master: dict, price: dict, mb: bytes, pb: bytes,
         "measured_research_bound_count": measured,
         "unresolved_shadow_source_count": unresolved,
     })
+    if "integrity_recheck_unresolved_reason_counts" in j:
+        categories=j["integrity_recheck_unresolved_reason_counts"]
+        candidate_count=j.get("integrity_recheck_candidate_count")
+        attempts=j.get("integrity_recheck_attempted")
+        recovered=j.get("integrity_recheck_recovered")
+        unknown=counts["UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"]
+        demand(type(categories) is dict and
+               all(type(k) is str and k in GAP_REASONS and
+                   type(v) is int and v>=0 for k,v in categories.items()),
+               "GAP_DIAGNOSTIC_ENUM_INVALID")
+        demand(type(candidate_count) is int and type(attempts) is int
+               and type(recovered) is int and
+               0<=recovered<=attempts<=8 and
+               recovered+unknown==candidate_count and
+               attempts<=candidate_count and
+               sum(categories.values())==unknown and
+               j.get("integrity_recheck_unresolved")==unknown,
+               "GAP_DIAGNOSTIC_PARTITION_INVALID")
+        result["integrity_recheck_unresolved_reason_counts"]=dict(sorted(categories.items()))
+        result["integrity_recheck_attempted"]=attempts
+        result["integrity_recheck_recovered"]=recovered
+        result["integrity_recheck_unresolved"]=unknown
     return result
 
 
@@ -228,6 +260,29 @@ def selftest() -> None:
     mixed["classifications"]["MSFT"]="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"
     mixed["counts"]={"LOWER_BOUND_GE_50M_SHADOW":1,
                      "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW":1}
+    diagnostic=json.loads(json.dumps(mixed))
+    diagnostic.update(integrity_recheck_candidate_count=1,
+                      integrity_recheck_attempted=1,
+                      integrity_recheck_recovered=0,
+                      integrity_recheck_unresolved=1,
+                      integrity_recheck_unresolved_reason_counts={
+                         "RTH_30MIN_SESSION_GAP":1})
+    safe_diag=sanitize(diagnostic,master,price,mb,pb,"2026-10-14")
+    demand(safe_diag["integrity_recheck_unresolved_reason_counts"]==
+           {"RTH_30MIN_SESSION_GAP":1}
+           and safe_diag["unresolved_shadow_source_count"]==1
+           and safe_diag["published_symbol_classifications"] is False,
+           "SOURCE_DIAGNOSTIC_LEAK_OR_MISMATCH")
+    for tamper in (
+        dict(diagnostic,integrity_recheck_unresolved_reason_counts={
+             "RAW_VENDOR_ERROR_123":1}),
+        dict(diagnostic,integrity_recheck_unresolved_reason_counts={
+             "RTH_30MIN_SESSION_GAP":2}),
+        dict(diagnostic,integrity_recheck_recovered=1),
+    ):
+        try:sanitize(tamper,master,price,mb,pb,"2026-10-14")
+        except ValueError:pass
+        else:raise AssertionError("INVALID_GAP_DIAGNOSTIC_ACCEPTED")
     partial=sanitize(mixed,master,price,mb,pb,"2026-10-14")
     demand(partial["status"]=="SHADOW_CENSUSED_WITH_SOURCE_GAPS_NO_PRIMARY"
            and partial["all_symbol_dispositions_recorded"] is True
@@ -256,7 +311,7 @@ def selftest() -> None:
         except (ValueError, TypeError):
             continue
         raise AssertionError("FALSE_SHADOW_EVIDENCE_ACCEPTED_" + str(idx))
-    print("XRAY_CURRENT_SIP_PUBLICATION_SELFTEST=PASS_3_POSITIVE_10_NEGATIVE_SOURCE_GAP_NOT_COMPLETE_NO_RAW_NO_R92")
+    print("XRAY_CURRENT_SIP_PUBLICATION_SELFTEST=PASS_4_POSITIVE_13_NEGATIVE_ENUMERATED_FIVE_GAP_REASONS_NO_RAW_NO_R92")
 
 
 def live(mode: str, path: Path, output: Path) -> int:
