@@ -64,6 +64,16 @@ def cohort(doc,now):
 
 def run(doc,now,fetch):
     asof,names=cohort(doc,now)
+    # The independently technical-scanned RTH lower-bound cohort can be
+    # smaller than the full source identity universe. Report BOTH
+    # denominators; never describe cohort completeness as universe coverage.
+    source_scope=doc["per_symbol_causal_routing"]
+    cohort_set=set(names)
+    outside_counts=Counter(row.get("first_unresolved_gate")
+        for sym,row in source_scope.items() if sym not in cohort_set)
+    outside_count=len(source_scope)-len(names)
+    need(outside_count>=0 and sum(outside_counts.values())==outside_count,
+         "FULL_IDENTITY_NONCOHORT_PARTITION")
     days,weeks=expected_dates(asof)
     need(len(days)==260 and len(weeks)==52 and days[-1]==asof,
          "EXACT_260_52_OFFICIAL_DATES")
@@ -72,6 +82,12 @@ def run(doc,now,fetch):
         "source_causal_digest_sha256":sha256(json.dumps(
             doc,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
         "source_causal_scope_count":doc["scope_count"],
+        "full_identity_source_partition_checked":True,
+        "technical_cohort_is_universe_count":len(names)==doc["scope_count"],
+        "outside_technical_cohort_count":outside_count,
+        "outside_technical_cohort_first_unresolved_gate_counts":
+            dict(sorted(outside_counts.items())),
+        "full_identity_technical_scan_attested":False,
         "source_rth_lower_bound_cohort_sha256":symbols_sha(names),
         "source_research_likelihood_not_a_price_prediction":True,
         "scope_count":len(names),
@@ -96,6 +112,7 @@ def run(doc,now,fetch):
     }
     if not names:
         result["all_symbols_classified"]=True
+        result["full_identity_technical_scan_attested"]=outside_count==0
         result["status"]="EMPTY_RESEARCH_COHORT_NOT_A_NO_SETUP_PROOF"
         result["classification_counts"]={}
         return result
@@ -202,6 +219,7 @@ def run(doc,now,fetch):
     need(sum(result["classification_counts"].values())==len(names),
          "EXACT_STATUS_PARTITION")
     result["all_symbols_classified"]=True
+    result["full_identity_technical_scan_attested"]=outside_count==0
     result["status"]="ALL_COHORT_SYMBOLS_CLASSIFIED_RESEARCH_ONLY"
     return result
 
@@ -233,6 +251,27 @@ def selftest():
          sum(result["classification_counts"].values())==3,
          "PROVIDER_OUTAGE_CANNOT_CREATE_WATCH")
     from copy import deepcopy
+    # A complete technical scan of 3/4 eligible-source identities MUST NOT
+    # masquerade as a complete scan of four (or of all NASDAQ securities).
+    extended=deepcopy(d)
+    extended["scope_count"]=4
+    extended["per_symbol_causal_routing"]["ZZZ"]={
+        "first_unresolved_gate":"HISTORY",
+        "causal_class":"UNPROVEN_260_SESSIONS"}
+    extended["first_unresolved_gate_counts"]={"HISTORY":1,"PRICE_DV30":3}
+    partial=run(extended,now,inaccessible)
+    need(partial["full_identity_source_partition_checked"] is True
+         and partial["source_causal_scope_count"]==4
+         and partial["scope_count"]==3
+         and partial["outside_technical_cohort_count"]==1
+         and partial["outside_technical_cohort_first_unresolved_gate_counts"]==
+             {"HISTORY":1}
+         and partial["all_symbols_classified"] is True
+         and partial["full_identity_technical_scan_attested"] is False
+         and partial["technical_cohort_is_universe_count"] is False
+         and partial["registered_r92_count"]==0
+         and partial["technical_research_watch_symbols"]==[],
+         "NO_FALSE_FULL_UNIVERSE_TECHNICAL_COVERAGE")
     cases=[
         ("BAD_ASOF",lambda x:x.update(asof_et="2026-10-13")),
         ("FORGED_BARS",lambda x:x.update(no_vendor_ohlcv_persisted=False)),
