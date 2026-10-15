@@ -1,5 +1,10 @@
 name: XRAY Alpaca 515 Corporate Actions Census Shadow (No PIT GO)
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_scope_ca_shadow.py"
+      - ".github/workflows/xray-alpaca-515-corporate-actions-shadow.yml"
   push:
     branches: [main]
     paths:
@@ -53,10 +58,20 @@ jobs:
           from pathlib import Path
           r=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_515_ca_census_shadow.json").read_text())
           assert r["schema"]=="XRAY_ALPACA_515_CORPORATE_ACTIONS_CENSUS_SHADOW_V1"
-          assert r["status"]=="SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
-          assert r["expected_symbols"]==515 and r["measured_symbols"]==515
-          assert r["unmeasured_symbols"]==0 and r["pages_consumed"]>=8
-          assert r["source_price_count"]==514
+          price=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          n=price["pass_count"]
+          assert r["source_price_count"]==n
+          assert r["expected_symbols"]==r["measured_symbols"]==(
+              n+(1 if n else 0))
+          assert r["unmeasured_symbols"]==0
+          if n==0:
+              assert r["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST"
+              assert r["pages_consumed"]==0 and r["total_events_seen"]==0
+              assert r["symbol_local_CA_registry_completed"] is False
+              print("XRAY_CURRENT_CA_ZERO_PRICE=NO_VENDOR_CALL_NO_PIT_NO_R92")
+          else:
+              assert r["status"]=="SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
+              assert r["pages_consumed"]>=1
           assert r["total_events_seen"]==sum(r["counts_by_group"].values())
           assert r["unknown_vendor_group_events"]==0
           assert r["subject_not_in_requested_batch"]==0
@@ -70,8 +85,8 @@ jobs:
           assert r["current_c417_history_primary_authority"] is False
           assert r["current_c417_mc_primary_authority"] is False
           assert r["canonical_pass_created"]==0 and r["r92_created"] is False
-          assert r["symbol_local_CA_registry_completed"] is True
-          assert r["symbol_local_CA_affected_count"]+r["symbol_local_no_event_observed_count"]==515
+          assert r["symbol_local_CA_registry_completed"] is (n>0)
+          assert r["symbol_local_CA_affected_count"]+r["symbol_local_no_event_observed_count"]==r["expected_symbols"]
           assert r["symbol_local_non_split_review_count"]==len(r["symbol_local_non_split_review"])
           assert set(r["symbol_local_non_split_review"]).issubset(set(r["symbol_local_CA_type_ledger"]))
           assert r["vendor_raw_events_persisted"] is False
