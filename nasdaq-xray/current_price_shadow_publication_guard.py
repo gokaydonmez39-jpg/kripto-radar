@@ -253,9 +253,11 @@ def live(mode: str, path: Path, output: Path) -> int:
     if mode == "preflight":
         result = baseline(asof, symbols, gitsha(mb), gitsha(pb),
                           "PREFLIGHT_READY_SHADOW_ONLY")
-    elif mode == "no-keys":
+    elif mode in ("no-keys", "runtime-error"):
         result = baseline(asof, symbols, gitsha(mb), gitsha(pb),
-                          "BLOCKED_PROVIDER_CREDENTIALS_NOT_CONFIGURED")
+                          ("BLOCKED_PROVIDER_CREDENTIALS_NOT_CONFIGURED"
+                           if mode == "no-keys" else
+                           "BLOCKED_PRIVATE_VENDOR_CENSUS_ERROR"))
     else:
         demand(path is not None and path.is_file(), "PRIVATE_SOURCE_MISSING")
         result = sanitize(json.loads(path.read_text()), master, price, mb, pb, latest)
@@ -272,6 +274,7 @@ def main() -> None:
     modes.add_argument("--selftest", action="store_true")
     modes.add_argument("--preflight", action="store_true")
     modes.add_argument("--no-keys", action="store_true")
+    modes.add_argument("--runtime-error", action="store_true")
     modes.add_argument("--sanitize", type=Path)
     p.add_argument("--out", type=Path)
     args = p.parse_args()
@@ -282,7 +285,8 @@ def main() -> None:
         p.error("--out is required")
     raise SystemExit(live(
         "preflight" if args.preflight else
-        "no-keys" if args.no_keys else "sanitize",
+        "no-keys" if args.no_keys else
+        "runtime-error" if args.runtime_error else "sanitize",
         args.sanitize, args.out))
 
 
