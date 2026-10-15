@@ -144,11 +144,73 @@ def pager(symbols,tf,start,end,asof,credentials,calls):
     raise RuntimeError("ALPACA_PAGE_BUDGET_EXHAUSTED")
 
 
+
+# Incomplete 30Min slots cannot pass the strict RTH gate. However, trades
+# actually observed in correct RTH slots may give a conservative research-only
+# lower bound without manufacturing a zero-volume bar for a missing slot.
+PARTIAL_HIGH="PARTIAL_OBSERVED_RTH_LOWER_BOUND_GE50M_RESEARCH_ONLY"
+PARTIAL_UNRESOLVED="PARTIAL_OBSERVED_RTH_LOWER_BOUND_INDETERMINATE"
+PARTIAL_REJECTED="PARTIAL_SOURCE_SCHEMA_OR_VOLUME_REJECTED"
+
+def partial_missing_slot_bounds(daily,halfhour,days):
+    """Return aggregate-safe evidence only. NEVER promote strict RTH or R92."""
+    from decimal import Decimal
+    from alpaca_personal_price_current_exact30 import cached_official_window
+    from alpaca_sip_30min_rth_lower_bound_pilot import stamp,data_check
+    from alpaca_sip_4symbol_30min_rth_shadow import LIMIT
+    need(type(days) is list and len(days)==30 and len(set(days))==30
+         and days==sorted(days) and type(daily) is list
+         and type(halfhour) is list,"PARTIAL_SOURCE_INPUT")
+    expected={}
+    windows={}
+    for day in days:
+        start,close,n=cached_official_window(day)
+        need(n in (210,390) and n%30==0,"PARTIAL_SESSION_WINDOW")
+        windows[day]=(start,close)
+        for i in range(n//30):
+            slot=start+dt.timedelta(minutes=30*i)
+            need(slot not in expected and slot<close,"PARTIAL_SLOT_CLOCK")
+            expected[slot]=day
+    daybars={}
+    for bar in daily:
+        day=stamp(bar).astimezone(NY).date().isoformat()
+        if day in windows:
+            need(day not in daybars,"PARTIAL_DUPLICATE_DAILY")
+            data_check(bar)
+            daybars[day]=bar
+    need(set(daybars)==set(days),"PARTIAL_DAILY_NOT_EXACT30")
+    observed={}
+    for bar in halfhour:
+        at=stamp(bar)
+        if at in expected:
+            need(at not in observed,"PARTIAL_DUPLICATE_30MIN")
+            observed[at]=data_check(bar)
+        elif any(start<=at<close for start,close in windows.values()):
+            raise ValueError("XRAY_PERSONAL_JOINT_RTH30_PARTIAL_OFFGRID_RTH")
+    missing=set(expected)-set(observed)
+    need(bool(missing),"PARTIAL_EXPECTED_GAP_NOT_PRESENT")
+    perday={day:0 for day in days}
+    for slot,volume in observed.items():
+        perday[expected[slot]]+=volume
+    lower=[]
+    for day in days:
+        daily_volume=data_check(daybars[day])
+        need(perday[day]<=daily_volume,"PARTIAL_RTH_GREATER_THAN_DAILY")
+        close=Decimal(str(daybars[day]["c"]))
+        need(close.is_finite() and close>0,"PARTIAL_CLOSE_INVALID")
+        lower.append(close*perday[day])
+    lower.sort()
+    conservative_median=(lower[14]+lower[15])/Decimal(2)
+    kind=PARTIAL_HIGH if conservative_median>=LIMIT else PARTIAL_UNRESOLVED
+    return kind,len(missing),len({expected[slot] for slot in missing})
+
+
 def measure(asof,syms,days,source,now,pace=0):
     need(len(days)==30 and days[-1]==asof and
          syms==sorted(set(syms)), "MEASUREMENT_INPUT")
     status={s:"UNKNOWN_UNCHECKED" for s in syms}
     integrity_causes={}
+    partial_counts=Counter();partial_missing_slots=0;partial_missing_days=0
     calls=[0];stop=None;attempted=0
     # Close+5 must be in delayed historical SIP window, not a future ET midnight.
     _,end=historical_request_window(asof,now)
@@ -185,6 +247,15 @@ def measure(asof,syms,days,source,now,pace=0):
                     code=v.removeprefix("XRAY_PERSONAL_CURRENT_PRICE_")
                     integrity_causes[name]=(code if code in safe else
                                             "RTH_UNCLASSIFIED_DATA_INTEGRITY")
+                    if code=="EARLY_AND_FULL_BAR_COUNTS_EXACT":
+                        try:
+                            kind,missing_slots,missing_days=partial_missing_slot_bounds(
+                                daily[name],half[name],days)
+                            partial_counts[kind]+=1
+                            partial_missing_slots+=missing_slots
+                            partial_missing_days+=missing_days
+                        except (ValueError,TypeError,KeyError,OverflowError):
+                            partial_counts[PARTIAL_REJECTED]+=1
             attempted+=len(group)
         except (RuntimeError,ValueError,TimeoutError,OSError) as exc:
             v=str(exc)
@@ -195,6 +266,10 @@ def measure(asof,syms,days,source,now,pace=0):
             for name in group:status[name]=PROVIDER_UNKNOWN
         if pace:time.sleep(pace)
     count=dict(sorted(Counter(status.values()).items()))
+    need(sum(partial_counts.values())==sum(
+         v=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for v in integrity_causes.values())
+         and set(partial_counts)<={PARTIAL_HIGH,PARTIAL_UNRESOLVED,
+                                  PARTIAL_REJECTED},"PARTIAL_DIAGNOSTIC_ACCOUNTING")
     need(set(integrity_causes).issubset(
          {k for k,v in status.items() if v==RTH_UNVERIFIED}),
          "INTEGRITY_CAUSE_SCOPE")
@@ -223,6 +298,10 @@ def measure(asof,syms,days,source,now,pace=0):
         "symbol_rth_integrity_failure_codes":dict(sorted(integrity_causes.items())),
         "rth_integrity_cause_counts":dict(sorted(
             Counter(integrity_causes.values()).items())),
+        "partial_missing_slot_research_counts":dict(sorted(partial_counts.items())),
+        "partial_missing_slot_total_observed_gap_count":partial_missing_slots,
+        "partial_missing_slot_affected_session_total":partial_missing_days,
+        "partial_research_never_promotes_strict_rth":True,
         "source_stop_class":stop,
         "status":"RTH_30MIN_PERSONAL_SOURCE_SHADOW_NO_CANONICAL_AUTHORITY",
         "official_RTH_close_auction_volume_attested":False,
@@ -291,6 +370,19 @@ def selftest():
     need(x["rth_lower_bound_ge50m_shadow_count"]==1
          and x["source_api_calls"]==2
          and x["registered_R92_count"]==0,"RTH_BOUND_POSITIVE_NO_ALPHA")
+    kind,missing,affected=partial_missing_slot_bounds(daily,rth[:-1],dates)
+    need(kind==PARTIAL_HIGH and missing==1 and affected==1,
+         "PARTIAL_HIGH_OBSERVED_ONLY_NO_ZERO_FILL")
+    low_rth=[dict(row,v=10000) for row in rth[:-1]]
+    kind,missing,affected=partial_missing_slot_bounds(daily,low_rth,dates)
+    need(kind==PARTIAL_UNRESOLVED and missing==1 and affected==1,
+         "PARTIAL_LOW_MUST_REMAIN_UNRESOLVED")
+    for bad in (rth[:-1]+[rth[0]],
+                rth[:-1]+[dict(rth[0],t=(dt.datetime.fromisoformat(
+                    rth[0]["t"])+dt.timedelta(minutes=1)).isoformat())]):
+        try:partial_missing_slot_bounds(daily,bad,dates)
+        except ValueError:pass
+        else:raise AssertionError("PARTIAL_DUPLICATE_OR_OFFGRID_ACCEPTED")
     bad_rth=rth[:-1]
     def partial(group,tf,start,end,day,calls):
         calls[0]+=1
@@ -299,7 +391,9 @@ def selftest():
     need(y["rth_incomplete_or_unknown_count"]==1 and
          y["rth_lower_bound_ge50m_shadow_count"]==0 and
          y["rth_integrity_cause_counts"] == {
-             "EARLY_AND_FULL_BAR_COUNTS_EXACT":1},
+             "EARLY_AND_FULL_BAR_COUNTS_EXACT":1} and
+         y["partial_missing_slot_research_counts"]=={PARTIAL_HIGH:1} and
+         y["partial_research_never_promotes_strict_rth"] is True,
          "MISSING_LAST_RTH_SLOT_DIAGNOSED_NOT_PASS")
     def blocked(*args):
         raise RuntimeError("ALPACA_HTTP_429")
@@ -312,7 +406,7 @@ def selftest():
     need(limited["source_stop_class"]=="SOURCE_CALL_BUDGET_REACHED_NO_RTH"
          and limited["rth_lower_bound_ge50m_shadow_count"]==0,
          "CALL_BUDGET_EXHAUSTION_NOT_VENDOR_INTEGRITY")
-    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_900_BUDGET_DIAGNOSTIC_RTH_BOUND_SHA_NO_PRIMARY")
+    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_900_BUDGET_CONSERVATIVE_MISSING_SLOT_NO_PRIMARY")
 
 
 def main():
