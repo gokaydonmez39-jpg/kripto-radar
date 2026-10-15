@@ -70,6 +70,35 @@ def request_page(batch,start,end,key,secret,token,*,data_quality="complete"):
         raise RuntimeError("ALPACA_CA_INVALID_JSON") from e
 
 
+def zero_price_ca_report(asof,daily):
+    """Observed 0 PRICE survivors: there is no CA issuer scope or QQQ probe."""
+    return {
+        "schema":SCHEMA,"asof_et":asof,"asof_start":daily[0],
+        "symbol_local_CA_affected_count":0,
+        "symbol_local_non_split_review_count":0,
+        "symbol_local_CA_type_ledger":{},"symbol_local_non_split_review":{},
+        "symbol_local_no_event_observed_count":0,
+        "symbol_local_CA_registry_completed":False,
+        "expected_symbols":0,"measured_symbols":0,
+        "unmeasured_symbols":0,"pages_consumed":0,"total_events_seen":0,
+        "counts_by_group":{},"non_cash_dividend_events":0,
+        "duplicate_cross_batch_events_deduped":0,
+        "unknown_vendor_group_events":0,
+        "subject_not_in_requested_batch":0,
+        "status":"BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST",
+        "failure_reason_class":"NO_CANONICAL_PRICE_PASS_SCOPE",
+        "provider_data_quality":"complete",
+        "provider_publication_time_attested":False,
+        "independent_issuer_corporate_actions_reconciled":False,
+        "source_market_data_rights_attested":False,
+        "current_c417_history_primary_authority":False,
+        "current_c417_mc_primary_authority":False,
+        "canonical_pass_created":0,"r92_created":False,
+        "vendor_raw_events_persisted":False,
+        "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+    }
+
+
 def audit(asof,targets,start,fetch,*,now):
     if now.tzinfo is None or not sufficient_delay(asof,now):
         raise ValueError("ALPACA_CA_CURRENT_SESSION_HOLDBACK_UNVERIFIED")
@@ -280,7 +309,12 @@ def selftest():
     conflict=audit(asof,two_batches,"2025-09-29",mismatched,now=now)
     assert conflict["status"]=="SHADOW_INCOMPLETE_OR_INVALID_CA",conflict
     assert conflict["failure_reason_class"]=="ALPACA_CA_DUPLICATE_EVENT_CONFLICT",conflict
-    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_NO_PIT_NO_PRIMARY_9_NEGATIVE")
+    empty=zero_price_ca_report(asof,["2025-09-29"])
+    assert empty["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST"
+    assert empty["expected_symbols"]==empty["measured_symbols"]==0
+    assert empty["pages_consumed"]==0 and empty["symbol_local_CA_registry_completed"] is False
+    assert empty["canonical_pass_created"]==0 and empty["r92_created"] is False
+    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_ZERO_PRICE_NO_VENDOR_PIT_PRIMARY_9_NEGATIVE")
 
 
 def main():
@@ -295,14 +329,17 @@ def main():
     price=json.loads(PRICE.read_text())
     master=json.loads(MASTER.read_text())
     asof,targets,daily,weeks=scope(price,master)
-    key=os.environ.get("XRAY_ALPACA_DATA_KEY_ID","").strip()
-    secret=os.environ.get("XRAY_ALPACA_DATA_SECRET_KEY","").strip()
-    if not key or not secret:
-        raise SystemExit("ALPACA_CA_MISSING_PRIVATE_CREDENTIALS")
-    result=audit(asof,targets,daily[0],
-                 lambda batch,start,end,token: request_page(
-                     batch,start,end,key,secret,token),
-                 now=dt.datetime.now(UTC))
+    if not targets:
+        result=zero_price_ca_report(asof,daily)
+    else:
+        key=os.environ.get("XRAY_ALPACA_DATA_KEY_ID","").strip()
+        secret=os.environ.get("XRAY_ALPACA_DATA_SECRET_KEY","").strip()
+        if not key or not secret:
+            raise SystemExit("ALPACA_CA_MISSING_PRIVATE_CREDENTIALS")
+        result=audit(asof,targets,daily[0],
+                     lambda batch,start,end,token: request_page(
+                         batch,start,end,key,secret,token),
+                     now=dt.datetime.now(UTC))
     result["source_price_blob_sha"]=blob_sha(PRICE)
     result["source_master_blob_sha"]=blob_sha(MASTER)
     result["source_price_pass_hash"]=price["pass_hash"]
@@ -312,7 +349,9 @@ def main():
     print("XRAY_ALPACA_CA_515_STATUS="+result["status"])
     print("XRAY_ALPACA_CA_515_COUNTS="+json.dumps(result["counts_by_group"],sort_keys=True))
     print("XRAY_ALPACA_CA_515_SYMBOLS="+str(result["measured_symbols"]))
-    if result["status"]!="SHADOW_SCOPE_COMPLETE_CA_NOT_PIT":
+    if result["status"] not in {
+            "SHADOW_SCOPE_COMPLETE_CA_NOT_PIT",
+            "BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST"}:
         raise SystemExit(2)
 
 
