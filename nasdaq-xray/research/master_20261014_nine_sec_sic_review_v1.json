@@ -1,0 +1,72 @@
+{
+  "schema": "XRAY_MASTER_NINE_SEC_SIC_REVIEW_V1",
+  "asof_et": "2026-10-14",
+  "master_blob_sha": "efd55ad9ba7386b5ac6b2a76ee8677fd30b3ed04",
+  "authority": "REVIEW_ONLY_HUMAN_VERIFIED_PUBLIC_SEC_INDEX_METADATA_NO_NETWORK_ATTESTATION",
+  "scope": "EXACT_CANONICAL_UNKNOWN_IDENTITY_SET",
+  "source_vendor_raw_data": false,
+  "canonical_mutation_authorized": false,
+  "classification_override_authorized": false,
+  "alpha_authority": false,
+  "can_register_r92": false,
+  "device_delivery_verified": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "records": {
+    "ALIS": {
+      "cik": "0002026767",
+      "sic": 7374,
+      "filing_date": "2026-09-04",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2026767/000149315226041476/0001493152-26-041476-index.htm"
+    },
+    "BSAA": {
+      "cik": "0002051587",
+      "sic": 8200,
+      "filing_date": "2026-08-06",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2051587/000121390026086168/0001213900-26-086168-index.htm"
+    },
+    "FACT": {
+      "cik": null,
+      "sic": null,
+      "filing_date": null,
+      "source_url": null
+    },
+    "FVN": {
+      "cik": "0002010653",
+      "sic": 7373,
+      "filing_date": "2026-09-14",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2010653/000182912626010068/0001829126-26-010068-index.html"
+    },
+    "HCAC": {
+      "cik": "0002079013",
+      "sic": 6770,
+      "filing_date": "2026-06-26",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2079013/000182912626006943/0001829126-26-006943-index.htm"
+    },
+    "IPXG": {
+      "cik": "0002088805",
+      "sic": 7373,
+      "filing_date": "2026-09-21",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2088805/000121390026101661/0001213900-26-101661-index.htm"
+    },
+    "MACI": {
+      "cik": null,
+      "sic": null,
+      "filing_date": null,
+      "source_url": null
+    },
+    "MCGA": {
+      "cik": "0002064658",
+      "sic": 6199,
+      "filing_date": "2026-08-12",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2064658/000110465926094872/0001104659-26-094872-index.htm"
+    },
+    "WTG": {
+      "cik": "0002053927",
+      "sic": 7370,
+      "filing_date": "2026-09-28",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2053927/000182912626010488/0001829126-26-010488-index.htm"
+    }
+  }
+}
