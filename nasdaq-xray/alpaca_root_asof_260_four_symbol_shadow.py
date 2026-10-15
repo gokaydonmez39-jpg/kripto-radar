@@ -35,8 +35,13 @@ def four_unknown_scope(rows):
                 str(rows[s].get("status","")).startswith("UNKNOWN")
                 for s in SYMBOLS))
 
-def source_scope(*, require_four_unknown=True):
-    state=json.loads((ROOT/"sina_state.json").read_text())
+def source_scope(*, require_four_unknown=True, offline_test_state=None):
+    # Production always reads the actual moving root. Only the OFFLINE
+    # regression may inject a historical synthetic 13-Oct fixture.
+    if offline_test_state is None:
+        state=json.loads((ROOT/"sina_state.json").read_text())
+    else:
+        state=offline_test_state
     demand(state.get("asof_et")==ASOF and state.get("status")=="HISTORY_PARTIAL"
            and state.get("unknown_never_pass") is True
            and state.get("execution")=="NONE" and state.get("real_money")=="NO-GO"
@@ -112,8 +117,34 @@ def report(statuses,state,daily,weeks,source_status):
 def selftest():
     # Offline measurement fixtures may run after these four symbols recover.
     # The live vendor entry point still requires current four-symbol UNKNOWN.
-    daily,weeks,state=source_scope(require_four_unknown=False)
     fixture={s:{"status":"UNKNOWN_TEST_ONLY"} for s in SYMBOLS}
+    frozen_state={
+      "asof_et":ASOF,"status":"HISTORY_PARTIAL",
+      "unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO",
+      "unknown_count":len(SYMBOLS),"results":fixture,
+    }
+    # Unlike real source_scope(), this fixture does not read moving
+    # sina_state.json and cannot authorize any provider/canonical result.
+    daily,weeks,state=source_scope(offline_test_state=frozen_state)
+    import copy
+    broken=[
+      ("FUTURE_OR_STALE_ASOF",lambda d:d.update(asof_et="2026-10-14")),
+      ("INVALID_ROOT_STATUS",lambda d:d.update(status="PASS")),
+      ("ZERO_UNKNOWN",lambda d:d.update(unknown_count=0)),
+      ("EXECUTION_POLICY",lambda d:d.update(execution="LIVE")),
+      ("REAL_MONEY_POLICY",lambda d:d.update(real_money="GO")),
+      ("UNKNOWN_NEVER_PASS",lambda d:d.update(unknown_never_pass=False)),
+      ("SYMBOL_SCOPE_MISSING",lambda d:d["results"].pop("NVDA")),
+      ("SYMBOL_FALSE_PASS",lambda d:d["results"]["AAPL"].update(status="PASS")),
+    ]
+    for label,mutation in broken:
+        candidate=copy.deepcopy(frozen_state)
+        mutation(candidate)
+        try:
+            source_scope(offline_test_state=candidate)
+        except ValueError:
+            continue
+        raise AssertionError("ROOT_260_ARCHIVED_SOURCE_NEGATIVE_BYPASS_"+label)
     demand(four_unknown_scope(fixture),"OFFLINE_UNKNOWN_POSITIVE")
     not_unknown={s:dict(row) for s,row in fixture.items()}
     not_unknown["AAPL"]["status"]="PASS"
@@ -151,7 +182,7 @@ def selftest():
            and out["expected_completed_week_closes"]==52
            and out["primary_history_created"] is False
            and out["r92_created"] is False,"NO_ALPHA")
-    print("XRAY_ROOT_260_ASOF_SELFTEST=PASS_POSITIVE_9_NEGATIVES_NO_PRIMARY")
+    print("XRAY_ROOT_260_ASOF_SELFTEST=PASS_POSITIVE_17_NEGATIVES_ARCHIVED_FIXTURE_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
