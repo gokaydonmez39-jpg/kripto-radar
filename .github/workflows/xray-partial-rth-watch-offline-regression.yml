@@ -1,0 +1,67 @@
+name: XRAY 414 RTH Partial Research-to-WATCH Offline Security Regression
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/personal_six_gate_causal_breaker.py"
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
+      - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
+      - ".github/workflows/xray-partial-rth-watch-offline-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/personal_six_gate_causal_breaker.py"
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-partial-rth-watch-offline-regression.yml"
+permissions:
+  contents: read
+jobs:
+  partial-only-research:
+    name: Validate 30 RTH lower bound, six gates and no fabricated WATCH
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing locked math and exchange calendar
+        run: python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
+      - name: Exact official RTH missing slot / lower bound negative controls
+        run: |
+          python -m py_compile nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py
+          python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py --selftest
+      - name: Same-ASOF SHA-bound graph with unknown strict PRICE and zero AL
+        run: |
+          python -m py_compile nasdaq-xray/personal_six_gate_causal_breaker.py
+          python nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+          python -O nasdaq-xray/personal_six_gate_causal_breaker.py --selftest
+      - name: WATCH partial source labels, no fake verified family, empty-cohort safe
+        run: |
+          python -m py_compile nasdaq-xray/personal_full_cohort_early_technical_watch.py
+          python nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+          python -O nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+      - name: Assert code and workflow maintain release separation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("nasdaq-xray/personal_six_gate_causal_breaker.py").read_text()
+          t=Path("nasdaq-xray/personal_full_cohort_early_technical_watch.py").read_text()
+          c=Path(".github/workflows/xray-personal-full-universe-sip-coverage.yml").read_text()
+          for literal in ('"rth30_partial_research_never_primary": True',
+                          '"rth30_partial_missing_slot_high_research_only_count"',
+                          '"c417_price_dv30_primary_attested": False',
+                          '"registered_r92_count": 0'):
+              assert literal in s,literal
+          for literal in ('"partial_source_is_not_c417_primary":True',
+                          '"registered_r92_count":0',
+                          '"user_notification_sent":False'):
+              assert literal in t,literal
+          assert 'x["partial_missing_slot_research_by_symbol"]' in c
+          assert 'd["rth30_partial_research_never_primary"] is True' in c
+          print("XRAY_PARTIAL_RTH_414_PARALLEL_WATCH=SECURE_RESEARCH_ONLY_NO_AL")
+          PY
