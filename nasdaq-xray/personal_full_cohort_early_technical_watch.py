@@ -94,6 +94,12 @@ def run(doc,now,fetch):
         "technical_status_by_symbol":{},
         "technical_research_watch_symbols":[],
         "technical_setup_family_verified":{},
+        # Even an empty source-qualified cohort has a deterministic membership.
+        # Omission used to make the existing automatic WATCH CI fail every time
+        # RTH bars were missing and no candidate was safely released.
+        "watch_membership_digest_sha256":sha256(json.dumps({
+            "asof_et":asof,"technical_setup_family_verified":{}
+        },sort_keys=True,separators=(",",":")).encode()).hexdigest(),
         "source_rights_not_inferred":True,
         "all_symbols_classified":False,
         "source_independent_primary_history_attested":False,
@@ -260,6 +266,29 @@ def selftest():
         "causal_class":"UNPROVEN_260_SESSIONS"}
     extended["first_unresolved_gate_counts"]={"HISTORY":1,"PRICE_DV30":3}
     partial=run(extended,now,inaccessible)
+    # All 3 symbol records exist, but no RTH-positive evidence is allowed.
+    # A zero research cohort is expected after a source outage, not CI failure.
+    empty=deepcopy(d)
+    empty["next_gate_mc_sec_research_only_symbols"]=[]
+    empty["rth30_lower_bound_observed"]=0
+    empty["rth30_lower_bound_sha256"]=symbols_sha([])
+    for v in empty["per_symbol_causal_routing"].values():
+        v["first_unresolved_gate"]="PRICE_DV30"
+        v["causal_class"]="RTH_30MIN_UNKNOWN_NOT_ATTESTED"
+    empty_result=run(empty,now,inaccessible)
+    expected_digest=sha256(json.dumps({
+        "asof_et":"2026-10-14","technical_setup_family_verified":{}
+    },sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    need(empty_result["scope_count"]==0 and
+         empty_result["source_causal_scope_count"]==3 and
+         empty_result["outside_technical_cohort_count"]==3 and
+         empty_result["status"]=="EMPTY_RESEARCH_COHORT_NOT_A_NO_SETUP_PROOF" and
+         empty_result["technical_research_watch_symbols"]==[] and
+         empty_result["watch_membership_digest_sha256"]==expected_digest and
+         empty_result["registered_r92_count"]==0 and
+         empty_result["all_symbols_classified"] is True and
+         empty_result["full_identity_technical_scan_attested"] is False,
+         "EMPTY_COHORT_MUST_PROVE_DIGEST_NO_FALSE_ZERO_OR_AL")
     need(partial["full_identity_source_partition_checked"] is True
          and partial["source_causal_scope_count"]==4
          and partial["scope_count"]==3
@@ -287,7 +316,7 @@ def selftest():
         try:cohort(broken,now)
         except ValueError:pass
         else:raise AssertionError("XRAY_EARLY_WATCH_FORGED_SOURCE_ACCEPTED_"+name)
-    print("XRAY_EARLY_WATCH_SELFTEST=PASS_7_CAUSAL_NEGATIVES_NO_WATCH_FROM_PROVIDER_OUTAGE")
+    print("XRAY_EARLY_WATCH_SELFTEST=PASS_7_CAUSAL_NEGATIVES_EMPTY_RTH_DIGEST_NO_FORGED_WATCH")
 
 
 def main():
