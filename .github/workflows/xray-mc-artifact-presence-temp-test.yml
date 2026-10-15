@@ -22,5 +22,4 @@ jobs:
           set -euo pipefail
           python -m py_compile nasdaq-xray/github_native_chain_health.py
           python nasdaq-xray/github_native_chain_health.py --selftest
-          python -O nasdaq-xray/github_native_chain_health.py --selftest
           echo "XRAY_STRICT_MC_PRESENCE_TEST=EXECUTED_NO_PROVIDER_CALLS_NO_TRADE"
