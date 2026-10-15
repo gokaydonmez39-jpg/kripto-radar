@@ -38,7 +38,7 @@ jobs:
             --dir "$RUNNER_TEMP/deep"
       - name: Inspect real SEC CIK issuer submissions PIT shares and official Nasdaq halt plus IR
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/candidate_local_frog_oct13_official_pit_audit.py \
             --deep "$RUNNER_TEMP/deep/xray_deep277_real_full.json" \
