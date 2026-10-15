@@ -48,7 +48,7 @@ jobs:
             --dir "$RUNNER_TEMP/cohort"
       - name: Read real SEC company facts and acceptances for 50 candidate-local issuers
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           REQUEST_PAGE: ${{ inputs.page || '0' }}
         run: |
           python nasdaq-xray/candidate_local_sec_pit_50_page.py \
