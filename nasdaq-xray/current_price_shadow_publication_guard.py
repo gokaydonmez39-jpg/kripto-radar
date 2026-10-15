@@ -187,7 +187,7 @@ def selftest() -> None:
         "research_lower_bound_ge_50m_count": 0,
         **SAFE,
     }
-    require(sanitize(j, master, price, mb, pb, "2026-10-14")[
+    demand(sanitize(j, master, price, mb, pb, "2026-10-14")[
         "status"] == "PARTIAL_OR_BLOCKED_SHADOW_NO_PRIMARY",
         "VALID_UNKNOWN_REJECTED")
     live = json.loads(json.dumps(j))
@@ -200,7 +200,7 @@ def selftest() -> None:
     live["all_symbols_classified"] = True
     live["research_lower_bound_ge_50m_count"] = 1
     output = sanitize(live, master, price, mb, pb, "2026-10-14")
-    require(output["complete_research_partition"] is True
+    demand(output["complete_research_partition"] is True
             and output["current_price_dv30_primary_pass_created"] == 0
             and output["published_symbol_classifications"] is False,
             "FALSE_RELEASE")
