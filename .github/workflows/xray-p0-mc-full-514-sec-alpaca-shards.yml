@@ -31,7 +31,7 @@ jobs:
           python -O nasdaq-xray/p0_sec_alpaca_64_spread_shadow.py --selftest
       - name: Measure one exact 514-symbol quarter without vendor persistence
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
         run: |
