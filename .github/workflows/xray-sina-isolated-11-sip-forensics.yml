@@ -4,11 +4,13 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py"
+      - "nasdaq-xray/alpaca_sina_zero_volume_minute_witness.py"
       - ".github/workflows/xray-sina-isolated-11-sip-forensics.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py"
+      - "nasdaq-xray/alpaca_sina_zero_volume_minute_witness.py"
       - ".github/workflows/xray-sina-isolated-11-sip-forensics.yml"
   workflow_dispatch:
 permissions:
@@ -31,7 +33,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          python -m py_compile nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py
+          python -m py_compile nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py nasdaq-xray/alpaca_sina_zero_volume_minute_witness.py
+          python nasdaq-xray/alpaca_sina_zero_volume_minute_witness.py
+          python -O nasdaq-xray/alpaca_sina_zero_volume_minute_witness.py
           python nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py --selftest
           python -O nasdaq-xray/alpaca_exhausted_sina_isolated_forensics.py --selftest
           python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
@@ -61,7 +65,17 @@ jobs:
           assert sum(doc["isolated_recheck_reason_counts"].values())==doc["first_pass_deficient"]
           assert doc["isolated_attempted"]<=16
           assert doc["requests_attempted"]<=((doc["selected_exhausted_count"]+8)//9)+16
-          assert doc["worst_case_page_requests_upper_bound"]<=doc["requests_attempted"]*24
+          assert doc["worst_case_page_requests_upper_bound"]<=doc["requests_attempted"]*24+8
+          minute=doc.get("zero_volume_minute_counts",{})
+          assert isinstance(minute,dict)
+          assert doc.get("zero_volume_minute_checks",0)<=8
+          assert all(k in {
+              "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
+              "MINUTE_NO_RTH_BARS_STILL_UNKNOWN",
+              "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN",
+              "MINUTE_OFFICIAL_ZERO_DAY_UNVERIFIED",
+          } and isinstance(v,int) and v>=0 for k,v in minute.items())
+          assert sum(minute.values())<=doc["isolated_recheck_reason_counts"].get("ZERO_VOLUME_DAILY_BAR",0)
           for field in ("source_rights_independently_verified",
                         "source_independent_primary_history_authority",
                         "r92_registered","provider_raw_ohlcv_persisted",

@@ -75,7 +75,7 @@ def reason(rows, days, asof, original):
     return "UNCLASSIFIED_SOURCE_QUALITY_UNKNOWN"
 
 def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
-        source_fetch, now):
+        source_fetch, now, minute_probe=None):
     need(now.tzinfo is not None and sufficient_delay(asof, now), "OFFICIAL_HOLDBACK")
     need(type(selected) is list and selected == sorted(set(selected))
          and 0 <= len(selected) <= MAX_ELIGIBLE, "EXHAUSTED_COHORT")
@@ -91,6 +91,7 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
         "requests_attempted": 0, "isolated_attempted": 0,
         "isolated_recheck_reason_counts": {},
         "first_pass_counts": {}, "first_pass_deficient": 0,
+        "zero_volume_minute_checks": 0, "zero_volume_minute_counts": {},
         "worst_case_page_requests_upper_bound": 0,
         "source_rights_independently_verified": False,
         "source_independent_primary_history_authority": False,
@@ -131,6 +132,7 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
     failures = [s for s in selected if first[s] != OBSERVED]
     output["first_pass_deficient"] = len(failures)
     categories = collections.Counter()
+    minute_counts = collections.Counter()
     for symbol in failures[:MAX_ISOLATED]:
         output["isolated_attempted"] += 1
         output["requests_attempted"] += 1
@@ -143,7 +145,23 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
             if latest != first[symbol]:
                 categories["ISOLATED_CLASS_CHANGED_NOT_PROVEN"] += 1
             else:
-                categories[reason(rows, days, asof, latest)] += 1
+                category=reason(rows, days, asof, latest)
+                categories[category] += 1
+                if category=="ZERO_VOLUME_DAILY_BAR" and minute_probe is not None:
+                    from alpaca_sina_zero_volume_minute_witness import zero_day,WITNESS_CODES
+                    zero_session=zero_day(rows,days)
+                    if zero_session is None:
+                        minute_counts["MINUTE_OFFICIAL_ZERO_DAY_UNVERIFIED"]+=1
+                    elif output["zero_volume_minute_checks"]>=8:
+                        minute_counts["MINUTE_OFFICIAL_ZERO_DAY_UNVERIFIED"]+=1
+                    else:
+                        output["zero_volume_minute_checks"]+=1
+                        try:
+                            witness=minute_probe(symbol,zero_session,asof,credentials)
+                        except (RuntimeError,ValueError,TypeError,KeyError,OSError):
+                            witness="MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+                        need(witness in WITNESS_CODES,"MINUTE_WITNESS_ENUM")
+                        minute_counts[witness]+=1
         except (RuntimeError, ValueError, TypeError, KeyError, OSError):
             categories["ISOLATED_PROVIDER_TRANSPORT_UNVERIFIED"] += 1
     remaining = len(failures) - output["isolated_attempted"]
@@ -156,8 +174,13 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
          "GLOBAL_REQUEST_BUDGET")
     output["isolated_recheck_reason_counts"] = dict(sorted(
         (k,v) for k,v in categories.items() if v))
+    output["zero_volume_minute_counts"]=dict(sorted(minute_counts.items()))
+    need(output["zero_volume_minute_checks"]<=8
+         and sum(output["zero_volume_minute_counts"].values())<=categories.get(
+             "ZERO_VOLUME_DAILY_BAR",0),"ZERO_MINUTE_COUNTS_BUDGET")
     output["worst_case_page_requests_upper_bound"] = (
-        output["requests_attempted"] * PAGER_MAX_PAGES_PER_BATCH)
+        output["requests_attempted"] * PAGER_MAX_PAGES_PER_BATCH
+        +output["zero_volume_minute_checks"])
     output["status"] = (
         "SHADOW_FORENSICS_MEASURED_NOT_CANONICAL"
         if "TRANSPORT_UNVERIFIED" not in first.values()
@@ -200,6 +223,19 @@ def selftest():
          and calls==[tuple(selected),("BBB",),("CCC",),("DDD",),("EEE",)]
          and result["canonical_history_pass_created"]==0
          and result["r92_registered"] is False, "SYNTHETIC_5_PARTITION")
+    def mock_minute(symbol,day,epoch,keys):
+        need(symbol=="BBB" and day==asof and epoch==asof and keys==("FAKE","FAKE"),
+             "MINUTE_WITNESS_SHADOW_SCOPE")
+        return "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW"
+    observed_minute=run(asof,selected,days,weeks,"a"*40,"b"*40,
+                        ("FAKE","FAKE"),fake,now,minute_probe=mock_minute)
+    need(observed_minute["zero_volume_minute_checks"]==1
+         and observed_minute["zero_volume_minute_counts"]==
+             {"MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW":1}
+         and observed_minute["isolated_recheck_reason_counts"]==want
+         and observed_minute["canonical_history_pass_created"]==0
+         and observed_minute["r92_registered"] is False,
+         "ONE_DAY_MINUTE_DOES_NOT_REPAIR_HISTORY")
     def denied(*_):raise RuntimeError("ALPACA_HTTP_403")
     bad = run(asof,selected,days,weeks,"a"*40,"b"*40,
               ("FAKE","FAKE"),denied,now)
@@ -245,13 +281,16 @@ def main():
     secret=(os.getenv("XRAY_ALPACA_DATA_SECRET_KEY") or "").strip()
     def query(block,start,end,k,s,epoch):
         return request_batch(block,start,end,k,s,adjustment="raw",asof=epoch)
+    from alpaca_sina_zero_volume_minute_witness import observe as witness
     output=run(asof,selected,days,weeks,blob_sha(SINA),blob_sha(MASTER),
-               (key,secret),query,now)
+               (key,secret),query,now,minute_probe=witness)
     args.out.write_text(json.dumps(output,sort_keys=True,indent=2)+"\n")
     print("XRAY_SINA_ISOLATED_STATUS="+output["status"])
     print("XRAY_SINA_ISOLATED_FIRST_COUNTS="+json.dumps(output["first_pass_counts"],sort_keys=True))
     print("XRAY_SINA_ISOLATED_REASON_COUNTS="+json.dumps(
         output["isolated_recheck_reason_counts"],sort_keys=True))
+    print("XRAY_SINA_ZERO_DAILY_MINUTE_COUNTS="+json.dumps(
+        output["zero_volume_minute_counts"],sort_keys=True))
     print("XRAY_SINA_ISOLATED_NO_CANONICAL_NO_R92=PASS")
 
 if __name__=="__main__":
