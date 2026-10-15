@@ -23,7 +23,6 @@ BLOCKS={
     "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
     "PRICE_UNKNOWN_CURRENT",
     "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
-    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
     "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
 }
 BLOBS={
@@ -46,6 +45,15 @@ def clean(symbols):
         and all(type(x) is str and re.fullmatch("[A-Z0-9.\\-]+",x) for x in symbols)
         and symbols==sorted(set(symbols)))
 
+def exact_epoch_mc_names(asof: str, names: list[str]) -> list[str]:
+    """List exact epoch/version MC bridge *filenames*, never grant MC authority."""
+    if type(asof) is not str or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",asof):
+        return []
+    pat=(r"canonical_mc_bridge_"+re.escape(asof.replace("-",""))+
+         r"_c417_dv30_v[1-9][0-9]*\.json")
+    return [n for n in names if type(n) is str and re.fullmatch(pat,n)]
+
+
 def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(e.get("schema")=="XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1","E2E_SCHEMA")
     require(set(e.get("source_blob_shas") or {})>=set(BLOBS),"E2E_BLOB_SCOPE")
@@ -66,11 +74,7 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(m.get("queue_hash")==sha_symbols(ms),"MASTER_QUEUE_HASH")
     require(p.get("source_master_queue_hash")==m.get("queue_hash"),"PRICE_MASTER_BINDING")
     require(isinstance(mc_names,list),"MC_FILES_INPUT")
-    current_name_prefix="canonical_mc_bridge_"+str(p["asof_et"]).replace("-","")+"_c417_dv30_v"
-    current=[n for n in mc_names if n.startswith(current_name_prefix) and re.fullmatch(r"v[1-9][0-9]*\\.json",n[len(current_name_prefix)-1:])]
-    # Explicit simpler full basename regex prevents unrelated policy/epoch matches.
-    current=[n for n in mc_names if re.fullmatch(
-        r"canonical_mc_bridge_"+p["asof_et"].replace("-","")+r"_c417_dv30_v[1-9][0-9]*\\.json",n)]
+    current=exact_epoch_mc_names(p["asof_et"],mc_names)
     require(len(current)==len(set(current)),"DUPLICATE_MC_FILE")
     unknown_in_price=sorted(set(us)&set(ps))
     blocked=set(e.get("blockers") or [])
@@ -85,8 +89,33 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(e.get("current_mc_authority_count")==0 if "CURRENT_MC_AUTHORITY_MISSING" in blocked else True,"MC_AUTHORITY_CLAIM")
     if not current:
         require("CURRENT_MC_AUTHORITY_MISSING" in blocked,"MISSING_MC_NOT_FLAGGED")
-    require(e.get("actual_device_delivery_receipt_attested") is False,"FAKE_DEVICE_RECEIPT")
-    require(e.get("alpha_authority") is False and e.get("ready_for_current_research_signal") is False,"RELEASE_PROMOTION")
+    delivery=e.get("delivery_observability")
+    require(isinstance(delivery,dict)
+            and delivery.get("phase")=="POST_DELIVERY_INDEPENDENT_ACK"
+            and delivery.get("status")=="UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK"
+            and delivery.get("device_receipt_attested") is False
+            and delivery.get("research_release_prerequisite") is False
+            and delivery.get("notification_sent_by_this_audit") is False
+            and e.get("actual_device_delivery_receipt_attested") is False,
+            "POST_DELIVERY_FAKE_ACK_OR_CIRCULAR_RELEASE")
+    require(e.get("alpha_authority") is False,"RELEASE_CANNOT_BE_ALPHA_AUTHORITY")
+    # Future verified research-ready witnesses must prove every local gate.
+    if e.get("ready_for_current_research_signal") is True:
+        require(e.get("candidate_local_source_chain_attested") is True
+                and e.get("current_mc_authority_count")==1
+                and e.get("candidate_preparation_witness_only") is True
+                and e.get("official_nasdaq_session_freshness_attested") is True,
+                "UNPROVEN_RESEARCH_READY_PROMOTION")
+        critical={
+            "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+            "CURRENT_MC_AUTHORITY_MISSING",
+            "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+            "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+            "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+            "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+            "PRICE_UNKNOWN_CURRENT",
+        }
+        require(not (blocked & critical), "READY_WITH_UNRESOLVED_LOCAL_GATE")
     manual_compatible=e.get("historical_manual_non_g9_source_contract_ready")
     manual_prep=e.get("historical_manual_research_candidate_prep_only")
     require(type(manual_compatible) is bool and type(manual_prep) is bool,
@@ -105,7 +134,7 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "P0_SETTLEMENT_SOURCE_BINDING":bool("SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT" in blocked),
         "P0_IDENTITY_GLOBAL_COVERAGE":bool("IDENTITY_PARTITION_INCOMPLETE" in blocked),
         "P0_STRICT_G9_ENTITLEMENT":g9_block,
-        "P0_DEVICE_RECEIPT_EVIDENCE":bool("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in blocked),
+        "P0_DEVICE_RECEIPT_EVIDENCE":not delivery["device_receipt_attested"],
     }
     # Operational dependency order: evidence-only, never a shortcut to AL.
     # A partial global identity set does not contaminate an exact disjoint
@@ -234,6 +263,12 @@ def fixtures():
        "price_pass_count":1,"master_unknown_count":1,"current_mc_authority_count":0,
        "blockers":sorted(BLOCKS-{"PRICE_UNKNOWN_CURRENT","SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT"}),"source_session_lags":{"TERMINAL":2},
        "actual_device_delivery_receipt_attested":False,"ready_for_current_research_signal":False,"alpha_authority":False,
+       "delivery_observability":{
+           "phase":"POST_DELIVERY_INDEPENDENT_ACK",
+           "status":"UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+           "device_receipt_attested":False,
+           "research_release_prerequisite":False,
+           "notification_sent_by_this_audit":False},
        "historical_manual_non_g9_source_contract_ready":True,
        "historical_manual_research_candidate_prep_only":False,
        "historical_manual_research_no_g9_pass_claim":True,
@@ -241,6 +276,25 @@ def fixtures():
     return m,p,t,e,blobs,[],{"status":"BLOCKED_STRICT_PERMANENT_ZERO"}
 
 def selftest():
+    # Previously r"\\.json" accidentally required a literal backslash,
+    # so even a REAL valid bridge name could never match. This positive
+    # test must fail on that prior regex, while 8 lookalikes remain rejected.
+    mcname="canonical_mc_bridge_20261009_c417_dv30_v1.json"
+    accepted=exact_epoch_mc_names("2026-10-09",[mcname])
+    require(accepted==[mcname],"MC_VALID_EPOCH_NAME_FALSE_NEGATIVE")
+    invalid=[
+        "canonical_mc_bridge_20261008_c417_dv30_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv20_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v0.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v1Xjson",
+        "canonical_mc_bridge_20261009_c417_dv30_v1.json.backup",
+        "nasdaq-xray/canonical_mc_bridge_20261009_c417_dv30_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v1\\json",
+        "canonical_mc_bridge_20261009_c417_dv30_v-1.json",
+    ]
+    require(exact_epoch_mc_names("2026-10-09",invalid)==[],
+            "MC_OTHER_EPOCH_OR_MALFORMED_ACCEPTED")
+    print("XRAY_EXACT_MC_FILENAME=PASS_ONE_VALID_EIGHT_NEGATIVES")
     x=fixtures()
     good=evaluate(*x)
     require(good["master_identity_unknown_intersection_price_pass_count"]==0,"BASE_DISJOINT")
@@ -268,6 +322,12 @@ def selftest():
         (2,"unknown_never_pass",False),
         (3,"source_blob_shas",{"master":"x"*40,"price":"b"*40,"terminal":"c"*40}),
         (3,"actual_device_delivery_receipt_attested",True),
+        (3,"delivery_observability",{"device_receipt_attested":True}),
+        (3,"delivery_observability",{"phase":"POST_DELIVERY_INDEPENDENT_ACK",
+            "status":"UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+            "device_receipt_attested":False,
+            "research_release_prerequisite":True,
+            "notification_sent_by_this_audit":False}),
         (3,"ready_for_current_research_signal",True),
         (3,"current_mc_authority_count",1),
         (3,"historical_manual_research_candidate_prep_only",True),
@@ -282,6 +342,36 @@ def selftest():
             n+=1
         else:
             raise RuntimeError("XRAY_NEGATIVE_MUTANT_ACCEPTED:"+str((idx,key)))
+    require(good["root_cause_classes"]["P0_DEVICE_RECEIPT_EVIDENCE"] is True,
+            "INDEPENDENT_DELIVERY_UNKNOWN_NOT_LOST")
+    require("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" not in good["e2e_blockers_exact"],
+            "DEVICE_ACK_NOT_A_SOURCE_BLOCKER")
+    # POSITIVE future-research-only witness: allow a source-ready candidate
+    # without claiming its notification arrived on a real phone. The fixture
+    # is isolated and never grants alpha, G9 or real market source authority.
+    future=list(copy.deepcopy(x))
+    future[2]["asof_et"]="2026-10-09"
+    future[3]["terminal_asof_et"]="2026-10-09"
+    future[3]["current_mc_authority_count"]=1
+    future[3]["candidate_local_source_chain_attested"]=True
+    future[3]["candidate_preparation_witness_only"]=True
+    future[3]["official_nasdaq_session_freshness_attested"]=True
+    future[3]["latest_completed_nasdaq_session"]="2026-10-09"
+    future[3]["ready_for_current_research_signal"]=True
+    future[3]["blockers"]=["IDENTITY_PARTITION_INCOMPLETE"]
+    future[5]=["canonical_mc_bridge_20261009_c417_dv30_v1.json"]
+    positive=evaluate(*future)
+    require(positive["root_cause_classes"]["P0_DEVICE_RECEIPT_EVIDENCE"] is True
+            and positive["manual_candidate_claim_released"] is False
+            and positive["go"] is False,
+            "FUTURE_READY_WITHOUT_FAKE_DEVICE_OR_ALPHA")
+    tamper=copy.deepcopy(future)
+    tamper[3]["blockers"].append("CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE")
+    try:
+        evaluate(*tamper)
+    except ValueError: pass
+    else: raise RuntimeError("FUTURE_READY_WITH_STALE_TERMINAL_ACCEPTED")
+    print("XRAY_FUTURE_RESEARCH_READY=PASS_POSITIVE_AND_STALE_SOURCE_NEGATIVE_NO_DEVICE_ACK")
     # A 12th unknown SPAC in the master outside PRICE must not alter PRICE scope.
     xx=copy.deepcopy(x)
     xx[0]["unknown_symbols"]=["S1","S2"]

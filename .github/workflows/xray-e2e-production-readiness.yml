@@ -111,8 +111,15 @@ jobs:
               assert o["candidate_local_source_chain_attested"] is True
               assert o["candidate_preparation_witness_only"] is True
           assert o["actual_device_delivery_receipt_attested"] is False
-          assert "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in o["blockers"]
+          delivery=o["delivery_observability"]
+          assert delivery["phase"]=="POST_DELIVERY_INDEPENDENT_ACK"
+          assert delivery["status"]=="UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK"
+          assert delivery["device_receipt_attested"] is False
+          assert delivery["research_release_prerequisite"] is False
+          assert delivery["notification_sent_by_this_audit"] is False
+          assert "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" not in o["blockers"]
           assert o["no_trading_or_device_receipt_claim"] is True
+          print("XRAY_DEVICE_RECEIPT=UNVERIFIED_POST_DELIVERY_NOT_SOURCE_RELEASE_GATE")
           print("XRAY_READINESS_REPORT_CHECK=PASS_FAIL_CLOSED")
           print("XRAY_READINESS_REPORT_RELEASE=NOT_GRANTED")
           PY
