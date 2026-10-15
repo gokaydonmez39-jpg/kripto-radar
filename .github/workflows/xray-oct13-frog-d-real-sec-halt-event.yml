@@ -28,7 +28,7 @@ jobs:
           gh run download 38535687938 --repo "${{ github.repository }}" --name xray-oct13-deep-277-page-3 --dir "$RUNNER_TEMP/frog"
       - name: Inspect real official SEC historical filings and NasdaqTrader halt records
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/candidate_local_oct13_frog_official_event_halt_sec.py --deep "$RUNNER_TEMP/frog/xray_deep_page.json" --out "$RUNNER_TEMP/xray_frog_official.json"
       - name: Preserve adverse unknowns and no fabricated R92
