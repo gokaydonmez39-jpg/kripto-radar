@@ -45,6 +45,15 @@ def clean(symbols):
         and all(type(x) is str and re.fullmatch("[A-Z0-9.\\-]+",x) for x in symbols)
         and symbols==sorted(set(symbols)))
 
+def exact_epoch_mc_names(asof: str, names: list[str]) -> list[str]:
+    """List exact epoch/version MC bridge *filenames*, never grant MC authority."""
+    if type(asof) is not str or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",asof):
+        return []
+    pat=(r"canonical_mc_bridge_"+re.escape(asof.replace("-",""))+
+         r"_c417_dv30_v[1-9][0-9]*\.json")
+    return [n for n in names if type(n) is str and re.fullmatch(pat,n)]
+
+
 def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(e.get("schema")=="XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1","E2E_SCHEMA")
     require(set(e.get("source_blob_shas") or {})>=set(BLOBS),"E2E_BLOB_SCOPE")
@@ -65,11 +74,7 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(m.get("queue_hash")==sha_symbols(ms),"MASTER_QUEUE_HASH")
     require(p.get("source_master_queue_hash")==m.get("queue_hash"),"PRICE_MASTER_BINDING")
     require(isinstance(mc_names,list),"MC_FILES_INPUT")
-    current_name_prefix="canonical_mc_bridge_"+str(p["asof_et"]).replace("-","")+"_c417_dv30_v"
-    current=[n for n in mc_names if n.startswith(current_name_prefix) and re.fullmatch(r"v[1-9][0-9]*\\.json",n[len(current_name_prefix)-1:])]
-    # Explicit simpler full basename regex prevents unrelated policy/epoch matches.
-    current=[n for n in mc_names if re.fullmatch(
-        r"canonical_mc_bridge_"+p["asof_et"].replace("-","")+r"_c417_dv30_v[1-9][0-9]*\\.json",n)]
+    current=exact_epoch_mc_names(p["asof_et"],mc_names)
     require(len(current)==len(set(current)),"DUPLICATE_MC_FILE")
     unknown_in_price=sorted(set(us)&set(ps))
     blocked=set(e.get("blockers") or [])
@@ -271,6 +276,25 @@ def fixtures():
     return m,p,t,e,blobs,[],{"status":"BLOCKED_STRICT_PERMANENT_ZERO"}
 
 def selftest():
+    # Previously r"\\.json" accidentally required a literal backslash,
+    # so even a REAL valid bridge name could never match. This positive
+    # test must fail on that prior regex, while 8 lookalikes remain rejected.
+    mcname="canonical_mc_bridge_20261009_c417_dv30_v1.json"
+    accepted=exact_epoch_mc_names("2026-10-09",[mcname])
+    require(accepted==[mcname],"MC_VALID_EPOCH_NAME_FALSE_NEGATIVE")
+    invalid=[
+        "canonical_mc_bridge_20261008_c417_dv30_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv20_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v0.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v1Xjson",
+        "canonical_mc_bridge_20261009_c417_dv30_v1.json.backup",
+        "nasdaq-xray/canonical_mc_bridge_20261009_c417_dv30_v1.json",
+        "canonical_mc_bridge_20261009_c417_dv30_v1\\json",
+        "canonical_mc_bridge_20261009_c417_dv30_v-1.json",
+    ]
+    require(exact_epoch_mc_names("2026-10-09",invalid)==[],
+            "MC_OTHER_EPOCH_OR_MALFORMED_ACCEPTED")
+    print("XRAY_EXACT_MC_FILENAME=PASS_ONE_VALID_EIGHT_NEGATIVES")
     x=fixtures()
     good=evaluate(*x)
     require(good["master_identity_unknown_intersection_price_pass_count"]==0,"BASE_DISJOINT")
