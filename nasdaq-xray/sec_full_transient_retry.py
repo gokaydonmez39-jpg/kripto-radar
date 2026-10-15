@@ -24,6 +24,10 @@ SCHEMA="XRAY_SEC_TRANSIENT_RECOVERY_SHADOW_V1"
 ORIGIN_SCHEMA="XRAY_SEC_MULTISYMBOL_PIT_SHADOW_V1"
 
 def validate_origin(origin:dict,master_sha:str,price_sha:str,scope:list[str],expected_asof:str):
+    # Empty PRICE scope is not a recoverable SEC census; never discover
+    # an old zero-row witness and mistake artifact exactness for readiness.
+    if not isinstance(scope,list) or not scope:
+        raise ValueError("ORIGIN_NO_CANONICAL_PRICE_PASS_SCOPE")
     if origin.get("schema")!=ORIGIN_SCHEMA:
         raise ValueError("BAD_ORIGIN_SCHEMA")
     if origin.get("asof_et")!=expected_asof:
@@ -171,7 +175,12 @@ def selftest():
     z["reason_codes"]={"A":"SHARE_CLASS_CORP_ACTION_AND_PIT_PRICE_STILL_REQUIRED",
                        "B":"SEC_HTTP_404","C":"SEC_SHARES_STALE_OR_FUTURE_OBSERVATION"}
     assert validate_origin(z,"m"*40,"p"*40,scope,"2026-10-09")==[]
-    print("XRAY_SEC_TRANSIENT_RETRY_SELFTEST=PASS_LATEST_ASOF_ORIGIN_SHA_404_NO_RETRY_NEGATIVES")
+    try:validate_origin(z,"m"*40,"p"*40,[],"2026-10-09")
+    except ValueError as exc:
+        if str(exc)!="ORIGIN_NO_CANONICAL_PRICE_PASS_SCOPE":
+            raise AssertionError("EMPTY_SOURCE_WRONG_VETO") from exc
+    else:raise AssertionError("EMPTY_SOURCE_ACCEPTED")
+    print("XRAY_SEC_TRANSIENT_RETRY_SELFTEST=PASS_LATEST_ASOF_ORIGIN_SHA_404_EMPTY_SCOPE_NEGATIVES")
 
 if __name__=="__main__":
     p=argparse.ArgumentParser()
