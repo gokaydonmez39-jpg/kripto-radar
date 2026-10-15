@@ -301,7 +301,8 @@ def test():
         source_master_count=10, pass_count=0, pass_symbols=[],
         unknown_count=1,unknown_symbols=["AAPL"],
         blocked_count=0,blocked_symbols=[])
-    paths["canonical_current_master_manifest.json"]["pass_count"]=10
+    paths["canonical_current_master_manifest.json"].update(
+        asof_et=d,pass_count=10)
     repaired_price=emit(paths,shas,d)
     price_codes={i["code"] for i in repaired_price["repair_order"]}
     prove(repaired_price["canonical_price_source_partition_verified"] and
