@@ -14,6 +14,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
+from alpaca_minute_source_response_diagnostics import SCHEMA_CODES
 
 ROOT = Path(__file__).resolve().parent
 MASTER = ROOT / "canonical_current_master_manifest.json"
@@ -37,7 +38,7 @@ SAFE = {"execution": "NONE", "real_money": "NO-GO",
 MINUTE_WITNESS_CODES = {
     "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
     "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-    "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+    *SCHEMA_CODES,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
@@ -341,6 +342,7 @@ def selftest() -> None:
         dict(diagnostic,integrity_recheck_detail_counts={"UNSAFE_SYMBOL_AAPL":1}),
         dict(diagnostic,integrity_recheck_detail_counts={}),
         dict(diagnostic,minute_witness_counts={"SYNTHETIC_PASS":1}),
+        dict(diagnostic,minute_witness_counts={"MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN":1}),
         dict(diagnostic,minute_witness_counts={
             "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":2}),
         dict(diagnostic,minute_witness_inspected=9),

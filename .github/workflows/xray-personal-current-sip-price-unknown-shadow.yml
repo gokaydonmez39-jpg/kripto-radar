@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
+      - "nasdaq-xray/alpaca_minute_source_response_diagnostics.py"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
   push:
     branches: [main]
@@ -13,6 +14,7 @@ on:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
       - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
+      - "nasdaq-xray/alpaca_minute_source_response_diagnostics.py"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
@@ -45,6 +47,8 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check 'pandas_market_calendars==5.4.0'
           python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py nasdaq-xray/alpaca_price_gap_minute_witness.py
+          python nasdaq-xray/alpaca_minute_source_response_diagnostics.py
+          python -O nasdaq-xray/alpaca_minute_source_response_diagnostics.py
           python nasdaq-xray/alpaca_price_gap_minute_witness.py
           python -O nasdaq-xray/alpaca_price_gap_minute_witness.py
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
@@ -109,19 +113,12 @@ jobs:
           } and isinstance(v,int) and v>=0 for k,v in details.items())
           assert sum(details.values()) == (reasons.get("RTH_30MIN_SESSION_GAP",0)
                  + reasons.get("OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",0))
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          from alpaca_price_gap_minute_witness import WITNESS_CODES
           minute=j.get("minute_witness_counts",{})
           assert isinstance(minute,dict)
-          assert all(k in {
-              "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
-              "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-              "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
-              "MINUTE_HTTP_400_INVALID_REQUEST",
-              "MINUTE_HTTP_401_403_DENIED",
-              "MINUTE_HTTP_429_THROTTLED",
-              "MINUTE_HTTP_OTHER_ERROR",
-              "MINUTE_NETWORK_OR_TIMEOUT",
-              "MINUTE_GLOBAL_BUDGET_BLOCKED",
-          } and isinstance(v,int) and v>=0 for k,v in minute.items())
+          assert all(k in WITNESS_CODES and isinstance(v,int) and v>=0 for k,v in minute.items())
           assert sum(minute.values())<=reasons.get("RTH_30MIN_SESSION_GAP",0)
           print("XRAY_CURRENT_SIP_COUNTS_ONLY="+json.dumps({
               "asof_et":j["asof_et"],"status":j["status"],

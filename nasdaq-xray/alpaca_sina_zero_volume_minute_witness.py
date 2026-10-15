@@ -18,13 +18,14 @@ import urllib.request
 from alpaca_rth_minute_integrity_shadow import official_window
 from alpaca_free_sip_shadow_guard import timestamp_date
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp
+from alpaca_minute_source_response_diagnostics import classify_minute_document, SCHEMA_CODES
 
 MAX_BYTES=280000
 SRE=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 WITNESS_CODES={
     "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
     "MINUTE_NO_RTH_BARS_STILL_UNKNOWN",
-    "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+    *SCHEMA_CODES,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
@@ -58,13 +59,13 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
         or type(creds) is not tuple or len(creds)!=2
         or not all(type(x) is str and x for x in creds)
         or day>asof):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
     try:
         start,close,minutes=official_window(day)
         if minutes not in (210,390) or not start<close:
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+            return "MINUTE_SCHEMA_PRECHECK_INVALID"
     except (ValueError,TypeError,OverflowError):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
     params={
         "timeframe":"1Min","feed":"sip","adjustment":"raw",
         "limit":"500","sort":"asc","asof":asof,
@@ -80,28 +81,18 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
             "User-Agent":"NASDAQ-XRAY-ReadOnly-Sina-Exception-Witness/1.0"})
         with urlopen(req,timeout=22) as reply:
             if reply.status!=200:
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+                return "MINUTE_HTTP_OTHER_ERROR"
             raw=reply.read(MAX_BYTES+1)
         if len(raw)>MAX_BYTES:
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-        doc=json.loads(raw)
-        if (type(doc) is not dict or type(doc.get("bars")) is not list
-            or (doc.get("symbol") is not None and doc["symbol"]!=symbol)
-            or doc.get("next_page_token") is not None
-            or len(doc["bars"])>minutes):
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-        seen=set()
-        for bar in doc["bars"]:
-            if type(bar) is not dict:
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-            at=stamp(bar)
-            if (not(start<=at<close) or at.second!=0
-                or at.microsecond!=0 or at in seen
-                or type(bar.get("v")) is not int or bar["v"]<=0):
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-            seen.add(at)
-        return ("MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW" if seen
-                else "MINUTE_NO_RTH_BARS_STILL_UNKNOWN")
+            return "MINUTE_SCHEMA_BODY_OVERSIZE"
+        try:
+            doc=json.loads(raw)
+        except (ValueError,TypeError):
+            return "MINUTE_SCHEMA_JSON_INVALID"
+        return classify_minute_document(
+            doc,symbol=symbol,start=start,end_exclusive=close,max_bars=minutes,
+            present_code="MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
+            empty_code="MINUTE_NO_RTH_BARS_STILL_UNKNOWN")
     except urllib.error.HTTPError as error:
         # No response text, URL, provider timestamp or credentials are logged.
         if error.code==400:
@@ -114,7 +105,7 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
     except (urllib.error.URLError,TimeoutError,OSError):
         return "MINUTE_NETWORK_OR_TIMEOUT"
     except (ValueError,TypeError,KeyError,OverflowError):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
 
 def selftest():
     from alpaca_free_sip_shadow_guard import EST
@@ -147,14 +138,14 @@ def selftest():
         "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW")
     assert len(seen)==1
     assert observe("../SECRET",day,day,("KEY","SECRET"),fake)==(
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+        "MINUTE_SCHEMA_PRECHECK_INVALID")
     assert len(seen)==1
     for rows,expected in [
         ([],"MINUTE_NO_RTH_BARS_STILL_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":0}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":1}]*2,"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
-        ([{"t":close.isoformat(),"v":1}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
-        ([{"t":start.isoformat(),"v":True}],"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+        ([{"t":start.isoformat(),"v":0}],"MINUTE_SCHEMA_VOLUME_NOT_POSITIVE_INT"),
+        ([{"t":start.isoformat(),"v":1}]*2,"MINUTE_SCHEMA_DUPLICATE_TIMESTAMP"),
+        ([{"t":close.isoformat(),"v":1}],"MINUTE_SCHEMA_TIMESTAMP_OUT_OF_WINDOW"),
+        ([{"t":start.isoformat(),"v":True}],"MINUTE_SCHEMA_VOLUME_NOT_POSITIVE_INT"),
     ]:
         def getter(req,timeout):
             return Reply({"symbol":"AAA","bars":rows,"next_page_token":None})
@@ -162,7 +153,7 @@ def selftest():
     def paged(req,timeout):
         return Reply({"symbol":"AAA","bars":[],"next_page_token":"other"})
     assert observe("AAA",day,day,("KEY","SECRET"),paged)==(
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+        "MINUTE_SCHEMA_UNEXPECTED_PAGE_CURSOR")
     for code,expected in [
         (400,"MINUTE_HTTP_400_INVALID_REQUEST"),
         (403,"MINUTE_HTTP_401_403_DENIED"),

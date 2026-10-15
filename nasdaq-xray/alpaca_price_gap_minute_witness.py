@@ -18,6 +18,7 @@ import urllib.request
 
 from alpaca_rth_minute_integrity_shadow import official_window
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp
+from alpaca_minute_source_response_diagnostics import classify_minute_document, SCHEMA_CODES
 
 SLOT=dt.timedelta(minutes=30)
 MAX_BODY_BYTES=150000
@@ -25,7 +26,7 @@ SYMBOL_RE=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 WITNESS_CODES={
     "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
     "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-    "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+    *SCHEMA_CODES,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
@@ -55,7 +56,7 @@ def missing_first_slot(half,days):
 
 def observe(symbol,slot,asof,credentials,counter,limit,
             urlopen=urllib.request.urlopen):
-    """One request maximum; private result is enum only. Never turns UNKNOWN PASS."""
+    """Exactly one read-only GET; only an enumerated cause is returned."""
     if (not isinstance(symbol,str) or not SYMBOL_RE.fullmatch(symbol)
         or not isinstance(slot,dt.datetime) or slot.tzinfo is None
         or slot.utcoffset() is None
@@ -64,25 +65,22 @@ def observe(symbol,slot,asof,credentials,counter,limit,
         or not isinstance(counter,list) or len(counter)!=1
         or type(counter[0]) is not int or type(limit) is not int
         or not 0<=counter[0]<=limit):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
     try:
-        official_day=slot.astimezone(dt.timezone.utc)
-        # Requested window is exactly one RTH 30Min interval. Return nothing
-        # for any off-exchange timestamps or mismatched completed session.
         from zoneinfo import ZoneInfo
-        day=official_day.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+        day=slot.astimezone(ZoneInfo("America/New_York")).date().isoformat()
         start,close,n=official_window(day)
         if day>asof or not (start<=slot<close and
                            (slot-start)%SLOT==dt.timedelta(0) and slot+SLOT<=close):
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+            return "MINUTE_SCHEMA_PRECHECK_INVALID"
     except (ValueError,TypeError,OverflowError):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
     if counter[0]>=limit:
         return "MINUTE_GLOBAL_BUDGET_BLOCKED"
-    end=slot+SLOT-dt.timedelta(minutes=1)
+    end=slot+SLOT
     params={
         "start":slot.astimezone(dt.timezone.utc).isoformat().replace("+00:00","Z"),
-        "end":end.astimezone(dt.timezone.utc).isoformat().replace("+00:00","Z"),
+        "end":(end-dt.timedelta(minutes=1)).astimezone(dt.timezone.utc).isoformat().replace("+00:00","Z"),
         "timeframe":"1Min","feed":"sip","adjustment":"raw",
         "sort":"asc","limit":"1000","asof":asof,
     }
@@ -96,30 +94,18 @@ def observe(symbol,slot,asof,credentials,counter,limit,
         req=urllib.request.Request(url,headers=headers)
         with urlopen(req,timeout=22) as response:
             if response.status!=200:
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+                return "MINUTE_HTTP_OTHER_ERROR"
             raw=response.read(MAX_BODY_BYTES+1)
         if len(raw)>MAX_BODY_BYTES:
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-        doc=json.loads(raw)
-        if (type(doc) is not dict or not isinstance(doc.get("bars"),list)
-                or doc.get("next_page_token") is not None
-                or (doc.get("symbol") is not None and doc["symbol"]!=symbol)):
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-        bars=doc["bars"]
-        if len(bars)>30:
-            return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-        seen=set()
-        for bar in bars:
-            if type(bar) is not dict:
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-            t=stamp(bar)
-            if (t<slot or t>slot+SLOT-dt.timedelta(minutes=1)
-                or t.second!=0 or t.microsecond!=0 or t in seen
-                or type(bar.get("v")) is not int or bar["v"]<=0):
-                return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
-            seen.add(t)
-        return ("MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW" if bars else
-                "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN")
+            return "MINUTE_SCHEMA_BODY_OVERSIZE"
+        try:
+            doc=json.loads(raw)
+        except (ValueError,TypeError):
+            return "MINUTE_SCHEMA_JSON_INVALID"
+        return classify_minute_document(
+            doc,symbol=symbol,start=slot,end_exclusive=end,max_bars=30,
+            present_code="MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
+            empty_code="MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN")
     except urllib.error.HTTPError as error:
         if error.code==400:
             return "MINUTE_HTTP_400_INVALID_REQUEST"
@@ -131,7 +117,7 @@ def observe(symbol,slot,asof,credentials,counter,limit,
     except (urllib.error.URLError,TimeoutError,OSError):
         return "MINUTE_NETWORK_OR_TIMEOUT"
     except (ValueError,KeyError,TypeError,OverflowError):
-        return "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"
+        return "MINUTE_SCHEMA_PRECHECK_INVALID"
 
 def selftest():
     from unittest.mock import patch
@@ -169,26 +155,26 @@ def selftest():
                    count,1,fake)=="MINUTE_GLOBAL_BUDGET_BLOCKED"
     assert count==[1] and len(calls)==1
     assert observe("AAA",slot,"2026-10-14",("",""),[0],1,fake)==(
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+        "MINUTE_SCHEMA_PRECHECK_INVALID")
     assert observe("../SECRET",slot,"2026-10-14",("a","b"),[0],1,fake)==(
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+        "MINUTE_SCHEMA_PRECHECK_INVALID")
     assert observe("AAA",close,"2026-10-14",("a","b"),[0],1,fake)==(
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN")
+        "MINUTE_SCHEMA_PRECHECK_INVALID")
     def reply(data):
         return lambda *_a,**_kw:Response(data)
     for doc,category in [
         ({"symbol":"AAA","bars":[],"next_page_token":None},
          "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":3}],
-          "next_page_token":"MORE"},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+          "next_page_token":"MORE"},"MINUTE_SCHEMA_UNEXPECTED_PAGE_CURSOR"),
         ({"symbol":"ZZZ","bars":[],"next_page_token":None},
-         "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+         "MINUTE_SCHEMA_SYMBOL_MISMATCH"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":0}],
-          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_VOLUME_NOT_POSITIVE_INT"),
         ({"symbol":"AAA","bars":[{"t":slot.isoformat(),"v":3}]*2,
-          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_DUPLICATE_TIMESTAMP"),
         ({"symbol":"AAA","bars":[{"t":(slot+SLOT).isoformat(),"v":3}],
-          "next_page_token":None},"MINUTE_SCHEMA_OR_SCOPE_UNKNOWN"),
+          "next_page_token":None},"MINUTE_SCHEMA_TIMESTAMP_OUT_OF_WINDOW"),
     ]:
         assert observe("AAA",slot,"2026-10-14",("a","b"),[0],1,reply(doc))==category
     for code,label in [
@@ -207,7 +193,7 @@ def selftest():
     assert WITNESS_CODES=={
         "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
         "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
-        "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+        *SCHEMA_CODES,
         "MINUTE_HTTP_400_INVALID_REQUEST",
         "MINUTE_HTTP_401_403_DENIED",
         "MINUTE_HTTP_429_THROTTLED",
