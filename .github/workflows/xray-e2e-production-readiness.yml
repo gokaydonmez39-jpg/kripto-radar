@@ -2,7 +2,7 @@ name: XRAY E2E Production Readiness (Fail-Closed)
 on:
   workflow_dispatch:
   push:
-    branches: [main, xray/e2e-stale-safe-noop-20261015] # TEMPORARY BRANCH STALE-INVOCATION TEST; remove after receipt
+    branches: [main]
     paths:
       - "nasdaq-xray/e2e_production_readiness.py"
       - "nasdaq-xray/blocker_root_dependency_audit.py"
