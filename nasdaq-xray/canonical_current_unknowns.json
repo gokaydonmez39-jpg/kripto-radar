@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-14",
+  "asof_et": "2026-10-15",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3185
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3185
+    "UNKNOWN_STATIC": 3189
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1014202621:31|||||||",
+  "official_footer": "File Creation Time: 1015202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3185
+    "UNKNOWN_STATIC": 3189
   },
-  "source_queue_hash": "efcbb7f9b8ee0d417d601ca3df6938e899ace0fbc9e5ae4fad2d1c4b1ca5d747",
-  "source_state_hash": "3e1ed66fbeb0fe50b5faa353f39637554c2015911a75bf4e28adcb13b868c81f",
-  "source_unknown_count": 3185,
+  "source_queue_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
+  "source_state_hash": "f5914b2b7ca205baf00a5255a933f778cca6b1e9452e62debd74bb41e2ef3e04",
+  "source_unknown_count": 3189,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3185,
+  "unknown_count": 3189,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -3113,6 +3113,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Amarin Corporation plc - American Depositary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "AMRO": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Amaero Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "AMRX": {
@@ -7415,6 +7433,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Blue Moon Metals Inc. - Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "BMMX": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Black Mammoth Metals Corporation - Common Shares",
       "status": "UNKNOWN_STATIC"
     },
     "BMR": {
@@ -24731,6 +24767,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Innovative Solutions and Support, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "IAM": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Iambic Therapeutics, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "IART": {
@@ -56321,6 +56375,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "DENTSPLY SIRONA Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "XRPN": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Evernorth Holdings Inc. - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "XRTX": {

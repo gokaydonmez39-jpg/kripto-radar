@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-10-14",
+  "asof_et": "2026-10-15",
   "asof_identity_proof": {
-    "blob_sha": "8a17a1f7c778e0349f650ac414b33d6b6336784e",
+    "blob_sha": "9259628d09e3e5559f397c897f5d032ad446f043",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261014.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261015.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,19 +28,19 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3185,
+    "PASS_IDENTITY": 3189,
     "UNKNOWN_IDENTITY": 9
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2435,
-  "explicit_excluded_hash": "c50995de982d11bbdebb6f5f61e17de77e850a61388f1a9db8d9ce88f11560df",
+  "explicit_excluded_count": 2434,
+  "explicit_excluded_hash": "9ebfae0e3a6b8a62e933703728c4cbd8c9f3caaa631036de5c8e14e892c25e95",
   "explicit_excluded_reason_counts": {
     "DEBT": 58,
     "ETF": 1296,
     "FUND": 32,
     "PREFERRED": 101,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 204,
+    "SPAC_BLANK_CHECK": 203,
     "TEST_ISSUE": 8,
     "UNIT": 258,
     "WARRANT": 371,
@@ -48,18 +48,18 @@
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3185
+      "UNKNOWN_STATIC": 3189
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3185
+    "source_unknown_count": 3189
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1014202621:31|||||||",
-  "pass_count": 3185,
-  "pass_hash": "efcbb7f9b8ee0d417d601ca3df6938e899ace0fbc9e5ae4fad2d1c4b1ca5d747",
+  "official_footer": "File Creation Time: 1015202617:01|||||||",
+  "pass_count": 3189,
+  "pass_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -233,6 +233,7 @@
     "AMPH",
     "AMPL",
     "AMRN",
+    "AMRO",
     "AMRX",
     "AMSC",
     "AMSF",
@@ -472,6 +473,7 @@
     "BMGL",
     "BMHL",
     "BMM",
+    "BMMX",
     "BMR",
     "BMRA",
     "BMRC",
@@ -1434,6 +1436,7 @@
     "HYPD",
     "HYPR",
     "IA",
+    "IAM",
     "IART",
     "IBCP",
     "IBEX",
@@ -3189,6 +3192,7 @@
     "XPEL",
     "XPON",
     "XRAY",
+    "XRPN",
     "XRTX",
     "XRX",
     "XTIA",
@@ -3249,20 +3253,20 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "efcbb7f9b8ee0d417d601ca3df6938e899ace0fbc9e5ae4fad2d1c4b1ca5d747",
-  "queue_total": 3185,
-  "queue_unique": 3185,
-  "raw_identity_total": 3194,
+  "queue_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
+  "queue_total": 3189,
+  "queue_unique": 3189,
+  "raw_identity_total": 3198,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "e285a692470ede462505a33cc207c94adfba394c",
-    "count": 577,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261014.json",
-    "symbol_hash": "628c1565b326aecf4b651ac6e263c506d1683d79bc84293bca390e95fc25cafe"
+    "blob_sha": "53569a33df863b1ae9080ae5746c28ecb4f3ef4c",
+    "count": 575,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261015.json",
+    "symbol_hash": "564dde228bed2cc5ca22f2497d4d832f6ef5d43cec04c7cf4544be513ea9fa01"
   },
-  "source_state_blob_sha": "9a4ad1e9f46285f4a021ac71554d4f3a9cf9ed27",
-  "source_state_hash": "3e1ed66fbeb0fe50b5faa353f39637554c2015911a75bf4e28adcb13b868c81f",
+  "source_state_blob_sha": "f06b0b837e02856b8f7e079067bbabbbfe586026",
+  "source_state_hash": "f5914b2b7ca205baf00a5255a933f778cca6b1e9452e62debd74bb41e2ef3e04",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
