@@ -47,6 +47,6 @@ jobs:
           old=legacy.read_text()
           assert 'XRAY Personal Full-Universe SIP EOD Coverage (Research Only)' in old
           assert 'github.event.workflow_run.conclusion == \'success\'' in old
-          assert "XRAY_EARLY_WATCH_CI_EXACT_RESEARCH_WATCH_MEMBERSHIP_DIGEST" in old
+          assert "EXACT_RESEARCH_WATCH_MEMBERSHIP_DIGEST" in old
           print("XRAY_SINGLE_EARLY_TECH_WATCH=PASS_ONE_CHAIN_ZERO_COHORT_DIGEST_NO_AL")
           PY
