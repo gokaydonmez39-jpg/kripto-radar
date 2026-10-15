@@ -83,6 +83,9 @@ def baseline(asof: str, symbols: list[str],
         "classified_count": 0, "attempted_count": 0, "api_calls": 0,
         "counts": {"UNKNOWN_NOT_ATTEMPTED": len(symbols)},
         "complete_research_partition": False,
+        "all_symbol_dispositions_recorded": False,
+        "measured_research_bound_count": 0,
+        "unresolved_shadow_source_count": len(symbols),
         "source_authority": "SHADOW_RTH_30MIN_LOWER_BOUND_NOT_CANONICAL",
         "data_rights_independently_attested": False,
         "closing_auction_and_corrections_attested": False,
@@ -142,16 +145,28 @@ def sanitize(j: dict, master: dict, price: dict, mb: bytes, pb: bytes,
             == counts["LOWER_BOUND_GE_50M_SHADOW"]
         and all(j.get(k) == v for k, v in SAFE.items()),
         "PRIMARY_AUTHORITY_FALSE_ASSERTION")
-    status = ("SHADOW_LOWER_BOUND_SCOPE_CLASSIFIED_NOT_PRIMARY"
-              if j["all_symbols_classified"]
-              else "PARTIAL_OR_BLOCKED_SHADOW_NO_PRIMARY")
+    # "Every ticker received a classification label" is NOT synonymous with
+    # intact thirty-session source evidence. On real 14-Oct input, 5/513
+    # had an integrity gap; the old code falsely marked the whole research
+    # partition complete. Preserve exact counts without promoting any alpha.
+    measured=sum(counts[k] for k in MEASURED)
+    unresolved=len(symbols)-measured
+    demand(measured>=0 and unresolved>=0, "MEASURED_SCOPE_ACCOUNTING")
+    status = ("PARTIAL_OR_BLOCKED_SHADOW_NO_PRIMARY"
+              if counts["UNKNOWN_NOT_ATTEMPTED"]>0 else
+              "SHADOW_CENSUSED_WITH_SOURCE_GAPS_NO_PRIMARY"
+              if unresolved>0 else
+              "SHADOW_BOUNDS_ALL_MEASURED_NOT_PRIMARY")
     result = baseline(asof, symbols, gitsha(mb), gitsha(pb), status)
     result.update({
         "counts": dict(sorted(counts.items())),
         "classified_count": j["classified_count"],
         "attempted_count": j["attempted_count"],
         "api_calls": j["api_calls"],
-        "complete_research_partition": bool(j["all_symbols_classified"]),
+        "complete_research_partition": measured==len(symbols),
+        "all_symbol_dispositions_recorded": bool(j["all_symbols_classified"]),
+        "measured_research_bound_count": measured,
+        "unresolved_shadow_source_count": unresolved,
     })
     return result
 
@@ -201,9 +216,26 @@ def selftest() -> None:
     live["research_lower_bound_ge_50m_count"] = 1
     output = sanitize(live, master, price, mb, pb, "2026-10-14")
     demand(output["complete_research_partition"] is True
+            and output["unresolved_shadow_source_count"] == 0
+            and output["measured_research_bound_count"] == 2
+            and output["status"] == "SHADOW_BOUNDS_ALL_MEASURED_NOT_PRIMARY"
             and output["current_price_dv30_primary_pass_created"] == 0
             and output["published_symbol_classifications"] is False,
             "FALSE_RELEASE")
+    # Real 14-Oct shape: all 513 symbols assigned a status, but five
+    # underlying source datasets are incomplete. Never call that COMPLETE.
+    mixed=json.loads(json.dumps(live))
+    mixed["classifications"]["MSFT"]="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"
+    mixed["counts"]={"LOWER_BOUND_GE_50M_SHADOW":1,
+                     "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW":1}
+    partial=sanitize(mixed,master,price,mb,pb,"2026-10-14")
+    demand(partial["status"]=="SHADOW_CENSUSED_WITH_SOURCE_GAPS_NO_PRIMARY"
+           and partial["all_symbol_dispositions_recorded"] is True
+           and partial["complete_research_partition"] is False
+           and partial["unresolved_shadow_source_count"]==1
+           and partial["measured_research_bound_count"]==1
+           and partial["r92_registered"] is False,
+           "FALSE_COMPLETION_ON_SOURCE_INTEGRITY_GAP")
     bad = [
         (dict(j, asof_et="2026-10-13"), price, mb, pb, "2026-10-14"),
         (dict(j, source_price_git_blob_sha="0"*40), price, mb, pb, "2026-10-14"),
@@ -224,7 +256,7 @@ def selftest() -> None:
         except (ValueError, TypeError):
             continue
         raise AssertionError("FALSE_SHADOW_EVIDENCE_ACCEPTED_" + str(idx))
-    print("XRAY_CURRENT_SIP_PUBLICATION_SELFTEST=PASS_2_POSITIVE_10_NEGATIVE_NO_RAW_NO_R92")
+    print("XRAY_CURRENT_SIP_PUBLICATION_SELFTEST=PASS_3_POSITIVE_10_NEGATIVE_SOURCE_GAP_NOT_COMPLETE_NO_RAW_NO_R92")
 
 
 def live(mode: str, path: Path, output: Path) -> int:
