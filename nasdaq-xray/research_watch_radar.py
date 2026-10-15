@@ -8,7 +8,10 @@ import hashlib
 import json
 import math
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
+
+from source_epoch_freshness_guard import last_complete_session
 
 ROOT=Path(__file__).resolve().parent
 FILES={
@@ -29,11 +32,17 @@ def read(root,name):
     return json.loads(raw),hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
 
 
-def build(root):
+def build(root, *, now_utc=None):
+    # SHA-perfect canonical sources can still be a FROZEN HISTORICAL epoch.
+    # Never label stale stage B as live WATCH just because blob links match.
+    now_utc=datetime.now(timezone.utc) if now_utc is None else now_utc
+    current_asof=last_complete_session(now_utc)
     t,terminal_blob=read(root,FILES["terminal"])
     evidence=t.get("evidence") or {}
     sources={}
     discrepancies=[]
+    if t.get("asof_et")!=current_asof:
+        discrepancies.append("TERMINAL_NOT_LATEST_COMPLETED_NASDAQ_SESSION")
     for key,filename in FILES.items():
         if key=="terminal":
             continue
@@ -107,6 +116,8 @@ def build(root):
       "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
       "alpha_authority":False,"decision_authority":False,"g9_authority":False,
       "source_exact":exact,"binding_discrepancies":sorted(set(discrepancies)),
+      "latest_completed_nasdaq_session":current_asof,
+      "terminal_epoch_current":t.get("asof_et")==current_asof,
       "status":"WATCH_RESEARCH_EXACT" if exact else "STALE_SNAPSHOT_WATCH_BLOCKED",
       "observed_b_watch_count":len(watched),
       "live_watch_count":len(watched) if exact else 0,
@@ -117,7 +128,7 @@ def build(root):
       "pre_g9_al_count":int(final.get("pre_g9_tech_pass_count") or 0),
       "buy_candidates":[],"go":False,"orders":[],
       "source_blobs":{"terminal":terminal_blob,**{k:v[1] for k,v in sources.items()}},
-      "disclaimer":"Not AL, not executable, not current if source_exact=false. No threshold relaxation.",
+      "disclaimer":"Not AL, not executable, not current if source_exact=false. Every live WATCH requires the official latest completed Nasdaq session. No threshold relaxation.",
     }
 
 
@@ -125,6 +136,8 @@ def selftest():
     with tempfile.TemporaryDirectory() as td:
         root=Path(td)
         asof="2026-10-07"
+        fresh=datetime(2026,10,8,0,0,tzinfo=timezone.utc)
+        stale=datetime(2026,10,8,21,0,tzinfo=timezone.utc)
         payload={key:{"asof_et":asof,"execution":"NONE","real_money":"NO-GO"}
                  for key in CHECK}
         payload["deep"]["b_armed_rs_event_watch"]=["TEST"]
@@ -147,18 +160,28 @@ def selftest():
         (root/FILES["terminal"]).write_text(json.dumps({
             "asof_et":asof,"execution":"NONE","real_money":"NO-GO",
             "unknown_never_pass":True,"evidence":evidence}))
-        r=build(root)
+        r=build(root,now_utc=fresh)
         assert r["source_exact"] and r["live_watch_count"]==1 and not r["buy_candidates"]
+        assert r["latest_completed_nasdaq_session"]==asof and r["terminal_epoch_current"] is True
         assert r["rejected_final_count"]==1 and r["go"] is False
+        # Strong adversarial case: ALL blob hashes and epochs still match,
+        # but US market closed a newer session. Old B_ARMED is historical only.
+        r_late=build(root,now_utc=stale)
+        assert not r_late["source_exact"] and r_late["live_watch_count"]==0
+        assert r_late["research_watch"]==[]
+        assert r_late["stale_observations_not_live"][0]["symbol"]=="TEST"
+        assert "TERMINAL_NOT_LATEST_COMPLETED_NASDAQ_SESSION" in r_late["binding_discrepancies"]
+        assert r_late["latest_completed_nasdaq_session"]=="2026-10-08"
+        assert r_late["terminal_epoch_current"] is False
         (root/FILES["master"]).write_text(json.dumps({"asof_et":asof,"execution":"NONE","real_money":"NO-GO","x":"drift"}))
-        r=build(root)
+        r=build(root,now_utc=fresh)
         assert not r["source_exact"] and not r["research_watch"]
         assert r["stale_observations_not_live"][0]["symbol"]=="TEST"
         altered=copy.deepcopy(payload["final"])
         altered["results"]["TEST|D"]["pre_g9_tech_pass"]=True
         (root/FILES["final"]).write_text(json.dumps(altered))
         try:
-            build(root)
+            build(root,now_utc=fresh)
             raise AssertionError("UNSAFE_CANDIDATE_ACCEPTED")
         except AssertionError as e:
             assert "C4_17_RISK_FAIL_MUST_NEVER_PROMOTE" in str(e)
@@ -170,11 +193,11 @@ def selftest():
                 unsafe["results"]["TEST|D"]["geometry"]["risk_percent"]=invalid
             (root/FILES["final"]).write_text(json.dumps(unsafe)+"\n")
             try:
-                build(root)
+                build(root,now_utc=fresh)
                 raise AssertionError("INVALID_RISK_ACCEPTED")
             except AssertionError as e:
                 assert "FINAL_RISK" in str(e),str(e)
-    print("XRAY_WATCH_RESEARCH_FAIL_CLOSED_SELFTEST=PASS invalid_risk_cases=7")
+    print("XRAY_WATCH_RESEARCH_FAIL_CLOSED_SELFTEST=PASS invalid_risk_cases=7 stale_sha_perfect_session_negative=PASS")
 
 
 if __name__=="__main__":
@@ -191,4 +214,5 @@ if __name__=="__main__":
         Path(args.out).write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
         print(json.dumps({k:result[k] for k in (
             "status","source_exact","observed_b_watch_count","live_watch_count",
-            "rejected_final_count","pre_g9_al_count","binding_discrepancies")},sort_keys=True))
+            "rejected_final_count","pre_g9_al_count","binding_discrepancies",
+            "latest_completed_nasdaq_session","terminal_epoch_current")},sort_keys=True))
