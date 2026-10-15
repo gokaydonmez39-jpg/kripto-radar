@@ -48,13 +48,23 @@ def cohort(doc,now):
          "SAFETY_AND_UNPROMOTED_SOURCE")
     scope=doc.get("per_symbol_causal_routing")
     high=doc.get("next_gate_mc_sec_research_only_symbols")
+    partial=doc.get("rth30_partial_missing_slot_high_research_only_symbols")
+    need(type(partial) is list and partial==sorted(set(partial)) and
+         doc.get("rth30_partial_research_never_primary") is True and
+         len(partial)==doc.get("rth30_partial_missing_slot_high_research_only_count") and
+         symbols_sha(partial)==doc.get("rth30_partial_missing_slot_high_research_only_sha256"),
+         "EXACT_SYMBOLIC_PARTIAL_SHA_NO_PRIMARY")
     need(type(scope) is dict and doc.get("scope_count")==len(scope) and
          len(scope)>0 and type(high) is list and high==sorted(set(high)) and
          len(high)==doc.get("rth30_lower_bound_observed") and
          symbols_sha(high)==doc.get("rth30_lower_bound_sha256") and
-         set(high).issubset(scope) and
+         set(partial).issubset(high) and set(high).issubset(scope) and
+         len(high)-len(partial)==
+             doc.get("rth30_strict_complete_slot_lower_bound_observed") and
          all(scope[s]["first_unresolved_gate"]=="PRICE_DV30" and
-             scope[s]["causal_class"]=="RTH_30MIN_LOWER_BOUND_ONLY"
+             scope[s]["causal_class"]==(
+                 "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY" if s in partial
+                 else "RTH_30MIN_LOWER_BOUND_ONLY")
              for s in high),"EXACT_POSITIVE_RTH_RESEARCH_COHORT")
     counts=Counter(row.get("first_unresolved_gate") for row in scope.values())
     need(dict(sorted(counts.items()))==doc.get("first_unresolved_gate_counts"),
@@ -82,6 +92,11 @@ def run(doc,now,fetch):
         "source_causal_digest_sha256":sha256(json.dumps(
             doc,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
         "source_causal_scope_count":doc["scope_count"],
+        "research_partial_rth_source_count":
+            doc["rth30_partial_missing_slot_high_research_only_count"],
+        "research_complete_rth_source_count":
+            doc["rth30_strict_complete_slot_lower_bound_observed"],
+        "partial_source_is_not_c417_primary":True,
         "full_identity_source_partition_checked":True,
         "technical_cohort_is_universe_count":len(names)==doc["scope_count"],
         "outside_technical_cohort_count":outside_count,
@@ -231,6 +246,7 @@ def run(doc,now,fetch):
 
 
 def selftest():
+    from copy import deepcopy
     now=datetime(2026,10,14,22,tzinfo=timezone.utc)
     syms=["AAPL","BSP","NVDA"]
     scope={s:{"first_unresolved_gate":"PRICE_DV30",
@@ -244,6 +260,11 @@ def selftest():
        "scope_count":3,"per_symbol_causal_routing":scope,
        "next_gate_mc_sec_research_only_symbols":syms,
        "rth30_lower_bound_observed":3,
+       "rth30_strict_complete_slot_lower_bound_observed":3,
+       "rth30_partial_missing_slot_high_research_only_count":0,
+       "rth30_partial_missing_slot_high_research_only_symbols":[],
+       "rth30_partial_missing_slot_high_research_only_sha256":symbols_sha([]),
+       "rth30_partial_research_never_primary":True,
        "rth30_lower_bound_sha256":symbols_sha(syms),
        "first_unresolved_gate_counts":{"PRICE_DV30":3}}
     a,scope=cohort(d,now)
@@ -251,12 +272,33 @@ def selftest():
     def inaccessible(symbols,start,end,asof):
         raise RuntimeError("ALPACA_HTTP_403")
     result=run(d,now,inaccessible)
+    partial=deepcopy(d)
+    partial["rth30_strict_complete_slot_lower_bound_observed"]=2
+    partial["rth30_partial_missing_slot_high_research_only_count"]=1
+    partial["rth30_partial_missing_slot_high_research_only_symbols"]=["AAPL"]
+    partial["rth30_partial_missing_slot_high_research_only_sha256"]=symbols_sha(["AAPL"])
+    partial["per_symbol_causal_routing"]["AAPL"]["causal_class"]=(
+        "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY")
+    p_asof,p_syms=cohort(partial,now)
+    need(p_asof=="2026-10-14" and p_syms==syms and
+         run(partial,now,inaccessible)["technical_research_watch_symbols"]==[],
+         "PARTIAL_PROVEN_POSITIVE_SCOPE_NOT_A_SYNTHETIC_WATCH")
+    partial_bad=deepcopy(partial)
+    partial_bad["per_symbol_causal_routing"]["AAPL"]["causal_class"]=(
+        "RTH_30MIN_LOWER_BOUND_ONLY")
+    try:cohort(partial_bad,now)
+    except ValueError:pass
+    else:raise AssertionError("PARTIAL_FORGED_STRICT_CLASS_ACCEPTED")
+    partial_bad=deepcopy(partial)
+    partial_bad["rth30_partial_missing_slot_high_research_only_sha256"]="0"*64
+    try:cohort(partial_bad,now)
+    except ValueError:pass
+    else:raise AssertionError("PARTIAL_FORGED_SHA_ACCEPTED")
     need(result["scope_count"]==3 and result["all_symbols_classified"] and
          result["technical_research_watch_symbols"]==[] and
          result["registered_r92_count"]==0 and not result["user_notification_sent"] and
          sum(result["classification_counts"].values())==3,
          "PROVIDER_OUTAGE_CANNOT_CREATE_WATCH")
-    from copy import deepcopy
     # A complete technical scan of 3/4 eligible-source identities MUST NOT
     # masquerade as a complete scan of four (or of all NASDAQ securities).
     extended=deepcopy(d)
@@ -271,6 +313,7 @@ def selftest():
     empty=deepcopy(d)
     empty["next_gate_mc_sec_research_only_symbols"]=[]
     empty["rth30_lower_bound_observed"]=0
+    empty["rth30_strict_complete_slot_lower_bound_observed"]=0
     empty["rth30_lower_bound_sha256"]=symbols_sha([])
     for v in empty["per_symbol_causal_routing"].values():
         v["first_unresolved_gate"]="PRICE_DV30"
@@ -316,7 +359,7 @@ def selftest():
         try:cohort(broken,now)
         except ValueError:pass
         else:raise AssertionError("XRAY_EARLY_WATCH_FORGED_SOURCE_ACCEPTED_"+name)
-    print("XRAY_EARLY_WATCH_SELFTEST=PASS_7_CAUSAL_NEGATIVES_EMPTY_RTH_DIGEST_NO_FORGED_WATCH")
+    print("XRAY_EARLY_WATCH_SELFTEST=PASS_9_CAUSAL_NEGATIVES_PARTIAL_RTH_RESEARCH_ONLY_NO_FALSE_WATCH")
 
 
 def main():
@@ -346,6 +389,8 @@ def main():
         "asof":result["asof_et"],"scope":result["scope_count"],
         "verified_technical_research_watch_count":
             len(result["technical_research_watch_symbols"]),
+        "partial_rth_research_scope_count":
+            result["research_partial_rth_source_count"],
         "classification_counts":result["classification_counts"],
         "R92":0,"notification_sent":False},sort_keys=True))
 

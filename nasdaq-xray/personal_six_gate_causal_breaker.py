@@ -17,6 +17,9 @@ from pathlib import Path
 
 from source_epoch_freshness_guard import last_complete_session
 from alpaca_full_universe_asof_sip_availability import sha as scope_sha
+from alpaca_personal_joint_260_d30_rth_shadow import (
+    PARTIAL_HIGH, PARTIAL_UNRESOLVED, PARTIAL_REJECTED,
+)
 from alpaca_full_universe_30d_daily_proxy_shadow import (
     VALID as D30_HIGH, LOW_PRICE as D30_LOW_PRICE, LOW_DV as D30_LOW_DV,
 )
@@ -161,6 +164,25 @@ def build(day, hist, bridge, rth, now, source_digests=None):
          "260_DAILY30_RTH_EXACT_COHORT_SHA")
     rth_labels = partition(rth, "classifications",
                            "classification_counts", cohort)
+    # Independent symbolic evidence, strictly a subset of strict UNKNOWN.
+    # Never overwrite canonical/strict labels; permit only parallel research.
+    partial = rth.get("partial_missing_slot_research_by_symbol")
+    causes_rth = rth.get("symbol_rth_integrity_failure_codes")
+    need(type(partial) is dict and type(causes_rth) is dict and
+         rth.get("partial_missing_slot_symbolic_only_never_canonical") is True and
+         set(partial) == {sym for sym,why in causes_rth.items()
+             if why == "EARLY_AND_FULL_BAR_COUNTS_EXACT"} and
+         set(causes_rth).issubset(cohort) and
+         all(rth_labels[sym] == RTH_UNKNOWN for sym in partial) and
+         set(partial.values()).issubset({
+             PARTIAL_HIGH, PARTIAL_UNRESOLVED, PARTIAL_REJECTED}) and
+         dict(sorted(Counter(partial.values()).items())) ==
+         rth.get("partial_missing_slot_research_counts") and
+         dict(sorted(Counter(causes_rth.values()).items())) ==
+         rth.get("rth_integrity_cause_counts"),
+         "PARTIAL_RESEARCH_SOURCE_INTEGRITY_NEVER_STRICT_PASS")
+    partial_high = sorted(sym for sym,kind in partial.items()
+                          if kind == PARTIAL_HIGH)
     need(rth.get("official_session_count") == 30 and
          rth.get("source_rights_not_inferred") is True and
          rth.get("registered_R92_count") == 0 and
@@ -193,10 +215,23 @@ def build(day, hist, bridge, rth, now, source_digests=None):
     need(sum(primary.values()) == len(names) and
          all(d["first_unresolved_gate"] in STAGES[:3]
              for d in details.values()), "NO_UNPROVEN_PROMOTION")
-    high = sorted(sym for sym in cohort if rth_labels[sym] == RTH_HIGH)
-    need(len(high) == rth["rth_lower_bound_ge50m_shadow_count"] and
+    strict_high = sorted(sym for sym in cohort if rth_labels[sym] == RTH_HIGH)
+    high = sorted(set(strict_high) | set(partial_high))
+    need(set(strict_high).isdisjoint(partial_high) and
+         len(strict_high) == rth["rth_lower_bound_ge50m_shadow_count"] and
+         len(high) == len(strict_high)+len(partial_high) and
          all(details[sym]["first_unresolved_gate"] == "PRICE_DV30"
-             for sym in high), "SHADOW_HIGH_NEVER_PRIMARY")
+             for sym in high), "RESEARCH_HIGH_NEVER_PRIMARY")
+    for sym in partial_high:
+        need(details[sym]["causal_class"] == "RTH_DATA_INTEGRITY_OR_PROVIDER_UNKNOWN",
+             "PARTIAL_CANNOT_OVERRIDE_OTHER_CAUSAL_GATE")
+        details[sym]["causal_class"] = "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY"
+        details[sym]["parallel_research_only"] = (
+            "EVALUATE_TECHNICAL_A_B_D_ONLY_WITH_INDEPENDENT_DAILY_HISTORY")
+        # First unresolved source action is retained.
+        need(details[sym]["next_safe_evidence_action"] ==
+             "ISOLATE_BAD_30MIN_SESSION_OR_PROVIDER_BATCH",
+             "PARTIAL_RTH_NEXT_SAFE_EVIDENCE_UNCHANGED")
     return {
         "schema": SCHEMA,
         "asof_et": current,
@@ -210,6 +245,12 @@ def build(day, hist, bridge, rth, now, source_digests=None):
         "daily30_high_liquidity_proxy_count": sum(x == D30_HIGH for x in d30.values()),
         "joint260_daily30_research_scope": len(cohort),
         "rth30_lower_bound_observed": len(high),
+        "rth30_strict_complete_slot_lower_bound_observed": len(strict_high),
+        "rth30_partial_missing_slot_high_research_only_count": len(partial_high),
+        "rth30_partial_missing_slot_high_research_only_symbols": partial_high,
+        "rth30_partial_missing_slot_high_research_only_sha256":
+            scope_sha(partial_high),
+        "rth30_partial_research_never_primary": True,
         "rth30_lower_bound_sha256": scope_sha(high),
         "rth30_ambiguous_count": sum(x == RTH_MID for x in rth_labels.values()),
         "rth30_data_unknown_count": sum(x in (RTH_UNKNOWN, RTH_PROVIDER)
@@ -285,6 +326,11 @@ def selftest():
                classifications=rth_labels,
                classification_counts=counts(rth_labels),
                rth_lower_bound_ge50m_shadow_count=1,
+               partial_missing_slot_research_by_symbol={},
+               partial_missing_slot_research_counts={},
+               partial_missing_slot_symbolic_only_never_canonical=True,
+               symbol_rth_integrity_failure_codes={},
+               rth_integrity_cause_counts={},
                official_session_count=30,
                source_rights_not_inferred=True,
                registered_R92_count=0,
@@ -295,6 +341,43 @@ def selftest():
                canonical_master_price_history_mc_untouched=True)
     import copy
     good = build(day,hist,bridge,rth,now)
+    part = copy.deepcopy(rth)
+    part["classifications"]["AAA"] = RTH_UNKNOWN
+    part["classification_counts"] = {RTH_UNKNOWN:1}
+    part["rth_lower_bound_ge50m_shadow_count"] = 0
+    part["symbol_rth_integrity_failure_codes"] = {
+        "AAA":"EARLY_AND_FULL_BAR_COUNTS_EXACT"}
+    part["rth_integrity_cause_counts"] = {"EARLY_AND_FULL_BAR_COUNTS_EXACT":1}
+    part["partial_missing_slot_research_by_symbol"] = {"AAA":PARTIAL_HIGH}
+    part["partial_missing_slot_research_counts"] = {PARTIAL_HIGH:1}
+    partial_ok = build(day,hist,bridge,part,now)
+    need(partial_ok["rth30_lower_bound_observed"]==1 and
+         partial_ok["rth30_strict_complete_slot_lower_bound_observed"]==0 and
+         partial_ok["rth30_partial_missing_slot_high_research_only_count"]==1 and
+         partial_ok["rth30_data_unknown_count"]==1 and
+         partial_ok["per_symbol_causal_routing"]["AAA"]["causal_class"]==
+             "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY" and
+         partial_ok["per_symbol_causal_routing"]["AAA"]["first_unresolved_gate"]==
+             "PRICE_DV30" and
+         partial_ok["c417_price_dv30_primary_attested"] is False and
+         partial_ok["registered_r92_count"]==0,
+         "PARTIAL_POSITIVE_RESEARCH_CANNOT_CHANGE_STRICT_UNKNOWN_OR_AL")
+    badpartial=copy.deepcopy(part)
+    badpartial["partial_missing_slot_research_counts"]={PARTIAL_HIGH:2}
+    try:build(day,hist,bridge,badpartial,now)
+    except ValueError as exc:
+        need("PARTIAL_RESEARCH_SOURCE_INTEGRITY" in str(exc),
+             "FORGED_PARTIAL_COUNT_MUST_FAIL")
+    else:raise AssertionError("FORGED_PARTIAL_COUNT_ACCEPTED")
+    badpartial=copy.deepcopy(part)
+    badpartial["classifications"]["AAA"]=RTH_HIGH
+    badpartial["classification_counts"]={RTH_HIGH:1}
+    badpartial["rth_lower_bound_ge50m_shadow_count"]=1
+    try:build(day,hist,bridge,badpartial,now)
+    except ValueError as exc:
+        need("PARTIAL_RESEARCH_SOURCE_INTEGRITY" in str(exc),
+             "PARTIAL_WITH_STRICT_PASS_MUST_FAIL")
+    else:raise AssertionError("PARTIAL_FORGED_STRICT_PASS_ACCEPTED")
     need(good["scope_count"] == 4 and
          good["first_unresolved_gate_counts"] ==
          {"HISTORY":1,"PRICE_DV30":2,"SOURCE":1} and
@@ -332,7 +415,7 @@ def selftest():
             need(expected in str(exc), "NEGATIVE_CAUSE_" + expected)
         else:
             raise AssertionError("SIX_GATE_BAD_EVIDENCE_ACCEPTED_" + expected)
-    print("XRAY_SIX_GATE_CAUSAL_BREAKER_SELFTEST=PASS_10_NEGATIVES_SHA_ASOF_NO_FALSE_AL")
+    print("XRAY_SIX_GATE_CAUSAL_BREAKER_SELFTEST=PASS_12_NEGATIVES_PARTIAL_414_SHADOW_NO_FALSE_AL")
 
 
 def main():

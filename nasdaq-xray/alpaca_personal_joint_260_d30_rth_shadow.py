@@ -210,7 +210,7 @@ def measure(asof,syms,days,source,now,pace=0):
          syms==sorted(set(syms)), "MEASUREMENT_INPUT")
     status={s:"UNKNOWN_UNCHECKED" for s in syms}
     integrity_causes={}
-    partial_counts=Counter();partial_missing_slots=0;partial_missing_days=0
+    partial_counts=Counter();partial_status={};partial_missing_slots=0;partial_missing_days=0
     calls=[0];stop=None;attempted=0
     # Close+5 must be in delayed historical SIP window, not a future ET midnight.
     _,end=historical_request_window(asof,now)
@@ -252,10 +252,12 @@ def measure(asof,syms,days,source,now,pace=0):
                             kind,missing_slots,missing_days=partial_missing_slot_bounds(
                                 daily[name],half[name],days)
                             partial_counts[kind]+=1
+                            partial_status[name]=kind
                             partial_missing_slots+=missing_slots
                             partial_missing_days+=missing_days
                         except (ValueError,TypeError,KeyError,OverflowError):
                             partial_counts[PARTIAL_REJECTED]+=1
+                            partial_status[name]=PARTIAL_REJECTED
             attempted+=len(group)
         except (RuntimeError,ValueError,TimeoutError,OSError) as exc:
             v=str(exc)
@@ -269,7 +271,13 @@ def measure(asof,syms,days,source,now,pace=0):
     need(sum(partial_counts.values())==sum(
          v=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for v in integrity_causes.values())
          and set(partial_counts)<={PARTIAL_HIGH,PARTIAL_UNRESOLVED,
-                                  PARTIAL_REJECTED},"PARTIAL_DIAGNOSTIC_ACCOUNTING")
+                                  PARTIAL_REJECTED} and
+         dict(sorted(Counter(partial_status.values()).items()))==
+         dict(sorted(partial_counts.items())) and
+         set(partial_status)=={sym for sym,code in integrity_causes.items()
+             if code=="EARLY_AND_FULL_BAR_COUNTS_EXACT"} and
+         all(status[sym]==RTH_UNVERIFIED for sym in partial_status),
+         "PARTIAL_DIAGNOSTIC_ACCOUNTING")
     need(set(integrity_causes).issubset(
          {k for k,v in status.items() if v==RTH_UNVERIFIED}),
          "INTEGRITY_CAUSE_SCOPE")
@@ -299,6 +307,8 @@ def measure(asof,syms,days,source,now,pace=0):
         "rth_integrity_cause_counts":dict(sorted(
             Counter(integrity_causes.values()).items())),
         "partial_missing_slot_research_counts":dict(sorted(partial_counts.items())),
+        "partial_missing_slot_research_by_symbol":dict(sorted(partial_status.items())),
+        "partial_missing_slot_symbolic_only_never_canonical":True,
         "partial_missing_slot_total_observed_gap_count":partial_missing_slots,
         "partial_missing_slot_affected_session_total":partial_missing_days,
         "partial_research_never_promotes_strict_rth":True,
@@ -393,13 +403,17 @@ def selftest():
          y["rth_integrity_cause_counts"] == {
              "EARLY_AND_FULL_BAR_COUNTS_EXACT":1} and
          y["partial_missing_slot_research_counts"]=={PARTIAL_HIGH:1} and
+         y["partial_missing_slot_research_by_symbol"]=={"AAPL":PARTIAL_HIGH} and
+         y["partial_missing_slot_symbolic_only_never_canonical"] is True and
          y["partial_research_never_promotes_strict_rth"] is True,
          "MISSING_LAST_RTH_SLOT_DIAGNOSED_NOT_PASS")
     def blocked(*args):
         raise RuntimeError("ALPACA_HTTP_429")
     z=measure(asof,symbols,dates,blocked,now)
     need(z["source_stop_class"]=="ALPACA_HTTP_429" and
-         z["rth_incomplete_or_unknown_count"]==1,"RATE_LIMIT_NEVER_PASS")
+         z["rth_incomplete_or_unknown_count"]==1 and
+         z["partial_missing_slot_research_by_symbol"]=={},
+         "RATE_LIMIT_NEVER_PASS")
     def budget(*args):
         raise ValueError("XRAY_PERSONAL_JOINT_RTH30_SOURCE_CALL_BUDGET")
     limited=measure(asof,symbols,dates,budget,now)
