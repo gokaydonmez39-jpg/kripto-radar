@@ -23,7 +23,6 @@ BLOCKS={
     "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
     "PRICE_UNKNOWN_CURRENT",
     "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
-    "NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",
     "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
 }
 BLOBS={
@@ -85,8 +84,23 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
     require(e.get("current_mc_authority_count")==0 if "CURRENT_MC_AUTHORITY_MISSING" in blocked else True,"MC_AUTHORITY_CLAIM")
     if not current:
         require("CURRENT_MC_AUTHORITY_MISSING" in blocked,"MISSING_MC_NOT_FLAGGED")
-    require(e.get("actual_device_delivery_receipt_attested") is False,"FAKE_DEVICE_RECEIPT")
-    require(e.get("alpha_authority") is False and e.get("ready_for_current_research_signal") is False,"RELEASE_PROMOTION")
+    delivery=e.get("delivery_observability")
+    require(isinstance(delivery,dict)
+            and delivery.get("phase")=="POST_DELIVERY_INDEPENDENT_ACK"
+            and delivery.get("status")=="UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK"
+            and delivery.get("device_receipt_attested") is False
+            and delivery.get("research_release_prerequisite") is False
+            and delivery.get("notification_sent_by_this_audit") is False
+            and e.get("actual_device_delivery_receipt_attested") is False,
+            "POST_DELIVERY_FAKE_ACK_OR_CIRCULAR_RELEASE")
+    require(e.get("alpha_authority") is False,"RELEASE_CANNOT_BE_ALPHA_AUTHORITY")
+    # Future verified research-ready witnesses must prove every local gate.
+    if e.get("ready_for_current_research_signal") is True:
+        require(e.get("candidate_local_source_chain_attested") is True
+                and e.get("current_mc_authority_count")==1
+                and e.get("candidate_preparation_witness_only") is True
+                and e.get("official_nasdaq_session_freshness_attested") is True,
+                "UNPROVEN_RESEARCH_READY_PROMOTION")
     manual_compatible=e.get("historical_manual_non_g9_source_contract_ready")
     manual_prep=e.get("historical_manual_research_candidate_prep_only")
     require(type(manual_compatible) is bool and type(manual_prep) is bool,
@@ -105,7 +119,7 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
         "P0_SETTLEMENT_SOURCE_BINDING":bool("SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT" in blocked),
         "P0_IDENTITY_GLOBAL_COVERAGE":bool("IDENTITY_PARTITION_INCOMPLETE" in blocked),
         "P0_STRICT_G9_ENTITLEMENT":g9_block,
-        "P0_DEVICE_RECEIPT_EVIDENCE":bool("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" in blocked),
+        "P0_DEVICE_RECEIPT_EVIDENCE":not delivery["device_receipt_attested"],
     }
     # Operational dependency order: evidence-only, never a shortcut to AL.
     # A partial global identity set does not contaminate an exact disjoint
@@ -234,6 +248,12 @@ def fixtures():
        "price_pass_count":1,"master_unknown_count":1,"current_mc_authority_count":0,
        "blockers":sorted(BLOCKS-{"PRICE_UNKNOWN_CURRENT","SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT"}),"source_session_lags":{"TERMINAL":2},
        "actual_device_delivery_receipt_attested":False,"ready_for_current_research_signal":False,"alpha_authority":False,
+       "delivery_observability":{
+           "phase":"POST_DELIVERY_INDEPENDENT_ACK",
+           "status":"UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+           "device_receipt_attested":False,
+           "research_release_prerequisite":False,
+           "notification_sent_by_this_audit":False},
        "historical_manual_non_g9_source_contract_ready":True,
        "historical_manual_research_candidate_prep_only":False,
        "historical_manual_research_no_g9_pass_claim":True,
@@ -268,6 +288,12 @@ def selftest():
         (2,"unknown_never_pass",False),
         (3,"source_blob_shas",{"master":"x"*40,"price":"b"*40,"terminal":"c"*40}),
         (3,"actual_device_delivery_receipt_attested",True),
+        (3,"delivery_observability",{"device_receipt_attested":True}),
+        (3,"delivery_observability",{"phase":"POST_DELIVERY_INDEPENDENT_ACK",
+            "status":"UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+            "device_receipt_attested":False,
+            "research_release_prerequisite":True,
+            "notification_sent_by_this_audit":False}),
         (3,"ready_for_current_research_signal",True),
         (3,"current_mc_authority_count",1),
         (3,"historical_manual_research_candidate_prep_only",True),
@@ -282,6 +308,10 @@ def selftest():
             n+=1
         else:
             raise RuntimeError("XRAY_NEGATIVE_MUTANT_ACCEPTED:"+str((idx,key)))
+    require(good["root_cause_classes"]["P0_DEVICE_RECEIPT_EVIDENCE"] is True,
+            "INDEPENDENT_DELIVERY_UNKNOWN_NOT_LOST")
+    require("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" not in good["e2e_blockers_exact"],
+            "DEVICE_ACK_NOT_A_SOURCE_BLOCKER")
     # A 12th unknown SPAC in the master outside PRICE must not alter PRICE scope.
     xx=copy.deepcopy(x)
     xx[0]["unknown_symbols"]=["S1","S2"]
