@@ -1,0 +1,93 @@
+name: XRAY Exhausted Sina 27 Independent SIP 260 History (Shadow)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_exhausted_sina_260_shadow.py"
+      - ".github/workflows/xray-exhausted-sina-independent-sip-260-shadow.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_exhausted_sina_260_shadow.py"
+      - ".github/workflows/xray-exhausted-sina-independent-sip-260-shadow.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Pin official completed NASDAQ calendar
+        run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+      - name: Zero-network, adversarial 27-exception source audit
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/alpaca_exhausted_sina_260_shadow.py
+          python nasdaq-xray/alpaca_exhausted_sina_260_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_exhausted_sina_260_shadow.py --selftest
+          python nasdaq-xray/alpaca_sip_paginated_transport_shadow.py
+          echo "XRAY_EXHAUSTED_SINA_SIP_OPTIMIZED_AND_PAGINATION_NEGATIVES=PASS"
+      - name: Read-only private SIP remeasurement of exact same-ASOF exhausted ROOT exceptions
+        if: github.ref == 'refs/heads/main'
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/alpaca_exhausted_sina_260_shadow.py --out "$RUNNER_TEMP/xray_27_sina_independent_sip_counts_only.json"
+      - name: Verify exact state + master Git blobs and authority veto
+        if: github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_27_sina_independent_sip_counts_only.json"
+          doc=json.loads(p.read_text())
+          assert doc["schema"]=="XRAY_EXHAUSTED_SINA_INDEPENDENT_ALPACA_SIP_260_SHADOW_V1"
+          for output,source in (
+              ("source_sina_state_git_blob_sha","nasdaq-xray/sina_state.json"),
+              ("source_master_git_blob_sha","nasdaq-xray/canonical_current_master_manifest.json"),
+          ):
+              assert doc[output]==subprocess.check_output(
+                  ["git","hash-object",source],text=True).strip()
+          state=json.loads(Path("nasdaq-xray/sina_state.json").read_text())
+          true_count=sum(r.get("status")=="UNKNOWN_RETRY_EXHAUSTED"
+                         for r in state["results"].values())
+          assert 0<=true_count<=32
+          assert doc["selected_exhausted_transient_count"]==true_count
+          assert sum(doc["counts"].values())==true_count
+          assert doc["expected_daily_sessions"]==260
+          assert doc["expected_completed_week_closes"]==52
+          assert doc["batch_requests_attempted"]<=4
+          assert doc["worst_case_page_requests_upper_bound"]<=96
+          for field in ("source_vendor_rights_independently_verified",
+                        "source_official_auction_and_corrections_verified",
+                        "share_class_corporate_actions_pit_verified",
+                        "r92_registered","provider_raw_ohlcv_persisted",
+                        "provider_symbol_rows_persisted"):
+              assert doc[field] is False,field
+          for field in ("canonical_history_pass_created",
+                        "canonical_price_pass_created",
+                        "canonical_mc_pass_created"):
+              assert doc[field]==0,field
+          assert doc["execution"]=="NONE" and doc["real_money"]=="NO-GO"
+          print("XRAY_EXHAUSTED_SINA_PRIVATE_260_COUNTS="+json.dumps(doc["counts"],sort_keys=True))
+          print("XRAY_EXHAUSTED_SINA_27_SOURCE_PROVENANCE=EXACT_SHA_NO_HISTORY_MC_R92")
+          PY
+      - name: Save exact-SHA and COUNTS ONLY; never raw provider rows
+        if: ${{ always() && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: xray-exhausted-sina-private-sip-260-counts-only
+          path: ${{ runner.temp }}/xray_27_sina_independent_sip_counts_only.json
+          if-no-files-found: ignore
+          retention-days: 7
