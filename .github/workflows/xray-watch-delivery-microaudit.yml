@@ -2,6 +2,8 @@ name: XRAY WATCH vs AL and ChatGPT Delivery Microaudit
 on:
   workflow_dispatch:
   schedule:
+    # 16:05 Türkiye on October US EDT weekdays; observation only, no live quote claim.
+    - cron: "5 13 * * 1-5"
     - cron: "35 22 * * 1-5"
   push:
     branches: [main]
@@ -55,6 +57,11 @@ jobs:
           assert d["iphone_push_ack_independently_attested_by_this_run"] is False
           assert d["delivery_workflow_is_not_an_iphone_push_channel"] is True
           assert d["research_liquidity_is_not_a_rising_stock_prediction"] is True
+          assert d["liquidity_prescreen_is_not_a_technical_watch"] is True
+          assert d["live_opening_quote_feed_independently_verified"] is False
+          assert d["current_research_mode"]=="COMPLETED_SESSION_EOD_ONLY_NO_INTRADAY_PROMISE"
+          assert type(d["canonical_price_dv30_pass_count"]) is int
+          assert type(d["canonical_price_dv30_residual_unknown_count"]) is int
           assert d["blocker_count"]==len(d["repair_order"])
           assert len(set(x["code"] for x in d["repair_order"]))==d["blocker_count"]
           summary=Path(os.environ["GITHUB_STEP_SUMMARY"])
@@ -65,6 +72,9 @@ jobs:
                       "**; technical WATCH: **"+str(d["claimed_technical_watch_count"])+
                       "**; registered R92: **"+str(d["canonical_pointer_r92_count"])+"**\n\n")
               f.write("Unresolved audit findings: **"+str(d["blocker_count"])+"**\n\n")
+              f.write("Kanonik C4.17 DV30 PASS: **"+str(d["canonical_price_dv30_pass_count"])+
+                      "**; DV30 kalıntı belirsiz: **"+str(d["canonical_price_dv30_residual_unknown_count"])+"**\n\n")
+              f.write("Açılışta gerçek zamanlı fiyat akışı onaylanmadı; likidite ön listesi İZLE/AL değildir.\n\n")
               f.write("GitHub delivery CI success != ChatGPT message/phone receipt.\n\n")
               f.write("| Fault | Exact repair requirement |\n|---|---|\n")
               for row in d["repair_order"]:
