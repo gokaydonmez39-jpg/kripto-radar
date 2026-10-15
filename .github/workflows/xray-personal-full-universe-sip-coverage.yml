@@ -280,6 +280,12 @@ jobs:
           assert x["registered_R92_count"]==0
           assert sum(x["rth_integrity_cause_counts"].values())==len(x["symbol_rth_integrity_failure_codes"])
           assert set(x["symbol_rth_integrity_failure_codes"]).issubset({k for k,v in x["classifications"].items() if v=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"})
+          from collections import Counter
+          subset=x["partial_missing_slot_research_by_symbol"]
+          assert x["partial_missing_slot_symbolic_only_never_canonical"] is True
+          assert set(subset)=={k for k,v in x["symbol_rth_integrity_failure_codes"].items() if v=="EARLY_AND_FULL_BAR_COUNTS_EXACT"}
+          assert dict(sorted(Counter(subset.values()).items()))==x["partial_missing_slot_research_counts"]
+          assert all(x["classifications"][k]=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW" for k in subset)
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_PERSONAL_JOINT_260_RTH30=PASS_RESEARCH_ONLY_NOT_PRIMARY")
           PY
@@ -353,6 +359,11 @@ jobs:
           assert sum(d["next_safe_evidence_action_counts"].values())==d["scope_count"]
           assert d["six_gate_dependency_order"]==["SOURCE","HISTORY","PRICE_DV30","MC","TECH","R92_DELIVERY"]
           assert d["rth30_lower_bound_observed"]==len(d["next_gate_mc_sec_research_only_symbols"])
+          assert d["rth30_lower_bound_observed"]==d["rth30_strict_complete_slot_lower_bound_observed"]+d["rth30_partial_missing_slot_high_research_only_count"]
+          assert d["rth30_partial_research_never_primary"] is True
+          assert len(d["rth30_partial_missing_slot_high_research_only_symbols"])==d["rth30_partial_missing_slot_high_research_only_count"]
+          assert set(d["rth30_partial_missing_slot_high_research_only_symbols"]).issubset(d["next_gate_mc_sec_research_only_symbols"])
+          assert d["rth30_data_unknown_count"]>=d["rth30_partial_missing_slot_high_research_only_count"]
           assert d["c417_price_dv30_primary_attested"] is False
           assert d["issuer_class_mc_current_attested"] is False
           assert d["technical_a_b_d_r1_event_regime_attested"] is False
