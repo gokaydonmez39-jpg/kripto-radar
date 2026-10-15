@@ -9,7 +9,6 @@ HISTORY zero daily-volume sources use the same independently tested contract.
 from __future__ import annotations
 
 import datetime as dt
-from alpaca_sip_30min_rth_lower_bound_pilot import stamp
 
 SCHEMA_CODES = frozenset({
     "MINUTE_SCHEMA_DOC_INVALID",
@@ -43,6 +42,7 @@ def classify_minute_document(doc, *, symbol, start, end_exclusive,
     rows=doc["bars"]
     if len(rows)>max_bars:
         return "MINUTE_SCHEMA_BAR_COUNT_EXCEEDED"
+    from alpaca_sip_30min_rth_lower_bound_pilot import stamp
     seen=set()
     for bar in rows:
         if type(bar) is not dict:
