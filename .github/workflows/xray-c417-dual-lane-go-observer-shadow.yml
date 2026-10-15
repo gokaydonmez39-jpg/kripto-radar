@@ -1,7 +1,7 @@
 name: XRAY C4.17 Dual Lane GO Observer - No Authority
 on:
   push:
-    branches: [audit/c417-dual-lane-go-shadow-20261010, main, xray/dual-lane-zero-price-pass-safe-noop-20261015] # TEMP_PROOF_ONLY_REMOVE
+    branches: [audit/c417-dual-lane-go-shadow-20261010, main]
     paths:
       - "nasdaq-xray/research/c417_dual_lane_go_shadow.py"
       - "nasdaq-xray/canonical_current_master_manifest.json"
