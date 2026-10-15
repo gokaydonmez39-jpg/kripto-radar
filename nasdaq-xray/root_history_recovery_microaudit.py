@@ -10,6 +10,7 @@ import collections
 import datetime as dt
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from sina_transport_rescue import choose as choose_transport_rescue
@@ -24,6 +25,11 @@ STATIC={
 }
 TRANSIENT=("SyntaxError:","IndexError:","JSONDecodeError:","TimeoutError:",
            "ConnectionError:","HTTPError:")
+# Sina stores caught exception names as ClassName:<provider message>. A four-
+# attempt exhaustion is an UNKNOWN regardless of exception type. Only the
+# explicitly transient types above are eligible for transport rescue; every
+# other validated exception requires source review, never automatic promotion.
+EXCEPTION_RECORD=re.compile(r"^[A-Za-z_][A-Za-z_0-9]*:.{0,200}$",re.DOTALL)
 
 def audit(state,root,now):
     if now.tzinfo is None:
@@ -74,11 +80,16 @@ def audit(state,root,now):
             classified[reason]+=1
         elif status=="UNKNOWN_RETRY_EXHAUSTED":
             info=row.get("info")
-            if not isinstance(info,str) or not info.startswith(TRANSIENT):
-                raise ValueError("UNKNOWN_EXHAUSTED_NONTRANSIENT:"+symbol)
+            if (type(info) is not str or not EXCEPTION_RECORD.fullmatch(info)):
+                raise ValueError("UNKNOWN_EXHAUSTED_MALFORMED_SOURCE_RECORD:"+symbol)
             if type(row.get("attempts")) is not int or row["attempts"]<4:
                 raise ValueError("UNKNOWN_EXHAUSTED_WITHOUT_FOUR_ATTEMPTS:"+symbol)
-            classified["EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"]+=1
+            # Keep nontransient or unrecognized provider exceptions UNKNOWN.
+            # They are not rescue candidates and cannot count as PASS.
+            category=("EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
+                      if info.startswith(TRANSIENT) else
+                      "EXHAUSTED_OTHER_PROVIDER_EXCEPTION_REQUIRES_REVIEW")
+            classified[category]+=1
         elif status=="UNKNOWN_RETRY":
             classified["UNEXHAUSTED_RETRYABLE_UNKNOWN"]+=1
         elif status.startswith("UNKNOWN"):
@@ -127,6 +138,8 @@ def audit(state,root,now):
         raise ValueError("ROOT_STATUS_UNRECOGNIZED")
     rescue=choose_transport_rescue(state,now)
     exhausted=classified["EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"]
+    other_exhausted=classified[
+        "EXHAUSTED_OTHER_PROVIDER_EXCEPTION_REQUIRES_REVIEW"]
     if len(rescue)>min(32,exhausted):
         raise ValueError("RESCUE_OUT_OF_BOUNDS")
     return {
@@ -141,10 +154,13 @@ def audit(state,root,now):
         "known_status_counts":dict(sorted(bystatus.items())),
         "unknown_reason_counts":dict(sorted(classified.items())),
         "source_transport_exception_unknown_count":exhausted,
+        "source_other_exception_unknown_count":other_exhausted,
+        "source_unknown_total_still_blocks_go":unknown,
         "independent_history_or_asof_proof_required_count":(
             classified["SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"]
             +classified["ASOF_MISSING_REQUIRES_RESOLUTION"]
-            +classified["EXACT30_INCOMPLETE_NEVER_PASS"]),
+            +classified["EXACT30_INCOMPLETE_NEVER_PASS"]
+            +other_exhausted),
         "eligible_single_round_real_provider_retries_now":len(rescue),
         "eligible_retry_symbol_count_only":len(rescue),
         "rescue_max_one_per_exact_epoch":True,
@@ -187,6 +203,38 @@ def selftest():
     assert yes["unknown_count"]==2 and not yes["alpha_authority"]
     assert yes["known_status_counts"]==s["counts"]
     import copy
+    # Reproduces the real 15 Oct data-plane failure:
+    # retry-exhausted ValueError must remain UNKNOWN but must NOT abort the
+    # full-root microaudit or become eligible for transient rescue.
+    nontransient=copy.deepcopy(s)
+    nontransient["results"]["BBB"]["info"]="ValueError:provider structural field"
+    seal_state(nontransient)
+    classified_other=audit(nontransient,r,now)
+    assert classified_other["known_status_counts"]==s["counts"]
+    assert classified_other["unknown_count"]==2
+    assert classified_other["source_transport_exception_unknown_count"]==0
+    assert classified_other["source_other_exception_unknown_count"]==1
+    assert classified_other["eligible_single_round_real_provider_retries_now"]==0
+    assert classified_other["independent_history_or_asof_proof_required_count"]==2
+    assert classified_other["source_unknown_total_still_blocks_go"]==2
+    assert classified_other["source_proof_full_history_attested"] is False
+    assert classified_other["alpha_authority"] is False
+    # Valid but not listed exception names also remain quarantined as UNKNOWN.
+    unknown_exception=copy.deepcopy(s)
+    unknown_exception["results"]["BBB"]["info"]="CustomDataSourceException:unclassified"
+    seal_state(unknown_exception)
+    assert audit(unknown_exception,r,now)[
+        "source_other_exception_unknown_count"]==1
+    # Malformed info cannot masquerade as a known exception record.
+    malformed=copy.deepcopy(s)
+    malformed["results"]["BBB"]["info"]="fake"
+    seal_state(malformed)
+    try: audit(malformed,r,now)
+    except ValueError as exc:
+        assert "UNKNOWN_EXHAUSTED_MALFORMED_SOURCE_RECORD" in str(exc)
+    else:
+        raise AssertionError("MALFORMED_EXHAUSTION_RECORD_ACCEPTED")
+
     cases=[
         (lambda x,y:x.update(asof_et="2026-10-08"),"ROOT_SINA_ASOF_DRIFT"),
         (lambda x,y:x.update(unknown_count=0),"SINA_UNKNOWN_COUNT_DRIFT"),
@@ -195,6 +243,7 @@ def selftest():
         (lambda x,y:x["counts"].update(PASS=99),"HISTORY_DECLARED_STATUS_COUNTS_DRIFT"),
         (lambda x,y:x["results"]["AAA"].update(status="FABRICATED_GO"),"HISTORY_RESULT_STATUS_UNRECOGNIZED"),
         (lambda x,y:x["results"]["BBB"].update(attempts=2),"UNKNOWN_EXHAUSTED_WITHOUT_FOUR_ATTEMPTS"),
+        (lambda x,y:x["results"]["BBB"].update(info=None),"UNKNOWN_EXHAUSTED_MALFORMED_SOURCE_RECORD"),
         (lambda x,y:x["results"].pop("CCC"),"HISTORY_QUEUE_PARTITION_NOT_EXACT"),
         (lambda x,y:x.update(execution="TRADE"),"EXECUTION_SAFETY_DRIFT"),
         (lambda x,y:y.update(pending_retry=2),"RETRY_COUNTER_DRIFT"),
@@ -248,7 +297,7 @@ def selftest():
     try:audit(s,r,now.replace(tzinfo=None))
     except ValueError:pass
     else:raise AssertionError("NAIVE_CLOCK_ACCEPTED")
-    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_14_NEGATIVES_COMPLETE_SOURCE_NESTED_ROOT_LEGACY_HASH_STATUS_COUNTS_NO_AL")
+    print("XRAY_ROOT_HISTORY_RECOVERY_SELFTEST=PASS_NONTRANSIENT_EXHAUSTED_REMAINS_UNKNOWN_TRANSIENT_RESCUE_ONLY_MALFORMED_DENIED_NO_R92")
 
 def main():
     p=argparse.ArgumentParser()
