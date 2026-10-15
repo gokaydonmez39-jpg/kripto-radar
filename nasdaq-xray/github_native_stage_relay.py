@@ -117,6 +117,19 @@ def selftest():
     t={"asof_et":"2026-10-07","full_end_to_end_research_pass":False}
     assert classify(now,r,m,p,t,[])==(
         "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    # Actual Oct 15: 548 canonical PRICE UNKNOWN and zero certified PRICE
+    # survivors. Post-MC's full-scope resolver cannot run, so wake only
+    # Pre-MC; never dispatch a predictably failing downstream release job.
+    waiting_price=dict(p,unknown_symbols=["B"],unknown_count=1,
+                       blocked_symbols=[],blocked_count=0)
+    assert classify(now,r,m,waiting_price,t,[],target="post-mc")==(
+        "POST_MC_PRICE_UNKNOWN_NO_DISPATCH",False)
+    assert classify(now,r,m,waiting_price,t,[],target="pre-mc")==(
+        "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    malformed_price=dict(waiting_price,unknown_count=0)
+    assert classify(now,r,m,malformed_price,t,[],target="post-mc")==(
+        "POST_MC_PRICE_PARTITION_UNTRUSTED",False)
+
     # Regression from 15 Oct 2026 live root: root moved to Oct 15 while
     # canonical MASTER and PRICE remained on Oct 14. Pre-MC must be allowed
     # to REBUILD them; this must never count as downstream source proof.
