@@ -593,6 +593,34 @@ def selftest():
     require(isolated_gap_detail(daily_rows,half_rows,d,
             "OTHER_STRUCTURAL_SOURCE_REJECTION") is None,
             "OTHER_STRUCTURAL_MUST_NOT_BE_GUESSED")
+    # Deliberately no bar reconstruction: same-vendor 1Min evidence is a
+    # discrepancy witness only; the original unknown remains UNKNOWN.
+    minute_case=empty_report(asof,["AAPL"],d,"a"*40,"b"*40)
+    minute_case["classifications"]={"AAPL":INTEGRITY_UNKNOWN}
+    finalize(minute_case)
+    minute_calls=[]
+    counters=[0]
+    def one_sym_fetch(block,dates,creds,call_count,asof):
+        call_count[0]+=1
+        return {"AAPL":daily_rows},{"AAPL":half_rows[:-1]}
+    def minute_fake(symbol,slot,keys,calls,epoch):
+        minute_calls.append((symbol,slot,epoch))
+        calls[0]+=1
+        return "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW"
+    isolated_integrity_recheck(
+        minute_case,d,("FAKE","FAKE"),counters,one_sym_fetch,
+        analyzer=lambda *_:{"AAPL":INTEGRITY_UNKNOWN},
+        minute_probe=minute_fake)
+    require(minute_case["minute_witness_counts"]==
+            {"MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":1}
+            and len(minute_calls)==1
+            and minute_calls[0][0]=="AAPL"
+            and minute_case["minute_witness_inspected"]==1
+            and counters[0]==2
+            and minute_case["classifications"]["AAPL"]==INTEGRITY_UNKNOWN
+            and minute_case["price_primary_pass_count"]==0
+            and minute_case["registered_R92_created"] is False,
+            "1MIN_SIP_SHADOW_CANNOT_REPAIR_PRICE_PRIMARY")
     print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_ISOLATED_GAP_SOURCE_REASONS_DAILY_RTH_DUPLICATE_AUTH_BUDGET_NO_PRIMARY")
 
 def main():
