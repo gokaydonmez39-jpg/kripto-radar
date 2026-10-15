@@ -61,7 +61,7 @@ jobs:
     env:
       FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
       CLOUDFLARE_RADAR_TOKEN: ${{ secrets.CLOUDFLARE_RADAR_TOKEN }}
-      XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY/1.0 research github.com/gokaydonmez39-jpg/kripto-radar"
+      XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
