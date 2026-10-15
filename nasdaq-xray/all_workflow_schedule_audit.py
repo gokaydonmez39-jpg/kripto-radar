@@ -33,7 +33,7 @@ EXPECTED={
  "xray-final-gate-overlay.yml":("15 * * * *",),
  "xray-github-native-root-watchdog.yml":("*/15 * * * 1-5",),
  "xray-live-truth-attestation.yml":("13 * * * 1-5",),
- "xray-manual-decision-research-shadow.yml":("17 21 * * 1-5",),
+ "xray-manual-decision-research-shadow.yml":("17 21 * * 1-5","15 13 * * 1-5"),
  "xray-massive-grouped-history-resume.yml":("17 */3 * * *",),
  "xray-multi-provider-research-shadow.yml":("07 21 * * 1-5",),
  "xray-preopen-source-audit.yml":("5 12 * * 1-5","25 12 * * 1-5",
@@ -176,6 +176,7 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-watch-delivery-microaudit.yml"]==["5 13 * * 1-5","35 22 * * 1-5"]
+    assert base["automated_schedules"]["xray-manual-decision-research-shadow.yml"]==["17 21 * * 1-5","15 13 * * 1-5"]
     assert "xray-personal-full-cohort-early-watch.yml" in base["extra_readonly_provider_scheduled"]
     assert "xray-personal-full-universe-sip-coverage.yml" in base["extra_readonly_provider_scheduled"]
     def bad(modify,want):
