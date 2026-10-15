@@ -180,7 +180,7 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
              "ZERO_VOLUME_DAILY_BAR",0),"ZERO_MINUTE_COUNTS_BUDGET")
     output["worst_case_page_requests_upper_bound"] = (
         output["requests_attempted"] * PAGER_MAX_PAGES_PER_BATCH
-        +output["zero_volume_minute_checks"])
+        +2*output["zero_volume_minute_checks"])
     output["status"] = (
         "SHADOW_FORENSICS_MEASURED_NOT_CANONICAL"
         if "TRANSPORT_UNVERIFIED" not in first.values()

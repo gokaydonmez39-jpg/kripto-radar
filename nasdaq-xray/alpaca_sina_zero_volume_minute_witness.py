@@ -19,6 +19,7 @@ from alpaca_rth_minute_integrity_shadow import official_window
 from alpaca_free_sip_shadow_guard import timestamp_date
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp
 from alpaca_minute_source_response_diagnostics import classify_minute_document, SCHEMA_CODES
+from alpaca_minute_null_multiroute_shadow import probe as multi_probe, STATUS as MULTI_ROUTE_STATUS
 
 MAX_BYTES=280000
 SRE=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
@@ -26,6 +27,7 @@ WITNESS_CODES={
     "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
     "MINUTE_NO_RTH_BARS_STILL_UNKNOWN",
     *SCHEMA_CODES,
+    *MULTI_ROUTE_STATUS,
     "MINUTE_HTTP_400_INVALID_REQUEST",
     "MINUTE_HTTP_401_403_DENIED",
     "MINUTE_HTTP_429_THROTTLED",
@@ -89,6 +91,14 @@ def observe(symbol,day,asof,creds,urlopen=urllib.request.urlopen):
             doc=json.loads(raw)
         except (ValueError,TypeError):
             return "MINUTE_SCHEMA_JSON_INVALID"
+        # A provider 200 with bars:null is not evidence of zero volume.
+        # Compare its multi-symbol transport route once, same RTH session,
+        # same SIP entitlement, no vendor rows or identity persisted.
+        # Never retry if a pagination cursor or foreign symbol is present.
+        if (type(doc) is dict and doc.get("bars","UNSET") is None
+            and doc.get("next_page_token") is None
+            and doc.get("symbol") in (None,symbol)):
+            return multi_probe(symbol,day,asof,creds,urlopen)
         return classify_minute_document(
             doc,symbol=symbol,start=start,end_exclusive=close,max_bars=minutes,
             present_code="MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
@@ -167,7 +177,38 @@ def selftest():
         raise urllib.error.URLError("private")
     assert observe("AAA",day,day,("KEY","SECRET"),offline)==(
         "MINUTE_NETWORK_OR_TIMEOUT")
-    print("XRAY_SINA_DAILY_ZERO_MINUTE_SELFTEST=PASS_ONE_BOUND_SESSION_POSITIVE_NEGATIVES_NO_RAW_NO_PRIMARY")
+    # FIRST route bars:null triggers exactly ONE alternative multi-symbol GET,
+    # never a market-volume zero-filling operation.
+    calls=[]
+    def contrasted(req,timeout):
+        calls.append(req.full_url)
+        if "/v2/stocks/AAA/bars?" in req.full_url:
+            return Reply({"symbol":"AAA","bars":None,"next_page_token":None})
+        assert "/v2/stocks/bars?" in req.full_url
+        return Reply({"bars":{"AAA":[{
+            "t":start.isoformat(),"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":123
+        }]},"next_page_token":None})
+    assert observe("AAA",day,day,("KEY","SECRET"),contrasted)==(
+        "MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW")
+    assert len(calls)==2
+    calls.clear()
+    def still_absent(req,timeout):
+        calls.append(req.full_url)
+        if "/v2/stocks/AAA/bars?" in req.full_url:
+            return Reply({"symbol":"AAA","bars":None,"next_page_token":None})
+        return Reply({"bars":{},"next_page_token":None})
+    assert observe("AAA",day,day,("KEY","SECRET"),still_absent)==(
+        "MULTI_ROUTE_NO_ELIGIBLE_BAR_OBSERVED_UNKNOWN")
+    assert len(calls)==2
+    # Non-null invalid responses MUST NOT cause an alternate provider call.
+    calls.clear()
+    def badschema(req,timeout):
+        calls.append(req.full_url)
+        return Reply({"symbol":"AAA","bars":{},"next_page_token":None})
+    assert observe("AAA",day,day,("KEY","SECRET"),badschema)==(
+        "MINUTE_SCHEMA_BARS_MAPPING_NOT_LIST")
+    assert len(calls)==1
+    print("XRAY_SINA_DAILY_ZERO_MINUTE_SELFTEST=PASS_BOUNDED_NULL_ALTERNATE_ROUTE_NO_SYNTHETIC_VOLUME_NO_PRIMARY")
 
 if __name__=="__main__":
     selftest()
