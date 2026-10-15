@@ -51,6 +51,6 @@ jobs:
           assert d["go"] is False and d["alpha_authority"] is False
           assert e["execution"]=="NONE" and e["real_money"]=="NO-GO"
           print("XRAY_DEVICE_RELEASE_SEPARATION=PASS_REAL_GITHUB_RUN_NO_FAKE_ACK_NO_ALPHA")
-          print("XRAY_FUTURE_READY_LOCAL_CHAIN_TEST=EVALUATED_IN_CAUSAL_SELFTEST")
+          print("XRAY_FUTURE_READY_LOCAL_CHAIN_TEST=EVALUATED_IN_CAUSAL_SELFTEST_TUPLE_FIX")
           print("XRAY_RETAINED_SOURCE_BLOCKERS="+str(e["blockers"]))
           PY
