@@ -1,0 +1,66 @@
+name: XRAY Backup SIP Batch and Root Trigger Regression (No Vendor Calls)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
+      - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
+      - ".github/workflows/xray-sip-backup-trigger-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
+      - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
+      - ".github/workflows/xray-sip-backup-trigger-regression.yml"
+permissions:
+  contents: read
+jobs:
+  backup-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install only offline calendar and YAML parser
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0 PyYAML==6.0.3
+      - name: Batch error isolation vs quota/auth transport exact tests
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile nasdaq-xray/alpaca_full_universe_asof_sip_availability.py
+          python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+          python -O nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+      - name: Prove backup only follows successful root and cannot auto-promote C4.17
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          f=Path(".github/workflows/xray-personal-full-universe-sip-coverage.yml")
+          d=yaml.load(f.read_text(),Loader=yaml.BaseLoader)
+          on=d["on"]
+          assert on["workflow_run"]["workflows"]==[
+              "NASDAQ SWING XRAY Autonomous Data Plane"]
+          assert on["workflow_run"]["types"]==["completed"]
+          assert on["workflow_run"]["branches"]==["main"]
+          assert on["schedule"][0]["cron"]=="10 22 * * 1-5"
+          assert "pull_request" not in on,"EXPENSIVE_NETWORK_SCAN_IN_PR"
+          jobs=d["jobs"]
+          gate=jobs["coverage"]["if"]
+          assert "github.event.workflow_run.conclusion == 'success'" in gate
+          assert "github.event.workflow_run.head_branch == 'main'" in gate
+          assert "github.event_name != 'workflow_run'" in gate
+          assert "workflow_run" in on and "push" in on and "schedule" in on
+          assert "source_circuit_breaker_open" in Path(
+              "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
+          ).read_text()
+          for key in ("history260","root-source-bridge","joint-rth30-shadow",
+                      "six-gate-causal-breaker"):
+              assert key in jobs and "needs" in jobs[key]
+          assert d["permissions"]["contents"]=="read"
+          assert not d["concurrency"]["cancel-in-progress"]=="true"
+          print("XRAY_BACKUP_AUTOMATIC_ROOT_TRIGGER=PASS_SUCCESS_MAIN_ONLY_CREDIT_BOUNDED_RESEARCH_NO_AL")
+          PY
