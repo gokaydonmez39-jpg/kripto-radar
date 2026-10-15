@@ -99,6 +99,21 @@ jobs:
           need(x["scope_count"]==len(x["technical_status_by_symbol"]) and
                x["all_symbols_classified"] is True and
                sum(x["classification_counts"].values())==x["scope_count"],"EXACT_SCOPE")
+          # FULL NASDAQ identity SOURCE != source-qualified 30-minute technical cohort.
+          # Even successful cohort classification cannot silently assert full-universe
+          # technical coverage. Missing source/history/price proof is not TECH_FAIL.
+          need(x["full_identity_source_partition_checked"] is True
+               and type(x["source_causal_scope_count"]) is int
+               and type(x["outside_technical_cohort_count"]) is int
+               and x["source_causal_scope_count"]==
+                   x["scope_count"]+x["outside_technical_cohort_count"]
+               and sum(x["outside_technical_cohort_first_unresolved_gate_counts"].values())==
+                   x["outside_technical_cohort_count"]
+               and x["technical_cohort_is_universe_count"]==
+                   (x["outside_technical_cohort_count"]==0)
+               and x["full_identity_technical_scan_attested"]==
+                   (x["outside_technical_cohort_count"]==0 and x["all_symbols_classified"]),
+               "FULL_IDENTITY_VS_COHORT_NOT_CONFLATED")
           need(set(x["technical_setup_family_verified"])==
                set(x["technical_research_watch_symbols"]),"NO_FALSE_SETUP_FAMILY")
           need(type(x.get("source_workflow_run_id")) is int and
@@ -122,6 +137,11 @@ jobs:
               f.write("ASOF ET: "+x["asof_et"]+"; cohort "+str(x["scope_count"])+"\n\n")
               f.write("Fresh A/B/D technical observations: **"+
                       str(len(x["technical_research_watch_symbols"]))+"**\n\n")
+              f.write("Source identity count: **"+str(x["source_causal_scope_count"])+
+                      "**; outside research-only technical cohort: **"+
+                      str(x["outside_technical_cohort_count"])+"**.\\n\\n")
+              f.write("Full-identity technical scan attested: **"+
+                      str(x["full_identity_technical_scan_attested"])+"**.\\n\\n")
               f.write("Primary MC, canonical DV30, G9, issuer events and R92: **UNVERIFIED**.\n\n")
               f.write("This private artifact is not a platform notification or iPhone receipt.\n")
           print("XRAY_EARLY_WATCH=SOURCE_BOUND_COHORT_CLASSIFIED_NO_FALSE_BUY")
