@@ -1,7 +1,7 @@
 name: XRAY C4.17 Dual Lane GO Observer - No Authority
 on:
   push:
-    branches: [audit/c417-dual-lane-go-shadow-20261010, main]
+    branches: [audit/c417-dual-lane-go-shadow-20261010, main, xray/dual-lane-zero-price-pass-safe-noop-20261015] # TEMP_PROOF_ONLY_REMOVE
     paths:
       - "nasdaq-xray/research/c417_dual_lane_go_shadow.py"
       - "nasdaq-xray/canonical_current_master_manifest.json"
@@ -37,7 +37,74 @@ jobs:
           python nasdaq-xray/research/c417_dual_lane_go_shadow.py --selftest
           python nasdaq-xray/current_history_source_request.py --selftest
           python nasdaq-xray/e2e_production_readiness.py --selftest
+      - name: Verify zero PRICE PASS is an exact source-bound non-signal cohort
+        id: pass_scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          def digest(xs): return hashlib.sha256("\\n".join(xs).encode()).hexdigest()
+          def need(ok,reason):
+              if not ok: raise ValueError("XRAY_DUAL_LANE_COHORT_GUARD:"+reason)
+          def assess(m,p):
+              safe=lambda x:x.get("execution")=="NONE" and x.get("real_money")=="NO-GO" and x.get("unknown_never_pass") is True
+              need(safe(m) and safe(p),"UNSAFE_CANONICAL_SOURCE")
+              syms=m.get("pass_symbols"); passed=p.get("pass_symbols")
+              need(type(syms) is list and syms==sorted(set(syms)) and all(type(s) is str and s for s in syms),"MASTER_SET")
+              need(type(passed) is list and passed==sorted(set(passed)) and all(type(s) is str and s for s in passed),"PRICE_SET")
+              need(type(m.get("queue_total")) is int and len(syms)==m["queue_total"],"MASTER_COUNT")
+              need(m.get("queue_hash")==digest(syms),"MASTER_HASH")
+              need(type(p.get("source_master_count")) is int and p["source_master_count"]==len(syms)
+                   and p.get("source_master_queue_hash")==m["queue_hash"],"PRICE_MASTER_BINDING")
+              need(p.get("asof_et")==m.get("asof_et"),"ASOF_MISMATCH")
+              need(type(p.get("pass_count")) is int and p["pass_count"]==len(passed)
+                   and p.get("pass_hash")==digest(passed),"PRICE_PASS_BINDING")
+              need(set(passed).issubset(syms),"PRICE_PASS_OUTSIDE_MASTER")
+              results=p.get("results")
+              need(isinstance(results,dict) and set(results)==set(syms),"PRICE_FULL_RESULT_SCOPE")
+              u=p.get("unknown_symbols"); blocked=p.get("blocked_symbols")
+              need(type(u) is list and type(blocked) is list
+                   and u==sorted(set(u)) and blocked==sorted(set(blocked))
+                   and type(p.get("unknown_count")) is int and p["unknown_count"]==len(u)
+                   and type(p.get("blocked_count")) is int and p["blocked_count"]==len(blocked)
+                   and not (set(passed)&(set(u)|set(blocked))),"UNKNOWN_BLOCKED_PARTITION")
+              return "empty" if len(passed)==0 else "nonempty"
+          safety={"execution":"NONE","real_money":"NO-GO","unknown_never_pass":True}
+          example_m={**safety,"asof_et":"2026-10-14","pass_symbols":["AAA"],
+                     "queue_total":1,"queue_hash":digest(["AAA"])}
+          example_p={**safety,"asof_et":"2026-10-14","source_master_count":1,
+                     "source_master_queue_hash":digest(["AAA"]),"results":{"AAA":{"status":"UNKNOWN"}},
+                     "pass_symbols":[],"pass_count":0,"pass_hash":digest([]),
+                     "unknown_symbols":["AAA"],"unknown_count":1,
+                     "blocked_symbols":[],"blocked_count":0}
+          assert assess(example_m,example_p)=="empty"
+          ready=dict(example_p,pass_symbols=["AAA"],pass_count=1,pass_hash=digest(["AAA"]),
+                     unknown_symbols=[],unknown_count=0,results={"AAA":{"status":"PASS_PRICE_DV30"}})
+          assert assess(example_m,ready)=="nonempty"
+          for edit in ({"pass_count":1},{"pass_hash":"bad"},{"source_master_queue_hash":"bad"},
+                       {"asof_et":"2026-10-13"},{"unknown_never_pass":False},
+                       {"results":{}}):
+              bad=dict(example_p,**edit)
+              try:assess(example_m,bad)
+              except ValueError:pass
+              else:raise AssertionError("FALSE_EMPTY_SOURCE_ACCEPTED:"+str(edit))
+          actual_m=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          actual_p=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          cohort=assess(actual_m,actual_p)
+          with open(os.environ["GITHUB_OUTPUT"],"a") as out:out.write("cohort="+cohort+"\\n")
+          if cohort=="empty":
+              print("XRAY_DUAL_LANE=BLOCKED_NO_PRICE_PASS_SCOPE_NO_HISTORY_REQUEST_NO_AL")
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+                  out.write("XRAY zero PRICE PASS: validated empty cohort; no history request, no shadow GO or device ACK.\\n")
+          else:
+              print("XRAY_DUAL_LANE=NONEMPTY_COHORT_PROVENANCE_CHECK_CONTINUES")
+          print("XRAY_DUAL_LANE_ZERO_PASS_GUARD_SELFTEST=PASS_POSITIVE_SIX_NEGATIVES")
+          PY
       - name: Build source-bound 514 cohort concurrent research-only witness
+        if: steps.pass_scope.outputs.cohort == 'nonempty'
         run: |
           python nasdaq-xray/research/c417_dual_lane_go_shadow.py --out "$RUNNER_TEMP/xray_c417_dual_lane_go_shadow.json"
           python - <<'PY'
@@ -66,6 +133,7 @@ jobs:
           print("XRAY_DUAL_LANE_FAIL_CLOSED_NO_SHADOW_PROMOTION=PASS")
           PY
       - name: Upload only SHA, counts and negative evidence, no vendor price
+        if: steps.pass_scope.outputs.cohort == 'nonempty'
         uses: actions/upload-artifact@v4
         with:
           name: xray-c417-dual-lane-no-source-go-shadow
