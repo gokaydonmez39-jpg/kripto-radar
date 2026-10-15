@@ -45,7 +45,7 @@ def _private(cache: Path) -> bool:
 def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
              require_qqq: bool = True) -> dict:
     symbols = price.get("pass_symbols")
-    if (not isinstance(symbols, list) or not symbols
+    if (not isinstance(symbols, list)
         or symbols != sorted(set(symbols))
         or len(symbols) != price.get("pass_count")
         or any(not isinstance(s, str) for s in symbols)
@@ -74,7 +74,9 @@ def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
         raise ValueError("EXCHANGE_CALENDAR_INSUFFICIENT")
     # QQQ is a benchmark: it must be checked but is NOT a member of PRICE 514
     # unless it happens to pass the upstream equity rules.
-    targets = sorted(set(symbols) | ({"QQQ"} if require_qqq else set()))
+    # No PRICE survivors => no vendor cache should be opened, even for QQQ.
+    targets = (sorted(set(symbols) | ({"QQQ"} if require_qqq else set()))
+               if symbols else [])
     summary = {
         "missing_file": 0, "invalid_or_unreadable": 0,
         "stale_or_session_gap": 0, "complete_private_transport": 0,
@@ -125,19 +127,23 @@ def evaluate(price: dict, price_sha: str, cache_dir: Path, *,
             continue
         summary["complete_private_transport"] += 1
     tested = len(targets)
-    assert sum(summary.values()) == tested, "PARTITION_NOT_EXHAUSTIVE"
-    complete = summary["complete_private_transport"] == tested
+    if sum(summary.values()) != tested:
+        raise ValueError("PARTITION_NOT_EXHAUSTIVE")
+    complete = bool(symbols) and summary["complete_private_transport"] == tested
     # Hard wall: structural cache completeness is NOT provider entitlement,
     # verified exchange lineage, point-in-time split/issuer continuity, or
     # production history authority. No self-reported certificate can change it.
     return {
         "schema": SCHEMA,
-        "status": "PRIVATE_TRANSPORT_STRUCTURALLY_COMPLETE_NO_SOURCE_AUTHORITY"
-                  if complete else "PRIVATE_TRANSPORT_INCOMPLETE_OR_NOT_PRESENT",
+        "status": ("BLOCKED_ZERO_PRICE_PASS_NO_PRIVATE_HISTORY_INPUT"
+                  if not symbols else
+                  "PRIVATE_TRANSPORT_STRUCTURALLY_COMPLETE_NO_SOURCE_AUTHORITY"
+                  if complete else "PRIVATE_TRANSPORT_INCOMPLETE_OR_NOT_PRESENT"),
         "asof_et": asof,
         "policy": "C4.17", "control": "C4.27",
         "c418_status": "PROPOSED_NOT_ACTIVATED",
         "price_pass_count": len(symbols),
+        "history_source_input_eligible":bool(symbols),
         "source_price_blob_sha": price_sha,
         "source_price_pass_hash": price["pass_hash"],
         "source_price_unknown_count": price.get("unknown_count"),
