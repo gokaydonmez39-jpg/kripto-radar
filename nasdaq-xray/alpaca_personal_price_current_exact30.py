@@ -319,7 +319,7 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                         missing_first_slot,WITNESS_CODES)
                     slot=missing_first_slot(half.get(sym,[]),dates)
                     if slot is None:
-                        witness_counts["MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"]+=1
+                        witness_counts["MINUTE_SCHEMA_PRECHECK_INVALID"]+=1
                     else:
                         report["minute_witness_inspected"]+=1
                         try:
