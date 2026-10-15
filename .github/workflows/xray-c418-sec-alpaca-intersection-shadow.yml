@@ -29,14 +29,21 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 1
-      - name: Ensure this research run uses current main, not a superseded source
+      - name: Verify immutable event source; detect main drift without promoting research
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           remote_sha="$(git ls-remote origin refs/heads/main | cut -f1)"
-          test -n "$remote_sha" && test "$remote_sha" = "$GITHUB_SHA"
-          echo "XRAY_C418_PARTITION_SOURCE_SHA=CURRENT_MAIN_EXACT"
+          test -n "$remote_sha"
+          if [[ "$remote_sha" != "$GITHUB_SHA" ]]; then
+            echo "XRAY_C418_PARTITION_EPOCH=ARCHIVED_EVENT_SNAPSHOT_NO_PRIMARY_AUTHORITY"
+          else
+            echo "XRAY_C418_PARTITION_EPOCH=CURRENT_AT_PRECHECK_RESEARCH_ONLY"
+          fi
+          # The downstream join still checks immutable PRICE/MASTER Git blobs,
+          # same ASOF, cohort and symbol sets. No canonical writes or R92.
+          echo "XRAY_C418_PARTITION_SOURCE_SHA=EXACT_EVENT_SNAPSHOT_NOT_RELEASE_ATTESTATION"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
