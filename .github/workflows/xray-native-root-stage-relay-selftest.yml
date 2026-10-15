@@ -5,12 +5,14 @@ on:
     paths:
       - "nasdaq-xray/github_native_stage_relay.py"
       - ".github/workflows/xray-native-root-stage-relay-selftest.yml"
+      - ".github/workflows/xray-native-stage-relay-live.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/github_native_stage_relay.py"
       - ".github/workflows/nasdaq-xray-daily.yml"
       - ".github/workflows/xray-native-root-stage-relay-selftest.yml"
+      - ".github/workflows/xray-native-stage-relay-live.yml"
 permissions:
   contents: read
 jobs:
@@ -24,6 +26,18 @@ jobs:
           python-version: "3.12"
       - name: Install pinned Nasdaq session calendar needed by root watchdog
         run: python -m pip install --disable-pip-version-check pandas==2.2.3 pandas_market_calendars==5.4.0
+      - name: Reject missing runner dependency before operational relay import
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path(".github/workflows/xray-native-stage-relay-live.yml").read_text()
+          install="python -m pip install --disable-pip-version-check pandas==2.2.3 pandas_market_calendars==5.4.0"
+          first="      - name: Regress source epoch and active-run gates"
+          assert s.count(install)==1,"LIVE_RELAY_CALENDAR_INSTALL_MISSING_OR_DUPLICATE"
+          assert s.index(install)<s.index(first),"LIVE_RELAY_IMPORT_PRECEDES_DEPENDENCY_INSTALL"
+          assert s.count("python nasdaq-xray/github_native_stage_relay.py --selftest")==1
+          print("XRAY_LIVE_RELAY_PINNED_CALENDAR_INSTALL=PASS_BEFORE_FIRST_IMPORT")
+          PY
       - name: Compile root/watchdog and zero-alpha stage relay
         run: |
           python -m py_compile nasdaq-xray/github_native_stage_relay.py nasdaq-xray/github_native_root_watchdog.py
