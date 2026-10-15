@@ -1,0 +1,33 @@
+name: XRAY SEC One-Call Official Connectivity (No AL)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/xray-sec-official-onecall-preflight.yml"
+      - "nasdaq-xray/sec_contact_onecall_research_preflight.py"
+permissions:
+  contents: read
+concurrency:
+  group: xray-sec-single-public-cik-transport
+  cancel-in-progress: true
+jobs:
+  research-only-sec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Verify one-request research canary negative contracts offline
+        run: |
+          python -m py_compile nasdaq-xray/sec_contact_onecall_research_preflight.py
+          python nasdaq-xray/sec_contact_onecall_research_preflight.py --selftest
+      - name: Diagnose SEC secret or attempt exactly one bounded official CIK request
+        env:
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
+        run: |
+          python nasdaq-xray/sec_contact_onecall_research_preflight.py
+          echo "XRAY_SEC_CANARY_NO_PRICE_MC_HISTORY_R92_OR_TRADES=TRUE"
