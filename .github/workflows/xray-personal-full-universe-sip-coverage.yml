@@ -14,6 +14,12 @@ on:
   schedule:
     - cron: "10 22 * * 1-5"
   workflow_dispatch:
+  # Prompt independent Alpaca research to check current source coverage
+  # as soon as root processing succeeds; this never promotes canonical data.
+  workflow_run:
+    workflows: ["NASDAQ SWING XRAY Autonomous Data Plane"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -25,6 +31,7 @@ concurrency:
 jobs:
   coverage:
     name: Verify every source symbol's delayed SIP session-day availability
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
