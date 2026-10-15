@@ -391,6 +391,21 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
         seen.add(dkey)
     return True
 
+def post_delivery_receipt_observability():
+    """A device ACK is post-publication evidence, NEVER a pre-publication gate.
+
+    The read-only E2E runner has no platform delivery API. Returning False
+    means unverified, not failed delivery and not a fabricated phone receipt.
+    """
+    return {
+        "phase": "POST_DELIVERY_INDEPENDENT_ACK",
+        "status": "UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+        "device_receipt_attested": False,
+        "research_release_prerequisite": False,
+        "notification_sent_by_this_audit": False,
+    }
+
+
 def snapshot():
     master=read("canonical_current_master_manifest.json")
     price=read("canonical_current_price_dv30.json")
@@ -481,8 +496,11 @@ def snapshot():
     # Unlike current/live G9, this is a separate historical manual-only
     # witness; it is NEVER a market-data entitlement, full GO or delivery.
     # Delivery is independent: a zero-signal scenario may be a legitimate
-    # completed run, but a device receipt must never be inferred from a ledger.
-    fail("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN",False)
+    # completed run. Requiring proof of receipt before ANY signal can be
+    # released would cause a circular dependency and permanent false NO-GO.
+    # The independent device ACK remains explicitly UNVERIFIED, separate from
+    # the C4.17 SOURCE/TERMINAL release blockers.
+    delivery=post_delivery_receipt_observability()
     scopes=scope_readiness(blocks,current_chain)
     return {
         "schema":"XRAY_E2E_PRODUCTION_READINESS_AUDIT_V1",
@@ -495,6 +513,7 @@ def snapshot():
         "historical_manual_research_no_g9_pass_claim":True,
         "historical_manual_research_no_notification_claim":True,
         "candidate_preparation_witness_only":prepared,
+        "delivery_observability":delivery,
         "actual_device_delivery_receipt_attested":False,
         "full_e2e_research_attested":current_chain
             and freshness.get("freshness_ready") is True
@@ -526,6 +545,16 @@ def snapshot():
     }
 
 def selftest():
+    delivery=post_delivery_receipt_observability()
+    assert delivery=={
+        "phase":"POST_DELIVERY_INDEPENDENT_ACK",
+        "status":"UNVERIFIED_NO_INDEPENDENT_DEVICE_ACK",
+        "device_receipt_attested":False,
+        "research_release_prerequisite":False,
+        "notification_sent_by_this_audit":False,
+    }
+    assert scope_readiness([],True)["candidate_local_source_chain_attested"] is True
+    print("XRAY_POST_DELIVERY_ACK_SEPARATION=PASS_UNVERIFIED_NOT_A_SOURCE_VETO")
     sample={
       "pass_symbols":["A","B"],
       "results":{
