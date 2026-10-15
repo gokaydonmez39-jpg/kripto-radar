@@ -37,7 +37,7 @@ def scope(price,master):
         if doc.get("execution")!="NONE" or doc.get("real_money")!="NO-GO":
             raise ValueError("SOURCE_SAFETY_CHANGED")
     symbols=price.get("pass_symbols")
-    if (not isinstance(symbols,list) or not symbols
+    if (not isinstance(symbols,list)
             or symbols!=sorted(set(symbols)) or len(symbols)!=price.get("pass_count")
             or sha256_lines(symbols)!=price.get("pass_hash")
             or not set(symbols).issubset(set(master.get("pass_symbols") or []))):
@@ -50,8 +50,30 @@ def scope(price,master):
     daily,weeks=expected_dates(asof)
     if len(daily)!=260 or len(weeks)!=52 or daily[-1]!=asof:
         raise ValueError("OFFICIAL_260_52_CALENDAR_INVALID")
-    targets=sorted(set(symbols)|{"QQQ"})
+    targets=sorted(set(symbols)|{"QQQ"}) if symbols else []
     return asof,targets,daily,weeks
+
+
+def zero_scope_report(asof,daily,weeks):
+    """No PRICE survivors => no QQQ-only HISTORY probe and no provider calls."""
+    return {
+      "schema":SCHEMA,"asof_et":asof,"policy":"C4.17","control":"C4.27",
+      "status":"BLOCKED_ZERO_PRICE_PASS_NO_260_HISTORY_REQUEST",
+      "expected_scope_count":0,"measured_scope_count":0,
+      "contains_qqq_benchmark":False,
+      "expected_daily_sessions":len(daily),
+      "required_completed_week_closes":len(weeks),
+      "batch_size":BATCH_SIZE,"batches_attempted":0,
+      "counts":{},"unverified_symbols":{},"transport_error_class":None,
+      "api_feed":"sip","api_timeframe":"1Day","api_adjustment":"raw",
+      "source_market_data_rights_independently_attested":False,
+      "corporate_action_adjustment_and_share_class_attested":False,
+      "current_c417_history_primary_authority":False,
+      "canonical_history_pass_created":0,"primary_mc_pass_created":0,
+      "strict_g9_pass":False,"account_pass":False,"r92_created":False,
+      "vendor_ohlcv_in_artifact":False,"vendor_raw_bars_persisted":False,
+      "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
+    }
 
 
 def classify(rows,required_daily,required_weeks,asof):
@@ -180,6 +202,16 @@ def selftest():
                 "execution":"NONE","real_money":"NO-GO"}
     a,t,d,w=scope(fake_price,fake_master)
     assert t==["AAA","BBB","QQQ"] and d==daily and w==weeks
+    no_equity=dict(fake_price,pass_symbols=[],pass_count=0,
+                   pass_hash=sha256_lines([]),unknown_count=2,
+                   unknown_symbols=["AAA","BBB"])
+    no_equity_master=dict(fake_master)
+    za,zt,zd,zw=scope(no_equity,no_equity_master)
+    assert za==asof and zt==[] and len(zd)==260
+    z=zero_scope_report(za,zd,zw)
+    assert z["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_260_HISTORY_REQUEST"
+    assert z["expected_scope_count"]==0 and z["measured_scope_count"]==0
+    assert z["r92_created"] is False and z["current_c417_history_primary_authority"] is False
     def mock_fetch(batch,start,end):
         assert set(batch)<=set(t) and "2025-09-29" in start
         assert end=="2026-10-10T00:00:00Z"
@@ -198,7 +230,7 @@ def selftest():
     assert blocked["counts"]["UNCHECKED_DUE_TO_TRANSPORT"]==3
     assert blocked["transport_error_class"]=="ALPACA_HTTP_429"
     assert blocked["status"]=="SHADOW_INCOMPLETE_TRANSPORT_OR_SCOPE"
-    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_POSITIVE_6_NEGATIVE_3_SCOPE_AND_TRANSPORT_NO_PRIMARY")
+    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_ZERO_PASS_POSITIVE_6_NEGATIVE_NO_PROVIDER_NO_PRIMARY")
 
 
 def main():
@@ -213,13 +245,18 @@ def main():
     price=json.loads(PRICE.read_text())
     master=json.loads(MASTER.read_text())
     asof,targets,daily,weeks=scope(price,master)
-    key=os.getenv("XRAY_ALPACA_DATA_KEY_ID","").strip()
-    secret=os.getenv("XRAY_ALPACA_DATA_SECRET_KEY","").strip()
-    if not key or not secret:
-        raise SystemExit("XRAY_ALPACA_515=BLOCKED_PRIVATE_CREDENTIALS_UNAVAILABLE")
-    def real(batch,start,end):
-        return request_batch(batch,start,end,key,secret,adjustment="raw",asof=asof)
-    result=audit(asof,targets,daily,weeks,real,now=dt.datetime.now(UTC))
+    if not targets:
+        # Real source is 0 canonical PRICE PASS. Never ask for benchmark
+        # or use credentials merely to create a misleading 260/52 witness.
+        result=zero_scope_report(asof,daily,weeks)
+    else:
+        key=os.getenv("XRAY_ALPACA_DATA_KEY_ID","").strip()
+        secret=os.getenv("XRAY_ALPACA_DATA_SECRET_KEY","").strip()
+        if not key or not secret:
+            raise SystemExit("XRAY_ALPACA_515=BLOCKED_PRIVATE_CREDENTIALS_UNAVAILABLE")
+        def real(batch,start,end):
+            return request_batch(batch,start,end,key,secret,adjustment="raw",asof=asof)
+        result=audit(asof,targets,daily,weeks,real,now=dt.datetime.now(UTC))
     result["api_symbol_mapping_asof_et"]=asof
     result["security_identity_lineage_independently_verified"]=False
     result["source_price_blob_sha"]=blob_sha(PRICE)

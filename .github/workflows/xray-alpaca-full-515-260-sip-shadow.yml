@@ -1,5 +1,10 @@
 name: XRAY Alpaca 515 Exact-260 SIP Shadow Full Scope (No GO)
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
+      - ".github/workflows/xray-alpaca-full-515-260-sip-shadow.yml"
   push:
     branches: [main]
     paths:
@@ -58,7 +63,8 @@ jobs:
               ["git","hash-object","nasdaq-xray/canonical_current_price_dv30.json"],text=True).strip()
           assert j["source_master_blob_sha"]==subprocess.check_output(
               ["git","hash-object","nasdaq-xray/canonical_current_master_manifest.json"],text=True).strip()
-          assert j["expected_scope_count"]==j["price_pass_count"]+1
+          assert j["expected_scope_count"]==(
+              j["price_pass_count"]+(1 if j["price_pass_count"] else 0))
           assert j["expected_daily_sessions"]==260
           assert j["required_completed_week_closes"]==52
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
@@ -70,11 +76,18 @@ jobs:
           assert j["vendor_ohlcv_in_artifact"] is False
           assert j["vendor_raw_bars_persisted"] is False
           assert sum(j["counts"].values())==j["expected_scope_count"]
-          if j["status"]!="SHADOW_FULL_515_SCOPE_MEASURED_NO_AUTHORITY":
-              raise SystemExit("XRAY_515_SHADOW_TRANSPORT_PARTIAL_FAIL_CLOSED")
-          if j["measured_scope_count"]!=j["expected_scope_count"]:
-              raise SystemExit("XRAY_515_SHADOW_SCOPE_NOT_COMPLETE_FAIL_CLOSED")
-          print("XRAY_515_REAL_FULL_SCOPE_MEASURED=PASS_NO_PRIMARY_NO_AL")
+          if j["price_pass_count"]==0:
+              assert j["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_260_HISTORY_REQUEST"
+              assert j["measured_scope_count"]==0
+              assert j["batches_attempted"]==0
+              assert j["contains_qqq_benchmark"] is False
+              print("XRAY_515_CURRENT_ZERO_PASS=BLOCKED_NO_SOURCE_HTTP_NO_AL")
+          else:
+              if j["status"]!="SHADOW_FULL_515_SCOPE_MEASURED_NO_AUTHORITY":
+                  raise SystemExit("XRAY_515_SHADOW_TRANSPORT_PARTIAL_FAIL_CLOSED")
+              if j["measured_scope_count"]!=j["expected_scope_count"]:
+                  raise SystemExit("XRAY_515_SHADOW_SCOPE_NOT_COMPLETE_FAIL_CLOSED")
+              print("XRAY_515_REAL_FULL_SCOPE_MEASURED=PASS_NO_PRIMARY_NO_AL")
           PY
       - name: Archive non-vendor per-symbol status and source SHAs only
         if: ${{ always() && github.ref == 'refs/heads/main' }}
