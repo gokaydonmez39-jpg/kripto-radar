@@ -20,8 +20,10 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent
 REVIEW = ROOT / "research/master_20261014_nine_sec_sic_review_v1.json"
-MASTER = ROOT / "canonical_current_master_manifest.json"
 ASOF = "2026-10-14"
+FROZEN_MASTER_BLOB = "efd55ad9ba7386b5ac6b2a76ee8677fd30b3ed04"
+# The immutable commit carrying this historical master is selected by the CI
+# workflow. Never read the moving canonical_current pointer for archival proof.
 EXPECTED = {"ALIS", "BSAA", "FACT", "FVN", "HCAC", "IPXG",
             "MACI", "MCGA", "WTG"}
 SAFE = {"execution": "NONE", "real_money": "NO-GO",
@@ -44,7 +46,8 @@ def check(doc: dict, master: dict, master_blob: str) -> dict:
     require(doc.get("schema") == "XRAY_MASTER_NINE_SEC_SIC_REVIEW_V1",
             "REVIEW_SCHEMA")
     require(doc.get("asof_et") == master.get("asof_et") == ASOF, "ASOF")
-    require(doc.get("master_blob_sha") == master_blob, "MASTER_BLOB")
+    require(doc.get("master_blob_sha") == master_blob == FROZEN_MASTER_BLOB,
+            "IMMUTABLE_MASTER_BLOB")
     require(all(doc.get(k) == v and master.get(k) == v
                 for k, v in SAFE.items()), "INVARIANTS")
     require(doc.get("authority") ==
@@ -126,9 +129,9 @@ def check(doc: dict, master: dict, master_blob: str) -> dict:
     }
 
 
-def selftest() -> None:
+def selftest(master_path: Path) -> None:
     data = json.loads(REVIEW.read_text())
-    raw = MASTER.read_bytes()
+    raw = master_path.read_bytes()
     master = json.loads(raw)
     want = blob_sha(raw)
     require(check(data, master, want)["all_nine_still_unknown"] is True,
@@ -166,13 +169,14 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--selftest", action="store_true")
     p.add_argument("--live", action="store_true")
+    p.add_argument("--master-source", type=Path, required=True)
     args = p.parse_args()
     if args.selftest == args.live:
         p.error("Select exactly one of --selftest and --live")
     if args.selftest:
-        selftest()
+        selftest(args.master_source)
         return
-    raw = MASTER.read_bytes()
+    raw = args.master_source.read_bytes()
     doc = json.loads(REVIEW.read_text())
     result = check(doc, json.loads(raw), blob_sha(raw))
     print("XRAY_NINE_SEC_REVIEW=" + json.dumps(result, sort_keys=True))
