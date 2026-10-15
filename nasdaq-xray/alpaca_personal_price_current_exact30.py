@@ -90,6 +90,8 @@ def empty_report(asof,names,dates,master_blob,price_blob):
         "integrity_recheck_unresolved":0,
         "integrity_recheck_status":"NOT_STARTED",
         "integrity_recheck_detail_counts":{},
+        "minute_witness_counts":{},
+        "minute_witness_inspected":0,
         "canonical_price_promoted":False,"canonical_mc_promoted":False,
         "canonical_files_mutated":False,"strict_live_G9_satisfied":False,
         "registered_R92_created":False,"personal_research_only":True,
@@ -273,7 +275,8 @@ def isolated_gap_detail(daily,halfhour,days,root_reason):
 
 def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                                analyzer=dynamic_analyze,checkpoint=None,
-                               *,max_rechecks=MAX_INTEGRITY_RECHECKS):
+                               *,max_rechecks=MAX_INTEGRITY_RECHECKS,
+                               minute_probe=None):
     """Recheck bounded source gaps and record only safe aggregate reason counts."""
     require(type(max_rechecks) is int and 0<=max_rechecks<=MAX_INTEGRITY_RECHECKS,
             "ISOLATED_RECHECK_CAP")
@@ -284,6 +287,7 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
     report["integrity_recheck_status"]="NO_GAPS" if not candidates else "BOUNDED_RESEARCH_RECHECK"
     failure_reasons={}
     failure_details={}
+    witness_counts=collections.Counter()
     for sym in candidates[:max_rechecks]:
         if counters[0]>=CALL_BUDGET:
             report["integrity_recheck_status"]="GLOBAL_BUDGET_EXHAUSTED"
@@ -310,6 +314,21 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
                     half.get(sym,[]),dates,failure_reasons[sym])
                 if detail is not None:
                     failure_details[sym]=detail
+                if failure_reasons[sym]=="RTH_30MIN_SESSION_GAP" and minute_probe is not None:
+                    from alpaca_price_gap_minute_witness import (
+                        missing_first_slot,WITNESS_CODES)
+                    slot=missing_first_slot(half.get(sym,[]),dates)
+                    if slot is None:
+                        witness_counts["MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"]+=1
+                    else:
+                        report["minute_witness_inspected"]+=1
+                        try:
+                            witness=minute_probe(sym,slot,credentials,counters,report["asof_et"])
+                        except (urllib.error.HTTPError,urllib.error.URLError,
+                                ValueError,TypeError,TimeoutError,OSError):
+                            witness="MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN"
+                        require(witness in WITNESS_CODES,"MINUTE_PROBE_INVALID_ENUM")
+                        witness_counts[witness]+=1
         except (urllib.error.HTTPError,urllib.error.URLError,ValueError,
                 TimeoutError,OSError) as exc:
             if isinstance(exc,urllib.error.HTTPError) and exc.code in (401,403,429):
@@ -334,6 +353,11 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
     require(set(failure_details)<=unresolved,"ISOLATED_DETAIL_SCOPE_EXACT")
     report["integrity_recheck_detail_counts"]=dict(sorted(
         collections.Counter(failure_details.values()).items()))
+    report["minute_witness_counts"]=dict(sorted(witness_counts.items()))
+    require(report["minute_witness_inspected"]<=MAX_INTEGRITY_RECHECKS
+            and sum(report["minute_witness_counts"].values())<=sum(
+                x=="RTH_30MIN_SESSION_GAP" for x in failure_reasons.values()),
+            "MINUTE_WITNESS_BOUND_SOURCE_ONLY")
     require(set(report["integrity_recheck_detail_counts"])<=GAP_DETAIL_CODES
             and sum(report["integrity_recheck_detail_counts"].values())
             ==sum(code in {"RTH_30MIN_SESSION_GAP",
@@ -399,8 +423,12 @@ def census(now,credentials,output,fetcher=fetch):
         checkpoint()
         if i+BATCH<len(symbols):time.sleep(0.7)
     if not result.get("provider_cliff"):
+        from alpaca_price_gap_minute_witness import observe
         isolated_integrity_recheck(result,dates,credentials,counters,fetcher,
-                                   checkpoint=checkpoint)
+                                   checkpoint=checkpoint,
+                                   minute_probe=lambda symbol,slot,keys,counter,epoch:
+                                       observe(symbol,slot,epoch,tuple(keys),
+                                               counter,CALL_BUDGET))
     finalize(result)
     checkpoint()
     return result
@@ -565,6 +593,34 @@ def selftest():
     require(isolated_gap_detail(daily_rows,half_rows,d,
             "OTHER_STRUCTURAL_SOURCE_REJECTION") is None,
             "OTHER_STRUCTURAL_MUST_NOT_BE_GUESSED")
+    # Deliberately no bar reconstruction: same-vendor 1Min evidence is a
+    # discrepancy witness only; the original unknown remains UNKNOWN.
+    minute_case=empty_report(asof,["AAPL"],d,"a"*40,"b"*40)
+    minute_case["classifications"]={"AAPL":INTEGRITY_UNKNOWN}
+    finalize(minute_case)
+    minute_calls=[]
+    counters=[0]
+    def one_sym_fetch(block,dates,creds,call_count,asof):
+        call_count[0]+=1
+        return {"AAPL":daily_rows},{"AAPL":half_rows[:-1]}
+    def minute_fake(symbol,slot,keys,calls,epoch):
+        minute_calls.append((symbol,slot,epoch))
+        calls[0]+=1
+        return "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW"
+    isolated_integrity_recheck(
+        minute_case,d,("FAKE","FAKE"),counters,one_sym_fetch,
+        analyzer=lambda *_:{"AAPL":INTEGRITY_UNKNOWN},
+        minute_probe=minute_fake)
+    require(minute_case["minute_witness_counts"]==
+            {"MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":1}
+            and len(minute_calls)==1
+            and minute_calls[0][0]=="AAPL"
+            and minute_case["minute_witness_inspected"]==1
+            and counters[0]==2
+            and minute_case["classifications"]["AAPL"]==INTEGRITY_UNKNOWN
+            and minute_case["price_primary_pass_count"]==0
+            and minute_case["registered_R92_created"] is False,
+            "1MIN_SIP_SHADOW_CANNOT_REPAIR_PRICE_PRIMARY")
     print("XRAY_PERSONAL_CURRENT_PRICE_SELFTEST=PASS_ISOLATED_GAP_SOURCE_REASONS_DAILY_RTH_DUPLICATE_AUTH_BUDGET_NO_PRIMARY")
 
 def main():
@@ -587,6 +643,8 @@ def main():
         out["integrity_recheck_unresolved_reason_counts"],sort_keys=True))
     print("XRAY_PERSONAL_CURRENT_PRICE_INTEGRITY_DETAIL_COUNTS="+json.dumps(
         out["integrity_recheck_detail_counts"],sort_keys=True))
+    print("XRAY_PERSONAL_CURRENT_PRICE_MINUTE_WITNESS_COUNTS="+json.dumps(
+        out["minute_witness_counts"],sort_keys=True))
     print("XRAY_PERSONAL_CURRENT_PRICE_ASOF="+out["asof_et"])
     print("XRAY_PERSONAL_CURRENT_PRICE_NO_PRIMARY_R92=PASS")
 if __name__=="__main__":main()

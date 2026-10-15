@@ -34,6 +34,12 @@ SAFE = {"execution": "NONE", "real_money": "NO-GO",
         "unknown_never_pass": True}
 # Strict enumeration of derived incident labels; never copy exception text,
 # symbol IDs, missing bar positions, per-session values or provider payloads.
+MINUTE_WITNESS_CODES = {
+    "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
+    "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
+    "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN",
+    "MINUTE_GLOBAL_BUDGET_BLOCKED",
+}
 GAP_DETAIL_CODES = {
     "RTH_ONE_30MIN_SLOT_MISSING",
     "RTH_MULTIPLE_30MIN_SLOTS_ONE_SESSION",
@@ -107,6 +113,8 @@ def baseline(asof: str, symbols: list[str],
         "unresolved_shadow_source_count": len(symbols),
         "integrity_recheck_unresolved_reason_counts": {},
         "integrity_recheck_detail_counts": {},
+        "minute_witness_counts": {},
+        "minute_witness_inspected": 0,
         "source_authority": "SHADOW_RTH_30MIN_LOWER_BOUND_NOT_CANONICAL",
         "data_rights_independently_attested": False,
         "closing_auction_and_corrections_attested": False,
@@ -222,6 +230,21 @@ def sanitize(j: dict, master: dict, price: dict, mb: bytes, pb: bytes,
                 categories.get("OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",0)),
                 "GAP_DETAIL_ROOT_PARTITION_MISMATCH")
             result["integrity_recheck_detail_counts"]=dict(sorted(details.items()))
+        if "minute_witness_counts" in j:
+            minute=j["minute_witness_counts"]
+            checked=j.get("minute_witness_inspected")
+            demand(type(minute) is dict and type(checked) is int
+                   and 0<=checked<=8 and all(
+                      type(k) is str and k in MINUTE_WITNESS_CODES
+                      and type(v) is int and v>=0
+                      for k,v in minute.items()),
+                   "MINUTE_WITNESS_ENUM_INVALID")
+            demand(sum(minute.values())<=categories.get(
+                      "RTH_30MIN_SESSION_GAP",0)
+                   and checked<=sum(minute.values()),
+                   "MINUTE_WITNESS_ROOT_MISMATCH")
+            result["minute_witness_counts"]=dict(sorted(minute.items()))
+            result["minute_witness_inspected"]=checked
     return result
 
 
@@ -290,12 +313,17 @@ def selftest() -> None:
                       integrity_recheck_unresolved_reason_counts={
                          "RTH_30MIN_SESSION_GAP":1},
                       integrity_recheck_detail_counts={
-                         "RTH_ONE_30MIN_SLOT_MISSING":1})
+                         "RTH_ONE_30MIN_SLOT_MISSING":1},
+                      minute_witness_counts={
+                         "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":1},
+                      minute_witness_inspected=1)
     safe_diag=sanitize(diagnostic,master,price,mb,pb,"2026-10-14")
     demand(safe_diag["integrity_recheck_unresolved_reason_counts"]==
            {"RTH_30MIN_SESSION_GAP":1}
            and safe_diag["integrity_recheck_detail_counts"]==
            {"RTH_ONE_30MIN_SLOT_MISSING":1}
+           and safe_diag["minute_witness_counts"]==
+           {"MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":1}
            and safe_diag["unresolved_shadow_source_count"]==1
            and safe_diag["published_symbol_classifications"] is False,
            "SOURCE_DIAGNOSTIC_LEAK_OR_MISMATCH")
@@ -307,6 +335,10 @@ def selftest() -> None:
         dict(diagnostic,integrity_recheck_recovered=1),
         dict(diagnostic,integrity_recheck_detail_counts={"UNSAFE_SYMBOL_AAPL":1}),
         dict(diagnostic,integrity_recheck_detail_counts={}),
+        dict(diagnostic,minute_witness_counts={"SYNTHETIC_PASS":1}),
+        dict(diagnostic,minute_witness_counts={
+            "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW":2}),
+        dict(diagnostic,minute_witness_inspected=9),
     ):
         try:sanitize(tamper,master,price,mb,pb,"2026-10-14")
         except ValueError:pass

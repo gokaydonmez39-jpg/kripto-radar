@@ -5,12 +5,14 @@ on:
     paths:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
+      - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/current_price_shadow_publication_guard.py"
       - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
+      - "nasdaq-xray/alpaca_price_gap_minute_witness.py"
       - "nasdaq-xray/canonical_current_master_manifest.json"
       - "nasdaq-xray/canonical_current_price_dv30.json"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
@@ -42,7 +44,9 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check 'pandas_market_calendars==5.4.0'
-          python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py
+          python -m py_compile nasdaq-xray/alpaca_personal_price_current_exact30.py nasdaq-xray/alpaca_price_gap_minute_witness.py
+          python nasdaq-xray/alpaca_price_gap_minute_witness.py
+          python -O nasdaq-xray/alpaca_price_gap_minute_witness.py
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
           python -O nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
       - name: Current main only — bounded private SIP census with counts-only public report
@@ -105,12 +109,22 @@ jobs:
           } and isinstance(v,int) and v>=0 for k,v in details.items())
           assert sum(details.values()) == (reasons.get("RTH_30MIN_SESSION_GAP",0)
                  + reasons.get("OHLCV_SCHEMA_OR_TIMESTAMP_INVALID",0))
+          minute=j.get("minute_witness_counts",{})
+          assert isinstance(minute,dict)
+          assert all(k in {
+              "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",
+              "MINUTE_NO_BAR_OBSERVED_STILL_UNKNOWN",
+              "MINUTE_TRANSPORT_OR_SCHEMA_UNKNOWN",
+              "MINUTE_GLOBAL_BUDGET_BLOCKED",
+          } and isinstance(v,int) and v>=0 for k,v in minute.items())
+          assert sum(minute.values())<=reasons.get("RTH_30MIN_SESSION_GAP",0)
           print("XRAY_CURRENT_SIP_COUNTS_ONLY="+json.dumps({
               "asof_et":j["asof_et"],"status":j["status"],
               "scope":j["exact_source_unknown_scope_count"],
               "counts":j["counts"],"source_price_sha":j["source_price_blob_sha"],
               "gap_reasons":reasons,
               "gap_details_counts_only":details,
+              "minute_witness_counts_only":minute,
               "isolated_recheck_attempted":j.get("integrity_recheck_attempted",0),
               "isolated_recheck_recovered":j.get("integrity_recheck_recovered",0),
           },sort_keys=True))
