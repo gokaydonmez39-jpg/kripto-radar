@@ -109,7 +109,7 @@ CHECKS={
 def crons(yml:str)->tuple[str,...]:
     return tuple(re.findall(r'^\s*- cron: [\"\']([^\"\']+)[\"\']\s*$',yml,re.M))
 
-def validate_contract(files:dict[str,str])->dict:
+def validate_contract(files:dict[str,str], *, relay_source:str|None=None)->dict:
     errors=[]
     for name,want in REQUIRED.items():
         actual=crons(files[name])
@@ -170,10 +170,28 @@ def validate_contract(files:dict[str,str])->dict:
     ):
         if needle not in wd:
             errors.append("WATCHDOG_REPAIR_CONTRACT_MISSING:"+needle)
-    relay=(DATA/"github_native_stage_relay.py").read_text()
-    for needle in ("exact_checked_out_main(", '["git","rev-parse","HEAD"]',
-                   "fingerprint(first_runs)!=fingerprint(next_runs)",
-                   "SOURCE_ASOF_MISMATCH"):
+    relay=((DATA/"github_native_stage_relay.py").read_text()
+           if relay_source is None else relay_source)
+    # PR #50 removed the circular exact-ASOF veto only for Pre-MC refresh.
+    # Requiring its retired SOURCE_ASOF_MISMATCH token would reject the fixed
+    # code while overlooking the truly critical Post-MC/future/date guards.
+    relay_guards=(
+        '["git","rev-parse","HEAD"]',
+        "exact_checked_out_main(local_sha,a,b)",
+        "fingerprint(first_runs)!=fingerprint(next_runs)",
+        'if not canonical_asof or canonical_asof!=price.get("asof_et"):',
+        "stale_canonical=canonical_date<root_date",
+        'if stale_canonical and target!="pre-mc":',
+        'return "STALE_CANONICAL_EPOCH_POST_MC_FORBIDDEN",False',
+        'return ("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE" if stale_canonical',
+        'if root_date>now.astimezone(ZoneInfo("America/New_York")).date():',
+        "if canonical_date>root_date:",
+        'if root.get("execution")!="NONE" or root.get("real_money")!="NO-GO":',
+        'if terminal.get("asof_et")==asof and terminal.get("full_end_to_end_research_pass") is True:',
+        "if run.get(\"status\") not in ACTIVE:",
+        "target=args.target",
+    )
+    for needle in relay_guards:
         if needle not in relay:
             errors.append("RELAY_SHA_CONTRACT_MISSING:"+needle)
     return {"ok":not errors,"errors":sorted(set(errors))}
@@ -287,8 +305,36 @@ def selftest():
     modified["nasdaq-xray-delivery.yml"]=(
         without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
+    # Mutation tests on the actual root-stage source: a missing source-epoch
+    # fence, unsafe Post-MC dispatch, or bypassed two-read SHA check must
+    # make this audit FAIL. No network, market data or synthetic AL involved.
+    relay_path=DATA/"github_native_stage_relay.py"
+    source=relay_path.read_text()
+    relay_guards=(
+        '["git","rev-parse","HEAD"]',
+        "exact_checked_out_main(local_sha,a,b)",
+        "fingerprint(first_runs)!=fingerprint(next_runs)",
+        'if not canonical_asof or canonical_asof!=price.get("asof_et"):',
+        "stale_canonical=canonical_date<root_date",
+        'if stale_canonical and target!="pre-mc":',
+        'return "STALE_CANONICAL_EPOCH_POST_MC_FORBIDDEN",False',
+        'return ("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE" if stale_canonical',
+        'if root_date>now.astimezone(ZoneInfo("America/New_York")).date():',
+        "if canonical_date>root_date:",
+        'if root.get("execution")!="NONE" or root.get("real_money")!="NO-GO":',
+        'if terminal.get("asof_et")==asof and terminal.get("full_end_to_end_research_pass") is True:',
+        'if run.get("status") not in ACTIVE:',
+    )
+    for needle in relay_guards:
+        assert source.count(needle)>=1,("LIVE_RELAY_GUARD_NOT_FOUND",needle)
+        mutated=source.replace(needle,"REMOVED_LIVE_GUARD",1)
+        failure=validate_contract(files,relay_source=mutated)
+        assert not failure["ok"] and any(
+            e.startswith("RELAY_SHA_CONTRACT_MISSING:")
+            for e in failure["errors"]
+        ),("REMOVED_RELAY_GUARD_NOT_CAUGHT",needle)
     assert session_timeline()
-    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_17_NEGATIVES_17_WORKFLOW_CRONS_DUAL_OVERLAY_SINGLE_WRITER_NO_FALSE_GO")
+    print("XRAY_MONDAY_MICROAUDIT_SELFTEST=PASS_18_WORKFLOW_NEGATIVES_13_RELAY_NEGATIVES_NO_PRIMARY_NO_ALPHA")
 
 def main():
     parser=argparse.ArgumentParser()
