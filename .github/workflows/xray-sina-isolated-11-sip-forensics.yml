@@ -72,7 +72,12 @@ jobs:
           assert all(k in {
               "MINUTE_POSITIVE_DAILY_ZERO_DISCREPANCY_SHADOW",
               "MINUTE_NO_RTH_BARS_STILL_UNKNOWN",
-              "MINUTE_INVALID_OR_TRANSPORT_UNKNOWN",
+              "MINUTE_SCHEMA_OR_SCOPE_UNKNOWN",
+              "MINUTE_HTTP_400_INVALID_REQUEST",
+              "MINUTE_HTTP_401_403_DENIED",
+              "MINUTE_HTTP_429_THROTTLED",
+              "MINUTE_HTTP_OTHER_ERROR",
+              "MINUTE_NETWORK_OR_TIMEOUT",
               "MINUTE_OFFICIAL_ZERO_DAY_UNVERIFIED",
           } and isinstance(v,int) and v>=0 for k,v in minute.items())
           assert sum(minute.values())<=doc["isolated_recheck_reason_counts"].get("ZERO_VOLUME_DAILY_BAR",0)
