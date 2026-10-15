@@ -101,6 +101,16 @@ def evaluate(m,p,t,e,blobs,mc_names,strict_g9):
                 and e.get("candidate_preparation_witness_only") is True
                 and e.get("official_nasdaq_session_freshness_attested") is True,
                 "UNPROVEN_RESEARCH_READY_PROMOTION")
+        critical={
+            "SOURCE_EPOCH_NOT_LATEST_COMPLETED_SESSION",
+            "CURRENT_MC_AUTHORITY_MISSING",
+            "CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE",
+            "TERMINAL_CURRENT_MC_CHAIN_NOT_PROVEN",
+            "SETTLEMENT_UNVERIFIED_OR_PRICE_SHA_DRIFT",
+            "PRICE_PASS_NON_G9_SOURCE_NOT_RELEASE_AUTHORITY",
+            "PRICE_UNKNOWN_CURRENT",
+        }
+        require(not (blocked & critical), "READY_WITH_UNRESOLVED_LOCAL_GATE")
     manual_compatible=e.get("historical_manual_non_g9_source_contract_ready")
     manual_prep=e.get("historical_manual_research_candidate_prep_only")
     require(type(manual_compatible) is bool and type(manual_prep) is bool,
@@ -312,6 +322,32 @@ def selftest():
             "INDEPENDENT_DELIVERY_UNKNOWN_NOT_LOST")
     require("NOTIFICATION_DEVICE_RECEIPT_NOT_PROVEN" not in good["e2e_blockers_exact"],
             "DEVICE_ACK_NOT_A_SOURCE_BLOCKER")
+    # POSITIVE future-research-only witness: allow a source-ready candidate
+    # without claiming its notification arrived on a real phone. The fixture
+    # is isolated and never grants alpha, G9 or real market source authority.
+    future=copy.deepcopy(x)
+    future[2]["asof_et"]="2026-10-09"
+    future[3]["terminal_asof_et"]="2026-10-09"
+    future[3]["current_mc_authority_count"]=1
+    future[3]["candidate_local_source_chain_attested"]=True
+    future[3]["candidate_preparation_witness_only"]=True
+    future[3]["official_nasdaq_session_freshness_attested"]=True
+    future[3]["latest_completed_nasdaq_session"]="2026-10-09"
+    future[3]["ready_for_current_research_signal"]=True
+    future[3]["blockers"]=["IDENTITY_PARTITION_INCOMPLETE"]
+    future[5]=["canonical_mc_bridge_20261009_c417_dv30_v1.json"]
+    positive=evaluate(*future)
+    require(positive["root_cause_classes"]["P0_DEVICE_RECEIPT_EVIDENCE"] is True
+            and positive["manual_candidate_claim_released"] is False
+            and positive["go"] is False,
+            "FUTURE_READY_WITHOUT_FAKE_DEVICE_OR_ALPHA")
+    tamper=copy.deepcopy(future)
+    tamper[3]["blockers"].append("CURRENT_TERMINAL_FROZEN_OR_INCOMPLETE")
+    try:
+        evaluate(*tamper)
+    except ValueError: pass
+    else: raise RuntimeError("FUTURE_READY_WITH_STALE_TERMINAL_ACCEPTED")
+    print("XRAY_FUTURE_RESEARCH_READY=PASS_POSITIVE_AND_STALE_SOURCE_NEGATIVE_NO_DEVICE_ACK")
     # A 12th unknown SPAC in the master outside PRICE must not alter PRICE scope.
     xx=copy.deepcopy(x)
     xx[0]["unknown_symbols"]=["S1","S2"]
