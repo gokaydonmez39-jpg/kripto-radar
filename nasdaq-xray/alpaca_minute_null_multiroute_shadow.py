@@ -20,7 +20,6 @@ import urllib.parse
 import urllib.request
 
 from alpaca_minute_source_response_diagnostics import classify_minute_document
-from alpaca_rth_minute_integrity_shadow import official_window
 
 MAX_BYTES=300_000
 VALID_SYMBOL=re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
@@ -41,6 +40,7 @@ def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen, *,
         or day>asof):
         return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
     try:
+        from alpaca_rth_minute_integrity_shadow import official_window
         start,close,minutes=official_window(day)
         if minutes not in (390,210) or close-start != dt.timedelta(minutes=minutes):
             return "MULTI_ROUTE_INVALID_INPUT_NO_CALL"
@@ -116,6 +116,7 @@ def probe(symbol, day, asof, credentials, opener=urllib.request.urlopen, *,
         return "MULTI_ROUTE_INCOMPLETE_OR_INVALID_RESPONSE_UNKNOWN"
 
 def selftest():
+    from alpaca_rth_minute_integrity_shadow import official_window
     start,close,minutes=official_window("2026-10-14")
     bar={"t":start.isoformat(),"o":10.0,"h":11.0,"l":9.0,"c":10.5,"v":15}
     invoked=[]
