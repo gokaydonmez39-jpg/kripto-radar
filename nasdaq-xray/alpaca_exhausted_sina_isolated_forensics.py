@@ -159,7 +159,7 @@ def run(asof, selected, days, weeks, sina_sha, master_sha, credentials,
                         try:
                             witness=minute_probe(symbol,zero_session,asof,credentials)
                         except (RuntimeError,ValueError,TypeError,KeyError,OSError):
-                            witness="MINUTE_INVALID_OR_TRANSPORT_UNKNOWN"
+                            witness="MINUTE_NETWORK_OR_TIMEOUT"
                         need(witness in WITNESS_CODES,"MINUTE_WITNESS_ENUM")
                         minute_counts[witness]+=1
         except (RuntimeError, ValueError, TypeError, KeyError, OSError):
