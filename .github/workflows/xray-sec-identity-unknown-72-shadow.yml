@@ -28,7 +28,7 @@ jobs:
           python nasdaq-xray/sec_identity_unknown_72_shadow.py --selftest
       - name: Research-only official SEC current issuer SIC scope
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_identity_unknown_72_shadow.py --output "$RUNNER_TEMP/xray_sec_unknown_72_shadow.json"
       - name: Assert exactly same frozen master unknown scope, no new PASS
