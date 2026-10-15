@@ -26,7 +26,7 @@ jobs:
           python -O nasdaq-xray/p0_sec_alphabet_xbrl_multiclass_canary.py --selftest
       - name: Independent real SEC original R1 and acceptance-date crosscheck
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           set -euo pipefail
           python nasdaq-xray/p0_sec_alphabet_xbrl_multiclass_canary.py \

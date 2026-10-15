@@ -38,7 +38,7 @@ jobs:
             --dir "$RUNNER_TEMP/cohort"
       - name: Query actual SEC official companyfacts and submissions for eight candidate-local issuers
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/candidate_local_sec_pit_8_producer.py \
             --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \

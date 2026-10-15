@@ -50,7 +50,7 @@ jobs:
           echo XRAY_FROG_LAST_MILE_IMMUTABLE_SOURCES=PASS
       - name: Scan actual SEC issuer Form4 8K registration, official IR, Nasdaq and thirty SIP close samples
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || vars.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || vars.XRAY_ALPACA_DATA_SECRET_KEY }}
           XRAY_ALPACA_API_KEY_ID: ${{ secrets.XRAY_ALPACA_API_KEY_ID || vars.XRAY_ALPACA_API_KEY_ID }}

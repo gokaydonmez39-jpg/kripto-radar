@@ -77,7 +77,7 @@ jobs:
       - name: Query SEC current identifiers and PIT shares for entire frozen PRICE pass cohort
         if: steps.eligible.outputs.has_price_pass == 'true'
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_free_mc_multisymbol_pit_audit.py --all-price-pass --output "$RUNNER_TEMP/xray_sec_full_price_pass_pit.json"
       - name: Validate complete cohort and no PRIMARY promotion

@@ -38,7 +38,7 @@ jobs:
             --name xray-20261013-338-reproduced-history-fail-no-r92 --dir "$RUNNER_TEMP/xray_history338"
       - name: Query official SEC EDGAR PIT transport as-of Oct13 (canary only)
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/sec_official_free_mc_transport_probe.py --asof 2026-10-13 \
             --output "$RUNNER_TEMP/xray_oct13_sec_primary_transport_canary.json"

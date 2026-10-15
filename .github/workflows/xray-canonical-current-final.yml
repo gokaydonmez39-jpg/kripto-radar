@@ -679,7 +679,7 @@ jobs:
           XRAY_LEGAL_GUARD_LIFECYCLE: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_lifecycle_registry.json
           XRAY_LEGAL_GUARD_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_candidate_legal_guard.json
           XRAY_LEGAL_GUARD_SCOPE_FILE: ${{ github.workspace }}/nasdaq-xray/canonical_prelegal_survivor_scope.json
-          XRAY_SEC_USER_AGENT: "NASDAQ-SWING-XRAY research bot; xray-dataplane-bot@users.noreply.github.com"
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           XRAY_SEC_MIN_INTERVAL_SECONDS: "0.22"
         run: python nasdaq-xray/build_candidate_legal_guard.py
 
