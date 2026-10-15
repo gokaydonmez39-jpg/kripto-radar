@@ -35,7 +35,7 @@ def require(test: bool, code: str) -> None:
 
 def blob_sha(raw: bytes) -> str:
     return hashlib.sha1(
-        b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+        b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
     ).hexdigest()
 
 
@@ -76,10 +76,10 @@ def check(doc: dict, master: dict, master_blob: str) -> dict:
             continue
         require(all(x is not None for x in fields), "PARTIAL_EVIDENCE")
         cik, sic, day, source = fields
-        require(type(cik) is str and re.fullmatch(r"\\d{10}", cik) is not None,
+        require(type(cik) is str and re.fullmatch(r"\d{10}", cik) is not None,
                 "CIK")
         require(type(sic) is int and 100 <= sic <= 9999, "SIC")
-        require(type(day) is str and re.fullmatch(r"20\\d{2}-\\d{2}-\\d{2}", day)
+        require(type(day) is str and re.fullmatch(r"20\d{2}-\d{2}-\d{2}", day)
                 is not None, "DATE_FORMAT")
         try:
             dated = dt.date.fromisoformat(day)
@@ -92,7 +92,7 @@ def check(doc: dict, master: dict, master_blob: str) -> dict:
                 and not u.username and not u.password and not u.query
                 and not u.fragment, "OFFICIAL_DOMAIN")
         m = re.fullmatch(
-            r"/Archives/edgar/data/(\\d+)/(\\d{18})/([A-Za-z0-9.-]+)-index\\.html?",
+            r"/Archives/edgar/data/(\d+)/(\d{18})/([A-Za-z0-9.-]+)-index\.html?",
             u.path)
         require(m is not None and int(m.group(1)) == int(cik),
                 "SEC_CIK_DOCUMENT_BINDING")
