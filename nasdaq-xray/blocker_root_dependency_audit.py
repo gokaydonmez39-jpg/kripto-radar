@@ -325,7 +325,7 @@ def selftest():
     # POSITIVE future-research-only witness: allow a source-ready candidate
     # without claiming its notification arrived on a real phone. The fixture
     # is isolated and never grants alpha, G9 or real market source authority.
-    future=copy.deepcopy(x)
+    future=list(copy.deepcopy(x))
     future[2]["asof_et"]="2026-10-09"
     future[3]["terminal_asof_et"]="2026-10-09"
     future[3]["current_mc_authority_count"]=1
