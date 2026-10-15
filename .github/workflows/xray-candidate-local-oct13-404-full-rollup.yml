@@ -1,5 +1,10 @@
 name: XRAY Candidate Local Oct13 545 SIP and 404 SEC Full Rollup
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_full_404_source_rollup.py"
+      - ".github/workflows/xray-candidate-local-oct13-404-full-rollup.yml"
   push:
     branches: [main]
     paths:
@@ -25,6 +30,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Restore exact frozen 13-Oct master and PRICE blobs without touching current pointers
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Verified original SIP source-run checkout; Git's immutable blob
+          # hashes are independently checked by the Python rollup.
+          frozen_ref="97cc29aa4b3a9030ee4e02fb5d6100482d17ae45"
+          git fetch --no-tags --depth=1 origin "$frozen_ref"
+          git show "$frozen_ref:nasdaq-xray/canonical_current_master_manifest.json" > "$RUNNER_TEMP/frozen_master.json"
+          git show "$frozen_ref:nasdaq-xray/canonical_current_price_dv30.json" > "$RUNNER_TEMP/frozen_price.json"
+          test "$(git hash-object "$RUNNER_TEMP/frozen_master.json")" = "64901add1736102b16b95597cf4d41beb2e8bc53"
+          test "$(git hash-object "$RUNNER_TEMP/frozen_price.json")" = "4bac485ade0477d419992cb6b36089c6b0896e4b"
+          echo "XRAY_OCT13_FROZEN_BLOB_PROVENANCE=EXACT_ARCHIVE_NEVER_CURRENT"
       - name: Source-local negative test no global UNKNOWN promotion
         run: |
           python -m py_compile nasdaq-xray/candidate_local_full_404_source_rollup.py
@@ -78,6 +96,8 @@ jobs:
             --price-dir "$RUNNER_TEMP/price" --sec-dir "$RUNNER_TEMP/sec" \
             --history "$RUNNER_TEMP/history/xray_personal_root260_full_cohort.json" \
             --cohort "$RUNNER_TEMP/cohort/xray_candidate_local_404_oct13.json" \
+            --master-source "$RUNNER_TEMP/frozen_master.json" \
+            --price-source "$RUNNER_TEMP/frozen_price.json" \
             --out "$RUNNER_TEMP/xray_full_same_asof_source_rollup.json"
       - uses: actions/upload-artifact@v4
         if: steps.gate.outputs.ready == 'true'
