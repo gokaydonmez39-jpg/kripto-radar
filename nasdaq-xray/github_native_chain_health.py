@@ -11,6 +11,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import re
 import time
 from unittest.mock import patch
 from github_native_root_watchdog import github, head_sha, timestamp, UTC
@@ -74,12 +75,16 @@ def classify(now, blobs, files, main_stable):
         issues.append("ROOT_MASTER_ASOF_LAG")
     current_mc_bridges=[]
     if root_asof_valid:
+        # Artifact presence is diagnostic ONLY. Match the exact E2E
+        # bridge filename grammar and a canonical lowercase Git SHA.
+        # v0/v01/Unicode digits or nonhex 40-character values must never
+        # hide CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT.
         prefix=ROOT+"canonical_mc_bridge_"+root_asof.replace("-","")+"_c417_dv30_v"
         current_mc_bridges=sorted(
             path for path,sha in blobs.items()
-            if path.startswith(prefix) and path.endswith(".json")
-            and path[len(prefix):-5].isdigit()
-            and isinstance(sha,str) and len(sha)==40
+            if isinstance(path,str)
+            and re.fullmatch(re.escape(prefix)+r"[1-9][0-9]*\.json",path)
+            and isinstance(sha,str) and re.fullmatch(r"[0-9a-f]{40}",sha)
         )
         if not current_mc_bridges:
             issues.append("CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT")
@@ -294,6 +299,32 @@ def selftest():
     assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" not in new_v["issues"]
     assert new_v["current_mc_bridge_artifact_count"]==1
     assert new_v["current_mc_primary_authority_proven_by_watchdog"] is False
+    # The prior isdigit-only presence detector accepted v0, v01 and any
+    # 40-character string. Positive and negative epoch grammar MUST agree
+    # with the stricter E2E authority lookup (but never grant authority).
+    valid_v28=dict(blobs)
+    valid_v28[ROOT+"canonical_mc_bridge_20261008_c417_dv30_v28.json"]="a"*40
+    valid_report=classify(now,valid_v28,dated,True)
+    assert valid_report["current_mc_bridge_artifact_count"]==1
+    assert valid_report["current_mc_primary_authority_proven_by_watchdog"] is False
+    bad_mc_cases=[
+        ("ZERO_VERSION","canonical_mc_bridge_20261008_c417_dv30_v0.json","a"*40),
+        ("LEADING_ZERO","canonical_mc_bridge_20261008_c417_dv30_v01.json","a"*40),
+        ("WRONG_DATE","canonical_mc_bridge_20261007_c417_dv30_v1.json","a"*40),
+        ("WRONG_POLICY","canonical_mc_bridge_20261008_c417_dv20_v1.json","a"*40),
+        ("WRONG_EXTENSION","canonical_mc_bridge_20261008_c417_dv30_v1Xjson","a"*40),
+        ("NESTED_PATH","other/canonical_mc_bridge_20261008_c417_dv30_v1.json","a"*40),
+        ("NONHEX_SHA","canonical_mc_bridge_20261008_c417_dv30_v1.json","z"*40),
+        ("SHORT_SHA","canonical_mc_bridge_20261008_c417_dv30_v1.json","a"*39),
+        ("UPPERCASE_SHA","canonical_mc_bridge_20261008_c417_dv30_v1.json","A"*40),
+    ]
+    for label,name,blob_sha in bad_mc_cases:
+        invalid=dict(blobs)
+        invalid[ROOT+name if not name.startswith("other/") else name]=blob_sha
+        report=classify(now,invalid,dated,True)
+        assert "CURRENT_MC_AUTHORITY_ARTIFACT_ABSENT" in report["issues"],label
+        assert report["current_mc_bridge_artifact_count"]==0,label
+    print("XRAY_MC_ARTIFACT_FILENAME_SHA=PASS_V1_V28_AND_NINE_FAIL_CLOSED_NEGATIVES_NO_PRIMARY_PROMOTION")
     # A bridge's existence is not proof of policy, measurements or entitlement.
     bad_mc=dict(new_mc)
     bad_mc.pop(ROOT+"canonical_mc_bridge_20261008_c417_dv30_v1.json")
