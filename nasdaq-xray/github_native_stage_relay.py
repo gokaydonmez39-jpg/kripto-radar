@@ -13,6 +13,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from github_native_root_watchdog import github, head_sha, timestamp, UTC
 
@@ -22,15 +23,37 @@ WORKFLOWS={"pre-mc":"xray-canonical-current-pre-mc.yml",
 ACTIVE={"queued","in_progress","pending","waiting","requested"}
 ROOT=Path(__file__).resolve().parent
 
-def classify(now, root, master, price, terminal, runs):
+def classify(now, root, master, price, terminal, runs, target="pre-mc"):
     if now.tzinfo is None:
         raise ValueError("NAIVE_CLOCK_FORBIDDEN")
     now=now.astimezone(UTC)
+    if target not in WORKFLOWS:
+        raise ValueError("UNAUTHORIZED_RELAY_TARGET")
     if not all(isinstance(x,dict) for x in (root,master,price,terminal)):
         raise ValueError("NON_OBJECT_SOURCE")
     asof=str(root.get("asof_et") or "")
-    if not asof or not (asof==master.get("asof_et")==price.get("asof_et")):
-        return "SOURCE_ASOF_MISMATCH",False
+    canonical_asof=str(master.get("asof_et") or "")
+    if not canonical_asof or canonical_asof!=price.get("asof_et"):
+        return "CANONICAL_MASTER_PRICE_EPOCH_MISMATCH",False
+    try:
+        root_date=dt.date.fromisoformat(asof)
+        canonical_date=dt.date.fromisoformat(canonical_asof)
+        if root_date.isoformat()!=asof or canonical_date.isoformat()!=canonical_asof:
+            return "INVALID_SOURCE_EPOCH",False
+    except (TypeError,ValueError):
+        return "INVALID_SOURCE_EPOCH",False
+    # An epoch from the future in exchange-local time cannot wake any stage.
+    if root_date>now.astimezone(ZoneInfo("America/New_York")).date():
+        return "ROOT_SOURCE_EPOCH_IN_FUTURE",False
+    if canonical_date>root_date:
+        return "ROOT_BEHIND_CANONICAL_EPOCH",False
+    stale_canonical=canonical_date<root_date
+    # The root->Pre-MC relay repairs canonical source drift. Demanding that
+    # MASTER/PRICE already match the new root is a dependency cycle. Post-MC
+    # must still require exact current source epochs; this NEVER promotes a
+    # stale PRICE or HISTORY result or authorizes terminal/AL.
+    if stale_canonical and target!="pre-mc":
+        return "STALE_CANONICAL_EPOCH_POST_MC_FORBIDDEN",False
     if root.get("execution")!="NONE" or root.get("real_money")!="NO-GO":
         return "ROOT_POLICY_SAFETY_INVALID",False
     if master.get("unknown_never_pass") is not True or price.get("unknown_never_pass") is not True:
@@ -52,7 +75,8 @@ def classify(now, root, master, price, terminal, runs):
         age=(now-timestamp(run.get("created_at"))).total_seconds()
         if -60<=age<=3600:
             return "PRE_MC_ACTIVE_SUPPRESS",False
-    return "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True
+    return ("STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE" if stale_canonical
+            else "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE"),True
 
 def fingerprint(runs):
     return sorted((r.get("id"),r.get("status"),r.get("conclusion"),
@@ -93,6 +117,38 @@ def selftest():
     t={"asof_et":"2026-10-07","full_end_to_end_research_pass":False}
     assert classify(now,r,m,p,t,[])==(
         "EXACT_SOURCE_EPOCH_PRE_MC_RELAY_ELIGIBLE",True)
+    # Regression from 15 Oct 2026 live root: root moved to Oct 15 while
+    # canonical MASTER and PRICE remained on Oct 14. Pre-MC must be allowed
+    # to REBUILD them; this must never count as downstream source proof.
+    rollover_now=dt.datetime(2026,10,16,0,30,tzinfo=UTC)
+    rollover_root=dict(r,asof_et="2026-10-15")
+    old_master=dict(m,asof_et="2026-10-14")
+    old_price=dict(p,asof_et="2026-10-14")
+    assert classify(rollover_now,rollover_root,old_master,old_price,t,[])==(
+        "STALE_CANONICAL_EPOCH_PRE_MC_REFRESH_ELIGIBLE",True), (
+        "ROOT_NEWER_THAN_CANONICAL_MUST_WAKE_PRE_MC_NOT_FREEZE")
+
+    assert classify(rollover_now,rollover_root,old_master,old_price,t,[],
+                    target="post-mc")==(
+        "STALE_CANONICAL_EPOCH_POST_MC_FORBIDDEN",False)
+    mismatch_price=dict(old_price,asof_et="2026-10-13")
+    assert classify(rollover_now,rollover_root,old_master,mismatch_price,t,[])[1] is False
+    forward_master=dict(old_master,asof_et="2026-10-16")
+    forward_price=dict(old_price,asof_et="2026-10-16")
+    assert classify(rollover_now,rollover_root,forward_master,forward_price,t,[])==(
+        "ROOT_BEHIND_CANONICAL_EPOCH",False)
+    invented_root=dict(rollover_root,asof_et="2026-10-16")
+    assert classify(rollover_now,invented_root,old_master,old_price,t,[])==(
+        "ROOT_SOURCE_EPOCH_IN_FUTURE",False)
+    broken_root=dict(rollover_root,asof_et="invalid")
+    assert classify(rollover_now,broken_root,old_master,old_price,t,[])==(
+        "INVALID_SOURCE_EPOCH",False)
+    try:classify(rollover_now,rollover_root,old_master,old_price,t,[],target="unknown")
+    except ValueError as exc:assert "UNAUTHORIZED_RELAY_TARGET" in str(exc)
+    else:raise AssertionError("UNAUTHORIZED_STAGE_TARGET_ACCEPTED")
+    assert classify(rollover_now,rollover_root,old_master,old_price,t,
+                    [{"status":"in_progress","created_at":"2026-10-16T00:20:00Z"}])==(
+        "PRE_MC_ACTIVE_SUPPRESS",False)
     def one(run_status,created):
         return [{"status":run_status,"created_at":created,"id":1}]
     assert classify(now,r,m,p,t,one("in_progress","2026-10-09T08:45:00Z"))==(
@@ -115,7 +171,7 @@ def selftest():
                  ("b"*40,sha,sha),("",sha,sha),
                  (sha,sha,None),("not-a-sha",sha,sha)):
         assert not exact_checked_out_main(*trio)
-    print("XRAY_STAGE_RELAY_SELFTEST=PASS_EXACT_EPOCH_13_NEGATIVE_TWO_TARGETS_CHECKOUT_SHA_BOUND_NO_PRIMARY_OR_TRADE")
+    print("XRAY_STAGE_RELAY_SELFTEST=PASS_ROLLOVER_PREMC_POSITIVE_POSTMC_NEGATIVE_SHA_BOUND_NO_PRIMARY_OR_TRADE")
 
 def main():
     parser=argparse.ArgumentParser()
@@ -137,7 +193,7 @@ def main():
         ["git","rev-parse","HEAD"],text=True).strip()
     sources=load_sources()
     first_runs=read_runs(token,target)
-    reason,eligible=classify(dt.datetime.now(UTC),*sources,first_runs)
+    reason,eligible=classify(dt.datetime.now(UTC),*sources,first_runs,target=args.target)
     out={"schema":"XRAY_NATIVE_ROOT_TO_PRE_MC_RELAY_V1",
          "execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
          "alpha_authority":False,"mc_primary_promoted":False,
@@ -150,7 +206,7 @@ def main():
     if eligible:
         b=head_sha(token)
         next_runs=read_runs(token,target)
-        again_reason,still_ok=classify(dt.datetime.now(UTC),*sources,next_runs)
+        again_reason,still_ok=classify(dt.datetime.now(UTC),*sources,next_runs,target=args.target)
         # Both remote snapshots and the actual runner checkout must agree.
         # This is critical when another writer updated main since checkout.
         checkout_exact=exact_checked_out_main(local_sha,a,b)
