@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - xray/sec-licensed-preflight-onecall-20261015 # TEMP_ACCEPTANCE_REMOVE
     paths:
       - ".github/workflows/xray-sec-official-onecall-preflight.yml"
       - "nasdaq-xray/sec_contact_onecall_research_preflight.py"
