@@ -31,7 +31,7 @@ jobs:
           python -O nasdaq-xray/p0_sec_dualclass_pit_shadow.py --selftest
       - name: SEC official 10Q filings accession acceptance (2 issuers only)
         env:
-          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT || vars.XRAY_SEC_USER_AGENT }}
+          XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
         run: |
           python nasdaq-xray/p0_sec_dualclass_pit_shadow.py \
             --out "$RUNNER_TEMP/xray_sec_dualclass_pit_shadow.json"
