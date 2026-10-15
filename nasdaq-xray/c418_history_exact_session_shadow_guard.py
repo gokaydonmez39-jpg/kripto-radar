@@ -49,6 +49,17 @@ def report(asof, provider, symbols):
         "execution": "NONE", "real_money": "NO-GO", "unknown_never_pass": True,
     }
 
+def exact_positive_share_count(value):
+    """Only integer-valued share volumes; float >2**53-1 loses unit precision.
+
+    This is input-integrity verification, not a market-data-rights attestation.
+    """
+    if type(value) is int:
+        return value > 0
+    return (type(value) is float and math.isfinite(value)
+            and 0 < value <= 2**53 - 1 and value.is_integer())
+
+
 def audit(rows, symbols, asof, provider, required):
     r = report(asof, provider, symbols)
     if (not day(asof) or not isinstance(rows, list)
@@ -89,6 +100,8 @@ def audit(rows, symbols, asof, provider, required):
             value=row.get(col)
             if type(value) not in (int,float) or not math.isfinite(value) or value<=0:
                 bad[sym].add("ZERO_INVALID_OR_NONFINITE_OHLCV")
+            elif col=="volume" and not exact_positive_share_count(value):
+                bad[sym].add("FRACTIONAL_OR_PRECISION_UNSAFE_SHARE_VOLUME")
             else: vals[col]=value
         if len(vals)==5 and (
             vals["low"]>min(vals["open"], vals["close"]) or
@@ -148,12 +161,27 @@ def selftest():
         ("low",12,"OHLC_CONTRADICTION")):
         row=[dict(x) for x in base]; row[0][field]=badval
         run(row,1,reason)
+    # A tiny fractional share volume previously yielded a false
+    # SHADOW_NUMERIC_COMPLETE; integer-valued vendor floats remain supported.
+    for noninteger in (500.25,0.5,float(2**53)):
+        modified=[dict(x) for x in base]
+        modified[0]["volume"]=noninteger
+        run(modified,1,"FRACTIONAL_OR_PRECISION_UNSAFE_SHARE_VOLUME")
+    normal=[dict(x) for x in base]
+    normal[0]["volume"]=500.0
+    run(normal,2)
+    assert exact_positive_share_count(500)
+    assert exact_positive_share_count(500.0)
+    assert not exact_positive_share_count(500.25)
+    assert not exact_positive_share_count(True)
+    assert not exact_positive_share_count(float("inf"))
+    assert not exact_positive_share_count(float(2**53))
     run(base+[dict(base[0])],1,"DUPLICATE_SESSION")
     run(base+[bar("QQQ","2026-10-11")],1,"FUTURE_DATED_BAR")
     assert audit(base+[bar("FAKE","2026-10-09")],["AAPL","QQQ"],
                  "2026-10-09","PRIVATE_TEST",required)["status"]=="DATA_BLOCKED"
     assert audit(None,["AAPL","QQQ"],"2026-10-09","PRIVATE_TEST",required)["status"]=="DATA_BLOCKED"
-    print("XRAY_C418_EXACT_260_SIP_SHADOW_SELFTEST=PASS_9_CONTRACT_AND_NEGATIVE_TESTS_NO_PROMOTION")
+    print("XRAY_C418_EXACT_260_SIP_SHADOW_SELFTEST=PASS_9_BASE_PLUS_FRACTIONAL_VOLUME_AND_PRECISION_NEGATIVES_NO_PROMOTION")
 
 def main():
     parser=argparse.ArgumentParser()
