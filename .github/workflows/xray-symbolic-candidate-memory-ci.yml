@@ -224,6 +224,54 @@ jobs:
           assert not a["iphone_receipt_attested"] and not m["alpha_authority"]
           print("XRAY_MEMORY_REAL_GITHUB_ADMISSION_AND_ONE_SESSION_PROPOSAL=PASS_NO_AL")
           PY
+      - name: Verify real isolated GitHub ledger preimage WITHOUT writing it
+        if: steps.source.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ID: ${{ steps.source.outputs.run_id }}
+          ASOF: ${{ steps.source.outputs.asof }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from research_candidate_memory_cas import (
+              REPO,BRANCH,PATH,authorized_proposal,verified_file_response)
+          root=Path(os.environ["RUNNER_TEMP"])
+          source=root/"symbolic_memory_admission"
+          run=json.loads((source/"run.json").read_text())
+          artifact=json.loads((source/"artifact.json").read_text())
+          receipt=json.loads((source/"receipt.json").read_text())
+          obj=json.loads(subprocess.check_output([
+              "gh","api",f"repos/{REPO}/contents/{PATH}?ref={BRANCH}"
+          ],text=True,timeout=40))
+          old,ledger=verified_file_response(obj)
+          plan=authorized_proposal(run,artifact,receipt,obj,
+              current_asof=os.environ["ASOF"],
+              expected_run_id=int(os.environ["ID"]))
+          assert plan["expected_blob_sha"]==obj["sha"]
+          assert plan["alpha_authority"] is False
+          assert plan["status"] in ("NEW_ACCEPTED_SESSION","IDEMPOTENT_NO_CHANGE")
+          assert plan["new_blob_sha"] and plan["entries"]>=1
+          verified_file_response(obj)
+          result={
+              "status":"REAL_GITHUB_ISOLATED_BRANCH_PREIMAGE_VERIFIED_READ_ONLY",
+              "ledger_branch":BRANCH,
+              "source_run_id":plan["run_id"],
+              "asof_et":plan["asof_et"],
+              "current_ledger_entries":len(ledger["entries"]),
+              "proposed_ledger_entries":plan["entries"],
+              "proposed_status":plan["status"],
+              "old_blob_sha":plan["expected_blob_sha"],
+              "proposed_new_blob_sha":plan["new_blob_sha"],
+              "alpha_authority":False,
+              "commit_executed":False,"main_mutated":False,
+              "execution":"NONE","real_money":"NO-GO"}
+          (root/"xray_symbolic_memory_cas_readonly_preflight.json").write_text(
+              json.dumps(result,sort_keys=True,indent=2)+"\n")
+          print("XRAY_REAL_ISOLATED_CAS_PREFLIGHT=PASS_READONLY_"+
+                plan["status"])
+          PY
       - name: Store noncanonical symbolic proposal only, with limited artifact retention
         if: steps.source.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
@@ -232,6 +280,7 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_symbolic_memory_admission.json
             ${{ runner.temp }}/xray_symbolic_memory_proposal.json
+            ${{ runner.temp }}/xray_symbolic_memory_cas_readonly_preflight.json
           retention-days: 14
           if-no-files-found: error
 
