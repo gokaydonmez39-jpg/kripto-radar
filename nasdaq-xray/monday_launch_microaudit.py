@@ -326,12 +326,12 @@ def selftest():
     # all mandatory PASS strings and step ordering appear intact.
     modified=dict(files)
     flow=modified["nasdaq-xray-delivery.yml"]
-    anchor=("if: steps.source_epoch.outputs.ready == 'true'\\n"
-            "        run: |\\n"
+    anchor=("if: steps.source_epoch.outputs.ready == 'true'\n"
+            "        run: |\n"
             "          python nasdaq-xray/official_source_guard.py")
     assert anchor in flow,"OFFICIAL_LAZY_GUARD_MUTATION_ANCHOR_MISSING"
     modified["nasdaq-xray-delivery.yml"]=flow.replace(
-        anchor,"run: |\\n          python nasdaq-xray/official_source_guard.py",1)
+        anchor,"run: |\n          python nasdaq-xray/official_source_guard.py",1)
     assert not validate_contract(modified)["ok"],"UNGATED_OFFICIAL_NETWORK_FALSE_PASS"
     # Mutation tests on the actual root-stage source: a missing source-epoch
     # fence, unsafe Post-MC dispatch, or bypassed two-read SHA check must
