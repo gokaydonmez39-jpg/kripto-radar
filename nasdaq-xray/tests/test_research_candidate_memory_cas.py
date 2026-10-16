@@ -47,6 +47,71 @@ class CASBranchTests(unittest.TestCase):
         self.assertEqual(again["status"],"IDEMPOTENT_NO_CHANGE")
         self.assertEqual(again["entries"],1)
 
+    def test_readonly_delta_baseline_never_claims_new_since_prior(self):
+        plan=self.plan()
+        delta=s.readonly_delta_from_authenticated_plan(plan)
+        self.assertEqual(delta["status"],"BASELINE_ONLY_NO_PRIOR_SESSION")
+        self.assertFalse(delta["prior_accepted_session_attested"])
+        self.assertEqual(delta["current_watch_count"],2)
+        self.assertEqual(delta["newly_observed_since_prior"],[])
+        self.assertEqual(delta["no_longer_observed_since_prior"],[])
+        self.assertEqual(delta["unchanged_symbol_count"],0)
+        self.assertFalse(delta["persistence_executed"])
+        self.assertFalse(delta["notification_sent"])
+        self.assertFalse(delta["alpha_authority"])
+
+    def test_real_prior_session_new_exit_family_change_and_idempotence(self):
+        before=receipt("2026-10-15",
+            {"FROG":["D"],"MANH":["B","D"],"WDAY":["B"]})
+        old,_=m.propose(m.empty_ledger(),before)
+        source=github_obj(old)
+        current=receipt("2026-10-16",
+            {"MANH":["D"],"MSFT":["D"],"WDAY":["B"]})
+        current_run=run()
+        current_run["created_at"]="2026-10-16T21:00:00Z"
+        current_run["updated_at"]="2026-10-16T21:05:00Z"
+        p=s.authorized_proposal(current_run,self.a,current,source,
+             current_asof="2026-10-16",expected_run_id=567)
+        delta=s.readonly_delta_from_authenticated_plan(p)
+        self.assertEqual(delta["prior_asof_et"],"2026-10-15")
+        self.assertEqual(delta["asof_et"],"2026-10-16")
+        self.assertEqual(delta["prior_watch_count"],3)
+        self.assertEqual(delta["current_watch_count"],3)
+        self.assertEqual([e["symbol"] for e in delta["newly_observed_since_prior"]],
+                         ["MSFT"])
+        self.assertEqual([e["symbol"] for e in delta["no_longer_observed_since_prior"]],
+                         ["FROG"])
+        self.assertEqual([e["symbol"] for e in delta["family_changed_since_prior"]],
+                         ["MANH"])
+        self.assertEqual(delta["unchanged_symbol_count"],1)
+        self.assertFalse(delta["r92_authority"])
+        self.assertFalse(delta["raw_market_data_included"])
+        new_ledger=json.loads(p["content"])
+        twice=s.authorized_proposal(current_run,self.a,current,
+             github_obj(new_ledger),current_asof="2026-10-16",
+             expected_run_id=567)
+        no_event=s.readonly_delta_from_authenticated_plan(twice)
+        self.assertEqual(no_event["status"],"IDEMPOTENT_NO_CHANGE")
+        self.assertEqual(no_event["newly_observed_since_prior"],[])
+        self.assertEqual(no_event["family_changed_since_prior"],[])
+        self.assertEqual(no_event["unchanged_symbol_count"],3)
+
+    def test_readonly_delta_rejects_forged_blob_or_report_authority(self):
+        plan=self.plan()
+        for key,bad in (
+            ("expected_blob_sha","0"*40),
+            ("new_blob_sha","0"*40),
+            ("alpha_authority",True),
+            ("entries",100),
+            ("watch_count",100),
+            ("status","AL"),
+            ("content",b"{invalid"),
+        ):
+            with self.subTest(key=key):
+                tampered={**plan,key:bad}
+                with self.assertRaises(ValueError):
+                    s.readonly_delta_from_authenticated_plan(tampered)
+
     def test_optin_environment_fail_closed(self):
         good={"XRAY_MEMORY_PERSIST_APPROVED":"true",
               "GITHUB_EVENT_NAME":"workflow_run",

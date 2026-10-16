@@ -244,7 +244,8 @@ jobs:
           from pathlib import Path
           sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
           from research_candidate_memory_cas import (
-              REPO,BRANCH,PATH,authorized_proposal,verified_file_response)
+              REPO,BRANCH,PATH,authorized_proposal,verified_file_response,
+              readonly_delta_from_authenticated_plan)
           root=Path(os.environ["RUNNER_TEMP"])
           source=root/"symbolic_memory_admission"
           run=json.loads((source/"run.json").read_text())
@@ -262,6 +263,13 @@ jobs:
           assert plan["status"] in ("NEW_ACCEPTED_SESSION","IDEMPOTENT_NO_CHANGE")
           assert plan["new_blob_sha"] and plan["entries"]>=1
           verified_file_response(obj)
+          delta=readonly_delta_from_authenticated_plan(plan)
+          assert delta["persistence_executed"] is False
+          assert delta["notification_sent"] is False
+          assert delta["alpha_authority"] is False
+          assert delta["prior_ledger_blob_sha"]==obj["sha"]
+          (root/"xray_symbolic_memory_delta_readonly.json").write_text(
+              json.dumps(delta,sort_keys=True,indent=2)+"\n")
           result={
               "status":"REAL_GITHUB_ISOLATED_BRANCH_PREIMAGE_VERIFIED_READ_ONLY",
               "ledger_branch":BRANCH,
@@ -279,6 +287,10 @@ jobs:
               json.dumps(result,sort_keys=True,indent=2)+"\n")
           print("XRAY_REAL_ISOLATED_CAS_PREFLIGHT=PASS_READONLY_"+
                 plan["status"])
+          print("XRAY_REAL_SYMBOLIC_DELTA_SOURCE_BOUND="+delta["status"]+
+                " new="+str(len(delta["newly_observed_since_prior"]))+
+                " exit="+str(len(delta["no_longer_observed_since_prior"]))+
+                " family="+str(len(delta["family_changed_since_prior"])))
           PY
       - name: Store noncanonical symbolic proposal only, with limited artifact retention
         if: steps.source.outputs.ready == 'true'
@@ -289,6 +301,7 @@ jobs:
             ${{ runner.temp }}/xray_symbolic_memory_admission.json
             ${{ runner.temp }}/xray_symbolic_memory_proposal.json
             ${{ runner.temp }}/xray_symbolic_memory_cas_readonly_preflight.json
+            ${{ runner.temp }}/xray_symbolic_memory_delta_readonly.json
           retention-days: 14
           if-no-files-found: error
 

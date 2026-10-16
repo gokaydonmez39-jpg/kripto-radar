@@ -102,6 +102,99 @@ def authorized_proposal(run, artifact, receipt, live_file, *,
     }
 
 
+def readonly_delta_from_authenticated_plan(plan):
+    """Summarize REAL isolated-branch member/family changes, without writing.
+
+    Caller MUST supply authorized_proposal() output from a verified GitHub
+    preimage and separately authenticated same-ASOF receipt. A first snapshot
+    is a baseline, not a claim that each ticker is a newly discovered setup.
+    """
+    ensure(type(plan) is dict and
+           plan.get("status") in ("NEW_ACCEPTED_SESSION",
+                                  "IDEMPOTENT_NO_CHANGE") and
+           type(plan.get("content")) is bytes and
+           type(plan.get("old_content")) is bytes and
+           type(plan.get("expected_blob_sha")) is str and
+           type(plan.get("new_blob_sha")) is str and
+           git_blob_sha(plan["old_content"]) == plan["expected_blob_sha"] and
+           git_blob_sha(plan["content"]) == plan["new_blob_sha"],
+           "DELTA_UNTRUSTED_CAS_PLAN")
+    try:
+        previous=json.loads(plan["old_content"])
+        proposed=json.loads(plan["content"])
+    except (ValueError,UnicodeDecodeError) as ex:
+        raise ValueError("XRAY_MEMORY_DELTA_INVALID_JSON") from ex
+    validate_ledger(previous)
+    validate_ledger(proposed)
+    before=previous["entries"]
+    after=proposed["entries"]
+    status=plan["status"]
+    if status=="NEW_ACCEPTED_SESSION":
+        ensure(len(after)==len(before)+1 and
+               after[:-1]==before and
+               after[-1]["asof_et"]==plan.get("asof_et") and
+               after[-1]["source_run_ids"] and
+               after[-1]["prev_entry_sha256"]==
+                   (before[-1]["entry_sha256"] if before else "0"*64),
+               "DELTA_APPEND_ONLY_EXACT")
+        events=after[-1]["watch_events"]
+    else:
+        ensure(after==before and
+               bool(before) and
+               before[-1]["asof_et"]==plan.get("asof_et"),
+               "DELTA_IDEMPOTENT_NOT_EQUAL")
+        events=[]
+    present=after[-1]["watch_families"] if after else {}
+    prior=before[-1]["watch_families"] if before else {}
+    ensure(plan.get("entries")==len(after) and
+           plan.get("watch_count")==len(present) and
+           plan.get("alpha_authority") is False,
+           "DELTA_COUNTER_OR_AUTHORITY")
+    kinds={
+        "WATCH_FIRST_OBSERVED":[],
+        "WATCH_NOT_OBSERVED_IN_NEXT_ACCEPTED_SESSION":[],
+        "WATCH_FAMILY_CHANGED":[]}
+    for item in events:
+        ensure(type(item) is dict and item.get("event") in kinds and
+               item.get("reason_authority")==
+                   "SYMBOLIC_MEMBERSHIP_DIFF_ONLY" and
+               item.get("confirmed_invalidation") is False and
+               item.get("r92") is False and item.get("al") is False,
+               "DELTA_NO_ALPHA_OR_INFERRED_INVALIDATION")
+        kinds[item["event"]].append(item)
+    has_previous=bool(before)
+    return {
+        "schema":"XRAY_RESEARCH_WATCH_DELTA_READONLY_V1",
+        "status":("BASELINE_ONLY_NO_PRIOR_SESSION" if not has_previous
+                 else status),
+        "asof_et":plan["asof_et"],
+        "prior_asof_et":before[-1]["asof_et"] if has_previous else None,
+        "source_acceptance_run_id":plan["run_id"],
+        "prior_ledger_blob_sha":plan["expected_blob_sha"],
+        "proposed_ledger_blob_sha":plan["new_blob_sha"],
+        "prior_ledger_entry_count":len(before),
+        "proposed_ledger_entry_count":len(after),
+        "prior_watch_count":len(prior),
+        "current_watch_count":len(present),
+        "prior_accepted_session_attested":has_previous,
+        "newly_observed_since_prior":(
+            kinds["WATCH_FIRST_OBSERVED"] if has_previous else []),
+        "no_longer_observed_since_prior":
+            kinds["WATCH_NOT_OBSERVED_IN_NEXT_ACCEPTED_SESSION"],
+        "family_changed_since_prior":kinds["WATCH_FAMILY_CHANGED"],
+        "unchanged_symbol_count":(
+            sum(prior.get(sym)==present[sym] for sym in present
+                if sym in prior) if has_previous else 0),
+        "first_snapshot_is_not_delta":not has_previous,
+        "raw_market_data_included":False,
+        "persistence_executed":False,
+        "notification_sent":False,
+        "alpha_authority":False,"r92_authority":False,
+        "execution":"NONE","real_money":"NO-GO",
+        "unknown_never_pass":True,
+    }
+
+
 def gh_api(path, payload=None):
     cmd = ["gh", "api", path]
     if payload is not None:
