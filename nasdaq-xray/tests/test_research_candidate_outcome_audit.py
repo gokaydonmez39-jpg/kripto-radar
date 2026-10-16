@@ -164,7 +164,7 @@ class OutcomeDiagnosticsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"DECISION_LOOKAHEAD"):
             self.run_audit(l,e,s)
         l,e,s=fixture()
-        s["reference_available_at_utc"]="2026-10-16T12:00:00Z"
+        s["reference_available_at_utc"]="2026-10-16T13:00:00Z"
         with self.assertRaisesRegex(ValueError,"REFERENCE_KNOWN_AFTER_DECISION"):
             self.run_audit(l,e,s)
 
