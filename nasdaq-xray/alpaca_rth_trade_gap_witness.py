@@ -22,6 +22,13 @@ STATES=frozenset({
     "NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN",
     "TRADE_QUERY_PAGINATED_INCOMPLETE_UNKNOWN",
     "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN",
+    "TRADE_VENDOR_NULL_TRADES_UNKNOWN",
+    "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN",
+    "TRADE_TIMESTAMP_INVALID_UNKNOWN",
+    "TRADE_PRICE_OR_SIZE_INVALID_UNKNOWN",
+    "TRADE_ID_INVALID_OR_DUPLICATE_UNKNOWN",
+    "TRADE_CONDITIONS_INVALID_UNKNOWN",
+    "TRADE_PAGINATION_INVALID_UNKNOWN",
     "TRADE_HTTP_401_403_NOT_ENTITLED",
     "TRADE_HTTP_429_THROTTLED",
     "TRADE_HTTP_OTHER_UNKNOWN",
@@ -78,40 +85,51 @@ def probe(symbol,slot,asof,credentials,opener=urllib.request.urlopen):
             return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
         source=json.loads(bb)
         if (type(source) is not dict or
-            source.get("symbol") not in (None,symbol) or
-            type(source.get("trades")) is not list or
+            source.get("symbol") not in (None,symbol)):
+            return "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"
+        if source.get("trades") is None:
+            # Null/missing is not an empty list and NEVER means no trades.
+            return "TRADE_VENDOR_NULL_TRADES_UNKNOWN"
+        if (type(source["trades"]) is not list or
             len(source["trades"])>MAX_TRADES):
-            return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+            return "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"
         trades=source["trades"]
         seen=set()
         for row in trades:
             if type(row) is not dict:
-                return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+                return "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"
             timestamp=row.get("t")
             price=row.get("p")
             size=row.get("s")
             ident=row.get("i")
-            if (type(timestamp) is not str or
-                type(price) not in (int,float) or not math.isfinite(price) or price<=0 or
-                type(size) is not int or size<=0 or
-                type(ident) is not int or ident<0):
-                return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
-            when=dt.datetime.fromisoformat(timestamp.replace("Z","+00:00"))
+            if type(timestamp) is not str:
+                return "TRADE_TIMESTAMP_INVALID_UNKNOWN"
+            if (type(price) not in (int,float) or
+                not math.isfinite(price) or price<=0 or
+                type(size) is not int or size<=0):
+                return "TRADE_PRICE_OR_SIZE_INVALID_UNKNOWN"
+            if type(ident) is not int or ident<0:
+                return "TRADE_ID_INVALID_OR_DUPLICATE_UNKNOWN"
+            try:
+                when=dt.datetime.fromisoformat(timestamp.replace("Z","+00:00"))
+            except (ValueError,TypeError,OverflowError):
+                return "TRADE_TIMESTAMP_INVALID_UNKNOWN"
             if (when.tzinfo is None or
                 not slot<=when.astimezone(dt.timezone.utc)<end):
-                return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+                return "TRADE_TIMESTAMP_INVALID_UNKNOWN"
             key=(row.get("x"),ident)
             if key in seen:
-                return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+                return "TRADE_ID_INVALID_OR_DUPLICATE_UNKNOWN"
             seen.add(key)
             conditions=row.get("c")
             if conditions is not None and (
                 type(conditions) is not list or
                 any(type(flag) is not str for flag in conditions)):
-                return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+                return "TRADE_CONDITIONS_INVALID_UNKNOWN"
         token=source.get("next_page_token")
-        if token is not None and (type(token) is not str or not token or len(token)>2048):
-            return "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN"
+        if token is not None and (type(token) is not str or
+                                  not token or len(token)>2048):
+            return "TRADE_PAGINATION_INVALID_UNKNOWN"
         if trades:
             # Even with pagination, only presence is observed; NO volume sums.
             return "TRADE_RECORD_PRESENT_AGGREGATE_BAR_MISSING_RESEARCH_ONLY"
@@ -170,18 +188,20 @@ def selftest():
     check(probe("AAA",slot,"2026-10-14",auth,responder({
           "symbol":"AAA","trades":[],"next_page_token":"MORE"}))==
           "TRADE_QUERY_PAGINATED_INCOMPLETE_UNKNOWN","PAGINATION_NOT_COMPLETE")
-    for mutation in (
-        lambda o:o["trades"][0].update(s=0),
-        lambda o:o["trades"][0].update(p=float("nan")),
-        lambda o:o["trades"][0].update(t=close.isoformat()),
-        lambda o:o["trades"][0].update(i="bad"),
-        lambda o:o["trades"].append(copy.deepcopy(o["trades"][0])),
-        lambda o:o.update(symbol="OTHER"),
-        lambda o:o["trades"][0].update(c=["@",4]),
+    for mutation,code in (
+        (lambda o:o["trades"][0].update(s=0),"TRADE_PRICE_OR_SIZE_INVALID_UNKNOWN"),
+        (lambda o:o["trades"][0].update(p=float("nan")),"TRADE_PRICE_OR_SIZE_INVALID_UNKNOWN"),
+        (lambda o:o["trades"][0].update(t=close.isoformat()),"TRADE_TIMESTAMP_INVALID_UNKNOWN"),
+        (lambda o:o["trades"][0].update(i="bad"),"TRADE_ID_INVALID_OR_DUPLICATE_UNKNOWN"),
+        (lambda o:o["trades"].append(copy.deepcopy(o["trades"][0])),"TRADE_ID_INVALID_OR_DUPLICATE_UNKNOWN"),
+        (lambda o:o.update(symbol="OTHER"),"TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"),
+        (lambda o:o["trades"][0].update(c=["@",4]),"TRADE_CONDITIONS_INVALID_UNKNOWN"),
+        (lambda o:o.update(trades=None),"TRADE_VENDOR_NULL_TRADES_UNKNOWN"),
+        (lambda o:o.update(next_page_token=123),"TRADE_PAGINATION_INVALID_UNKNOWN"),
     ):
         bad=copy.deepcopy(positive);mutation(bad)
-        check(probe("AAA",slot,"2026-10-14",auth,responder(bad))==
-              "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN","MALFORMED_VENDOR_ROW_REFUSED")
+        check(probe("AAA",slot,"2026-10-14",auth,responder(bad))==code,
+              "MALFORMED_VENDOR_ROW_CLASSIFIED_EXACTLY")
     before=len(calls)
     for sym,timestamp,asof in (
         ("../BAD",slot,"2026-10-14"),
@@ -191,8 +211,8 @@ def selftest():
         check(probe(sym,timestamp,asof,auth,responder(positive))==
               "TRADE_SCOPE_REJECTED_NO_CALL","FORGED_OR_STALE_SCOPE")
     check(len(calls)==before,"NO_CALL_WHEN_SCOPE_INVALID")
-    check(len(STATES)==9,"STATUS_CLOSED_ENUMERATION")
-    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_10_NEGATIVES_PYTHON_O_SAFE_NO_ALPHA")
+    check(len(STATES)==16,"STATUS_CLOSED_ENUMERATION")
+    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_12_NEGATIVES_PYTHON_O_SAFE_NO_ALPHA")
 
 
 if __name__=="__main__":
