@@ -5,12 +5,14 @@ on:
     paths:
       - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
       - "nasdaq-xray/alpaca_rth_trade_gap_witness.py"
+      - "nasdaq-xray/alpaca_closing_auction_research_probe.py"
       - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
       - "nasdaq-xray/alpaca_rth_trade_gap_witness.py"
+      - "nasdaq-xray/alpaca_closing_auction_research_probe.py"
       - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
   workflow_run:
     workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
@@ -87,6 +89,9 @@ jobs:
           python -O nasdaq-xray/alpaca_rth_trade_gap_witness.py
           python nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
           python -O nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_closing_auction_research_probe.py
+          python nasdaq-xray/alpaca_closing_auction_research_probe.py --selftest
+          python -O nasdaq-xray/alpaca_closing_auction_research_probe.py --selftest
       - name: Keep only aggregate research evidence, never signal or trade
         run: |
           python - <<'PY'
@@ -251,6 +256,38 @@ jobs:
           assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
           print("XRAY_RTH497_TEMPORAL_LIVE_CANARY=SAFE_AGGREGATES_ONLY")
           PY
+      - name: Probe official SIP historical-auction endpoint for four authenticated missing-bar symbols
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_closing_auction_research_probe.py \
+            --parent "$RUNNER_TEMP/parent/xray_personal_joint_rth30_shadow.json" \
+            --out "$RUNNER_TEMP/xray_rth_auction_four_gap_research.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"xray_rth_auction_four_gap_research.json"
+          r=json.loads(p.read_text())
+          assert r["schema"]=="XRAY_PERSONAL_SIP_AUCTION_ACCESSIBILITY_WITNESS_V1"
+          assert r["target_count"]==4 and r["api_calls"]<=1
+          assert r["source_endpoint"]=="https://data.alpaca.markets/v2/stocks/auctions"
+          assert r["no_vendor_auction_prices_or_volumes_persisted"] is True
+          assert r["source_rights_not_inferred"] is True
+          assert r["official_auction_correction_and_sale_conditions_attested"] is False
+          assert r["official_c417_primary_dv30_attested"] is False
+          assert r["registered_R92_count"]==0 and r["orders"]==[]
+          assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
+          print("XRAY_FOUR_GAP_AUCTION_SHADOW=BOUNDED_ONE_CALL_RESEARCH_ONLY")
+          PY
+      - name: Upload separate symbolic auction availability diagnostic; never vendor rows or rights attestation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-sip-auction-four-gap-research-no-raw-prices
+          path: ${{ runner.temp }}/xray_rth_auction_four_gap_research.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Upload only aggregate 30Min/1Min/trade-presence evidence; no OHLCV or ticker identities
         if: always()
         uses: actions/upload-artifact@v4
