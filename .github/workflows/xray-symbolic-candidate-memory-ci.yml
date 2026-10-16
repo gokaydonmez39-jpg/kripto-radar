@@ -5,6 +5,8 @@ on:
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
       - "nasdaq-xray/research_candidate_memory_admission.py"
+      - "nasdaq-xray/research_candidate_memory_cas.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory_cas.py"
       - "nasdaq-xray/tests/test_research_candidate_memory_admission.py"
       - "nasdaq-xray/tests/test_research_candidate_memory.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
@@ -37,7 +39,7 @@ jobs:
           python-version: "3.12"
       - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
         run: |
-          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py
           python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory*.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
       - name: Assert no trading, no provider dependency, no publication and no mutation of main
@@ -58,6 +60,10 @@ jobs:
 
   trusted-receipt-proposal:
     needs: symbolic-memory-offline
+    outputs:
+      ready: ${{ steps.source.outputs.ready }}
+      run_id: ${{ steps.source.outputs.run_id }}
+      asof: ${{ steps.source.outputs.asof }}
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
@@ -176,3 +182,36 @@ jobs:
             ${{ runner.temp }}/xray_symbolic_memory_proposal.json
           retention-days: 14
           if-no-files-found: error
+
+  # Explicitly DISARMED unless repo owner later enables repository variable
+  # XRAY_MEMORY_PERSIST_APPROVED=true after separate production approval.
+  # Never commits to main; all writes target dedicated memory-state branch.
+  isolated-state-cas-optin:
+    needs: trusted-receipt-proposal
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && needs.trusted-receipt-proposal.outputs.ready == 'true' && vars.XRAY_MEMORY_PERSIST_APPROVED == 'true' }}
+    concurrency:
+      group: xray-symbolic-candidate-memory-state-cas
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Require approved exact trusted source and persist ONLY isolated ledger via CAS
+        env:
+          GH_TOKEN: ${{ github.token }}
+          XRAY_MEMORY_PERSIST_APPROVED: ${{ vars.XRAY_MEMORY_PERSIST_APPROVED }}
+          SRC_ID: ${{ needs.trusted-receipt-proposal.outputs.run_id }}
+          ASOF: ${{ needs.trusted-receipt-proposal.outputs.asof }}
+        run: |
+          test "$GITHUB_EVENT_NAME" = "workflow_run"
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$XRAY_MEMORY_PERSIST_APPROVED" = "true"
+          python nasdaq-xray/research_candidate_memory_cas.py --run-id "$SRC_ID" --asof "$ASOF"
