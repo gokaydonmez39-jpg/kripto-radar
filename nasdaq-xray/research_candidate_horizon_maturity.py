@@ -51,8 +51,29 @@ def summarize(provenance,*,now_utc):
             sched.loc[sessions[h]]["market_close"].to_pydatetime()
             +dt.timedelta(minutes=30)).isoformat(),
     } for h in HORIZONS}
+    def utc_field(field):
+        s=provenance.get(field)
+        ensure(type(s) is str,"MATURITY_MISSING_"+field)
+        try:
+            x=dt.datetime.fromisoformat(s.replace("Z","+00:00"))
+        except ValueError as exc:
+            raise ValueError("XRAY_MEMORY_MATURITY_BAD_"+field) from exc
+        ensure(x.tzinfo is not None and x.utcoffset()==dt.timedelta(0),
+               "MATURITY_NOT_UTC_"+field)
+        return x
+    accepted=utc_field("accepted_at_utc")
+    next_open=utc_field("next_market_open_utc")
+    eod=utc_field("official_eod_buffer_cutoff_utc")
+    ensure(eod<=accepted<=now_utc and eod<next_open,
+           "MATURITY_PROOF_TIME_OR_CLOCK_DRIFT")
+    ensure(provenance.get("next_session")==sessions[1] and
+           next_open==sched.loc[sessions[1]]["market_open"].to_pydatetime() and
+           eod==sched.loc[asof]["market_close"].to_pydatetime()+
+                   dt.timedelta(minutes=30),
+           "MATURITY_OFFICIAL_BOUNDARY_DRIFT")
     rows=provenance.get("episodes")
     ensure(type(rows) is list and
+           all(type(v) is dict for v in rows) and
            len(rows)==provenance.get("symbolic_watch_count") and
            len(rows)==len({v.get("symbol") for v in rows}) and
            sum(v.get("eligible_for_next_session_research_only") is True
@@ -73,7 +94,15 @@ def summarize(provenance,*,now_utc):
                row.get("issuer_class_identity_verified") is False,
                "MATURITY_EPISODE_AUTHORITY")
         gate=row.get("eligible_for_next_session_research_only")
-        ensure(type(gate) is bool, "MATURITY_EPISODE_ELIGIBILITY_TYPE")
+        ensure(type(gate) is bool and gate==(accepted<next_open),
+               "MATURITY_EPISODE_ELIGIBILITY_DRIFT")
+        ensure(row.get("candidate_decision_at_utc")==accepted.isoformat() and
+               row.get("source_acceptance_sha256") and
+               row.get("trusted_acceptance_workflow_run_id")==
+                   provenance.get("acceptance_workflow_run_id") and
+               row.get("ledger_entry_sha256")==
+                   provenance.get("durable_ledger_entry_sha256"),
+               "MATURITY_SOURCE_PROVENANCE_DRIFT")
         if gate:eligible+=1
         horizon_states={}
         for h in HORIZONS:
