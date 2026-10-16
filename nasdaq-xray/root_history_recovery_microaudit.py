@@ -53,11 +53,16 @@ def audit(state,root,now):
     q=state.get("queue");rows=state.get("results")
     if not isinstance(q,list) or not isinstance(rows,dict):
         raise ValueError("HISTORY_QUEUE_OR_ROWS_MISSING")
-    if (len(q)!=len(set(q)) or any(not isinstance(x,str) or not x for x in q)
-        or set(q)!=set(rows)
-        or state.get("cursor")!=len(q)
-        or state.get("queue_total")!=len(q)):
+    cursor=state.get("cursor")
+    # An in-progress root checkpoint covers an exact *prefix* of the official
+    # queue. Requiring every symbol here incorrectly kills safe partial runs.
+    if (len(q)!=len(set(q)) or any(type(x) is not str or not x for x in q)
+        or type(cursor) is not int or not 0<=cursor<=len(q)
+        or state.get("queue_total")!=len(q)
+        or len(rows)!=cursor or set(rows)!=set(q[:cursor])):
         raise ValueError("HISTORY_QUEUE_PARTITION_NOT_EXACT")
+    if cursor<len(q) and state.get("status")=="HISTORY_COMPLETE":
+        raise ValueError("HISTORY_COMPLETE_WITH_UNPROCESSED_QUEUE")
     if state.get("queue_hash")!=hashlib.sha256("\n".join(q).encode()).hexdigest():
         raise ValueError("HISTORY_QUEUE_HASH_MISMATCH")
     hash_integrity=verify_state_hash(state)
@@ -110,7 +115,7 @@ def audit(state,root,now):
                   and row.get("attempts",99)<4)
     if remaining!=state.get("pending_retry"):
         raise ValueError("SINA_RETRY_COUNTER_DRIFT")
-    if sum(bystatus.values())!=len(q):
+    if sum(bystatus.values())!=cursor:
         raise ValueError("HISTORY_CLASSIFICATION_SUM_DRIFT")
     # C4.17: a complete cursor and matching UNKNOWN subtotal do not prove
     # the persisted PASS/FAIL/BLOCK partition matches individual source rows.
@@ -126,7 +131,15 @@ def audit(state,root,now):
             raise ValueError("ROOT_UNKNOWN_COUNT_DRIFT")
         if remaining!=root.get("pending_retry"):
             raise ValueError("RETRY_COUNTER_DRIFT")
-        root_binding="PARTIAL_COUNTERS_EXACT"
+        # A partial run has not examined the queue suffix. Bind its root
+        # checkpoint explicitly rather than treating suffix as zero/FAIL/PASS.
+        if cursor<len(q) and (
+            root.get("cursor")!=cursor or
+            root.get("queue_total")!=len(q) or
+            root.get("queue_hash")!=state.get("queue_hash")):
+            raise ValueError("PARTIAL_ROOT_QUEUE_BINDING_MISMATCH")
+        root_binding=("PARTIAL_PREFIX_COUNTERS_EXACT_NOT_FULL_HISTORY"
+                      if cursor<len(q) else "PARTIAL_COUNTERS_EXACT")
     elif root_status in ("DATA_PLANE_PARTIAL_UNKNOWN",
                          "DATA_PLANE_PASS_CANONICAL_DOWNSTREAM_DEFERRED"):
         # In orchestrator_run.py, post-HISTORY root reports counts under
@@ -134,7 +147,7 @@ def audit(state,root,now):
         # root simply because it lacks partial-only top-level counters.
         h=root.get("history")
         if (not isinstance(h,dict) or state.get("status")!="HISTORY_COMPLETE"
-            or unknown!=0 or remaining!=0
+            or cursor!=len(q) or unknown!=0 or remaining!=0
             or h.get("status")!="HISTORY_COMPLETE"
             or h.get("queue_total")!=len(q)
             or h.get("queue_hash")!=state.get("queue_hash")
@@ -157,6 +170,9 @@ def audit(state,root,now):
         "source_state_hash_integrity":hash_integrity,
         "source_state_reproducible_hash":hash_integrity=="PASS_DETERMINISTIC_BLOB_INTERNAL",
         "input_symbols":len(q),
+        "processed_symbols":cursor,
+        "unprocessed_symbols":len(q)-cursor,
+        "queue_processed_complete":cursor==len(q),
         "unknown_count":unknown,
         "known_status_counts":dict(sorted(bystatus.items())),
         "unknown_reason_counts":dict(sorted(classified.items())),
@@ -287,6 +303,60 @@ def selftest():
         except ValueError as ex:
             assert code in str(ex),(code,str(ex))
         else:raise AssertionError("INVALID_HISTORY_MUTATION_WAS_ACCEPTED:"+code)
+    # Reproduce the observed main-run checkpoint: cursor<total but every
+    # processed symbol matches the exact queue prefix, and UNKNOWN stays UNKNOWN.
+    incomplete=copy.deepcopy(s)
+    incomplete["queue"]=queue+["DDD"]
+    incomplete["cursor"]=len(queue)
+    incomplete["queue_total"]=len(queue)+1
+    incomplete["queue_hash"]=hashlib.sha256(
+        "\\n".join(incomplete["queue"]).encode()).hexdigest()
+    seal_state(incomplete)
+    partial_root=copy.deepcopy(r)
+    partial_root.update(cursor=len(queue),queue_total=len(queue)+1,
+                        queue_hash=incomplete["queue_hash"])
+    def check(condition,reason):
+        if not condition:
+            raise AssertionError("XRAY_PARTIAL_PREFIX_"+reason)
+    observed=audit(incomplete,partial_root,now)
+    check(observed["processed_symbols"]==3 and
+          observed["unprocessed_symbols"]==1 and
+          observed["queue_processed_complete"] is False and
+          observed["unknown_count"]==2 and
+          observed["root_state_binding"]==
+            "PARTIAL_PREFIX_COUNTERS_EXACT_NOT_FULL_HISTORY" and
+          observed["source_proof_full_history_attested"] is False and
+          observed["alpha_authority"] is False,
+          "EXACT_PREFIX_NO_PREMATURE_PASS")
+    check(observed["eligible_single_round_real_provider_retries_now"]==0,
+          "NO_PROVIDER_RESCUE_BEFORE_QUEUE_COMPLETES")
+    partial_negatives=[
+        (lambda x,y:x["results"].update(DDD=rec("PASS",{})),
+         "HISTORY_QUEUE_PARTITION_NOT_EXACT"),
+        (lambda x,y:(x["results"].pop("CCC"),
+                     x["results"].update(DDD=rec("PASS",{}))),
+         "HISTORY_QUEUE_PARTITION_NOT_EXACT"),
+        (lambda x,y:x.update(cursor=4),
+         "HISTORY_QUEUE_PARTITION_NOT_EXACT"),
+        (lambda x,y:x.update(status="HISTORY_COMPLETE"),
+         "HISTORY_COMPLETE_WITH_UNPROCESSED_QUEUE"),
+        (lambda x,y:y.update(cursor=2),
+         "PARTIAL_ROOT_QUEUE_BINDING_MISMATCH"),
+        (lambda x,y:y.update(queue_hash="0"*64),
+         "PARTIAL_ROOT_QUEUE_BINDING_MISMATCH"),
+        (lambda x,y:y.update(queue_total=3),
+         "PARTIAL_ROOT_QUEUE_BINDING_MISMATCH"),
+    ]
+    for corrupt,reason in partial_negatives:
+        bad=copy.deepcopy(incomplete);bad_root=copy.deepcopy(partial_root)
+        corrupt(bad,bad_root)
+        seal_state(bad)
+        try:
+            audit(bad,bad_root,now)
+        except ValueError as err:
+            check(reason in str(err),"WRONG_REJECTION_"+reason)
+        else:
+            raise AssertionError("XRAY_PARTIAL_PREFIX_FALSE_ACCEPT_"+reason)
     # A fully completed source must NEVER be rejected by the partial-only
     # counter expectations; however a falsified COMPLETE claim is rejected.
     good=copy.deepcopy(s)
