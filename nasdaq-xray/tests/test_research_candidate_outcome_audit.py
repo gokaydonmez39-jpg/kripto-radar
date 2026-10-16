@@ -134,6 +134,7 @@ class OutcomeDiagnosticsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.run_audit(l,e,s)
         l,e,s=fixture()
+        s["stock_future_bars"].pop(-1)
         s["stock_future_bars"].append(copy.deepcopy(s["stock_future_bars"][0]))
         with self.assertRaises(ValueError):
             self.run_audit(l,e,s)
