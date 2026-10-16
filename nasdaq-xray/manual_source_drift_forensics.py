@@ -25,7 +25,7 @@ def need(ok,why):
 
 def blob(data):
     return hashlib.sha1(
-        b"blob "+str(len(data)).encode("ascii")+b"\\0"+data).hexdigest()
+        b"blob "+str(len(data)).encode("ascii")+bytes([0])+data).hexdigest()
 
 
 def audit(terminal,master,policy,master_bytes):
@@ -117,7 +117,7 @@ def main():
     master=json.loads(bb)
     policy=json.loads(paths[2].read_text())
     result=audit(terminal,master,policy,bb)
-    args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\\n")
+    args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+chr(10))
     print(json.dumps({
         "status":result["status"],
         "day_delta":result["day_delta_master_minus_terminal"],
