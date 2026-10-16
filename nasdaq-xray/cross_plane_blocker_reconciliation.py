@@ -161,7 +161,12 @@ def reconcile(root,price,six,*,now_utc):
         "personal_next_safe_evidence_action_counts":dict(sorted(actions.items())),
         "canonical_unknown_symbolic_repair_worklist":dict(sorted(issue_rows.items())),
         "six_gate_input_report_sha256":dict(sorted(recorded.items())),
-        "count_semantics":"223 root historical unresolved, 260/52 research history unproven, and 548 canonical price UNKNOWN are distinct criteria; NEVER add/subtract as one failure metric",
+        "count_semantics":(
+            f"{root['unknown_count']} root historical unresolved, "
+            f"{research_history_unproven} independent 260/52 research "
+            f"history unproven, and {len(issue_rows)} canonical price "
+            "UNKNOWN are distinct criteria; NEVER add/subtract as one "
+            "failure metric"),
         "same_epoch_and_identity_does_not_establish_same_policy":True,
         "personal_history_and_liquidity_still_research_only":True,
         "licensed_source_access_or_rights_independently_verified":False,

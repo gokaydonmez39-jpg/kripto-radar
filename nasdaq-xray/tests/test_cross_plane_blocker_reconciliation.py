@@ -110,6 +110,11 @@ class CrossPlaneTests(unittest.TestCase):
                  "alpha_authority"})
             self.assertFalse(row["alpha_authority"])
         self.assertTrue(x["no_raw_market_prices_or_volume_in_output"])
+        self.assertIn("2 root historical unresolved",x["count_semantics"])
+        self.assertIn("2 independent 260/52",x["count_semantics"])
+        self.assertIn("2 canonical price UNKNOWN",x["count_semantics"])
+        self.assertNotIn("223 root historical",x["count_semantics"])
+        self.assertNotIn("548 canonical price",x["count_semantics"])
 
     def test_official_session_drift_or_naive_clock_refused(self):
         root,price,six=fixture()

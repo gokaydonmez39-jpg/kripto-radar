@@ -105,8 +105,22 @@ jobs:
               if len(files)!=1:continue
               report=json.loads(files[0].read_text())
               if report.get("asof_et")!=expected:continue
+              # Bind the upstream measurement to immutable SAME-ASOF
+              # source identities, not the old 3189 UNKNOWN count.
+              root=json.loads(Path("nasdaq-xray/orchestrator_state.json").read_text())
+              master=json.loads(Path("nasdaq-xray/canonical_current_master_manifest.json").read_text())
+              digest=report.get("exact_root_identity_scope_sha256")
+              size=report.get("scope_count")
               if (report.get("schema")!="XRAY_PERSONAL_SIX_GATE_CAUSAL_BREAKER_V1"
-                  or report.get("scope_count")!=3189):
+                  or type(size) is not int or not 1<=size<=6500
+                  or size!=root.get("queue_total")
+                  or size!=master.get("queue_total")
+                  or digest!=root.get("queue_hash")
+                  or digest!=master.get("queue_hash")
+                  or root.get("asof_et")!=expected
+                  or master.get("asof_et")!=expected
+                  or root.get("execution")!="NONE" or root.get("real_money")!="NO-GO"
+                  or master.get("execution")!="NONE" or master.get("real_money")!="NO-GO"):
                   continue
               (out/"trusted_six_gate.json").write_text(
                   json.dumps(report,sort_keys=True)+"\n")
@@ -135,7 +149,7 @@ jobs:
           assert x["iphone_delivery_attested"] is False and x["canonical_mutated"] is False
           assert x["licensed_source_access_or_rights_independently_verified"] is False
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-          print("XRAY_CROSS_PLANE_REAL_3189_RECONCILIATION_PASS_NO_AL="+str(x["universe_count"]))
+          print("XRAY_CROSS_PLANE_REAL_EXACT_SCOPE_RECONCILIATION_PASS_NO_AL="+str(x["universe_count"]))
           print("XRAY_CROSS_PLANE_COUNTS_ROOT_SHADOW_PRICE="+str(
               x["canonical_root_history_unknown_count"])+"/"+str(
               x["independent_research_history_260_52_unproven_count"])+"/"+str(
