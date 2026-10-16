@@ -36,6 +36,11 @@ on:
       - "XRAY Canonical Current Pre-MC Factory"
       - "XRAY Canonical Current Post-MC Factory"
       - "XRAY Canonical Current Final Factory"
+      # Backstop: verified EOD technical completion happens before the opening
+      # even if GitHub's independent preopen cron events are delayed/skipped.
+      # No second market scan or alert is created; official preopen clock and
+      # hard C4.17/G9 gates remain fail-closed in the existing job.
+      - "XRAY Personal Early Technical WATCH 406 (No AL)"
     types: [completed]
     branches: [main]
   # Multiple independent preopen observations withstand late GitHub cron runs.

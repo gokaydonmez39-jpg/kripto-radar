@@ -42,6 +42,15 @@ jobs:
           assert "iphone_delivery_receipt_attested" in code
           assert "platform_notification_sent_by_this_audit" in code
           assert "XRAY_PREOPEN_WATCH_RECEIPT=NO_FALSE_GO_" in pre
+          # GitHub schedule ticks were not recorded before opening on 16 Oct.
+          # The independent complete EOD technical-WATCH workflow now creates
+          # a second, non-market-data-trigger for the existing preopen audit.
+          assert '      - "XRAY Personal Early Technical WATCH 406 (No AL)"' in pre
+          assert '    types: [completed]' in pre
+          for hh in ("5 12", "25 12", "5 13", "15 13", "15 14"):
+              assert ('cron: "'+hh+' * * 1-5"') in pre
+          assert "if: steps.epoch_guard.outputs.valid == 'true'" in pre
+
           assert "xray-preopen-research-watch" not in pre
           assert "xray_preopen_research_watch_truth.json" in pre
           assert "gh run download" not in code
