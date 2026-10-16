@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-16T06:22:20.937969+00:00",
+  "generated_at_utc": "2026-10-16T07:26:06.648462+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -978,115 +978,187 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 12,
+      "row_count": 20,
       "rows": [
         {
-          "BX Action": "Delete",
-          "Company Name": "Clear Channel Outdoor Holdings, Inc.",
-          "Effective Date": "10/15/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": ""
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "abrdn Global Infrastructure Income Fund",
-          "Effective Date": "10/15/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "ASGI^"
-        },
-        {
           "BX Action": "Add",
-          "Company Name": "American Century ETF Trust",
-          "Effective Date": "10/15/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "AVUC"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Black Mammoth Metals Corporation",
-          "Effective Date": "10/15/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "BMMX"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Bitwise Dogecoin ETF",
-          "Effective Date": "10/15/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "P",
-          "Symbol": "BWOW"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Managed Portfolio Series",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "GANZ"
+          "Symbol": "AAAB"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Harbor ETF Trust",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "AELV"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Iambic Therapeutics, Inc.",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Q",
-          "Symbol": "IAM"
+          "Primary Listing Market": "Z",
+          "Symbol": "AGGB"
         },
         {
           "BX Action": "Add",
-          "Company Name": "SPACCircle Acquisition Corp.",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "ANG"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "BBBB"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "City Therapeutics, Inc.",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "G",
-          "Symbol": "SCQCU"
+          "Symbol": "CTY"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Global X Funds",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "SMRZ"
+          "Symbol": "FTN"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "GCB"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "HH"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Collaborative Investment Series Trust",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "HOID"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Santander Holdings USA, Inc.",
-          "Effective Date": "10/15/2026",
+          "Company Name": "iShares Trust",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "SNUS-I"
+          "Primary Listing Market": "P",
+          "Symbol": "IBIC"
         },
         {
           "BX Action": "Add",
-          "Company Name": "William Blair ETF Trust",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "WBEM"
+          "Primary Listing Market": "Z",
+          "Symbol": "IGB"
         },
         {
           "BX Action": "Add",
-          "Company Name": "William Blair ETF Trust",
-          "Effective Date": "10/15/2026",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "WBIE"
+          "Primary Listing Market": "Z",
+          "Symbol": "LIGB"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "LTB"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi MANGOS ETF",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "MMF"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "SVTN"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "TCGX Acquisition Corp. II",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "TCXB"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "TNTW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "TTTT"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Corgi ETF Trust I",
+          "Effective Date": "10/16/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "UB"
         }
       ],
       "status": "PASS",
