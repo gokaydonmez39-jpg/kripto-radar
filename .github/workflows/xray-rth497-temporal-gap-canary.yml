@@ -32,7 +32,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           file=Path(".github/workflows/xray-rth497-temporal-gap-canary.yml").read_text()
-          marker='      - "nasdaq-xray/alpaca_rth_trade_gap_witness.py"'
+          marker='      - "nasdaq-xray/alpaca_rth_trade_gap_'+'witness.py"'
           if file.count(marker)!=2:
               raise RuntimeError("XRAY_TRADE_SOURCE_PR_PUSH_TRIGGER_SYMMETRY_BROKEN")
           print("XRAY_TRADE_SOURCE_PR_PUSH_TRIGGER_SYMMETRY=PASS")
