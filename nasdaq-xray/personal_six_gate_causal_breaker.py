@@ -174,6 +174,7 @@ def build(day, hist, bridge, rth, now, source_digests=None):
              "SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION" and
          rth.get("partial_no_daily_close_proxy_or_unobserved_zero_fill") is True and
          rth.get("partial_notional_source_trade_conditions_unattested") is True and
+         rth.get("partial_notional_proxy_not_mathematical_trade_floor") is True and
          set(partial) == {sym for sym,why in causes_rth.items()
              if why == "EARLY_AND_FULL_BAR_COUNTS_EXACT"} and
          set(causes_rth).issubset(cohort) and
@@ -229,7 +230,7 @@ def build(day, hist, bridge, rth, now, source_digests=None):
     for sym in partial_high:
         need(details[sym]["causal_class"] == "RTH_DATA_INTEGRITY_OR_PROVIDER_UNKNOWN",
              "PARTIAL_CANNOT_OVERRIDE_OTHER_CAUSAL_GATE")
-        details[sym]["causal_class"] = "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY"
+        details[sym]["causal_class"] = "RTH_OBSERVED_PARTIAL_BARLOW_PROXY_ONLY"
         details[sym]["parallel_research_only"] = (
             "EVALUATE_TECHNICAL_A_B_D_ONLY_WITH_INDEPENDENT_DAILY_HISTORY")
         # First unresolved source action is retained.
@@ -255,6 +256,7 @@ def build(day, hist, bridge, rth, now, source_digests=None):
         "rth30_partial_missing_slot_high_research_only_sha256":
             scope_sha(partial_high),
         "rth30_partial_research_never_primary": True,
+        "rth30_partial_notional_is_proxy_not_trade_floor":True,
         "rth30_lower_bound_sha256": scope_sha(high),
         "rth30_ambiguous_count": sum(x == RTH_MID for x in rth_labels.values()),
         "rth30_data_unknown_count": sum(x in (RTH_UNKNOWN, RTH_PROVIDER)
@@ -336,6 +338,7 @@ def selftest():
                partial_notional_method="SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION",
                partial_no_daily_close_proxy_or_unobserved_zero_fill=True,
                partial_notional_source_trade_conditions_unattested=True,
+               partial_notional_proxy_not_mathematical_trade_floor=True,
                symbol_rth_integrity_failure_codes={},
                rth_integrity_cause_counts={},
                official_session_count=30,
@@ -363,7 +366,7 @@ def selftest():
          partial_ok["rth30_partial_missing_slot_high_research_only_count"]==1 and
          partial_ok["rth30_data_unknown_count"]==1 and
          partial_ok["per_symbol_causal_routing"]["AAA"]["causal_class"]==
-             "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY" and
+             "RTH_OBSERVED_PARTIAL_BARLOW_PROXY_ONLY" and
          partial_ok["per_symbol_causal_routing"]["AAA"]["first_unresolved_gate"]==
              "PRICE_DV30" and
          partial_ok["c417_price_dv30_primary_attested"] is False and
