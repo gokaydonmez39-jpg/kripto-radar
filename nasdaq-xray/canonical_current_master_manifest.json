@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-10-15",
+  "asof_et": "2026-10-16",
   "asof_identity_proof": {
-    "blob_sha": "44947f13385768e82a92a095a16c67bc818370ea",
+    "blob_sha": "c3b4bf8cb207668d446e56f952b4621ad71bf40b",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261015.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261016.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,19 +28,19 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3189,
-    "UNKNOWN_IDENTITY": 9
+    "PASS_IDENTITY": 3190,
+    "UNKNOWN_IDENTITY": 11
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2434,
-  "explicit_excluded_hash": "9ebfae0e3a6b8a62e933703728c4cbd8c9f3caaa631036de5c8e14e892c25e95",
+  "explicit_excluded_count": 2433,
+  "explicit_excluded_hash": "955654e3eaa79ce24d6d99ffcfa5812741ffb2d6010c4e493128dcca1ad56b76",
   "explicit_excluded_reason_counts": {
     "DEBT": 58,
     "ETF": 1296,
     "FUND": 32,
     "PREFERRED": 101,
     "RIGHT": 104,
-    "SPAC_BLANK_CHECK": 203,
+    "SPAC_BLANK_CHECK": 202,
     "TEST_ISSUE": 8,
     "UNIT": 258,
     "WARRANT": 371,
@@ -48,18 +48,18 @@
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3189
+      "UNKNOWN_STATIC": 3190
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3189
+    "source_unknown_count": 3190
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1015202621:31|||||||",
-  "pass_count": 3189,
-  "pass_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
+  "official_footer": "File Creation Time: 1016202617:01|||||||",
+  "pass_count": 3190,
+  "pass_hash": "7cdeda46ce56fbd2598c789cf30899f15a5a6ddd7fdc4eadb16b086d39174d71",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -813,6 +813,7 @@
     "CTSO",
     "CTW",
     "CTXR",
+    "CTY",
     "CUB",
     "CUE",
     "CULP",
@@ -3253,25 +3254,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
-  "queue_total": 3189,
-  "queue_unique": 3189,
-  "raw_identity_total": 3198,
+  "queue_hash": "7cdeda46ce56fbd2598c789cf30899f15a5a6ddd7fdc4eadb16b086d39174d71",
+  "queue_total": 3190,
+  "queue_unique": 3190,
+  "raw_identity_total": 3201,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "2af1abbfd162b44369d542fb6dc17f4ee96e091a",
-    "count": 575,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261015.json",
-    "symbol_hash": "564dde228bed2cc5ca22f2497d4d832f6ef5d43cec04c7cf4544be513ea9fa01"
+    "blob_sha": "d95bac289041902d85c22d1084c1711482e039ab",
+    "count": 574,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261016.json",
+    "symbol_hash": "fb84b01b35c3a28a0f27d5cf5c66d8a145de0266b201927e4c4165640eadcf0f"
   },
-  "source_state_blob_sha": "92f3892004f825d22a15f855b705d7be6ccb1138",
-  "source_state_hash": "a07328df95e68454771713026cd83fdb9a9b64c052c7b9ddcf6d5e3f552ace98",
+  "source_state_blob_sha": "555af2d6c074a81e9411b500cccd2fbe3d52e0ad",
+  "source_state_hash": "e8bd2879888e0d6700e00bcbc01e295d06b7eaa7ce462f6ae2c81f4c657ab5bc",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 9,
+  "unknown_count": 11,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3288,6 +3289,15 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "BEST SPAC I Acquisition Corp. - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "DTSQ": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "DT Cloud Star Acquisition Corporation - Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3345,6 +3355,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "TCXB": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "TCGX Acquisition Corp. II - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "WTG": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3359,12 +3378,14 @@
   "unknown_symbols": [
     "ALIS",
     "BSAA",
+    "DTSQ",
     "FACT",
     "FVN",
     "HCAC",
     "IPXG",
     "MACI",
     "MCGA",
+    "TCXB",
     "WTG"
   ]
 }

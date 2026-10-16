@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-15",
+  "asof_et": "2026-10-16",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3190
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3190
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1015202621:31|||||||",
+  "official_footer": "File Creation Time: 1016202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3190
   },
-  "source_queue_hash": "e1ac8e0a5a51bbbba5f52a8d3dedc3fc1a8d05b1460d1cf558e5fa9eabd363d8",
-  "source_state_hash": "a07328df95e68454771713026cd83fdb9a9b64c052c7b9ddcf6d5e3f552ace98",
-  "source_unknown_count": 3189,
+  "source_queue_hash": "7cdeda46ce56fbd2598c789cf30899f15a5a6ddd7fdc4eadb16b086d39174d71",
+  "source_state_hash": "e8bd2879888e0d6700e00bcbc01e295d06b7eaa7ce462f6ae2c81f4c657ab5bc",
+  "source_unknown_count": 3190,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3189,
+  "unknown_count": 3190,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -13553,6 +13553,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Citius Pharmaceuticals, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CTY": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "City Therapeutics, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "CUB": {
