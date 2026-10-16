@@ -1,0 +1,150 @@
+name: XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/cross_plane_blocker_reconciliation.py"
+      - "nasdaq-xray/tests/test_cross_plane_blocker_reconciliation.py"
+      - ".github/workflows/xray-cross-plane-blocker-reconciliation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/cross_plane_blocker_reconciliation.py"
+      - "nasdaq-xray/tests/test_cross_plane_blocker_reconciliation.py"
+      - ".github/workflows/xray-cross-plane-blocker-reconciliation.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-cross-plane-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  compare-readonly:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official NASDAQ calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Validate syntax and synthetic adversarial partitions with and without assertions
+        run: |
+          python -m py_compile nasdaq-xray/cross_plane_blocker_reconciliation.py nasdaq-xray/tests/test_cross_plane_blocker_reconciliation.py
+          python -m unittest discover -s nasdaq-xray/tests -p test_cross_plane_blocker_reconciliation.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_cross_plane_blocker_reconciliation.py -v
+          python - <<'PY'
+          from pathlib import Path
+          code=Path("nasdaq-xray/cross_plane_blocker_reconciliation.py").read_text()
+          assert "urllib" not in code and "requests" not in code and "subprocess" not in code
+          assert "real_money" in code and "unknown_never_pass" in code
+          print("XRAY_CROSS_PLANE_NO_PROVIDER_NO_BROKER_NO_CANONICAL_WRITE=PASS")
+          PY
+      - name: Reauthenticate SAME main-success coverage run and exact symbolic artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_KIND: ${{ github.event_name }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from source_epoch_freshness_guard import last_complete_session
+          out=Path(os.environ["RUNNER_TEMP"])/"xray_six_gate_same_run"
+          out.mkdir(parents=True,exist_ok=True)
+          repo=os.environ["REPO"]
+          if repo!="gokaydonmez39-jpg/kripto-radar":
+              raise ValueError("FOREIGN_REPOSITORY")
+          expected=last_complete_session(dt.datetime.now(dt.timezone.utc))
+          def api(path):
+              return json.loads(subprocess.check_output(
+                  ["gh","api",f"repos/{repo}/{path}"],text=True,timeout=40))
+          if os.environ["EVENT_KIND"]=="workflow_run":
+              candidates=[api("actions/runs/"+os.environ["SOURCE_RUN"])]
+          else:
+              x=api("actions/workflows/xray-personal-full-universe-sip-coverage.yml/runs?branch=main&status=success&per_page=12")
+              candidates=x["workflow_runs"]
+          chosen=None
+          for run in candidates:
+              if (run.get("name")!="XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"
+                  or run.get("path")!=".github/workflows/xray-personal-full-universe-sip-coverage.yml"
+                  or run.get("status")!="completed" or run.get("conclusion")!="success"
+                  or run.get("head_branch")!="main"
+                  or (run.get("repository") or {}).get("full_name")!=repo
+                  or (run.get("head_repository") or {}).get("full_name")!=repo):
+                  continue
+              rid=int(run["id"])
+              data=api("actions/runs/"+str(rid)+"/artifacts")["artifacts"]
+              artifacts=[a for a in data
+                  if a.get("name")=="xray-personal-six-gate-causal-worklist-no-ohlcv"
+                  and a.get("expired") is False and
+                  a.get("workflow_run",{}).get("id")==rid and
+                  0<a.get("size_in_bytes",0)<400000]
+              if len(artifacts)!=1:continue
+              folder=out/str(rid)
+              folder.mkdir(exist_ok=True)
+              try:
+                  subprocess.check_output(["gh","run","download",str(rid),
+                      "--repo",repo,"-n",artifacts[0]["name"],
+                      "-D",str(folder)],timeout=60)
+              except subprocess.SubprocessError:
+                  continue
+              files=list(folder.rglob("*.json"))
+              if len(files)!=1:continue
+              report=json.loads(files[0].read_text())
+              if report.get("asof_et")!=expected:continue
+              if (report.get("schema")!="XRAY_PERSONAL_SIX_GATE_CAUSAL_BREAKER_V1"
+                  or report.get("scope_count")!=3189):
+                  continue
+              (out/"trusted_six_gate.json").write_text(
+                  json.dumps(report,sort_keys=True)+"\n")
+              chosen=rid;break
+          if not chosen:
+              raise RuntimeError("NO_EXACT_CURRENT_SUCCESSFUL_MAIN_SIX_GATE_ARTIFACT_FAIL_CLOSED")
+          (out/"source_run_id.txt").write_text(str(chosen)+"\n")
+          print("XRAY_CROSS_PLANE_AUTHENTICATED_SIX_GATE_RUN="+str(chosen))
+          PY
+      - name: Replay full 3189-symbol canonical-vs-research partitions read-only
+        run: |
+          python nasdaq-xray/cross_plane_blocker_reconciliation.py \
+            --root nasdaq-xray/orchestrator_state.json \
+            --price nasdaq-xray/canonical_current_price_dv30.json \
+            --six "$RUNNER_TEMP/xray_six_gate_same_run/trusted_six_gate.json" \
+            --out "$RUNNER_TEMP/xray_cross_plane_reconciliation_no_al.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_cross_plane_reconciliation_no_al.json").read_text())
+          assert x["universe_count"]==sum(x["personal_sip_first_unresolved_gate_counts"].values())
+          assert x["canonical_price_dv30_unknown_count"]==len(x["canonical_unknown_symbolic_repair_worklist"])
+          assert x["canonical_root_history_unknown_count"]==sum(x["canonical_root_history_unknown_reason_counts"].values())
+          assert sum(x["canonical_price_unknown_by_personal_first_gate"].values())==x["canonical_price_dv30_unknown_count"]
+          assert x["alpha_authority"] is False and x["r92_authority"] is False
+          assert x["iphone_delivery_attested"] is False and x["canonical_mutated"] is False
+          assert x["licensed_source_access_or_rights_independently_verified"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_CROSS_PLANE_REAL_3189_RECONCILIATION_PASS_NO_AL="+str(x["universe_count"]))
+          print("XRAY_CROSS_PLANE_COUNTS_ROOT_SHADOW_PRICE="+str(
+              x["canonical_root_history_unknown_count"])+"/"+str(
+              x["independent_research_history_260_52_unproven_count"])+"/"+str(
+              x["canonical_price_dv30_unknown_count"]))
+          PY
+      - name: Store ONLY symbolic repair actions and distinct-count evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-cross-plane-3189-source-history-price-reconciliation-no-al
+          path: ${{ runner.temp }}/xray_cross_plane_reconciliation_no_al.json
+          retention-days: 14
+          if-no-files-found: error
