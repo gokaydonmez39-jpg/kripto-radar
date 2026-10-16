@@ -120,6 +120,9 @@ def audit(ledger,episode,market,*,observed_at_utc):
            type(market.get("market_data_source_sha256")) is str and
            H64.fullmatch(market["market_data_source_sha256"]) is not None,
            "MARKET_IDENTITY_SOURCE")
+    ensure(market.get("reference_session")==asof and
+           market.get("benchmark_reference_session")==asof,
+           "REFERENCE_ASOF_SESSION_MISMATCH")
     ensure(positive(market.get("reference_adjusted_close")) and
            positive(market.get("benchmark_reference_adjusted_close")),
            "REFERENCE_ADJUSTED_CLOSE")
