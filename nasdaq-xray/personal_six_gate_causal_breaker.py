@@ -170,6 +170,10 @@ def build(day, hist, bridge, rth, now, source_digests=None):
     causes_rth = rth.get("symbol_rth_integrity_failure_codes")
     need(type(partial) is dict and type(causes_rth) is dict and
          rth.get("partial_missing_slot_symbolic_only_never_canonical") is True and
+         rth.get("partial_notional_method")==
+             "SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION" and
+         rth.get("partial_no_daily_close_proxy_or_unobserved_zero_fill") is True and
+         rth.get("partial_notional_source_trade_conditions_unattested") is True and
          set(partial) == {sym for sym,why in causes_rth.items()
              if why == "EARLY_AND_FULL_BAR_COUNTS_EXACT"} and
          set(causes_rth).issubset(cohort) and
@@ -329,6 +333,9 @@ def selftest():
                partial_missing_slot_research_by_symbol={},
                partial_missing_slot_research_counts={},
                partial_missing_slot_symbolic_only_never_canonical=True,
+               partial_notional_method="SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION",
+               partial_no_daily_close_proxy_or_unobserved_zero_fill=True,
+               partial_notional_source_trade_conditions_unattested=True,
                symbol_rth_integrity_failure_codes={},
                rth_integrity_cause_counts={},
                official_session_count=30,
@@ -362,6 +369,13 @@ def selftest():
          partial_ok["c417_price_dv30_primary_attested"] is False and
          partial_ok["registered_r92_count"]==0,
          "PARTIAL_POSITIVE_RESEARCH_CANNOT_CHANGE_STRICT_UNKNOWN_OR_AL")
+    badpartial=copy.deepcopy(part)
+    badpartial["partial_no_daily_close_proxy_or_unobserved_zero_fill"]=False
+    try:build(day,hist,bridge,badpartial,now)
+    except ValueError as exc:
+        need("PARTIAL_RESEARCH_SOURCE_INTEGRITY" in str(exc),
+             "OLD_CLOSE_PROXY_MUST_NOT_PROMOTE")
+    else:raise AssertionError("OLD_DAILY_CLOSE_PROXY_ACCEPTED")
     badpartial=copy.deepcopy(part)
     badpartial["partial_missing_slot_research_counts"]={PARTIAL_HIGH:2}
     try:build(day,hist,bridge,badpartial,now)
