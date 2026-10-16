@@ -8,6 +8,7 @@ existing accepted research receipt, not market-data providers or broker APIs.
 from __future__ import annotations
 import argparse
 import base64
+import binascii
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -52,7 +53,7 @@ def verified_file_response(obj):
     try:
         raw = base64.b64decode(obj["content"].replace("\n", ""),
                                validate=True)
-    except ValueError as e:
+    except (ValueError, binascii.Error) as e:
         raise ValueError("XRAY_MEMORY_INVALID_GITHUB_B64") from e
     ensure(git_blob_sha(raw) == obj["sha"], "GITHUB_BLOB_SHA_DRIFT")
     ensure(len(raw) < MAX_LEDGER_BYTES, "LEDGER_SIZE_LIMIT")
