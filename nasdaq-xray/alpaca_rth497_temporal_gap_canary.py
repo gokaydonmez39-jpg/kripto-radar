@@ -42,8 +42,9 @@ def sample_from_parent(p,now):
     """Prioritize four *actual* integrity gaps and four ambiguous controls.
 
     The parent artifact must come from a separately authenticated successful
-    main GH run. Four missing-slot symbols are not allowed to disappear into
-    the 415 research-high proxy population. No original OHLCV is stored.
+    main GH run. Four missing-slot symbols cannot disappear into a research
+    high proxy population just because the measured population changed.
+    No original OHLCV is stored.
     """
     need(type(p) is dict and type(now) is dt.datetime and
          now.tzinfo is not None and now.utcoffset() is not None,
@@ -51,10 +52,23 @@ def sample_from_parent(p,now):
     asof=p.get("asof_et")
     need(type(asof) is str and asof==last_complete_session(now),
          "FRESH_ASOF")
-    need(p.get("schema")==PARENT and p.get("joint_cohort_count")==497
-         and p.get("rth_incomplete_or_unknown_count")==4
-         and p.get("rth_ambiguous_shadow_count")==78
-         and p.get("rth_lower_bound_ge50m_shadow_count")==415
+    # Cohort cardinalities are MEASUREMENTS, not policy constants. A fixed
+    # 497/415/78 sentinel rejected the authenticated 16 Oct 496/418/74
+    # source even though its partition and four original gaps were intact.
+    total=p.get("joint_cohort_count")
+    high_n=p.get("rth_lower_bound_ge50m_shadow_count")
+    mid_n=p.get("rth_ambiguous_shadow_count")
+    unknown_n=p.get("rth_incomplete_or_unknown_count")
+    need(type(total) is int and 8<=total<=3190
+         and type(high_n) is int and 0<=high_n<=total
+         and type(mid_n) is int and 4<=mid_n<=total
+         and type(unknown_n) is int and unknown_n==4
+         and total==high_n+mid_n+unknown_n
+         and p.get("classification_counts")=={
+             "LOWER_BOUND_GE_50M_SHADOW":high_n,
+             "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW":mid_n,
+             "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW":unknown_n}
+         and p.get("schema")==PARENT
          and p.get("rth_integrity_cause_counts")=={
            "EARLY_AND_FULL_BAR_COUNTS_EXACT":4}
          and p.get("source_stop_class") is None
@@ -71,7 +85,7 @@ def sample_from_parent(p,now):
     causes=p.get("symbol_rth_integrity_failure_codes")
     partial=p.get("partial_missing_slot_research_by_symbol")
     need(type(labels) is dict and type(causes) is dict and
-         type(partial) is dict and len(labels)==497 and
+         type(partial) is dict and len(labels)==total and
          set(causes)==set(partial) and len(causes)==4 and
          all(x=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for x in causes.values()),
          "PARENT_EXACT_FOUR_INTEGRITY_GAPS")
@@ -85,7 +99,7 @@ def sample_from_parent(p,now):
                if v=="AMBIGUOUS_BETWEEN_BOUNDS_SHADOW")
     unknown=sorted(s for s,v in labels.items()
                if v=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW")
-    need(len(high)==415 and len(mid)==78 and len(unknown)==4
+    need(len(high)==high_n and len(mid)==mid_n and len(unknown)==unknown_n
          and unknown==sorted(causes)
          and all(partial[s].startswith("PARTIAL_OBSERVED_RTH_BARLOW_")
                  for s in unknown),
@@ -333,6 +347,10 @@ def selftest():
        "rth_incomplete_or_unknown_count":4,
        "rth_ambiguous_shadow_count":78,
        "rth_lower_bound_ge50m_shadow_count":415,
+       "classification_counts":{
+           "LOWER_BOUND_GE_50M_SHADOW":415,
+           "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW":78,
+           "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW":4},
        "rth_integrity_cause_counts":{"EARLY_AND_FULL_BAR_COUNTS_EXACT":4},
        "source_stop_class":None,
        "partial_research_never_promotes_strict_rth":True,
@@ -352,6 +370,36 @@ def selftest():
     need(len(syms)==CANARY and syms==sorted(syms),"SAMPLE_SORT")
     need(set(gaps).issubset(syms) and len(set(syms)-set(gaps))==4,
          "EXACT_FOUR_INTEGRITY_GAPS_TARGETED")
+    # The actual October 16 source cohort contains 496, not 497 names.
+    # Dynamic counts must be accepted ONLY when exact partition + SHA bind.
+    current=deepcopy(p)
+    current["classifications"].pop(names[0])
+    for name in names[415:419]:
+        current["classifications"][name]="LOWER_BOUND_GE_50M_SHADOW"
+    current["joint_cohort_count"]=496
+    current["rth_lower_bound_ge50m_shadow_count"]=418
+    current["rth_ambiguous_shadow_count"]=74
+    current["classification_counts"]={
+        "LOWER_BOUND_GE_50M_SHADOW":418,
+        "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW":74,
+        "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW":4}
+    current["joint_history260_daily30_cohort_sha256"]=sha(
+        sorted(current["classifications"]))
+    _,current_sample,_=sample_from_parent(current,now)
+    need(len(current_sample)==8 and set(gaps).issubset(current_sample),
+         "LATEST_REAL_COHORT_DYNAMIC_COUNTS_WITH_EXACT_SHA")
+    for corrupt in (
+        lambda x:x.update(rth_lower_bound_ge50m_shadow_count=419),
+        lambda x:x["classification_counts"].update(
+            {"AMBIGUOUS_BETWEEN_BOUNDS_SHADOW":75}),
+        lambda x:x["classifications"].update({"OUTSIDE":"LOWER_BOUND_GE_50M_SHADOW"}),
+        lambda x:x["symbol_rth_integrity_failure_codes"].pop(gaps[0]),
+        lambda x:x.update(official_c417_primary_dv30_attested=True),
+    ):
+        bad=deepcopy(current);corrupt(bad)
+        try:sample_from_parent(bad,now)
+        except ValueError:pass
+        else:raise AssertionError("COHORT_PARTITION_OR_AUTHORITY_TAMPER_ACCEPTED")
     for change in (lambda x:x.update(asof_et="2026-10-14"),
                    lambda x:x.update(registered_R92_count=1),
                    lambda x:x.update(joint_history260_daily30_cohort_sha256="x"*64),
