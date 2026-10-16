@@ -240,7 +240,7 @@ jobs:
   # Never commits to main; all writes target dedicated memory-state branch.
   isolated-state-cas-optin:
     needs: trusted-receipt-proposal
-    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && needs.trusted-receipt-proposal.outputs.ready == 'true' && vars.XRAY_MEMORY_PERSIST_APPROVED == 'true' }}
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && needs.trusted-receipt-proposal.outputs.ready == 'true' && vars.XRAY_MEMORY_PERSIST_APPROVED == 'true' && vars.XRAY_MEMORY_RELEASE_COMMIT_SHA != '' && vars.XRAY_MEMORY_RELEASE_COMMIT_SHA == github.sha }}
     concurrency:
       group: xray-symbolic-candidate-memory-state-cas
       cancel-in-progress: false
@@ -252,18 +252,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install independent Nasdaq EOD calendar for release-time verification
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Require approved exact trusted source and persist ONLY isolated ledger via CAS
         env:
           GH_TOKEN: ${{ github.token }}
           XRAY_MEMORY_PERSIST_APPROVED: ${{ vars.XRAY_MEMORY_PERSIST_APPROVED }}
+          XRAY_MEMORY_RELEASE_COMMIT_SHA: ${{ vars.XRAY_MEMORY_RELEASE_COMMIT_SHA }}
+          XRAY_MEMORY_EVENT_SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
           SRC_ID: ${{ needs.trusted-receipt-proposal.outputs.run_id }}
           ASOF: ${{ needs.trusted-receipt-proposal.outputs.asof }}
         run: |
           test "$GITHUB_EVENT_NAME" = "workflow_run"
           test "$GITHUB_REF" = "refs/heads/main"
           test "$XRAY_MEMORY_PERSIST_APPROVED" = "true"
+          test "$XRAY_MEMORY_RELEASE_COMMIT_SHA" = "$GITHUB_SHA"
+          test "$XRAY_MEMORY_EVENT_SOURCE_RUN_ID" = "$SRC_ID"
           python nasdaq-xray/research_candidate_memory_cas.py --run-id "$SRC_ID" --asof "$ASOF"
