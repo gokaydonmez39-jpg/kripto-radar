@@ -123,8 +123,8 @@ def audit(ledger,episode,market,*,observed_at_utc):
     ensure(positive(market.get("reference_adjusted_close")) and
            positive(market.get("benchmark_reference_adjusted_close")),
            "REFERENCE_ADJUSTED_CLOSE")
-    ensure(aware(market.get("reference_available_at_utc"))<=decision and
-           aware(market.get("benchmark_reference_available_at_utc"))<=decision,
+    ensure(closes[asof]<=aware(market.get("reference_available_at_utc"))<=decision and
+           closes[asof]<=aware(market.get("benchmark_reference_available_at_utc"))<=decision,
            "REFERENCE_KNOWN_AFTER_DECISION")
     stock=validated_prices(market.get("stock_future_bars"),name="STOCK",
                            identity=identity,future=future,closes=closes,now=now)
