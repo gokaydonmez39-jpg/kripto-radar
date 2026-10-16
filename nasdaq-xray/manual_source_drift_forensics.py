@@ -15,7 +15,7 @@ import re
 from manual_decision_report import may_use_frozen_blob
 
 SCHEMA="XRAY_MANUAL_SOURCE_DRIFT_FORENSIC_V1"
-H40=re.compile(r"[a-f0-9]{40}\\Z")
+H40=re.compile(r"[a-f0-9]{40}")
 
 
 def need(ok,why):
