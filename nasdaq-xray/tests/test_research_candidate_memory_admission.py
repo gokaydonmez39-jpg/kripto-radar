@@ -104,6 +104,17 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RUN_TIMESTAMP_UTC"):
             self.admit(r=r)
 
+    def test_official_close_buffer_and_nontrading_day(self):
+        r=copy.deepcopy(self.run)
+        r["created_at"]="2026-10-15T15:00:00Z"
+        r["updated_at"]="2026-10-15T16:00:00Z"
+        with self.assertRaisesRegex(ValueError,
+                                    "ACCEPTANCE_BEFORE_OFFICIAL_EOD_BUFFER"):
+            self.admit(r=r)
+        weekend=receipt("2026-10-10",{"MANH":["B"],"WDAY":["D"]})
+        with self.assertRaisesRegex(ValueError,"NON_NASDAQ_OFFICIAL_SESSION"):
+            self.admit(v=weekend,expected_asof="2026-10-10")
+
     def test_al_and_provenance_forgery(self):
         v = copy.deepcopy(self.receipt)
         v["registered_R92_count"] = 1
