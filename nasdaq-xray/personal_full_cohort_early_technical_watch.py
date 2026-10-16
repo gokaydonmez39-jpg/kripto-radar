@@ -175,9 +175,11 @@ def run(doc,now,fetch):
         eligible_weeks=stage.build_week_last(asof)
         groups=chunks(names)
         for i,grp in enumerate(groups):
+            # A failed API batch still consumes a request attempt and
+            # potentially vendor quota; count BEFORE the network call.
+            result["api_batches_attempted"]+=1
             try:
                 r=fetch(grp,start,end,asof)
-                result["api_batches_attempted"]+=1
                 need(type(r) is dict and set(r)==set(grp),"EXACT_PROVIDER_BATCH_SET")
             except Exception as exc:
                 for symbol in grp:
@@ -301,6 +303,52 @@ def selftest():
          result["registered_r92_count"]==0 and not result["user_notification_sent"] and
          sum(result["classification_counts"].values())==3,
          "PROVIDER_OUTAGE_CANNOT_CREATE_WATCH")
+    # Research budget telemetry must count failed vendor requests too.
+    # Benchmark succeeds; first cohort batch raises transient transport;
+    # second succeeds. No mocked input may imply independent technical GO.
+    from unittest.mock import patch
+    import stage1_shadow
+    def benchmark_then_first_bad(syms,start,end,asof):
+        calls.append(tuple(syms))
+        if syms==["QQQ"]:
+            return {"QQQ":[]}
+        if syms==["AAPL"]:
+            raise RuntimeError("SIMULATED_PROVIDER_503")
+        return {sym:[] for sym in syms}
+    calls=[]
+    with (patch(__name__+".quality",
+                return_value=([], "HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY")),
+          patch(__name__+".assess",return_value=("NO_TECHNICAL_SETUP",0)),
+          patch(__name__+".chunks",
+                side_effect=lambda syms:[[syms[0]],syms[1:]]),
+          patch.object(stage1_shadow,"build_week_last",return_value=[])):
+        counted=run(d,now,benchmark_then_first_bad)
+    need(calls==[("QQQ",),("AAPL",),("BSP","NVDA")] and
+         counted["api_batches_attempted"]==3 and
+         counted["technical_status_by_symbol"]["AAPL"]==
+            "UNKNOWN_PROVIDER_BATCH_RuntimeError" and
+         counted["registered_r92_count"]==0 and
+         counted["technical_research_watch_symbols"]==[],
+         "FAILED_PROVIDER_BATCH_NOT_ACCOUNTED_OR_PROMOTED")
+    cliff_calls=[]
+    def benchmark_then_403(syms,start,end,asof):
+        cliff_calls.append(tuple(syms))
+        if syms==["QQQ"]:return {"QQQ":[]}
+        raise RuntimeError("SIMULATED_HTTP_403")
+    with (patch(__name__+".quality",
+                return_value=([], "HISTORICAL_SIP_260_52_RAW_RESEARCH_ONLY")),
+          patch(__name__+".chunks",
+                side_effect=lambda syms:[[syms[0]],syms[1:]]),
+          patch.object(stage1_shadow,"build_week_last",return_value=[])):
+        blocked=run(d,now,benchmark_then_403)
+    need(cliff_calls==[("QQQ",),("AAPL",)] and
+         blocked["api_batches_attempted"]==2 and
+         blocked["technical_status_by_symbol"]["BSP"]==
+            "UNKNOWN_UNATTEMPTED_UPSTREAM_CLIFF" and
+         blocked["technical_status_by_symbol"]["NVDA"]==
+            "UNKNOWN_UNATTEMPTED_UPSTREAM_CLIFF" and
+         blocked["registered_r92_count"]==0,
+         "PROVIDER_403_CLIFF_MUST_HAVE_EXACT_ATTEMPT_COUNT")
     # A complete technical scan of 3/4 eligible-source identities MUST NOT
     # masquerade as a complete scan of four (or of all NASDAQ securities).
     extended=deepcopy(d)
@@ -361,7 +409,7 @@ def selftest():
         try:cohort(broken,now)
         except ValueError:pass
         else:raise AssertionError("XRAY_EARLY_WATCH_FORGED_SOURCE_ACCEPTED_"+name)
-    print("XRAY_EARLY_WATCH_SELFTEST=PASS_9_CAUSAL_NEGATIVES_PARTIAL_RTH_RESEARCH_ONLY_NO_FALSE_WATCH")
+    print("XRAY_EARLY_WATCH_SELFTEST=PASS_FAILED_BATCH_503_403_EXACT_ATTEMPT_COUNTS_9_CAUSAL_NEGATIVES_NO_FALSE_WATCH")
 
 
 def main():
