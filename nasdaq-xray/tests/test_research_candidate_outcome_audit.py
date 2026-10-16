@@ -44,6 +44,8 @@ def fixture():
         "issuer_class_key":"CIK:MANH-FIXTURE",
         "benchmark_class_key":"ETF:QQQ-FIXTURE",
         "market_data_source_sha256":"f"*64,
+        "reference_session":ASOF,
+        "benchmark_reference_session":ASOF,
         "reference_adjusted_close":100,
         "benchmark_reference_adjusted_close":100,
         "reference_available_at_utc":"2026-10-15T20:30:00Z",
@@ -87,6 +89,16 @@ class OutcomeDiagnosticsTests(unittest.TestCase):
             self.assertEqual(x["status"],
                 "UNKNOWN_MISSING_COMPLETE_COMPARABLE_SESSION")
             self.assertIsNone(x["forward_return_pct"])
+
+    def test_reference_must_match_exact_asof(self):
+        l,e,s=fixture()
+        s["reference_session"]="2026-10-14"
+        with self.assertRaisesRegex(ValueError,"REFERENCE_ASOF_SESSION_MISMATCH"):
+            self.run_audit(l,e,s)
+        l,e,s=fixture()
+        s["benchmark_reference_session"]="2026-10-14"
+        with self.assertRaisesRegex(ValueError,"REFERENCE_ASOF_SESSION_MISMATCH"):
+            self.run_audit(l,e,s)
 
     def test_future_reference_leakage(self):
         l,e,s=fixture()
