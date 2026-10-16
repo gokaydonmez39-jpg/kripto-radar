@@ -29,44 +29,70 @@ NY=ZoneInfo("America/New_York")
 CANARY=8
 MAX_CALLS=16
 MAX_BYTES=3500000
-PARENT_RUN=38819985875
+PARENT_RUN=None  # Never bind an archival workflow run as current.
 
 def need(ok,why):
     if not ok: raise ValueError("XRAY_RTH497_TEMPORAL_"+why)
 
 def sample_from_parent(p,now):
-    need(type(p) is dict and type(now) is dt.datetime
-         and now.tzinfo is not None and now.utcoffset() is not None,
+    """Prioritize four *actual* integrity gaps and four ambiguous controls.
+
+    The parent artifact must come from a separately authenticated successful
+    main GH run. Four missing-slot symbols are not allowed to disappear into
+    the 415 research-high proxy population. No original OHLCV is stored.
+    """
+    need(type(p) is dict and type(now) is dt.datetime and
+         now.tzinfo is not None and now.utcoffset() is not None,
          "INPUT")
     asof=p.get("asof_et")
     need(type(asof) is str and asof==last_complete_session(now),
          "FRESH_ASOF")
     need(p.get("schema")==PARENT and p.get("joint_cohort_count")==497
-         and p.get("rth_incomplete_or_unknown_count")==497
+         and p.get("rth_incomplete_or_unknown_count")==4
+         and p.get("rth_ambiguous_shadow_count")==78
+         and p.get("rth_lower_bound_ge50m_shadow_count")==415
          and p.get("rth_integrity_cause_counts")=={
-           "EARLY_AND_FULL_BAR_COUNTS_EXACT":497}
+           "EARLY_AND_FULL_BAR_COUNTS_EXACT":4}
          and p.get("source_stop_class") is None
          and p.get("partial_research_never_promotes_strict_rth") is True
          and p.get("source_rights_not_inferred") is True
          and p.get("vendor_ohlcv_persisted") is False
          and p.get("registered_R92_count")==0
+         and p.get("official_c417_primary_dv30_attested") is False
+         and p.get("official_RTH_close_auction_volume_attested") is False
+         and p.get("official_RTH_corrections_attested") is False
          and p.get("execution")=="NONE" and p.get("real_money")=="NO-GO",
          "PARENT_PROVENANCE")
     labels=p.get("classifications")
     causes=p.get("symbol_rth_integrity_failure_codes")
-    need(type(labels) is dict and type(causes) is dict
-         and set(labels)==set(causes) and len(labels)==497
-         and all(x=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"
-                 for x in labels.values())
-         and all(x=="EARLY_AND_FULL_BAR_COUNTS_EXACT"
-                 for x in causes.values()),"PARENT_PARTITION")
+    partial=p.get("partial_missing_slot_research_by_symbol")
+    need(type(labels) is dict and type(causes) is dict and
+         type(partial) is dict and len(labels)==497 and
+         set(causes)==set(partial) and len(causes)==4 and
+         all(x=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for x in causes.values()),
+         "PARENT_EXACT_FOUR_INTEGRITY_GAPS")
     syms=sorted(labels)
     need(all(type(s) is str and SYMBOL_RE.fullmatch(s) for s in syms)
          and p.get("joint_history260_daily30_cohort_sha256")==sha(syms),
          "PARENT_SHA")
-    chosen=[syms[(len(syms)-1)*i//(CANARY-1)] for i in range(CANARY)]
-    need(len(set(chosen))==CANARY,"DUPLICATE_CANARY")
-    return asof,chosen,dates30(asof)
+    high=sorted(s for s,v in labels.items()
+                if v=="LOWER_BOUND_GE_50M_SHADOW")
+    mid=sorted(s for s,v in labels.items()
+               if v=="AMBIGUOUS_BETWEEN_BOUNDS_SHADOW")
+    unknown=sorted(s for s,v in labels.items()
+               if v=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW")
+    need(len(high)==415 and len(mid)==78 and len(unknown)==4
+         and unknown==sorted(causes)
+         and all(partial[s].startswith("PARTIAL_OBSERVED_RTH_BARLOW_")
+                 for s in unknown),
+         "STRICT_415_78_4_DISJOINT_PARTITION")
+    # Disperse ambiguity controls, avoid re-querying the 415 proxy highs.
+    middle=[mid[(len(mid)-1)*i//3] for i in range(4)]
+    selected=sorted(unknown+middle)
+    need(len(set(selected))==CANARY and len(selected)==8,
+         "TARGETED_CANARY_CARDINALITY")
+    return asof,selected,dates30(asof)
+
 
 def retrieve(symbols,days,asof,now,credentials,opener=urllib.request.urlopen):
     need(type(symbols) is list and len(symbols)==CANARY
@@ -131,7 +157,7 @@ def retrieve(symbols,days,asof,now,credentials,opener=urllib.request.urlopen):
         token=nxt
     raise ValueError("XRAY_RTH497_TEMPORAL_BUDGET_EXHAUSTED_NO_PROMOTION")
 
-def classify_aggregates(asof,syms,days,bars,calls):
+def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0):
     need(len(syms)==CANARY and syms==sorted(set(syms))
          and type(bars) is dict and set(bars)==set(syms)
          and len(days)==30 and days[-1]==asof,"AGGREGATE_INPUT")
@@ -175,9 +201,9 @@ def classify_aggregates(asof,syms,days,bars,calls):
         nlate+=int(asof in sessions)
         nolder+=int(any(s!=asof for s in sessions))
     total=sum(late.values())+sum(older.values())
-    out={"schema":SCHEMA,"asof_et":asof,"parent_run_id":PARENT_RUN,
+    out={"schema":SCHEMA,"asof_et":asof,"parent_run_id":parent_run_id,
          "cohort_size":497,"sample_size":CANARY,
-         "selection":"EVENLY_SPACED_SHA_BOUND_UNKNOWN_LIST",
+         "selection":"TARGETED_FOUR_GAPS_PLUS_FOUR_AMBIGUITY_CONTROLS",
          "sample_digest_sha256":sha(syms),
          "source":"ALPACA_DELAYED_HISTORICAL_SIP_30MIN",
          "source_api_calls":calls,"call_budget":MAX_CALLS,
@@ -209,20 +235,35 @@ def selftest():
     asof="2026-10-15"
     now=dt.datetime(2026,10,15,23,30,tzinfo=dt.timezone.utc)
     names=[f"X{i:03}" for i in range(497)]
+    classes={s:("LOWER_BOUND_GE_50M_SHADOW" if i<415 else
+                "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW" if i<493 else
+                "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW")
+             for i,s in enumerate(names)}
+    gaps=names[493:]
     p={"schema":PARENT,"asof_et":asof,"joint_cohort_count":497,
        "joint_history260_daily30_cohort_sha256":sha(names),
-       "rth_incomplete_or_unknown_count":497,
-       "rth_integrity_cause_counts":{"EARLY_AND_FULL_BAR_COUNTS_EXACT":497},
+       "rth_incomplete_or_unknown_count":4,
+       "rth_ambiguous_shadow_count":78,
+       "rth_lower_bound_ge50m_shadow_count":415,
+       "rth_integrity_cause_counts":{"EARLY_AND_FULL_BAR_COUNTS_EXACT":4},
        "source_stop_class":None,
        "partial_research_never_promotes_strict_rth":True,
        "source_rights_not_inferred":True,"vendor_ohlcv_persisted":False,
-       "registered_R92_count":0,"execution":"NONE","real_money":"NO-GO",
-       "classifications":dict.fromkeys(names,
-          "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"),
-       "symbol_rth_integrity_failure_codes":dict.fromkeys(names,
-          "EARLY_AND_FULL_BAR_COUNTS_EXACT")}
+       "registered_R92_count":0,
+       "official_c417_primary_dv30_attested":False,
+       "official_RTH_close_auction_volume_attested":False,
+       "official_RTH_corrections_attested":False,
+       "execution":"NONE","real_money":"NO-GO",
+       "classifications":classes,
+       "symbol_rth_integrity_failure_codes":
+            dict.fromkeys(gaps,"EARLY_AND_FULL_BAR_COUNTS_EXACT"),
+       "partial_missing_slot_research_by_symbol":
+            dict.fromkeys(gaps,
+                "PARTIAL_OBSERVED_RTH_BARLOW_NOTIONAL_PROXY_INDETERMINATE")}
     _,syms,days=sample_from_parent(p,now)
     need(len(syms)==CANARY and syms==sorted(syms),"SAMPLE_SORT")
+    need(set(gaps).issubset(syms) and len(set(syms)-set(gaps))==4,
+         "EXACT_FOUR_INTEGRITY_GAPS_TARGETED")
     for change in (lambda x:x.update(asof_et="2026-10-14"),
                    lambda x:x.update(registered_R92_count=1),
                    lambda x:x.update(joint_history260_daily30_cohort_sha256="x"*64),
@@ -302,8 +343,12 @@ def main():
     credentials=(os.getenv("XRAY_ALPACA_DATA_KEY_ID","").strip(),
                  os.getenv("XRAY_ALPACA_DATA_SECRET_KEY","").strip())
     need(all(credentials),"RUNNER_CREDENTIALS_REQUIRED")
+    parent_run_text=os.getenv("XRAY_AUTHENTICATED_RTH_PARENT_RUN_ID","")
+    need(parent_run_text.isascii() and parent_run_text.isdecimal()
+         and int(parent_run_text)>0,"EXACT_AUTHENTICATED_PARENT_RUN_REQUIRED")
     bars,calls=retrieve(syms,days,asof,now,credentials)
-    out=classify_aggregates(asof,syms,days,bars,calls)
+    out=classify_aggregates(asof,syms,days,bars,calls,
+         parent_run_id=int(parent_run_text))
     args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print("XRAY_RTH497_TEMPORAL_CANARY="+json.dumps({
        "asof":asof,"canary":len(syms),
