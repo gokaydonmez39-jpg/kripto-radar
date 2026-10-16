@@ -8,6 +8,7 @@ on:
       - "nasdaq-xray/provider_automation_governance.json"
       - "nasdaq-xray/provider_automation_governance_selftest.py"
       - "nasdaq-xray/preopen_live_release_gate.py"
+      - "nasdaq-xray/preopen_personal_research_receipt_guard.py"
       - "nasdaq-xray/monday_launch_microaudit.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - "nasdaq-xray/repository_integrity_audit.py"
@@ -316,6 +317,75 @@ jobs:
               assert r["status"]=="PREOPEN_BLOCKED_NO_GO" and r["blockers"]
           print("XRAY_PREOPEN_OPERATIONAL_TRUTH="+r["status"])
           PY
+      - name: Verify newest 15-Oct EOD research WATCH receipt, never AL or phone delivery
+        if: steps.epoch_guard.outputs.valid == 'true'
+        timeout-minutes: 2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile nasdaq-xray/preopen_personal_research_receipt_guard.py
+          python nasdaq-xray/preopen_personal_research_receipt_guard.py --selftest
+          python -O nasdaq-xray/preopen_personal_research_receipt_guard.py --selftest
+          python - <<'PY'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          target=root/"xray_preopen_research_receipt_source.json"
+          output=root/"xray_preopen_research_watch_truth.json"
+          repo=os.environ["GITHUB_REPOSITORY"]
+          def api(endpoint):
+              try:
+                  call=subprocess.run(["gh","api","repos/"+repo+"/"+endpoint],
+                   text=True,capture_output=True,timeout=20)
+                  return json.loads(call.stdout) if call.returncode==0 else {}
+              except (OSError,ValueError,subprocess.TimeoutExpired):
+                  return {}
+          def latest(file):
+              data=api("actions/workflows/"+file+"/runs?per_page=12")
+              for row in data.get("workflow_runs",[]):
+                  if row.get("conclusion")=="success" and row.get("status")=="completed" and row.get("head_branch")=="main":
+                      return row
+              return None
+          src=latest("xray-personal-full-universe-sip-coverage.yml")
+          accept=latest("xray-research-operations-acceptance.yml")
+          if src and accept:
+              folder=root/"research_receipt"
+              folder.mkdir(exist_ok=True)
+              try:
+                  command=["gh","run","download",str(accept["id"]),"--repo",repo,
+                      "-n","xray-personal-research-operations-exact-receipt-no-al",
+                      "-D",str(folder)]
+                  done=subprocess.run(command,capture_output=True,timeout=50)
+                  docs=list(folder.glob("*.json"))
+                  if done.returncode==0 and len(docs)==1:
+                      target.write_bytes(docs[0].read_bytes())
+              except (OSError,subprocess.TimeoutExpired):
+                  pass
+          cmd=[sys.executable,"nasdaq-xray/preopen_personal_research_receipt_guard.py",
+               "--out",str(output)]
+          if target.is_file():
+              cmd.extend(["--receipt",str(target)])
+          if src:
+              cmd.extend(["--source-run-id",str(src["id"])])
+          subprocess.run(cmd,check=True)
+          data=json.loads(output.read_text())
+          assert data["schema"]=="XRAY_PREOPEN_EOD_WATCH_RECEIPT_GATE_V1"
+          assert data["can_claim_opening_full_go"] is False
+          assert data["independent_c417_price_dv30_attested"] is False
+          assert data["independent_c417_mc_and_corporate_events_attested"] is False
+          assert data["fresh_live_rth_intraday_or_g9_attested"] is False
+          assert data["platform_notification_sent_by_this_audit"] is False
+          assert data["iphone_delivery_receipt_attested"] is False
+          assert data["registered_R92_count"]==0
+          assert data["no_broker_orders"] is True
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("## Independent last-completed EOD research receipt (NOT opening AL)\n\n")
+              f.write("Status: **"+data["status"]+"**; asof "+data["asof_et"]+
+                      "; research liquidity proxy "+str(data["research_rth_proxy_count"])+
+                      "; technical WATCH "+str(data["research_watch_count"])+".\n\n")
+              f.write("Live intraday/G9, primary DV30/MC, registered R92 and actual iPhone receipt: **NOT ATTESTED**.\n")
+          print("XRAY_PREOPEN_WATCH_RECEIPT=NO_FALSE_GO_"+data["status"])
+          PY
       - name: Upload public operational counts only
         if: steps.epoch_guard.outputs.valid == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -324,6 +394,7 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_preopen_source_readiness.json
             ${{ runner.temp }}/xray_current_preopen.json
+            ${{ runner.temp }}/xray_preopen_research_watch_truth.json
             ${{ runner.temp }}/xray_monday_launch_microaudit.json
             ${{ runner.temp }}/xray_monday_live_actions.json
             ${{ runner.temp }}/xray_all_workflow_schedule_audit.json
