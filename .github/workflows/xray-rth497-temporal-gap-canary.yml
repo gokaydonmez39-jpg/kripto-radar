@@ -12,6 +12,10 @@ on:
       - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
       - "nasdaq-xray/alpaca_rth_trade_gap_witness.py"
       - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
+  workflow_run:
+    workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
+    types: [completed]
+    branches: [main]
 permissions:
   contents: read
   actions: read
@@ -37,6 +41,45 @@ jobs:
               raise RuntimeError("XRAY_TRADE_SOURCE_PR_PUSH_TRIGGER_SYMMETRY_BROKEN")
           print("XRAY_TRADE_SOURCE_PR_PUSH_TRIGGER_SYMMETRY=PASS")
           PY
+      - name: Enforce trusted parent completion chain with positive and negative gate cases
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          file=Path(".github/workflows/xray-rth497-temporal-gap-canary.yml").read_text()
+          required=(
+              'workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]',
+              'types: [completed]',
+              "github.event.workflow_run.conclusion == 'success'",
+              "github.event.workflow_run.head_branch == 'main'",
+              "github.event.workflow_run.head_repository.full_name == github.repository",
+              "github.event.workflow_run.repository.full_name == github.repository",
+              "github.event.workflow_run.path == '.github/workflows/xray-personal-full-universe-sip-coverage.yml'",
+              "XRAY_EXPECTED_PARENT_RUN_ID",
+              "if expected_id is not None and rid!=expected_id:continue",
+          )
+          for marker in required:
+              if marker not in file:
+                  raise AssertionError("XRAY_WORKFLOW_CHAIN_GUARD_MISSING")
+          repo="gokaydonmez39-jpg/kripto-radar"
+          def allowed(event,conclusion,branch,head_repo,source_repo,path):
+              return (event=="push" or
+                      (event=="workflow_run" and conclusion=="success" and
+                       branch=="main" and head_repo==repo and source_repo==repo and
+                       path==".github/workflows/xray-personal-full-universe-sip-coverage.yml"))
+          good=("workflow_run","success","main",repo,repo,
+                ".github/workflows/xray-personal-full-universe-sip-coverage.yml")
+          if not allowed(*good) or not allowed("push",None,None,None,None,None):
+              raise AssertionError("XRAY_TRUSTED_PARENT_POSITIVE_BLOCKED")
+          for i,bad_value in ((1,"failure"),(2,"foreign"),(3,"attacker/repo"),
+                              (4,"attacker/repo"),(5,"attacker/repo"),
+                              (5,".github/workflows/other.yml")):
+              bad=list(good);bad[i]=bad_value
+              if allowed(*bad):
+                  raise AssertionError("XRAY_UNTRUSTED_PARENT_ACCEPTED")
+          if allowed("pull_request",*good[1:]):
+              raise AssertionError("XRAY_PR_CREDENTIAL_GATE_BYPASS")
+          print("XRAY_PARENT_WORKFLOW_CHAIN=PASS_2_POSITIVE_7_NEGATIVE_NO_API")
+          PY
       - name: Test sample bounds, timestamp duplicates, stale epoch, market GO guards
         run: |
           python -m py_compile nasdaq-xray/alpaca_rth497_temporal_gap_canary.py nasdaq-xray/alpaca_rth_trade_gap_witness.py
@@ -60,7 +103,14 @@ jobs:
   bounded-live:
     name: Bounded 4-gap SIP 30Min + 1Min + historical trade-presence comparison
     needs: offline
-    if: ${{ github.event_name == 'push' }}
+    if: >-
+      ${{ github.event_name == 'push' ||
+          (github.event_name == 'workflow_run' &&
+           github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.head_branch == 'main' &&
+           github.event.workflow_run.head_repository.full_name == github.repository &&
+           github.event.workflow_run.repository.full_name == github.repository &&
+           github.event.workflow_run.path == '.github/workflows/xray-personal-full-universe-sip-coverage.yml') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -75,6 +125,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          XRAY_TRIGGER_EVENT: ${{ github.event_name }}
+          XRAY_EXPECTED_PARENT_RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -83,6 +135,17 @@ jobs:
           sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
           from source_epoch_freshness_guard import last_complete_session
           repo=os.environ["REPO"]
+          event=os.environ.get("XRAY_TRIGGER_EVENT","")
+          parent_id_text=os.environ.get("XRAY_EXPECTED_PARENT_RUN_ID","").strip()
+          if event=="workflow_run":
+              if not (parent_id_text.isascii() and parent_id_text.isdecimal() and
+                      int(parent_id_text)>0):
+                  raise RuntimeError("XRAY_RTH_CANARY_INVALID_TRIGGER_PARENT_ID")
+              expected_id=int(parent_id_text)
+          elif event=="push" and not parent_id_text:
+              expected_id=None
+          else:
+              raise RuntimeError("XRAY_RTH_CANARY_UNTRUSTED_TRIGGER_EVENT")
           if repo!="gokaydonmez39-jpg/kripto-radar":
               raise RuntimeError("XRAY_RTH_CANARY_FOREIGN_REPO")
           asof=last_complete_session(dt.datetime.now(dt.timezone.utc))
@@ -107,6 +170,7 @@ jobs:
                       (run.get("head_repository") or {}).get("full_name")==repo):
                   continue
               rid=run["id"]
+              if expected_id is not None and rid!=expected_id:continue
               arts=api("actions/runs/"+str(rid)+"/artifacts")["artifacts"]
               matching=[x for x in arts if x.get("name")==label and
                   x.get("expired") is False and
