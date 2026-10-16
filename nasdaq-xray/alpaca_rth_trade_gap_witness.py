@@ -23,6 +23,7 @@ STATES=frozenset({
     "TRADE_QUERY_PAGINATED_INCOMPLETE_UNKNOWN",
     "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN",
     "TRADE_VENDOR_NULL_TRADES_UNKNOWN",
+    "TRADE_VENDOR_MISSING_TRADES_FIELD_UNKNOWN",
     "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN",
     "TRADE_TIMESTAMP_INVALID_UNKNOWN",
     "TRADE_PRICE_OR_SIZE_INVALID_UNKNOWN",
@@ -87,8 +88,11 @@ def probe(symbol,slot,asof,credentials,opener=urllib.request.urlopen):
         if (type(source) is not dict or
             source.get("symbol") not in (None,symbol)):
             return "TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"
-        if source.get("trades") is None:
-            # Null/missing is not an empty list and NEVER means no trades.
+        if "trades" not in source:
+            # A missing key and an explicit JSON null are distinct vendor states.
+            # Neither state proves an empty tape or eligible zero volume.
+            return "TRADE_VENDOR_MISSING_TRADES_FIELD_UNKNOWN"
+        if source["trades"] is None:
             return "TRADE_VENDOR_NULL_TRADES_UNKNOWN"
         if (type(source["trades"]) is not list or
             len(source["trades"])>MAX_TRADES):
@@ -197,6 +201,7 @@ def selftest():
         (lambda o:o.update(symbol="OTHER"),"TRADE_DOCUMENT_OR_LENGTH_INVALID_UNKNOWN"),
         (lambda o:o["trades"][0].update(c=["@",4]),"TRADE_CONDITIONS_INVALID_UNKNOWN"),
         (lambda o:o.update(trades=None),"TRADE_VENDOR_NULL_TRADES_UNKNOWN"),
+        (lambda o:o.pop("trades"),"TRADE_VENDOR_MISSING_TRADES_FIELD_UNKNOWN"),
         (lambda o:o.update(next_page_token=123),"TRADE_PAGINATION_INVALID_UNKNOWN"),
     ):
         bad=copy.deepcopy(positive);mutation(bad)
@@ -211,8 +216,8 @@ def selftest():
         check(probe(sym,timestamp,asof,auth,responder(positive))==
               "TRADE_SCOPE_REJECTED_NO_CALL","FORGED_OR_STALE_SCOPE")
     check(len(calls)==before,"NO_CALL_WHEN_SCOPE_INVALID")
-    check(len(STATES)==16,"STATUS_CLOSED_ENUMERATION")
-    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_12_NEGATIVES_PYTHON_O_SAFE_NO_ALPHA")
+    check(len(STATES)==17,"STATUS_CLOSED_ENUMERATION")
+    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_13_NEGATIVES_PYTHON_O_SAFE_NO_ALPHA")
 
 
 if __name__=="__main__":
