@@ -5,6 +5,8 @@ on:
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
       - "nasdaq-xray/research_candidate_episode_provenance.py"
+      - "nasdaq-xray/research_candidate_horizon_maturity.py"
+      - "nasdaq-xray/tests/test_research_candidate_horizon_maturity.py"
       - "nasdaq-xray/tests/test_research_candidate_episode_provenance.py"
       - "nasdaq-xray/research_candidate_memory_admission.py"
       - "nasdaq-xray/research_candidate_memory_cas.py"
@@ -21,6 +23,8 @@ on:
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
       - "nasdaq-xray/research_candidate_episode_provenance.py"
+      - "nasdaq-xray/research_candidate_horizon_maturity.py"
+      - "nasdaq-xray/tests/test_research_candidate_horizon_maturity.py"
       - "nasdaq-xray/tests/test_research_candidate_episode_provenance.py"
       - "nasdaq-xray/research_candidate_memory_admission.py"
       - "nasdaq-xray/research_candidate_memory_cas.py"
@@ -57,7 +61,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
         run: |
-          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_episode_provenance.py nasdaq-xray/tests/test_research_candidate_episode_provenance.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/research_learning_readiness.py nasdaq-xray/tests/test_research_learning_readiness.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_episode_provenance.py nasdaq-xray/research_candidate_horizon_maturity.py nasdaq-xray/tests/test_research_candidate_episode_provenance.py nasdaq-xray/tests/test_research_candidate_horizon_maturity.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/research_learning_readiness.py nasdaq-xray/tests/test_research_learning_readiness.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
           python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
           python -m unittest discover -s nasdaq-xray/tests -p test_research_learning_readiness.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
@@ -318,6 +322,7 @@ jobs:
           from research_candidate_memory_cas import REPO,PATH,BRANCH,verified_file_response
           from research_candidate_memory_admission import ARTIFACT
           from research_candidate_episode_provenance import attest
+          from research_candidate_horizon_maturity import summarize
           run_id=int(os.environ["SOURCE_RUN_ID"])
           def api(route):
               return json.loads(subprocess.check_output(
@@ -354,6 +359,13 @@ jobs:
               root=Path(os.environ["RUNNER_TEMP"])
               (root/"xray_symbolic_research_episodes_source_bound.json").write_text(
                   json.dumps(out,sort_keys=True,indent=2)+"\n")
+              mature=summarize(out,now_utc=dt.datetime.now(dt.timezone.utc))
+              assert mature["realized_return_computed"] is False
+              assert mature["alpha_authority"] is False
+              assert mature["model_trained"] is False
+              (root/"xray_symbolic_horizon_maturity_calendar_only.json").write_text(
+                  json.dumps(mature,sort_keys=True,indent=2)+"\\n")
+              print("XRAY_HORIZON_CALENDAR_NO_PRICES_OR_AL=PASS")
               print("XRAY_EPISODES_DURABLE_SOURCE_BOUND_PASS="+str(
                     out["eligible_episodes"])+"/"+str(
                     out["symbolic_watch_count"])+"_RESEARCH_ONLY")
@@ -362,7 +374,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-episode-source-time-provenance-no-alpha
-          path: ${{ runner.temp }}/xray_symbolic_research_episodes_source_bound.json
+          path: |
+            ${{ runner.temp }}/xray_symbolic_research_episodes_source_bound.json
+            ${{ runner.temp }}/xray_symbolic_horizon_maturity_calendar_only.json
           retention-days: 14
           if-no-files-found: ignore
 
