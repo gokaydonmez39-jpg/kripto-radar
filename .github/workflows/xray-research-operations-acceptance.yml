@@ -149,7 +149,7 @@ jobs:
             --source-run-id "$SOURCE" --watch-run-id "$WATCH_ID" \
             --mirror-run-id "$MIRROR_ID" --asof "$ASOF" \
             --out "$RUNNER_TEMP/xray_research_operations_acceptance.json"
-      - name: Public summary: research evidence attested but FINAL release and phone not attested
+      - name: "Public summary — research evidence attested, but FINAL release and phone not attested"
         if: steps.inputs.outputs.ready == 'true'
         run: |
           python - <<'PY'
