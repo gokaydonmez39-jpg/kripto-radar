@@ -9,6 +9,8 @@ on:
       - "nasdaq-xray/tests/test_research_candidate_memory_cas.py"
       - "nasdaq-xray/research_candidate_outcome_audit.py"
       - "nasdaq-xray/tests/test_research_candidate_outcome_audit.py"
+      - "nasdaq-xray/research_learning_readiness.py"
+      - "nasdaq-xray/tests/test_research_learning_readiness.py"
       - "nasdaq-xray/tests/test_research_candidate_memory_admission.py"
       - "nasdaq-xray/tests/test_research_candidate_memory.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
@@ -23,6 +25,8 @@ on:
       - "nasdaq-xray/tests/test_research_candidate_memory_admission.py"
       - "nasdaq-xray/tests/test_research_candidate_memory_cas.py"
       - "nasdaq-xray/tests/test_research_candidate_outcome_audit.py"
+      - "nasdaq-xray/research_learning_readiness.py"
+      - "nasdaq-xray/tests/test_research_learning_readiness.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
   workflow_run:
     workflows:
@@ -49,9 +53,11 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
         run: |
-          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/research_learning_readiness.py nasdaq-xray/tests/test_research_learning_readiness.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
           python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
+          python -m unittest discover -s nasdaq-xray/tests -p test_research_learning_readiness.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_research_learning_readiness.py -v
       - name: Assert no trading, no provider dependency, no publication and no mutation of main
         run: |
           python - <<'PY'
@@ -67,6 +73,42 @@ jobs:
           assert "persisted_to_main" in p.read_text()
           print("XRAY_MEMORY_SECURITY=NO_PROVIDER_NO_BROKER_NO_LIVE_MAIN_WRITE")
           PY
+
+  learning-readiness-fail-closed:
+    needs: symbolic-memory-offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official session calendar, validate committed source-exact calibration
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Assess actual calibration artifact, never infer a trained model or AL
+        run: |
+          python nasdaq-xray/research_learning_readiness.py \
+            --audit nasdaq-xray/canonical_alpha_calibration_audit.json \
+            --out "$RUNNER_TEMP/xray_research_learning_readiness.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_research_learning_readiness.json").read_text())
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["alpha_authority"] is False and j["r92_authority"] is False
+          assert j["model_trained"] is False and j["model_calibrated"] is False
+          assert j["iphone_delivery_receipt_attested"] is False
+          assert j["out_of_sample_alpha"] is None
+          if j["comparable_current_policy_sessions"]<j["target_comparable_sessions"]:
+              assert j["status"]=="INSUFFICIENT_COMPARABLE_LEARNING_EVIDENCE"
+          print("XRAY_REAL_CALIBRATION_GUARD="+j["status"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-real-learning-readiness-no-alpha
+          path: ${{ runner.temp }}/xray_research_learning_readiness.json
+          retention-days: 14
+          if-no-files-found: error
 
   trusted-receipt-proposal:
     needs: symbolic-memory-offline
