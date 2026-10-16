@@ -341,13 +341,27 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
     rows=state.get("r92") or []
     terminal_keys=terminal.get("r92_candidates") or []
     pre_keys=(terminal.get("sets") or {}).get("pre_g9_tech_pass") or []
-    if not (isinstance(keys,list) and isinstance(rows,list)
-            and isinstance(terminal_keys,list) and isinstance(pre_keys,list)
-            and 1<=len(rows)<=3 and len(set(keys))==len(keys)
-            and set(terminal_keys)==set(pre_keys)
-            and bool(terminal_keys)):
+    # The registered pointer MUST cover exactly the terminal's candidate
+    # partition and delivery keys, not merely a valid subset. Previously a
+    # terminal with two R92 registrations could be 'attested' by one row.
+    # Keep identities canonical; casefold / duplicate set equality is not a
+    # substitute for a row-for-row and key-for-key registration proof.
+    if not (type(keys) is list and type(rows) is list
+            and type(terminal_keys) is list and type(pre_keys) is list
+            and 1<=len(rows)<=3
+            and len(keys)==len(rows)==len(terminal_keys)==len(pre_keys)
+            and all(type(k) is str and k.strip()==k and k for k in keys)
+            and all(type(k) is str
+                    and re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}\|[ABCD]",k)
+                    for k in terminal_keys)
+            and all(type(k) is str for k in pre_keys)
+            and len(set(keys))==len(keys)
+            and len(set(terminal_keys))==len(terminal_keys)
+            and len(set(pre_keys))==len(pre_keys)
+            and set(terminal_keys)==set(pre_keys)):
         return False
     seen=set()
+    seen_setup_keys=set()
     for row in rows:
         if not isinstance(row,dict) or row.get("schema")!="XRAY_RESEARCH_CANDIDATE_R92_V1":
             return False
@@ -381,15 +395,23 @@ def registered_research_candidate_exact(terminal,pointer,asof,terminal_sha):
             or row["rr_severe"]>no_cost_rr_upper+1e-10
             or row["rr_severe"]>row["rr_basic"]+1e-10):
             return False
-        key=str(row.get("symbol") or "").upper()+"|"+str(row.get("setup") or "").upper()
+        symbol=row.get("symbol")
+        setup=row.get("setup")
+        if (type(symbol) is not str or type(setup) is not str
+                or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}",symbol)
+                or setup not in REGISTERED_RR_MIN_BY_FAMILY):
+            return False
+        key=symbol+"|"+setup
         dkey=row.get("delivery_key")
-        if (key not in terminal_keys or dkey not in keys or dkey in seen
+        if (key not in terminal_keys or key in seen_setup_keys
+            or dkey not in keys or dkey in seen
             or row.get("asof_et")!=asof
             or row.get("mc_class")!="MC_PASS_PRIMARY"
             or row.get("execution")!="NONE" or row.get("real_money")!="NO-GO"):
             return False
         seen.add(dkey)
-    return True
+        seen_setup_keys.add(key)
+    return seen==set(keys) and seen_setup_keys==set(terminal_keys)
 
 def post_delivery_receipt_observability():
     """A device ACK is post-publication evidence, NEVER a pre-publication gate.
