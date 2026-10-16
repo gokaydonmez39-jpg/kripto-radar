@@ -151,17 +151,31 @@ def validate_contract(files:dict[str,str], *, relay_source:str|None=None)->dict:
                    'combined["backup_issue_status"] = best.get("backup_issue_status")'):
         if needle not in ledger:
             errors.append("DELIVERY_LEDGER_LATEST_OBSERVATION_REGRESSION:"+needle)
+    # Official status is mandatory for a REAL candidate, but never pull
+    # external status feeds for no registered R92 or an old source session.
+    # Moving official ahead of source epoch now causes unnecessary weekend
+    # network requests. Ordering is fail-closed, not permissive.
     ordering=(
-        "Refresh official Nasdaq halt + Security Status guard",
         "Synthetic registered-R92 delivery self-test",
         "Classify registered R92 presence without claiming source readiness",
         "Reject stale latest completed Nasdaq source before R92 delivery",
+        "Refresh official Nasdaq halt + Security Status guard",
         "Verify scheduler and final recovery readiness",
         "Prepare fail-closed registered research alerts",
         "Create or recover deduplicated research candidate issues",
     )
-    if not all(d.find(a)<d.find(b) for a,b in zip(ordering,ordering[1:])):
+    if not all(d.find(a)>=0 and d.find(b)>=0 and d.find(a)<d.find(b)
+               for a,b in zip(ordering,ordering[1:])):
         errors.append("DELIVERY_SAFETY_STEP_ORDER_DRIFT")
+    official_start=d.find("      - name: Refresh official Nasdaq halt + Security Status guard")
+    scheduler_start=d.find("      - name: Verify scheduler and final recovery readiness")
+    official_step=(d[official_start:scheduler_start]
+                   if official_start>=0 and scheduler_start>official_start else "")
+    if not (("if: steps.source_epoch.outputs.ready == 'true'" in official_step)
+            and ("python nasdaq-xray/official_source_guard.py" in official_step)
+            and ('h.get("status")=="PASS"' in official_step)
+            and ('ss.get("status")=="PASS"' in official_step)):
+        errors.append("DELIVERY_OFFICIAL_LAZY_FRESH_SESSION_GUARD_MISSING")
     wd=(DATA/"github_native_root_watchdog.py").read_text()
     for needle in (
         "weekend_noop_root_ids_ignored_for_weekday_success",
@@ -301,13 +315,24 @@ def selftest():
     modified=dict(files)
     raw=modified["nasdaq-xray-delivery.yml"]
     start=raw.index("      - name: Refresh official Nasdaq halt + Security Status guard")
-    stop=raw.index("      - name: Synthetic registered-R92 delivery self-test",start)
+    stop=raw.index("      - name: Verify scheduler and final recovery readiness",start)
     guard_step=raw[start:stop]
     without_guard=raw[:start]+raw[stop:]
     destination=without_guard.index("      - name: Reconcile durable delivery ledger")
     modified["nasdaq-xray-delivery.yml"]=(
         without_guard[:destination]+guard_step+without_guard[destination:])
     assert not validate_contract(modified)["ok"]
+    # Removing the external-source delay is a material regression even if
+    # all mandatory PASS strings and step ordering appear intact.
+    modified=dict(files)
+    flow=modified["nasdaq-xray-delivery.yml"]
+    anchor=("if: steps.source_epoch.outputs.ready == 'true'\n"
+            "        run: |\n"
+            "          python nasdaq-xray/official_source_guard.py")
+    assert anchor in flow,"OFFICIAL_LAZY_GUARD_MUTATION_ANCHOR_MISSING"
+    modified["nasdaq-xray-delivery.yml"]=flow.replace(
+        anchor,"run: |\n          python nasdaq-xray/official_source_guard.py",1)
+    assert not validate_contract(modified)["ok"],"UNGATED_OFFICIAL_NETWORK_FALSE_PASS"
     # Mutation tests on the actual root-stage source: a missing source-epoch
     # fence, unsafe Post-MC dispatch, or bypassed two-read SHA check must
     # make this audit FAIL. No network, market data or synthetic AL involved.
