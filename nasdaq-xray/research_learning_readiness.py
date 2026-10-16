@@ -74,6 +74,12 @@ def check(calibration, reports):
                report.get("raw_prices_persisted") is False and
                report.get("sample_comparability_externally_attested") is False,
                "OUTCOME_RESEARCH_ONLY_HEADER")
+        # Unknown extra promotion keys must never smuggle AL/delivery authority.
+        for authority_key in ("alpha_authority","r92_authority",
+                              "registered_R92_count","iphone_delivery_receipt_attested",
+                              "user_notification_sent","model_trained"):
+            ensure(report.get(authority_key) in (None,False,0),
+                   "FORGED_EXTRA_AUTHORITY_"+authority_key)
         key=(report.get("asof_et"),report.get("symbol"),
              report.get("accepted_receipt_sha256"))
         ensure(all(type(x) is str and bool(x) for x in key) and
