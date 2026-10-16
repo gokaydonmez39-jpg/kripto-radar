@@ -76,7 +76,7 @@ class CASBranchTests(unittest.TestCase):
             with self.subTest(key=key):
                 obj=copy.deepcopy(self.file)
                 obj[key]=val
-                with self.assertRaises((ValueError,Exception)):
+                with self.assertRaises(ValueError):
                     s.verified_file_response(obj)
 
     def test_stale_session_revision_and_run_forgery(self):
