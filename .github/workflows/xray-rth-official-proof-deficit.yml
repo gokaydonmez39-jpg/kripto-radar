@@ -1,0 +1,155 @@
+name: XRAY RTH 497 Official Proof Deficit Admission (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/rth_official_proof_deficit.py"
+      - "nasdaq-xray/tests/test_rth_official_proof_deficit.py"
+      - ".github/workflows/xray-rth-official-proof-deficit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/rth_official_proof_deficit.py"
+      - "nasdaq-xray/tests/test_rth_official_proof_deficit.py"
+      - ".github/workflows/xray-rth-official-proof-deficit.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  read-only-official-deficit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install official calendar, no new market-provider calls
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Authenticated latest successful main run and exact 3 named artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import datetime as dt,hashlib,json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from source_epoch_freshness_guard import last_complete_session
+          repo=os.environ["REPO"]
+          if repo!="gokaydonmez39-jpg/kripto-radar":raise ValueError("FOREIGN_REPO")
+          root=Path(os.environ["RUNNER_TEMP"])/"rth_proof"
+          root.mkdir()
+          asof=last_complete_session(dt.datetime.now(dt.timezone.utc))
+          def api(route):
+              return json.loads(subprocess.check_output(["gh","api",
+                  f"repos/{repo}/{route}"],text=True,timeout=50))
+          def download(kind,workflow,name,required):
+              runs=api("actions/workflows/"+workflow+
+                  "/runs?branch=main&status=success&per_page=6")["workflow_runs"]
+              if not runs:raise ValueError("NO_SUCCESSFUL_MAIN_"+kind)
+              x=runs[0]
+              if not (x.get("name")==name and
+                      x.get("path")==".github/workflows/"+workflow and
+                      x.get("status")=="completed" and
+                      x.get("conclusion")=="success" and
+                      x.get("head_branch")=="main" and
+                      (x.get("repository") or {}).get("full_name")==repo and
+                      (x.get("head_repository") or {}).get("full_name")==repo and
+                      type(x.get("id")) is int and x["id"]>0):
+                  raise ValueError("UNTRUSTED_GITHUB_MAIN_"+kind)
+              items=api("actions/runs/"+str(x["id"])+"/artifacts")["artifacts"]
+              for label,artifact_name in required.items():
+                  good=[a for a in items if a.get("name")==artifact_name and
+                        a.get("expired") is False and
+                        (a.get("workflow_run") or {}).get("id")==x["id"] and
+                        type(a.get("size_in_bytes")) is int and
+                        100<a["size_in_bytes"]<400000]
+                  if len(good)!=1:
+                      raise ValueError("MISSING_EXACT_GITHUB_ARTIFACT_"+label)
+                  folder=root/label
+                  folder.mkdir()
+                  subprocess.check_output([
+                      "gh","run","download",str(x["id"]),
+                      "--repo",repo,"-n",artifact_name,"-D",str(folder)
+                  ],timeout=70)
+                  files=list(folder.rglob("*.json"))
+                  if len(files)!=1:raise ValueError("JSON_ARTIFACT_CARDINALITY_"+label)
+                  raw=files[0].read_bytes()
+                  doc=json.loads(raw)
+                  if doc.get("asof_et")!=asof:
+                      raise ValueError("STALE_SOURCE_"+label)
+                  (root/(label+".json")).write_bytes(raw)
+              return x["id"]
+          cross_run=download("cross",
+              "xray-cross-plane-blocker-reconciliation.yml",
+              "XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)",
+              {"cross":"xray-cross-plane-3189-source-history-price-reconciliation-no-al"})
+          source_run=download("source",
+              "xray-personal-full-universe-sip-coverage.yml",
+              "XRAY Personal Full-Universe SIP EOD Coverage (Research Only)",
+              {"six":"xray-personal-six-gate-causal-worklist-no-ohlcv",
+               "joint":"xray-personal-joint-260-daily30-rth30-no-ohlcv"})
+          cross=json.loads((root/"cross.json").read_bytes())
+          six=json.loads((root/"six.json").read_bytes())
+          joint_bytes=(root/"joint.json").read_bytes()
+          if not (cross.get("six_gate_input_report_sha256")==
+                  six.get("input_report_sha256") and
+                  hashlib.sha256(joint_bytes).hexdigest()==
+                      six["input_report_sha256"]["rth"] and
+                  cross.get("root_universe_sha256")==
+                      six.get("exact_root_identity_scope_sha256")):
+              raise ValueError("REAL_SAME_RUN_ARTIFACT_SOURCE_DRIFT")
+          (root/"source_run_id.txt").write_text(str(source_run)+chr(10))
+          print("XRAY_RTH_CROSS_MAIN_RUN="+str(cross_run))
+          print("XRAY_RTH_SOURCE_MAIN_RUN="+str(source_run))
+          print("XRAY_RTH_REAL_SAME_RUN_RTH_SHA256=PASS")
+          PY
+      - name: Test 497 actual symbolic records, adverse mutations and -O
+        env:
+          XRAY_TEST_CROSS: ${{ runner.temp }}/rth_proof/cross.json
+          XRAY_TEST_SIX: ${{ runner.temp }}/rth_proof/six.json
+          XRAY_TEST_JOINT: ${{ runner.temp }}/rth_proof/joint.json
+        run: |
+          python -m py_compile nasdaq-xray/rth_official_proof_deficit.py nasdaq-xray/tests/test_rth_official_proof_deficit.py
+          python -m unittest discover -s nasdaq-xray/tests -p test_rth_official_proof_deficit.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_rth_official_proof_deficit.py -v
+          python - <<'PY'
+          from pathlib import Path
+          c=Path("nasdaq-xray/rth_official_proof_deficit.py").read_text()
+          assert all(x not in c for x in ("urllib","requests","subprocess"))
+          print("XRAY_RTH_ZERO_PROVIDER_ZERO_BROKER=PASS")
+          PY
+      - name: Replay canonical 548 unknown intersection without OHLCV
+        run: |
+          python nasdaq-xray/rth_official_proof_deficit.py \
+            --cross "$RUNNER_TEMP/rth_proof/cross.json" \
+            --six "$RUNNER_TEMP/rth_proof/six.json" \
+            --joint "$RUNNER_TEMP/rth_proof/joint.json" \
+            --upstream-run-id "$(cat "$RUNNER_TEMP/rth_proof/source_run_id.txt")" \
+            --out "$RUNNER_TEMP/xray_rth_official_proof_deficit_no_al.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/
+              "xray_rth_official_proof_deficit_no_al.json").read_text())
+          assert [x[k] for k in (
+              "rth_exact_30session_research_cohort",
+              "rth_complete_slot_research_high_count",
+              "rth_auction_volume_ambiguous_count",
+              "rth_incomplete_slot_count",
+              "outside_complete_rth_cohort_unknown_count")]==[497,415,78,4,51]
+          assert x["primary_c417_price_dv30_proven"] is False
+          assert x["alpha_authority"] is False and x["r92_authority"] is False
+          assert x["source_market_api_calls"]==0
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_RTH_REAL_415_78_4_PROOF_DENIAL=PASS_NO_AL")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-rth-415-78-4-official-proof-deficit-no-al
+          path: ${{ runner.temp }}/xray_rth_official_proof_deficit_no_al.json
+          retention-days: 14
+          if-no-files-found: error
