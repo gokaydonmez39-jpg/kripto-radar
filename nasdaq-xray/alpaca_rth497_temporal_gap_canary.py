@@ -7,6 +7,7 @@ canonical data mutation, personal trade execution or market GO promotion.
 from __future__ import annotations
 import argparse
 from collections import Counter
+from alpaca_price_gap_minute_witness import observe as minute_observe, WITNESS_CODES
 import datetime as dt
 import json
 import os
@@ -28,6 +29,7 @@ ROOT=Path(__file__).resolve().parent
 NY=ZoneInfo("America/New_York")
 CANARY=8
 MAX_CALLS=16
+MAX_MINUTE_WITNESS_CALLS=12
 MAX_BYTES=3500000
 PARENT_RUN=None  # Never bind an archival workflow run as current.
 
@@ -230,6 +232,65 @@ def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0):
          and 0<=nolder<=CANARY,"AGGREGATE_ACCOUNTING")
     return out
 
+def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
+                                        *,observer=minute_observe,
+                                        budget=MAX_MINUTE_WITNESS_CALLS):
+    """Extra 1Min SIP only for previously missing 30Min slots in four gaps.
+
+    This second TIMEFRAME is a same-provider diagnostic, not independent
+    auction/trade-condition evidence; it never repairs 30Min/DV30 or persists
+    vendor bars. An injected observer is used for offline negative tests.
+    """
+    errors=parent.get("symbol_rth_integrity_failure_codes")
+    need(type(errors) is dict and len(errors)==4 and
+         all(x=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for x in errors.values())
+         and set(errors).issubset(bar_map) and
+         type(budget) is int and 0<=budget<=12 and
+         type(credentials) is tuple and len(credentials)==2 and
+         all(type(v) is str and v for v in credentials),
+         "MINUTE_WITNESS_TARGET_SCOPE_OR_BUDGET")
+    grid=set()
+    for day in days:
+        start,close,minutes=official_window(day)
+        need(minutes in (210,390) and minutes%30==0,
+             "MINUTE_WITNESS_OFFICIAL_GRID")
+        grid.update(start+dt.timedelta(minutes=i*30)
+                    for i in range(minutes//30))
+    counter=[0]
+    counts=Counter()
+    missing_total=0
+    for sym in sorted(errors):
+        got=set()
+        for row in bar_map[sym]:
+            t=stamp(row)
+            if t in grid:got.add(t)
+        missing=sorted(grid-got)
+        missing_total+=len(missing)
+        for slot in missing:
+            if counter[0]>=budget:
+                counts["MINUTE_GLOBAL_BUDGET_BLOCKED"]+=1
+                continue
+            value=observer(sym,slot,asof,credentials,counter,budget)
+            need(value in WITNESS_CODES and 0<=counter[0]<=budget,
+                 "MINUTE_WITNESS_RESULT_CODE_OR_CALL_OVERRUN")
+            counts[value]+=1
+    need(sum(counts.values())==missing_total,
+         "MINUTE_WITNESS_EXACT_PARTITION")
+    return {
+        "minute_witness_target_group":"FOUR_RTH_INTEGRITY_GAPS_ONLY",
+        "minute_witness_30min_missing_slots_total":missing_total,
+        "minute_witness_source_api_calls":counter[0],
+        "minute_witness_call_budget":budget,
+        "minute_witness_result_counts":dict(sorted(counts.items())),
+        "minute_witness_present_not_canonical_repair_count":
+            counts.get("MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW",0)+
+            counts.get("MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW",0),
+        "minute_witness_no_independent_venue_or_trade_conditions":True,
+        "minute_witness_vendor_rows_persisted":False,
+        "minute_witness_can_upgrade_c417_or_r92":False
+    }
+
+
 def selftest():
     from copy import deepcopy
     asof="2026-10-15"
@@ -324,6 +385,41 @@ def selftest():
                         ("FAKE_ID","FAKE_SECRET"),opener=mock)
     need(count==1 and len(rows)==8 and all(not x for x in rows.values()),
          "MOCK_TRANSPORT")
+    # Check first missing slot of each of the four REAL parent gap identities
+    # using a mocked 1Min SIP observer (zero external requests in PR CI).
+    target=deepcopy(original)
+    for sym in gaps:
+        target[sym]=target[sym][1:]
+    simulated=[]
+    def fake_minute(sym,slot,date,keys,count,budget):
+        need(sym in gaps and date==asof and slot.tzinfo is not None
+             and count[0]<budget,"MINUTE_FIXTURE_EXACT_TARGET")
+        count[0]+=1
+        simulated.append(sym)
+        return "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW"
+    checked=probe_only_actual_missing_rth_slots(
+        asof,days,target,p,("FAKE_ID","FAKE_SECRET"),
+        observer=fake_minute,budget=4)
+    need(checked["minute_witness_source_api_calls"]==4 and
+         checked["minute_witness_present_not_canonical_repair_count"]==4 and
+         len(simulated)==4 and
+         checked["minute_witness_can_upgrade_c417_or_r92"] is False,
+         "FOUR_TARGETED_GAP_ONE_MINUTE_POSITIVE_NOT_PRIMARY")
+    checked=probe_only_actual_missing_rth_slots(
+        asof,days,target,p,("FAKE_ID","FAKE_SECRET"),
+        observer=fake_minute,budget=2)
+    need(checked["minute_witness_source_api_calls"]==2 and
+         checked["minute_witness_result_counts"].get(
+             "MINUTE_GLOBAL_BUDGET_BLOCKED")==2,
+         "TARGETED_MINUTE_BUDGET_EXACT")
+    unauthorized=deepcopy(p)
+    unauthorized["symbol_rth_integrity_failure_codes"].pop(gaps[0])
+    try:
+        probe_only_actual_missing_rth_slots(
+            asof,days,target,unauthorized,("FAKE_ID","FAKE_SECRET"),
+            observer=fake_minute)
+    except ValueError:pass
+    else:raise AssertionError("FORGED_GAP_SOURCE_ACCEPTED")
     print("XRAY_RTH497_TEMPORAL_CANARY_SELFTEST=PASS_8_SYMBOL_16_CALL_SHA_TIME_NEGATIVES_NO_ALPHA")
 
 def main():
@@ -349,6 +445,10 @@ def main():
     bars,calls=retrieve(syms,days,asof,now,credentials)
     out=classify_aggregates(asof,syms,days,bars,calls,
          parent_run_id=int(parent_run_text))
+    # Only previously missing 30Min windows get a second, bounded 1Min
+    # same-SIP-provider transport check. Not a substitute for official DV30.
+    out.update(probe_only_actual_missing_rth_slots(
+        asof,days,bars,source,credentials))
     args.out.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print("XRAY_RTH497_TEMPORAL_CANARY="+json.dumps({
        "asof":asof,"canary":len(syms),
@@ -356,6 +456,8 @@ def main():
        "latest_missing":out["latest_session_missing_slots"],
        "earlier_missing":out["earlier_sessions_missing_slots"],
        "latest_slots":out["latest_missing_official_slot_indices"],
+       "minute_calls":out["minute_witness_source_api_calls"],
+       "minute_windows_found":out["minute_witness_present_not_canonical_repair_count"],
        "zero_alpha":True},sort_keys=True))
 
 if __name__=="__main__":main()
