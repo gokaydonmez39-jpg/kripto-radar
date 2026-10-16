@@ -20,8 +20,8 @@ This is a nontrading research-memory add-on, not a replacement for C4.17.
 2. **Admission**: `research_candidate_memory_admission.py` requires completed SUCCESS of the exact main-branch acceptance workflow and exact named, unexpired GitHub Actions artifact from the same run. Caller must fetch both using authenticated GitHub API and artifact download; synthetic JSON passed by an untrusted caller is NOT authentication.
 3. **Memory**: `research_candidate_memory.py` accepts a validated symbolic receipt, exact WATCH membership SHA, A/B/D family lists and per-ASOF run IDs. Produces append-only hash-linked replayable ledger proposals with semantic transitions, monotonic ASOF, idempotence and same-ASOF revision quarantine. A missing later WATCH is **not** an invalidated trade.
 4. **Durable storage**: isolate state in branch `xray-research-memory-state`, file `nasdaq-xray/research/symbolic_candidate_memory_ledger_v1.json`. The branch contains an empty, noncanonical seed. `research_candidate_memory_cas.py` double-reads this file, validates its actual Git blob SHA, requires source re-authentication, uses one GitHub Contents API SHA-CAS write and exact readback; no force-push and never writes to main.
-5. **Activation**: default OFF. Opt-in CAS job runs only on completed successful main acceptance `workflow_run` AND repository Actions variable `XRAY_MEMORY_PERSIST_APPROVED` exactly equals `true`, following explicit owner release approval. Otherwise job is skipped. It is **not** activated by opening a draft PR.
-6. **Outcome diagnostics**: `research_candidate_outcome_audit.py` uses authorized private point-in-time adjusted closes and independent NASDAQ calendar, split/corporate action status, issuer-class identity and authorized benchmark. Its 1/3/5/10/20 session horizon values are post-observation **close moves**, NOT executable P&L, nor backtest proof; insufficient source = UNKNOWN. Raw price bars never written to output.
+5. **Activation**: default OFF. Opt-in CAS job runs only on completed successful main acceptance `workflow_run` AND repository Actions variable `XRAY_MEMORY_PERSIST_APPROVED` exactly equals `true`, **AND** repository Actions variable `XRAY_MEMORY_RELEASE_COMMIT_SHA` matches the exact `github.sha` of the verified main workflow code, following explicit owner release approval. Any different new main revision automatically disables the writer. A separate source event run ID must also match. Otherwise job is skipped. It is **not** activated by opening a draft PR.
+6. **Outcome diagnostics**: `research_candidate_outcome_audit.py` uses authorized private point-in-time adjusted closes, **same-ASOF stock and benchmark reference sessions**, independent NASDAQ calendar, split/corporate action status, issuer-class identity and authorized benchmark. Its 1/3/5/10/20 session horizon values are post-observation **close moves**, NOT executable P&L, nor backtest proof; insufficient source = UNKNOWN. Raw price bars never written to output.
 
 ## Production-stopper checklist
 
@@ -37,7 +37,7 @@ This is a nontrading research-memory add-on, not a replacement for C4.17.
 ## Recovery / rollback
 
 - On any source SHA drift, CAS collision, illegal provider input, bad adjustment, missing future bar or invalid run, **fail closed**. Do not generate a synthetic replacement and do not modify canonical files.
-- Disable the repository opt-in variable to suspend persistence; the two existing ChatGPT tasks need no changes.
+- Disable either repository opt-in variable to suspend persistence; the two existing ChatGPT tasks need no changes.
 - Keep `xray-research-memory-state` immutable Git history as rollback evidence. If a bad ledger revision is detected, freeze writes, save the last known-good Git commit and conduct a branch-copy forensic reconciliation with a separate PR. Do not force-push over evidence.
 - Rolling back PR code is separately reviewable and does not imply removing historical evidence. No trade/account rollback is necessary because none can be made by this layer.
 
@@ -63,3 +63,7 @@ This is a nontrading research-memory add-on, not a replacement for C4.17.
 - Explicit definition of positive/negative outcomes before evaluation; only then precision, recall, Brier score, calibration and false-positive/false-negative testing.
 - Causal incident/provider budget ledger with independently measured redundant-call savings, source-error cooldown and no auth/credit-cliff retry.
 - Production-readback tests only **after** owner-controlled opt-in activation. Shadow CI PASS alone does not satisfy this last milestone.
+
+## Final merge-vs-release control
+
+Merging the research-only code/CI into `main` is **not** an approval to write candidate memory: the SHA-pinned two-variable CAS writer remains disabled. Merge tests and read-only preflight can run as independent Actions without new paid providers. No one can treat a passing synthetic fixture as authenticated forward performance. 
