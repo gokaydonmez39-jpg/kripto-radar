@@ -1,0 +1,181 @@
+name: XRAY Research Operations Cross-Artifact Acceptance (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - nasdaq-xray/personal_research_operations_acceptance.py
+      - .github/workflows/xray-research-operations-acceptance.yml
+  push:
+    branches: [main]
+    paths:
+      - nasdaq-xray/personal_research_operations_acceptance.py
+      - .github/workflows/xray-research-operations-acceptance.yml
+  workflow_run:
+    workflows:
+      - "XRAY Personal Early Technical WATCH 406 (No AL)"
+      - "XRAY SEC 414 Same-ASOF Mirror CIK Research (No MC)"
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-research-operations-acceptance
+  cancel-in-progress: false
+jobs:
+  deterministic-adversarial:
+    name: Cross-artifact same-ASOF/SHA, 16 forged negatives and no false final
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Normal and optimized independent security acceptance
+        run: |
+          python -m py_compile nasdaq-xray/personal_research_operations_acceptance.py
+          python nasdaq-xray/personal_research_operations_acceptance.py --selftest
+          python -O nasdaq-xray/personal_research_operations_acceptance.py --selftest
+
+  live-readback:
+    name: Bind real source, technical WATCH and SEC mirror to one verified research receipt
+    needs: deterministic-adversarial
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Nasdaq calendar for completed session gate
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Locate latest real, same-ASOF, matching-source official Actions artifacts
+        id: inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,os,subprocess,sys
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"research_acceptance"
+          root.mkdir(parents=True,exist_ok=True)
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from source_epoch_freshness_guard import last_complete_session
+          from personal_watch_run_lineage_guard import verify_run
+          expected=last_complete_session(dt.datetime.now(dt.timezone.utc))
+          repo=os.environ["REPO"]
+          def api(x):
+              return json.loads(subprocess.check_output(
+                  ["gh","api","repos/"+repo+"/"+x],text=True))
+          def find_runs(workflow):
+              return [r for r in api("actions/workflows/"+workflow+"/runs?per_page=24")["workflow_runs"]
+                  if r.get("status")=="completed" and r.get("conclusion")=="success"
+                  and r.get("head_branch")=="main"
+                  and (r.get("head_repository") or {}).get("full_name",repo)==repo]
+          def download(run_id,artifact,target):
+              target.mkdir(parents=True,exist_ok=True)
+              try:
+                  subprocess.check_output(
+                      ["gh","run","download",str(run_id),"--repo",repo,
+                       "-n",artifact,"-D",str(target)],
+                      stderr=subprocess.DEVNULL,timeout=70)
+                  files=list(target.glob("*.json"))
+                  if len(files)!=1:return None
+                  return json.loads(files[0].read_text())
+              except (OSError,ValueError,subprocess.CalledProcessError,
+                      subprocess.TimeoutExpired):
+                  return None
+          chosen=None
+          watches=find_runs("xray-personal-full-cohort-early-watch.yml")
+          mirrors=find_runs("xray-sec-414-asof-mirror-research.yml")
+          for wr in watches[:12]:
+              wp=root/("w"+str(wr["id"]))
+              watch=download(wr["id"],"xray-personal-early-technical-watch-private-no-ohlcv",wp)
+              if not watch or watch.get("asof_et")!=expected:continue
+              source_id=watch.get("source_workflow_run_id")
+              if type(source_id) is not int or source_id<=0:continue
+              try:
+                  source=api("actions/runs/"+str(source_id))
+                  verify_run(source,repo,expected_run_id=source_id,
+                             expected_head_sha=source["head_sha"])
+              except (ValueError,KeyError,TypeError,subprocess.CalledProcessError):
+                  continue
+              cp=root/("c"+str(source_id))
+              causal=download(source_id,"xray-personal-six-gate-causal-worklist-no-ohlcv",cp)
+              if not causal or causal.get("asof_et")!=expected:continue
+              for mr in mirrors[:12]:
+                  mp=root/("m"+str(mr["id"]))
+                  mirror=download(mr["id"],"xray-sec-414-asof-immutable-mirror-no-mc",mp)
+                  if not mirror or mirror.get("asof_et")!=expected:continue
+                  if mirror.get("source_causal_cohort_sha256")!=causal.get("rth30_lower_bound_sha256"):
+                      continue
+                  # All three exact receipts are inspected again by the
+                  # independently tested reconciler, never just these labels.
+                  chosen=(source_id,wr["id"],mr["id"],cp,wp,mp)
+                  break
+              if chosen:break
+          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
+              if not chosen:
+                  f.write("ready=false\n")
+                  print("XRAY_RESEARCH_ACCEPTANCE_SAFE_SKIP_NO_COMPLETE_THREE_ARTIFACTS")
+              else:
+                  source_id,watch_id,mirror_id,cp,wp,mp=chosen
+                  f.write("ready=true\nasof="+expected+"\n")
+                  f.write("source_run="+str(source_id)+"\n")
+                  f.write("watch_run="+str(watch_id)+"\n")
+                  f.write("mirror_run="+str(mirror_id)+"\n")
+                  f.write("causal_path="+str(next(cp.glob("*.json")))+"\n")
+                  f.write("watch_path="+str(next(wp.glob("*.json")))+"\n")
+                  f.write("mirror_path="+str(next(mp.glob("*.json")))+"\n")
+                  print("XRAY_RESEARCH_ACCEPTANCE_BOUND_SOURCE="+str(source_id)+
+                        " WATCH="+str(watch_id)+" MIRROR="+str(mirror_id))
+          PY
+      - name: Reconcile source digest, 412 scope, 12 observed WATCH, mirror identity and zero R92
+        if: steps.inputs.outputs.ready == 'true'
+        env:
+          CAUSAL: ${{ steps.inputs.outputs.causal_path }}
+          WATCH: ${{ steps.inputs.outputs.watch_path }}
+          MIRROR: ${{ steps.inputs.outputs.mirror_path }}
+          SOURCE: ${{ steps.inputs.outputs.source_run }}
+          WATCH_ID: ${{ steps.inputs.outputs.watch_run }}
+          MIRROR_ID: ${{ steps.inputs.outputs.mirror_run }}
+          ASOF: ${{ steps.inputs.outputs.asof }}
+        run: |
+          python nasdaq-xray/personal_research_operations_acceptance.py \
+            --causal "$CAUSAL" --watch "$WATCH" --mirror "$MIRROR" \
+            --source-run-id "$SOURCE" --watch-run-id "$WATCH_ID" \
+            --mirror-run-id "$MIRROR_ID" --asof "$ASOF" \
+            --out "$RUNNER_TEMP/xray_research_operations_acceptance.json"
+      - name: "Public summary — research evidence attested, but FINAL release and phone not attested"
+        if: steps.inputs.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_research_operations_acceptance.json").read_text())
+          assert d["research_all_three_artifacts_same_asof_and_sha"] is True
+          assert d["research_cohort_full_symbolic_partition_checked"] is True
+          assert d["operational_final_with_real_user_delivery_attested"] is False
+          assert d["c417_primary_price_mc_release_attested"] is False
+          assert d["registered_R92_count"]==0 and d["orders"]==[]
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as s:
+              s.write("# XRAY personal research evidence: verified (NOT final release)\n\n")
+              s.write("ASOF "+d["asof_et"]+"; cohort "+str(d["rth_research_proxy_count"])+
+                      "; independent A/B/D WATCH "+str(d["research_technical_watch_count"])+
+                      "; mirror current CIK candidates "+str(d["research_secondary_cik_discovered_count"])+".\n\n")
+              s.write("Exact source+WATCH+SEC cohort membership and SHA: **PASS**.\n\n")
+              s.write("Primary C4.17 PRICE/MC, rights and real iPhone receipt: **NOT ATTESTED**. No AL or orders.\n")
+          print("XRAY_RESEARCH_OPERATIONS=THREE_REAL_ARTIFACTS_VERIFIED_NO_FALSE_FINAL")
+          PY
+      - name: Archive symbolic acceptance only; no OHLCV or price levels
+        if: ${{ always() && steps.inputs.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-research-operations-exact-receipt-no-al
+          path: ${{ runner.temp }}/xray_research_operations_acceptance.json
+          if-no-files-found: warn
+          retention-days: 14
