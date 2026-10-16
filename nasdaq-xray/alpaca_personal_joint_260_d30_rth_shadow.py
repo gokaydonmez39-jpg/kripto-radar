@@ -145,15 +145,20 @@ def pager(symbols,tf,start,end,asof,credentials,calls):
 
 
 
-# Incomplete 30Min slots cannot pass the strict RTH gate. However, trades
-# actually observed in correct RTH slots may give a conservative research-only
-# lower bound without manufacturing a zero-volume bar for a missing slot.
-PARTIAL_HIGH="PARTIAL_OBSERVED_RTH_LOWER_BOUND_GE50M_RESEARCH_ONLY"
-PARTIAL_UNRESOLVED="PARTIAL_OBSERVED_RTH_LOWER_BOUND_INDETERMINATE"
+# Incomplete 30Min slots cannot pass the strict RTH gate.
+# LOW * volume is a deliberately conservative RESEARCH PROXY, NOT a genuine
+# trade-notional lower bound: Alpaca trade conditions can update bar VOLUME
+# without updating HIGH/LOW (e.g. odd lots). Actual trade price for a
+# volume-contributing print might be LOWER than the reported bar low.
+# DAILY CLOSE * observed volume is also not a mathematical floor.
+# Thus neither observed proxy may prove official DV30 >= $50M.
+# This remains research-only, not corrected/auction/PIT primary market data.
+PARTIAL_HIGH="PARTIAL_OBSERVED_RTH_BARLOW_NOTIONAL_PROXY_GE50M_RESEARCH_ONLY"
+PARTIAL_UNRESOLVED="PARTIAL_OBSERVED_RTH_BARLOW_NOTIONAL_PROXY_INDETERMINATE"
 PARTIAL_REJECTED="PARTIAL_SOURCE_SCHEMA_OR_VOLUME_REJECTED"
 
 def partial_missing_slot_bounds(daily,halfhour,days):
-    """Return aggregate-safe evidence only. NEVER promote strict RTH or R92."""
+    """Return bar-LOW-weighted research proxy, NOT a trade-notional lower bound."""
     from decimal import Decimal
     from alpaca_personal_price_current_exact30 import cached_official_window
     from alpaca_sip_30min_rth_lower_bound_pilot import stamp,data_check
@@ -184,21 +189,33 @@ def partial_missing_slot_bounds(daily,halfhour,days):
         at=stamp(bar)
         if at in expected:
             need(at not in observed,"PARTIAL_DUPLICATE_30MIN")
-            observed[at]=data_check(bar)
+            volume=data_check(bar)
+            # Bar LOW (not daily close) reduces upward pricing bias.
+            # Bar VOLUME may contain excluded LOW prints: still ONLY A PROXY.
+            # Do not persist vendor OHLCV in any research artifact.
+            try:
+                o,h,l,c=(Decimal(str(bar[k])) for k in ("o","h","l","c"))
+            except (TypeError,ValueError,KeyError,ArithmeticError) as exc:
+                raise ValueError("XRAY_PERSONAL_JOINT_RTH30_PARTIAL_BAD_BAR_OHLC") from exc
+            need(all(p.is_finite() and p>0 for p in (o,h,l,c)) and
+                 l<=o<=h and l<=c<=h,
+                 "PARTIAL_BAD_BAR_PRICE_ORDER")
+            observed[at]=(volume,l)
         elif any(start<=at<close for start,close in windows.values()):
             raise ValueError("XRAY_PERSONAL_JOINT_RTH30_PARTIAL_OFFGRID_RTH")
     missing=set(expected)-set(observed)
     need(bool(missing),"PARTIAL_EXPECTED_GAP_NOT_PRESENT")
     perday={day:0 for day in days}
-    for slot,volume in observed.items():
-        perday[expected[slot]]+=volume
+    notional={day:Decimal(0) for day in days}
+    for slot,(volume,low) in observed.items():
+        day=expected[slot]
+        perday[day]+=volume
+        notional[day]+=low*volume
     lower=[]
     for day in days:
         daily_volume=data_check(daybars[day])
         need(perday[day]<=daily_volume,"PARTIAL_RTH_GREATER_THAN_DAILY")
-        close=Decimal(str(daybars[day]["c"]))
-        need(close.is_finite() and close>0,"PARTIAL_CLOSE_INVALID")
-        lower.append(close*perday[day])
+        lower.append(notional[day])
     lower.sort()
     conservative_median=(lower[14]+lower[15])/Decimal(2)
     kind=PARTIAL_HIGH if conservative_median>=LIMIT else PARTIAL_UNRESOLVED
@@ -309,6 +326,10 @@ def measure(asof,syms,days,source,now,pace=0):
         "partial_missing_slot_research_counts":dict(sorted(partial_counts.items())),
         "partial_missing_slot_research_by_symbol":dict(sorted(partial_status.items())),
         "partial_missing_slot_symbolic_only_never_canonical":True,
+        "partial_notional_method":"SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION",
+        "partial_no_daily_close_proxy_or_unobserved_zero_fill":True,
+        "partial_notional_source_trade_conditions_unattested":True,
+        "partial_notional_proxy_not_mathematical_trade_floor":True,
         "partial_missing_slot_total_observed_gap_count":partial_missing_slots,
         "partial_missing_slot_affected_session_total":partial_missing_days,
         "partial_research_never_promotes_strict_rth":True,
@@ -387,6 +408,24 @@ def selftest():
     kind,missing,affected=partial_missing_slot_bounds(daily,low_rth,dates)
     need(kind==PARTIAL_UNRESOLVED and missing==1 and affected==1,
          "PARTIAL_LOW_MUST_REMAIN_UNRESOLVED")
+    # Adversarial counterexample: daily close $10 would seem to clear $50m
+    # although every observed $0.10-$0.30 trade bar cannot prove $50m.
+    small_prices=[dict(row,o=0.2,h=0.3,l=0.1,c=0.2)
+                  for row in rth[:-1]]
+    kind,missing,affected=partial_missing_slot_bounds(
+        daily,small_prices,dates)
+    need(kind==PARTIAL_UNRESOLVED and missing==1,
+         "DAILY_CLOSE_TIMES_VOLUME_IS_NOT_DOLLAR_VOLUME_FLOOR")
+    for broken in (
+        dict(rth[0],l=0),
+        dict(rth[0],l=11.01),
+        dict(rth[0],o=-1),
+        dict(rth[0],l="NaN"),
+    ):
+        test_bars=rth[:-1].copy();test_bars[0]=broken
+        try:partial_missing_slot_bounds(daily,test_bars,dates)
+        except ValueError:pass
+        else:raise AssertionError("FORGED_BAR_PRICE_ACCEPTED")
     for bad in (rth[:-1]+[rth[0]],
                 rth[:-1]+[dict(rth[0],t=(dt.datetime.fromisoformat(
                     rth[0]["t"])+dt.timedelta(minutes=1)).isoformat())]):
@@ -405,6 +444,7 @@ def selftest():
          y["partial_missing_slot_research_counts"]=={PARTIAL_HIGH:1} and
          y["partial_missing_slot_research_by_symbol"]=={"AAPL":PARTIAL_HIGH} and
          y["partial_missing_slot_symbolic_only_never_canonical"] is True and
+         y["partial_notional_proxy_not_mathematical_trade_floor"] is True and
          y["partial_research_never_promotes_strict_rth"] is True,
          "MISSING_LAST_RTH_SLOT_DIAGNOSED_NOT_PASS")
     def blocked(*args):
@@ -420,7 +460,7 @@ def selftest():
     need(limited["source_stop_class"]=="SOURCE_CALL_BUDGET_REACHED_NO_RTH"
          and limited["rth_lower_bound_ge50m_shadow_count"]==0,
          "CALL_BUDGET_EXHAUSTION_NOT_VENDOR_INTEGRITY")
-    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_900_BUDGET_CONSERVATIVE_MISSING_SLOT_NO_PRIMARY")
+    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_BAR_LOW_NOTIONAL_PROXY_NOT_A_TRADE_FLOOR_NO_PRIMARY")
 
 
 def main():

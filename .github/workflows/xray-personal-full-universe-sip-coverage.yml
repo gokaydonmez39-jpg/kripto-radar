@@ -283,6 +283,10 @@ jobs:
           from collections import Counter
           subset=x["partial_missing_slot_research_by_symbol"]
           assert x["partial_missing_slot_symbolic_only_never_canonical"] is True
+          assert x["partial_notional_method"]=="SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION"
+          assert x["partial_no_daily_close_proxy_or_unobserved_zero_fill"] is True
+          assert x["partial_notional_source_trade_conditions_unattested"] is True
+          assert x["partial_notional_proxy_not_mathematical_trade_floor"] is True
           assert set(subset)=={k for k,v in x["symbol_rth_integrity_failure_codes"].items() if v=="EARLY_AND_FULL_BAR_COUNTS_EXACT"}
           assert dict(sorted(Counter(subset.values()).items()))==x["partial_missing_slot_research_counts"]
           assert all(x["classifications"][k]=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW" for k in subset)
@@ -361,6 +365,7 @@ jobs:
           assert d["rth30_lower_bound_observed"]==len(d["next_gate_mc_sec_research_only_symbols"])
           assert d["rth30_lower_bound_observed"]==d["rth30_strict_complete_slot_lower_bound_observed"]+d["rth30_partial_missing_slot_high_research_only_count"]
           assert d["rth30_partial_research_never_primary"] is True
+          assert d["rth30_partial_notional_is_proxy_not_trade_floor"] is True
           assert len(d["rth30_partial_missing_slot_high_research_only_symbols"])==d["rth30_partial_missing_slot_high_research_only_count"]
           assert set(d["rth30_partial_missing_slot_high_research_only_symbols"]).issubset(d["next_gate_mc_sec_research_only_symbols"])
           assert d["rth30_data_unknown_count"]>=d["rth30_partial_missing_slot_high_research_only_count"]
