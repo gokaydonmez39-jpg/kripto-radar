@@ -51,7 +51,10 @@ class CASBranchTests(unittest.TestCase):
         good={"XRAY_MEMORY_PERSIST_APPROVED":"true",
               "GITHUB_EVENT_NAME":"workflow_run",
               "GITHUB_REF":"refs/heads/main",
-              "GITHUB_REPOSITORY":s.REPO,"GH_TOKEN":"fixture"}
+              "GITHUB_REPOSITORY":s.REPO,"GH_TOKEN":"fixture",
+              "GITHUB_SHA":"a"*40,
+              "XRAY_MEMORY_RELEASE_COMMIT_SHA":"a"*40,
+              "XRAY_MEMORY_EVENT_SOURCE_RUN_ID":"567"}
         s.check_authorization(good)
         for key,val in (
             ("XRAY_MEMORY_PERSIST_APPROVED","false"),
@@ -59,6 +62,11 @@ class CASBranchTests(unittest.TestCase):
             ("GITHUB_REF","refs/heads/xray-research-memory-state"),
             ("GITHUB_REPOSITORY","fake/repo"),
             ("GH_TOKEN",""),
+            ("GITHUB_SHA","b"*40),
+            ("XRAY_MEMORY_RELEASE_COMMIT_SHA",""),
+            ("XRAY_MEMORY_RELEASE_COMMIT_SHA","b"*40),
+            ("XRAY_MEMORY_EVENT_SOURCE_RUN_ID",""),
+            ("XRAY_MEMORY_EVENT_SOURCE_RUN_ID","0"),
         ):
             with self.subTest(key=key):
                 changed={**good,key:val}
