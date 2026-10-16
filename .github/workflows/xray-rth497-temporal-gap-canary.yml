@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_rth497_temporal_gap_canary.py"
+      - "nasdaq-xray/alpaca_rth_trade_gap_witness.py"
       - ".github/workflows/xray-rth497-temporal-gap-canary.yml"
   push:
     branches: [main]
@@ -27,7 +28,9 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Test sample bounds, timestamp duplicates, stale epoch, market GO guards
         run: |
-          python -m py_compile nasdaq-xray/alpaca_rth497_temporal_gap_canary.py
+          python -m py_compile nasdaq-xray/alpaca_rth497_temporal_gap_canary.py nasdaq-xray/alpaca_rth_trade_gap_witness.py
+          python nasdaq-xray/alpaca_rth_trade_gap_witness.py
+          python -O nasdaq-xray/alpaca_rth_trade_gap_witness.py
           python nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
           python -O nasdaq-xray/alpaca_rth497_temporal_gap_canary.py --selftest
       - name: Keep only aggregate research evidence, never signal or trade
@@ -44,7 +47,7 @@ jobs:
           print("XRAY_RTH497_CANARY_GUARDS=PASS_NO_PRIMARY_NO_R92")
           PY
   bounded-live:
-    name: Measure 4 RTH gaps and 4 controls, plus at most 12 targeted 1Min SIP fallback calls
+    name: Bounded 4-gap SIP 30Min + 1Min + historical trade-presence comparison
     needs: offline
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
@@ -145,6 +148,14 @@ jobs:
           assert r["schema"]=="XRAY_RTH497_TEMPORAL_CLUSTER_RESEARCH_V1"
           assert r["sample_size"]==8 and r["source_api_calls"]<=16
           assert r["sample_missing_30min_slots"]==r["latest_session_missing_slots"]+r["earlier_sessions_missing_slots"]
+          assert r["historical_trade_witness_source_api_calls"]<=8
+          assert r["historical_trade_witness_call_budget"]==8
+          assert sum(r["historical_trade_witness_result_counts"].values())==r["minute_witness_30min_missing_slots_total"]
+          assert r["historical_trade_prints_vendor_rows_persisted"] is False
+          assert r["historical_trade_source_rights_and_sale_conditions_verified"] is False
+          assert r["historical_trade_witness_can_upgrade_c417_or_r92"] is False
+          assert (r["source_api_calls"]+r["minute_witness_source_api_calls"]
+                 +r["historical_trade_witness_source_api_calls"])<=36
           assert r["minute_witness_source_api_calls"]<=12
           assert r["source_api_calls"]+r["minute_witness_source_api_calls"]<=28
           assert r["minute_witness_call_budget"]==12
@@ -159,7 +170,7 @@ jobs:
           assert r["execution"]=="NONE" and r["real_money"]=="NO-GO"
           print("XRAY_RTH497_TEMPORAL_LIVE_CANARY=SAFE_AGGREGATES_ONLY")
           PY
-      - name: Upload only aggregate missing-slot AND minute transport evidence; no OHLCV or ticker identities
+      - name: Upload only aggregate 30Min/1Min/trade-presence evidence; no OHLCV or ticker identities
         if: always()
         uses: actions/upload-artifact@v4
         with:
