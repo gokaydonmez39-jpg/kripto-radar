@@ -310,7 +310,7 @@ def selftest():
     incomplete["cursor"]=len(queue)
     incomplete["queue_total"]=len(queue)+1
     incomplete["queue_hash"]=hashlib.sha256(
-        "\\n".join(incomplete["queue"]).encode()).hexdigest()
+        "\n".join(incomplete["queue"]).encode()).hexdigest()
     seal_state(incomplete)
     partial_root=copy.deepcopy(r)
     partial_root.update(cursor=len(queue),queue_total=len(queue)+1,
