@@ -1,0 +1,91 @@
+name: XRAY Manual Source Epoch Fault Forensics (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/manual_source_drift_forensics.py"
+      - "nasdaq-xray/tests/test_manual_source_drift_forensics.py"
+      - ".github/workflows/xray-manual-source-drift-forensics.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/manual_source_drift_forensics.py"
+      - "nasdaq-xray/tests/test_manual_source_drift_forensics.py"
+      - ".github/workflows/xray-manual-source-drift-forensics.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Manual Decision Research Only"
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-binding-audit:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prove exact SHA, seven-day expiry and no authority with and without Python assertions
+        run: |
+          python -m py_compile nasdaq-xray/manual_source_drift_forensics.py nasdaq-xray/tests/test_manual_source_drift_forensics.py
+          python -m unittest discover -s nasdaq-xray/tests -p test_manual_source_drift_forensics.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_manual_source_drift_forensics.py -v
+      - name: Authenticate parent manual-workflow FAILURE identity when triggered
+        if: ${{ github.event_name == 'workflow_run' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          UPSTREAM_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          x=json.loads(subprocess.check_output([
+              "gh","api",f"repos/{os.environ['REPO']}/actions/runs/{os.environ['UPSTREAM_ID']}"
+          ],text=True,timeout=40))
+          assert os.environ["REPO"]=="gokaydonmez39-jpg/kripto-radar"
+          assert x["id"]==int(os.environ["UPSTREAM_ID"])
+          assert x["name"]=="XRAY Manual Decision Research Only"
+          assert x["path"]==".github/workflows/xray-manual-decision-research-shadow.yml"
+          assert x["conclusion"]=="failure" and x["status"]=="completed"
+          assert x["head_branch"]=="main"
+          assert x["repository"]["full_name"]==os.environ["REPO"]
+          assert x["head_repository"]["full_name"]==os.environ["REPO"]
+          print("XRAY_MANUAL_UPSTREAM_FAILED_RUN_IDENTITY=PASS_NO_RELEASE")
+          PY
+      - name: Independently inspect latest terminal/master, never amend terminal or retry Alpaca
+        run: |
+          python nasdaq-xray/manual_source_drift_forensics.py \
+            --out "$RUNNER_TEMP/xray_manual_source_drift_forensics_no_al.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/
+              "xray_manual_source_drift_forensics_no_al.json").read_text())
+          assert x["schema"]=="XRAY_MANUAL_SOURCE_DRIFT_FORENSIC_V1"
+          assert x["status"] in (
+              "SOURCE_INTEGRITY_BLOCKED",
+              "ARCHIVAL_TERMINAL_SOURCE_ALLOWED_NOT_CURRENT_RELEASE",
+              "EXACT_TERMINAL_MASTER_SOURCE_BINDING_ONLY")
+          assert x["signal_count"]==0 and x["alpha_authority"] is False
+          assert x["r92_authority"] is False and x["device_delivery_attested"] is False
+          assert x["repair_autonomously_authorized"] is False
+          assert x["manual_workflow_failure_suppressed"] is False
+          assert x["canonical_terminal_mutated"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_MANUAL_SOURCE_FORENSIC="+x["status"])
+          PY
+      - name: Store independent incident proof only (not signals)
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-manual-terminal-master-source-incident-no-al
+          path: ${{ runner.temp }}/xray_manual_source_drift_forensics_no_al.json
+          retention-days: 14
+          if-no-files-found: error
