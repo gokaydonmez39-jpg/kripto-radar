@@ -1,5 +1,10 @@
 name: XRAY Personal Early Technical WATCH 406 (No AL)
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
   workflow_run:
     workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
     types: [completed]
@@ -36,6 +41,9 @@ jobs:
           python nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
           python -O nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
       - name: Select completed-success exact research cohort, not stale or failed source
+        # PR validation must be strictly OFFLINE; no provider calls or
+        # downloaded private source artifacts from untrusted head commits.
+        if: ${{ github.event_name != 'pull_request' }}
         id: source
         env:
           GH_TOKEN: ${{ github.token }}
@@ -113,6 +121,10 @@ jobs:
           def need(ok,reason):
               if not ok:raise ValueError("XRAY_EARLY_WATCH_CI_"+reason)
           need(x["schema"]=="XRAY_PERSONAL_FULL_COHORT_EARLY_TECH_WATCH_V1","SCHEMA")
+          need(type(x["api_batches_attempted"]) is int and
+               0<=x["api_batches_attempted"]<=1+x["scope_count"] and
+               (x["scope_count"]==0 or x["api_batches_attempted"]>=1),
+               "FAILED_BATCHES_MUST_COUNT_AS_REQUEST_ATTEMPTS")
           need(x["scope_count"]==len(x["technical_status_by_symbol"]) and
                x["all_symbols_classified"] is True and
                sum(x["classification_counts"].values())==x["scope_count"],"EXACT_SCOPE")
