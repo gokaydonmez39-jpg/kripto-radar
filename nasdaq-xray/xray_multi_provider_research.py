@@ -672,6 +672,8 @@ def selftest():
     # remaining exact-ASOF research symbols, not another vendor call per
     # symbol. This is ONLY date-scoped NON-PIT discovery, never MC PRIMARY.
     backup_symbols=["AAPL","ASTS","NVDA"]
+    def fallback_lagging_terminal():
+        raise ValueError("SOURCE_DRIFT:TERMINAL")
     def fallback_inputs():
         return ("2026-10-09",{"MASTER":[],"MC":backup_symbols,"EVENT":[]},
                 {"MASTER":"a"*40,"PRICE":"b"*40,"MC":None,
@@ -704,7 +706,7 @@ def selftest():
             "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"true",
             "XRAY_BQ_LICENSE_EVIDENCE_SHA256":"b"*64
         }):
-            observed=produce(3,inputs_fn=lagging_terminal,
+            observed=produce(3,inputs_fn=fallback_lagging_terminal,
                             recovery_inputs_fn=fallback_inputs,
                             http_get=stub,allow_pre_mc_recovery=True)
         return traffic,observed
@@ -746,7 +748,7 @@ def selftest():
         "XRAY_BQ_API_KEY":"SYNTHETIC_BQ_KEY",
         "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"",
         "XRAY_BQ_LICENSE_EVIDENCE_SHA256":""}):
-        no_bq=produce(3,inputs_fn=lagging_terminal,
+        no_bq=produce(3,inputs_fn=fallback_lagging_terminal,
                       recovery_inputs_fn=fallback_inputs,
                       runner=lambda p,*a: (_ for _ in ()).throw(
                           urllib.error.HTTPError("https://example.invalid",429,
