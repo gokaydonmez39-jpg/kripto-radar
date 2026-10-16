@@ -6,7 +6,7 @@ symbolic A/B/D WATCH and frozen secondary SEC identity evidence. No vendor
 OHLCV, private account, order execution, or claimed phone delivery.
 """
 from __future__ import annotations
-import argparse,copy,hashlib,json
+import argparse,copy,hashlib,json,re
 from pathlib import Path
 from collections import Counter
 
@@ -16,6 +16,9 @@ WATCH="XRAY_PERSONAL_FULL_COHORT_EARLY_TECH_WATCH_V1"
 MIRROR="XRAY_PERSONAL_SEC_ASOF_MIRROR_414_DISCOVERY_RESEARCH_V1"
 TECH="TECHNICAL_WATCH_OBSERVED_RESEARCH_NOT_AL"
 CIK="MIRROR_EXACT_ASOF_SEC_TICKER_CIK_DISCOVERY_NOT_OFFICIAL_ATTESTATION"
+SYMBOL=re.compile(r"[A-Z][A-Z0-9.-]{0,9}")
+SHA40=re.compile(r"[0-9a-f]{40}")
+CIK10=re.compile(r"[0-9]{10}")
 def need(x,why):
     if not x:raise ValueError("XRAY_RESEARCH_ACCEPTANCE_"+why)
 def digest(x):
@@ -25,7 +28,7 @@ def symbols_digest(names):
     return hashlib.sha256("\n".join(names).encode()).hexdigest()
 def valid_set(names):
     return type(names) is list and names==sorted(set(names)) and all(
-        type(n) is str and n and n==n.upper() for n in names)
+        type(n) is str and SYMBOL.fullmatch(n) is not None for n in names)
 def reconcile(c,w,m,*,source_run_id,watch_run_id,mirror_run_id,asof_required=None):
     for label,obj in (("CAUSAL",c),("WATCH",w),("MIRROR",m)):
         need(type(obj) is dict,"OBJECT_"+label)
@@ -51,7 +54,8 @@ def reconcile(c,w,m,*,source_run_id,watch_run_id,mirror_run_id,asof_required=Non
          and c.get("technical_a_b_d_r1_event_regime_attested") is False
          and c.get("registered_r92_count")==0
          and c.get("no_vendor_ohlcv_persisted") is True
-         and c.get("no_canonical_mutations") is True,
+         and c.get("no_canonical_mutations") is True
+         and c.get("source_rights_not_inferred") is True,
          "SOURCE_PROXY_NEVER_PRIMARY")
     scope=c.get("per_symbol_causal_routing")
     need(type(scope) is dict and len(scope)==c.get("scope_count")
@@ -92,7 +96,12 @@ def reconcile(c,w,m,*,source_run_id,watch_run_id,mirror_run_id,asof_required=Non
          and m.get("mirror_asof_pinned") is True
          and m.get("mirror_status")==
              "EXACT_ASOF_SHA_VERIFIED_SECONDARY_DISCOVERY"
-         and m.get("mirror_source_repository")=="TylerJForstrom/Stock-Data",
+         and m.get("mirror_source_repository")=="TylerJForstrom/Stock-Data"
+         and type(m.get("mirror_source_commit")) is str
+         and SHA40.fullmatch(m["mirror_source_commit"]) is not None
+         and m["mirror_source_commit"]!="0"*40
+         and m.get("source_rights_not_inferred") is True
+         and m.get("technical_watch_generated_here") is False,
          "MIRROR_SHA_SOURCE")
     labels=m.get("classifications")
     ciks=m.get("ciK_secondary_discovery_only")
@@ -102,8 +111,8 @@ def reconcile(c,w,m,*,source_run_id,watch_run_id,mirror_run_id,asof_required=Non
              Counter(labels.values()).items()))
          and set(ciks)=={s for s in names if labels[s]==CIK}
          and m.get("mirror_found_count")==len(ciks)
-         and all(type(v) is str and len(v)==10 and v.isdigit()
-                 for v in ciks.values()),"MIRROR_CIK_PARTITION")
+         and all(type(v) is str and CIK10.fullmatch(v) is not None
+                 and int(v)>0 for v in ciks.values()),"MIRROR_CIK_PARTITION")
     # A research receipt MUST reject any accidental elevation anywhere.
     for flag in ("source_independent_primary_dv30_attested",
                  "source_independent_primary_history_attested",
@@ -164,6 +173,7 @@ def selftest():
        "technical_a_b_d_r1_event_regime_attested":False,
        "registered_r92_count":0,"no_vendor_ohlcv_persisted":True,
        "no_canonical_mutations":True,
+       "source_rights_not_inferred":True,
        "per_symbol_causal_routing":{
            "AAA":{"first_unresolved_gate":"PRICE_DV30"},
            "BBB":{"first_unresolved_gate":"PRICE_DV30"},
@@ -206,6 +216,9 @@ def selftest():
        "mirror_asof_pinned":True,
        "mirror_status":"EXACT_ASOF_SHA_VERIFIED_SECONDARY_DISCOVERY",
        "mirror_source_repository":"TylerJForstrom/Stock-Data",
+       "mirror_source_commit":"a"*40,
+       "source_rights_not_inferred":True,
+       "technical_watch_generated_here":False,
        "classifications":{"AAA":CIK,"BBB":CIK},
        "classification_counts":{CIK:2},
        "ciK_secondary_discovery_only":{
@@ -238,6 +251,7 @@ def selftest():
         ("c","rth30_lower_bound_sha256","0"*64),
         ("c","rth30_partial_notional_is_proxy_not_trade_floor",False),
         ("c","c417_price_dv30_primary_attested",True),
+        ("c","source_rights_not_inferred",False),
         ("w","asof_et","2026-10-14"),
         ("w","source_workflow_run_id",900),
         ("w","source_causal_digest_sha256","0"*64),
@@ -251,9 +265,15 @@ def selftest():
         ("m","market_cap_2b_attested",True),
         ("m","iphone_delivery_receipt_attested",True),
         ("m","mirror_asof_pinned",False),
+        ("m","mirror_source_commit","bad"),
+        ("m","mirror_source_commit","0"*40),
+        ("m","source_rights_not_inferred",False),
+        ("m","technical_watch_generated_here",True),
+        ("m","ciK_secondary_discovery_only",{"AAA":"١٢٣٤٥٦٧٨٩٠","BBB":"0000000002"}),
+        ("m","ciK_secondary_discovery_only",{"AAA":"0000000000","BBB":"0000000002"}),
     ):
         attack(target,key,value)
-    print("XRAY_RESEARCH_OPERATIONS_ACCEPTANCE_SELFTEST=PASS_16_FORGED_AND_ONE_POSITIVE_NO_FALSE_FINAL")
+    print("XRAY_RESEARCH_OPERATIONS_ACCEPTANCE_SELFTEST=PASS_23_FORGED_AND_ONE_POSITIVE_NO_FALSE_FINAL")
 
 def main():
     p=argparse.ArgumentParser()
