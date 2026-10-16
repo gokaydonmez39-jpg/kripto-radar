@@ -10,19 +10,25 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import research_candidate_memory as m
 import research_candidate_outcome_audit as o
 from test_research_candidate_memory import receipt
+from test_research_candidate_memory_admission import run,artifact
+import research_candidate_episode_provenance as ep_source
 
 ASOF="2026-10-15"
 AFTER="2026-12-05T00:00:00Z"
 
 
+def build_provenance(ledger):
+    # Authenticated-GitHub-shaped TEST FIXTURES ONLY. No actual API proof.
+    r=receipt(ASOF,{"MANH":["B","D"]})
+    return ep_source.attest(
+        ledger,r,run(),artifact(),asof=ASOF,expected_run_id=567,
+        now_utc=dt.datetime(2026,12,5,tzinfo=dt.timezone.utc))
+
+
 def fixture():
     r=receipt(ASOF,{"MANH":["B","D"]})
     ledger,_=m.propose(m.empty_ledger(),r)
-    ep={
-        "schema":"XRAY_RESEARCH_EPISODE_SOURCE_V1",
-        "asof_et":ASOF,"symbol":"MANH","families":["B","D"],
-        "source_acceptance_sha256":m.sha(r),
-        "candidate_decision_at_utc":"2026-10-15T21:00:00Z"}
+    ep=build_provenance(ledger)["episodes"][0]
     future,close,_=o.session_schedule(ASOF)
     def rows(identity,delta):
         return [{
@@ -31,7 +37,7 @@ def fixture():
             "split_adjustment_verified":True,
             "source_sha256":"e"*64,
             "adjusted_close":100*(1+delta*(i+1)),
-            "available_at_utc":(close[day]+dt.timedelta(minutes=25)).isoformat(),
+            "available_at_utc":(close[day]+dt.timedelta(minutes=35)).isoformat(),
         } for i,day in enumerate(future)]
     source={
         "schema":"XRAY_RESEARCH_AUTHORIZED_OUTCOME_BARS_V1",
@@ -62,6 +68,8 @@ class OutcomeDiagnosticsTests(unittest.TestCase):
         return o.audit(a if ledger is None else ledger,
                        b if ep is None else ep,
                        c if source is None else source,
+                       kwargs.get("provenance") if "provenance" in kwargs
+                           else build_provenance(a),
                        observed_at_utc=kwargs.get("now",AFTER))
 
     def test_all_five_horizons_mathematically_exact(self):
@@ -78,6 +86,56 @@ class OutcomeDiagnosticsTests(unittest.TestCase):
         self.assertFalse(r["primary_alpha_authority"])
         self.assertFalse(r["raw_prices_persisted"])
         self.assertNotIn("adjusted_close",str(r))
+
+    def test_backdated_episode_decision_is_rejected(self):
+        l,e,s=fixture()
+        e["candidate_decision_at_utc"]="2026-10-15T21:00:00Z"
+        with self.assertRaisesRegex(ValueError,
+                    "EPISODE_NOT_IDENTICAL_TO_BOUND_PROVENANCE"):
+            self.run_audit(l,e,s)
+
+    def test_provenance_must_be_supplied_not_assumed(self):
+        l,e,s=fixture()
+        with self.assertRaisesRegex(ValueError,"UNTRUSTED_EPISODE_PROVENANCE_HEADER"):
+            self.run_audit(l,e,s,provenance=None)
+
+    def test_exact_durable_hash_and_acceptance_run_enforced(self):
+        l,e,s=fixture()
+        p=build_provenance(l)
+        p["durable_ledger_entry_sha256"]="b"*64
+        with self.assertRaisesRegex(ValueError,"UNTRUSTED_EPISODE_PROVENANCE_HEADER"):
+            self.run_audit(l,e,s,provenance=p)
+        p=build_provenance(l)
+        p["acceptance_workflow_run_id"]=999
+        with self.assertRaisesRegex(ValueError,"FORGED_PROVENANCE_EPISODE_ROW"):
+            self.run_audit(l,e,s,provenance=p)
+
+    def test_source_after_next_open_never_produces_retrospective_return(self):
+        l,e,s=fixture()
+        p=build_provenance(l)
+        p["accepted_at_utc"]="2026-10-16T15:00:00+00:00"
+        with self.assertRaisesRegex(ValueError,"PROVENANCE_OFFICIAL_TIME_DRIFT_OR_LATE"):
+            self.run_audit(l,e,s,provenance=p)
+
+    def test_provenance_forged_price_and_identity_status_rejected(self):
+        for key in ("licensed_price_available",
+                    "issuer_class_identity_verified","alpha_authority",
+                    "github_run_api_identity_authenticated_inside_module"):
+            with self.subTest(key=key):
+                l,e,s=fixture()
+                p=build_provenance(l)
+                p["episodes"][0][key]=True
+                with self.assertRaisesRegex(ValueError,
+                        "FORGED_PROVENANCE_EPISODE_ROW"):
+                    self.run_audit(l,e,s,provenance=p)
+
+    def test_future_bar_before_eod_buffer_rejected(self):
+        l,e,s=fixture()
+        d,closes,_=o.session_schedule(ASOF)
+        s["stock_future_bars"][0]["available_at_utc"]=(
+            closes[d[0]]+dt.timedelta(minutes=10)).isoformat()
+        with self.assertRaisesRegex(ValueError,"LEAKED_OR_FUTURE_STOCK"):
+            self.run_audit(l,e,s)
 
     def test_missing_future_is_unknown_and_not_zero(self):
         l,e,s=fixture()
