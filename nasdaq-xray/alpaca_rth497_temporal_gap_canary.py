@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded 8-symbol original SIP 30Min gap clustering, research only.
 
-No 497-symbol replay, zero fill, individual raw bars/identities in outputs,
+No full-universe replay, zero fill, individual raw bars/identities in outputs,
 canonical data mutation, personal trade execution or market GO promotion.
 """
 from __future__ import annotations
@@ -104,7 +104,7 @@ def sample_from_parent(p,now):
          and all(partial[s].startswith("PARTIAL_OBSERVED_RTH_BARLOW_")
                  for s in unknown),
          "STRICT_415_78_4_DISJOINT_PARTITION")
-    # Disperse ambiguity controls, avoid re-querying the 415 proxy highs.
+    # Disperse ambiguity controls, avoid re-querying any proxy highs.
     middle=[mid[(len(mid)-1)*i//3] for i in range(4)]
     selected=sorted(unknown+middle)
     need(len(set(selected))==CANARY and len(selected)==8,
@@ -175,7 +175,14 @@ def retrieve(symbols,days,asof,now,credentials,opener=urllib.request.urlopen):
         token=nxt
     raise ValueError("XRAY_RTH497_TEMPORAL_BUDGET_EXHAUSTED_NO_PROMOTION")
 
-def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0):
+def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0,
+                        parent_cohort_size=None):
+    # Report the authenticated parent measurement; NEVER an obsolete fixture
+    # constant. Offline synthetic bars without a parent have no cohort claim.
+    need(parent_cohort_size is None or
+         (type(parent_cohort_size) is int and
+          CANARY<=parent_cohort_size<=3190),
+         "PARENT_COHORT_SIZE_NOT_ATTESTED")
     need(len(syms)==CANARY and syms==sorted(set(syms))
          and type(bars) is dict and set(bars)==set(syms)
          and len(days)==30 and days[-1]==asof,"AGGREGATE_INPUT")
@@ -220,7 +227,7 @@ def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0):
         nolder+=int(any(s!=asof for s in sessions))
     total=sum(late.values())+sum(older.values())
     out={"schema":SCHEMA,"asof_et":asof,"parent_run_id":parent_run_id,
-         "cohort_size":497,"sample_size":CANARY,
+         "cohort_size":parent_cohort_size,"sample_size":CANARY,
          "selection":"TARGETED_FOUR_GAPS_PLUS_FOUR_AMBIGUITY_CONTROLS",
          "sample_digest_sha256":sha(syms),
          "source":"ALPACA_DELAYED_HISTORICAL_SIP_30MIN",
@@ -415,8 +422,23 @@ def selftest():
             bar={"t":(start+dt.timedelta(minutes=index*30)).isoformat(),
                  "o":10,"h":11,"l":9,"c":10,"v":1000}
             for sym in syms:original[sym].append(bar)
-    need(classify_aggregates(asof,syms,days,original,1)[
-        "fully_complete_sample_symbols"]==8,"COMPLETE_FIXTURE")
+    exact=classify_aggregates(
+        asof,syms,days,original,1,parent_cohort_size=497)
+    need(exact["fully_complete_sample_symbols"]==8 and
+         exact["cohort_size"]==497,"COMPLETE_FIXTURE")
+    latest=classify_aggregates(
+        asof,syms,days,original,1,parent_cohort_size=496)
+    need(latest["cohort_size"]==496 and
+         latest["sample_digest_sha256"]==sha(syms) and
+         latest["registered_R92_count"]==0,
+         "CURRENT_PARENT_COHORT_NOT_FROZEN_TELEMETRY")
+    need(classify_aggregates(asof,syms,days,original,1)["cohort_size"]
+         is None,"NO_PARENT_COHORT_MUST_NOT_BE_INVENTED")
+    for bad_cohort in (0,7,3191,True,"497"):
+        try:classify_aggregates(
+            asof,syms,days,original,1,parent_cohort_size=bad_cohort)
+        except ValueError:pass
+        else:raise AssertionError("INVALID_PARENT_COHORT_COUNT_ACCEPTED")
     changed=deepcopy(original)
     start,_,_=official_window(asof)
     missing={start,start+dt.timedelta(minutes=30)}
@@ -529,7 +551,8 @@ def main():
          and int(parent_run_text)>0,"EXACT_AUTHENTICATED_PARENT_RUN_REQUIRED")
     bars,calls=retrieve(syms,days,asof,now,credentials)
     out=classify_aggregates(asof,syms,days,bars,calls,
-         parent_run_id=int(parent_run_text))
+         parent_run_id=int(parent_run_text),
+         parent_cohort_size=source["joint_cohort_count"])
     # Only previously missing 30Min windows get a second, bounded 1Min
     # same-SIP-provider transport check. Not a substitute for official DV30.
     out.update(probe_only_actual_missing_rth_slots(
