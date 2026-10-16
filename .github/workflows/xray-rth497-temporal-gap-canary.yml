@@ -187,13 +187,19 @@ jobs:
                   # Fail closed on stale report: do not query old session.
                   files[0].unlink()
                   continue
-              if (source.get("schema")!=
-                  "XRAY_PERSONAL_JOINT_HISTORY_DAILY30_EXACT_RTH30_BOUND_V1" or
-                  source.get("joint_cohort_count")!=497 or
-                  source.get("rth_incomplete_or_unknown_count")!=4 or
-                  source.get("rth_lower_bound_ge50m_shadow_count")!=415 or
-                  source.get("rth_ambiguous_shadow_count")!=78):
-                  raise RuntimeError("XRAY_RTH_CANARY_LATEST_SOURCE_COHORT_CHANGED")
+              # Do not freeze market-derived cohort counts in workflow YAML.
+              # One shared validator checks authoritative main parent identity,
+              # exact current ASOF, SHA-bound complete disjoint class partition,
+              # four actual gaps and zero primary/trading authority.
+              from alpaca_rth497_temporal_gap_canary import sample_from_parent
+              try:
+                  observed_asof,observed_sample,_=sample_from_parent(
+                      source,dt.datetime.now(dt.timezone.utc))
+                  if observed_asof!=asof or len(observed_sample)!=8:
+                      raise ValueError("INCONSISTENT_ASOF_OR_TARGET_COUNT")
+              except ValueError as exc:
+                  raise RuntimeError(
+                      "XRAY_RTH_CANARY_UNTRUSTED_PARENT_COHORT_CONTRACT") from exc
               chosen=rid
               (out/"xray_personal_joint_rth30_shadow.json").write_text(
                   json.dumps(source,sort_keys=True)+chr(10))
