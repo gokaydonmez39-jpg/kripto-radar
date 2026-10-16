@@ -6,7 +6,11 @@ model, calibrated probability, 7/7 R92, G9, broker or mobile delivery.
 """
 from __future__ import annotations
 import argparse
+import datetime as dt
 import json
+import math
+import re
+import pandas_market_calendars as mcal
 from pathlib import Path
 from research_candidate_memory import ensure
 
@@ -33,12 +37,22 @@ def check(calibration, reports):
     for row in rows:
         ensure(type(row) is dict and type(row.get("asof_et")) is str,
                "SNAPSHOT_DATE")
+        try:
+            date_obj=dt.date.fromisoformat(row["asof_et"])
+        except ValueError as e:
+            raise ValueError("XRAY_MEMORY_BAD_SESSION_DATE") from e
+        ensure(date_obj.isoformat()==row["asof_et"],"BAD_SESSION_FORMAT")
         dates.append(row["asof_et"])
         if row.get("comparable_to_current_c417") is True:
             ensure(row.get("full_end_to_end_research_pass") is True and
                    row.get("compiled_policy_version")==C417,
                    "FALSE_C417_COMPARABLE_SNAPSHOT")
     ensure(len(dates)==len(set(dates)),"DUPLICATE_C417_SESSION")
+    if dates:
+        days=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=min(dates),end_date=max(dates))
+        valid={str(x.date()) for x in days}
+        ensure(set(dates).issubset(valid),"NON_NASDAQ_C417_SESSION")
     comparable=sum(x.get("comparable_to_current_c417") is True for x in rows)
     target=calibration.get("target_comparable_sessions")
     ensure(type(target) is int and target>=60 and
@@ -64,6 +78,10 @@ def check(calibration, reports):
              report.get("accepted_receipt_sha256"))
         ensure(all(type(x) is str and bool(x) for x in key) and
                key not in accepted,"DUPLICATE_OR_INVALID_EPISODE")
+        ensure(type(report.get("source_market_data_sha256")) is str and
+               re.fullmatch(r"[a-f0-9]{64}",report["source_market_data_sha256"]) is not None and
+               re.fullmatch(r"[a-f0-9]{64}",key[2]) is not None,
+               "OUTCOME_SOURCE_SHA")
         accepted.add(key)
         horizons=report.get("horizons")
         ensure(type(horizons) is dict and set(horizons)==set(HORIZONS),
@@ -74,6 +92,15 @@ def check(calibration, reports):
                        "COMPLETED_RESEARCH_FORWARD_CLOSE_MOVE_NOT_TRADE",
                        "UNKNOWN_MISSING_COMPLETE_COMPARABLE_SESSION")
                    for o in outcomes),"OUTCOME_STATUS_INVALID")
+        for out in outcomes:
+            nums=[out.get(k) for k in ("forward_return_pct",
+                  "benchmark_return_pct","excess_return_pct_points")]
+            if out["status"].startswith("COMPLETED"):
+                ensure(all(type(v) in (int,float) and math.isfinite(v) for v in nums)
+                       and abs(nums[0]-nums[1]-nums[2])<0.00001,
+                       "FORWARD_BENCHMARK_MATH")
+            else:
+                ensure(all(v is None for v in nums),"UNKNOWN_HORIZON_WITH_FINITE_RESULT")
         if all(x["status"].startswith("COMPLETED") for x in outcomes):
             complete+=1
         else:
