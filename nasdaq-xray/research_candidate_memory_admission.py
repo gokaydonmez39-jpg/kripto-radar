@@ -13,6 +13,7 @@ import datetime as dt
 import json
 from pathlib import Path
 import re
+import pandas_market_calendars as mcal
 
 from research_candidate_memory import ensure, verify_receipt
 
@@ -72,6 +73,13 @@ def admit(run, receipt, *, expected_asof, artifact=None,
     ensure(asof == expected_asof, "WRONG_OFFICIAL_COMPLETED_SESSION")
     # Completed source itself must postdate the EOD observation by design.
     ensure(updated.date().isoformat() >= asof, "ACCEPTANCE_BEFORE_ASOF")
+    calendar=mcal.get_calendar("NASDAQ")
+    schedule=calendar.schedule(start_date=asof,end_date=asof)
+    ensure(len(schedule)==1 and str(schedule.index[0].date())==asof,
+           "NON_NASDAQ_OFFICIAL_SESSION")
+    close=schedule.iloc[0]["market_close"].to_pydatetime()
+    ensure(updated>=close+dt.timedelta(minutes=30),
+           "ACCEPTANCE_BEFORE_OFFICIAL_EOD_BUFFER")
     if artifact is not None:
         ensure(type(artifact) is dict and
                artifact.get("name") == ARTIFACT and
