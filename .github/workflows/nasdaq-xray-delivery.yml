@@ -62,6 +62,9 @@ jobs:
         run: |
           python nasdaq-xray/delivery_official_gate_order_selftest.py
           python -O nasdaq-xray/delivery_official_gate_order_selftest.py
+          # Monday timeline microaudit imports the official pinned calendar,
+          # no broker, vendor data, keys or user notification.
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
           python nasdaq-xray/monday_launch_microaudit.py --selftest
   deliver:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
