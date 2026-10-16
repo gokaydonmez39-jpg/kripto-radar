@@ -16,6 +16,7 @@ import re
 
 import pandas_market_calendars as mcal
 from research_candidate_memory import ensure, validate_ledger, canonical
+from research_candidate_episode_provenance import SCHEMA as PROVENANCE_SCHEMA, EPISODE_SCHEMA
 
 SCHEMA="XRAY_RESEARCH_FORWARD_OUTCOME_DIAGNOSTICS_V1"
 HORIZONS=(1,3,5,10,20)
@@ -71,13 +72,82 @@ def validated_prices(rows,*,name,identity,future,closes,now):
                H64.fullmatch(bar["source_sha256"]) is not None and
                positive(bar.get("adjusted_close")),"BAD_"+name+"_BAR")
         available=aware(bar.get("available_at_utc"))
-        ensure(closes[bar["session"]]<=available<=now,
+        ensure(closes[bar["session"]]+dt.timedelta(minutes=30)<=available<=now,
                "LEAKED_OR_FUTURE_"+name+"_BAR")
         found[bar["session"]]=bar
     return found
 
 
-def audit(ledger,episode,market,*,observed_at_utc):
+def bind_episode_to_durable_provenance(ledger, entry, episode, provenance,
+                                       *, asof, next_open, closes, now):
+    """Pure consistency check. Caller must authenticate GH API/artifact externally."""
+    ensure(type(provenance) is dict and
+           provenance.get("schema")==PROVENANCE_SCHEMA and
+           provenance.get("asof_et")==asof and
+           provenance.get("execution")=="NONE" and
+           provenance.get("real_money")=="NO-GO" and
+           provenance.get("unknown_never_pass") is True and
+           provenance.get("alpha_authority") is False and
+           provenance.get("r92_authority") is False and
+           provenance.get("forward_return_computed") is False and
+           provenance.get("model_calibrated") is False and
+           provenance.get("backtest_proven") is False and
+           provenance.get("iphone_delivery_receipt_attested") is False and
+           provenance.get("durable_ledger_entry_sha256")==entry["entry_sha256"],
+           "UNTRUSTED_EPISODE_PROVENANCE_HEADER")
+    acceptance=aware(provenance.get("accepted_at_utc"))
+    official_cutoff=closes[asof]+dt.timedelta(minutes=30)
+    ensure(acceptance>=official_cutoff and acceptance<next_open and
+           acceptance<=now and
+           aware(provenance.get("official_eod_buffer_cutoff_utc"))==official_cutoff and
+           aware(provenance.get("next_market_open_utc"))==next_open,
+           "PROVENANCE_OFFICIAL_TIME_DRIFT_OR_LATE")
+    rows=provenance.get("episodes")
+    ensure(type(rows) is list and
+           len(rows)==entry["watch_count"] and
+           provenance.get("symbolic_watch_count")==len(rows) and
+           provenance.get("eligible_episodes")==len(rows) and
+           provenance.get("rejected_late_episodes")==0 and
+           type(provenance.get("acceptance_workflow_run_id")) is int and
+           provenance["acceptance_workflow_run_id"]>0,
+           "PROVENANCE_COHORT_OR_ACCEPTANCE_CARDINALITY")
+    ensure(all(type(x) is dict and x.get("schema")==EPISODE_SCHEMA and
+               x.get("asof_et")==asof and
+               x.get("source_acceptance_sha256")==entry["source_acceptance_sha256"] and
+               x.get("ledger_entry_sha256")==entry["entry_sha256"] and
+               x.get("trusted_acceptance_workflow_run_id")==
+                   provenance["acceptance_workflow_run_id"] and
+               x.get("candidate_decision_at_utc")==provenance["accepted_at_utc"] and
+               x.get("decision_time_provenance")==
+                   "SUCCESSFUL_GITHUB_ACCEPTANCE_RUN_UPDATED_AT" and
+               x.get("decision_time_bound_to_supplied_successful_run_metadata") is True and
+               x.get("github_run_api_identity_authenticated_inside_module") is False and
+               x.get("eligible_for_next_session_research_only") is True and
+               x.get("ineligible_reason") is None and
+               x.get("issuer_class_identity_verified") is False and
+               x.get("licensed_price_available") is False and
+               x.get("no_c417_release") is True and
+               x.get("no_trade_or_fill") is True and
+               x.get("alpha_authority") is False and
+               x.get("r92_authority") is False and
+               x.get("iphone_delivery_receipt_attested") is False and
+               x.get("execution")=="NONE" and x.get("real_money")=="NO-GO"
+               for x in rows),
+           "FORGED_PROVENANCE_EPISODE_ROW")
+    symbols=[x["symbol"] for x in rows]
+    ensure(symbols==sorted(entry["watch_families"]) and
+           all(x["families"]==entry["watch_families"][x["symbol"]]
+               for x in rows),
+           "PROVENANCE_WATCH_COHORT_NOT_EXACT")
+    candidates=[x for x in rows if x["symbol"]==episode["symbol"]]
+    ensure(len(candidates)==1 and canonical(candidates[0])==canonical(episode),
+           "EPISODE_NOT_IDENTICAL_TO_BOUND_PROVENANCE")
+    ensure(aware(episode["candidate_decision_at_utc"])==acceptance,
+           "EPISODE_DECISION_NOT_ACCEPTANCE_TIME")
+    return provenance["acceptance_workflow_run_id"]
+
+
+def audit(ledger,episode,market,provenance,*,observed_at_utc):
     validate_ledger(ledger)
     now=aware(observed_at_utc)
     ensure(type(episode) is dict and
@@ -101,6 +171,9 @@ def audit(ledger,episode,market,*,observed_at_utc):
     decision=aware(episode["candidate_decision_at_utc"])
     ensure(closes[asof]<=decision<next_open and decision<=now,
            "DECISION_LOOKAHEAD_OR_EARLY")
+    run_id=bind_episode_to_durable_provenance(
+        ledger,accepted[0],episode,provenance,asof=asof,
+        next_open=next_open,closes=closes,now=now)
     ensure(type(market) is dict and
            market.get("schema")=="XRAY_RESEARCH_AUTHORIZED_OUTCOME_BARS_V1" and
            market.get("symbol")==symbol and
@@ -161,6 +234,10 @@ def audit(ledger,episode,market,*,observed_at_utc):
         "asof_et":asof,"accepted_receipt_sha256":digest,
         "source_market_data_sha256":market["market_data_source_sha256"],
         "source_issuer_class_key":identity,
+        "durable_ledger_entry_sha256":accepted[0]["entry_sha256"],
+        "trusted_acceptance_workflow_run_id":run_id,
+        "episode_provenance_consistency_checked":True,
+        "github_api_and_artifact_authenticated_inside_module":False,
         "comparison_benchmark_class_key":benchmark,
         "horizons":details,
         "primary_alpha_authority":False,
@@ -183,15 +260,17 @@ def audit(ledger,episode,market,*,observed_at_utc):
 
 def main():
     p=argparse.ArgumentParser()
-    for x in ("ledger","episode","market","out"):
+    for x in ("ledger","episode","market","provenance","out"):
         p.add_argument("--"+x,required=True,type=Path)
     p.add_argument("--observed-at-utc",required=True)
     a=p.parse_args()
     ensure(a.out.resolve() not in {a.ledger.resolve(),
-          a.episode.resolve(),a.market.resolve()},"INPUT_OVERWRITE_FORBIDDEN")
+          a.episode.resolve(),a.market.resolve(),
+          a.provenance.resolve()},"INPUT_OVERWRITE_FORBIDDEN")
     o=audit(json.loads(a.ledger.read_text()),
             json.loads(a.episode.read_text()),
             json.loads(a.market.read_text()),
+            json.loads(a.provenance.read_text()),
             observed_at_utc=a.observed_at_utc)
     a.out.write_bytes(canonical(o)+b"\n")
     print(json.dumps({"status":"RESEARCH_DIAGNOSTIC_ONLY",
