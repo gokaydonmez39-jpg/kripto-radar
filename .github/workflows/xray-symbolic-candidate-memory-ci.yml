@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/research_candidate_memory_admission.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory_admission.py"
       - "nasdaq-xray/tests/test_research_candidate_memory.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
   push:
@@ -12,9 +14,15 @@ on:
       - "nasdaq-xray/research_candidate_memory.py"
       - "nasdaq-xray/tests/test_research_candidate_memory.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
+  workflow_run:
+    workflows:
+      - "XRAY Research Operations Cross-Artifact Acceptance (No AL)"
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: xray-symbolic-candidate-memory-${{ github.ref }}
   cancel-in-progress: false
@@ -29,8 +37,8 @@ jobs:
           python-version: "3.12"
       - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
         run: |
-          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory.py
-          python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py
+          python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory*.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
       - name: Assert no trading, no provider dependency, no publication and no mutation of main
         run: |
@@ -47,3 +55,124 @@ jobs:
           assert "persisted_to_main" in p.read_text()
           print("XRAY_MEMORY_SECURITY=NO_PROVIDER_NO_BROKER_NO_LIVE_MAIN_WRITE")
           PY
+
+  trusted-receipt-proposal:
+    needs: symbolic-memory-offline
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact official Nasdaq completed-session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Authenticate latest eligible main workflow and exact named receipt artifact
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          UPSTREAM_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          python - <<'PY'
+          import datetime as dt,json,os,subprocess,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from source_epoch_freshness_guard import last_complete_session
+          from research_candidate_memory_admission import admit,ARTIFACT,WORKFLOW,REPO
+          root=Path(os.environ["RUNNER_TEMP"])/"symbolic_memory_admission"
+          root.mkdir(parents=True,exist_ok=True)
+          expected=last_complete_session(dt.datetime.now(dt.timezone.utc))
+          repo=os.environ["REPO"]
+          if repo!=REPO:raise RuntimeError("UNEXPECTED_REPOSITORY")
+          def api(path):
+              return json.loads(subprocess.check_output(
+                  ["gh","api","repos/"+repo+"/"+path],text=True,timeout=40))
+          if os.environ["EVENT_NAME"]=="workflow_run":
+              upstream=int(os.environ["UPSTREAM_ID"])
+              selected=[api("actions/runs/"+str(upstream))]
+          else:
+              listing=api("actions/workflows/xray-research-operations-acceptance.yml/runs?per_page=20")
+              selected=[r for r in listing["workflow_runs"] if
+                        r.get("status")=="completed" and
+                        r.get("conclusion")=="success"][:8]
+          chosen=None
+          for run in selected:
+              try:
+                  # Check GitHub provenance BEFORE retrieving any artifact.
+                  if (run.get("name")!="XRAY Research Operations Cross-Artifact Acceptance (No AL)"
+                      or run.get("path")!=WORKFLOW or run.get("head_branch")!="main"
+                      or (run.get("head_repository") or {}).get("full_name")!=REPO
+                      or (run.get("repository") or {}).get("full_name")!=REPO):
+                      continue
+                  run_id=int(run["id"])
+                  artifacts=api("actions/runs/"+str(run_id)+"/artifacts")["artifacts"]
+                  match=[a for a in artifacts if a.get("name")==ARTIFACT and not a.get("expired")]
+                  if len(match)!=1:continue
+                  location=root/str(run_id)
+                  location.mkdir(exist_ok=True)
+                  subprocess.check_output(["gh","run","download",str(run_id),
+                        "--repo",repo,"-n",ARTIFACT,"-D",str(location)],
+                        stderr=subprocess.DEVNULL,text=True,timeout=60)
+                  files=list(location.rglob("*.json"))
+                  if len(files)!=1:continue
+                  receipt=json.loads(files[0].read_text())
+                  admit(run,receipt,expected_asof=expected,artifact=match[0],
+                        expected_run_id=run_id)
+                  for name,obj in (("run",run),("artifact",match[0]),("receipt",receipt)):
+                      (root/(name+".json")).write_text(
+                          json.dumps(obj,sort_keys=True)+"\n")
+                  chosen=run_id
+                  break
+              except (OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError):
+                  continue
+          with open(os.environ["GITHUB_OUTPUT"],"a") as fh:
+              fh.write("ready="+("true" if chosen else "false")+"\n")
+              if chosen:fh.write("run_id="+str(chosen)+"\n")
+              fh.write("asof="+expected+"\n")
+          print("XRAY_MEMORY_AUTHENTICATED_RUN="+str(chosen) if chosen else
+                "XRAY_MEMORY_SAFE_NOOP_NO_CURRENT_TRUSTED_RECEIPT")
+          PY
+      - name: Fail-closed authenticated admission and deterministic proposal
+        if: steps.source.outputs.ready == 'true'
+        env:
+          ID: ${{ steps.source.outputs.run_id }}
+          ASOF: ${{ steps.source.outputs.asof }}
+        run: |
+          python nasdaq-xray/research_candidate_memory_admission.py \
+            --run "$RUNNER_TEMP/symbolic_memory_admission/run.json" \
+            --artifact "$RUNNER_TEMP/symbolic_memory_admission/artifact.json" \
+            --receipt "$RUNNER_TEMP/symbolic_memory_admission/receipt.json" \
+            --asof "$ASOF" --run-id "$ID" \
+            --out "$RUNNER_TEMP/xray_symbolic_memory_admission.json"
+          python nasdaq-xray/research_candidate_memory.py \
+            --receipt "$RUNNER_TEMP/symbolic_memory_admission/receipt.json" \
+            --ledger "$RUNNER_TEMP/NOT_A_PERSISTED_LEDGER.json" \
+            --out "$RUNNER_TEMP/xray_symbolic_memory_proposal.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          a=json.loads((p/"xray_symbolic_memory_admission.json").read_text())
+          m=json.loads((p/"xray_symbolic_memory_proposal.json").read_text())
+          assert a["status"]=="AUTHENTICATED_MAIN_WORKFLOW_RECEIPT_RESEARCH_ONLY"
+          assert a["registered_r92"]==0 and a["alpha_authority"] is False
+          assert len(m["entries"])==1
+          assert m["entries"][0]["asof_et"]==a["asof_et"]
+          assert len(m["entries"][0]["watch_families"])==a["symbolic_watch_count"]
+          assert m["execution"]=="NONE" and m["real_money"]=="NO-GO"
+          assert not a["iphone_receipt_attested"] and not m["alpha_authority"]
+          print("XRAY_MEMORY_REAL_GITHUB_ADMISSION_AND_ONE_SESSION_PROPOSAL=PASS_NO_AL")
+          PY
+      - name: Store noncanonical symbolic proposal only, with limited artifact retention
+        if: steps.source.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-symbolic-candidate-memory-proposal-no-al
+          path: |
+            ${{ runner.temp }}/xray_symbolic_memory_admission.json
+            ${{ runner.temp }}/xray_symbolic_memory_proposal.json
+          retention-days: 14
+          if-no-files-found: error
