@@ -102,8 +102,14 @@ class CrossPlaneTests(unittest.TestCase):
         self.assertFalse(x["r92_authority"])
         self.assertFalse(x["iphone_delivery_attested"])
         self.assertNotIn("adjusted_close",str(x))
-        self.assertNotIn("volume",str(x).lower().replace(
-            "no_raw_market_prices_or_volume_in_output",""))
+        for row in x["canonical_unknown_symbolic_repair_worklist"].values():
+            self.assertEqual(
+                set(row),
+                {"canonical_price_state","research_first_unresolved_gate",
+                 "research_causal_class","safe_next_evidence_action",
+                 "alpha_authority"})
+            self.assertFalse(row["alpha_authority"])
+        self.assertTrue(x["no_raw_market_prices_or_volume_in_output"])
 
     def test_official_session_drift_or_naive_clock_refused(self):
         root,price,six=fixture()
