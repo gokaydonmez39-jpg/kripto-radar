@@ -43,6 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           python nasdaq-xray/root_history_recovery_microaudit.py --selftest
+          python -O nasdaq-xray/root_history_recovery_microaudit.py --selftest
           python nasdaq-xray/sina_transport_rescue.py
           python - <<'PY'
           import datetime as dt,hashlib,sys
