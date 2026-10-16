@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/research_candidate_episode_provenance.py"
+      - "nasdaq-xray/tests/test_research_candidate_episode_provenance.py"
       - "nasdaq-xray/research_candidate_memory_admission.py"
       - "nasdaq-xray/research_candidate_memory_cas.py"
       - "nasdaq-xray/tests/test_research_candidate_memory_cas.py"
@@ -18,6 +20,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/research_candidate_episode_provenance.py"
+      - "nasdaq-xray/tests/test_research_candidate_episode_provenance.py"
       - "nasdaq-xray/research_candidate_memory_admission.py"
       - "nasdaq-xray/research_candidate_memory_cas.py"
       - "nasdaq-xray/research_candidate_outcome_audit.py"
@@ -53,7 +57,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
       - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
         run: |
-          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/research_learning_readiness.py nasdaq-xray/tests/test_research_learning_readiness.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_episode_provenance.py nasdaq-xray/tests/test_research_candidate_episode_provenance.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/research_learning_readiness.py nasdaq-xray/tests/test_research_learning_readiness.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
           python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
           python -m unittest discover -s nasdaq-xray/tests -p test_research_learning_readiness.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
@@ -283,6 +287,84 @@ jobs:
             ${{ runner.temp }}/xray_symbolic_memory_cas_readonly_preflight.json
           retention-days: 14
           if-no-files-found: error
+
+
+  source-bound-episode-provenance:
+    needs: [symbolic-memory-offline, trusted-receipt-proposal]
+    if: ${{ needs.trusted-receipt-proposal.outputs.ready == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Nasdaq official session schedule
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Reauthenticate exact source run and durable GitHub state, then build non-AL episodes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ needs.trusted-receipt-proposal.outputs.run_id }}
+          ASOF: ${{ needs.trusted-receipt-proposal.outputs.asof }}
+        run: |
+          python - <<'PY'
+          import base64,datetime as dt,json,os,subprocess,sys,tempfile
+          from pathlib import Path
+          sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
+          from research_candidate_memory import sha
+          from research_candidate_memory_cas import REPO,PATH,BRANCH,verified_file_response
+          from research_candidate_memory_admission import ARTIFACT
+          from research_candidate_episode_provenance import attest
+          run_id=int(os.environ["SOURCE_RUN_ID"])
+          def api(route):
+              return json.loads(subprocess.check_output(
+                  ["gh","api","repos/"+REPO+"/"+route],
+                  text=True,timeout=40))
+          run=api("actions/runs/"+str(run_id))
+          artifacts=api("actions/runs/"+str(run_id)+"/artifacts")["artifacts"]
+          matches=[a for a in artifacts if a.get("name")==ARTIFACT and
+                   a.get("expired") is False]
+          if len(matches)!=1:raise ValueError("EXACT_ARTIFACT_MISSING_OR_AMBIGUOUS")
+          with tempfile.TemporaryDirectory() as tmp:
+              subprocess.check_output(
+                  ["gh","run","download",str(run_id),"--repo",REPO,
+                   "-n",ARTIFACT,"-D",tmp],timeout=60)
+              paths=list(Path(tmp).rglob("*.json"))
+              if len(paths)!=1:raise ValueError("RECEIPT_CARDINALITY")
+              receipt=json.loads(paths[0].read_text())
+          response=api(f"contents/{PATH}?ref={BRANCH}")
+          raw,ledger=verified_file_response(response)
+          asof=os.environ["ASOF"]
+          matches_ledger=[e for e in ledger["entries"]
+                          if e["asof_et"]==asof and
+                          e["source_acceptance_sha256"]==sha(receipt)]
+          if not matches_ledger:
+              print("XRAY_EPISODE_SAFE_NOOP_DURABLE_ACCEPTED_SESSION_ABSENT")
+          else:
+              out=attest(ledger,receipt,run,matches[0],
+                         asof=asof,expected_run_id=run_id,
+                         now_utc=dt.datetime.now(dt.timezone.utc))
+              assert out["alpha_authority"] is False
+              assert out["forward_return_computed"] is False
+              assert out["backtest_proven"] is False
+              assert out["model_calibrated"] is False
+              root=Path(os.environ["RUNNER_TEMP"])
+              (root/"xray_symbolic_research_episodes_source_bound.json").write_text(
+                  json.dumps(out,sort_keys=True,indent=2)+"\n")
+              print("XRAY_EPISODES_DURABLE_SOURCE_BOUND_PASS="+str(
+                    out["eligible_episodes"])+"/"+str(
+                    out["symbolic_watch_count"])+"_RESEARCH_ONLY")
+          PY
+      - name: Store only symbolic decision-time provenance (no OHLCV, no AL)
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-episode-source-time-provenance-no-alpha
+          path: ${{ runner.temp }}/xray_symbolic_research_episodes_source_bound.json
+          retention-days: 14
+          if-no-files-found: ignore
 
   # Explicitly DISARMED unless repo owner later enables repository variable
   # XRAY_MEMORY_PERSIST_APPROVED=true after separate production approval.
