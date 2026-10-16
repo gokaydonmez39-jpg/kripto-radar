@@ -36,6 +36,17 @@ def check_authorization(env):
            "MAIN_WORKFLOW_RUN_ONLY")
     ensure(type(env.get("GH_TOKEN")) is str and bool(env.get("GH_TOKEN")),
            "GITHUB_API_CREDENTIAL_MISSING")
+    # Two explicit owner-controlled repository vars, including exactly the
+    # approved code commit. A future main change disarms persistence again.
+    approved=env.get("XRAY_MEMORY_RELEASE_COMMIT_SHA")
+    running=env.get("GITHUB_SHA")
+    ensure(type(approved) is str and len(approved)==40 and
+           all(c in "0123456789abcdef" for c in approved) and
+           approved==running,"EXACT_RELEASE_SHA_NOT_APPROVED")
+    source=env.get("XRAY_MEMORY_EVENT_SOURCE_RUN_ID")
+    ensure(type(source) is str and source.isascii() and
+           source.isdecimal() and int(source)>0,
+           "TRUSTED_WORKFLOW_EVENT_SOURCE_MISSING")
 
 
 def git_blob_sha(content):
@@ -124,6 +135,8 @@ def obtain_exact_main_receipt(run_id):
 def execute(*, expected_asof, run_id):
     check_authorization(os.environ)
     ensure(type(run_id) is int and run_id>0, "RUN_ID_TYPE")
+    ensure(run_id==int(os.environ["XRAY_MEMORY_EVENT_SOURCE_RUN_ID"]),
+           "EVENT_SOURCE_RUN_ID_MISMATCH")
     run,artifact,receipt = obtain_exact_main_receipt(run_id)
     readpath = f"repos/{REPO}/contents/{PATH}?ref={BRANCH}"
     first = gh_api(readpath)
