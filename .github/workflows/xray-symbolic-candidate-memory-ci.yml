@@ -1,0 +1,49 @@
+name: XRAY Symbolic Candidate Memory Offline Regression (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory.py"
+      - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory.py"
+      - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-symbolic-candidate-memory-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  symbolic-memory-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Reject unsafe proposals and prove idempotent SHA-chain and lifecycle replay
+        run: |
+          python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory.py
+          python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
+      - name: Assert no trading, no provider dependency, no publication and no mutation of main
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          p = Path("nasdaq-xray/research_candidate_memory.py")
+          tree = ast.parse(p.read_text())
+          imports = [x.module for x in ast.walk(tree) if isinstance(x, ast.ImportFrom)]
+          names = [a.name for x in ast.walk(tree) if isinstance(x, ast.Import) for a in x.names]
+          banned = {"requests", "httpx", "urllib", "alpaca", "socket", "subprocess"}
+          assert not set(imports + names) & banned
+          assert "def propose(" in p.read_text()
+          assert "persisted_to_main" in p.read_text()
+          print("XRAY_MEMORY_SECURITY=NO_PROVIDER_NO_BROKER_NO_LIVE_MAIN_WRITE")
+          PY
