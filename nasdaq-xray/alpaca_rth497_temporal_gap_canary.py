@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from alpaca_price_gap_minute_witness import observe as minute_observe, WITNESS_CODES
+from alpaca_rth_trade_gap_witness import probe as trade_probe, STATES as TRADE_STATES
 import datetime as dt
 import json
 import os
@@ -30,6 +31,7 @@ NY=ZoneInfo("America/New_York")
 CANARY=8
 MAX_CALLS=16
 MAX_MINUTE_WITNESS_CALLS=12
+MAX_TRADE_PRINT_WITNESS_CALLS=8
 MAX_BYTES=3500000
 PARENT_RUN=None  # Never bind an archival workflow run as current.
 
@@ -234,7 +236,9 @@ def classify_aggregates(asof,syms,days,bars,calls,*,parent_run_id=0):
 
 def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
                                         *,observer=minute_observe,
-                                        budget=MAX_MINUTE_WITNESS_CALLS):
+                                        budget=MAX_MINUTE_WITNESS_CALLS,
+                                        trade_observer=trade_probe,
+                                        trade_budget=MAX_TRADE_PRINT_WITNESS_CALLS):
     """Extra 1Min SIP only for previously missing 30Min slots in four gaps.
 
     This second TIMEFRAME is a same-provider diagnostic, not independent
@@ -246,6 +250,7 @@ def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
          all(x=="EARLY_AND_FULL_BAR_COUNTS_EXACT" for x in errors.values())
          and set(errors).issubset(bar_map) and
          type(budget) is int and 0<=budget<=12 and
+         type(trade_budget) is int and 0<=trade_budget<=8 and
          type(credentials) is tuple and len(credentials)==2 and
          all(type(v) is str and v for v in credentials),
          "MINUTE_WITNESS_TARGET_SCOPE_OR_BUDGET")
@@ -258,6 +263,8 @@ def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
                     for i in range(minutes//30))
     counter=[0]
     counts=Counter()
+    trade_counts=Counter()
+    trade_used=0
     missing_total=0
     for sym in sorted(errors):
         got=set()
@@ -269,13 +276,25 @@ def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
         for slot in missing:
             if counter[0]>=budget:
                 counts["MINUTE_GLOBAL_BUDGET_BLOCKED"]+=1
-                continue
-            value=observer(sym,slot,asof,credentials,counter,budget)
-            need(value in WITNESS_CODES and 0<=counter[0]<=budget,
-                 "MINUTE_WITNESS_RESULT_CODE_OR_CALL_OVERRUN")
-            counts[value]+=1
-    need(sum(counts.values())==missing_total,
-         "MINUTE_WITNESS_EXACT_PARTITION")
+            else:
+                value=observer(sym,slot,asof,credentials,counter,budget)
+                need(value in WITNESS_CODES and 0<=counter[0]<=budget,
+                     "MINUTE_WITNESS_RESULT_CODE_OR_CALL_OVERRUN")
+                counts[value]+=1
+            if trade_used>=trade_budget:
+                trade_counts["TRADE_WITNESS_BUDGET_BLOCKED_NO_CALL"]+=1
+            else:
+                # Official historical single-stock trades API; same Alpaca SIP
+                # source is a transport crosscheck, not licensed primary proof.
+                result=trade_observer(sym,slot,asof,credentials)
+                need(result in TRADE_STATES,"TRADE_WITNESS_ENUM_ONLY")
+                if result!="TRADE_SCOPE_REJECTED_NO_CALL":
+                    trade_used+=1
+                trade_counts[result]+=1
+    need(sum(counts.values())==missing_total and
+         sum(trade_counts.values())==missing_total and
+         0<=trade_used<=trade_budget,
+         "GAP_VS_MINUTE_VS_TRADE_EXACT_PARTITION")
     return {
         "minute_witness_target_group":"FOUR_RTH_INTEGRITY_GAPS_ONLY",
         "minute_witness_30min_missing_slots_total":missing_total,
@@ -287,7 +306,15 @@ def probe_only_actual_missing_rth_slots(asof,days,bar_map,parent,credentials,
             counts.get("MULTI_ROUTE_MINUTE_VALID_BAR_OBSERVED_SHADOW",0),
         "minute_witness_no_independent_venue_or_trade_conditions":True,
         "minute_witness_vendor_rows_persisted":False,
-        "minute_witness_can_upgrade_c417_or_r92":False
+        "minute_witness_can_upgrade_c417_or_r92":False,
+        "historical_trade_witness_source_api_calls":trade_used,
+        "historical_trade_witness_call_budget":trade_budget,
+        "historical_trade_witness_result_counts":dict(sorted(trade_counts.items())),
+        "historical_trade_sample_present_no_volume_authority_count":
+            trade_counts.get("TRADE_RECORD_PRESENT_AGGREGATE_BAR_MISSING_RESEARCH_ONLY",0),
+        "historical_trade_prints_vendor_rows_persisted":False,
+        "historical_trade_source_rights_and_sale_conditions_verified":False,
+        "historical_trade_witness_can_upgrade_c417_or_r92":False
     }
 
 
@@ -399,7 +426,9 @@ def selftest():
         return "MINUTE_BAR_PRESENT_COARSE_BAR_MISSING_SHADOW"
     checked=probe_only_actual_missing_rth_slots(
         asof,days,target,p,("FAKE_ID","FAKE_SECRET"),
-        observer=fake_minute,budget=4)
+        observer=fake_minute,budget=4,
+        trade_observer=lambda *args:"NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN",
+        trade_budget=4)
     need(checked["minute_witness_source_api_calls"]==4 and
          checked["minute_witness_present_not_canonical_repair_count"]==4 and
          len(simulated)==4 and
@@ -407,17 +436,25 @@ def selftest():
          "FOUR_TARGETED_GAP_ONE_MINUTE_POSITIVE_NOT_PRIMARY")
     checked=probe_only_actual_missing_rth_slots(
         asof,days,target,p,("FAKE_ID","FAKE_SECRET"),
-        observer=fake_minute,budget=2)
+        observer=fake_minute,budget=2,
+        trade_observer=lambda *args:"NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN",
+        trade_budget=2)
     need(checked["minute_witness_source_api_calls"]==2 and
          checked["minute_witness_result_counts"].get(
              "MINUTE_GLOBAL_BUDGET_BLOCKED")==2,
          "TARGETED_MINUTE_BUDGET_EXACT")
+    need(checked["historical_trade_witness_source_api_calls"]==2 and
+         checked["historical_trade_witness_result_counts"].get(
+             "TRADE_WITNESS_BUDGET_BLOCKED_NO_CALL")==2 and
+         checked["historical_trade_witness_can_upgrade_c417_or_r92"] is False,
+         "TARGETED_TRADE_PRINT_BUDGET_EXACT")
     unauthorized=deepcopy(p)
     unauthorized["symbol_rth_integrity_failure_codes"].pop(gaps[0])
     try:
         probe_only_actual_missing_rth_slots(
             asof,days,target,unauthorized,("FAKE_ID","FAKE_SECRET"),
-            observer=fake_minute)
+            observer=fake_minute,
+            trade_observer=lambda *args:"NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN")
     except ValueError:pass
     else:raise AssertionError("FORGED_GAP_SOURCE_ACCEPTED")
     print("XRAY_RTH497_TEMPORAL_CANARY_SELFTEST=PASS_8_SYMBOL_16_CALL_SHA_TIME_NEGATIVES_NO_ALPHA")
@@ -458,6 +495,8 @@ def main():
        "latest_slots":out["latest_missing_official_slot_indices"],
        "minute_calls":out["minute_witness_source_api_calls"],
        "minute_windows_found":out["minute_witness_present_not_canonical_repair_count"],
+       "trade_calls":out["historical_trade_witness_source_api_calls"],
+       "trade_sample_present":out["historical_trade_sample_present_no_volume_authority_count"],
        "zero_alpha":True},sort_keys=True))
 
 if __name__=="__main__":main()
