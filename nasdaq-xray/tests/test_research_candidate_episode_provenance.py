@@ -40,7 +40,8 @@ class EpisodeProvenanceTests(unittest.TestCase):
         self.assertEqual(x["accepted_at_utc"],"2026-10-16T12:52:00+00:00")
         self.assertEqual([e["symbol"] for e in x["episodes"]],["MANH","WDAY"])
         for e in x["episodes"]:
-            self.assertTrue(e["decision_timestamp_independently_authenticated_by_producer"])
+            self.assertTrue(e["decision_time_bound_to_supplied_successful_run_metadata"])
+            self.assertFalse(e["github_run_api_identity_authenticated_inside_module"])
             self.assertFalse(e["licensed_price_available"])
             self.assertFalse(e["issuer_class_identity_verified"])
             self.assertFalse(e["alpha_authority"])
