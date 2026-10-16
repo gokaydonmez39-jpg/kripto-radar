@@ -16,7 +16,13 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_candidate_memory.py"
+      - "nasdaq-xray/research_candidate_memory_admission.py"
+      - "nasdaq-xray/research_candidate_memory_cas.py"
+      - "nasdaq-xray/research_candidate_outcome_audit.py"
       - "nasdaq-xray/tests/test_research_candidate_memory.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory_admission.py"
+      - "nasdaq-xray/tests/test_research_candidate_memory_cas.py"
+      - "nasdaq-xray/tests/test_research_candidate_outcome_audit.py"
       - ".github/workflows/xray-symbolic-candidate-memory-ci.yml"
   workflow_run:
     workflows:
@@ -45,7 +51,7 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/research_candidate_memory.py nasdaq-xray/research_candidate_memory_admission.py nasdaq-xray/research_candidate_memory_cas.py nasdaq-xray/research_candidate_outcome_audit.py nasdaq-xray/tests/test_research_candidate_memory.py nasdaq-xray/tests/test_research_candidate_memory_admission.py nasdaq-xray/tests/test_research_candidate_memory_cas.py nasdaq-xray/tests/test_research_candidate_outcome_audit.py
           python -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
-          python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate_memory.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_research_candidate*.py -v
       - name: Assert no trading, no provider dependency, no publication and no mutation of main
         run: |
           python - <<'PY'
