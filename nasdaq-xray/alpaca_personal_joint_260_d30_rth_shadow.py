@@ -145,17 +145,20 @@ def pager(symbols,tf,start,end,asof,credentials,calls):
 
 
 
-# Incomplete 30Min slots cannot pass the strict RTH gate. However, observed
-# vendor-bar LOW * observed integer volume gives a conservative *bar-level*
-# notional floor under that bar source's own aggregation semantics. A DAILY
-# CLOSE * observed volume is NOT a mathematical lower bound for traded notional.
-# This remains research-only, not official corrected/auction/PIT market data.
-PARTIAL_HIGH="PARTIAL_OBSERVED_RTH_LOWER_BOUND_GE50M_RESEARCH_ONLY"
-PARTIAL_UNRESOLVED="PARTIAL_OBSERVED_RTH_LOWER_BOUND_INDETERMINATE"
+# Incomplete 30Min slots cannot pass the strict RTH gate.
+# LOW * volume is a deliberately conservative RESEARCH PROXY, NOT a genuine
+# trade-notional lower bound: Alpaca trade conditions can update bar VOLUME
+# without updating HIGH/LOW (e.g. odd lots). Actual trade price for a
+# volume-contributing print might be LOWER than the reported bar low.
+# DAILY CLOSE * observed volume is also not a mathematical floor.
+# Thus neither observed proxy may prove official DV30 >= $50M.
+# This remains research-only, not corrected/auction/PIT primary market data.
+PARTIAL_HIGH="PARTIAL_OBSERVED_RTH_BARLOW_NOTIONAL_PROXY_GE50M_RESEARCH_ONLY"
+PARTIAL_UNRESOLVED="PARTIAL_OBSERVED_RTH_BARLOW_NOTIONAL_PROXY_INDETERMINATE"
 PARTIAL_REJECTED="PARTIAL_SOURCE_SCHEMA_OR_VOLUME_REJECTED"
 
 def partial_missing_slot_bounds(daily,halfhour,days):
-    """Return aggregate-safe evidence only. NEVER promote strict RTH or R92."""
+    """Return bar-LOW-weighted research proxy, NOT a trade-notional lower bound."""
     from decimal import Decimal
     from alpaca_personal_price_current_exact30 import cached_official_window
     from alpaca_sip_30min_rth_lower_bound_pilot import stamp,data_check
@@ -187,8 +190,9 @@ def partial_missing_slot_bounds(daily,halfhour,days):
         if at in expected:
             need(at not in observed,"PARTIAL_DUPLICATE_30MIN")
             volume=data_check(bar)
-            # Use each BAR's minimum price, never a later daily CLOSE.
-            # Do not persist vendor OHLCV, even in the research artifact.
+            # Bar LOW (not daily close) reduces upward pricing bias.
+            # Bar VOLUME may contain excluded LOW prints: still ONLY A PROXY.
+            # Do not persist vendor OHLCV in any research artifact.
             try:
                 o,h,l,c=(Decimal(str(bar[k])) for k in ("o","h","l","c"))
             except (TypeError,ValueError,KeyError,ArithmeticError) as exc:
@@ -325,6 +329,7 @@ def measure(asof,syms,days,source,now,pace=0):
         "partial_notional_method":"SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION",
         "partial_no_daily_close_proxy_or_unobserved_zero_fill":True,
         "partial_notional_source_trade_conditions_unattested":True,
+        "partial_notional_proxy_not_mathematical_trade_floor":True,
         "partial_missing_slot_total_observed_gap_count":partial_missing_slots,
         "partial_missing_slot_affected_session_total":partial_missing_days,
         "partial_research_never_promotes_strict_rth":True,
@@ -439,6 +444,7 @@ def selftest():
          y["partial_missing_slot_research_counts"]=={PARTIAL_HIGH:1} and
          y["partial_missing_slot_research_by_symbol"]=={"AAPL":PARTIAL_HIGH} and
          y["partial_missing_slot_symbolic_only_never_canonical"] is True and
+         y["partial_notional_proxy_not_mathematical_trade_floor"] is True and
          y["partial_research_never_promotes_strict_rth"] is True,
          "MISSING_LAST_RTH_SLOT_DIAGNOSED_NOT_PASS")
     def blocked(*args):
@@ -454,7 +460,7 @@ def selftest():
     need(limited["source_stop_class"]=="SOURCE_CALL_BUDGET_REACHED_NO_RTH"
          and limited["rth_lower_bound_ge50m_shadow_count"]==0,
          "CALL_BUDGET_EXHAUSTION_NOT_VENDOR_INTEGRITY")
-    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_BAR_LOW_NOTIONAL_BOUND_CLOSE_PROXY_NEGATIVE_NO_PRIMARY")
+    print("XRAY_PERSONAL_JOINT_RTH30_SELFTEST=PASS_BAR_LOW_NOTIONAL_PROXY_NOT_A_TRADE_FLOOR_NO_PRIMARY")
 
 
 def main():
