@@ -95,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-16T19:03:48.242818+00:00",
+  "generated_at_utc": "2026-10-16T20:04:43.064747+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -894,8 +894,53 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 65,
+      "item_count": 68,
       "items": [
+        {
+          "HaltDate": "10/16/2026",
+          "HaltTime": "15:54:02.776",
+          "IssueName": "Chilwa Minerals Limited ADS",
+          "IssueSymbol": "CHWM",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/16/2026",
+          "ResumptionQuoteTime": "15:54:02",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:54:02.776</td><td valign=\"top\">CHWM</td><td valign=\"top\">Chilwa Minerals Limited ADS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:54:02                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Fri, 16 Oct 2026 04:00:00 GMT",
+          "title": "CHWM"
+        },
+        {
+          "HaltDate": "10/16/2026",
+          "HaltTime": "15:10:18.326",
+          "IssueName": "Impact BioMedical, Inc. Common Stock",
+          "IssueSymbol": "IBO",
+          "Market": "AMEX",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "10/16/2026",
+          "ResumptionQuoteTime": "15:20:18",
+          "ResumptionTradeTime": "15:20:18",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:10:18.326</td><td valign=\"top\">IBO</td><td valign=\"top\">Impact BioMedical, Inc. Common Stock</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:20:18                      </td><td valign=\"top\">15:20:18                      </td></tr></table>",
+          "pubDate": "Fri, 16 Oct 2026 04:00:00 GMT",
+          "title": "IBO"
+        },
+        {
+          "HaltDate": "10/16/2026",
+          "HaltTime": "15:05:03.293",
+          "IssueName": "Future Vision Acquisition OS",
+          "IssueSymbol": "FVN",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/16/2026",
+          "ResumptionQuoteTime": "15:05:03",
+          "ResumptionTradeTime": "15:10:03",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:05:03.293</td><td valign=\"top\">FVN</td><td valign=\"top\">Future Vision Acquisition OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/16/2026                    </td><td valign=\"top\">15:05:03                      </td><td valign=\"top\">15:10:03                      </td></tr></table>",
+          "pubDate": "Fri, 16 Oct 2026 04:00:00 GMT",
+          "title": "FVN"
+        },
         {
           "HaltDate": "10/16/2026",
           "HaltTime": "14:55:52.180",
