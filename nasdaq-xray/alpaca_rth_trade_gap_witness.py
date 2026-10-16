@@ -131,10 +131,14 @@ def probe(symbol,slot,asof,credentials,opener=urllib.request.urlopen):
 
 
 def selftest():
+    """Assertions deliberately remain active under python -O."""
     from alpaca_rth_minute_integrity_shadow import official_window
+    import copy
     start,close,n=official_window("2026-10-14")
-    slot=start+dt.timedelta(minutes=30*5)
-    assert n==390
+    slot=start+dt.timedelta(minutes=150)
+    def check(ok,code):
+        if not ok:raise AssertionError("XRAY_TRADE_PRINT_"+code)
+    check(n==390,"OFFICIAL_SESSION")
     calls=[]
     class Response:
         status=200
@@ -146,25 +150,26 @@ def selftest():
         def opener(request,timeout):
             calls.append(request)
             q=urllib.parse.parse_qs(urllib.parse.urlsplit(request.full_url).query)
-            assert q["feed"]==["sip"] and q["limit"]==[str(MAX_TRADES)]
-            assert q["asof"]==["2026-10-14"]
-            assert "PASSWORD" not in request.full_url
-            assert timeout==22
+            check(q.get("feed")==["sip"] and
+                  q.get("limit")==[str(MAX_TRADES)] and
+                  q.get("asof")==["2026-10-14"] and
+                  "PASSWORD" not in request.full_url and timeout==22,
+                  "AUTH_AND_REQUEST_PARAMETERS")
             return Response(obj)
         return opener
     tr={"i":1,"t":(slot+dt.timedelta(seconds=12)).isoformat(),
         "p":25.5,"s":100,"x":"Q","c":["@"]}
     auth=("FAKE_ID","PASSWORD")
-    present={"symbol":"AAA","trades":[tr],"next_page_token":None}
-    assert probe("AAA",slot,"2026-10-14",auth,responder(present))==(
-        "TRADE_RECORD_PRESENT_AGGREGATE_BAR_MISSING_RESEARCH_ONLY")
-    assert probe("AAA",slot,"2026-10-14",auth,responder({
-        "symbol":"AAA","trades":[],"next_page_token":None}))==(
-        "NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN")
-    assert probe("AAA",slot,"2026-10-14",auth,responder({
-        "symbol":"AAA","trades":[],"next_page_token":"MORE"}))==(
-        "TRADE_QUERY_PAGINATED_INCOMPLETE_UNKNOWN")
-    import copy
+    positive={"symbol":"AAA","trades":[tr],"next_page_token":None}
+    check(probe("AAA",slot,"2026-10-14",auth,responder(positive))==
+          "TRADE_RECORD_PRESENT_AGGREGATE_BAR_MISSING_RESEARCH_ONLY",
+          "POSITIVE_NOT_PRIMARY")
+    check(probe("AAA",slot,"2026-10-14",auth,responder({
+          "symbol":"AAA","trades":[],"next_page_token":None}))==
+          "NO_TRADE_RECORD_RETURNED_STILL_UNKNOWN","EMPTY_NOT_ZERO")
+    check(probe("AAA",slot,"2026-10-14",auth,responder({
+          "symbol":"AAA","trades":[],"next_page_token":"MORE"}))==
+          "TRADE_QUERY_PAGINATED_INCOMPLETE_UNKNOWN","PAGINATION_NOT_COMPLETE")
     for mutation in (
         lambda o:o["trades"][0].update(s=0),
         lambda o:o["trades"][0].update(p=float("nan")),
@@ -174,20 +179,20 @@ def selftest():
         lambda o:o.update(symbol="OTHER"),
         lambda o:o["trades"][0].update(c=["@",4]),
     ):
-        bad=copy.deepcopy(present);mutation(bad)
-        assert probe("AAA",slot,"2026-10-14",auth,responder(bad))==(
-            "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN")
+        bad=copy.deepcopy(positive);mutation(bad)
+        check(probe("AAA",slot,"2026-10-14",auth,responder(bad))==
+              "TRADE_SCHEMA_OR_INTEGRITY_UNKNOWN","MALFORMED_VENDOR_ROW_REFUSED")
     before=len(calls)
     for sym,timestamp,asof in (
         ("../BAD",slot,"2026-10-14"),
         ("AAA",close,"2026-10-14"),
         ("AAA",slot,"2026-10-13"),
     ):
-        assert probe(sym,timestamp,asof,auth,responder(present))==(
-            "TRADE_SCOPE_REJECTED_NO_CALL")
-    assert len(calls)==before
-    assert len(STATES)==9
-    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_10_NEGATIVES_NO_ALPHA")
+        check(probe(sym,timestamp,asof,auth,responder(positive))==
+              "TRADE_SCOPE_REJECTED_NO_CALL","FORGED_OR_STALE_SCOPE")
+    check(len(calls)==before,"NO_CALL_WHEN_SCOPE_INVALID")
+    check(len(STATES)==9,"STATUS_CLOSED_ENUMERATION")
+    print("XRAY_RTH_TRADE_GAP_WITNESS_SELFTEST=PASS_3_DIAGNOSTICS_10_NEGATIVES_PYTHON_O_SAFE_NO_ALPHA")
 
 
 if __name__=="__main__":
