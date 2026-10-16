@@ -50,6 +50,7 @@ def cohort(doc,now):
     high=doc.get("next_gate_mc_sec_research_only_symbols")
     partial=doc.get("rth30_partial_missing_slot_high_research_only_symbols")
     need(type(partial) is list and partial==sorted(set(partial)) and
+         doc.get("rth30_partial_notional_is_proxy_not_trade_floor") is True and
          doc.get("rth30_partial_research_never_primary") is True and
          len(partial)==doc.get("rth30_partial_missing_slot_high_research_only_count") and
          symbols_sha(partial)==doc.get("rth30_partial_missing_slot_high_research_only_sha256"),
@@ -63,7 +64,7 @@ def cohort(doc,now):
              doc.get("rth30_strict_complete_slot_lower_bound_observed") and
          all(scope[s]["first_unresolved_gate"]=="PRICE_DV30" and
              scope[s]["causal_class"]==(
-                 "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY" if s in partial
+                 "RTH_OBSERVED_PARTIAL_BARLOW_PROXY_ONLY" if s in partial
                  else "RTH_30MIN_LOWER_BOUND_ONLY")
              for s in high),"EXACT_POSITIVE_RTH_RESEARCH_COHORT")
     counts=Counter(row.get("first_unresolved_gate") for row in scope.values())
@@ -265,6 +266,7 @@ def selftest():
        "rth30_partial_missing_slot_high_research_only_symbols":[],
        "rth30_partial_missing_slot_high_research_only_sha256":symbols_sha([]),
        "rth30_partial_research_never_primary":True,
+       "rth30_partial_notional_is_proxy_not_trade_floor":True,
        "rth30_lower_bound_sha256":symbols_sha(syms),
        "first_unresolved_gate_counts":{"PRICE_DV30":3}}
     a,scope=cohort(d,now)
@@ -278,7 +280,7 @@ def selftest():
     partial["rth30_partial_missing_slot_high_research_only_symbols"]=["AAPL"]
     partial["rth30_partial_missing_slot_high_research_only_sha256"]=symbols_sha(["AAPL"])
     partial["per_symbol_causal_routing"]["AAPL"]["causal_class"]=(
-        "RTH_OBSERVED_PARTIAL_LOWER_BOUND_ONLY")
+        "RTH_OBSERVED_PARTIAL_BARLOW_PROXY_ONLY")
     p_asof,p_syms=cohort(partial,now)
     need(p_asof=="2026-10-14" and p_syms==syms and
          run(partial,now,inaccessible)["technical_research_watch_symbols"]==[],
