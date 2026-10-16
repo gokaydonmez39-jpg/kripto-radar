@@ -5,13 +5,15 @@ import datetime as dt
 from pathlib import Path
 import sys
 import unittest
+import pandas_market_calendars as mcal
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import research_learning_readiness as r
 
 def calibration(n=0):
+    days=mcal.get_calendar("NASDAQ").valid_days("2026-01-01","2026-07-31")
     rows=[{
-      "asof_et":(dt.date(2026,1,1)+dt.timedelta(days=i)).isoformat(),
+      "asof_et":str(days[i].date()),
       "comparable_to_current_c417":True,
       "full_end_to_end_research_pass":True,
       "compiled_policy_version":"C4.17"}
