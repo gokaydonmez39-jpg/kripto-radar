@@ -1,0 +1,84 @@
+name: XRAY RTH 30-Session Missing-Bar Recovery Horizon
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py"
+      - ".github/workflows/xray-rth30-unrepaired-gap-horizon.yml"
+  push:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py"
+      - ".github/workflows/xray-rth30-unrepaired-gap-horizon.yml"
+  workflow_run:
+    workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: xray-rth30-missing-session-calendar-horizon
+  cancel-in-progress: false
+jobs:
+  exact-nasdaq-calendar:
+    name: Prove 30 official new sessions, Thanksgiving half day and zero false FINAL
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install existing locked official Nasdaq calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Enforce 15-Oct 30-session missing-slot horizon with 5 negatives, Python and -O
+        run: |
+          python -m py_compile nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py
+          python nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py --selftest
+          python -O nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py --selftest
+      - name: Calculate current trading-session progress with no provider calls
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          python nasdaq-xray/personal_rth30_unrepaired_gap_horizon.py \
+            --gap-session 2026-10-15 \
+            --out "$RUNNER_TEMP/xray_unrepaired_rth30_calendar_only.json"
+      - name: "Verify horizon is not a PRICE, MC, R92, device or FINAL attestation"
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_unrepaired_rth30_calendar_only.json").read_text())
+          assert x["schema"]=="XRAY_PERSONAL_RTH30_UNREPAIRED_GAP_EXIT_HORIZON_V1"
+          assert x["first_clean_30_session_window_day_without_backfill"]=="2026-11-27"
+          assert x["first_clean_day_rth_minutes"]==210
+          assert x["first_clean_day_expected_30min_slots"]==7
+          for key in ("independent_c417_price_dv30_attested",
+                      "official_missing_bar_backfill_completed",
+                      "all_30_sessions_clean_data_attested",
+                      "market_cap_2b_attested",
+                      "issuer_and_corporate_events_attested",
+                      "data_feed_rights_attested",
+                      "device_notification_receipt_attested"):
+              assert x[key] is False
+          assert x["date_is_only_no_backfill_window_drop_out_not_final_deadline"] is True
+          assert x["registered_R92_count"]==0 and x["execution"]=="NONE"
+          assert x["real_money"]=="NO-GO"
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+              out.write("## XRAY missing historical RTH slot, official 30-session window\n\n")
+              out.write("Incomplete source session: "+x["incident_missing_session"]+".\n\n")
+              out.write("First full 30-session window excluding this date **without backfill**: **"+
+                        x["first_clean_30_session_window_day_without_backfill"]+"**.\n\n")
+              out.write("That day is early close 13:00 ET (7 x 30m RTH slots).\n\n")
+              out.write("This does not mean source bars are complete or official DV30/MC/AL or iPhone delivery is verified.\n")
+          print("XRAY_RTH30_HORIZON=PROVEN_CALENDAR_ONLY_NO_FINAL")
+          PY
+      - name: Retain only no-price, calendar-only evidence
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-personal-rth30-incident-horizon-calendar-only-no-go
+          path: ${{ runner.temp }}/xray_unrepaired_rth30_calendar_only.json
+          if-no-files-found: error
+          retention-days: 14
