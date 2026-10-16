@@ -1,6 +1,13 @@
 name: XRAY Research Candidate Delivery
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/delivery_prepare.py"
+      - "nasdaq-xray/delivery_scheduler_guard.py"
+      - "nasdaq-xray/delivery_official_gate_order_selftest.py"
+      - ".github/workflows/nasdaq-xray-delivery.yml"
   workflow_run:
     workflows: ["XRAY Canonical Current Final Factory", "NASDAQ SWING XRAY Autonomous Data Plane"]
     types: [completed]
@@ -39,8 +46,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  guard-order-offline:
+    # PR runs only this sandboxed static negative guard test; no credentials,
+    # endpoint, official data pull, device channel or user notification.
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Prove registration and completed-session gates precede all official network calls
+        run: |
+          python nasdaq-xray/delivery_official_gate_order_selftest.py
+          python -O nasdaq-xray/delivery_official_gate_order_selftest.py
   deliver:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -79,22 +101,6 @@ jobs:
             nasdaq-xray/delivery_scheduler_guard_selftest.py \
             nasdaq-xray/delivery_ledger_merge.py
           python nasdaq-xray/delivery_ledger_merge.py --selftest
-
-      - name: Refresh official Nasdaq halt + Security Status guard
-        run: |
-          python nasdaq-xray/official_source_guard.py
-          python - <<'PY'
-          import json
-          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
-          s=g.get("sources") or {}
-          h=s.get("trade_halts") or {}
-          ss=s.get("security_status") or {}
-          assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
-          assert h.get("status")=="PASS",h
-          assert ss.get("status")=="PASS",ss
-          safety=g.get("candidate_safety") or {}
-          print("XRAY_DELIVERY_OFFICIAL_SAFETY_GUARD=PASS veto="+str(len(safety.get("veto_symbols") or [])))
-          PY
 
       - name: Synthetic registered-R92 delivery self-test
         run: |
@@ -151,6 +157,27 @@ jobs:
           print("XRAY_DELIVERY_COMPLETED_SESSION_SOURCE="+("PASS" if ok else "BLOCKED_STALE_ASOF"))
           print("XRAY_DELIVERY_SESSION_LAGS="+json.dumps(report["session_lag"],sort_keys=True))
           PY
+
+      - name: Refresh official Nasdaq halt + Security Status guard
+        # Avoid all official/network queries on the weekend, stale epochs,
+        # and every run with no registered R92. This is mandatory whenever
+        # exact candidate-local delivery is genuinely possible.
+        if: steps.source_epoch.outputs.ready == 'true'
+        run: |
+          python nasdaq-xray/official_source_guard.py
+          python - <<'PY'
+          import json
+          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
+          s=g.get("sources") or {}
+          h=s.get("trade_halts") or {}
+          ss=s.get("security_status") or {}
+          assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+          assert h.get("status")=="PASS",h
+          assert ss.get("status")=="PASS",ss
+          safety=g.get("candidate_safety") or {}
+          print("XRAY_DELIVERY_OFFICIAL_SAFETY_GUARD=PASS veto="+str(len(safety.get("veto_symbols") or [])))
+          PY
+
 
       - name: Verify scheduler and final recovery readiness
         id: scheduler
