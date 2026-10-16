@@ -283,6 +283,9 @@ jobs:
           from collections import Counter
           subset=x["partial_missing_slot_research_by_symbol"]
           assert x["partial_missing_slot_symbolic_only_never_canonical"] is True
+          assert x["partial_notional_method"]=="SUM_OBSERVED_30MIN_BAR_LOW_TIMES_VOLUME_PER_OFFICIAL_SESSION"
+          assert x["partial_no_daily_close_proxy_or_unobserved_zero_fill"] is True
+          assert x["partial_notional_source_trade_conditions_unattested"] is True
           assert set(subset)=={k for k,v in x["symbol_rth_integrity_failure_codes"].items() if v=="EARLY_AND_FULL_BAR_COUNTS_EXACT"}
           assert dict(sorted(Counter(subset.values()).items()))==x["partial_missing_slot_research_counts"]
           assert all(x["classifications"][k]=="UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW" for k in subset)
