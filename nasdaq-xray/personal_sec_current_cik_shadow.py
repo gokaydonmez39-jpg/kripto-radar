@@ -13,6 +13,7 @@ from collections import Counter,defaultdict
 import datetime as dt
 import hashlib
 import json
+import re
 from pathlib import Path
 import urllib.error
 import urllib.request
@@ -29,6 +30,8 @@ NOT_FOUND="UNKNOWN_SEC_TICKER_NOT_FOUND"
 WRONG="UNKNOWN_SEC_TICKER_EXCHANGE_NOT_NASDAQ"
 MULTI="UNKNOWN_MULTIPLE_ISSUER_CIK_FOR_TICKER"
 SOURCE="UNKNOWN_SEC_OFFICIAL_CURRENT_INDEX_UNAVAILABLE"
+MIRROR="RESEARCH_EXACT_ASOF_VERIFIED_MIRROR_CIK_NOT_OFFICIAL_CURRENT"
+MIRROR_REPO="TylerJForstrom/Stock-Data"
 
 def need(v,why):
     if not v:raise ValueError("XRAY_SEC_CIK_PERSONAL_"+why)
@@ -101,10 +104,14 @@ def validate_route(route,now):
     return route["asof_et"],cohort
 
 
-def run(route,now,download):
+def run(route,now,download,mirror_discover=None):
     asof,syms=validate_route(route,now)
     status={s:SOURCE for s in syms}
     ciks={};problem=None;sec_sha=None
+    # A third-party mirror is never interchangeable with the SEC primary.
+    # Keep source identity, provenance and decision authority separate.
+    mirror_ciks={};mirror_sha=None;mirror_commit=None;mirror_date=None
+    mirror_state="NOT_USED_PRIMARY_REQUEST_SUCCEEDED"
     try:
         raw=download()
         need(type(raw) is bytes and len(raw)<=8_000_000,
@@ -119,9 +126,48 @@ def run(route,now,download):
                  str(exc).startswith("XRAY_SEC_CIK_PERSONAL_") else
                  "SEC_CURRENT_INDEX_INTEGRITY_FAILED")
         status={s:SOURCE for s in syms};ciks={}
+        mirror_state="NOT_REQUESTED"
+        if mirror_discover is not None:
+            try:
+                # discover_exact_asof() verifies immutable commit, snapshot
+                # date, declared upstream success date, payload bytes & SHA256.
+                # It never uses a stale or future SEC ticker association.
+                proof=mirror_discover(asof,syms)
+                need(type(proof) is dict and
+                     proof.get("status")=="EXACT_ASOF_CIK_DISCOVERY_ONLY" and
+                     proof.get("source_repository")==MIRROR_REPO and
+                     proof.get("snapshot_date")==asof and
+                     type(proof.get("source_commit")) is str and
+                     re.fullmatch(r"[0-9a-f]{40}",proof["source_commit"]) and
+                     type(proof.get("source_sha256")) is str and
+                     re.fullmatch(r"[0-9a-f]{64}",proof["source_sha256"]) and
+                     proof.get("unknown_total")==len(syms) and
+                     type(proof.get("ciK_discovery_only")) is dict and
+                     proof.get("ciK_discovered_count")==
+                         len(proof["ciK_discovery_only"]),
+                     "MIRROR_EXACT_ASOF_SOURCE_PROOF")
+                mirror_ciks=proof["ciK_discovery_only"]
+                need(set(mirror_ciks)<=set(syms) and
+                     all(type(cik) is str and
+                         re.fullmatch(r"[0-9]{10}",cik) and int(cik)>0
+                         for cik in mirror_ciks.values()),
+                     "MIRROR_INVALID_CIK_OR_SCOPE")
+                mirror_ciks=dict(sorted(mirror_ciks.items()))
+                status.update({sym:MIRROR for sym in mirror_ciks})
+                mirror_sha=proof["source_sha256"]
+                mirror_commit=proof["source_commit"]
+                mirror_date=proof["snapshot_date"]
+                mirror_state="VERIFIED_EXACT_ASOF_THIRD_PARTY_RESEARCH_ONLY"
+            except Exception:
+                # A failed, malformed, stale or future mirror remains UNKNOWN.
+                mirror_state="MIRROR_UNAVAILABLE_OR_NOT_EXACT_ASOF"
+                mirror_ciks={};mirror_sha=None;mirror_commit=None;mirror_date=None
+                status={s:SOURCE for s in syms}
     cnt=dict(sorted(Counter(status.values()).items()))
     need(len(status)==len(syms) and sum(cnt.values())==len(syms)
-         and set(ciks)=={s for s in syms if status[s]==MATCH},
+         and set(ciks)=={s for s in syms if status[s]==MATCH}
+         and set(mirror_ciks)=={s for s in syms if status[s]==MIRROR}
+         and not (set(ciks)&set(mirror_ciks)),
          "SEC_FULL_PARTITION")
     return {
         "schema":SCHEMA, "asof_et":asof,
@@ -132,6 +178,13 @@ def run(route,now,download):
         "classifications":dict(sorted(status.items())),
         "classification_counts":cnt,
         "sec_current_cik_candidates":dict(sorted(ciks.items())),
+        "mirror_exact_asof_cik_research_candidates":mirror_ciks,
+        "mirror_snapshot_date":mirror_date,
+        "mirror_source_repository":MIRROR_REPO if mirror_commit else None,
+        "mirror_source_commit":mirror_commit,
+        "mirror_source_sha256":mirror_sha,
+        "mirror_verification_state":mirror_state,
+        "mirror_cik_never_substitutes_sec_primary_or_mc":True,
         "sec_mapping_is_current_only_not_asof_pit":True,
         "sec_companyfacts_class_share_count_verified":False,
         "issuer_class_and_corporate_actions_verified":False,
@@ -189,7 +242,58 @@ def selftest():
     except ValueError as exc:
         need("LATEST_SOURCE_ASOF" in str(exc),"STALE_EPOCH_REASON")
     else:raise AssertionError("STALE_SOURCE_ACCEPTED")
-    print("XRAY_SEC_CIK_PERSONAL_SELFTEST=PASS_SHA_PIT_MC_5_NEGATIVES_NO_ALPHA")
+    # Realistic primary SEC 403: an exact-date, SHA-attested third-party
+    # snapshot may help RESEARCH ONLY; official SEC CIK authority stays empty.
+    mirror={
+        "status":"EXACT_ASOF_CIK_DISCOVERY_ONLY",
+        "source_repository":MIRROR_REPO,
+        "snapshot_date":asof,
+        "source_commit":"a"*40,
+        "source_sha256":"b"*64,
+        "unknown_total":len(syms),
+        "ciK_discovered_count":2,
+        "ciK_discovery_only":{"AAA":"0000000012","DDD":"0000000016"},
+    }
+    no_sec=lambda:(_ for _ in ()).throw(urllib.error.URLError("403"))
+    mirror_ok=run(route,now,no_sec,lambda a,s:mirror)
+    need(mirror_ok["classification_counts"]=={MIRROR:2,SOURCE:2}
+         and mirror_ok["sec_current_cik_candidates"]=={}
+         and mirror_ok["mirror_exact_asof_cik_research_candidates"]==
+             mirror["ciK_discovery_only"]
+         and mirror_ok["mirror_verification_state"]==
+             "VERIFIED_EXACT_ASOF_THIRD_PARTY_RESEARCH_ONLY"
+         and mirror_ok["current_mc_2b_attested"] is False
+         and mirror_ok["registered_R92_count"]==0,
+         "MIRROR_RESEARCH_ONLY_NO_MC_PROMOTION")
+    mirror_bad_cases=[
+        dict(mirror,snapshot_date="2026-10-13"),
+        dict(mirror,source_commit="x"*40),
+        dict(mirror,source_sha256="bad"),
+        dict(mirror,ciK_discovery_only={"OUTSIDE":"0000000012"}),
+        dict(mirror,ciK_discovered_count=77),
+        dict(mirror,ciK_discovery_only={"AAA":"0000000000"}),
+        dict(mirror,source_repository="unapproved/mirror"),
+    ]
+    for invalid in mirror_bad_cases:
+        quarantined=run(route,now,no_sec,lambda a,s,p=invalid:p)
+        need(quarantined["classification_counts"]=={SOURCE:4}
+             and quarantined["sec_current_cik_candidates"]=={}
+             and quarantined["mirror_exact_asof_cik_research_candidates"]=={}
+             and quarantined["current_mc_2b_attested"] is False,
+             "MIRROR_BAD_SOURCE_FALSE_ACCEPT")
+    no_snapshot=run(route,now,no_sec,
+        lambda a,s:(_ for _ in ()).throw(OSError("no exact snapshot")))
+    need(no_snapshot["classification_counts"]=={SOURCE:4}
+         and no_snapshot["mirror_verification_state"]==
+             "MIRROR_UNAVAILABLE_OR_NOT_EXACT_ASOF",
+         "MIRROR_OUTAGE_NOT_FAIL_CLOSED")
+    primary=run(route,now,lambda:json.dumps(raw).encode(),
+        lambda a,s:(_ for _ in ()).throw(AssertionError("called mirror on SEC success")))
+    need(primary["classification_counts"]==obj["classification_counts"]
+         and primary["mirror_verification_state"]==
+             "NOT_USED_PRIMARY_REQUEST_SUCCEEDED",
+         "PRIMARY_SUCCESS_UNNECESSARY_MIRROR_CALL")
+    print("XRAY_SEC_CIK_PERSONAL_SELFTEST=PASS_PRIMARY_403_VERIFIED_MIRROR_9_NEGATIVE_NO_MC_NO_ALPHA")
 
 
 def main():
@@ -213,14 +317,18 @@ def main():
         with urllib.request.urlopen(req,timeout=30) as res:
             need(res.status==200,"SEC_HTTP_NON200")
             return res.read(8_000_001)
-    result=run(obj,now,fetch)
+    from sec_mirror_cik_shadow import discover as discover_exact_asof
+    result=run(obj,now,fetch,mirror_discover=discover_exact_asof)
     a.out.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("XRAY_SEC_PERSONAL_ISSUER_CIK="+json.dumps({
         "status":result["status"],"asof_et":result["asof_et"],
         "scope":result["scope_count"],
         "counts":result["classification_counts"],
         "mc2b_confirmed":result["current_mc_2b_attested"],
-        "sec_state":result["sec_lookup_state"],"R92":0
+        "sec_state":result["sec_lookup_state"],
+        "mirror_state":result["mirror_verification_state"],
+        "mirror_research_count":len(result["mirror_exact_asof_cik_research_candidates"]),
+        "official_cik_count":len(result["sec_current_cik_candidates"]),"R92":0
     },sort_keys=True))
 
 
