@@ -242,6 +242,11 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
         g=group(provider)
         if g in ("MASSIVE","BQ") and not keys.get(g):
             attempts.append((provider,"NO_KEY"));continue
+        # A provider-family 429 means no more same-run quota spend against
+        # that family, even on a different endpoint (e.g. BQ screener).
+        # Endpoint 403 stays endpoint-scoped: it need not deny all services.
+        if cache.get("circuit-group:"+g):
+            attempts.append((provider,"PROVIDER_GROUP_QUOTA_OPEN"));continue
         needed=0 if (provider=="SEC_TICKER_DIRECTORY" and "directory" in cache) or (
             provider=="SEC_MIRROR_PIT" and "mirror" in cache) or (
             provider=="BQ_MC_HISTORICAL_DAILY" and
@@ -270,6 +275,8 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
             attempts.append((provider,code))
             if code in ("QUOTA_429","AUTH_DENIED"):
                 cache["circuit:"+provider]=True
+            if code=="QUOTA_429":
+                cache["circuit-group:"+g]=True
             # Discard exception body; API URL may contain a secret.
     return "UNKNOWN",attempts
 
@@ -446,7 +453,36 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs,
                         # Discard provider exception text; API key is in URL.
         statuses=collections.Counter()
         attempts=collections.Counter()
-        for sym in rotate_sample(symbols,limit):
+        selected=rotate_sample(symbols,limit)
+        for index,sym in enumerate(selected):
+            # A Massive 429/401/403 on the first MC ticker opens its
+            # provider-specific circuit; the permitted BusinessQuant backup
+            # must query the REMAINING tickers as one dated <=5-ticker
+            # request, not repeat per-ticker API calls and exhaust its free
+            # daily quota. Never prefetch without BOTH operator licence
+            # attestation and an existing authorized runner key.
+            if (lane=="MC" and index>0 and keys.get("BQ")
+                and cache.get("circuit:MASSIVE_TICKER_PIT") is True
+                and not cache.get("circuit-group:BQ")
+                and not cache.get("circuit:BQ_MC_HISTORICAL_DAILY")
+                and "bq_daily_batch_status" not in cache
+                and counters["BQ"]+1<=GROUP_CAP["BQ"]
+                and counters["BQ_MC_HISTORICAL_DAILY"]+1<=MAX_PER_RUN["BQ_MC_HISTORICAL_DAILY"]):
+                rest=selected[index:]
+                if rest:
+                    # A failed HTTP fetch consumes its attempt. It MUST NOT
+                    # trigger another per-symbol retry after an uncertain
+                    # timeout or authentication/capacity error.
+                    counters["BQ"]+=1
+                    counters["BQ_MC_HISTORICAL_DAILY"]+=1
+                    try:
+                        cache["bq_daily_batch_status"]=bq_historic_batch_shadow(
+                            rest,asof,keys["BQ"],http_get)
+                    except urllib.error.HTTPError as err:
+                        cache["circuit:BQ_MC_HISTORICAL_DAILY"]=True
+                        if err.code==429: cache["circuit-group:BQ"]=True
+                    except Exception:
+                        cache["circuit:BQ_MC_HISTORICAL_DAILY"]=True
             status,logs=route(lane,sym,asof,keys,counters,cache,http_get,runner)
             statuses[status]+=1
             for provider,code in logs:attempts[provider+":"+code]+=1
@@ -630,6 +666,99 @@ def selftest():
     assert "3500000000" not in json.dumps(simulated)
     assert "BQ_FAKE_NO_REAL_VENDORDATA" not in json.dumps(simulated)
     print("XRAY_BQ_FIVE_TICKER_BATCH_ONE_CALL=PASS_9_NEGATIVE_NO_PRIMARY_NO_PIT")
+
+    # REALISTIC FAILOVER: licensed Massive's first request is 429 or endpoint
+    # 403. A separate, verified BQ account must be used in ONE batch for
+    # remaining exact-ASOF research symbols, not another vendor call per
+    # symbol. This is ONLY date-scoped NON-PIT discovery, never MC PRIMARY.
+    backup_symbols=["AAPL","ASTS","NVDA"]
+    def fallback_lagging_terminal():
+        raise ValueError("SOURCE_DRIFT:TERMINAL")
+    def fallback_inputs():
+        return ("2026-10-09",{"MASTER":[],"MC":backup_symbols,"EVENT":[]},
+                {"MASTER":"a"*40,"PRICE":"b"*40,"MC":None,
+                 "HISTORY":"c"*40,"EVENT":"d"*40,"TERMINAL":"e"*40})
+    def failover_simulation(massive_code=429,bq_code=None):
+        traffic={"massive":0,"bq_calls":0,"bq_symbols":[]}
+        def stub(url,headers=None,body=None):
+            if url.startswith("https://api.massive.com/v3/reference/tickers/"):
+                traffic["massive"]+=1
+                raise urllib.error.HTTPError(url,massive_code,"synthetic",{},None)
+            if url.startswith("https://data.businessquant.com/historic?"):
+                from urllib.parse import urlsplit,parse_qs
+                args=parse_qs(urlsplit(url).query)
+                group=args["ticker"][0].split(",")
+                assert args["from_date"]==args["till_date"]==["2026-10-09"]
+                assert 1<=len(group)<=5 and set(group).issubset(backup_symbols)
+                traffic["bq_calls"]+=1
+                traffic["bq_symbols"].append(group)
+                if bq_code is not None:
+                    raise urllib.error.HTTPError(url,bq_code,"synthetic",{},None)
+                return [{"ticker":sym,"date":"2026-10-09",
+                         "metric":"Market Capitalization (Daily)",
+                         "value":3_500_000_000.0} for sym in group]
+            raise AssertionError("UNEXPECTED_VENDOR_ROUTE")
+        with _patch_batch.dict(os.environ,{
+            "XRAY_MASSIVE_API_KEY":"SYNTHETIC_MASSIVE_KEY",
+            "XRAY_BQ_API_KEY":"SYNTHETIC_BQ_KEY",
+            "XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+            "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64,
+            "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+            "XRAY_BQ_LICENSE_EVIDENCE_SHA256":"b"*64
+        }):
+            observed=produce(3,inputs_fn=fallback_lagging_terminal,
+                            recovery_inputs_fn=fallback_inputs,
+                            http_get=stub,allow_pre_mc_recovery=True)
+        return traffic,observed
+    # First Massive call 429, first exact BQ ticker 1 request, next two
+    # symbols ONE BQ batch request: only 3 vendor calls, no data published.
+    observed_calls,successful_backup=failover_simulation()
+    assert observed_calls["massive"]==1 and observed_calls["bq_calls"]==2
+    assert sorted(sum(observed_calls["bq_symbols"],[]))==backup_symbols
+    assert sorted(map(len,observed_calls["bq_symbols"]))==[1,2]
+    assert successful_backup["invocation_counts"]["MASSIVE"]==1
+    assert successful_backup["invocation_counts"]["BQ"]==2
+    assert successful_backup["lanes"]["MC"]["status_counts"]=={
+        "REFERENCE_OBSERVED_NOT_AUTHORITY":3}
+    assert successful_backup["alpha_authority"] is False
+    assert successful_backup["mc_pass_created"] is False
+    assert successful_backup["real_money"]=="NO-GO"
+    assert "3500000000" not in json.dumps(successful_backup)
+    assert "SYNTHETIC_BQ_KEY" not in json.dumps(successful_backup)
+    # Massive endpoint permission denial (403) is endpoint-scoped;
+    # legitimate independent BQ stays usable and still batches.
+    denied_calls,denied_backup=failover_simulation(massive_code=403)
+    assert denied_calls["massive"]==1 and denied_calls["bq_calls"]==2
+    assert denied_backup["lanes"]["MC"]["status_counts"]=={
+        "REFERENCE_OBSERVED_NOT_AUTHORITY":3}
+    # If BQ itself returns 429 after Massive 429, BOTH groups halt for the
+    # rest of this run; no screener retry and no invented current MC result.
+    exhausted_calls,exhausted=failover_simulation(bq_code=429)
+    assert exhausted_calls["massive"]==1 and exhausted_calls["bq_calls"]==1
+    assert exhausted["invocation_counts"]["MASSIVE"]==1
+    assert exhausted["invocation_counts"]["BQ"]==1
+    assert exhausted["lanes"]["MC"]["status_counts"]=={"UNKNOWN":3}
+    assert exhausted["mc_pass_created"] is False
+    # No BQ research licence, no vendor BQ route, even if a key string
+    # happens to exist and Massive fails; the policy is immutable.
+    with _patch_batch.dict(os.environ,{
+        "XRAY_MASSIVE_API_KEY":"SYNTHETIC_MASSIVE_KEY",
+        "XRAY_MASSIVE_UNATTENDED_RESEARCH_LICENSE_OK":"true",
+        "XRAY_MASSIVE_LICENSE_EVIDENCE_SHA256":"a"*64,
+        "XRAY_BQ_API_KEY":"SYNTHETIC_BQ_KEY",
+        "XRAY_BQ_UNATTENDED_RESEARCH_LICENSE_OK":"",
+        "XRAY_BQ_LICENSE_EVIDENCE_SHA256":""}):
+        no_bq=produce(3,inputs_fn=fallback_lagging_terminal,
+                      recovery_inputs_fn=fallback_inputs,
+                      runner=lambda p,*a: (_ for _ in ()).throw(
+                          urllib.error.HTTPError("https://example.invalid",429,
+                                                "synthetic",{},None)),
+                      allow_pre_mc_recovery=True)
+    assert no_bq["provider_keys_present"]=={"MASSIVE":True,"BQ":False}
+    assert no_bq["invocation_counts"].get("BQ",0)==0
+    assert no_bq["mc_pass_created"] is False and no_bq["alpha_authority"] is False
+    print("XRAY_MASSIVE_429_403_TO_LICENSED_BQ_BATCH=PASS_4_SCENARIOS_NO_PRIMARY_NO_VENDOR_DATA")
+
 
 
     assert rotate_sample(["A","B","C","D","E","F"],2,0)==["A","B"]
