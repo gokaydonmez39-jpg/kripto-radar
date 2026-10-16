@@ -242,6 +242,11 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
         g=group(provider)
         if g in ("MASSIVE","BQ") and not keys.get(g):
             attempts.append((provider,"NO_KEY"));continue
+        # A provider-family 429 means no more same-run quota spend against
+        # that family, even on a different endpoint (e.g. BQ screener).
+        # Endpoint 403 stays endpoint-scoped: it need not deny all services.
+        if cache.get("circuit-group:"+g):
+            attempts.append((provider,"PROVIDER_GROUP_QUOTA_OPEN"));continue
         needed=0 if (provider=="SEC_TICKER_DIRECTORY" and "directory" in cache) or (
             provider=="SEC_MIRROR_PIT" and "mirror" in cache) or (
             provider=="BQ_MC_HISTORICAL_DAILY" and
@@ -270,6 +275,8 @@ def route(lane,sym,asof,keys,counters,cache,http_get=http,runner=lookup):
             attempts.append((provider,code))
             if code in ("QUOTA_429","AUTH_DENIED"):
                 cache["circuit:"+provider]=True
+            if code=="QUOTA_429":
+                cache["circuit-group:"+g]=True
             # Discard exception body; API URL may contain a secret.
     return "UNKNOWN",attempts
 
@@ -446,7 +453,36 @@ def produce(limit=3,http_get=http,runner=lookup,inputs_fn=inputs,
                         # Discard provider exception text; API key is in URL.
         statuses=collections.Counter()
         attempts=collections.Counter()
-        for sym in rotate_sample(symbols,limit):
+        selected=rotate_sample(symbols,limit)
+        for index,sym in enumerate(selected):
+            # A Massive 429/401/403 on the first MC ticker opens its
+            # provider-specific circuit; the permitted BusinessQuant backup
+            # must query the REMAINING tickers as one dated <=5-ticker
+            # request, not repeat per-ticker API calls and exhaust its free
+            # daily quota. Never prefetch without BOTH operator licence
+            # attestation and an existing authorized runner key.
+            if (lane=="MC" and index>0 and keys.get("BQ")
+                and cache.get("circuit:MASSIVE_TICKER_PIT") is True
+                and not cache.get("circuit-group:BQ")
+                and not cache.get("circuit:BQ_MC_HISTORICAL_DAILY")
+                and "bq_daily_batch_status" not in cache
+                and counters["BQ"]+1<=GROUP_CAP["BQ"]
+                and counters["BQ_MC_HISTORICAL_DAILY"]+1<=MAX_PER_RUN["BQ_MC_HISTORICAL_DAILY"]):
+                rest=selected[index:]
+                if rest:
+                    # A failed HTTP fetch consumes its attempt. It MUST NOT
+                    # trigger another per-symbol retry after an uncertain
+                    # timeout or authentication/capacity error.
+                    counters["BQ"]+=1
+                    counters["BQ_MC_HISTORICAL_DAILY"]+=1
+                    try:
+                        cache["bq_daily_batch_status"]=bq_historic_batch_shadow(
+                            rest,asof,keys["BQ"],http_get)
+                    except urllib.error.HTTPError as err:
+                        cache["circuit:BQ_MC_HISTORICAL_DAILY"]=True
+                        if err.code==429: cache["circuit-group:BQ"]=True
+                    except Exception:
+                        cache["circuit:BQ_MC_HISTORICAL_DAILY"]=True
             status,logs=route(lane,sym,asof,keys,counters,cache,http_get,runner)
             statuses[status]+=1
             for provider,code in logs:attempts[provider+":"+code]+=1
