@@ -364,7 +364,7 @@ jobs:
               assert mature["alpha_authority"] is False
               assert mature["model_trained"] is False
               (root/"xray_symbolic_horizon_maturity_calendar_only.json").write_text(
-                  json.dumps(mature,sort_keys=True,indent=2)+"\\n")
+                  json.dumps(mature,sort_keys=True,indent=2)+"\n")
               print("XRAY_HORIZON_CALENDAR_NO_PRICES_OR_AL=PASS")
               print("XRAY_EPISODES_DURABLE_SOURCE_BOUND_PASS="+str(
                     out["eligible_episodes"])+"/"+str(
