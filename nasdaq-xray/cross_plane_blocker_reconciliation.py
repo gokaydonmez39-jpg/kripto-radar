@@ -150,16 +150,12 @@ def reconcile(root,price,six,*,now_utc):
         "canonical_root_history_unknown_reason_counts":dict(sorted(reasons.items())),
         "independent_research_history_260_52_unproven_count":research_history_unproven,
         "canonical_price_dv30_unknown_count":len(issue_rows),
-        "canonical_price_dv30_pass_count":canonical.get("PASS",0),
+        "canonical_price_dv30_reported_pass_count_not_independently_attested":canonical.get("PASS",0),
         "canonical_price_status_counts":dict(sorted(canonical.items())),
         "personal_sip_first_unresolved_gate_counts":dict(sorted(routings.items())),
         "canonical_price_unknown_by_personal_first_gate":{
-            gate:dict(sorted(Counter(
-                row["research_first_unresolved_gate"] for row in issue_rows.values()
-            ).items())) if False else
-            sum(x["research_first_unresolved_gate"]==gate
-                for x in issue_rows.values())
-            for gate in GATES},
+            gate:sum(x["research_first_unresolved_gate"]==gate
+                     for x in issue_rows.values()) for gate in GATES},
         "canonical_price_status_by_personal_first_gate":{
             gate:dict(sorted(intersections[gate].items())) for gate in GATES},
         "personal_next_safe_evidence_action_counts":dict(sorted(actions.items())),
@@ -169,6 +165,7 @@ def reconcile(root,price,six,*,now_utc):
         "same_epoch_and_identity_does_not_establish_same_policy":True,
         "personal_history_and_liquidity_still_research_only":True,
         "licensed_source_access_or_rights_independently_verified":False,
+        "canonical_price_primary_evidence_independently_verified_here":False,
         "github_source_artifact_authenticated_inside_module":False,
         "no_market_provider_called":True,
         "no_raw_market_prices_or_volume_in_output":True,
