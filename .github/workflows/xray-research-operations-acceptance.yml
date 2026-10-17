@@ -4,11 +4,13 @@ on:
     branches: [main]
     paths:
       - nasdaq-xray/personal_research_operations_acceptance.py
+      - nasdaq-xray/omega_buy_only_start_kernel.py
       - .github/workflows/xray-research-operations-acceptance.yml
   push:
     branches: [main]
     paths:
       - nasdaq-xray/personal_research_operations_acceptance.py
+      - nasdaq-xray/omega_buy_only_start_kernel.py
       - .github/workflows/xray-research-operations-acceptance.yml
   workflow_run:
     workflows:
@@ -37,6 +39,9 @@ jobs:
           python -m py_compile nasdaq-xray/personal_research_operations_acceptance.py
           python nasdaq-xray/personal_research_operations_acceptance.py --selftest
           python -O nasdaq-xray/personal_research_operations_acceptance.py --selftest
+          python -m py_compile nasdaq-xray/omega_buy_only_start_kernel.py
+          python nasdaq-xray/omega_buy_only_start_kernel.py --selftest
+          python -O nasdaq-xray/omega_buy_only_start_kernel.py --selftest
 
   live-readback:
     name: Bind real source, technical WATCH and SEC mirror to one verified research receipt
@@ -149,6 +154,38 @@ jobs:
             --source-run-id "$SOURCE" --watch-run-id "$WATCH_ID" \
             --mirror-run-id "$MIRROR_ID" --asof "$ASOF" \
             --out "$RUNNER_TEMP/xray_research_operations_acceptance.json"
+      - name: "Omega BUY-only start DAG: real canonical source vs independent research"
+        if: steps.inputs.outputs.ready == 'true'
+        env:
+          ASOF: ${{ steps.inputs.outputs.asof }}
+        run: |
+          python nasdaq-xray/omega_buy_only_start_kernel.py \
+            --asof "$ASOF" \
+            --research-receipt "$RUNNER_TEMP/xray_research_operations_acceptance.json" \
+            --out "$RUNNER_TEMP/xray_omega_buy_only_start_gate.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_omega_buy_only_start_gate.json").read_text())
+          assert d["execution"]=="NONE" and d["real_money"]=="NO-GO"
+          assert d["research"]["verified"] is True
+          assert d["this_report_is_release_authority"] is False
+          assert d["buy_signal_issued"] is False
+          assert d["orders"]==[]
+          assert d["broker_access_required"] is False
+          assert d["g9_strict_required"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as s:
+              s.write("## Omega manual BUY-only start DAG\n\n")
+              s.write("**Research:** "+d["research_start"]+"; **AL:** "+
+                      d["buy_signal_start"]+".\n\n")
+              s.write("Unverified canonical PRICE "+str(d["canonical"]["price_unknown"])+
+                      "; PRIMARY PRICE PASS "+str(d["canonical"]["price_pass"])+
+                      "; current R92 "+str(d["canonical"]["registered_r92"])+".\n\n")
+              s.write("Research-only exact 3-source technical WATCH: "+
+                      str(d["research"]["watch_count"])+
+                      "; never BUY, never broker/order.\n\n")
+          print("XRAY_OMEGA_CROSS_ARTIFACT_START=RESEARCH_ONLY_NO_FALSE_AL")
+          PY
       - name: "Public summary — research evidence attested, but FINAL release and phone not attested"
         if: steps.inputs.outputs.ready == 'true'
         run: |
@@ -176,6 +213,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xray-personal-research-operations-exact-receipt-no-al
-          path: ${{ runner.temp }}/xray_research_operations_acceptance.json
+          path: |
+            ${{ runner.temp }}/xray_research_operations_acceptance.json
+            ${{ runner.temp }}/xray_omega_buy_only_start_gate.json
           if-no-files-found: warn
           retention-days: 14
