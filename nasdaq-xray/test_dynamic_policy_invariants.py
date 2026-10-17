@@ -117,15 +117,20 @@ def main():
     st,info=sina.resolution_result("ZZZZ",bad_overlay,exp)
     assert st=="UNKNOWN_STATIC",(st,info)
 
-    good_overlay={
+    # A source name and perfectly consistent 30-count/median numbers are
+    # NOT actual per-session exchange evidence. Preserve nonpromotion even
+    # under the erstwhile synthetically "good" legacy overlay fixture.
+    forged_overlay={
       "decision":"PASS_HARD_GATES","price":100.0,"bars":300,
       "dv30_lower_bound":100_000_000.0,"dv30_upper_bound":100_000_000.0,
       "known_session_count":30,"missing_sessions":[],
       "no_synthetic_bar":True,"source":"TEST","proof":"EXACT30_MEDIAN"
     }
-    st,info=sina.resolution_result("ZZZZ",good_overlay,exp)
-    assert st=="PASS",(st,info)
-    assert info["known_session_count"]==30 and info["missing_sessions"]==[]
+    st,info=sina.resolution_result("ZZZZ",forged_overlay,exp)
+    assert st=="UNKNOWN_STATIC",(st,info)
+    assert info["reason"]=="UNATTESTED_HISTORY_OVERLAY_POSITIVE_FORBIDDEN"
+    assert info["revalidate_in_canonical_price_history_chain"] is True
+    assert info["unknown_never_pass"] is True
 
     from price_dv30_recover_from_fullstate import valid_bridge_price_resolution
     assert valid_bridge_price_resolution({
