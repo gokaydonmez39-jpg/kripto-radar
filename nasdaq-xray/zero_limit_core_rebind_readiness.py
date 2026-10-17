@@ -211,8 +211,10 @@ def main():
         require(not args.out.resolve().is_relative_to(REPO.resolve()),
                 "PUBLIC_REPO_OUTPUT_FORBIDDEN")
         args.out.parent.mkdir(parents=True,exist_ok=True)
-        args.out.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",
+        args.out.write_text(json.dumps(report,indent=2,sort_keys=True,allow_nan=False)+"\n",
                             encoding="utf-8")
+        reread = json.loads(args.out.read_text(encoding="utf-8"))
+        require(reread == report, "JSON_ARTIFACT_ROUNDTRIP_FAILED")
     print("XRAY_ZERO_LIMIT_CORE_REBIND="+report["research_status"])
     print("XRAY_ZERO_LIMIT_MASTER_UNKNOWN="+str(report["master"]["unknown_count"]))
     print("XRAY_ZERO_LIMIT_PRICE_UNKNOWN="+str(report["price_dv30"]["unknown_count"]))
