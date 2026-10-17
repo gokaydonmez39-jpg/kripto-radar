@@ -78,8 +78,14 @@ def evaluate(master: dict, price: dict, inventory: dict, *, blocked_price_diagno
     require(bq.get("historical_mc_slug") == "market-capitalization-daily", "BQ_METRIC_CHANGED")
     calls = (len(ps) + batch - 1) // batch
     quota_days = (calls + daily - 1) // daily
-    sustainable = calls <= daily
+    # A zero or incomplete PRICE cohort cannot establish a full-cohort daily
+    # refresh, even if a 0-call arithmetic expression fits in the quota.
+    # Distinguish capacity of the observed research subset from completeness.
+    subset_quota_fits = bool(ps) and calls <= daily
+    sustainable = subset_quota_fits and not incomplete
     reasons = []
+    if not ps:
+        reasons.append("EMPTY_PRICE_PASS_SCOPE_NO_CAPACITY_CLAIM")
     if incomplete:
         reasons.append("PRICE_UNKNOWN_OR_BLOCKED_NO_PRIMARY")
     if not sustainable:
@@ -107,7 +113,10 @@ def evaluate(master: dict, price: dict, inventory: dict, *, blocked_price_diagno
             "required_full_cohort_calls": calls,
             "maximum_tickers_per_day": daily * batch,
             "minimum_quota_calendar_days": quota_days,
+            "zero_cohort_days_not_a_fulfilled_market_data_requirement": not bool(ps),
+            "observed_price_pass_subset_quota_fits": subset_quota_fits,
             "full_cohort_daily_refresh_with_this_quota": sustainable,
+            "full_cohort_daily_refresh_requires_nonempty_complete_price_scope": True,
             "min_days_not_same_session_authority": True,
         },
         "reason_codes": reasons,
@@ -155,6 +164,7 @@ def selftest() -> None:
     require(diag["status"]=="SHADOW_PRICE_INCOMPLETE_NO_PRIMARY"
             and diag["source_price_unknown_count"]==2
             and not diag["source_price_cohort_complete"]
+            and not diag["BQ"]["full_cohort_daily_refresh_with_this_quota"]
             and not diag["production_go"] and not diag["can_create_PRIMARY"],
             "INCOMPLETE_SOURCE_MUST_NEVER_GO")
     try:evaluate(im,ip,inv)
@@ -171,6 +181,13 @@ def selftest() -> None:
         pp["pass_count"] = n
         res = evaluate(mm, pp, inv)
         require(res["BQ"]["required_full_cohort_calls"] == (n+4)//5, "DYNAMIC_COHORT_ARITHMETIC")
+        require(res["BQ"]["full_cohort_daily_refresh_with_this_quota"] == (0 < n <= 150), "NONEMPTY_FULL_COHORT_CAPACITY_ONLY")
+        require(res["BQ"]["observed_price_pass_subset_quota_fits"] == (0 < n <= 150), "OBSERVED_SUBSET_QUOTA_SEPARATE")
+        if n == 0:
+            require("EMPTY_PRICE_PASS_SCOPE_NO_CAPACITY_CLAIM" in res["reason_codes"]
+                    and res["BQ"]["zero_cohort_days_not_a_fulfilled_market_data_requirement"]
+                    and res["BQ"]["minimum_quota_calendar_days"] == 0
+                    and res["status"] == "SHADOW_DAILY_REFRESH_BLOCKED", "ZERO_COHORT_FALSE_FEASIBILITY")
         require(res["can_create_PRIMARY"] is False and res["production_go"] is False, "FALSE_PRIMARY")
     negative = [
         ("MASTER_PASS_UNKNOWN_OVERLAP", lambda m,p,i: m["unknown_symbols"].append(m["pass_symbols"][0])),
@@ -195,6 +212,7 @@ def selftest() -> None:
         except ValueError as err:
             require(code in str(err), "WRONG_NEGATIVE_REASON:" + code + ":" + str(err))
         else: raise RuntimeError("UNSAFE_MUTANT_ACCEPTED:" + code)
+    print("XRAY_C418_ZERO_SCOPE_MUST_NOT_CLAIM_DAILY_FEASIBILITY=PASS")
     print(f"XRAY_C418_DAILY_MC_CAPACITY_SELFTEST=PASS_7_DYNAMIC_14_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
 
 
