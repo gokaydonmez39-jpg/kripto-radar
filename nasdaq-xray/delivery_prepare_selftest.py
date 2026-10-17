@@ -42,16 +42,21 @@ def write_guard(p,active=None,status="PASS",suspended=None,security_status=None)
     }
     (p/"canonical_official_source_guard.json").write_text(json.dumps(g))
 
-def write_chain(p,unrelated_unknown=True,exact=True):
+def write_chain(p,unrelated_unknown=True,exact=True,unrelated_price_unknown=False):
     symbols=["AAA","BBB"]+(["ZZZ"] if unrelated_unknown else [])
     price={
       "schema":"XRAY_CANONICAL_PRICE_DV30_V1","asof_et":"2099-01-02",
-      "unknown_count":0,"pass_count":len(symbols),"pass_hash":"PASSHASH",
+      "unknown_count":int(unrelated_price_unknown),
+      "unknown_symbols":["DDD"] if unrelated_price_unknown else [],
+      "source_master_count":len(symbols)+int(unrelated_price_unknown),
+      "pass_count":len(symbols),"pass_hash":"PASSHASH",
       "pass_symbols":symbols,
       "results":{
         "AAA":{"status":"PASS_PRICE_DV30","info":{"dv30":100000000.0}},
         "BBB":{"status":"PASS_PRICE_DV30","info":{"dv30":120000000.0}},
         **({"ZZZ":{"status":"PASS_PRICE_DV30","info":{"dv30":80000000.0}}} if unrelated_unknown else {}),
+        **({"DDD":{"status":"UNKNOWN","info":{"reason":"RTH_UNVERIFIED"}}}
+           if unrelated_price_unknown else {}),
       }
     }
     (p/"canonical_current_price_dv30.json").write_text(json.dumps(price))
@@ -161,6 +166,46 @@ with tempfile.TemporaryDirectory() as td:
     assert "XRAY_DELIVERY_COUNT=2" in cp.stdout
     batch=json.load(open(p/".delivery_work/batch.json"))
     assert {x["symbol"] for x in batch["candidates"]}=={"AAA","BBB"}
+
+    # Positive: independently proven R92 candidates remain eligible even
+    # when ANOTHER price symbol is explicitly UNKNOWN in an exact partition.
+    # Unknown DDD is not in PRICE PASS or the MC input set.
+    write_chain(p,unrelated_unknown=True,exact=True,unrelated_price_unknown=True)
+    write_terminal(p)
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a,b],[a["delivery_key"],b["delivery_key"]])))
+    cp=run_case(p,True)
+    assert "XRAY_DELIVERY_READY=PASS" in cp.stdout
+    assert "XRAY_DELIVERY_COUNT=2" in cp.stdout
+
+    # Negative: corrupt, overlapping, or omitted PRICE UNKNOWN partitions
+    # must never be used to bypass the strict candidate-local source proof.
+    for badpart in ("PRICE_PASS_IS_UNKNOWN","UNCLASSIFIED_PRICE_UNKNOWN",
+                    "MISSING_SOURCE_ROW","FALSE_UNKNOWN_COUNT"):
+        write_chain(p,unrelated_unknown=True,exact=True,unrelated_price_unknown=True)
+        price_path=p/"canonical_current_price_dv30.json"
+        bad_price=json.loads(price_path.read_text())
+        if badpart=="PRICE_PASS_IS_UNKNOWN":
+            bad_price["unknown_symbols"]=["AAA"]
+        elif badpart=="UNCLASSIFIED_PRICE_UNKNOWN":
+            bad_price["unknown_symbols"]=[]
+            bad_price["unknown_count"]=0
+        elif badpart=="MISSING_SOURCE_ROW":
+            del bad_price["results"]["DDD"]
+        elif badpart=="FALSE_UNKNOWN_COUNT":
+            bad_price["unknown_count"]=2
+        price_path.write_text(json.dumps(bad_price))
+        write_terminal(p)
+        (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+            pointer(p,[a,b],[a["delivery_key"],b["delivery_key"]])))
+        cp=run_case(p,True)
+        assert "XRAY_DELIVERY_NOOP=CURRENT_DV30_MC_CHAIN_INCOMPLETE" in cp.stdout,badpart
+
+    # Restore exact candidate fixtures for all legacy delivery negatives.
+    write_chain(p,unrelated_unknown=True,exact=True)
+    write_terminal(p)
+    (p/"chatgpt_canonical_state_v2.json").write_text(json.dumps(
+        pointer(p,[a,b],[a["delivery_key"],b["delivery_key"]])))
 
     # Negative: malformed/unregistered R92 must never silently become
     # NO_REGISTERED_CANDIDATE. Only a genuinely empty R92 is a clean no-op.
@@ -281,4 +326,4 @@ with tempfile.TemporaryDirectory() as td:
     cp=run_case(p,False)
     assert "DELIVERY_R92_SAFETY_LOCK_FAIL" in (cp.stdout+cp.stderr)
 
-print("XRAY_DELIVERY_PREPARE_SELFTEST=PASS_CANDIDATE_LOCAL_GLOBAL_UNKNOWN_INDEPENDENCE")
+print("XRAY_DELIVERY_PREPARE_SELFTEST=PASS_CANDIDATE_LOCAL_PRICE_AND_MC_UNKNOWN_INDEPENDENCE")
