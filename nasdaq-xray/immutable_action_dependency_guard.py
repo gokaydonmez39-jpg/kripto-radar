@@ -16,7 +16,7 @@ PYTHON = "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065"
 ARTIFACT = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
 EXPECTED = {
     ".github/workflows/nasdaq-xray-daily.yml": (CHECKOUT, PYTHON, ARTIFACT),
-    ".github/workflows/nasdaq-xray-delivery.yml": (CHECKOUT, PYTHON),
+    ".github/workflows/nasdaq-xray-delivery.yml": (CHECKOUT, PYTHON, CHECKOUT, PYTHON),
     ".github/workflows/xray-e2e-production-readiness.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-preopen-source-audit.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-c418-multi-source-contract.yml": (CHECKOUT, PYTHON, ARTIFACT),
@@ -58,6 +58,20 @@ def verify(path: str, contents: str) -> int:
     if any(not re.fullmatch(r"actions/[a-z-]+@[a-f0-9]{40}", ref)
            for ref in observed):
         raise ValueError("ACTION_NOT_IMMUTABLE")
+    if path == ".github/workflows/nasdaq-xray-delivery.yml":
+        # Delivery has separate offline PR guard and delivery jobs. Both must
+        # independently pin checkout + Python; the global 4-ref count alone
+        # cannot prove the two-job supply-chain boundary.
+        guard_head = re.search(r"(?m)^  guard-order-offline:\s*$", contents)
+        delivery_head = re.search(r"(?m)^  deliver:\s*$", contents)
+        if (guard_head is None or delivery_head is None
+                or guard_head.end() >= delivery_head.start()):
+            raise ValueError("DELIVERY_TWO_JOB_STRUCTURE_MISSING")
+        guard_text = contents[guard_head.end():delivery_head.start()]
+        deliver_text = contents[delivery_head.end():]
+        if (references(guard_text) != [CHECKOUT, PYTHON]
+                or references(deliver_text) != [CHECKOUT, PYTHON]):
+            raise ValueError("DELIVERY_JOB_LOCAL_PIN_SET_MISMATCH")
     if path == ".github/workflows/xray-sec-free-mc-transport-proof.yml":
         if re.search(r"(?m)^\s*ref:\s*(?:main|master)\s*$", contents):
             raise ValueError("SEC_CHECKOUT_MOVING_MAIN_DISALLOWED")
@@ -84,6 +98,35 @@ def selftest() -> None:
               "  - uses: " + PYTHON + " # v5.6.0\n"
               "  - uses: " + ARTIFACT + " # v4.6.2\n")
     assert verify(example, source) == 3
+    delivery = ".github/workflows/nasdaq-xray-delivery.yml"
+    delivery_fixture = (
+        "jobs:\n"
+        "  guard-order-offline:\n"
+        "    steps:\n"
+        "      - uses: " + CHECKOUT + "\n"
+        "      - uses: " + PYTHON + "\n"
+        "  deliver:\n"
+        "    steps:\n"
+        "      - uses: " + CHECKOUT + "\n"
+        "      - uses: " + PYTHON + "\n"
+    )
+    assert verify(delivery, delivery_fixture) == 4
+    delivery_negatives = (
+        delivery_fixture.replace("  deliver:\n", "  other:\n"),
+        delivery_fixture.replace("  guard-order-offline:\n", "  other:\n"),
+        delivery_fixture.replace("      - uses: " + PYTHON + "\n", "", 1),
+        delivery_fixture.replace("      - uses: " + CHECKOUT + "\n", "", 1),
+        delivery_fixture.replace(
+            "  deliver:\n    steps:\n      - uses: " + CHECKOUT,
+            "  deliver:\n    steps:\n      - uses: actions/checkout@v4"),
+        delivery_fixture + "      - uses: " + PYTHON + "\n",
+    )
+    for mutant in delivery_negatives:
+        try:
+            verify(delivery, mutant)
+        except ValueError:
+            continue
+        raise AssertionError("DELIVERY_MULTI_JOB_DEPENDENCY_MUTATION_ACCEPTED")
     assert references("steps:\n  - name: hello\n") == []
     negatives = [
         source.replace(CHECKOUT, "actions/checkout@v4"),
@@ -155,6 +198,7 @@ def selftest() -> None:
         try: verify(history,mutated)
         except ValueError: continue
         raise AssertionError("HISTORY_ACTION_OR_OPTIMIZATION_NEGATIVE_BYPASS")
+    print("XRAY_IMMUTABLE_DELIVERY_TWO_JOBS_SELFTEST=PASS_6_NEGATIVES")
     print("XRAY_IMMUTABLE_ACTION_GUARD_SELFTEST=PASS_14_NEGATIVES")
 
 
@@ -165,7 +209,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 46:
+    if sum(audited.values()) != 48:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -173,4 +217,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_46_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_48_EXACT_OFFICIAL_SHAS")
