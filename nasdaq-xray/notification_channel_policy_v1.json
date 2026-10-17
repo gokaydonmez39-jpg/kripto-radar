@@ -34,6 +34,16 @@
     "iphone_ack_verification_status": "UNVERIFIED",
     "no_push_claim_without_platform_ack": true,
     "no_new_notification_channel": true,
-    "watch_candidates_must_not_be_converted_to_buy": true
-  }
+    "watch_candidates_must_not_be_converted_to_buy": true,
+    "user_visible_only": "🟢 AL — DOĞRULANMIŞ R92",
+    "watch_early_liquidity_source_fault_data_fault_wait_internal_only": true,
+    "no_user_notification_from_watch_or_health_issues": true,
+    "registered_r92_candidate_local_full_c417_proof_required": true
+  },
+  "user_visible_event_scope": "VERIFIED_REGISTERED_R92_BUY_ONLY",
+  "watch_and_early_research_internal_only": true,
+  "source_and_data_faults_internal_only": true,
+  "silent_when_no_new_verified_r92": true,
+  "broker_orders_never_allowed": true,
+  "account_and_g9_not_research_signal_prerequisites": true
 }
