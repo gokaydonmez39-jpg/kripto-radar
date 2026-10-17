@@ -3,11 +3,13 @@ on:
   pull_request:
     paths:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
+      - "nasdaq-xray/personal_research_daily_attestation.py"
       - ".github/workflows/xray-candidate-sip-pending-partition-offline.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
+      - "nasdaq-xray/personal_research_daily_attestation.py"
       - ".github/workflows/xray-candidate-sip-pending-partition-offline.yml"
 permissions:
   contents: read
@@ -31,6 +33,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py
           python nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
           python -O nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
+          python -m py_compile nasdaq-xray/personal_research_daily_attestation.py
+          python nasdaq-xray/personal_research_daily_attestation.py --selftest
+          python -O nasdaq-xray/personal_research_daily_attestation.py --selftest
       - name: Verify exact LIVE main-source partial candidate partition if session is current
         run: |
           python - <<'PY'
