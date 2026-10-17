@@ -194,6 +194,14 @@ def selftest():
         except (ValueError,TypeError,KeyError):pass
         else:raise AssertionError("DANGEROUS_CANONICAL_INPUT_ACCEPTED")
     require(len(variants)==12,"NEGATIVE_FIXTURE_COUNT")
+    serialized=json.dumps(result,sort_keys=True,allow_nan=False)+"\n"
+    require(json.loads(serialized)==result and serialized.endswith("\n"),"JSON_ROUNDTRIP_SELFTEST")
+    try:
+        json.loads(serialized+"\\n")
+    except json.JSONDecodeError:
+        pass
+    else:
+        raise AssertionError("TRAILING_LITERAL_BACKSLASH_N_ACCEPTED")
     print("XRAY_ZERO_LIMIT_CORE_REBIND_SELFTEST=PASS_12_NEGATIVES_3_CALENDAR_GATES_NO_VENDOR_NO_PRIMARY_NO_R92")
 
 def main():
