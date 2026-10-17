@@ -142,11 +142,11 @@ def evaluate(pack, expected_asof, receipt=None):
          and pol.get("account", {}).get("mandatory_for_research_signal") is False,
          "NO_BROKER_NO_G9_REQUIRED")
     need(notify.get("user_delivery_authority_task_id") == TASK
-         or notify.get("user_visible_event_scope") != "VERIFIED_REGISTERED_R92_BUY_ONLY"
-         or notify.get("watch_and_early_research_internal_only") is not True
-         or notify.get("source_and_data_faults_internal_only") is not True
-         or notify.get("dedup_required") is not True
-         or notify.get("unknown_never_pass") is not True,
+         and notify.get("user_visible_event_scope") == "VERIFIED_REGISTERED_R92_BUY_ONLY"
+         and notify.get("watch_and_early_research_internal_only") is True
+         and notify.get("source_and_data_faults_internal_only") is True
+         and notify.get("dedup_required") is True
+         and notify.get("unknown_never_pass") is True,
          "ONLY_REGISTERED_AL_NOTIFICATIONS")
     part_ok, part_reason = price_partition(px, m)
     # Fail closed on corrupt partitions. It must NEVER be spun into a repair.
