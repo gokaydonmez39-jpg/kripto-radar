@@ -1,11 +1,11 @@
 {
-  "asof_et": "2026-10-14",
+  "asof_et": "2026-10-16",
   "asof_proof": {
-    "canonical_price_blob_sha": "af380e14b8edc8a879f4230e39ecc73ceb1ef948",
-    "master_blob_sha": "efd55ad9ba7386b5ac6b2a76ee8677fd30b3ed04",
-    "orchestrator_blob_sha": "9604b6b9be18f8300e9bb3883e0b6c8154fcbd4b",
-    "pending_scope_sha256": "1f5acf556a2b6d52798881f129604844f21e57c923a787764f482784a568ac5d",
-    "price_unknown_scope_sha256": "9eec68b44d65d0d80ae7c500744768e0b56ce71af0ee789e5a9dfe74c0a34a7b"
+    "canonical_price_blob_sha": "69ea1e7a6cccf6a0e3f6ae81379af322202be870",
+    "master_blob_sha": "a1dbabedc1ce2d8844e077bc48dd92ffd0d324f0",
+    "orchestrator_blob_sha": "fd9f57e35df419f216a474502774f0a45d28a5c9",
+    "pending_scope_sha256": "a6b1cf3aed13b4438b84688fa6cdf3ea9988505b6e5d163585ff1ec28e4e3b87",
+    "price_unknown_scope_sha256": "2bea89714d7ddf5e213dcc26bbff87e8fdc6be2247b215a13589c35b396c4d9e"
   },
   "candidate_technical_watch_research_observed_count": 0,
   "certified_C417_AL_signal_count": 0,
@@ -17,26 +17,26 @@
   "no_personal_account_access": true,
   "no_vendor_ohlcv_or_price_levels_persisted": true,
   "personal_price_exact30_research_counts": {
-    "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW": 87,
-    "LOWER_BOUND_GE_50M_SHADOW": 421,
-    "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW": 5
+    "AMBIGUOUS_BETWEEN_BOUNDS_SHADOW": 77,
+    "LOWER_BOUND_GE_50M_SHADOW": 433,
+    "UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW": 32
   },
   "personal_secondary_technical_counts": {
-    "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 2
+    "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 3
   },
   "personal_source260_candidate_counts": {
-    "SHADOW_260_DAILY_52_WEEK_OBSERVED": 2
+    "SHADOW_260_DAILY_52_WEEK_OBSERVED": 3
   },
   "registered_R92_signal_count": 0,
   "research_scope": {
-    "all_candidate_watch": 474,
-    "canonical_price_unknown": 513,
-    "canonical_technical_evaluated": 472,
-    "master_pass": 3185,
-    "master_unknown": 9,
-    "secondary_local_pending_examined": 2,
+    "all_candidate_watch": 476,
+    "canonical_price_unknown": 542,
+    "canonical_technical_evaluated": 473,
+    "master_pass": 3190,
+    "master_unknown": 11,
+    "secondary_local_pending_examined": 3,
     "secondary_local_still_unknown_count": 0,
-    "secondary_local_technical_rejected_count": 2
+    "secondary_local_technical_rejected_count": 3
   },
   "safety": {
     "canonical_release_unchanged": true,
