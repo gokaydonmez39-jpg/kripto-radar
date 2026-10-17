@@ -825,25 +825,19 @@ def resolution_result(sym,ov,expected30):
             return "UNKNOWN_STATIC",{"reason":"RESOLUTION_BLOCK_INVALID","symbol":sym}
         return "BLOCK_CURRENT_RUN",{"reason":ov.get("reason"),"trade_status":"Halted","last_bar":ov.get("last_bar"),"resolution_source":ov.get("source")}
     if d=="PASS_HARD_GATES":
-        px=num(ov.get("price")); bars=ov.get("bars")
-        lo=num(ov.get("dv30_lower_bound")); hi=num(ov.get("dv30_upper_bound"))
-        missing=ov.get("missing_sessions") or []; known=ov.get("known_session_count")
-        if (
-          px is None or px<HARD_PRICE or not isinstance(bars,int) or bars<HARD_HISTORY
-          or lo is None or hi is None or lo<HARD_DV30 or hi<lo
-          or ov.get("no_synthetic_bar") is not True
-          or not isinstance(known,int) or known!=30 or missing!=[]
-          or lo!=hi
-        ):
-            return "UNKNOWN_STATIC",{"reason":"RESOLUTION_PASS_BOUND_INVALID","symbol":sym}
-        return "PASS",{
-          "price":px,"bars":bars,
-          "dv30_gate_pass_by_bound":True,
-          "dv30_lower_bound":lo,"dv30_upper_bound":hi,
-          "known_session_count":known,"missing_sessions":missing,
-          "no_synthetic_bar":True,
-          "resolution_source":ov.get("source"),
-          "proof":ov.get("proof"),
+        # CRITICAL PROOF BOUNDARY: an overlay is manually/file-supplied
+        # diagnostic material. Even with 30, equal lower/upper DV30 bounds,
+        # a timestamp and a plausible "source" string, it proves neither
+        # 30 real exchange RTH observations nor licensed source lineage.
+        # It must never create an AL-eligible PASS. The independent
+        # canonical PRICE/MC/HISTORY lineage owns all positive promotions.
+        # This policy does not suppress genuine Sina PASS from parse_hist()
+        # or a separately validated immutable primary evidence bridge.
+        return "UNKNOWN_STATIC",{
+          "reason":"UNATTESTED_HISTORY_OVERLAY_POSITIVE_FORBIDDEN",
+          "symbol":sym,"decision":"PASS_HARD_GATES",
+          "revalidate_in_canonical_price_history_chain":True,
+          "unknown_never_pass":True,
         }
     return "UNKNOWN_STATIC",{"reason":"RESOLUTION_DECISION_UNKNOWN","symbol":sym,"decision":d}
 
