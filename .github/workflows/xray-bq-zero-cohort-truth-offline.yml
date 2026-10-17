@@ -1,0 +1,50 @@
+name: XRAY BQ Zero Cohort Truth (Offline)
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/xray-bq-zero-cohort-truth-offline.yml"
+      - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
+  push:
+    paths:
+      - ".github/workflows/xray-bq-zero-cohort-truth-offline.yml"
+      - "nasdaq-xray/c418_daily_mc_capacity_guard.py"
+permissions:
+  contents: read
+concurrency:
+  group: xray-bq-zero-cohort-truth
+  cancel-in-progress: false
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Run exact quota and zero-cohort regressions without provider calls
+        run: |
+          python -m py_compile nasdaq-xray/c418_daily_mc_capacity_guard.py
+          python nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+          python -O nasdaq-xray/c418_daily_mc_capacity_guard.py --selftest
+      - name: Check live repo canonical zero-cohort cannot be silently feasible
+        run: |
+          python nasdaq-xray/c418_daily_mc_capacity_guard.py --out "$RUNNER_TEMP/bq_truth.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ["RUNNER_TEMP"])/"bq_truth.json").read_text())
+          assert report["execution"] == "NONE"
+          assert report["real_money"] == "NO-GO"
+          assert report["unknown_never_pass"] is True
+          assert report["can_create_PRIMARY"] is False
+          assert report["can_register_R92"] is False
+          assert report["production_go"] is False
+          bq = report["BQ"]
+          if report["source_cohort_price_pass"] == 0:
+              assert bq["required_full_cohort_calls"] == 0
+              assert bq["full_cohort_daily_refresh_with_this_quota"] is False
+              assert bq["observed_price_pass_subset_quota_fits"] is False
+              assert "EMPTY_PRICE_PASS_SCOPE_NO_CAPACITY_CLAIM" in report["reason_codes"]
+          print("XRAY_BQ_ACTUAL_ZERO_PRICE_COHORT_NOT_CAPACITY_PASS=PASS")
+          PY
