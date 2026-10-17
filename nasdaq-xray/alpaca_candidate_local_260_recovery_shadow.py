@@ -63,12 +63,36 @@ def source_scope(root, now):
          and digest == funnel.get("watchlist_digest"),
          "CANDIDATE_SOURCE_AND_WATCH_DIGEST_MISMATCH")
     results = funnel.get("results")
-    need(type(results) is dict and set(results) == set(names)
-         and funnel.get("attempted_count") == len(names),
+    known = set(results) if type(results) is dict else set()
+    universe = set(names)
+    need(type(results) is dict and known.issubset(universe)
+         and all(type(row) is dict and type(row.get("status")) is str
+                 for row in results.values())
+         and type(funnel.get("attempted_count")) is int
+         and funnel["attempted_count"] == len(known),
          "RESULT_PARTITION_INCOMPLETE")
-    target = sorted(sym for sym in names if type(results.get(sym)) is dict
-                    and type(results[sym].get("status")) is str
-                    and results[sym]["status"].startswith("UNKNOWN_"))
+    unattempted = universe - known
+    # The technical producer is allowed to stop mid-cohort. Its explicit
+    # pending partition MUST contain precisely every unattempted symbol AND
+    # every already-attempted UNKNOWN. A missing row is not a technical PASS.
+    # It may still receive a separate *research-only* SIP history observation.
+    if unattempted:
+        pending = funnel.get("pending_symbols")
+        pending_observed = {
+            sym for sym, row in results.items()
+            if row["status"].startswith("UNKNOWN_")
+        }
+        need(type(pending) is list and
+             len(pending) == len(set(pending)) and
+             all(type(sym) is str for sym in pending) and
+             type(funnel.get("pending_count")) is int and
+             funnel["pending_count"] == len(pending) and
+             set(pending) == unattempted | pending_observed,
+             "PENDING_PARTITION_UNATTESTED")
+    target = sorted(unattempted | {
+        sym for sym, row in results.items()
+        if row["status"].startswith("UNKNOWN_")
+    })
     need(len(target) <= len(names), "TARGETS_OUTSIDE_WATCH_SCOPE")
     daily, weeks = expected_dates(asof)
     need(len(daily) == 260 and len(weeks) == 52 and daily[-1] == asof,
@@ -341,7 +365,37 @@ def selftest():
         need("RESULT_PARTITION_INCOMPLETE" in str(exc), "MISSING_CANDIDATE_FAIL_CLOSED")
     else:
         raise AssertionError("UNATTEMPTED_CANDIDATE_SILENTLY_OMITTED")
+    # Positive: same exact source scope, with one tracked technical
+    # candidate not yet attempted. Prove explicit source pending partition
+    # and include it in historical diagnostics WITHOUT any technical PASS.
+    fake["candidate_technical_funnel"]["attempted_count"] = 1
+    fake["candidate_technical_funnel"]["pending_count"] = 2
+    fake["candidate_technical_funnel"]["pending_symbols"] = ["AAA", "BBB"]
+    need(source_scope(fake, now)[1] == ["AAA", "BBB"],
+         "UNATTEMPTED_PENDING_LOCAL_INCLUDED")
+    # A real current source may have 475/476 attempted and exactly one
+    # unattempted; the 2 other UNKNOWN rows are already in results.
+    pending_attack = [
+        lambda f: f.update(pending_symbols=["AAA"]),
+        lambda f: f.update(pending_symbols=["AAA", "BBB", "BBB"]),
+        lambda f: f.update(pending_count=1),
+        lambda f: f.update(attempted_count=2),
+        lambda f: f.update(pending_symbols=["AAA", "CCC"],pending_count=2),
+        lambda f: f.update(pending_symbols=["BBB"],pending_count=1),
+    ]
+    from copy import deepcopy
+    for index, mutate in enumerate(pending_attack):
+        altered = deepcopy(fake)
+        mutate(altered["candidate_technical_funnel"])
+        try:
+            source_scope(altered, now)
+        except ValueError:
+            continue
+        raise AssertionError("UNATTESTED_PARTIAL_SOURCE_ACCEPTED_" + str(index))
     fake["candidate_technical_funnel"]["results"]["BBB"] = saved
+    fake["candidate_technical_funnel"]["attempted_count"] = 2
+    fake["candidate_technical_funnel"].pop("pending_symbols")
+    fake["candidate_technical_funnel"].pop("pending_count")
     fake["asof_et"] = "2026-10-12"
     try:
         source_scope(fake, now)
@@ -442,7 +496,7 @@ def selftest():
          "UNKNOWN_SOURCE_ROW_INVALID"
          and malformed["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
          "MALFORMED_BAR_MUST_NEVER_LOOK_LIKE_COMPLETE_SOURCE")
-    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_SEVEN_PENDING_3_OBSERVED_1_GAP_4_NEGATIVES_NO_PRIMARY_R92")
+    print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_EXACT_PENDING_UNATTEMPTED_6_NEGATIVES_NO_PRIMARY_R92")
 
 def main():
     p = argparse.ArgumentParser()
