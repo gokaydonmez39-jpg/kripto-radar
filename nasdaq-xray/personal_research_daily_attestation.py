@@ -64,15 +64,35 @@ def audit(orchestrator,study,state_blob):
     require(tech.get("source_candidates_sha256")==watch.get("source_candidates_sha256")
             and tech.get("watchlist_digest")==watch.get("watchlist_digest"),
             "WATCH_DIGEST_SOURCE_DRIFT")
-    previous=tech.get("results") or {}
-    require(type(previous) is dict and set(previous)==set(symbols),
-            "TECH_EXACT_RESULT_COHORT")
-    pending=sorted(sym for sym in symbols if
-                   type(previous[sym]) is dict and
-                   type(previous[sym].get("status")) is str and
-                   previous[sym]["status"].startswith("UNKNOWN_"))
-    require(pending==sorted(tech.get("pending_symbols") or []) and
-            len(pending)==tech.get("pending_count"),
+    previous=tech.get("results")
+    known=set(previous) if type(previous) is dict else set()
+    universe=set(symbols)
+    require(type(previous) is dict and known.issubset(universe) and
+            all(type(row) is dict and type(row.get("status")) is str
+                for row in previous.values()), "TECH_EXACT_RESULT_COHORT")
+    unattempted=universe-known
+    if unattempted:
+        # Fail closed unless EVERY missing technical result is declared
+        # pending in the same exact source epoch. A source observation
+        # CANNOT retroactively make a technical evaluation a PASS.
+        require(type(tech.get("attempted_count")) is int and
+                tech["attempted_count"]==len(known),
+                "TECH_ATTEMPTED_PARTITION_INVALID")
+    elif "attempted_count" in tech:
+        require(type(tech["attempted_count"]) is int and
+                tech["attempted_count"]==len(known),
+                "TECH_ATTEMPTED_PARTITION_INVALID")
+    pending=sorted(unattempted|{
+        sym for sym,row in previous.items()
+        if row["status"].startswith("UNKNOWN_")
+    })
+    declared=tech.get("pending_symbols")
+    require(type(declared) is list and
+            len(declared)==len(set(declared)) and
+            all(type(s) is str and s for s in declared) and
+            set(declared)==set(pending) and
+            type(tech.get("pending_count")) is int and
+            len(pending)==tech["pending_count"],
             "CURRENT_PENDING_SCOPE_DRIFT")
     require(study.get("schema")==SHADOW and
             study.get("source_state_git_blob_sha")==state_blob and
@@ -154,7 +174,56 @@ def selftest():
             valid["registered_R92_created"]==0 and
             valid["status"]=="PERSONAL_RESEARCH_BOUND_PASS_NOT_PRODUCTION",
             "POSITIVE_EXACT_COHORT")
+    # Real 16 Oct class: 476 watched, 475 attempted, 3 pending:
+    # 2 attempted UNKNOWN plus 1 unattempted. A secondary study may
+    # measure all three, but NONE is a canonical technical PASS or R92.
     import copy
+    partial=copy.deepcopy(m)
+    partial["candidate_technical_funnel"]["results"].pop("CCC")
+    partial["candidate_technical_funnel"]["attempted_count"]=2
+    partial_ok=audit(partial,s,h)
+    require(partial_ok["candidate_pending_source_total"]==2 and
+            partial_ok["secondary_sip_history_pending_reexamined_count"]==2 and
+            partial_ok["certified_C417_AL_signals_created"]==0 and
+            partial_ok["registered_R92_created"]==0,
+            "PARTIAL_PENDING_PROOF_NOT_RESEARCH_ONLY")
+    for tag,modifier in (
+        ("MISSING_EXPLICIT_PENDING",
+         lambda x:x["candidate_technical_funnel"].update(pending_symbols=["BBB"])),
+        ("DUPLICATE_PENDING",
+         lambda x:x["candidate_technical_funnel"].update(pending_symbols=["BBB","BBB"])),
+        ("FALSE_PENDING_COUNT",
+         lambda x:x["candidate_technical_funnel"].update(pending_count=1)),
+        ("WRONG_ATTEMPTED_COUNT",
+         lambda x:x["candidate_technical_funnel"].update(attempted_count=3)),
+        ("EXTRA_UNSCOPED_PENDING",
+         lambda x:x["candidate_technical_funnel"].update(pending_symbols=["BBB","CCC","ZZZ"],pending_count=3)),
+        ("MISSING_FROZEN_TECH_ROW",
+         lambda x:x["candidate_technical_funnel"]["results"].pop("BBB")),
+    ):
+        altered=copy.deepcopy(partial)
+        modifier(altered)
+        try:
+            audit(altered,s,h)
+        except ValueError:
+            continue
+        raise AssertionError("FALSE_PARTIAL_PENDING_ACCEPTED_"+tag)
+    for tag,modifier in (
+        ("MISSING_SECONDARY_UNATTEMPTED",
+         lambda x:x["statuses"].pop("CCC")),
+        ("FALSE_NEW_SECONDARY_PASS",
+         lambda x:x["statuses"].update(CCC="CANONICAL_R92_BUY_PASS")),
+        ("FORGED_SOURCE_SHA",
+         lambda x:x.update(source_state_git_blob_sha="0"*40)),
+    ):
+        altered=copy.deepcopy(s)
+        modifier(altered)
+        try:
+            audit(partial,altered,h)
+        except ValueError:
+            continue
+        raise AssertionError("FALSE_SECONDARY_PENDING_ACCEPTED_"+tag)
+
     for field,mutation in (
       ("SOURCE",lambda x:x.update(source_state_git_blob_sha="2"*40)),
       ("BAD_R92",lambda x:x.update(true_r92_count=1)),
@@ -168,7 +237,7 @@ def selftest():
         try:audit(m,bad,h)
         except ValueError:pass
         else:raise AssertionError("FALSE_ATTEST_ACCEPTED_"+field)
-    print("XRAY_PERSONAL_DAILY_ATTEST_SELFTEST=PASS_FULL_SCOPE_6_NEGATIVES_NO_C417_R92")
+    print("XRAY_PERSONAL_DAILY_ATTEST_SELFTEST=PASS_PARTIAL_PENDING_9_NEGATIVES_AND_6_LEGACY_NO_R92")
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
