@@ -44,8 +44,53 @@ def repo_path(rel):
 def load_json(path: Path):
     return json.loads(path.read_text())
 
+def valid_price_partition(price):
+    """Check the full source classification before validating an R92 candidate.
+
+    Unrelated PRICE UNKNOWN stays UNKNOWN but does not veto a complete,
+    independently proven candidate-local PRICE/MC/Final chain.
+    """
+    if not isinstance(price, dict):
+        return False
+    rows = price.get("results")
+    passed, unknown = price.get("pass_symbols"), price.get("unknown_symbols")
+    blocked = price.get("blocked_symbols", [])
+    if not (isinstance(rows, dict) and isinstance(passed, list)
+            and isinstance(unknown, list) and isinstance(blocked, list)):
+        return False
+    for group in (passed, unknown, blocked):
+        if any(not isinstance(x, str) or not x or x != x.upper() for x in group):
+            return False
+        if len(group) != len(set(group)):
+            return False
+    ps, us, bs = set(passed), set(unknown), set(blocked)
+    if ps & us or ps & bs or us & bs:
+        return False
+    if (len(ps) != price.get("pass_count")
+            or len(us) != price.get("unknown_count")
+            or len(bs) != price.get("blocked_count", 0)):
+        return False
+    live_pass = {sym for sym, row in rows.items()
+                 if isinstance(row, dict) and row.get("status") == "PASS_PRICE_DV30"}
+    live_unknown = {sym for sym, row in rows.items()
+                    if isinstance(row, dict)
+                    and str(row.get("status") or "").startswith("UNKNOWN")}
+    if ps != live_pass or us != live_unknown:
+        return False
+    if any(sym not in rows for sym in bs):
+        return False
+    if any(not isinstance(row, dict) or not isinstance(row.get("status"), str)
+           for row in rows.values()):
+        return False
+    master_size = price.get("source_master_count")
+    if master_size is not None and (type(master_size) is not int
+                                   or master_size != len(rows)):
+        return False
+    return True
+
+
 def current_chain_state():
-    """Validate exact current DV30->MC lineage without demanding global MC_UNKNOWN=0."""
+    """Verify exact current DV30->MC binding; global PRICE UNKNOWN is not a veto."""
     try:
         px = load_json(CURRENT_PRICE)
         h = load_json(CURRENT_HISTORY)
@@ -53,7 +98,7 @@ def current_chain_state():
         mc = load_json(mc_path) if mc_path.exists() else {}
         exact = bool(
             px.get("schema") == "XRAY_CANONICAL_PRICE_DV30_V1"
-            and int(px.get("unknown_count", -1)) == 0
+            and valid_price_partition(px)
             and h.get("asof_et") == px.get("asof_et")
             and h.get("source_mc_policy_hash") == CURRENT_POLICY_HASH
             and h.get("source_mc_policy_version") == "C4.17"
