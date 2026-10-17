@@ -37,6 +37,18 @@ def need(ok, reason):
         raise ValueError("XRAY_PERSONAL_FULL_UNIVERSE_SIP_" + reason)
 
 
+class RequestBudget:
+    """Shared fail-closed transport-attempt budget: debit BEFORE every HTTP call."""
+    def __init__(self, limit):
+        need(type(limit) is int and limit > 0, "CALL_BUDGET_LIMIT_INVALID")
+        self.limit = limit
+        self.used = 0
+
+    def debit(self):
+        need(self.used < self.limit, "CALL_BUDGET")
+        self.used += 1
+
+
 def sha(symbols):
     return hashlib.sha256("\n".join(symbols).encode()).hexdigest()
 
@@ -100,11 +112,12 @@ def historical_request_window(asof, now):
 
 
 def query_sip(symbols, asof, key, secret, opener=urllib.request.urlopen,
-              page_cap=8):
+              page_cap=8, budget=None, window_fn=historical_request_window):
     """One bounded multi-symbol request family; honour all returned pages."""
     need(bool(key and secret), "ALPACA_CREDENTIALS_NOT_CONFIGURED")
-    start, end = historical_request_window(
-        asof, dt.datetime.now(dt.timezone.utc))
+    need(budget is None or isinstance(budget, RequestBudget),
+         "CALL_BUDGET_OBJECT_INVALID")
+    start, end = window_fn(asof, dt.datetime.now(dt.timezone.utc))
     base = "https://data.alpaca.markets/v2/stocks/bars"
     pages, output, token = 0, {}, None
     while True:
@@ -119,6 +132,8 @@ def query_sip(symbols, asof, key, secret, opener=urllib.request.urlopen,
             "APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret,
             "Accept": "application/json",
             "User-Agent": "xray-personal-asof-coverage/1.0"})
+        if budget is not None:
+            budget.debit()
         with opener(req, timeout=24) as response:
             doc = json.loads(response.read())
         need(type(doc) is dict and type(doc.get("bars")) is dict,
@@ -334,6 +349,43 @@ def selftest():
     need(out["no_vendor_ohlcv_persisted"] is True and
          all("c" not in str(v) for v in out["symbol_classifications"].values()
              if False), "NO_RAW_VENDOR")
+    from io import BytesIO
+    attempts = []
+    def fake_http(req, timeout):
+        attempts.append(req.full_url)
+        if len(attempts) == 1:
+            response = {"bars": {"AAPL": [record()]},
+                        "next_page_token": "next"}
+        else:
+            response = {"bars": {}, "next_page_token": None}
+        return BytesIO(json.dumps(response).encode("utf-8"))
+    fake_window = lambda day, moment: (
+        "2026-10-14T00:00:00-04:00", "2026-10-14T20:05:00+00:00")
+    one = RequestBudget(1)
+    negative(lambda: query_sip(["AAPL"], asof, "TEST_ID", "TEST_SECRET",
+                                opener=fake_http, page_cap=3, budget=one,
+                                window_fn=fake_window), "CALL_BUDGET")
+    need(one.used == 1 and len(attempts) == 1,
+         "SECOND_PAGE_MUST_NOT_SPEND_PAST_HARD_CAP")
+    attempts.clear()
+    two = RequestBudget(2)
+    rows, pages = query_sip(["AAPL"], asof, "TEST_ID", "TEST_SECRET",
+                            opener=fake_http, page_cap=3, budget=two,
+                            window_fn=fake_window)
+    need(two.used == pages == 2 and len(attempts) == 2 and
+         len(rows["AAPL"]) == 1, "TWO_PAGE_ATTEMPTS_EXACT")
+    negative(lambda: RequestBudget(True), "CALL_BUDGET_LIMIT_INVALID")
+    failed = RequestBudget(1)
+    def failed_http(req, timeout):
+        raise urllib.error.HTTPError(req.full_url, 403, "denied", {}, None)
+    try:
+        query_sip(["AAPL"], asof, "TEST_ID", "TEST_SECRET",
+                  opener=failed_http, budget=failed, window_fn=fake_window)
+    except urllib.error.HTTPError:
+        need(failed.used == 1, "HTTP403_COUNTS_TOWARD_QUOTA")
+    else:
+        raise AssertionError("HTTP403_NOT_RAISED")
+    print("XRAY_PERSONAL_SIP_HTTP_ATTEMPT_BUDGET=PASS_2PAGE_HARD_CAP_AND_HTTP403_COUNTS")
     print("XRAY_PERSONAL_FULL_UNIVERSE_SIP_SELFTEST=PASS_BATCH_SCHEMA_HTTP400_ISOLATION_QUOTA_AUTH_TRANSPORT_FAIL_CLOSE")
 
 
@@ -353,9 +405,18 @@ def main():
     key = os.getenv("XRAY_ALPACA_DATA_KEY_ID")
     secret = os.getenv("XRAY_ALPACA_DATA_SECRET_KEY")
     now = dt.datetime.now(dt.timezone.utc)
+    budget = RequestBudget(MAX_REQUESTS)
     def provider(sub, asof):
-        return query_sip(sub, asof, key, secret)
+        return query_sip(sub, asof, key, secret, budget=budget)
     result = census(state, root, now, provider)
+    completed_pages = result["upstream_page_requests"]
+    need(type(completed_pages) is int and
+         0 <= completed_pages <= budget.used <= MAX_REQUESTS,
+         "HTTP_ATTEMPT_ACCOUNTING_INVALID")
+    result["upstream_completed_page_requests"] = completed_pages
+    result["upstream_page_requests"] = budget.used
+    result["upstream_failed_or_unclassified_page_attempts"] = (
+        budget.used - completed_pages)
     a.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
     print("XRAY_PERSONAL_FULL_UNIVERSE_SIP_COVERAGE=" +
           json.dumps({"asof_et": result["asof_et"],
