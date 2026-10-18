@@ -76,6 +76,36 @@ jobs:
               assert h['outside_rth_or_other']==960-390==570
               assert h['duplicate_rth_stamps']==h['invalid_rth_ohlcv']==0
               assert h['qualified_for_c417_primary'] is False
+              extra=x['additional_unknown_symbol_sip_30_session_canaries']
+              assert extra['observed_date']=='2026-10-18'
+              assert extra['source_account_entitlement']=='CONNECTED_INTERACTIVE_ONLY_GITHUB_UNATTESTED'
+              assert extra['automated_non_display_permission_proven'] is False
+              assert extra['primary_price_authority'] is False
+              assert extra['can_notify_user'] is False
+              samples=extra['symbols']
+              assert set(samples)=={'AAL','AAON','ABVX'}
+              expected={
+                'AAL':([384,350,224],958,568,30),
+                'AAON':([236,198,128],562,172,24),
+                'ABVX':([294,274,156],724,334,29)
+              }
+              for sym,(chunks,raw,excluded,days50) in expected.items():
+                  k=samples[sym]
+                  assert k['feed']=='sip'
+                  assert k['from']=='2026-09-04' and k['to']=='2026-10-16'
+                  assert k['official_sessions']==30
+                  assert k['chunk_counts']==chunks and sum(chunks)==raw
+                  assert k['raw_bars_observed']==raw
+                  assert k['rth_bars_observed']==390
+                  assert k['expected_rth_bars']==390
+                  assert k['other_bars_excluded']==excluded
+                  assert raw==excluded+390
+                  assert k['missing_official_sessions']==0
+                  assert k['invalid_rth_volume']==0
+                  assert k['days_research_rth_dv_lower_bound_ge50m']==days50
+                  assert k['canonical_dv30_pass'] is False
+                  assert max(chunks)<1000
+
               minute=rows['sip_minute_one_session']
               assert minute['feed']=='sip' and minute['observed_rth_minutes']==minute['expected_rth_minutes']==390
               assert minute['missing_rth_minutes']==minute['duplicate_rth_stamps']==minute['invalid_rth_ohlcv']==0
@@ -95,6 +125,10 @@ jobs:
               try: validate(x)
               except AssertionError: continue
               raise RuntimeError('XRAY_ALPACA_SIP_FALSE_PROMOTION_'+label)
+          x=copy.deepcopy(d);x['additional_unknown_symbol_sip_30_session_canaries']['symbols']['AAON']['rth_bars_observed']=389
+          try: validate(x)
+          except AssertionError: pass
+          else: raise RuntimeError('XRAY_ALPACA_SIP_FALSE_COHORT_390')
           print('XRAY_ALPACA_CONNECTED_SIP_RESEARCH=PASS_284_DAILY_30X13_RTH_390_MINUTE_SIX_NEGATIVE_NO_PRIMARY')
           print('XRAY_ALPACA_RUNNER_NONDISPLAY_LICENSE=BLOCKED_UNATTESTED')
           print('XRAY_ALPACA_REAL_R92_AL=0')
