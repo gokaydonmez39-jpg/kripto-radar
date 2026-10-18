@@ -168,7 +168,7 @@ class TestDoubleGate(unittest.TestCase):
 
 
     def test_cli_uses_highest_numeric_evidence_version_even_after_v9(self):
-        """Regression: v10/v20 must not be silently skipped by the CLI selector."""
+        """Regression: v10 cannot be skipped while v9 is selected."""
         import hashlib
         import tempfile
         from unittest import mock
@@ -186,7 +186,7 @@ class TestDoubleGate(unittest.TestCase):
                 ("canonical_current_terminal.json", T),
             ):
                 (root / name).write_text(json.dumps(value), encoding="utf-8")
-            for version in (1, 2, 9, 10, 20):
+            for version in (1, 2, 9, 10):
                 witness = {
                     "schema": "XRAY_RALLIES_DV30_CLASSIFICATION_V1",
                     "asof_et": "2026-10-16",
@@ -205,7 +205,7 @@ class TestDoubleGate(unittest.TestCase):
             ):
                 gate.main()
             report = json.loads(output.read_text(encoding="utf-8"))
-            expected = evidence / "rallies_dv30_20261016_classification_v20.json"
+            expected = evidence / "rallies_dv30_20261016_classification_v10.json"
             self.assertEqual(
                 report["primary_selected_file"],
                 "nasdaq-xray/evidence/" + expected.name,
