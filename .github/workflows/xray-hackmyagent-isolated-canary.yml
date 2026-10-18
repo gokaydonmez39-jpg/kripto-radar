@@ -45,6 +45,12 @@ jobs:
           "$RUNNER_TEMP/hma/node_modules/.bin/hackmyagent" scan-text "$RUNNER_TEMP/hostile-pr-body.txt" --as pr-body --json > "$RUNNER_TEMP/hma-scan.json" 2> "$RUNNER_TEMP/hma-scan-stderr.txt"
           status=$?
           set -e
+          echo "XRAY_HMA_SCAN_EXIT_CODE=$status"
+          if [[ ! -s "$RUNNER_TEMP/hma-scan.json" ]]; then
+            echo "XRAY_HMA_NO_SCAN_JSON=BLOCKED"
+            head -c 1600 "$RUNNER_TEMP/hma-scan-stderr.txt" || true
+            exit 13
+          fi
           python - <<'PY'
           import json,os
           from pathlib import Path
