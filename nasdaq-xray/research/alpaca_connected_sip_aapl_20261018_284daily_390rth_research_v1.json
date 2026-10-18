@@ -110,5 +110,75 @@
   "vendor_raw_request_data_disclosed_to_repo": false,
   "new_alpha_signals": 0,
   "alerts_sent": 0,
-  "note": "Read-only observations from connected app. No vendor-signed receipt or complete source bytes retained. CI validates internal mathematical contract and blocks false source promotion; it does NOT reproduce a vendor fetch."
+  "note": "Read-only observations from connected app. No vendor-signed receipt or complete source bytes retained. CI validates internal mathematical contract and blocks false source promotion; it does NOT reproduce a vendor fetch.",
+  "additional_unknown_symbol_sip_30_session_canaries": {
+    "observed_date": "2026-10-18",
+    "source_account_entitlement": "CONNECTED_INTERACTIVE_ONLY_GITHUB_UNATTESTED",
+    "automated_non_display_permission_proven": false,
+    "primary_price_authority": false,
+    "can_notify_user": false,
+    "definition": "Observed 30m SIP bar counts over each official RTH start 09:30 inclusive to 16:00 exclusive. Data vendor raw rows not stored. Basic integrity is not C4.17 acceptance; 50M USD per-day volume lower bound computed with 30m VWAP*share volume, excludes auctions and adjustments. 30-day median, corporate actions, rights and independent primary MC not attested.",
+    "symbols": {
+      "AAL": {
+        "feed": "sip",
+        "timeframe": "30Min",
+        "from": "2026-09-04",
+        "to": "2026-10-16",
+        "official_sessions": 30,
+        "chunk_counts": [
+          384,
+          350,
+          224
+        ],
+        "raw_bars_observed": 958,
+        "expected_rth_bars": 390,
+        "rth_bars_observed": 390,
+        "other_bars_excluded": 568,
+        "missing_official_sessions": 0,
+        "invalid_rth_volume": 0,
+        "days_research_rth_dv_lower_bound_ge50m": 30,
+        "canonical_dv30_pass": false
+      },
+      "AAON": {
+        "feed": "sip",
+        "timeframe": "30Min",
+        "from": "2026-09-04",
+        "to": "2026-10-16",
+        "official_sessions": 30,
+        "chunk_counts": [
+          236,
+          198,
+          128
+        ],
+        "raw_bars_observed": 562,
+        "expected_rth_bars": 390,
+        "rth_bars_observed": 390,
+        "other_bars_excluded": 172,
+        "missing_official_sessions": 0,
+        "invalid_rth_volume": 0,
+        "days_research_rth_dv_lower_bound_ge50m": 24,
+        "canonical_dv30_pass": false
+      },
+      "ABVX": {
+        "feed": "sip",
+        "timeframe": "30Min",
+        "from": "2026-09-04",
+        "to": "2026-10-16",
+        "official_sessions": 30,
+        "chunk_counts": [
+          294,
+          274,
+          156
+        ],
+        "raw_bars_observed": 724,
+        "expected_rth_bars": 390,
+        "rth_bars_observed": 390,
+        "other_bars_excluded": 334,
+        "missing_official_sessions": 0,
+        "invalid_rth_volume": 0,
+        "days_research_rth_dv_lower_bound_ge50m": 29,
+        "canonical_dv30_pass": false
+      }
+    }
+  }
 }
