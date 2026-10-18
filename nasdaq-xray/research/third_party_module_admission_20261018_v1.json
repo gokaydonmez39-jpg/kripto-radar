@@ -1,0 +1,180 @@
+{
+  "schema": "XRAY_THIRD_PARTY_RESEARCH_ADMISSION_V1",
+  "recorded_date": "2026-10-18",
+  "review_base_sha": "31a7a1fffd3ddefc8d9f5aa9689453f887064299",
+  "effective_policy": "C4.17",
+  "activation": "PROPOSAL_ONLY_NOT_CONNECTED",
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "all_vendor_rights_verified": false,
+  "primary_price_creation_allowed": false,
+  "primary_mc_creation_allowed": false,
+  "history_pass_creation_allowed": false,
+  "r92_creation_allowed": false,
+  "notifications_allowed": false,
+  "third_party_code_imported": false,
+  "credentials_or_market_data_fetched": false,
+  "independent_external_suite_executed": false,
+  "scope": "Research-only source-pinned architectural admission; GitHub offline guards test local XRAY compatibility boundaries, NOT external-package runtime execution.",
+  "decisions": [
+    {
+      "id": "AI_HEDGE_FUND",
+      "repository": "virattt/ai-hedge-fund",
+      "commit_sha": "78b779c1389e2d1452dc29606d2c4126d859b964",
+      "license": "MIT",
+      "decision": "REUSE_EXISTING_DESIGN",
+      "reuse": [
+        "fail_loud_provider_errors",
+        "filing_date_pit_negative_tests",
+        "hash_chained_replay_invariants"
+      ],
+      "existing": [
+        "research_candidate_memory.py",
+        "research_candidate_memory_cas.py",
+        "c418_multi_source_guard.py"
+      ],
+      "blockers": [
+        "provider_entitlement_unproved",
+        "market_cap_latest_fallback_lookahead",
+        "no_verified_30_rth_or_260_sessions"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    },
+    {
+      "id": "OPENBB",
+      "repository": "openbq-org/OpenBB",
+      "commit_sha": "cbf37e1f98a61d4e17ff1df43441fd4004774cac",
+      "license": "Apache-2.0",
+      "decision": "SHADOW_ADAPTER_RESEARCH",
+      "reuse": [
+        "normalized_provider_interface_only"
+      ],
+      "existing": [
+        "c418_provider_routing_readiness.py",
+        "xray_multi_provider_research.py"
+      ],
+      "blockers": [
+        "provider_rights_unproved",
+        "no_independent_market_data_entitlement",
+        "third_party_vendor_entitlements_still_unproved"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    },
+    {
+      "id": "QLIB",
+      "repository": "microsoft/qlib",
+      "commit_sha": "54355232463878d2eebb91fe0ee5fa7fa1f5976c",
+      "license": "MIT",
+      "decision": "OFFLINE_COMPARISON_CANDIDATE",
+      "reuse": [
+        "point_in_time_regression",
+        "walk_forward_backtest_design",
+        "series_integrity_crosscheck"
+      ],
+      "existing": [
+        "c418_history_exact_session_shadow_guard.py",
+        "c418_shadow_resilience_guard.py"
+      ],
+      "blockers": [
+        "history_provider_260_sessions_unproved",
+        "no_license_for_underlying_vendor_data",
+        "external_runtime_not_executed"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    },
+    {
+      "id": "TRADINGAGENTS",
+      "repository": "TauricResearch/TradingAgents",
+      "commit_sha": "e8f5503e9b86d5c2710b0c76b1f686703968c9df",
+      "license": "Apache-2.0",
+      "decision": "OFFLINE_ANALYST_SHADOW_CANDIDATE",
+      "reuse": [
+        "multi_perspective_analyst_review",
+        "decision_reflection_only"
+      ],
+      "existing": [
+        "research_overlay_shadow_contract_v1.json",
+        "research_learning_readiness.py"
+      ],
+      "blockers": [
+        "LLM_variance",
+        "model_auth_entitlements_unverified",
+        "research_cannot_change_c417"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    },
+    {
+      "id": "OPENSTOCK",
+      "repository": "Open-Dev-Society/OpenStock",
+      "commit_sha": "dc2db1bb2fdce2da3bb1eba7c51a73ad52f7d464",
+      "license": "AGPL-3.0",
+      "decision": "REFERENCE_ONLY_NO_CODE_IMPORT",
+      "reuse": [
+        "atomic_claim_and_notification_retry_design"
+      ],
+      "existing": [
+        "delivery_ledger_merge.py",
+        "notification_channel_policy_v1.json"
+      ],
+      "blockers": [
+        "AGPL_license_integration_review",
+        "hisse_io_fork_unavailable",
+        "unverified_mobile_delivery",
+        "holiday_early_close_calendar_gap"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    },
+    {
+      "id": "FREQTRADE",
+      "repository": "freqtrade/freqtrade",
+      "commit_sha": "84e5657e698ec6ff279c6a4c04c7591dfefaec74",
+      "license": "GPL-3.0",
+      "decision": "REJECT_CORE_INTEGRATION",
+      "reuse": [
+        "conceptual_lookahead_checklists_only"
+      ],
+      "existing": [
+        "c418_shadow_resilience_guard.py"
+      ],
+      "blockers": [
+        "crypto_market_venue_mismatch",
+        "GPL_compatibility_review",
+        "contains_broker_order_execution"
+      ],
+      "production_import": false,
+      "independent_runtime_test": false
+    }
+  ],
+  "next_steps": [
+    "Ingest authorized private OpenBB/Qlib OHLCV exports via the installed shadow adapter, only after vendor data rights and input integrity are independently verified; never turn numeric shadow completeness into canonical PASS.",
+    "Run local XRAY fail-closed and memory regressions on an isolated branch.",
+    "Require pinned vendor entitlements and real exact-session data before implementing any adapter.",
+    "Use an isolated research-only PoC with synthetic inputs before importing third-party code.",
+    "Keep canonical C4.17 data, R92, GitHub main, and ChatGPT notification authority unchanged."
+  ],
+  "integrations": {
+    "research_private_export_shadow": {
+      "module": "nasdaq-xray/external_ohlcv_research_shadow.py",
+      "adapters": [
+        "OPENBB_EQUITY_HISTORICAL",
+        "QLIB_FEATURES_DAILY"
+      ],
+      "runtime_package_dependencies": [],
+      "private_input_only": true,
+      "synthetic_contract_ci_tests": "nasdaq-xray/tests/test_external_ohlcv_research_shadow.py",
+      "validator": "nasdaq-xray/c418_history_exact_session_shadow_guard.py",
+      "requires_master_exact_blob_and_latest_completed_nasdaq_session": true,
+      "live_vendor_io": false,
+      "authorizes_data_rights": false,
+      "canonical_stage_connected": false,
+      "production_r92": false,
+      "comment": "A real read-only file-format adapter is installed in an isolated research path; no external package, key, vendor data or producer schedule is activated."
+    }
+  }
+}
