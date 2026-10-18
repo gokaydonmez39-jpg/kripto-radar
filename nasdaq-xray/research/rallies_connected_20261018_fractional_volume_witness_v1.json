@@ -1,0 +1,61 @@
+{
+  "schema": "XRAY_RALLIES_CONNECTED_CHATGPT_INTERACTIVE_VOLUME_WITNESS_V1",
+  "observed_date": "2026-10-18",
+  "evidence_surface": "CONNECTED_CHATGPT_RALLIES_READ_ONLY_PRICE_FROM_DATE_RANGE",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "source_uri": "https://rallies.ai/",
+  "source_class": "INTERACTIVE_CONNECTED_ONLY_NOT_GITHUB_RUNNER_LICENSED",
+  "observations": [
+    {
+      "symbol": "AAPL",
+      "start": "2026-09-01",
+      "end": "2026-10-16",
+      "day_rows": 33,
+      "fractional_daily_volume_rows": 33
+    },
+    {
+      "symbol": "MSFT",
+      "start": "2026-10-12",
+      "end": "2026-10-16",
+      "day_rows": 5,
+      "fractional_daily_volume_rows": 5
+    },
+    {
+      "symbol": "NVDA",
+      "start": "2026-10-12",
+      "end": "2026-10-16",
+      "day_rows": 5,
+      "fractional_daily_volume_rows": 5
+    }
+  ],
+  "observed_day_rows": 43,
+  "non_integral_volume_rows": 43,
+  "invalid_or_nonpositive_numeric_volume_rows": 0,
+  "scope_limitation": "Manually observed connector metadata. No raw rows are committed. This is not an independent source SHA, licensed Github data feed, proof of full RTH bars or a universal claim about Rallies.",
+  "alpaca_canary": {
+    "source": "CONNECTED_CHATGPT_ALPACA_GET_STOCK_BARS",
+    "ticker": "AAPL",
+    "start": "2026-09-01",
+    "end": "2026-10-17",
+    "feed": "delayed_sip",
+    "timeframe": "1Day",
+    "status": "API_ERROR",
+    "exception_type": "api_error",
+    "cause": "UNDETERMINED",
+    "rows_attested": 0
+  },
+  "strict_conclusion": "RALLIES_FRACTIONAL_VENDOR_VOLUME_FAIL_C417_UNADJUSTED_INTEGER_RTH_PROOF",
+  "no_vendor_raw_prices_stored": true,
+  "no_source_credentials_stored": true,
+  "licensed_automation_proven": false,
+  "provider_rth_unadjusted_share_volume_proven": false,
+  "canonical_asof": "2026-10-16",
+  "price_pass_created": 0,
+  "mc_pass_created": 0,
+  "r92_created": 0,
+  "alerts_sent": 0,
+  "production_provider_config_changed": false,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true
+}
