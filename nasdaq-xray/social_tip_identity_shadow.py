@@ -98,6 +98,12 @@ def assess(tip: dict, master: dict, master_raw: bytes) -> dict:
     validate_master(master)
     require(type(master_raw) is bytes and len(master_raw) > 0,
             "MASTER_SOURCE_BYTES_REQUIRED")
+    try:
+        parsed_master = json.loads(master_raw)
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise ValueError("XRAY_SOCIAL_TIP_MASTER_RAW_NOT_JSON") from exc
+    require(type(parsed_master) is dict and parsed_master == master,
+            "MASTER_RAW_BYTES_OBJECT_MISMATCH")
     asof = iso_date(master["asof_et"])
     observed = iso_date(tip["observed_at"])
     require(asof < observed, "MASTER_ASOF_NOT_PRIOR_TO_POST")
