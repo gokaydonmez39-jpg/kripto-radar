@@ -53,8 +53,8 @@ jobs:
               assert x["rallies_primary_materialized"]==0 and x["rallies_primary_uncovered"]==3190
               assert x["terminal_full_end_to_end_research_pass"] is False and x["r92_verified_count"]==0
               assert len(obj["sources"])==18 and len(obj["blockers"])==7
-              assert len({s["name"] for s in obj["sources"]})==13
-              assert len({s["url"] for s in obj["sources"]})==13
+              assert len({s["name"] for s in obj["sources"]})==18
+              assert len({s["url"] for s in obj["sources"]})==18
               assert len({b["id"] for b in obj["blockers"]})==7
               assert all(s["production_import"] is False and s["market_feed_licensed"] is False
                          and s["has_verified_market_bars"] is False and s["may_create_R92"] is False
