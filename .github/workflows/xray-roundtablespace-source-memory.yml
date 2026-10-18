@@ -52,7 +52,7 @@ jobs:
               assert x["master_identity_pass"]==3190 and x["master_identity_unknown"]==11
               assert x["rallies_primary_materialized"]==0 and x["rallies_primary_uncovered"]==3190
               assert x["terminal_full_end_to_end_research_pass"] is False and x["r92_verified_count"]==0
-              assert len(obj["sources"])==13 and len(obj["blockers"])==7
+              assert len(obj["sources"])==18 and len(obj["blockers"])==7
               assert len({s["name"] for s in obj["sources"]})==13
               assert len({s["url"] for s in obj["sources"]})==13
               assert len({b["id"] for b in obj["blockers"]})==7
@@ -61,6 +61,24 @@ jobs:
                          and s["may_notify_user"] is False for s in obj["sources"])
               assert all(b["status"]=="BLOCKED" and b["proof"] for b in obj["blockers"])
               assert len(obj["next_evidence_first_sequence"])==5
+              xtra=obj.get("followup_addendum") or {}
+              assert xtra.get("new_source_count")==5
+              assert xtra.get("license_forbidden_standard_use") is True
+              assert xtra.get("no_provider_access_or_entitlement_proven") is True
+              assert xtra.get("production_unchanged") is True
+              assert xtra.get("zero_new_verified_R92") is True
+              tv=[s for s in obj["sources"] if s["name"]=="TradingView MCP"]
+              assert len(tv)==1
+              assert tv[0]["disposition"]=="PRODUCTION_NO_GO_STANDARD_DISPLAY_ONLY_LICENSE"
+              assert tv[0]["official_terms_url"]=="https://www.tradingview.com/policies/"
+              known={s["name"]:s for s in obj["sources"]}
+              for name in ("HackMyAgent","Anthropic Claude Security Plugin","Cognee","XERJ","global-stock-data"):
+                  assert name in known
+                  assert known[name]["market_feed_licensed"] is False
+                  assert known[name]["has_verified_market_bars"] is False
+                  assert known[name]["production_import"] is False
+              assert known["global-stock-data"]["provenance"]=="INDEPENDENT_EXTERNAL_GITHUB_DISCOVERY_NOT_VERIFIED_AS_ROUNDTABLESPACE_POST"
+
           check(d)
           mutations=[
               ("buy",("new_buy_signal_count",1)),
@@ -74,9 +92,15 @@ jobs:
               try: check(x)
               except AssertionError: continue
               raise RuntimeError("XRAY_RESEARCH_UNSAFE_PROMOTION_ACCEPTED_"+label)
+          y=copy.deepcopy(d)
+          tv=next(row for row in y["sources"] if row["name"]=="TradingView MCP")
+          tv["disposition"]="AUTHORIZED_PRICE_PROVIDER"
+          try: check(y)
+          except AssertionError: pass
+          else: raise RuntimeError("XRAY_TRADINGVIEW_LICENSING_FALSE_PASS")
           x=copy.deepcopy(d);x["sources"][0]["may_notify_user"]=True
           try: check(x)
           except AssertionError: pass
           else: raise RuntimeError("XRAY_RESEARCH_SOURCE_NOTIFY_PROMOTION_ACCEPTED")
-          print("XRAY_ROUNDTABLESPACE_RESEARCH_MEMORY_PASS=13_SOURCES_7_BLOCKERS_6_NEGATIVE_ZERO_AL")
+          print("XRAY_ROUNDTABLESPACE_RESEARCH_MEMORY_PASS=18_SOURCES_7_BLOCKERS_TRADINGVIEW_NO_GO_7_NEGATIVE_ZERO_AL")
           PY
