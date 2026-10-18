@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/**"
       - "nasdaq-xray/sec_operator_contact_secret_only_guard.py"
+      - "nasdaq-xray/official_source_guard.py"
+      - "nasdaq-xray/tests/test_official_security_status_fail_closed.py"
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -26,5 +28,9 @@ jobs:
           python-version: "3.12"
       - name: Prove five malicious contact patterns are rejected
         run: python nasdaq-xray/sec_operator_contact_secret_only_guard.py --selftest
+      - name: Official Nasdaq safety negative tests (no network or vendor rights)
+        run: |
+          python -m unittest discover -s nasdaq-xray/tests -p test_official_security_status_fail_closed.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_official_security_status_fail_closed.py -v
       - name: No plaintext operator contact in any workflow
         run: python nasdaq-xray/sec_operator_contact_secret_only_guard.py
