@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/research_preopen_source_audit.py"
+      - "nasdaq-xray/rallies_source_double_gate.py"
       - "nasdaq-xray/provider_automation_governance.json"
       - "nasdaq-xray/provider_automation_governance_selftest.py"
       - "nasdaq-xray/preopen_live_release_gate.py"
@@ -98,6 +99,24 @@ jobs:
       - name: Install pinned official NASDAQ calendar and source YAML parser
         if: steps.epoch_guard.outputs.valid == 'true'
         run: python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0" "PyYAML==6.0.2"
+      - name: Check Rallies missing evidence and non-display entitlements independently (No AL)
+        if: steps.epoch_guard.outputs.valid == 'true'
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/rallies_source_double_gate.py
+          python nasdaq-xray/rallies_source_double_gate.py --out "$RUNNER_TEMP/xray_rallies_two_gate.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_rallies_two_gate.json").read_text())
+          assert x["schema"]=="XRAY_RALLIES_AUTHORITY_DOUBLE_GATE_AUDIT_V1"
+          assert x["status"]=="BLOCKED_SOURCE_EVIDENCE_OR_RIGHTS"
+          assert x["full_e2e_source_attested_by_this_audit"] is False
+          assert x["may_promote_price_pass"] is False
+          assert x["may_promote_r92"] is False and x["may_notify_user"] is False
+          assert x["buy_signals"]==0
+          print("XRAY_PREOPEN_RALLIES_TWO_GATE="+x["status"]+" primary="+x["source_state"]["status"]+" unknown="+str(x["price_unknown_count"]))
+          PY
       - name: Early exact-root personal SIP bridge adversarial selftests before provider calls
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
@@ -406,5 +425,6 @@ jobs:
             ${{ runner.temp }}/xray_root_history_recovery.json
             ${{ runner.temp }}/xray_repo_inventory.json
             ${{ runner.temp }}/xray_current_terminal_epoch_forensics.json
+            ${{ runner.temp }}/xray_rallies_two_gate.json
           retention-days: 14
           if-no-files-found: error
