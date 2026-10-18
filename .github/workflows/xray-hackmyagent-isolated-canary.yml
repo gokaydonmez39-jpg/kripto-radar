@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --prefix "$RUNNER_TEMP/hma" --ignore-scripts --no-audit --no-fund 'hackmyagent@0.33.2'
-          "$RUNNER_TEMP/hma/node_modules/.bin/hackmyagent" --version > "$RUNNER_TEMP/hma-version.txt"
+          "$RUNNER_TEMP/hma/node_modules/.bin/hackmyagent" --version > "$RUNNER_TEMP/hma-version.txt" 2>&1
           cat "$RUNNER_TEMP/hma-version.txt"
           grep -F "Telemetry: off" "$RUNNER_TEMP/hma-version.txt"
       - name: Exercise actual offline hostile text detector without provider tokens
