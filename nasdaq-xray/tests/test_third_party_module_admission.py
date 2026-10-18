@@ -132,7 +132,7 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(denied["status"], "DATA_BLOCKED")
         self.assertFalse(denied["can_create_HISTORY_PASS"])
         self.assertFalse(denied["can_register_R92"])
-        for value in (True, 0.5, float("inf"), 2**53):
+        for value in (True, 0.5, float("inf"), float(2**53)):
             self.assertFalse(hist.exact_positive_share_count(value))
 
     def test_shadow_router_cannot_activate_primary(self):
