@@ -63,10 +63,14 @@ jobs:
           print("XRAY_HMA_STATIC_RESULT_LENGTH="+str(len(raw)))
           # False positives are not grounds to promote source authority.
           # An actual security finding must originate from scanner output.
-          low=raw.lower()
-          assert "filesystem" in low or "mcp" in low,"NO_MCP_CHECK_COVERAGE"
-          assert ("finding" in low or "critical" in low or "high" in low),"NO_FINDING_EVIDENCE"
-          print("XRAY_HMA_REAL_MCP_STATIC_CANARY=PASS_RESEARCH_ONLY")
+          assert obj.get("measured") is True,"UNMEASURED_SCAN_CANNOT_PASS"
+          findings=obj.get("findings")
+          assert isinstance(findings,list),"NO_TYPED_FINDINGS_ARRAY"
+          print("XRAY_HMA_ACTUAL_FINDING_COUNT="+str(len(findings)))
+          print("XRAY_HMA_RESULT_COUNTS="+str(obj.get("counts")))
+          print("XRAY_HMA_FINDING_CODES="+",".join(str(row.get("id") or row.get("checkId") or row.get("ruleId")) for row in findings[:10] if isinstance(row,dict)))
+          assert len(findings)>0,"SYNTHETIC_UNSAFE_MCP_CONFIG_NOT_DETECTED"
+          print("XRAY_HMA_REAL_MCP_STATIC_CANARY=PASS_ACTUAL_FINDING_RESEARCH_ONLY")
           PY
       - name: Declare no production authority and no automatic fixes
         run: |
