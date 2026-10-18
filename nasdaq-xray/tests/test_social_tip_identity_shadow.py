@@ -32,15 +32,18 @@ MASTER = {
 def copy(x):
     return json.loads(json.dumps(x))
 
+def raw(x):
+    return json.dumps(x, sort_keys=True, separators=(",", ":")).encode()
+
 class TestSocialTipIdentityQuarantine(unittest.TestCase):
     def test_positive_six_identity_only_four_not_proven(self):
-        result=assess(copy(TIP),copy(MASTER),b"synthetic master")
+        result=assess(copy(TIP),copy(MASTER),raw(MASTER))
         self.assertEqual(result["status"],"RESEARCH_ONLY_IDENTITY_SCREEN_NO_AL")
         self.assertEqual(result["identity_only_symbols"],["ASTS","CRWV","NBIS","OUST","RKLB","TMDX"])
         self.assertEqual(result["not_in_master_symbols"],["MP","SMR","UUUU","VRT"])
         self.assertEqual(result["unknown_identity_symbols"],[])
         self.assertEqual(result["asof_et"],"2026-10-16")
-        self.assertEqual(result["master_blob_sha256"],hashlib.sha256(b"synthetic master").hexdigest())
+        self.assertEqual(result["master_blob_sha256"],hashlib.sha256(raw(MASTER)).hexdigest())
         self.assertFalse(result["price_verified"])
         self.assertFalse(result["production_authority"])
         self.assertFalse(result["r92_authority"])
@@ -49,13 +52,13 @@ class TestSocialTipIdentityQuarantine(unittest.TestCase):
 
     def test_unknown_identity_never_becomes_identity_pass(self):
         master=copy(MASTER); master["unknown_symbols"]=["MP"]
-        result=assess(copy(TIP),master,b"test")
+        result=assess(copy(TIP),master,raw(master))
         self.assertEqual(result["unknown_identity_symbols"],["MP"])
         self.assertNotIn("MP",result["identity_only_symbols"])
 
     def test_master_asof_before_social_post_and_distinct(self):
         tip=copy(TIP); tip["observed_at"]="2026-10-16"
-        with self.assertRaises(ValueError): assess(tip,copy(MASTER),b"test")
+        with self.assertRaises(ValueError): assess(tip,copy(MASTER),raw(MASTER))
 
     def test_duplicate_tip_rejected(self):
         tip=copy(TIP); tip["tickers"][1]="MP"
@@ -93,8 +96,19 @@ class TestSocialTipIdentityQuarantine(unittest.TestCase):
             with self.subTest(name=name),self.assertRaises(ValueError):
                 validate_master(master)
 
+
+    def test_source_bytes_must_match_claimed_master_structure(self):
+        forged = copy(MASTER)
+        forged["unknown_symbols"] = ["VRT"]
+        with self.assertRaises(ValueError):
+            assess(copy(TIP), forged, raw(MASTER))
+
+    def test_invalid_source_bytes_are_never_accepted(self):
+        with self.assertRaises(ValueError):
+            assess(copy(TIP), copy(MASTER), b"not json")
+
     def test_missing_master_identity_is_not_a_nyse_proof(self):
-        x=assess(copy(TIP),copy(MASTER),b"test")
+        x=assess(copy(TIP),copy(MASTER),raw(MASTER))
         self.assertEqual(x["not_in_master_classification"],"NOT_IN_NASDAQ_MASTER_ASOF_NOT_EXCHANGE_PROOF")
 
 if __name__=="__main__":
