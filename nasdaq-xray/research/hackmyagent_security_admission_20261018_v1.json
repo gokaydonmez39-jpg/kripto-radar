@@ -1,0 +1,31 @@
+{
+  "schema": "XRAY_HACKMYAGENT_NO_SECRETS_ADMISSION_V1",
+  "observed": "2026-10-18",
+  "source": "https://github.com/opena2a-org/hackmyagent",
+  "source_code_license": "Apache-2.0",
+  "upstream_package": "hackmyagent",
+  "pinned_version": "0.33.2",
+  "task": "SYNTHETIC_PR_BODY_INJECTION_VS_CLEAN_OFFLINE_SECURITY_CANARY",
+  "capability_claim": "Static text-instruction override detection. Not market data. Upstream may install optional native ONNX components; npm lifecycle scripts are disabled. Runtime uses public npm package only in isolated PR/main read-only temporary runner.",
+  "test_status": "NOT_TESTED_UNTIL_CI_RUN",
+  "production_scanner_installed": false,
+  "production_integration_authorized": false,
+  "read_any_github_secret": false,
+  "execute_red_team_attacks": false,
+  "modify_repo_files": false,
+  "send_market_orders": false,
+  "promote_price_pass": false,
+  "promote_r92": false,
+  "source_data_licensing_proven": false,
+  "alerts_sent": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "safe_configuration": {
+    "telemetry": "off",
+    "npm_scripts": "disabled",
+    "repo_credentials": "not_persisted",
+    "github_permissions": "contents_read",
+    "no_provider_keys": true,
+    "synthetic_only": true
+  }
+}
