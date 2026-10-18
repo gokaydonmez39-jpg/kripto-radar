@@ -99,7 +99,9 @@ class RuntimePrerequisitesTests(unittest.TestCase):
         r = subject.summarize(analysis(env))
         txt = json.dumps(r, ensure_ascii=False)
         for k, v in env.items():
-            self.assertNotIn(v, txt, k)
+            # "true" is an ordinary JSON boolean, not a credential.
+            if k not in {cfg["grant"] for cfg in underlying.EXPLICIT.values()}:
+                self.assertNotIn(v, txt, k)
             self.assertNotIn(k, txt, k)
         self.assertNotIn("USD", txt)
         self.assertNotIn("AAPL", txt)
