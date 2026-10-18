@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json, re, html as htmlmod, xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date as calendar_date
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from resilience_runtime import fetch_text
@@ -28,6 +28,14 @@ def parse_pipe(txt):
             rows.append(dict(zip(hdr,vals)))
     return rows
 def parse_security_status_html(txt):
+    """Return only validated official status rows; reject deceptive empty pages."""
+    if not isinstance(txt,str):
+        raise ValueError("SECURITY_STATUS_HTML_BAD_TYPE")
+    visible=htmlmod.unescape(re.sub(r"<[^>]*>"," ",txt))
+    visible=re.sub(r"\s+"," ",visible)
+    if (not re.search(r"\bNasdaq\s+Security\s+Status\s+Updates\b",visible,re.I)
+        or not re.search(r"\bSearch\s+By\s+Date\s+Range\b",visible,re.I)):
+        raise ValueError("SECURITY_STATUS_PAGE_IDENTITY_UNVERIFIED")
     rows=[]
     for tr in re.findall(r"<tr\b[^>]*>(.*?)</tr>",txt,flags=re.I|re.S):
         cells=[]
@@ -42,21 +50,41 @@ def parse_security_status_html(txt):
               "OldFinancialStatus":cells[5] if len(cells)>5 else "",
               "NewFinancialStatus":cells[6] if len(cells)>6 else "",
             })
+    if not rows and not re.search(r"\bNo\s+results\s+found\b",visible,re.I):
+        raise ValueError("SECURITY_STATUS_UNVERIFIED_EMPTY_RESPONSE")
     return rows
 
-def derive_security_suspensions(rows):
+def derive_security_suspensions(rows, *, asof_date=None):
     """Event-source Nasdaq issue suspension state.
 
     Suspension is sticky until a strictly later official Security Additions
     event for the same symbol. Same-day conflicts fail closed to suspended.
     Anticipated additions never clear a suspension.
     """
+    cutoff=None
+    if asof_date is not None:
+        if not isinstance(asof_date,str):
+            raise ValueError("SECURITY_STATUS_ASOF_BAD_TYPE")
+        try:
+            cutoff=calendar_date.fromisoformat(asof_date)
+        except ValueError as exc:
+            raise ValueError("SECURITY_STATUS_ASOF_INVALID_DATE") from exc
+        if cutoff.isoformat()!=asof_date:
+            raise ValueError("SECURITY_STATUS_ASOF_NON_CANONICAL")
     by={}
     for row in rows:
+        if not isinstance(row,dict):
+            continue
         sym=str(row.get("Symbol") or "").strip().upper()
         date=str(row.get("EffectiveDate") or "").strip()
         event=str(row.get("IssueEvent") or "").strip().lower()
         if not sym or not re.fullmatch(r"\d{4}-\d{2}-\d{2}",date):
+            continue
+        try:
+            effective_date=calendar_date.fromisoformat(date)
+        except ValueError:
+            continue
+        if cutoff is not None and effective_date>cutoff:
             continue
         st=by.setdefault(sym,{"latest_suspension":None,"latest_addition":None,"events":[]})
         if "suspension" in event:
@@ -140,7 +168,7 @@ def main():
                  str(row.get("OldFinancialStatus") or ""),str(row.get("NewFinancialStatus") or ""))
             if key in seen: continue
             seen.add(key); merged.append(row)
-        susp,susp_evidence=derive_security_suspensions(merged)
+        susp,susp_evidence=derive_security_suspensions(merged,asof_date=end)
         out["sources"]["security_status"]={
           "status":"PASS","url":url,"query_start":start,"query_end":end,
           "row_count":len(rows),"rows":rows[:500],
