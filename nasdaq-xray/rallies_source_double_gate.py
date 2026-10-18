@@ -79,6 +79,9 @@ def inspect(master, price, governance, terminal, primary_bytes=None):
                             ("blocked_count",blocked))),"PRICE_COUNTS")
     require(all((rows.get(s) or {}).get("status")=="UNKNOWN" for s in unknown),
             "UNKNOWN_ROW_STATUS")
+    require({sym for sym,row in rows.items()
+             if isinstance(row,dict) and row.get("status")=="UNKNOWN"}==unknown,
+            "UNKNOWN_PARTITION_EXACT")
     require(all((rows.get(s) or {}).get("status")=="PASS_PRICE_DV30" for s in pxpass),
             "PRICE_PASS_ROW_STATUS")
     provider=(governance.get("providers") or {}).get("RALLIES") or {}
