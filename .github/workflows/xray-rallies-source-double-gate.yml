@@ -48,6 +48,17 @@ jobs:
           assert "MISSING_SAME_ASOF_RALLIES_CLASSIFICATION" in j["blockers"]
           assert "RALLIES_AUTOMATED_NONDISPLAY_ENTITLEMENT_UNATTESTED" in j["blockers"]
           assert "RALLIES_RTH_INTEGER_VOLUME_NOT_ATTESTED" in j["blockers"]
+          inventory=j["historical_primary_inventory"]
+          assert inventory["asof_et"]==j["asof_et"]
+          assert inventory["may_promote_price_pass"] is False
+          assert inventory["may_promote_r92"] is False
+          assert inventory["raw_vendor_data_attested"] is False
+          assert inventory["runner_license_attested"] is False
+          assert inventory["same_asof_artifact_present"] is (j["primary_selected_file"] is not None)
+          if inventory["latest_prior_asof_et"] is not None:
+              assert inventory["latest_prior_asof_et"]<inventory["asof_et"]
+          print("XRAY_RALLIES_LAST_HISTORICAL_ASOF="+str(inventory["latest_prior_asof_et"]))
+          print("XRAY_RALLIES_CURRENT_PRIMARY_PRESENT="+str(inventory["same_asof_artifact_present"]))
           assert j["buy_signals"]==0 and j["may_notify_user"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           print("XRAY_RALLIES_CURRENT_DOUBLE_GATE=PASS_DIAGNOSTIC_BLOCKED_NO_ALPHA")
