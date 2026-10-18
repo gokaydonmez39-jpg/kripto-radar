@@ -55,7 +55,7 @@ def historical_primary_inventory(asof, names):
         if "/" in name or "\\\\" in name:
             continue
         match = re.fullmatch(
-            r"rallies_dv30_(\\d{8})_classification(?:_v([1-9][0-9]*))?\\.json",
+            r"rallies_dv30_(\d{8})_classification(?:_v([1-9][0-9]*))?\.json",
             name,
         )
         if match is None:
