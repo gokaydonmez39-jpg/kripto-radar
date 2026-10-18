@@ -235,8 +235,9 @@ def main():
         if name==prefix: paths.append((1,path))
         else:
             tail=name.removeprefix(prefix)
-            if re.fullmatch(r"_v[2-9][0-9]*",tail):
-                paths.append((int(tail[2:]),path))
+            version_match=re.fullmatch(r"_v([1-9][0-9]*)",tail)
+            if version_match is not None and int(version_match.group(1))>=2:
+                paths.append((int(version_match.group(1)),path))
     witness=max(paths,key=lambda x:x[0])[1].read_bytes() if paths else None
     result=inspect(master,price,gov,term,witness)
     result["historical_primary_inventory"]=historical_primary_inventory(
