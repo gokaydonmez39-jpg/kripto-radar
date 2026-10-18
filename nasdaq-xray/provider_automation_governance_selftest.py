@@ -84,3 +84,26 @@ print("XRAY_BACKUP_PROVIDER_BQ_TWELVE_SELFTEST=PASS_DOCUMENTED_FREE_NOT_ACTIVATE
 print("XRAY_PROVIDER_AUTOMATION_GOVERNANCE_SELFTEST=PASS")
 
 # READINESS_WORKFLOW_RUN_REBIND_PROBE_2026_10_05: no semantic change.
+
+# Third-party code availability / standard display-only market data rules.
+# This is also executed by the existing fail-closed preopen audit workflow.
+for name in ("TRADINGVIEW_MCP","OPENBB_PUBLIC_NASDAQ_CBOE","GLOBAL_STOCK_DATA"):
+    x=j["providers"][name]
+    require(x["code_availability_does_not_grant_market_data_rights"] is True
+            and x["automated_unattended_data_access_attested"] is False
+            and x["license_evidence_status"]=="NOT_ATTESTED",
+            "XRAY_THIRDPARTY_RIGHTS_GUARD_"+name)
+    for flag in ("positive_price_dv30_promotion_allowed",
+                 "primary_mc_promotion_allowed","history_pass_promotion_allowed",
+                 "r92_promotion_allowed","strict_g9_promotion_allowed",
+                 "paid_top_up_allowed"):
+        require(x[flag] is False,"XRAY_THIRDPARTY_FALSE_PASS_"+name+"_"+flag)
+    require(x["execution"]=="NONE" and x["real_money"]=="NO-GO",
+            "XRAY_THIRDPARTY_NO_TRADE_"+name)
+require(j["providers"]["TRADINGVIEW_MCP"]["standard_plan_non_display_algo_use"]
+        =="PROHIBITED_UNLESS_EXPLICIT_SEPARATE_RIGHTS","TV_STANDARD_LICENSE")
+require(j["providers"]["OPENBB_PUBLIC_NASDAQ_CBOE"]["provider_sdk_data_license_transfer"]
+        is False,"OPENBB_FEED_LICENSE_TRANSFER")
+require(j["providers"]["GLOBAL_STOCK_DATA"]["unlicensed_yahoo_sina_cboe_nasdaq_market_data_promoted"]
+        is False,"UNLICENSED_GLOBAL_MARKET_FEED")
+print("XRAY_THIRDPARTY_RIGHTS_GUARD=PASS_NO_UNLICENSED_SOURCE_PROMOTION")
