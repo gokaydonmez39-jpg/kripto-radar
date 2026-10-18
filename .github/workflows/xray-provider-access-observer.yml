@@ -11,6 +11,7 @@ on:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - "nasdaq-xray/provider_runner_access_audit.py"
+      - "nasdaq-xray/provider_runtime_readiness_summary.py"
       - "nasdaq-xray/zero_limit_core_rebind_readiness.py"
 
 permissions:
@@ -197,6 +198,32 @@ jobs:
               if len(key)>=8:assert key not in payload
           print("XRAY_LIVE_RUNNER_SOURCE_PRESENCE=PASS_12_ZERO_HTTP_ZERO_PRIMARY")
           PY
+      - name: Summarize actual GitHub runner prerequisites without independent license claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/provider_runtime_readiness_summary.py \
+            --audit "$RUNNER_TEMP/xray_runner_access_audit.json" \
+            --out "$RUNNER_TEMP/xray_runner_prerequisites_summary.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_runner_prerequisites_summary.json").read_text())
+          assert x["schema"]=="XRAY_PROVIDER_RUNNER_PREREQUISITES_NO_AUTHORITY_V1"
+          assert x["provider_count"]==12 and len(x["providers"])==12
+          assert x["external_http_calls"]==0 and x["live_vendor_data_fetched"] is False
+          assert x["independently_verified_vendor_license"] is False
+          assert x["primary_created"] is False and x["r92_created"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          providers={p["id"]:p for p in x["providers"]}
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("\\n## Runner vendor prerequisites (not API or license proof)\\n")
+              for sid in ("ALPACA","MASSIVE","BUSINESSQUANT"):
+                  row=providers[sid]
+                  f.write(f"- {sid}: {row['status']}; blocked: {', '.join(row['blockers']) if row['blockers'] else 'no local configuration blocker'}\\n")
+              f.write("\\nNo API calls, raw market data, independent license rights, PRIMARY, HISTORY PASS or R92.\\n")
+          print("XRAY_RUNNER_PREREQUISITES_SUMMARY=PASS_ZERO_HTTP_ZERO_PRIMARY")
+          PY
       - name: PRICE-gated capacity diagnostic is separate and never required
         shell: bash
         run: |
@@ -238,6 +265,7 @@ jobs:
             ${{ runner.temp }}/xray_price_independent_provider_access.json
             ${{ runner.temp }}/xray_daily_mc_capacity_diagnostic.json
             ${{ runner.temp }}/xray_runner_access_audit.json
+            ${{ runner.temp }}/xray_runner_prerequisites_summary.json
             ${{ runner.temp }}/xray_zero_limit_rebind_readiness.json
           retention-days: 14
           if-no-files-found: error
