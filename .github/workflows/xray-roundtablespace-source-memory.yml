@@ -1,0 +1,82 @@
+name: XRAY RoundtableSpace Source Memory Acceptance (No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'nasdaq-xray/research/roundtablespace_verified_source_handoff_20261018_v1.json'
+      - '.github/workflows/xray-roundtablespace-source-memory.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nasdaq-xray/research/roundtablespace_verified_source_handoff_20261018_v1.json'
+      - '.github/workflows/xray-roundtablespace-source-memory.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-roundtablespace-source-memory-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  no-trade-no-source-promotion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Validate append-only research source registry and deliberate negative promotions
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy,json
+          from pathlib import Path
+          p=Path("nasdaq-xray/research/roundtablespace_verified_source_handoff_20261018_v1.json")
+          d=json.loads(p.read_text())
+          def check(obj):
+              assert obj["schema"]=="XRAY_ROUNDTABLESPACE_VERIFIED_SOURCE_HANDOFF_V1"
+              assert obj["scope"]=="READ_ONLY_RESEARCH_HANDOFF_NOT_A_VENDOR_PRICE_FEED"
+              assert obj["coverage_statement"]=="PARTIAL_INDEXED_PUBLIC_POSTS_NOT_ENTIRE_X_PROFILE"
+              assert obj["execution"]=="NONE" and obj["real_money"]=="NO-GO"
+              assert obj["unknown_never_pass"] is True
+              assert obj["price_gate_unblocked"] is False and obj["g9_unblocked"] is False
+              assert obj["primary_mc_unblocked"] is False and obj["licensed_history_unblocked"] is False
+              assert obj["r92_authority"] is False and obj["alpha_authority"] is False
+              assert obj["provider_rights_attested"] is False
+              assert obj["market_data_downloaded"] is False and obj["production_package_imported"] is False
+              assert obj["new_buy_signal_count"]==0 and obj["alerts_sent"]==0
+              assert obj["iphone_receipt_attested"] is False
+              assert obj["base_main_sha"]=="765cbe708a1ddf7bc48bd2a9be0f3dd6106f288b"
+              x=obj["confirmed_canonical_snapshot"]
+              assert x["price_asof_et"]=="2026-10-16" and x["price_pass"]==0 and x["price_unknown"]==542
+              assert x["master_identity_pass"]==3190 and x["master_identity_unknown"]==11
+              assert x["rallies_primary_materialized"]==0 and x["rallies_primary_uncovered"]==3190
+              assert x["terminal_full_end_to_end_research_pass"] is False and x["r92_verified_count"]==0
+              assert len(obj["sources"])==13 and len(obj["blockers"])==7
+              assert len({s["name"] for s in obj["sources"]})==13
+              assert len({s["url"] for s in obj["sources"]})==13
+              assert len({b["id"] for b in obj["blockers"]})==7
+              assert all(s["production_import"] is False and s["market_feed_licensed"] is False
+                         and s["has_verified_market_bars"] is False and s["may_create_R92"] is False
+                         and s["may_notify_user"] is False for s in obj["sources"])
+              assert all(b["status"]=="BLOCKED" and b["proof"] for b in obj["blockers"])
+              assert len(obj["next_evidence_first_sequence"])==5
+          check(d)
+          mutations=[
+              ("buy",("new_buy_signal_count",1)),
+              ("licensed",("provider_rights_attested",True)),
+              ("pass",("price_gate_unblocked",True)),
+              ("r92",("r92_authority",True)),
+              ("coverage",("coverage_statement","FULL_X_PROFILE")),
+          ]
+          for label,(key,value) in mutations:
+              x=copy.deepcopy(d);x[key]=value
+              try: check(x)
+              except AssertionError: continue
+              raise RuntimeError("XRAY_RESEARCH_UNSAFE_PROMOTION_ACCEPTED_"+label)
+          x=copy.deepcopy(d);x["sources"][0]["may_notify_user"]=True
+          try: check(x)
+          except AssertionError: pass
+          else: raise RuntimeError("XRAY_RESEARCH_SOURCE_NOTIFY_PROMOTION_ACCEPTED")
+          print("XRAY_ROUNDTABLESPACE_RESEARCH_MEMORY_PASS=13_SOURCES_7_BLOCKERS_6_NEGATIVE_ZERO_AL")
+          PY
