@@ -16,7 +16,7 @@
   "third_party_code_imported": false,
   "credentials_or_market_data_fetched": false,
   "independent_external_suite_executed": false,
-  "scope": "Research-only architectural admission; local XRAY regression tests are NOT independent external-package compatibility tests.",
+  "scope": "Research-only source-pinned architectural admission; GitHub offline guards test local XRAY compatibility boundaries, NOT external-package runtime execution.",
   "decisions": [
     {
       "id": "AI_HEDGE_FUND",
@@ -44,9 +44,9 @@
     },
     {
       "id": "OPENBB",
-      "repository": "OpenBB-finance/OpenBB",
-      "commit_sha": null,
-      "license": "UNVERIFIED_CURRENT_FORK",
+      "repository": "openbq-org/OpenBB",
+      "commit_sha": "cbf37e1f98a61d4e17ff1df43441fd4004774cac",
+      "license": "Apache-2.0",
       "decision": "SHADOW_ADAPTER_RESEARCH",
       "reuse": [
         "normalized_provider_interface_only"
@@ -58,7 +58,7 @@
       "blockers": [
         "provider_rights_unproved",
         "no_independent_market_data_entitlement",
-        "upstream_source_and_build_revision_unpinned"
+        "third_party_vendor_entitlements_still_unproved"
       ],
       "production_import": false,
       "independent_runtime_test": false
