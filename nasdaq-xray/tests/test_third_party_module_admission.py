@@ -77,7 +77,7 @@ def admit(doc: object) -> dict:
         sha = row.get("commit_sha")
         if sha is not None and (type(sha) is not str or not SHA.fullmatch(sha)):
             raise ValueError("EXTERNAL_ADMISSION_BAD_SHA")
-        if sha is None and row["decision"] not in {"SHADOW_ADAPTER_RESEARCH"}:
+        if sha is None:
             raise ValueError("EXTERNAL_ADMISSION_MISSING_PIN")
         for path in row["existing"]:
             if type(path) is not str or path.startswith("/") or ".." in Path(path).parts:
@@ -87,7 +87,9 @@ def admit(doc: object) -> dict:
     by_id = {r["id"]: r for r in rows}
     if (by_id["FREQTRADE"]["decision"] != "REJECT_CORE_INTEGRATION"
             or by_id["OPENSTOCK"]["decision"] != "REFERENCE_ONLY_NO_CODE_IMPORT"
-            or by_id["AI_HEDGE_FUND"]["decision"] != "REUSE_EXISTING_DESIGN"):
+            or by_id["AI_HEDGE_FUND"]["decision"] != "REUSE_EXISTING_DESIGN"
+            or by_id["OPENBB"]["repository"] != "openbq-org/OpenBB"
+            or by_id["OPENBB"]["license"] != "Apache-2.0"):
         raise ValueError("EXTERNAL_ADMISSION_UNSAFE_LICENSE_OR_ROLE")
     return doc
 
