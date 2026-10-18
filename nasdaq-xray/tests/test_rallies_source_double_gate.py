@@ -166,5 +166,88 @@ class TestDoubleGate(unittest.TestCase):
         self.assertFalse(x["governance_state"]["rallies_license_and_volume_claimed"])
         self.assertFalse(x["may_promote_r92"])
 
+
+    def test_cli_uses_highest_numeric_evidence_version_even_after_v9(self):
+        """Regression: v10 cannot be skipped while v9 is selected."""
+        import hashlib
+        import tempfile
+        from unittest import mock
+        import rallies_source_double_gate as gate
+
+        with tempfile.TemporaryDirectory() as td:
+            base = Path(td)
+            root = base / "repo" / "nasdaq-xray"
+            evidence = root / "evidence"
+            evidence.mkdir(parents=True)
+            for name, value in (
+                ("canonical_current_master_manifest.json", M),
+                ("canonical_current_price_dv30.json", P),
+                ("provider_automation_governance.json", G),
+                ("canonical_current_terminal.json", T),
+            ):
+                (root / name).write_text(json.dumps(value), encoding="utf-8")
+            for version in (1, 2, 9, 10):
+                witness = {
+                    "schema": "XRAY_RALLIES_DV30_CLASSIFICATION_V1",
+                    "asof_et": "2026-10-16",
+                    "authority": "C4.17_RALLIES_EXACT30_PRIMARY",
+                    "execution": "NONE",
+                    "real_money": "NO-GO",
+                    "unknown_never_pass": True,
+                    "fixture_version": version,
+                }
+                (evidence / f"rallies_dv30_20261016_classification_v{version}.json").write_text(
+                    json.dumps(witness), encoding="utf-8"
+                )
+            output = base / "rallies_audit.json"
+            with mock.patch.object(gate, "ROOT", root), mock.patch.object(
+                sys, "argv", ["rallies_source_double_gate.py", "--out", str(output)]
+            ):
+                gate.main()
+            report = json.loads(output.read_text(encoding="utf-8"))
+            expected = evidence / "rallies_dv30_20261016_classification_v10.json"
+            self.assertEqual(
+                report["primary_selected_file"],
+                "nasdaq-xray/evidence/" + expected.name,
+            )
+            self.assertEqual(
+                report["source_state"]["source_sha256"],
+                hashlib.sha256(expected.read_bytes()).hexdigest(),
+            )
+            self.assertFalse(report["may_promote_price_pass"])
+            self.assertFalse(report["may_promote_r92"])
+            self.assertEqual(report["buy_signals"], 0)
+
+    def test_cli_ignores_unqualified_version_one(self):
+        """The existing v1 suffix is never accepted as a versioned witness."""
+        import tempfile
+        from unittest import mock
+        import rallies_source_double_gate as gate
+
+        with tempfile.TemporaryDirectory() as td:
+            base = Path(td)
+            root = base / "repo" / "nasdaq-xray"
+            evidence = root / "evidence"
+            evidence.mkdir(parents=True)
+            for name, value in (
+                ("canonical_current_master_manifest.json", M),
+                ("canonical_current_price_dv30.json", P),
+                ("provider_automation_governance.json", G),
+                ("canonical_current_terminal.json", T),
+            ):
+                (root / name).write_text(json.dumps(value), encoding="utf-8")
+            (evidence / "rallies_dv30_20261016_classification_v1.json").write_text(
+                "{}", encoding="utf-8"
+            )
+            output = base / "rallies_audit.json"
+            with mock.patch.object(gate, "ROOT", root), mock.patch.object(
+                sys, "argv", ["rallies_source_double_gate.py", "--out", str(output)]
+            ):
+                gate.main()
+            report = json.loads(output.read_text(encoding="utf-8"))
+            self.assertIsNone(report["primary_selected_file"])
+            self.assertEqual(report["source_state"]["status"], "MISSING")
+            self.assertIn("MISSING_SAME_ASOF_RALLIES_CLASSIFICATION", report["blockers"])
+
 if __name__=="__main__":
     unittest.main()
