@@ -6,7 +6,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from rallies_source_double_gate import inspect
+from rallies_source_double_gate import inspect, historical_primary_inventory
 
 M={
     "schema":"XRAY_CANONICAL_MASTER_MANIFEST_VX","asof_et":"2026-10-16",
@@ -41,6 +41,45 @@ def d(x): return copy.deepcopy(x)
 class TestDoubleGate(unittest.TestCase):
     def case(self,master=None,price=None,governance=None,terminal=None,primary=None):
         return inspect(master or d(M),price or d(P),governance or d(G),terminal or d(T),primary)
+
+
+    def test_old_classification_never_covers_new_asof(self):
+        inventory=historical_primary_inventory("2026-10-16",[
+            "rallies_dv30_20261006_classification.json",
+            "rallies_dv30_20261007_classification_v2.json",
+            "rallies_dv30_20261008_classification.json"])
+        self.assertEqual(inventory["latest_prior_asof_et"],"2026-10-08")
+        self.assertFalse(inventory["same_asof_artifact_present"])
+        self.assertEqual(inventory["same_asof_candidates"],[])
+        self.assertEqual(inventory["prior_candidate_count"],3)
+        self.assertFalse(inventory["may_promote_price_pass"])
+        self.assertFalse(inventory["may_promote_r92"])
+
+    def test_current_filename_not_proof_of_vendor_or_rights(self):
+        inventory=historical_primary_inventory("2026-10-16",[
+            "rallies_dv30_20261016_classification.json",
+            "rallies_dv30_20261016_classification_v2.json"])
+        self.assertTrue(inventory["same_asof_artifact_present"])
+        self.assertEqual(inventory["same_asof_candidates"],[
+            "rallies_dv30_20261016_classification.json",
+            "rallies_dv30_20261016_classification_v2.json"])
+        self.assertFalse(inventory["raw_vendor_data_attested"])
+        self.assertFalse(inventory["runner_license_attested"])
+
+    def test_future_or_deceptive_filenames_not_promoted(self):
+        inventory=historical_primary_inventory("2026-10-16",[
+            "rallies_dv30_20261017_classification.json",
+            "rallies_dv30_20261016_classification-copy.json",
+            "rallies_dv30_20261016_classification_v1.json",
+            "../rallies_dv30_20261016_classification.json",
+            "rallies_dv30_20261008_classification.json"])
+        self.assertFalse(inventory["same_asof_artifact_present"])
+        self.assertEqual(inventory["latest_prior_asof_et"],"2026-10-08")
+        self.assertEqual(inventory["future_candidate_count"],1)
+
+    def test_invalid_asof_fails_closed(self):
+        with self.assertRaises(ValueError):
+            historical_primary_inventory("2026-99-88",[])
 
     def test_missing_and_no_license_are_independent_blocks(self):
         x=self.case()
