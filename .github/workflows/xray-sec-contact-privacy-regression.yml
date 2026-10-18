@@ -32,5 +32,7 @@ jobs:
         run: |
           python -m unittest discover -s nasdaq-xray/tests -p test_official_security_status_fail_closed.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_official_security_status_fail_closed.py -v
+          python nasdaq-xray/official_source_guard_selftest.py
+          python -O nasdaq-xray/official_source_guard_selftest.py
       - name: No plaintext operator contact in any workflow
         run: python nasdaq-xray/sec_operator_contact_secret_only_guard.py
