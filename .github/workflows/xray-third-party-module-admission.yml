@@ -5,6 +5,8 @@ on:
     paths:
       - 'nasdaq-xray/research/third_party_module_admission_20261018_v1.json'
       - 'nasdaq-xray/tests/test_third_party_module_admission.py'
+      - 'nasdaq-xray/external_ohlcv_research_shadow.py'
+      - 'nasdaq-xray/tests/test_external_ohlcv_research_shadow.py'
       - '.github/workflows/xray-third-party-module-admission.yml'
   workflow_dispatch:
 
@@ -31,6 +33,11 @@ jobs:
           python -m py_compile nasdaq-xray/tests/test_third_party_module_admission.py
           python -m unittest discover -s nasdaq-xray/tests -p 'test_third_party_module_admission.py' -v
           python -O -m unittest discover -s nasdaq-xray/tests -p 'test_third_party_module_admission.py' -v
+      - name: Test OpenBB and Qlib private-export adapter against the exact-260 validator
+        run: |
+          python -m py_compile nasdaq-xray/external_ohlcv_research_shadow.py nasdaq-xray/tests/test_external_ohlcv_research_shadow.py
+          python -m unittest discover -s nasdaq-xray/tests -p 'test_external_ohlcv_research_shadow.py' -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p 'test_external_ohlcv_research_shadow.py' -v
       - name: Re-run existing licensed-source fail-closed and exact-session controls
         run: |
           python nasdaq-xray/c418_multi_source_guard.py --selftest
@@ -45,6 +52,6 @@ jobs:
       - name: Declare scope precisely
         run: |
           echo '## XRAY external-module selection: offline research protections only' >> "$GITHUB_STEP_SUMMARY"
-          echo 'No third-party package import or independent external test suite executed.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'OpenBB/Qlib published export schema adapters tested with synthetic rows; no third-party package or live vendor run.' >> "$GITHUB_STEP_SUMMARY"
           echo 'No market data, no vendor credentials, no broker orders, no primary MC/PRICE, no R92, no user notification.' >> "$GITHUB_STEP_SUMMARY"
           echo 'This run cannot authorize production adoption or license rights.' >> "$GITHUB_STEP_SUMMARY"
