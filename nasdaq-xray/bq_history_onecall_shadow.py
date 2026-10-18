@@ -17,7 +17,7 @@ import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parent
@@ -50,11 +50,17 @@ def validate(obj:object, asof:str, symbol:str=TICKER)->dict:
     for row in rows:
         if not isinstance(row,dict):
             raise ValueError("BQ_ROW_NOT_OBJECT")
-        raw=str(row.get("date") or "")[:10]
+        raw_timestamp=row.get("date")
+        # Never silently discard a malformed or unrecognized vendor timestamp.
+        # EOD samples use a complete YYYY-MM-DD HH:MM:SS timestamp.
+        if (type(raw_timestamp) is not str or
+                re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", raw_timestamp) is None):
+            raise ValueError("BQ_EOD_TIMESTAMP_FORMAT_UNVERIFIED")
         try:
-            d=date.fromisoformat(raw)
-        except (TypeError,ValueError) as e:
-            raise ValueError("BQ_DATE_INVALID") from e
+            d=datetime.strptime(raw_timestamp,"%Y-%m-%d %H:%M:%S").date()
+        except ValueError as e:
+            raise ValueError("BQ_EOD_TIMESTAMP_INVALID") from e
+        raw=d.isoformat()
         if raw>asof or raw in seen or d.weekday()>4:
             raise ValueError("BQ_FUTURE_DUPLICATE_OR_NONSESSION")
         seen.add(raw)
@@ -70,6 +76,10 @@ def validate(obj:object, asof:str, symbol:str=TICKER)->dict:
                 raise ValueError("BQ_BAR_NONPOSITIVE_OR_NONFINITE")
             vals.append(v)
         o,h,l,c,v=vals
+        # Daily share volume must be an exact, non-fractional count.
+        # Any upstream unit ambiguity stays quarantined, never normalized.
+        if not v.is_integer():
+            raise ValueError("BQ_EOD_VOLUME_NOT_WHOLE_SHARES")
         if h<max(o,c,l) or l>min(o,c):
             raise ValueError("BQ_OHLC_RANGE_INCONSISTENT")
     return {"bar_rows_validated":len(rows),
@@ -142,7 +152,7 @@ def run(asof:str,key:str,http_get=limited_get,*,research_grant_ok:bool=False)->d
 def selftest()->None:
     asof="2026-10-08"
     row={"date":"2026-10-07 16:00:00","open":10.,"high":11.,
-         "low":9.,"close":10.5,"volume":150.25}
+         "low":9.,"close":10.5,"volume":150}
     sample={"metadata":{"ticker":TICKER,"mode":"eod","cik":320193,
                         "pagination":{"current_page":1,"total_pages":1}},
             "data":[row]}
@@ -173,17 +183,20 @@ def selftest()->None:
         {"metadata":sample["metadata"],"data":[row,row]},
         {"metadata":sample["metadata"],"data":[dict(row,date="2026-10-10")]},
         {"metadata":sample["metadata"],"data":[dict(row,date="not-a-date")]},
+        {"metadata":sample["metadata"],"data":[dict(row,volume=150.25)]},
+        {"metadata":sample["metadata"],"data":[dict(row,date="2026-10-07 MALFORMED")]},
+        {"metadata":sample["metadata"],"data":[dict(row,date="2026-10-07 27:00:00")]},
     ]:
         try:validate(bad,asof)
         except ValueError:cases.append(1)
         else:raise AssertionError("BQ_INVALID_EOD_ACCEPTED")
-    assert len(cases)==9
+    assert len(cases)==12
     import urllib.error
     for code in (401,403,429,500):
         r=run(asof,"mock-token",lambda *a,c=code:(_ for _ in ()).throw(urllib.error.HTTPError("https://secret.invalid?api_key=SECRET",c,"none",None,None)),research_grant_ok=True)
         assert r["status"].startswith("BLOCKED_")
         assert "SECRET" not in json.dumps(r)
-    print("XRAY_BQ_SHADOW_EOD_SELFTEST=PASS_2_POSITIVE_9_NEGATIVE_4_HTTP_AND_NO_KEY_NO_DATA_LEAK")
+    print("XRAY_BQ_SHADOW_EOD_SELFTEST=PASS_2_POSITIVE_12_NEGATIVE_4_HTTP_AND_NO_KEY_NO_DATA_LEAK")
 
 
 def main()->None:

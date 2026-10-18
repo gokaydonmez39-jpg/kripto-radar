@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/xray_multi_provider_research.py"
+      - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
   workflow_dispatch:
   schedule:
@@ -46,6 +47,9 @@ jobs:
           python -m py_compile nasdaq-xray/xray_multi_provider_research.py
           python nasdaq-xray/xray_multi_provider_research.py --selftest
           python -O nasdaq-xray/xray_multi_provider_research.py --selftest
+          python -m py_compile nasdaq-xray/bq_history_onecall_shadow.py
+          python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+          python -O nasdaq-xray/bq_history_onecall_shadow.py --selftest
           echo 'XRAY_BQ_FAILOVER_CREDIT_GUARD=PASS_OFFLINE_NO_VENDOR_NO_ALPHA'
   provider-shadow:
     if: github.event_name != 'pull_request'
@@ -122,6 +126,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python -m py_compile nasdaq-xray/bq_history_onecall_shadow.py
           python nasdaq-xray/bq_history_onecall_shadow.py --selftest
+          python -O nasdaq-xray/bq_history_onecall_shadow.py --selftest
           # Independently enforce no HTTP call merely because key is present.
           python - <<'PY'
           import importlib.util
