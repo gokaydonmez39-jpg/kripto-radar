@@ -67,13 +67,15 @@
       "url": "https://www.tradingview.com/mcp/docs",
       "provenance": "PROFILE_ASSOCIATED_PREVIOUS_RESEARCH",
       "role": "potential_intraday",
-      "disposition": "BLOCKED_ACCOUNT_ENTITLEMENT_AND_RIGHTS",
-      "reason": "Read-only get_ohlcv supports 30m up to 5000 bars; subscription, delayed data, automated use and session completeness unproven.",
+      "disposition": "PRODUCTION_NO_GO_STANDARD_DISPLAY_ONLY_LICENSE",
+      "reason": "TradingView standard terms expressly prohibit non-display algorithmic decision-making, price referencing and automated market-data extraction. Both official MCP and unofficial free scraping wrappers require separate explicit rights for XRAY C4.17/R92; technical bar access does not grant permission.",
       "production_import": false,
       "market_feed_licensed": false,
       "has_verified_market_bars": false,
       "may_create_R92": false,
-      "may_notify_user": false
+      "may_notify_user": false,
+      "official_terms_url": "https://www.tradingview.com/policies/",
+      "official_automated_collection_policy_url": "https://www.tradingview.com/support/solutions/43000674726-why-is-my-account-banned-due-to-suspicious-activity/"
     },
     {
       "name": "OpenFIGI",
@@ -191,6 +193,71 @@
       "has_verified_market_bars": false,
       "may_create_R92": false,
       "may_notify_user": false
+    },
+    {
+      "name": "HackMyAgent",
+      "url": "https://github.com/opena2a-org/hackmyagent",
+      "provenance": "DIRECT_ROUNDTABLESPACE_INDEXED_POST_20261018",
+      "role": "prompt_injection_mcp_secret_and_supply_chain_static_security",
+      "disposition": "OFFLINE_EVALUATION_CANDIDATE_ONLY",
+      "reason": "Apache-2.0 project; upstream README claims 261 checks, 29 semantic checks and prompt attack tests. Package install invokes native dependency download; telemetry on locally by default but off in CI. Do not run hostile payloads or auto-fix in production. No price source.",
+      "production_import": false,
+      "market_feed_licensed": false,
+      "has_verified_market_bars": false,
+      "may_create_R92": false,
+      "may_notify_user": false
+    },
+    {
+      "name": "Anthropic Claude Security Plugin",
+      "url": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-security",
+      "provenance": "DIRECT_ROUNDTABLESPACE_INDEXED_POST_20261018",
+      "role": "repo_security_review_and_threat_model",
+      "disposition": "REFERENCE_CLAUDE_CODE_ONLY_NO_RUNNER_IMPORT",
+      "reason": "Official plugin runs inside Claude Code session and does not isolate untrusted repos. No evidence of native GitHub Actions/ChatGPT runtime. Avoid duplicating existing integrity audits, do not give secrets.",
+      "production_import": false,
+      "market_feed_licensed": false,
+      "has_verified_market_bars": false,
+      "may_create_R92": false,
+      "may_notify_user": false
+    },
+    {
+      "name": "Cognee",
+      "url": "https://github.com/topoteretes/cognee",
+      "provenance": "SECONDARY_DEVELOPER_REPLY_TO_ROUNDTABLESPACE_POST_INDEXED",
+      "role": "local_knowledge_graph_and_long_term_memory",
+      "disposition": "BENCHMARK_ONLY_AGAINST_EXISTING_SHA_LEDGER",
+      "reason": "Apache-2.0, self-hosted with local embedding/NER models requiring model downloads and persistent compute. Memory recall cannot attest vendor bars, MC or rights; no installation without measurable gain.",
+      "production_import": false,
+      "market_feed_licensed": false,
+      "has_verified_market_bars": false,
+      "may_create_R92": false,
+      "may_notify_user": false
+    },
+    {
+      "name": "XERJ",
+      "url": "https://github.com/xerj-org/xerj",
+      "provenance": "DIRECT_ROUNDTABLESPACE_INDEXED_POST_20261018",
+      "role": "indexed_repo_search_and_evidence_context",
+      "disposition": "REFERENCE_ONLY_TEST_SAFE_AUTH_LOCAL_CONFIG",
+      "reason": "Apache-2.0 local search; README warns insecure mode disables TLS and API-key auth and permits superuser reading/deletion of indexes. Do not open service ports or replace source-bound proofs.",
+      "production_import": false,
+      "market_feed_licensed": false,
+      "has_verified_market_bars": false,
+      "may_create_R92": false,
+      "may_notify_user": false
+    },
+    {
+      "name": "global-stock-data",
+      "url": "https://github.com/simonlin1212/global-stock-data",
+      "provenance": "INDEPENDENT_EXTERNAL_GITHUB_DISCOVERY_NOT_VERIFIED_AS_ROUNDTABLESPACE_POST",
+      "role": "official_SEC_FINRA_FRED_source_map_and_terms_comparison",
+      "disposition": "REFERENCE_ONLY_NO_UNLICENSED_QUOTES",
+      "reason": "Apache-2.0 code/skills not data. Its SEC EDGAR and official open-data mapping is potentially useful as a source inventory; Yahoo/Sina/Cboe/Nasdaq quote or raw price paths are not licensed automatically. Third-party compliance tier labels are assertions to verify against source terms.",
+      "production_import": false,
+      "market_feed_licensed": false,
+      "has_verified_market_bars": false,
+      "may_create_R92": false,
+      "may_notify_user": false
     }
   ],
   "blockers": [
@@ -268,5 +335,20 @@
   "iphone_receipt_attested": false,
   "new_buy_signal_count": 0,
   "alerts_sent": 0,
-  "disposition": "VERIFIED_RESEARCH_LEADS_ONLY_ALL_RUNTIME_LICENSE_AND_DATA_GATES_UNRESOLVED"
+  "disposition": "VERIFIED_RESEARCH_LEADS_ONLY_ALL_RUNTIME_LICENSE_AND_DATA_GATES_UNRESOLVED",
+  "followup_addendum": {
+    "observed_date": "2026-10-18",
+    "scope": "INDEXED_PROFILE_POSTS_AND_OFFICIAL_REPOSITORY_DOCS_PARTIAL_ONLY",
+    "new_source_count": 5,
+    "extra_insight": "Standard TradingView display-only market-data terms expressly forbid automated non-display algorithmic decision-making. Reject unofficial TradingView MCP as licensed C4.17 source; do not claim a potential 5000 OHLCV bar interface makes it lawful.",
+    "authorized_security_candidate": "HackMyAgent: test in isolated no-secret offline fixture only after pinning hash/dependencies and preventing install scripts or unsolicited network access.",
+    "possible_sec_pit_aid": "Review SEC EDGAR accession acceptance and Form 4/13F parsing patterns from global-stock-data; do not import price feeds or attribute this externally found project to RoundtableSpace.",
+    "exchange_outage_context": "2026-10-15 Nasdaq feed incident reported by Reuters; possible temporal contextual risk only. NOT confirmed cause of 2026-10-16 missing Rallies classification artifact or 542 UNKNOWN; compare provider logs before asserting linkage.",
+    "exchange_outage_reference": "https://www.reuters.com/business/nasdaq-reports-network-disruption-us-equities-data-feeds-impacted-2026-10-15/",
+    "license_terms": "https://www.tradingview.com/policies/",
+    "license_forbidden_standard_use": true,
+    "no_provider_access_or_entitlement_proven": true,
+    "production_unchanged": true,
+    "zero_new_verified_R92": true
+  }
 }
