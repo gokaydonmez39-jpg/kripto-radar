@@ -1,6 +1,6 @@
 {
   "schema": "XRAY_PROVIDER_AUTOMATION_GOVERNANCE_V1",
-  "updated_on": "2026-10-14",
+  "updated_on": "2026-10-18",
   "execution": "NONE",
   "real_money": "NO-GO",
   "unknown_never_pass": true,
@@ -118,6 +118,68 @@
       "no_raw_vendor_ohlcv_in_public_github": true,
       "execution": "NONE",
       "real_money": "NO-GO"
+    },
+    "TRADINGVIEW_MCP": {
+      "code_availability_does_not_grant_market_data_rights": true,
+      "automated_unattended_data_access_attested": false,
+      "license_evidence_status": "NOT_ATTESTED",
+      "positive_price_dv30_promotion_allowed": false,
+      "primary_mc_promotion_allowed": false,
+      "history_pass_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "strict_g9_promotion_allowed": false,
+      "paid_top_up_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO",
+      "role": "RESEARCH_REFERENCE_ONLY_NOT_SCHEDULED_NASDAQ_PRICE_FEED",
+      "standard_plan_non_display_algo_use": "PROHIBITED_UNLESS_EXPLICIT_SEPARATE_RIGHTS",
+      "official_or_upstream_references": [
+        "https://www.tradingview.com/policies/",
+        "https://www.tradingview.com/mcp/docs"
+      ],
+      "risk": "Standard display-focused terms do not authorize unattended non-display algorithmic screening. Third-party free MCP wrappers cannot transfer market data license. Additional explicit written rights required before any use.",
+      "no_unofficial_scraping": true
+    },
+    "OPENBB_PUBLIC_NASDAQ_CBOE": {
+      "code_availability_does_not_grant_market_data_rights": true,
+      "automated_unattended_data_access_attested": false,
+      "license_evidence_status": "NOT_ATTESTED",
+      "positive_price_dv30_promotion_allowed": false,
+      "primary_mc_promotion_allowed": false,
+      "history_pass_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "strict_g9_promotion_allowed": false,
+      "paid_top_up_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO",
+      "role": "V5_ADAPTER_DISCOVERY_ONLY_NEVER_UNLICENSED_PRICE_FEED",
+      "provider_sdk_data_license_transfer": false,
+      "official_or_upstream_references": [
+        "https://github.com/openbq-org/OpenBB",
+        "https://www.nasdaq.com/legal"
+      ],
+      "risk": "Open-source OpenBB adapters publicly expose Nasdaq/Cboe website endpoints; SDK license != exchange market-data automation rights. No use as unattended C4.17 EOD, 260 RTH or quote source without independently licensed grant."
+    },
+    "GLOBAL_STOCK_DATA": {
+      "code_availability_does_not_grant_market_data_rights": true,
+      "automated_unattended_data_access_attested": false,
+      "license_evidence_status": "NOT_ATTESTED",
+      "positive_price_dv30_promotion_allowed": false,
+      "primary_mc_promotion_allowed": false,
+      "history_pass_promotion_allowed": false,
+      "r92_promotion_allowed": false,
+      "strict_g9_promotion_allowed": false,
+      "paid_top_up_allowed": false,
+      "execution": "NONE",
+      "real_money": "NO-GO",
+      "role": "OPEN_SOURCE_OFFICIAL_SEC_FINRA_REFERENCE_MAP_ONLY",
+      "unlicensed_yahoo_sina_cboe_nasdaq_market_data_promoted": false,
+      "sec_public_filing_facts_not_a_quote_license": true,
+      "official_or_upstream_references": [
+        "https://github.com/simonlin1212/global-stock-data",
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+      ],
+      "risk": "The upstream public skill includes Sina/Yahoo/Cboe/Nasdaq prices and SEC/FINRA reports. Its tier labels are vendor claims not account-specific rights; reuse only independent official-source compliance research; no raw quotes or bars into live AL."
     }
   }
 }
