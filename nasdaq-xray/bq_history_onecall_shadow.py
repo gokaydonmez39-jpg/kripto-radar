@@ -142,7 +142,7 @@ def run(asof:str,key:str,http_get=limited_get,*,research_grant_ok:bool=False)->d
 def selftest()->None:
     asof="2026-10-08"
     row={"date":"2026-10-07 16:00:00","open":10.,"high":11.,
-         "low":9.,"close":10.5,"volume":150.25}
+         "low":9.,"close":10.5,"volume":150}
     sample={"metadata":{"ticker":TICKER,"mode":"eod","cik":320193,
                         "pagination":{"current_page":1,"total_pages":1}},
             "data":[row]}
@@ -173,17 +173,19 @@ def selftest()->None:
         {"metadata":sample["metadata"],"data":[row,row]},
         {"metadata":sample["metadata"],"data":[dict(row,date="2026-10-10")]},
         {"metadata":sample["metadata"],"data":[dict(row,date="not-a-date")]},
+        {"metadata":sample["metadata"],"data":[dict(row,volume=150.25)]},
+        {"metadata":sample["metadata"],"data":[dict(row,date="2026-10-07 MALFORMED")]},
     ]:
         try:validate(bad,asof)
         except ValueError:cases.append(1)
         else:raise AssertionError("BQ_INVALID_EOD_ACCEPTED")
-    assert len(cases)==9
+    assert len(cases)==11
     import urllib.error
     for code in (401,403,429,500):
         r=run(asof,"mock-token",lambda *a,c=code:(_ for _ in ()).throw(urllib.error.HTTPError("https://secret.invalid?api_key=SECRET",c,"none",None,None)),research_grant_ok=True)
         assert r["status"].startswith("BLOCKED_")
         assert "SECRET" not in json.dumps(r)
-    print("XRAY_BQ_SHADOW_EOD_SELFTEST=PASS_2_POSITIVE_9_NEGATIVE_4_HTTP_AND_NO_KEY_NO_DATA_LEAK")
+    print("XRAY_BQ_SHADOW_EOD_SELFTEST=PASS_2_POSITIVE_11_NEGATIVE_4_HTTP_AND_NO_KEY_NO_DATA_LEAK")
 
 
 def main()->None:
