@@ -40,6 +40,57 @@ def unique_symbols(values, name):
     return set(values)
 
 
+
+def historical_primary_inventory(asof, names):
+    """Classify *filenames*, not vendor proof, by their exact DV30 evidence epoch.
+
+    Earlier classifications and future-dated files are not current evidence.
+    This inventory never attests licensing, RTH volume, prices or R92.
+    """
+    current = iso(asof)
+    require(type(names) in (list, tuple) and all(type(x) is str for x in names),
+            "INVENTORY_FILENAME_LIST")
+    prior, same, future = [], [], []
+    for name in set(names):
+        if "/" in name or "\\\\" in name:
+            continue
+        match = re.fullmatch(
+            r"rallies_dv30_(\\d{8})_classification(?:_v([1-9][0-9]*))?\\.json",
+            name,
+        )
+        if match is None:
+            continue
+        if match.group(2) is not None and int(match.group(2)) < 2:
+            continue
+        stamp = match.group(1)
+        try:
+            stamped = date.fromisoformat(
+                f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:8]}")
+        except ValueError:
+            continue
+        if stamped < current:
+            prior.append((stamped, name))
+        elif stamped == current:
+            same.append(name)
+        else:
+            future.append(name)
+    latest = max((d for d, _ in prior), default=None)
+    return {
+        "asof_et": current.isoformat(),
+        "same_asof_artifact_present": bool(same),
+        "same_asof_candidates": sorted(same),
+        "latest_prior_asof_et": latest.isoformat() if latest else None,
+        "prior_candidate_count": len(prior),
+        "future_candidate_count": len(future),
+        "old_evidence_never_rolls_forward": True,
+        "raw_vendor_data_attested": False,
+        "runner_license_attested": False,
+        "may_promote_price_pass": False,
+        "may_promote_r92": False,
+        "execution": "NONE",
+        "real_money": "NO-GO",
+    }
+
 def inspect(master, price, governance, terminal, primary_bytes=None):
     """No provider calls. Reject corrupted evidence before producing verdict."""
     require(all(type(x) is dict for x in (master,price,governance,terminal)),
@@ -188,6 +239,9 @@ def main():
                 paths.append((int(tail[2:]),path))
     witness=max(paths,key=lambda x:x[0])[1].read_bytes() if paths else None
     result=inspect(master,price,gov,term,witness)
+    result["historical_primary_inventory"]=historical_primary_inventory(
+        asof.isoformat(), [p.name for p in directory.iterdir() if p.is_file()]
+    )
     result["primary_expected_path"]="nasdaq-xray/evidence/"+prefix+".json"
     result["primary_selected_file"]=("nasdaq-xray/evidence/"+max(paths,key=lambda x:x[0])[1].name) if paths else None
     target=a.out.resolve()
