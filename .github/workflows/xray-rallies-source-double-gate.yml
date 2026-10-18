@@ -5,12 +5,14 @@ on:
     paths:
       - 'nasdaq-xray/rallies_source_double_gate.py'
       - 'nasdaq-xray/tests/test_rallies_source_double_gate.py'
+      - 'nasdaq-xray/research/rallies_connected_20261018_fractional_volume_witness_v1.json'
       - '.github/workflows/xray-rallies-source-double-gate.yml'
   push:
     branches: [main]
     paths:
       - 'nasdaq-xray/rallies_source_double_gate.py'
       - 'nasdaq-xray/tests/test_rallies_source_double_gate.py'
+      - 'nasdaq-xray/research/rallies_connected_20261018_fractional_volume_witness_v1.json'
       - '.github/workflows/xray-rallies-source-double-gate.yml'
   workflow_dispatch:
 permissions:
@@ -49,6 +51,32 @@ jobs:
           assert j["buy_signals"]==0 and j["may_notify_user"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
           print("XRAY_RALLIES_CURRENT_DOUBLE_GATE=PASS_DIAGNOSTIC_BLOCKED_NO_ALPHA")
+          PY
+      - name: Validate read-only Rallies volume integrity witness without vendor raw bytes or authority claims
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          x=json.loads(Path("nasdaq-xray/research/rallies_connected_20261018_fractional_volume_witness_v1.json").read_text())
+          assert x["schema"]=="XRAY_RALLIES_CONNECTED_CHATGPT_INTERACTIVE_VOLUME_WITNESS_V1"
+          assert x["evidence_surface"]=="CONNECTED_CHATGPT_RALLIES_READ_ONLY_PRICE_FROM_DATE_RANGE"
+          assert x["source_class"]=="INTERACTIVE_CONNECTED_ONLY_NOT_GITHUB_RUNNER_LICENSED"
+          assert len(x["observations"])==3
+          assert [r["symbol"] for r in x["observations"]]==["AAPL","MSFT","NVDA"]
+          assert sum(r["day_rows"] for r in x["observations"])==x["observed_day_rows"]==43
+          assert sum(r["fractional_daily_volume_rows"] for r in x["observations"])==x["non_integral_volume_rows"]==43
+          assert all(r["fractional_daily_volume_rows"]==r["day_rows"] and
+                     r["start"]<=r["end"] and r["day_rows"]>0 for r in x["observations"])
+          assert x["alpaca_canary"]["status"]=="API_ERROR" and x["alpaca_canary"]["rows_attested"]==0
+          for key in ("no_vendor_raw_prices_stored","no_source_credentials_stored","unknown_never_pass"):
+              assert x[key] is True,key
+          for key in ("licensed_automation_proven","provider_rth_unadjusted_share_volume_proven","production_provider_config_changed"):
+              assert x[key] is False,key
+          for key in ("price_pass_created","mc_pass_created","r92_created","alerts_sent"):
+              assert x[key]==0,key
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          assert not any(any(k in entry for k in ("close","open","high","low","volume","bar_raw","token","api_key")) for entry in x["observations"])
+          print("XRAY_REAL_RALLIES_VOLUME_WITNESS=43_OF_43_FRACTIONAL_NO_PRICE_NO_ALPHA")
           PY
       - name: Refuse forbidden network and brokerage imports
         run: |
