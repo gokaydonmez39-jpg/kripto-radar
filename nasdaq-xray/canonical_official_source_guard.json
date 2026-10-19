@@ -10,7 +10,6 @@
       "FRGT",
       "GP",
       "HCHL",
-      "IRON",
       "LAWR",
       "MAGH",
       "MCTA",
@@ -75,7 +74,6 @@
       "HCHL",
       "ILLR",
       "ILLRW",
-      "IRON",
       "LAWR",
       "LESL",
       "MAGH",
@@ -107,7 +105,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-19T11:04:08.222535+00:00",
+  "generated_at_utc": "2026-10-19T11:15:52.572299+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -769,7 +767,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 18,
+      "active_halt_count": 17,
       "active_halt_symbols": [
         "AZTR",
         "CAPS",
@@ -778,7 +776,6 @@
         "FRGT",
         "GP",
         "HCHL",
-        "IRON",
         "LAWR",
         "MAGH",
         "MCTA",
@@ -800,11 +797,11 @@
           "IssueSymbol": "IRON",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T2",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/19/2026                    </td><td valign=\"top\">06:55:37.593</td><td valign=\"top\">IRON</td><td valign=\"top\">Disc Medicine, Inc. SC</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T2</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/19/2026",
+          "ResumptionQuoteTime": "07:15:00",
+          "ResumptionTradeTime": "07:20:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/19/2026                    </td><td valign=\"top\">06:55:37.593</td><td valign=\"top\">IRON</td><td valign=\"top\">Disc Medicine, Inc. SC</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/19/2026                    </td><td valign=\"top\">07:15:00                      </td><td valign=\"top\">07:20:00                      </td></tr></table>",
           "pubDate": "Mon, 19 Oct 2026 04:00:00 GMT",
           "title": "IRON"
         },
