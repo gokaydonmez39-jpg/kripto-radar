@@ -24,6 +24,7 @@ from alpaca_personal_price_current_exact30 import (
     classify_mixed_full_and_early, dates30, STATES)
 from alpaca_full_universe_30d_daily_proxy_shadow import VALID as D30_HIGH
 from alpaca_sip_paginated_transport_shadow import SYMBOL_RE
+from alpaca_sip_request_pacer import PACER
 from source_epoch_freshness_guard import last_complete_session
 
 ROOT=Path(__file__).resolve().parent
@@ -111,6 +112,7 @@ def pager(symbols,tf,start,end,asof,credentials,calls):
                      "APCA-API-SECRET-KEY":credentials[1],
                      "Accept":"application/json",
                      "User-Agent":"NASDAQ-XRAY-Personal-Historical-Research/1.0"})
+        PACER.pace()  # Every page, not merely every 8-symbol batch.
         calls[0]+=1
         try:
             with urllib.request.urlopen(req,timeout=40) as res:
