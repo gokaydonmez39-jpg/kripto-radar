@@ -21,7 +21,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: xray-personal-full-cohort-early-watch
+  group: xray-alpaca-historical-sip-account-v1
   cancel-in-progress: false
 jobs:
   technical-watch:
