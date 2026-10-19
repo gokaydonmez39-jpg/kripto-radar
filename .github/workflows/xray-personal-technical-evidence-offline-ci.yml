@@ -6,12 +6,18 @@ on:
     paths:
       - nasdaq-xray/personal_research_primary_engine_v2.py
       - nasdaq-xray/eod_screening_digest.py
+      - nasdaq-xray/source_epoch_freshness_guard.py
+      - nasdaq-xray/current_terminal_epoch_forensics.py
+      - .github/workflows/xray-canonical-current-pre-mc.yml
       - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
   push:
     paths:
       - nasdaq-xray/personal_research_primary_engine_v1.py
       - nasdaq-xray/personal_research_primary_engine_v2.py
       - nasdaq-xray/eod_screening_digest.py
+      - nasdaq-xray/source_epoch_freshness_guard.py
+      - nasdaq-xray/current_terminal_epoch_forensics.py
+      - .github/workflows/xray-canonical-current-pre-mc.yml
       - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
 permissions:
   contents: read
@@ -31,6 +37,35 @@ jobs:
           python3 -m py_compile nasdaq-xray/personal_research_primary_engine_v2.py
           python3 nasdaq-xray/personal_research_primary_engine_v2.py --selftest
           python3 -O nasdaq-xray/personal_research_primary_engine_v2.py --selftest
+      - name: Assert official close plus 30m ASOF before Pre-MC and terminal diagnostics
+        run: |
+          python3 -m py_compile nasdaq-xray/source_epoch_freshness_guard.py nasdaq-xray/current_terminal_epoch_forensics.py
+          python3 nasdaq-xray/source_epoch_freshness_guard.py --selftest
+          python3 -O nasdaq-xray/source_epoch_freshness_guard.py --selftest
+          python3 nasdaq-xray/current_terminal_epoch_forensics.py --selftest
+          python3 -O nasdaq-xray/current_terminal_epoch_forensics.py --selftest
+          python3 nasdaq-xray/current_terminal_epoch_forensics.py --out "$RUNNER_TEMP/xray_official_epoch_audit.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          evidence=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_official_epoch_audit.json").read_text())
+          assert evidence["expected_latest_completed_official_asof_et"] >= evidence["source_asof_et"]
+          assert evidence["last_authoritative_terminal_asof_et"] <= evidence["source_asof_et"]
+          assert evidence["root_is_latest_official_asof"] == (
+              evidence["expected_latest_completed_official_asof_et"]==evidence["source_asof_et"])
+          assert evidence["canonical_terminal_overwritten"] is False
+          assert evidence["r92_created_by_report"] is False
+          assert evidence["mc_primary_approved_by_report"] is False
+          print("XRAY_REAL_CANONICAL_EPOCH_READBACK=PASS_FAIL_CLOSED_NO_ALPHA")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          source=Path(".github/workflows/xray-canonical-current-pre-mc.yml").read_text()
+          assert "from source_epoch_freshness_guard import last_complete_session" in source
+          assert "latest_completed=last_complete_session(now)" in source
+          assert 'row["market_close"].to_pydatetime()<=now' not in source
+          print("XRAY_PREMC_UNIFIED_ASOF_CLOCK=PASS_20261019_NO_PREMATURE_ROLLOVER")
+          PY
       - name: Candidate-local EOD observation survives unrelated UNKNOWN without AL authority
         run: |
           python3 -m py_compile nasdaq-xray/eod_screening_digest.py

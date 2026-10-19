@@ -175,8 +175,8 @@ jobs:
           python - <<'PY'
           import hashlib, json, os, pathlib, sys
           from datetime import datetime, timezone, timedelta
-          import pandas_market_calendars as mcal
           sys.path.insert(0,"nasdaq-xray")
+          from source_epoch_freshness_guard import last_complete_session
           from pre_mc_identity_replay_session_guard import defer_live_identity_replay
           from price_dv30_recover_from_fullstate import (
               price_snapshot_integrity, bridge_refresh_relevant, deferred_bootstrap_artifact,
@@ -193,18 +193,8 @@ jobs:
           terminal_asof=str(term.get("asof_et") or "")
           phase=((ps.get("work_cursor") or {}).get("PHASE") or "")
           now=datetime.now(timezone.utc)
-          cal=mcal.get_calendar("NASDAQ")
-          sched=cal.schedule(
-              start_date=(now.date()-timedelta(days=15)).isoformat(),
-              end_date=(now.date()+timedelta(days=1)).isoformat(),
-          )
-          completed=[]
-          for idx,row in sched.iterrows():
-              if row["market_close"].to_pydatetime()<=now:
-                  completed.append(idx.date().isoformat())
-          if not completed:
-              raise RuntimeError("NO_COMPLETED_NASDAQ_SESSION")
-          latest_completed=completed[-1]
+          # Match EOD/HISTORY/release: official XNAS close plus 30m.
+          latest_completed=last_complete_session(now)
           if pointer_asof and pointer_asof>latest_completed:
               raise RuntimeError(f"POINTER_ASOF_FUTURE:{pointer_asof}>{latest_completed}")
 
