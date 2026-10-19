@@ -19,7 +19,8 @@ DATES=["2026-10-16"]
 
 def fake_census(halfway):
     with tempfile.TemporaryDirectory() as temp_input, tempfile.TemporaryDirectory() as temp_output:
-        p=Path(temp_input)
+        p=Path(temp_input)/"repo"/"nasdaq-xray"
+        p.mkdir(parents=True)
         (p/"canonical_current_master_manifest.json").write_text("{}")
         (p/"canonical_current_price_dv30.json").write_text("{}")
         output=Path(temp_output)/"price_cliff.json"
