@@ -9,7 +9,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from sina_transport_rescue import choose
+from sina_transport_rescue import choose, retryable_record
 from root_history_recovery_microaudit import audit
 from sina_state_hash_guard import seal
 
@@ -52,6 +52,22 @@ class SinaLegacyRescueTests(unittest.TestCase):
     def test_only_true_transports_can_be_retried(self):
         state,root,now=fixture()
         self.assertEqual(choose(state,now),["F_429","G_TIMEOUT","H_CONN"])
+
+    def test_http_status_must_be_unambiguous_and_prefix_bound(self):
+        for deceptive in (
+            "HTTPError: upstream https://host/429 got 403",
+            "HTTPError: request id 429 returned 403",
+            "HTTPError: HTTP Error 403 but upstream text 429",
+            "HTTPError: status 500, then final 401",
+            "HTTPError: 429 / 403",
+            "HTTPError:429trailingjunk",
+        ):
+            with self.subTest(value=deceptive):
+                self.assertFalse(retryable_record(deceptive))
+        for valid in ("HTTPError:429", "HTTPError:HTTP Error 429: Too Many Requests",
+                      "HTTPError:503", "HTTPError:HTTP Error 502: Bad Gateway"):
+            with self.subTest(value=valid):
+                self.assertTrue(retryable_record(valid))
 
     def test_root_causal_categories_match_rescue(self):
         state,root,now=fixture()
