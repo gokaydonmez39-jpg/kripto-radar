@@ -75,6 +75,23 @@ class SinaNontransientRetry(TestCase):
         status,info=self.classify(exc)
         self.assertEqual(status,"UNKNOWN_RETRY")
 
+    def test_all_nontransient_http_4xx_are_quarantined(self):
+        for code in (402, 405, 406, 409, 418, 423, 426, 428, 431, 451):
+            with self.subTest(code=code):
+                exc=urllib.error.HTTPError("https://example.invalid",code,
+                                          "Definitive",hdrs=None,fp=None)
+                status,info=self.classify(exc)
+                self.assertEqual(status,"UNKNOWN_STATIC")
+                self.assertEqual(info["reason"],"SINA_SOURCE_HTTP_NONRETRYABLE")
+                self.assertEqual(info["http_status"],code)
+
+    def test_retryable_http_statuses_are_exact(self):
+        for code in (408, 425, 429, 500, 503):
+            with self.subTest(code=code):
+                exc=urllib.error.HTTPError("https://example.invalid",code,
+                                          "Transient",hdrs=None,fp=None)
+                self.assertEqual(self.classify(exc)[0],"UNKNOWN_RETRY")
+
     def test_transport_timeout_remains_bounded_retry(self):
         status,info=self.classify(TimeoutError("timed out"))
         self.assertEqual(status,"UNKNOWN_RETRY")

@@ -779,7 +779,11 @@ def parse_hist(sym,asof,expected30):
             "source_authority":"UNVERIFIED",
         }
     except urllib.error.HTTPError as e:
-        if int(e.code) in {400, 401, 403, 404, 410, 422}:
+        # Retry only explicitly transient status codes, matching the
+        # hardened legacy recovery contract. All other 4xx are definitive.
+        code=int(e.code)
+        retryable=(code in {408, 425, 429} or 500 <= code <= 599)
+        if not retryable:
             return "UNKNOWN_STATIC",{
                 "reason":"SINA_SOURCE_HTTP_NONRETRYABLE",
                 "http_status":int(e.code),
