@@ -91,6 +91,10 @@ def selftest():
     for instant in (sunday_et_monday_utc,monday_before_open,monday_before_close,monday_buffer_edge):
         assert last_complete_session(instant)=="2026-10-09",("PREMATURE_MONDAY_ASOF",instant)
     assert last_complete_session(monday_settled)=="2026-10-12","MONDAY_MARKET_OPEN_NOT_RECOGNIZED"
+    oct19_early=dt.datetime(2026,10,19,20,29,tzinfo=dt.timezone.utc)
+    oct19_ready=dt.datetime(2026,10,19,20,30,tzinfo=dt.timezone.utc)
+    assert last_complete_session(oct19_early)=="2026-10-16","PREMATURE_OCT19_ASOF"
+    assert last_complete_session(oct19_ready)=="2026-10-19","MISSED_OCT19_ASOF"
     o=audit(price,master,terminal,late)
     assert o["session_lag"]=={"PRICE":1,"MASTER":1,"TERMINAL":2}
     assert not o["freshness_ready"]

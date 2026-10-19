@@ -1,0 +1,204 @@
+{
+  "schema": "XRAY_CONNECTED_LONG_BRIDGE_HISTORY_28_SOURCE_ERRORS_SHADOW_V1",
+  "repo": "gokaydonmez39-jpg/kripto-radar",
+  "asof_et": "2026-10-16",
+  "source_sina_state_path": "nasdaq-xray/sina_state.json",
+  "source_sina_state_git_blob_sha": "4ea26884c96481b2c01a2e8a52c5fa8667ecb57a",
+  "source": "LONGBRIDGE_CONNECTED_READ_ONLY_CANDLESTICKS_INTRADAY_UNADJUSTED",
+  "source_surface": "USER_CONNECTED_INTERACTIVE_CHATGPT_NOT_GITHUB_RUNNER",
+  "read_only": true,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "unknown_never_pass": true,
+  "source_scope": 28,
+  "official_calendar": "XNAS_260_SESSIONS_2025-10-06_TO_2026-10-16",
+  "session_crosscheck": "LONGBRIDGE_MSFT_US_LAST260_CONTROL_MATCHES_XNAS_260_INTERVAL",
+  "crosscheck_kind": "EXACT_DATES_VS_MSFT_CONTROL_AND_XNAS_BOUNDARIES_ONLY_NOT_BAR_LINEAGE",
+  "provider_license_automated_non_display_attested": false,
+  "issuer_continuity_independently_attested": false,
+  "split_correction_and_rth_bar_integrity_attested": false,
+  "canonical_price_history_mc_or_r92_pass_created": 0,
+  "signal_sent": false,
+  "device_delivery_attested": false,
+  "raw_vendor_ohlcv_persisted": false,
+  "source_limited_to_connected_interactive_use": true,
+  "interpretation": "17 date-complete shadow candidates; 1 missing Jan20; 9 under260; 1 stale 2019. No canonical promotion.",
+  "counts": {
+    "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY": 17,
+    "SHADOW_260_DATE_GAP_NOT_COMPLETE": 1,
+    "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL": 9,
+    "SHADOW_NO_CURRENT_ASOF_STALE_SOURCE": 1
+  },
+  "results": {
+    "ACFN": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "ADAM": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "AEC": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 272,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "ALTI": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "ASTI": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "BMMX": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 2,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "CNL": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "CTY": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 1,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "DPU": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "ENGN": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "HTCO": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "INV": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "JONE": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 31,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "MAKO": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 140,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "NUCL": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 163,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "PAMT": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "PBM": {
+      "classification": "SHADOW_260_DATE_GAP_NOT_COMPLETE",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [
+        "2026-01-20"
+      ],
+      "latest_observed_date": "2026-10-16"
+    },
+    "RJET": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "RNTZ": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 4,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "SDA": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "SLBT": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "SLE": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "SUNE": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    },
+    "SVA": {
+      "classification": "SHADOW_NO_CURRENT_ASOF_STALE_SOURCE",
+      "observed_completed_daily_count": 275,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2019-02-22"
+    },
+    "TMS": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 82,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "TRXB": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 6,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "VMET": {
+      "classification": "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL",
+      "observed_completed_daily_count": 156,
+      "required_260_missing_dates_count": null,
+      "latest_observed_date": "2026-10-16"
+    },
+    "WEST": {
+      "classification": "SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY",
+      "observed_completed_daily_count": 279,
+      "required_260_missing_dates": [],
+      "latest_observed_date": "2026-10-16"
+    }
+  }
+}

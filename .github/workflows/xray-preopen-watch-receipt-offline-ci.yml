@@ -4,12 +4,14 @@ on:
     branches: [main]
     paths:
       - nasdaq-xray/preopen_personal_research_receipt_guard.py
+      - nasdaq-xray/preopen_live_release_gate.py
       - .github/workflows/xray-preopen-source-audit.yml
       - .github/workflows/xray-preopen-watch-receipt-offline-ci.yml
   push:
     branches: [main]
     paths:
       - nasdaq-xray/preopen_personal_research_receipt_guard.py
+      - nasdaq-xray/preopen_live_release_gate.py
       - .github/workflows/xray-preopen-watch-receipt-offline-ci.yml
 permissions:
   contents: read
@@ -30,6 +32,8 @@ jobs:
           python -m py_compile nasdaq-xray/preopen_personal_research_receipt_guard.py
           python nasdaq-xray/preopen_personal_research_receipt_guard.py --selftest
           python -O nasdaq-xray/preopen_personal_research_receipt_guard.py --selftest
+          python -m py_compile nasdaq-xray/preopen_live_release_gate.py
+          python nasdaq-xray/preopen_live_release_gate.py --selftest
       - name: Reject market-data calls and reject imaginary live push claims
         run: |
           python - <<'PY'

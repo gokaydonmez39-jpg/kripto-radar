@@ -51,7 +51,8 @@ def official_window(now):
             "current_session":et.date().isoformat(),
             "opening_utc":open_utc.isoformat()}
 
-def evaluate(now,root,master,price,terminal,official,readiness,sources):
+def evaluate(now,root,master,price,terminal,official,readiness,sources, *,
+             pointer=None, terminal_blob_sha=None):
     if now.tzinfo is None:
         raise ValueError("CLOCK_MUST_BE_TIMEZONE_AWARE")
     now=now.astimezone(UTC)
@@ -155,7 +156,14 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
                   "LOCAL_OFFICIAL_SAFETY_NOT_PASS")
     local_require(age_guard is not None and -60<=age_guard<=MAX_OFFICIAL_GUARD_AGE,
                   "LOCAL_OFFICIAL_GUARD_STALE")
+    # Terminal keys/readiness flags do not prove durable R92 registration.
+    pointer_exact = bool(
+        last and isinstance(pointer, dict)
+        and isinstance(terminal_blob_sha, str) and terminal_blob_sha
+        and e2e.registered_research_candidate_exact(
+            terminal, pointer, last, terminal_blob_sha))
     local_require(candidate_count>0,"LOCAL_NO_REGISTERED_R92")
+    local_require(pointer_exact,"LOCAL_R92_POINTER_TERMINAL_BINDING_NOT_PROVEN")
     local_require(terminal.get("candidate_local_research_pass") is True and
                   readiness.get("ready_for_current_research_signal") is True,
                   "LOCAL_EXACT_R92_REGISTRATION_NOT_ATTESTED")
@@ -168,7 +176,8 @@ def evaluate(now,root,master,price,terminal,official,readiness,sources):
         "terminal_asof_et":terminal.get("asof_et"),
         "root_age_seconds":round(age) if age is not None and math.isfinite(age) else None,
         "official_guard_age_seconds":round(age_guard) if age_guard is not None and math.isfinite(age_guard) else None,
-        "registered_candidate_count":candidate_count,
+        "registered_candidate_count":candidate_count if pointer_exact else 0,
+        "terminal_candidate_key_count":candidate_count,
         "explicit_non_g9_price_pass_count":non_g9_price_count,
         "candidate_local_research_preconditions_attested":candidate_local_ready,
         "candidate_local_preopen_blockers":sorted(local_reasons),
@@ -267,16 +276,65 @@ def selftest():
     local[0]["status"]="PARTIAL_HISTORY"
     local[0]["unknown_count"]=23
     local[3]["full_end_to_end_research_pass"]=False
-    local[3]["r92_candidates"]=["TEST_RESEARCH|B"]
+    local[3]["r92_candidates"]=["TEST|B"]
     local[5]["full_e2e_research_attested"]=False
     local[5]["ready_for_current_research_signal"]=True
     local[6]["candidate_local_source_preconditions_proven"]=True
-    separate=evaluate(monday,*local)
+    local[3]["candidate_delivery_safety"]={"status":"PASS"}
+    local[3]["checks"]={key:True for key in e2e.REQUIRED_LOCAL_CHECKS}
+    local[3]["sets"]={"pre_g9_tech_pass":["TEST|B"]}
+    test_sha="a"*40
+    reg={key:"present" for key in e2e.REQUIRED_REGISTERED_FIELDS}
+    reg.update({
+        "schema":"XRAY_RESEARCH_CANDIDATE_R92_V1",
+        "delivery_key":"preopen-exact-test-key","symbol":"TEST","setup":"B",
+        "asof_et":"2026-10-09","mc_class":"MC_PASS_PRIMARY",
+        "execution":"NONE","real_money":"NO-GO",
+        "entry_low":20.0,"entry_high":21.0,"chase_limit":22.0,
+        "stop":19.5,"r1":26.5,"rr_basic":2.5,"rr_severe":1.7,
+        "dv30":100_000_000.0})
+    pointer={"schema":"XRAY_GITHUB_DURABLE_STATE_V3",
+             "authority":"GITHUB_CURRENT_POINTER",
+             "execution":"NONE","real_money":"NO-GO",
+             "state_json":{
+                 "task_id":e2e.TASK_ID,"asof_et":"2026-10-09",
+                 "deep_final_evidence":{
+                     "terminal_path":"nasdaq-xray/canonical_current_terminal.json",
+                     "terminal_blob_sha":test_sha},
+                 "delivery_keys":["preopen-exact-test-key"],"r92":[reg]}}
+    separate=evaluate(monday,*local,pointer=pointer,terminal_blob_sha=test_sha)
     assert separate["status"]=="PREOPEN_BLOCKED_NO_GO"
     assert separate["candidate_local_research_preconditions_attested"] is True
     assert separate["registered_candidate_count"]==1
+    assert separate["terminal_candidate_key_count"]==1
     assert separate["notification_attempted"] is False
     assert separate["real_device_receipt_verified"] is False
+    # Regression: previously, 1 unbound terminal key passed local readiness.
+    no_pointer=evaluate(monday,*local)
+    assert not no_pointer["candidate_local_research_preconditions_attested"]
+    assert no_pointer["registered_candidate_count"]==0
+    assert no_pointer["terminal_candidate_key_count"]==1
+    assert "LOCAL_R92_POINTER_TERMINAL_BINDING_NOT_PROVEN" in no_pointer["candidate_local_preopen_blockers"]
+    for mutation in ("MISSING_POINTER","TERMINAL_SHA_DRIFT","MISSING_ROW",
+                     "FALLBACK_MC","UNREGISTERED_KEY","WRONG_ASOF"):
+        altered=copy.deepcopy(pointer)
+        sha=test_sha
+        if mutation=="MISSING_POINTER":
+            altered={}
+        elif mutation=="TERMINAL_SHA_DRIFT":
+            sha="b"*40
+        elif mutation=="MISSING_ROW":
+            altered["state_json"]["r92"]=[]
+        elif mutation=="FALLBACK_MC":
+            altered["state_json"]["r92"][0]["mc_class"]="MC_PASS_FALLBACK_WATCH"
+        elif mutation=="UNREGISTERED_KEY":
+            altered["state_json"]["delivery_keys"]=["forged-key"]
+        elif mutation=="WRONG_ASOF":
+            altered["state_json"]["asof_et"]="2026-10-08"
+        denied=evaluate(monday,*local,pointer=altered,terminal_blob_sha=sha)
+        assert denied["registered_candidate_count"]==0,mutation
+        assert not denied["candidate_local_research_preconditions_attested"],mutation
+        assert "LOCAL_R92_POINTER_TERMINAL_BINDING_NOT_PROVEN" in denied["candidate_local_preopen_blockers"],mutation
     for index,patch,reason in (
         (5,{"ready_for_current_research_signal":False},
          "LOCAL_EXACT_R92_REGISTRATION_NOT_ATTESTED"),
@@ -290,7 +348,7 @@ def selftest():
     ):
         corrupted=copy.deepcopy(local)
         corrupted[index].update(patch)
-        denied=evaluate(monday,*corrupted)
+        denied=evaluate(monday,*corrupted,pointer=pointer,terminal_blob_sha=test_sha)
         assert not denied["candidate_local_research_preconditions_attested"]
         assert reason in denied["candidate_local_preopen_blockers"],reason
     corrupted=copy.deepcopy(local)
@@ -298,14 +356,14 @@ def selftest():
     corrupted[2]["results"]={"TEST_NON_G9":{
         "status":"PASS_PRICE_DV30",
         "info":{"source":"RALLIES_BULK_NON_G9"}}}
-    denied=evaluate(monday,*corrupted)
+    denied=evaluate(monday,*corrupted,pointer=pointer,terminal_blob_sha=test_sha)
     assert not denied["candidate_local_research_preconditions_attested"]
     assert "LOCAL_NON_G9_PRICE_RELEASE_VETO" in denied["candidate_local_preopen_blockers"]
     bad=copy.deepcopy(objs)
     bad[3]["r92_candidates"]=["TEST_NOT_REGISTERED"]
     assert "POSITIVE_CANDIDATE_NOT_RESEARCH_REGISTERED" in evaluate(monday,*bad)["blockers"]
     assert evaluate(dt.datetime(2026,10,11,13,tzinfo=UTC),*objs)["status"]=="PREOPEN_BLOCKED_NO_GO"
-    print("XRAY_DYNAMIC_PREOPEN_SELFTEST=PASS_20261012_09_ET_11_NEGATIVE_NO_GO_NO_DEVICE")
+    print("XRAY_DYNAMIC_PREOPEN_SELFTEST=PASS_EXACT_POINTER_POSITIVE_6_POINTER_NEGATIVES_NO_DEVICE")
 
 def main():
     p=argparse.ArgumentParser()
@@ -328,7 +386,9 @@ def main():
         e2e.sha("canonical_current_price_dv30.json"))
     result=evaluate(dt.datetime.now(UTC),read("orchestrator_state.json"),
                     master,price,terminal,read("canonical_official_source_guard.json"),
-                    readiness,sources)
+                    readiness,sources,
+                    pointer=e2e.read("chatgpt_canonical_state_v2.json"),
+                    terminal_blob_sha=e2e.sha("canonical_current_terminal.json"))
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_DYNAMIC_PREOPEN="+result["status"])
     print("XRAY_DYNAMIC_PREOPEN_ASOF="+str(result["expected_completed_session_et"]))

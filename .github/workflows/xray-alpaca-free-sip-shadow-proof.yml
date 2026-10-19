@@ -1,6 +1,9 @@
 name: XRAY Alpaca Free Historical SIP Shadow Contract
 on:
   workflow_dispatch:
+  # Existing workflow only: at most one weekday quota-bounded opportunity.
+  schedule:
+    - cron: "10 22 * * 1-5"
   push:
     branches: [main]
     paths:
@@ -73,8 +76,37 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as output:
               output.write("source_status="+j["status"]+"\n")
           PY
+      - name: Quota-free scheduled root ASOF and latest-main preflight
+        id: scheduled_root
+        if: ${{ github.event_name == 'schedule' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt,json,os,pathlib,subprocess,sys
+          sys.path.insert(0,"nasdaq-xray")
+          from source_epoch_freshness_guard import last_complete_session
+          from alpaca_root_rescue_strict_dispatch_v2 import scheduled_probe_allowed
+          root=pathlib.Path("nasdaq-xray")
+          now=dt.datetime.now(dt.timezone.utc)
+          latest=last_complete_session(now)
+          p=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          s=json.loads((root/"sina_state.json").read_text())
+          check=subprocess.run(["git","ls-remote","origin","refs/heads/main"],
+              text=True,capture_output=True,timeout=15,check=False)
+          remote=(check.stdout.split()[0] if check.returncode==0 and check.stdout.split() else "")
+          ready=scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
+              f.write("ready="+str(ready).lower()+"\n")
+          print("XRAY_SCHEDULED_ROOT_PREFLIGHT="+(
+              "CURRENT_EXACT_SHA_BOUNDED_SHADOW" if ready
+              else "STALE_OR_HOLIDAY_OR_SHA_DRIFT_ZERO_HTTP_NOOP"))
+          print("XRAY_SCHEDULED_ROOT_ASOF="+latest+
+                " price="+str(p.get("asof_et"))+
+                " root="+str(s.get("asof_et")))
+          PY
       - name: Bounded root UNKNOWN historical source rescue shadow
-        if: ${{ github.event_name == 'workflow_dispatch' && (steps.price_shadow.outputs.source_status == 'SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY' || steps.price_shadow.outputs.source_status == 'BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE') }}
+        if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true')) && (steps.price_shadow.outputs.source_status == 'SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY' || steps.price_shadow.outputs.source_status == 'BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE') }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -92,6 +124,8 @@ jobs:
           PY
       - name: Enforce actual delayed SIP HTTP measurement before success
         if: ${{ github.event_name != 'pull_request' }}
+        env:
+          XRAY_SCHEDULE_ROOT_READY: ${{ steps.scheduled_root.outputs.ready }}
         run: |
           python - <<'PY'
           import json,os
@@ -103,7 +137,9 @@ jobs:
           a=json.loads((root/"xray_alpaca_free_sip_shadow.json").read_text())
           b_path=root/"xray_alpaca_root_unknown_rescue.json"
           b=json.loads(b_path.read_text()) if b_path.exists() else None
-          result=classify_manual_root(os.environ.get("GITHUB_EVENT_NAME",""),a,b)
+          result=classify_manual_root(
+              os.environ.get("GITHUB_EVENT_NAME",""),a,b,
+              scheduled_ready=os.environ.get("XRAY_SCHEDULE_ROOT_READY")=="true")
           print("XRAY_ALPACA_LIVE_TRANSPORT="+result+"_NEVER_PRIMARY_OR_R92")
           PY
       - name: Archive counts-only operational evidence for 14 days

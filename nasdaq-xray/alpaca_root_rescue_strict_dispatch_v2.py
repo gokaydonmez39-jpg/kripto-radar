@@ -23,8 +23,24 @@ ROOT=Path(__file__).resolve().parent
 BLOCKED_PRICE="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
 MEASURED_PRICE="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
 
-def classify_manual_root(event, price, root):
-    if event not in ("push","workflow_dispatch"):
+def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
+    """Strict pure predicate: stale/holiday/SHA/empty cohort cannot use provider quota."""
+    if not isinstance(now,dt.datetime) or now.tzinfo is None or now.utcoffset()!=dt.timedelta(0):
+        return False
+    if not isinstance(price,dict) or not isinstance(root,dict):
+        return False
+    if not isinstance(remote_sha,str) or not isinstance(expected_sha,str):
+        return False
+    return bool(now.date().isoformat()==latest
+        and price.get("asof_et")==root.get("asof_et")==latest
+        and price.get("unknown_never_pass") is True
+        and price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
+        and root.get("execution")=="NONE" and root.get("real_money")=="NO-GO"
+        and type(root.get("unknown_count")) is int and root.get("unknown_count")>0
+        and len(remote_sha)==40 and len(expected_sha)==40 and remote_sha==expected_sha)
+
+def classify_manual_root(event, price, root, *, scheduled_ready=False):
+    if event not in ("push","workflow_dispatch","schedule"):
         raise ValueError("UNAUTHORIZED_ROOT_EVENT")
     if price.get("schema")!="XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1":
         raise ValueError("PRICE_SHADOW_SCHEMA")
@@ -45,6 +61,11 @@ def classify_manual_root(event, price, root):
     if event=="push":
         if root is not None:raise ValueError("ROOT_VENDOR_ON_AUTOMATIC_PUSH")
         return "PUSH_PRICE_ONLY_OR_ZERO_SCOPE_NO_ROOT"
+    if event=="schedule" and not scheduled_ready:
+        if root is not None:raise ValueError("STALE_SCHEDULE_ROOT_VENDOR_RESULT")
+        return "SCHEDULE_STALE_OR_UNSETTLED_QUOTA_FREE_NOOP"
+    if event=="schedule" and scheduled_ready and root is None:
+        raise ValueError("SCHEDULE_READY_WITHOUT_ROOT_PROOF")
     if (not isinstance(root,dict) or
         root.get("schema")!="XRAY_ROOT_UNKNOWN_SIP_RESCUE_SHADOW_V1" or
         root.get("status")!="SHADOW_HISTORICAL_SOURCE_DIAGNOSTIC_COMPLETE" or
@@ -52,6 +73,8 @@ def classify_manual_root(event, price, root):
         root.get("asof_et")!=price.get("asof_et") or
         root.get("price_git_blob_sha")!=price.get("price_git_blob_sha")):
         raise ValueError("MANUAL_ROOT_EXACT_WITNESS_REQUIRED")
+    if event=="schedule":
+        return "SCHEDULE_EXACT_ASOF_BOUNDED_ROOT_SHADOW_ONLY"
     return ("MANUAL_ZERO_PRICE_ROOT_SHADOW_ONLY" if
             price["status"]==BLOCKED_PRICE else "MANUAL_PRICE_AND_ROOT_SHADOW_ONLY")
 
@@ -74,6 +97,34 @@ def selftest():
         assert positive=={"UNKNOWN_LT260_OR_52_WEEKS":1},positive
     finally:
         legacy.sip.evaluate_daily=original
+    scheduled_now=dt.datetime(2026,10,19,22,10,tzinfo=dt.timezone.utc)
+    scheduled_asof=last_complete_session(scheduled_now)
+    assert scheduled_asof=="2026-10-19","EXPECTED_NASDAQ_COMPLETED_DAY"
+    sp={"asof_et":scheduled_asof,"unknown_never_pass":True,
+        "execution":"NONE","real_money":"NO-GO"}
+    sr={"asof_et":scheduled_asof,"unknown_count":214,
+        "execution":"NONE","real_money":"NO-GO"}
+    sha="a"*40
+    assert scheduled_probe_allowed(scheduled_now,scheduled_asof,sp,sr,sha,sha)
+    holiday=dt.datetime(2026,11,26,22,10,tzinfo=dt.timezone.utc)
+    h_asof=last_complete_session(holiday)
+    assert h_asof=="2026-11-25","HOLIDAY_FRESHNESS_SOURCE"
+    for edits in (
+        {"now":holiday,"latest":h_asof},
+        {"now":dt.datetime(2026,10,19,22,10)},
+        {"price":dict(sp,asof_et="2026-10-16")},
+        {"root":dict(sr,asof_et="2026-10-16")},
+        {"root":dict(sr,unknown_count=0)},
+        {"root":dict(sr,unknown_count="214")},
+        {"root":dict(sr,execution="ORDER")},
+        {"price":dict(sp,unknown_never_pass=False)},
+        {"remote_sha":"b"*40},
+        {"expected_sha":""},
+    ):
+        args={"now":scheduled_now,"latest":scheduled_asof,
+            "price":sp,"root":sr,"remote_sha":sha,"expected_sha":sha}
+        args.update(edits)
+        assert not scheduled_probe_allowed(**args),("SCHEDULE_FALSE_POSITIVE",edits)
     px={"schema":"XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1",
         "status":BLOCKED_PRICE,"sample_count":0,
         "reason_counts":{"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1},
@@ -88,12 +139,15 @@ def selftest():
         "candidate_created":False,"vendor_raw_bars_persisted":False,
         "primary_mc_authority":False,"canonical_history_modified":False}
     assert classify_manual_root("push",px,None).startswith("PUSH_")
+    assert classify_manual_root("schedule",px,None)=="SCHEDULE_STALE_OR_UNSETTLED_QUOTA_FREE_NOOP"
+    assert classify_manual_root("schedule",px,root,scheduled_ready=True)==("SCHEDULE_EXACT_ASOF_BOUNDED_ROOT_SHADOW_ONLY")
     assert classify_manual_root("workflow_dispatch",px,root)==(
         "MANUAL_ZERO_PRICE_ROOT_SHADOW_ONLY")
     assert classify_manual_root("workflow_dispatch",
         dict(px,status=MEASURED_PRICE),root)=="MANUAL_PRICE_AND_ROOT_SHADOW_ONLY"
     for event,p,q in (
         ("push",px,root),("pull_request",px,root),
+        ("schedule",px,root),
         ("workflow_dispatch",px,None),
         ("workflow_dispatch",px,dict(root,status="BLOCKED")),
         ("workflow_dispatch",px,dict(root,price_git_blob_sha="b"*40)),
@@ -104,11 +158,29 @@ def selftest():
         try:classify_manual_root(event,p,q)
         except ValueError:pass
         else:raise RuntimeError("UNSAFE_ROOT_DIAGNOSTIC_ACCEPTED")
+    for bad_price,bad_root in (
+        (dict(px,real_money="YES"),root),
+        (px,dict(root,status="BLOCKED")),
+        (px,dict(root,price_git_blob_sha="b"*40)),
+        (px,dict(root,canonical_history_modified=True)),
+        (px,dict(root,primary_mc_authority=True)),
+    ):
+        try: classify_manual_root("schedule",bad_price,bad_root,scheduled_ready=True)
+        except ValueError: pass
+        else: raise RuntimeError("SCHEDULE_INVALID_SOURCE_ACCEPTED")
+    for ready,invalid in ((True,None),(False,root)):
+        try: classify_manual_root("schedule",px,invalid,scheduled_ready=ready)
+        except ValueError: pass
+        else: raise RuntimeError("SCHEDULE_READY_MISSING_OR_STALE_VENDOR_ACCEPTED")
     workflow=(ROOT.parent/".github"/"workflows"/
               "xray-alpaca-free-sip-shadow-proof.yml").read_text()
-    assert ("github.event_name == 'workflow_dispatch' && "
-            "(steps.price_shadow.outputs.source_status ==") in workflow
-    print("XRAY_ZERO_PRICE_ROOT_RESCUE=PASS_MANUAL_ONLY_8_NEGATIVES_NO_ALPHA")
+    assert 'cron: "10 22 * * 1-5"' in workflow
+    assert "last_complete_session(now)" in workflow
+    assert 'scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])' in workflow
+    assert "steps.scheduled_root.outputs.ready == 'true'" in workflow
+    assert "--limit 12 --output" in workflow
+    print("XRAY_SCHEDULED_ROOT_ELIGIBILITY=PASS_ONE_TRUE_TEN_FALSE_NO_HTTP")
+    print("XRAY_ZERO_PRICE_ROOT_RESCUE=PASS_SCHEDULE_BOUNDED_AND_MANUAL_NEGATIVES_NO_ALPHA")
     print("XRAY_ALPACA_ROOT_STRICT_DISPATCH_V2=PASS_FAKE_CALENDAR_BLOCKED_REAL_CALENDAR_SHORT_UNKNOWN")
 
 def main():
