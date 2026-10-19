@@ -179,14 +179,14 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertIn("pull_request", cfg["on"])
                 steps = next(iter(cfg["jobs"].values()))["steps"]
                 vendor = next(x for x in steps if x.get("name") == vendor_step_name)
-                self.assertIn("github.event_name != 'pull_request'", vendor["if"])
+                self.assertIn("github.event_name == 'workflow_dispatch'", vendor["if"])
                 self.assertIn("github.ref == 'refs/heads/main'", vendor["if"])
                 for step in steps:
                     if (step.get("name", "").startswith(("Verify exact current", "Assert 50-symbol",
                            "Verify no canonical", "Validate exact full"))
                             or "upload-artifact" in step.get("uses", "")):
-                        self.assertIn("github.event_name != 'pull_request'",
-                                      step.get("if", ""), "PR_MUST_NOT_REQUIRE_VENDOR_ARTIFACT")
+                        self.assertIn("github.event_name == 'workflow_dispatch'",
+                                      step.get("if", ""), "PR_MUST_NOT_REQUIRE_VENDOR_ARTIFACT_OR_AUTORUN")
         path = ROOT.parent / ".github" / "workflows" / (
             "xray-personal-current-sip-price-unknown-shadow.yml"
         )
