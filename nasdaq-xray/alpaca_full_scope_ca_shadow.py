@@ -21,6 +21,7 @@ import urllib.parse
 import urllib.request
 
 from alpaca_free_sip_shadow_guard import blob_sha, sufficient_delay
+from alpaca_sip_request_pacer import PACER
 from alpaca_full_scope_260_shadow import scope, PRICE, MASTER
 
 ROOT=Path(__file__).resolve().parent
@@ -54,6 +55,7 @@ def request_page(batch,start,end,key,secret,token,*,data_quality="complete"):
         "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
         "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
     try:
+        PACER.pace()  # Every HTTP page shares the historical Alpaca account budget.
         with urllib.request.urlopen(req,timeout=40) as r:
             if r.status!=200:
                 raise RuntimeError("ALPACA_CA_NON200")
