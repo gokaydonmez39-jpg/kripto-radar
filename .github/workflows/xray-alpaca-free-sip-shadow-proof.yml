@@ -100,6 +100,7 @@ jobs:
               and p.get("unknown_never_pass") is True
               and p.get("execution")=="NONE" and p.get("real_money")=="NO-GO"
               and s.get("execution")=="NONE" and s.get("real_money")=="NO-GO"
+              and type(s.get("unknown_count")) is int and s.get("unknown_count")>0
               and remote and remote==os.environ["GITHUB_SHA"])
           with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
               f.write("ready="+str(ready).lower()+"\n")
