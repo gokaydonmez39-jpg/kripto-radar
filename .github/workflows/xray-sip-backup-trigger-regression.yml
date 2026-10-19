@@ -57,7 +57,7 @@ jobs:
           assert "workflow_dispatch" in on
           assert not any(t in on for t in ("push","pull_request","workflow_run"))
           jobs=d["jobs"]
-          gate=jobs["coverage"]["if"]
+          gate=jobs["coverage"].get("if")
           assert gate is None, "NO_ROOT_SUCCESS_TRIGGER_FOR_EXPENSIVE_SIP"
           assert "source_circuit_breaker_open" in Path(
               "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
