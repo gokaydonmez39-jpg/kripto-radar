@@ -184,6 +184,8 @@ def audit(state,root,now):
             +classified["ASOF_MISSING_REQUIRES_RESOLUTION"]
             +classified["EXACT30_INCOMPLETE_NEVER_PASS"]
             +classified["SINA_HISTORY_EMPTY"]
+            +classified["SINA_SOURCE_SCHEMA_NONRETRYABLE"]
+            +classified["SINA_SOURCE_HTTP_NONRETRYABLE"]
             +other_exhausted),
         "eligible_single_round_real_provider_retries_now":len(rescue),
         "eligible_retry_symbol_count_only":len(rescue),
