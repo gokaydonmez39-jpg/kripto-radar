@@ -13,6 +13,7 @@ on:
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
   pull_request:
     paths:
+      - "nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
       - "nasdaq-xray/alpaca_strict_daily_shadow_v2.py"
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
@@ -73,7 +74,7 @@ jobs:
               output.write("source_status="+j["status"]+"\n")
           PY
       - name: Bounded root UNKNOWN historical source rescue shadow
-        if: ${{ github.event_name != 'pull_request' && steps.price_shadow.outputs.source_status == 'SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && (steps.price_shadow.outputs.source_status == 'SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY' || steps.price_shadow.outputs.source_status == 'BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE') }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -96,26 +97,14 @@ jobs:
           import json,os
           from pathlib import Path
           root=Path(os.environ["RUNNER_TEMP"])
+          import sys
+          sys.path.insert(0,"nasdaq-xray")
+          from alpaca_root_rescue_strict_dispatch_v2 import classify_manual_root
           a=json.loads((root/"xray_alpaca_free_sip_shadow.json").read_text())
-          if a["status"]=="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":
-              assert a["sample_count"]<3
-              assert a["reason_counts"]=={"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1}
-              assert a["candidate_created"] is False
-              assert a["primary_mc_authority"] is False
-              assert a["c417_price_pass_promoted"] is False
-              assert not (root/"xray_alpaca_root_unknown_rescue.json").exists()
-              print("XRAY_ALPACA_LIVE_TRANSPORT=BLOCKED_NO_PRICE_SCOPE_QUOTA_FREE_NOOP")
-              raise SystemExit(0)
-          allowed_a=a["status"]=="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
-          if not allowed_a or not (root/"xray_alpaca_root_unknown_rescue.json").exists():
-              print("XRAY_ALPACA_LIVE_TRANSPORT=BLOCKED_SOURCE_OR_PRIVATE_CREDENTIALS_UNAVAILABLE")
-              raise SystemExit(2)
-          b=json.loads((root/"xray_alpaca_root_unknown_rescue.json").read_text())
-          allowed_b=b["status"]=="SHADOW_HISTORICAL_SOURCE_DIAGNOSTIC_COMPLETE"
-          if not allowed_b:
-              print("XRAY_ALPACA_LIVE_TRANSPORT=BLOCKED_ROOT_DIAGNOSTIC")
-              raise SystemExit(2)
-          print("XRAY_ALPACA_LIVE_TRANSPORT=MEASURED_SHADOW_ONLY_NOT_PRODUCTION")
+          b_path=root/"xray_alpaca_root_unknown_rescue.json"
+          b=json.loads(b_path.read_text()) if b_path.exists() else None
+          result=classify_manual_root(os.environ.get("GITHUB_EVENT_NAME",""),a,b)
+          print("XRAY_ALPACA_LIVE_TRANSPORT="+result+"_NEVER_PRIMARY_OR_R92")
           PY
       - name: Archive counts-only operational evidence for 14 days
         if: always()
