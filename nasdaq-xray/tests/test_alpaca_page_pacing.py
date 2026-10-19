@@ -53,7 +53,7 @@ class PageQuotaContract(unittest.TestCase):
                 )
                 self.assertEqual(
                     x["concurrency"]["group"],
-                    "xray-alpaca-historical-sip-account-v1",
+                    "xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}",
                 )
                 self.assertEqual(x["concurrency"]["cancel-in-progress"], "false")
                 self.assertEqual(x["concurrency"]["group"],
