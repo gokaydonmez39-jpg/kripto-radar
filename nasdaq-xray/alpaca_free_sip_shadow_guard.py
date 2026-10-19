@@ -111,7 +111,7 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
     # 260-session official holiday calendar nor 52-week corporate adjustment.
     return "SHADOW_30_BARS_OBSERVED","RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED",30
 
-def load_scope():
+def load_scope(*, allow_no_representative=False):
     master_path=ROOT/"canonical_current_master_manifest.json"
     price_path=ROOT/"canonical_current_price_dv30.json"
     m=json.loads(master_path.read_text(encoding="utf-8"))
@@ -125,7 +125,7 @@ def load_scope():
     if not price_set.issubset(master_set) or len(price_set)!=int(p.get("pass_count",-1)):
         raise ValueError("UNIVERSE_PRICE_SET_MISMATCH")
     symbols=[x for x in SAMPLE if x in price_set]
-    if len(symbols)<3:
+    if len(symbols)<3 and not allow_no_representative:
         raise ValueError("NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE")
     dates=p.get("expected30") or []
     if len(dates)!=30 or len(set(dates))!=30 or dates[-1]!=p["asof_et"]:
@@ -179,7 +179,7 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
 
 def run(now=None):
     if now is None:now=dt.datetime.now(UTC)
-    m,p,symbols,expected30,msha,psha=load_scope()
+    m,p,symbols,expected30,msha,psha=load_scope(allow_no_representative=True)
     asof=p["asof_et"]
     output={
         "schema":SCHEMA,"asof_et":asof,"policy":"C4.17",
@@ -192,6 +192,12 @@ def run(now=None):
         "candidate_created":False,"device_receipt_proven":False,
         "vendor_raw_bars_persisted":False,"reason_counts":{},"status":"BLOCKED",
     }
+    if len(symbols)<3:
+        # A missing authoritative PRICE cohort is a research NO-OP, not an
+        # HTTP/provider failure. Never synthesize symbols or spend quota.
+        output["status"]="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
+        output["reason_counts"]={"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1}
+        return output
     key=os.environ.get("XRAY_ALPACA_DATA_KEY_ID","")
     secret=os.environ.get("XRAY_ALPACA_DATA_SECRET_KEY","")
     if not key or not secret:
@@ -302,6 +308,45 @@ def selftest():
     assert evaluate_daily(intraday,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR", (
         "ALPACA_INTRADAY_BAR_ACCEPTED_AS_DAILY",
         evaluate_daily(intraday,dates,"2026-10-08",now))
+    # Regression: zero CURRENT PRICE PASS must be a quota-free, explicit NO-OP.
+    # Synthetic local metadata lives only in a disposable offline test fixture.
+    from tempfile import TemporaryDirectory
+    with TemporaryDirectory(prefix="xray_free_sip_scope_test_") as temp:
+        fake_root=pathlib.Path(temp)
+        m={"asof_et":"2026-10-08","pass_symbols":list(SAMPLE),
+           "unknown_never_pass":True}
+        p={"asof_et":"2026-10-08","pass_symbols":[],"pass_count":0,
+           "unknown_never_pass":True,"expected30":dates}
+        def save_fixture():
+            (fake_root/"canonical_current_master_manifest.json").write_text(
+                json.dumps(m,sort_keys=True))
+            (fake_root/"canonical_current_price_dv30.json").write_text(
+                json.dumps(p,sort_keys=True))
+        save_fixture()
+        with patch.dict(globals(),{"ROOT":fake_root}), patch(
+             "urllib.request.urlopen",side_effect=AssertionError(
+             "PROVIDER_CALLED_WITHOUT_CANONICAL_PRICE_SCOPE")), patch.dict(
+             os.environ,{"XRAY_ALPACA_DATA_KEY_ID":"offline-key",
+                         "XRAY_ALPACA_DATA_SECRET_KEY":"offline-secret"}):
+            blocked=run(now)
+            assert blocked["status"]=="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
+            assert blocked["sample_count"]==0 and blocked["reason_counts"]=={
+                "NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1}
+            assert blocked["execution"]=="NONE" and blocked["real_money"]=="NO-GO"
+            assert blocked["primary_mc_authority"] is False
+            assert blocked["candidate_created"] is False
+            assert blocked["c417_price_pass_promoted"] is False
+            p["pass_symbols"]=list(SAMPLE[:3]);p["pass_count"]=3
+            save_fixture()
+            valid=load_scope()
+            assert valid[2]==list(SAMPLE[:3])
+            p["asof_et"]="2026-10-07"
+            save_fixture()
+            try:load_scope(allow_no_representative=True)
+            except ValueError as exc:
+                assert "EXACT_ASOF_SAFETY_SCOPE_INVALID" in str(exc)
+            else:raise AssertionError("INVALID_ASOF_MASQUERADED_AS_NOOP")
+    print("XRAY_ALPACA_ZERO_PRICE_SCOPE_NOOP=PASS_NO_HTTP_AND_MISMATCH_FAIL_CLOSED")
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
     print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
 if __name__=="__main__":
