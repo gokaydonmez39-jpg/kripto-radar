@@ -1,9 +1,15 @@
 name: XRAY Personal Technical Evidence Offline CI
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - nasdaq-xray/personal_research_primary_engine_v2.py
+      - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
   push:
     paths:
       - nasdaq-xray/personal_research_primary_engine_v1.py
+      - nasdaq-xray/personal_research_primary_engine_v2.py
       - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
 permissions:
   contents: read
@@ -17,6 +23,12 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Run technical measurement and adversarial tests without API credentials
         run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --selftest
+      - name: Validate actual XNAS 30/260/52 calendar and Python -O anti-bypass V2
+        run: |
+          python3 -m pip install --disable-pip-version-check 'pandas_market_calendars==5.4.0'
+          python3 -m py_compile nasdaq-xray/personal_research_primary_engine_v2.py
+          python3 nasdaq-xray/personal_research_primary_engine_v2.py --selftest
+          python3 -O nasdaq-xray/personal_research_primary_engine_v2.py --selftest
       - name: Audit all frozen 3185 HISTORY and 540 PRICE classifications
         run: python3 nasdaq-xray/personal_research_primary_engine_v1.py --audit-frozen
       - name: Verify personal research exact SHA chain and nonrelease evidence
@@ -32,7 +44,16 @@ jobs:
               return subprocess.check_output(['git','hash-object',str(path)],text=True).strip()
           assert policy['technical_engine_blob_sha']==sha(root/'personal_research_primary_engine_v1.py')
           assert report['technical_engine']['blob_sha']==policy['technical_engine_blob_sha']
-          assert report['personal_policy']['blob_sha']==sha(root/'personal_research_technical_policy_v1.json')
+          # The October-14 record is immutable historic evidence: a later
+          # current policy revision MUST NOT be retroactively written into it.
+          # Independently validate the live policy against frozen C4.17.
+          assert report['personal_policy']['blob_sha']=='ba1774944430af1442a4c37b03ce3f9565a1a2b4'
+          assert report['personal_policy']['blob_sha']!=sha(root/'personal_research_technical_policy_v1.json')
+          current=json.loads((root/'personal_research_technical_policy_v1.json').read_text())
+          assert current['research_use']=='PERSONAL_NONCOMMERCIAL_NO_RESALE'
+          assert current['parent_compiled_policy']=='C4.17'
+          assert current['unknown_never_pass'] is True
+          assert current['r92_registration_mode']=='INDEPENDENT_C417_RELEASE_APPROVAL_REQUIRED'
           assert report['master']['research_amended_blob_sha']==sha(root/'research/master_ten_sec_cik_sic_resolution_20261012_v1.json')
           assert sec['rows']['ALIS']['filing_evidence_date']=='2026-09-21'
           assert sec['rows']['HCAC']['sec_20260930_8k_dei_ticker_cik_exact_observed'] is True
@@ -44,6 +65,11 @@ jobs:
           assert report['technical_engine']['ci_run']==38485435217
           print('XRAY_PERSONAL_SHA_CHAIN=PASS_RELEASE_BLOCKED')
           PY
+      - name: Independently verify current personal research policy against C4.17
+        run: |
+          python3 -m py_compile nasdaq-xray/personal_research_policy_guard.py
+          python3 nasdaq-xray/personal_research_policy_guard.py --selftest
+          python3 -O nasdaq-xray/personal_research_policy_guard.py --selftest
       - name: Reject code paths with market execution and secrets
         run: |
           python3 - <<'PY'
