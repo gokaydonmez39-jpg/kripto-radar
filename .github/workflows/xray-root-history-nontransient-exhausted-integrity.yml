@@ -6,6 +6,8 @@ on:
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/tests/test_sina_legacy_rescue_classifier.py"
+      - "nasdaq-xray/tests/test_sina_static_reason_pipeline.py"
+      - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -16,6 +18,8 @@ on:
       - "nasdaq-xray/root_history_recovery_microaudit.py"
       - "nasdaq-xray/sina_stage.py"
       - "nasdaq-xray/tests/test_sina_legacy_rescue_classifier.py"
+      - "nasdaq-xray/tests/test_sina_static_reason_pipeline.py"
+      - "nasdaq-xray/history_unknown_source_triage.py"
       - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
@@ -105,6 +109,11 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s nasdaq-xray/tests -p test_sina_legacy_rescue_classifier.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_sina_legacy_rescue_classifier.py -v
+      - name: Sina producer-to-root static UNKNOWN reasons exact contract
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s nasdaq-xray/tests -p test_sina_static_reason_pipeline.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_sina_static_reason_pipeline.py -v
       - name: Never mistake offline-only evidence for a live source
         run: |
           set -euo pipefail
