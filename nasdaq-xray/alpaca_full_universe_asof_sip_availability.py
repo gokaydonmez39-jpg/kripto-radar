@@ -24,6 +24,7 @@ from zoneinfo import ZoneInfo
 import pandas_market_calendars as mcal
 
 from source_epoch_freshness_guard import last_complete_session
+from alpaca_sip_request_pacer import PACER
 
 ROOT = Path(__file__).resolve().parent
 BATCH = 100
@@ -134,6 +135,7 @@ def query_sip(symbols, asof, key, secret, opener=urllib.request.urlopen,
             "User-Agent": "xray-personal-asof-coverage/1.0"})
         if budget is not None:
             budget.debit()
+        PACER.pace()  # One token per attempted HTTP page, not per symbol batch.
         with opener(req, timeout=24) as response:
             doc = json.loads(response.read())
         need(type(doc) is dict and type(doc.get("bars")) is dict,
