@@ -56,6 +56,9 @@ class PageQuotaContract(unittest.TestCase):
                     "xray-alpaca-historical-sip-account-v1",
                 )
                 self.assertEqual(x["concurrency"]["cancel-in-progress"], "false")
+                self.assertEqual(x["concurrency"]["group"],
+                    "xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}",
+                    "PR_OFFLINE_RUN_MUST_NOT_STARVE_PRODUCTION_ACCOUNT_MUTEX")
         candidate = yaml.load(
             (ROOT.parent / ".github" / "workflows" / files[1]).read_text(),
             Loader=yaml.BaseLoader,
