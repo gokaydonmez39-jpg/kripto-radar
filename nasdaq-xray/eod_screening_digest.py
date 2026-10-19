@@ -121,7 +121,12 @@ def analyze(obj,sha,now_utc):
                 "PRICE_ROW_PARTITION_"+symbol)
     last=last_complete_session(now_utc)
     source_complete=not unresolved and not blocked
-    ready=source_complete and p["asof_et"]==last
+    current_epoch=p["asof_et"]==last
+    ready=source_complete and current_epoch
+    # Individual exact-PASS PRICE rows must remain observable even while
+    # unrelated universe rows are UNKNOWN.  This is NOT alpha/R92 authority,
+    # and the separate full-universe screen retains its strict readiness.
+    local_observations=screen if current_epoch else []
     return {
         "schema":SCHEMA,
         "asof_et":p["asof_et"],
@@ -134,6 +139,11 @@ def analyze(obj,sha,now_utc):
         "price_unknown_count":len(unresolved),
         "price_blocked_count":len(blocked),
         "withheld_due_to_incomplete_source_count":len(screen) if not source_complete else 0,
+        "candidate_local_price_observation_symbols":local_observations,
+        "candidate_local_price_observation_count":len(local_observations),
+        "candidate_local_price_observation_ready":bool(local_observations),
+        "candidate_local_observation_independent_of_unrelated_unknown":True,
+        "candidate_local_positive_release_authority":False,
         "scope":"EXACT_MASTER_IDENTITY_PASS",
         "master_identity_pass_count":len(allowed_master),
         "master_identity_unknown_count":len(unknown),
@@ -211,10 +221,15 @@ def selftest():
     got=analyze(copy.deepcopy(base),hashes,now)
     assert got["status"]=="EOD_PRICE_DV30_SCREEN_READY"
     assert got["screen_symbols"]==passed
+    assert got["candidate_local_price_observation_symbols"]==passed
+    assert got["candidate_local_price_observation_ready"] is True
+    assert got["candidate_local_positive_release_authority"] is False
     assert got["qualified_al_count"] is None and got["research_signals"]==[]
     assert got["execution"]=="NONE" and got["real_money"]=="NO-GO"
     stale=analyze(copy.deepcopy(base),hashes,dt.datetime(2026,10,12,21,0,tzinfo=dt.timezone.utc))
     assert stale["screen_symbols"]==[] and not stale["current_screen_ready"]
+    assert stale["candidate_local_price_observation_symbols"]==[]
+    assert stale["candidate_local_price_observation_ready"] is False
     partial=copy.deepcopy(base)
     partial["price"]["results"]["ZZZZ"]["status"]="UNKNOWN"
     partial["price"]["counts"]={"PASS_PRICE_DV30":2,"UNKNOWN":1}
@@ -226,7 +241,21 @@ def selftest():
     assert not blocked_report["source_cohort_complete"]
     assert blocked_report["price_unknown_count"]==1
     assert blocked_report["screen_symbols"]==[] and blocked_report["research_signals"]==[]
+    assert blocked_report["candidate_local_price_observation_symbols"]==passed
+    assert blocked_report["candidate_local_price_observation_count"]==2
+    assert blocked_report["candidate_local_price_observation_ready"] is True
+    assert blocked_report["candidate_local_positive_release_authority"] is False
     assert blocked_report["qualified_al_count"] is None and blocked_report["r92_registered_here"]==0
+    # The same scope separation must hold for an explicitly BLOCKED row,
+    # but neither UNKNOWN nor BLOCKED can itself become a local observation.
+    blk=copy.deepcopy(base)
+    blk["price"]["results"]["ZZZZ"]["status"]="BLOCK_CURRENT_RUN"
+    blk["price"]["counts"]={"PASS_PRICE_DV30":2,"BLOCK_CURRENT_RUN":1}
+    blk["price"]["blocked_symbols"]=["ZZZZ"];blk["price"]["blocked_count"]=1
+    blk_report=analyze(blk,hashes,now)
+    assert blk_report["candidate_local_price_observation_symbols"]==passed
+    assert blk_report["screen_symbols"]==[] and not blk_report["current_screen_ready"]
+    assert blk_report["qualified_al_count"] is None and blk_report["research_signals"]==[]
     blocked_mutations=[
         lambda x:x["price"]["counts"].update(UNKNOWN=0),
         lambda x:x["price"].update(unknown_symbols=["AAPL"]),
@@ -258,7 +287,7 @@ def selftest():
         try:analyze(case,hashes,now)
         except ValueError:pass
         else:raise RuntimeError("UNSAFE_SCREEN_MUTATION_ACCEPTED:"+str(i))
-    print("XRAY_EOD_SCREEN_SELFTEST=PASS_3_POSITIVE_17_NEGATIVE_NO_MC_NO_AL")
+    print("XRAY_EOD_SCREEN_SELFTEST=PASS_CANDIDATE_LOCAL_UNKNOWN_BLOCK_SEPARATE_FROM_GLOBAL_NO_MC_NO_AL")
 
 def main():
     ap=argparse.ArgumentParser()
