@@ -44,6 +44,35 @@ class QuotaDedupContract(unittest.TestCase):
         self.assertIn("alpaca_personal_price_current_exact30.py",str(price))
         self.assertIn("personal-eod-verified-snapshot",d["jobs"])
 
+    def test_scheduled_vendor_io_requires_official_nasdaq_session(self):
+        # RED pre-fix: cron fires on US weekdays that are Nasdaq holidays.
+        # Existing root_weekend_quota_guard is authoritative and fails closed.
+        for filename, vendor_jobs in (
+            ("xray-personal-full-universe-sip-coverage.yml", ("coverage",)),
+            ("xray-candidate-local-alpaca-sip-recovery.yml",
+             ("source-recovery", "personal-price-current-exact30")),
+        ):
+            with self.subTest(workflow=filename):
+                d=read(filename)
+                gate=d["jobs"].get("session-gate")
+                self.assertIsNotNone(gate, "SCHEDULED_PROVIDER_SESSION_GATE_MISSING")
+                self.assertEqual(gate["outputs"]["allow"],
+                    "${{ steps.session.outputs.allow_compute }}")
+                guard_steps=[s for s in gate["steps"] if
+                    s.get("id")=="session"]
+                self.assertEqual(len(guard_steps),1)
+                self.assertIn("root_weekend_quota_guard.py --emit",
+                    guard_steps[0].get("run",""))
+                self.assertTrue(any(
+                    "pandas_market_calendars==5.4.0" in s.get("run","")
+                    for s in gate["steps"]))
+                for name in vendor_jobs:
+                    job=d["jobs"][name]
+                    self.assertEqual(job.get("needs"),["session-gate"],
+                        "UNGUARDED_SCHEDULED_PROVIDER_JOB:"+name)
+                    self.assertEqual(job.get("if"),
+                        "${{ needs.session-gate.outputs.allow == 'true' }}")
+
     def test_standalone_price_vendor_traffic_manual_only(self):
         d=read("xray-personal-current-sip-price-unknown-shadow.yml")
         self.assertIn("pull_request",d["on"])
