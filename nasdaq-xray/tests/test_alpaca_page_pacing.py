@@ -184,6 +184,55 @@ class PageQuotaContract(unittest.TestCase):
         self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
         self.assertEqual(wf["concurrency"].get("queue"), "max")
 
+    def test_all_secondary_sip_workflows_share_account_lock_and_keep_pr_offline(self):
+        import yaml
+        expected = (
+            "xray-alpaca-historical-sip-account-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || 'production' }}"
+        )
+        target = {
+            "xray-p0-alpaca-515-raw-split.yml":
+                "Measure current 515 raw + split pairs with same session mapping ASOF",
+            "xray-personal-seven-sip-technical.yml":
+                "Run actual SIP 260 daily/52 weekly A-B-D/R1 technical research",
+            "xray-candidate-local-price-50-page.yml":
+                "One-ticker historical SIP 1Day plus 30Min official 30 sessions",
+        }
+        for filename, vendor_step_name in target.items():
+            with self.subTest(workflow=filename):
+                cfg = yaml.load(
+                    (ROOT.parent / ".github" / "workflows" / filename).read_text(),
+                    Loader=yaml.BaseLoader,
+                )
+                self.assertEqual(cfg["concurrency"]["group"], expected)
+                self.assertEqual(cfg["concurrency"]["cancel-in-progress"], "false")
+                self.assertEqual(cfg["concurrency"]["queue"], "max")
+                self.assertIn("pull_request", cfg["on"])
+                steps = next(iter(cfg["jobs"].values()))["steps"]
+                vendor = next(x for x in steps if x.get("name") == vendor_step_name)
+                self.assertIn("github.event_name == 'workflow_dispatch'", vendor["if"])
+                self.assertIn("github.ref == 'refs/heads/main'", vendor["if"])
+                for step in steps:
+                    if (step.get("name", "").startswith(("Verify exact current", "Assert 50-symbol",
+                           "Verify no canonical", "Validate exact full"))
+                            or "upload-artifact" in step.get("uses", "")):
+                        self.assertIn("github.event_name == 'workflow_dispatch'",
+                                      step.get("if", ""), "PR_MUST_NOT_REQUIRE_VENDOR_ARTIFACT_OR_AUTORUN")
+        path = ROOT.parent / ".github" / "workflows" / (
+            "xray-personal-current-sip-price-unknown-shadow.yml"
+        )
+        current = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
+        self.assertEqual(current["concurrency"]["group"], expected)
+        self.assertEqual(current["concurrency"]["cancel-in-progress"], "false")
+        self.assertEqual(current["concurrency"]["queue"], "max")
+        step = next(
+            x for x in next(iter(current["jobs"].values()))["steps"]
+            if x.get("name", "").startswith("Current main only")
+        )
+        self.assertIn("workflow_dispatch", step["if"])
+        self.assertIn("refs/heads/main", step["if"])
+
     def test_pacer_monotonic_actual_spacing_and_clock_regression(self):
         mod = importlib.import_module("alpaca_sip_request_pacer")
         fake = SimulatedClock()

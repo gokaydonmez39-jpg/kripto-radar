@@ -1,5 +1,10 @@
 name: XRAY Candidate-Local 13Oct SIP PRICE 50 Page
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/candidate_local_alpaca_price_50_page.py"
+      - ".github/workflows/xray-candidate-local-price-50-page.yml"
   push:
     branches: [main]
     paths:
@@ -16,8 +21,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-price-50-single-symbol-sip-epoch13
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   real-sip-recovery:
     runs-on: ubuntu-latest
@@ -37,6 +43,7 @@ jobs:
           python nasdaq-xray/candidate_local_alpaca_price_50_page.py --selftest
           python -O nasdaq-xray/candidate_local_alpaca_price_50_page.py --selftest
       - name: One-ticker historical SIP 1Day plus 30Min official 30 sessions
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -46,6 +53,7 @@ jobs:
             --page "$REQUEST_PAGE" \
             --out "$RUNNER_TEMP/xray_oct13_sip_price50.json"
       - name: Assert 50-symbol complete evidence partition and no false R92
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         run: |
           python - <<'PY'
           import json,os
@@ -61,7 +69,7 @@ jobs:
           print("XRAY_SIP_PRICE50_REAL_SOURCE_RESULT=PASS_METADATA_WITHOUT_FALSE_PRIMARY")
           PY
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         with:
           name: xray-oct13-candidate-local-single-sip-price50
           path: ${{ runner.temp }}/xray_oct13_sip_price50.json

@@ -21,16 +21,40 @@ def source(page):
     demand(type(page) is int and 0<=page<=10,"PAGE_RANGE")
     return syms[page*PAGE:(page+1)*PAGE],dates,master_sha,price_sha
 def selftest():
-    syms,dates,m,p=engine.scope()
-    demand(len(syms)==545 and dates[-1]=="2026-10-13","SOURCE")
+    # A frozen October-13 research page is NOT the latest current ASOF.
+    # Test pagination with an offline disposable fixture; the real source()
+    # still enforces engine.scope() and rejects expired source in production.
+    from unittest.mock import patch
+    syms=[f"OFFLINE_{i:04d}" for i in range(545)]
+    dates=engine.dates30()
+    demand(len(dates)==30 and dates[-1]=="2026-10-13","OFFICIAL_CALENDAR")
+    master_sha="a"*40
+    price_sha="b"*40
     parts=[syms[i*PAGE:(i+1)*PAGE] for i in range(11)]
     demand([len(x) for x in parts]==[50]*10+[45],"EXACT_PARTS")
     demand(len(set(x for part in parts for x in part))==545,"NO_DUP")
-    for i in (-1,11):
-        try:source(i)
-        except ValueError:pass
-        else:raise AssertionError("PAGE_NOT_REJECTED")
-    print("XRAY_LOCAL_PRICE50_SELFTEST=PASS_545_11_DISJOINT_PAGES")
+    with patch.object(engine,"scope",return_value=(syms,dates,master_sha,price_sha)) as guarded:
+        first=source(0)
+        last=source(10)
+        demand(first[0]==syms[:50] and last[0]==syms[-45:],"PAGE_BOUNDARIES")
+        demand(first[1:]==last[1:]==(dates,master_sha,price_sha),"SOURCE_BINDINGS")
+        demand(guarded.call_count==2,"STRICT_SCOPE_CALLED")
+        for i in (-1,11):
+            try:source(i)
+            except ValueError as exc:
+                demand("PAGE_RANGE" in str(exc),"NEGATIVE_PAGE_REASON")
+            else:raise AssertionError("PAGE_NOT_REJECTED")
+    with patch.object(engine,"scope",return_value=(syms[:-1],dates,master_sha,price_sha)):
+        try:source(0)
+        except ValueError as exc:
+            demand("EXACT_SCOPE" in str(exc),"TRUNCATED_SOURCE_REASON")
+        else:raise AssertionError("TRUNCATED_SCOPE_ACCEPTED")
+    with patch.object(engine,"scope",side_effect=ValueError("XRAY_PRICE_20261013_NOT_LATEST_COMPLETED_ASOF")):
+        try:source(0)
+        except ValueError as exc:
+            demand("NOT_LATEST_COMPLETED_ASOF" in str(exc),"STALE_SOURCE_REASON")
+        else:raise AssertionError("STALE_SOURCE_ACCEPTED")
+    print("XRAY_LOCAL_PRICE50_SELFTEST=PASS_FROZEN_FIXTURE_545_11_NO_LIVE_SOURCE_NO_VENDOR")
 def run(page,out):
     demand(out and not out.resolve().is_relative_to(ROOT.parent.resolve()),
            "NO_REPO_PROVIDER_EXPORT")
