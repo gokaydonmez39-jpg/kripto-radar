@@ -9,6 +9,10 @@ on:
       - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
       - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
+      - "nasdaq-xray/tests/test_alpaca_page_pacing.py"
+      - "nasdaq-xray/alpaca_sip_request_pacer.py"
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
   push:
     branches: [main]
@@ -19,6 +23,10 @@ on:
       - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
       - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
+      - "nasdaq-xray/tests/test_alpaca_page_pacing.py"
+      - "nasdaq-xray/alpaca_sip_request_pacer.py"
+      - "nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py"
+      - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
 permissions:
   contents: read
@@ -42,6 +50,10 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_full_universe_asof_sip_availability.py
           python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
           python -O nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+      - name: Test every SIP HTTP page is paced (offline)
+        run: |
+          python -m unittest discover -s nasdaq-xray/tests -p test_alpaca_page_pacing.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_alpaca_page_pacing.py -v
       - name: Prove no accidental double-billing of full-universe SIP scans (offline)
         run: |
           set -euo pipefail
