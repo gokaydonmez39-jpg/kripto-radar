@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/e2e_production_readiness.py"
       - "nasdaq-xray/blocker_root_dependency_audit.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
+      - "nasdaq-xray/current_terminal_epoch_forensics.py"
       - "nasdaq-xray/history_17_short_official_bound_selftest.py"
       - "nasdaq-xray/history_official_identity_evidence.json"
       - "nasdaq-xray/chatgpt_only_delivery_mode.py"
@@ -123,6 +124,53 @@ jobs:
           print("XRAY_READINESS_REPORT_CHECK=PASS_FAIL_CLOSED")
           print("XRAY_READINESS_REPORT_RELEASE=NOT_GRANTED")
           PY
+      - name: Independent official ASOF and archival terminal SHA witness (never an AL)
+        if: steps.epoch_guard.outputs.valid == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/current_terminal_epoch_forensics.py
+          python nasdaq-xray/current_terminal_epoch_forensics.py --selftest
+          python -O nasdaq-xray/current_terminal_epoch_forensics.py --selftest
+          python nasdaq-xray/current_terminal_epoch_forensics.py --out "$RUNNER_TEMP/xray_latest_asof_vs_authoritative_terminal.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          e=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_latest_asof_vs_authoritative_terminal.json").read_text())
+          def require(ok,code):
+              if not ok: raise RuntimeError("XRAY_E2E_EPOCH_SOURCE_FAIL_CLOSED_"+code)
+          require(e["schema"]=="XRAY_CURRENT_TERMINAL_EPOCH_FORENSICS_V1","SCHEMA")
+          require(e["execution"]=="NONE" and e["real_money"]=="NO-GO","SAFETY")
+          for key in ("canonical_terminal_overwritten","mc_primary_approved_by_report",
+                      "g9_approved_by_report","r92_created_by_report",
+                      "iphone_delivery_proven_by_report"):
+              require(e[key] is False,"UNAUTHORIZED_"+key)
+          require(e["current_asof_terminal_generated"] is False,"SYNTHETIC_CURRENT_TERMINAL")
+          require(e["source_asof_et"]<=e["expected_latest_completed_official_asof_et"],"FUTURE_ROOT")
+          require(e["last_authoritative_terminal_asof_et"]<=e["source_asof_et"],"FUTURE_TERMINAL")
+          require(e["root_is_latest_official_asof"]==(e["source_asof_et"]==
+                  e["expected_latest_completed_official_asof_et"]),"CURRENT_FLAG")
+          for key,item in e["source_git_blobs"].items():
+              actual=subprocess.check_output(
+                  ["git","rev-parse","HEAD:"+item["path"]],text=True).strip()
+              require(actual==item["git_blob_sha"],"GIT_BLOB_MISMATCH_"+key)
+          rows=[
+              ("Official last completed XNAS",e["expected_latest_completed_official_asof_et"]),
+              ("ROOT ASOF",e["source_asof_et"]),
+              ("MASTER ASOF",e["canonical_master_asof_et"]),
+              ("PRICE ASOF",e["canonical_price_asof_et"]),
+              ("Archival authoritative terminal",e["last_authoritative_terminal_asof_et"]),
+              ("PRICE UNKNOWN",str(e["latest_price_unknown_count"])),
+              ("MASTER UNKNOWN",str(e["latest_master_unknown_count"])),
+              ("ROOT HISTORY UNKNOWN",str(e["root_history_unknown_count"])),
+              ("Research release", "NOT ATTESTED; zero R92 created here"),
+          ]
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a",encoding="utf-8") as out:
+              out.write("## Official ASOF vs immutable terminal (read-only)\n\n| Source | Value |\n|---|---|\n")
+              for label,value in rows: out.write("| "+label+" | "+value+" |\n")
+              out.write("\nOld canonical terminal is NEVER re-dated. UNKNOWN stays UNKNOWN.\n")
+          print("XRAY_E2E_OFFICIAL_ASOF_SHA_AUDIT=PASS_"+e["status"]+"_NO_ALPHA")
+          PY
       - name: Independent root cause DAG, exact source-SHA, and 12-SPAC scope regression
         if: steps.epoch_guard.outputs.valid == 'true'
         run: |
@@ -154,6 +202,7 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_e2e_readiness.json
             ${{ runner.temp }}/xray_e2e_causal_dag.json
+            ${{ runner.temp }}/xray_latest_asof_vs_authoritative_terminal.json
           retention-days: 14
           if-no-files-found: error
       # IMPORTANT: selftest PASS is not production readiness. The artifact is

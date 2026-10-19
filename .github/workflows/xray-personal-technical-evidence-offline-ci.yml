@@ -9,6 +9,7 @@ on:
       - nasdaq-xray/source_epoch_freshness_guard.py
       - nasdaq-xray/current_terminal_epoch_forensics.py
       - .github/workflows/xray-canonical-current-pre-mc.yml
+      - .github/workflows/xray-e2e-production-readiness.yml
       - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
   push:
     paths:
@@ -18,6 +19,7 @@ on:
       - nasdaq-xray/source_epoch_freshness_guard.py
       - nasdaq-xray/current_terminal_epoch_forensics.py
       - .github/workflows/xray-canonical-current-pre-mc.yml
+      - .github/workflows/xray-e2e-production-readiness.yml
       - .github/workflows/xray-personal-technical-evidence-offline-ci.yml
 permissions:
   contents: read
@@ -57,6 +59,17 @@ jobs:
           assert evidence["r92_created_by_report"] is False
           assert evidence["mc_primary_approved_by_report"] is False
           print("XRAY_REAL_CANONICAL_EPOCH_READBACK=PASS_FAIL_CLOSED_NO_ALPHA")
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          flow=Path(".github/workflows/xray-e2e-production-readiness.yml").read_text()
+          assert "XRAY_E2E_OFFICIAL_ASOF_SHA_AUDIT=PASS_" in flow
+          assert '"git","rev-parse","HEAD:"+item["path"]' in flow
+          assert "xray_latest_asof_vs_authoritative_terminal.json" in flow
+          assert "python -O nasdaq-xray/current_terminal_epoch_forensics.py --selftest" in flow
+          assert "Research release" in flow and "NOT ATTESTED" in flow
+          assert "Release gate - fail workflow when actual current research is NO-GO" in flow
+          print("XRAY_E2E_SOURCE_SHA_ARCHIVAL_TERMINAL=PASS_NO_ALPHA")
           PY
           python3 - <<'PY'
           from pathlib import Path
