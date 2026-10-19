@@ -47,6 +47,50 @@ class PageQuotaContract(unittest.TestCase):
         self.assertIn("with opener(", portion)
         self.assertIn("PACER.pace()", portion, "COVERAGE_HTTP_PAGE_PACING_MISSING")
 
+        # A real two-page *offline* transport must debit AND pace each page.
+        import json
+        from unittest.mock import patch
+        import alpaca_full_universe_asof_sip_availability as sip
+
+        returned = [
+            {"bars": {"AAPL": []}, "next_page_token": "NEXT_PAGE"},
+            {"bars": {"AAPL": []}, "next_page_token": None},
+        ]
+        urls = []
+
+        class MockResponse:
+            def __init__(self, data):
+                self.data = data
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def read(self):
+                return json.dumps(self.data).encode()
+
+        def opener(req, timeout):
+            self.assertEqual(timeout, 24)
+            urls.append(req.full_url)
+            return MockResponse(returned[len(urls) - 1])
+
+        budget = sip.RequestBudget(3)
+        with patch.object(sip.PACER, "pace") as pacing:
+            result, count = sip.query_sip(
+                ["AAPL"], "2026-10-16", "OFFLINE_KEY", "OFFLINE_SECRET",
+                opener=opener, budget=budget,
+                window_fn=lambda *_: ("2026-10-16T00:00:00Z",
+                                     "2026-10-16T23:00:00Z"),
+            )
+        self.assertEqual((count, budget.used, len(urls)), (2, 2, 2))
+        self.assertEqual(pacing.call_count, 2, "EVERY_PAGE_MUST_BE_PACED")
+        self.assertEqual(result, {"AAPL": []})
+        self.assertNotIn("page_token=", urls[0])
+        self.assertIn("page_token=NEXT_PAGE", urls[1])
+
+
     def test_account_wide_workflow_mutex_and_intra_workflow_serial_io(self):
         import yaml
         files = (
