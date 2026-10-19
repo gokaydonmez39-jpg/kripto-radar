@@ -24,8 +24,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-personal-current-sip-price-shadow-${{ github.ref }}
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   research-only:
     runs-on: ubuntu-latest

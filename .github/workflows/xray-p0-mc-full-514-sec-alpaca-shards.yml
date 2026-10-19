@@ -7,11 +7,17 @@ on:
       - ".github/workflows/xray-p0-mc-full-514-sec-alpaca-shards.yml"
 permissions:
   contents: read
+concurrency:
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  cancel-in-progress: false
+  queue: max
 jobs:
   four-way-exact-mc-measure:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Workflow-level mutex does not serialize four jobs within this run.
+      max-parallel: 1
       matrix:
         shard: [0,1,2,3]
     timeout-minutes: 25

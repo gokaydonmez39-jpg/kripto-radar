@@ -152,6 +152,56 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertEqual(wf["concurrency"].get("queue"), "max")
                 self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
 
+    def test_all_discovered_remaining_secret_backed_alpaca_workflows_share_account_mutex(self):
+        """Offline regression for main-only or manual vendor HTTP escape paths."""
+        import yaml
+        expected = (
+            "xray-alpaca-historical-sip-account-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || 'production' }}"
+        )
+        vendor_files = (
+            "xray-p0-alpaca-515-raw-split.yml",
+            "xray-personal-seven-sip-technical.yml",
+            "xray-candidate-local-price-50-page.yml",
+            "xray-personal-current-sip-price-unknown-shadow.yml",
+            "xray-personal-price-20261013-exact30.yml",
+            "xray-p0-mc-full-514-sec-alpaca-shards.yml",
+            "xray-manual-decision-research-shadow.yml",
+            "xray-rth497-temporal-gap-canary.yml",
+        )
+        for name in vendor_files:
+            with self.subTest(name=name):
+                text = (ROOT.parent / ".github" / "workflows" / name).read_text()
+                wf = yaml.load(text, Loader=yaml.BaseLoader)
+                self.assertIn("XRAY_ALPACA_DATA_KEY_ID", text,
+                              "MUTEX_INVENTORY_PATH_IS_NOT_VENDOR_ACCOUNT_CONSUMER")
+                self.assertEqual(
+                    (wf.get("concurrency") or {}).get("group"), expected,
+                    "UNCOORDINATED_ALPACA_ACCOUNT_HTTP_ESCAPE",
+                )
+                self.assertEqual(
+                    (wf.get("concurrency") or {}).get("queue"), "max",
+                    "GITHUB_ACCOUNT_QUEUE_LOSSES_POSSIBLE",
+                )
+                self.assertEqual(
+                    (wf.get("concurrency") or {}).get("cancel-in-progress"),
+                    "false",
+                    "ACCOUNT_HTTP_MID_REQUEST_CANCELLATION_RISK",
+                )
+
+    def test_four_shard_mc_vendor_io_cannot_run_parallel_inside_one_workflow(self):
+        """Workflow-level account group never serializes matrix children."""
+        import yaml
+        p = ROOT.parent / ".github" / "workflows" / (
+            "xray-p0-mc-full-514-sec-alpaca-shards.yml"
+        )
+        wf = yaml.load(p.read_text(), Loader=yaml.BaseLoader)
+        job = wf["jobs"]["four-way-exact-mc-measure"]
+        self.assertEqual(job["strategy"].get("max-parallel"), "1",
+                         "FOUR_PARALLEL_HTTP_SHARDS_BYPASS_WORKFLOW_MUTEX")
+        self.assertEqual(job["strategy"]["fail-fast"], "false")
+
     def test_pacer_monotonic_actual_spacing_and_clock_regression(self):
         mod = importlib.import_module("alpaca_sip_request_pacer")
         fake = SimulatedClock()
