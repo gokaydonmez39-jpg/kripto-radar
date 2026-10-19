@@ -28,6 +28,7 @@ class PageQuotaContract(unittest.TestCase):
         for name, function in (
             ("alpaca_personal_joint_260_d30_rth_shadow.py", "pager"),
             ("alpaca_personal_price_20261013_exact30_census.py", "fetch"),
+            ("alpaca_free_sip_shadow_guard.py", "fetch_page"),
         ):
             with self.subTest(file=name):
                 source = (ROOT / name).read_text(encoding="utf-8")
