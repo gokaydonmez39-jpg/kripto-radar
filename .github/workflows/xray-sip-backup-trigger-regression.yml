@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
-      - name: Prove backup only follows successful root and cannot auto-promote C4.17
+      - name: Prove scheduled daily backup and no hourly source duplication
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -53,18 +53,12 @@ jobs:
           f=Path(".github/workflows/xray-personal-full-universe-sip-coverage.yml")
           d=yaml.load(f.read_text(),Loader=yaml.BaseLoader)
           on=d["on"]
-          assert on["workflow_run"]["workflows"]==[
-              "NASDAQ SWING XRAY Autonomous Data Plane"]
-          assert on["workflow_run"]["types"]==["completed"]
-          assert on["workflow_run"]["branches"]==["main"]
           assert on["schedule"][0]["cron"]=="10 22 * * 1-5"
-          assert "pull_request" not in on,"EXPENSIVE_NETWORK_SCAN_IN_PR"
+          assert "workflow_dispatch" in on
+          assert not any(t in on for t in ("push","pull_request","workflow_run"))
           jobs=d["jobs"]
           gate=jobs["coverage"]["if"]
-          assert "github.event.workflow_run.conclusion == 'success'" in gate
-          assert "github.event.workflow_run.head_branch == 'main'" in gate
-          assert "github.event_name != 'workflow_run'" in gate
-          assert "workflow_run" in on and "push" in on and "schedule" in on
+          assert gate is None, "NO_ROOT_SUCCESS_TRIGGER_FOR_EXPENSIVE_SIP"
           assert "source_circuit_breaker_open" in Path(
               "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
           ).read_text()
@@ -73,5 +67,5 @@ jobs:
               assert key in jobs and "needs" in jobs[key]
           assert d["permissions"]["contents"]=="read"
           assert not d["concurrency"]["cancel-in-progress"]=="true"
-          print("XRAY_BACKUP_AUTOMATIC_ROOT_TRIGGER=PASS_SUCCESS_MAIN_ONLY_CREDIT_BOUNDED_RESEARCH_NO_AL")
+          print("XRAY_BACKUP_EPOCH_DEDUP=PASS_DAILY_SCHEDULE_MANUAL_ONLY_NO_ROOT_HOURLY_NO_AL")
           PY
