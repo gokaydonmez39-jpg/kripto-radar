@@ -58,11 +58,11 @@ jobs:
           assert not any(t in on for t in ("push","pull_request","workflow_run"))
           jobs=d["jobs"]
           gate=jobs["coverage"].get("if")
-          assert gate=="${{ needs.session-gate.outputs.allow == 'true' }}", (
+          assert gate=="$"+"{{ needs.session-gate.outputs.allow == 'true' }}", (
               "SCHEDULED_SIP_VENDOR_MUST_REQUIRE_OFFICIAL_SESSION")
           assert jobs["coverage"]["needs"]==["session-gate"]
           sess=jobs["session-gate"]
-          assert sess["outputs"]["allow"]=="${{ steps.session.outputs.allow_compute }}"
+          assert sess["outputs"]["allow"]=="$"+"{{ steps.session.outputs.allow_compute }}"
           assert any(x.get("id")=="session" and
               "root_weekend_quota_guard.py --emit" in x.get("run","")
               for x in sess["steps"])
