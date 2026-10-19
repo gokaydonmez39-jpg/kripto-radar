@@ -13,6 +13,7 @@ import urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 import alpaca_sip_4symbol_30min_rth_shadow as pilot
 from alpaca_sip_30min_rth_lower_bound_pilot import stamp
+from alpaca_sip_request_pacer import PACER
 
 ROOT=Path(__file__).resolve().parent
 ASOF="2026-10-13"
@@ -87,6 +88,7 @@ def fetch(batch,dates,creds,calls,asof=ASOF):
                 headers={"APCA-API-KEY-ID":creds[0],
                          "APCA-API-SECRET-KEY":creds[1],
                          "Accept":"application/json"})
+            PACER.pace()  # Count page tokens against account-level RPM.
             calls[0]+=1
             with urllib.request.urlopen(req,timeout=32) as rsp:
                 raw=rsp.read(MAX_PAGE_BYTES+1)
