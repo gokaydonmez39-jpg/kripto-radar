@@ -69,10 +69,16 @@ class QuotaDedupContract(unittest.TestCase):
                     for s in gate["steps"]))
                 for name in vendor_jobs:
                     job=d["jobs"][name]
-                    self.assertEqual(job.get("needs"),["session-gate"],
+                    expected_needs = (["session-gate","source-recovery"]
+                        if name=="personal-price-current-exact30"
+                        else ["session-gate"])
+                    self.assertEqual(job.get("needs"),expected_needs,
                         "UNGUARDED_SCHEDULED_PROVIDER_JOB:"+name)
-                    self.assertEqual(job.get("if"),
-                        "${{ needs.session-gate.outputs.allow == 'true' }}")
+                    expected_if = "${{ needs.session-gate.outputs.allow == 'true' }}"
+                    if name=="personal-price-current-exact30":
+                        expected_if = ("${{ needs.session-gate.outputs.allow == 'true' "
+                                       "&& needs.source-recovery.result == 'success' }}")
+                    self.assertEqual(job.get("if"), expected_if)
 
     def test_standalone_price_vendor_traffic_manual_only(self):
         d=read("xray-personal-current-sip-price-unknown-shadow.yml")
