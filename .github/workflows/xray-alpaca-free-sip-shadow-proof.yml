@@ -86,6 +86,7 @@ jobs:
           import datetime as dt,json,os,pathlib,subprocess,sys
           sys.path.insert(0,"nasdaq-xray")
           from source_epoch_freshness_guard import last_complete_session
+          from alpaca_root_rescue_strict_dispatch_v2 import scheduled_probe_allowed
           root=pathlib.Path("nasdaq-xray")
           now=dt.datetime.now(dt.timezone.utc)
           latest=last_complete_session(now)
@@ -94,14 +95,7 @@ jobs:
           check=subprocess.run(["git","ls-remote","origin","refs/heads/main"],
               text=True,capture_output=True,timeout=15,check=False)
           remote=(check.stdout.split()[0] if check.returncode==0 and check.stdout.split() else "")
-          ready=bool(
-              now.date().isoformat()==latest
-              and p.get("asof_et")==s.get("asof_et")==latest
-              and p.get("unknown_never_pass") is True
-              and p.get("execution")=="NONE" and p.get("real_money")=="NO-GO"
-              and s.get("execution")=="NONE" and s.get("real_money")=="NO-GO"
-              and type(s.get("unknown_count")) is int and s.get("unknown_count")>0
-              and remote and remote==os.environ["GITHUB_SHA"])
+          ready=scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])
           with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
               f.write("ready="+str(ready).lower()+"\n")
           print("XRAY_SCHEDULED_ROOT_PREFLIGHT="+(
