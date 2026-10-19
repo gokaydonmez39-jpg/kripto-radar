@@ -89,6 +89,7 @@ def empty_report(asof,names,dates,master_blob,price_blob):
         "integrity_recheck_recovered":0,
         "integrity_recheck_unresolved":0,
         "integrity_recheck_status":"NOT_STARTED",
+        "integrity_recheck_unresolved_reason_counts":{},
         "integrity_recheck_detail_counts":{},
         "minute_witness_counts":{},
         "minute_witness_inspected":0,
@@ -381,6 +382,30 @@ def isolated_integrity_recheck(report,dates,credentials,counters,fetcher,
             "ISOLATED_NEVER_PRIMARY")
     return report
 
+def skip_integrity_recheck_for_provider_cliff(report):
+    """Finalize research diagnostics when 401/403/429 stops further provider IO.
+
+    No extra HTTP calls, no synthetic bars, no promotion. Count unresolved
+    integrity candidates without presenting a skipped check as NO_GAPS.
+    """
+    require(report.get("provider_cliff") in
+            {"AUTH_OR_ENTITLEMENT","RATE_LIMIT_OR_BUDGET"},
+            "CLIFF_NOT_ATTESTED")
+    require(report["integrity_recheck_attempted"]==0
+            and report["integrity_recheck_recovered"]==0
+            and report["integrity_recheck_status"]=="NOT_STARTED",
+            "CLIFF_RECHECK_PARTITION_ALREADY_STARTED")
+    count=sum(x==INTEGRITY_UNKNOWN for x in report["classifications"].values())
+    report["integrity_recheck_candidate_count"]=count
+    report["integrity_recheck_unresolved"]=count
+    report["integrity_recheck_unresolved_reason_counts"]=(
+        {"UNATTEMPTED_BUDGET_OR_LIMIT":count} if count else {})
+    report["integrity_recheck_status"]="SKIPPED_PROVIDER_CLIFF"
+    require(sum(report["integrity_recheck_unresolved_reason_counts"].values())==count,
+            "CLIFF_RECHECK_REASONS_NOT_EXACT")
+    return finalize(report)
+
+
 def census(now,credentials,output,fetcher=fetch):
     master_raw=(ROOT/"canonical_current_master_manifest.json").read_bytes()
     price_raw=(ROOT/"canonical_current_price_dv30.json").read_bytes()
@@ -422,7 +447,9 @@ def census(now,credentials,output,fetcher=fetch):
         result["attempted_count"]+=len(block)
         checkpoint()
         if i+BATCH<len(symbols):time.sleep(0.7)
-    if not result.get("provider_cliff"):
+    if result.get("provider_cliff"):
+        skip_integrity_recheck_for_provider_cliff(result)
+    else:
         from alpaca_price_gap_minute_witness import observe
         isolated_integrity_recheck(result,dates,credentials,counters,fetcher,
                                    checkpoint=checkpoint,
