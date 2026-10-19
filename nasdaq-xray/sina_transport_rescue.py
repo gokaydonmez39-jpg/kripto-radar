@@ -24,7 +24,7 @@ def retryable_record(info):
         # Legacy records need an explicit machine-readable HTTP status.
         # Unknown/bare statuses are quarantined; only rate limits and
         # retryable transport/server failures may consume one rescue.
-        m=re.search(r"(?<!\\d)(\\d{3})(?!\\d)",info[len("HTTPError:"):])
+        m=re.search(r"(?<!\d)(\d{3})(?!\d)",info[len("HTTPError:"):])
         if not m:
             return False
         code=int(m.group(1))
