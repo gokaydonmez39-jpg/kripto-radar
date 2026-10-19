@@ -24,8 +24,14 @@ def retryable_record(info):
         # Legacy records need an explicit machine-readable HTTP status.
         # Unknown/bare statuses are quarantined; only rate limits and
         # retryable transport/server failures may consume one rescue.
-        m=re.search(r"(?<!\d)(\d{3})(?!\d)",info[len("HTTPError:"):])
+        tail=info[len("HTTPError:"):]
+        # Only a leading, explicit HTTP code is trustworthy. Reject mixed
+        # status narratives (e.g. a 429 appearing in a URL, followed by 403).
+        m=re.match(r"\s*(?:HTTP Error\s+)?([1-5]\d{2})(?=\s|:|$)",tail)
         if not m:
+            return False
+        codes=re.findall(r"(?<!\d)\d{3}(?!\d)",tail)
+        if len(codes)!=1 or codes[0]!=m.group(1):
             return False
         code=int(m.group(1))
         return code in {408,425,429} or 500 <= code <= 599
