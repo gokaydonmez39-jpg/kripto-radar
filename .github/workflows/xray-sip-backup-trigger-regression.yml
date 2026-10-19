@@ -6,12 +6,18 @@ on:
       - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
       - ".github/workflows/xray-sip-backup-trigger-regression.yml"
+      - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
+      - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
+      - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_full_universe_asof_sip_availability.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
       - ".github/workflows/xray-sip-backup-trigger-regression.yml"
+      - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
+      - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
+      - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
 permissions:
   contents: read
 jobs:
@@ -34,6 +40,11 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_full_universe_asof_sip_availability.py
           python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
           python -O nasdaq-xray/alpaca_full_universe_asof_sip_availability.py --selftest
+      - name: Prove no accidental double-billing of full-universe SIP scans (offline)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
       - name: Prove backup only follows successful root and cannot auto-promote C4.17
         run: |
           python - <<'PY'
