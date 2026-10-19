@@ -56,6 +56,10 @@ class PageQuotaContract(unittest.TestCase):
                     "xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}",
                 )
                 self.assertEqual(x["concurrency"]["cancel-in-progress"], "false")
+                self.assertEqual(
+                    x["concurrency"].get("queue"), "max",
+                    "GITHUB_SINGLE_PENDING_LAST_WRITER_CANCELS_RESEARCH_SCAN",
+                )
                 self.assertEqual(x["concurrency"]["group"],
                     "xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}",
                     "PR_OFFLINE_RUN_MUST_NOT_STARVE_PRODUCTION_ACCOUNT_MUTEX")
