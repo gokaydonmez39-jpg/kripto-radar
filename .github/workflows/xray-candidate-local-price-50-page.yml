@@ -16,8 +16,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-price-50-single-symbol-sip-epoch13
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   real-sip-recovery:
     runs-on: ubuntu-latest
