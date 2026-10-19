@@ -1,10 +1,16 @@
 name: XRAY Root History UNKNOWN Source Triage
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/research/longbridge_history_28_source_errors_20261016_shadow_v1.json"
+      - ".github/workflows/xray-history-unknown-source-triage.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/history_unknown_source_triage.py"
+      - "nasdaq-xray/research/longbridge_history_28_source_errors_20261016_shadow_v1.json"
       - ".github/workflows/xray-history-unknown-source-triage.yml"
 permissions:
   contents: read
@@ -15,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -35,6 +41,86 @@ jobs:
           assert v["public_market_bars_persisted"] is False
           assert sum(v["status_counts"].values())==v["classifications"]
           print("XRAY_HISTORY_TRIAGE_SECURITY=PASS_NO_FAKE_ALPHA_OR_BARS")
+          PY
+      - name: Independently validate connected daily-date shadow witness and anti-promotion negatives
+        run: |
+          python -m pip install --disable-pip-version-check "pandas_market_calendars==5.4.0"
+          python - <<'PY'
+          import copy,json,subprocess
+          from pathlib import Path
+          import pandas_market_calendars as mcal
+          root=Path("nasdaq-xray")
+          w=json.loads((root/"research/longbridge_history_28_source_errors_20261016_shadow_v1.json").read_text())
+          # The 16-Oct shadow must be checked against its frozen Git source.
+          # A 19-Oct live ROOT must never be used as an old ASOF witness.
+          current=json.loads((root/"sina_state.json").read_text())
+          assert (current.get("execution"),current.get("real_money"),current.get("unknown_never_pass"))==("NONE","NO-GO",True)
+          historical_commit="874a77fc251b5a13b8f5af321149f49f58d6f061"
+          subprocess.run(["git","fetch","--no-tags","--depth=1","origin",historical_commit],
+                         check=True,stdout=subprocess.DEVNULL)
+          fetched=subprocess.check_output(["git","rev-parse","FETCH_HEAD"],text=True).strip()
+          assert fetched==historical_commit,"FROZEN_HISTORY_COMMIT_CHANGED"
+          frozen_path=historical_commit+":nasdaq-xray/sina_state.json"
+          historical_blob=subprocess.check_output(["git","rev-parse",frozen_path],text=True).strip()
+          assert historical_blob==w.get("source_sina_state_git_blob_sha"),"FROZEN_HISTORY_SOURCE_BLOB_MISMATCH"
+          s=json.loads(subprocess.check_output(["git","show",frozen_path],text=True))
+          assert current.get("asof_et")>=s.get("asof_et"),"CURRENT_ROOT_BEFORE_FROZEN_SHADOW"
+          expected={"SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY":17,
+            "SHADOW_260_DATE_GAP_NOT_COMPLETE":1,
+            "SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL":9,
+            "SHADOW_NO_CURRENT_ASOF_STALE_SOURCE":1}
+          dates=[d.date().isoformat() for d in mcal.get_calendar("NASDAQ").valid_days(
+            start_date="2025-10-06",end_date="2026-10-16")]
+          assert len(dates)==260 and dates[0]=="2025-10-06" and dates[-1]=="2026-10-16"
+          assert "2026-01-20" in dates
+          src={k for k,v in s["results"].items() if v.get("status")=="UNKNOWN_RETRY_EXHAUSTED"}
+          def valid(j):
+              if j.get("schema")!="XRAY_CONNECTED_LONG_BRIDGE_HISTORY_28_SOURCE_ERRORS_SHADOW_V1":return False
+              if j.get("asof_et")!="2026-10-16" or j.get("source_scope")!=28:return False
+              if j.get("source_sina_state_git_blob_sha")!=historical_blob:return False
+              if j.get("counts")!=expected:return False
+              if (j.get("execution"),j.get("real_money"),j.get("unknown_never_pass"))!=("NONE","NO-GO",True):return False
+              if any(j.get(k) is not False for k in ("provider_license_automated_non_display_attested",
+                  "issuer_continuity_independently_attested","split_correction_and_rth_bar_integrity_attested",
+                  "raw_vendor_ohlcv_persisted","signal_sent","device_delivery_attested")):return False
+              if j.get("canonical_price_history_mc_or_r92_pass_created")!=0:return False
+              rows=j.get("results") or {}
+              if set(rows)!=src or len(rows)!=28:return False
+              actual={key:0 for key in expected}
+              for symbol,row in rows.items():
+                  typ=row.get("classification")
+                  if typ not in actual:return False
+                  actual[typ]+=1
+                  count=row.get("observed_completed_daily_count")
+                  if type(count) is not int or count<0:return False
+                  if typ=="SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY":
+                      if count<260 or row.get("latest_observed_date")!="2026-10-16" or row.get("required_260_missing_dates")!=[]:return False
+                  elif typ=="SHADOW_260_DATE_GAP_NOT_COMPLETE":
+                      if symbol!="PBM" or row.get("required_260_missing_dates")!=["2026-01-20"]:return False
+                  elif typ=="SHADOW_UNDER260_DAILY_SOURCE_NOT_OFFICIAL_IPO_FAIL":
+                      if count>=260:return False
+                  elif typ=="SHADOW_NO_CURRENT_ASOF_STALE_SOURCE":
+                      if symbol!="SVA" or row.get("latest_observed_date")>="2026-10-16":return False
+              return actual==expected
+          assert valid(w),"CONNECTED_HISTORY_SHADOW_PARTITION_INVALID"
+          assert s["asof_et"]==w["asof_et"]
+          assert historical_blob==w["source_sina_state_git_blob_sha"],"HISTORY_SOURCE_EPOCH_DRIFT"
+          tampered=copy.deepcopy(w);tampered["source_sina_state_git_blob_sha"]="0"*40
+          assert not valid(tampered),"FORGED_SOURCE_BLOB_ACCEPTED"
+          tampered=copy.deepcopy(w);tampered["asof_et"]="2026-10-19"
+          assert not valid(tampered),"CROSS_EPOCH_SHADOW_ACCEPTED"
+          for field,value in (("provider_license_automated_non_display_attested",True),
+                              ("raw_vendor_ohlcv_persisted",True),
+                              ("canonical_price_history_mc_or_r92_pass_created",1)):
+              changed=copy.deepcopy(w);changed[field]=value
+              assert not valid(changed),field
+          changed=copy.deepcopy(w);changed["results"]["PBM"]["classification"]="SHADOW_EXACT260_DATES_PRESENT_NOT_PRIMARY"
+          assert not valid(changed),"PBM_MISSING_JAN20_FALSE_ACCEPTED"
+          changed=copy.deepcopy(w);changed["results"].pop("ACFN")
+          assert not valid(changed),"MISSING_TICKER_FALSE_ACCEPTED"
+          print("XRAY_28_HISTORY_SHADOW=PASS_IMMUTABLE_16OCT_17_COMPLETE_1_GAP_9_SHORT_1_STALE")
+          print("XRAY_HISTORY_SHADOW_CROSS_EPOCH=PASS_CURRENT_ROOT_INDEPENDENT_TWO_NEGATIVES")
+          print("XRAY_28_HISTORY_SHADOW_ALPHA=ZERO_LICENSE_UNVERIFIED_NO_CANONICAL_PROMOTION")
           PY
       - name: Save counts-only triage for 7 days
         if: always()
