@@ -20,6 +20,7 @@ from collections import Counter
 from functools import lru_cache
 import pandas_market_calendars as mcal
 from alpaca_sip_paginated_transport_shadow import collect_pages
+from alpaca_sip_request_pacer import PACER
 from zoneinfo import ZoneInfo
 
 ROOT=pathlib.Path(__file__).resolve().parent
@@ -158,6 +159,7 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
             "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
             "Accept":"application/json","User-Agent":"NASDAQ-XRAY-Research/1.0"})
         try:
+            PACER.pace()  # Every HTTP pagination page; no batch-level burst.
             with urllib.request.urlopen(req,timeout=25) as reply:
                 if reply.status!=200:
                     raise RuntimeError("ALPACA_HTTP_NON200")

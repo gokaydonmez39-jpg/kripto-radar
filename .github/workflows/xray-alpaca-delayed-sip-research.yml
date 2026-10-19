@@ -30,8 +30,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-alpaca-delayed-sip-research
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   canary:
     runs-on: ubuntu-latest

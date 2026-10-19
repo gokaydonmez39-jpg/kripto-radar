@@ -21,8 +21,9 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: xray-personal-full-cohort-early-watch
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   technical-watch:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}

@@ -6,8 +6,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-candidate-local-sip-recovery
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
   cancel-in-progress: false
+  queue: max
 jobs:
   session-gate:
     name: Fail closed before scheduled SIP vendor IO on Nasdaq holidays
@@ -191,8 +192,8 @@ jobs:
           retention-days: 14
 
   personal-price-current-exact30:
-    needs: [session-gate]
-    if: ${{ needs.session-gate.outputs.allow == 'true' }}
+    needs: [session-gate, source-recovery]
+    if: ${{ needs.session-gate.outputs.allow == 'true' && needs.source-recovery.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 37
     steps:
