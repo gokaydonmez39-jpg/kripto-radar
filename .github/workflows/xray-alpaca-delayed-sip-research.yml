@@ -30,7 +30,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-alpaca-delayed-sip-research
+  group: xray-alpaca-historical-sip-account-v1
   cancel-in-progress: false
 jobs:
   canary:
