@@ -9,7 +9,28 @@ concurrency:
   group: xray-candidate-local-sip-recovery
   cancel-in-progress: false
 jobs:
+  session-gate:
+    name: Fail closed before scheduled SIP vendor IO on Nasdaq holidays
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    outputs:
+      allow: ${{ steps.session.outputs.allow_compute }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned official Nasdaq session calendar
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+      - name: Enforce ET exchange session on schedule; manual research explicit
+        id: session
+        run: python nasdaq-xray/root_weekend_quota_guard.py --emit
+
   source-recovery:
+    needs: [session-gate]
+    if: ${{ needs.session-gate.outputs.allow == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -170,6 +191,8 @@ jobs:
           retention-days: 14
 
   personal-price-current-exact30:
+    needs: [session-gate]
+    if: ${{ needs.session-gate.outputs.allow == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 37
     steps:
