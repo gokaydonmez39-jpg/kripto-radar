@@ -5,6 +5,10 @@ on:
     paths:
       - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
       - ".github/workflows/xray-personal-price-20261013-exact30.yml"
+  pull_request:
+    paths:
+      - "nasdaq-xray/alpaca_personal_price_20261013_exact30_census.py"
+      - ".github/workflows/xray-personal-price-20261013-exact30.yml"
   workflow_dispatch:
 permissions:
   contents: read
