@@ -58,7 +58,7 @@ jobs:
           python nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
           python -O nasdaq-xray/alpaca_personal_price_current_exact30.py --selftest
       - name: Current main only — bounded private SIP census with counts-only public report
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         shell: bash
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
@@ -136,7 +136,7 @@ jobs:
           },sort_keys=True))
           PY
       - name: Archive sanitized counts only; source test success is not AL or R92
-        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-personal-current-sip-price-unknown-counts-only-no-alpha
