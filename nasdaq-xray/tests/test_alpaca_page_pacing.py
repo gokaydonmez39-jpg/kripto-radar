@@ -152,6 +152,14 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertEqual(wf["concurrency"].get("queue"), "max")
                 self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
 
+    def test_corporate_actions_page_level_pacing_before_every_request(self):
+        # CA events are obtained through Alpaca data endpoint (account shared).
+        source = (ROOT / "alpaca_full_scope_ca_shadow.py").read_text()
+        request = source.split("def request_page(", 1)[1].split("\ndef ", 1)[0]
+        self.assertIn("urllib.request.urlopen(", request)
+        self.assertIn("PACER.pace()", request,
+                      "ALPACA_CA_HTTP_PAGE_PACING_MISSING")
+
     def test_corporate_actions_live_alpaca_endpoint_shares_account_mutex(self):
         # Main-only CA census uses the same Alpaca account as SIP history.
         # It must not run outside the account-wide production quota gate.
