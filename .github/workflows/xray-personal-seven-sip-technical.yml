@@ -10,8 +10,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-personal-seven-technical
-  cancel-in-progress: true
+  group: xray-alpaca-historical-sip-account-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  cancel-in-progress: false
+  queue: max
 jobs:
   research:
     runs-on: ubuntu-latest
