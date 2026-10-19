@@ -38,6 +38,15 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertIn("PACER.pace()", portion, "PAGE_LEVEL_PACING_MISSING")
                 self.assertIn("urllib.request.urlopen(", portion)
 
+    def test_full_universe_coverage_paces_each_paginated_http_attempt(self):
+        # This is a separate 1Day coverage endpoint, not the shared 260D pager.
+        source = (ROOT / "alpaca_full_universe_asof_sip_availability.py").read_text(
+            encoding="utf-8"
+        )
+        portion = source.split("def query_sip(", 1)[1].split("\ndef ", 1)[0]
+        self.assertIn("with opener(", portion)
+        self.assertIn("PACER.pace()", portion, "COVERAGE_HTTP_PAGE_PACING_MISSING")
+
     def test_account_wide_workflow_mutex_and_intra_workflow_serial_io(self):
         import yaml
         files = (
