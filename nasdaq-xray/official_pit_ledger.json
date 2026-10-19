@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-19T05:19:25.264387+00:00",
+  "last_ingest_at_utc": "2026-10-19T08:49:40.384351+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 146,
+  "snapshot_count": 147,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -74106,6 +74106,191 @@
       },
       "payload_sha256": "2cfa3792c1a6cbdbc92852cc48f6ab8caec56f5cdbc4ad553e353384046088dc",
       "source": "security_status",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-19T08:49:38.966103+00:00",
+      "observed_at_utc": "2026-10-19T08:49:40.384315+00:00",
+      "payload": {
+        "row_count": 19,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "Hartford Funds Exchange-Traded Trust",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "ACIV"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "AMTD IDEA Group",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "N",
+            "Symbol": "AMTD"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "AMTD IDEA Group",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "AMTD"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Atkore Inc.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "ATKR"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "BTRN"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "CECO Environmental Corp.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "F",
+            "Symbol": "CECO"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "CECO Environmental Corp.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "CECO"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Hartford Funds Exchange-Traded Trust",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "HINC"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "International Bancshares Corporation",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "F",
+            "Symbol": "IBOC"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "International Bancshares Corporation",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "IBOC"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "IRVH"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Lion Copper Corp.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "LCU"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "MiniMed Group, Inc.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "MMEDV"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "QCLR"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Vivid Seats Inc.",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "SEATW"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Northern Lights Fund Trust II",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "SEQ"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "First Trust Exchange-Traded Fund VIII",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "SQBR"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "William Blair ETF Trust",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "WINC"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Global X Funds",
+            "Effective Date": "10/19/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "XCLR"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "421e63a4f53acc2f44fe9270eddb20e49a588eb1d2f39c254bd3395e457c1446",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
