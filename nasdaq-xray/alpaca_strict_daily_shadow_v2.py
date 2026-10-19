@@ -57,7 +57,9 @@ def main():
         return
     # Defense in depth: reject the canonical source scope before invoking
     # historical SIP transport. No vendor raw bars are written to output.
-    root,price,syms,days,*_ = legacy.load_scope()
+    # Validate the official calendar even when the PRICE cohort is empty.
+    # A zero-cohort NO-OP must not bypass provenance checks.
+    root,price,syms,days,*_ = legacy.load_scope(allow_no_representative=True)
     if validate(price["asof_et"],days)!="EXACT_OFFICIAL_NASDAQ_LAST_30":
         raise SystemExit("XRAY_ALPACA_STRICT_SOURCE_CALENDAR=BLOCKED")
     legacy.evaluate_daily=evaluate_daily_strict
