@@ -13,7 +13,7 @@ import json
 import re
 from pathlib import Path
 
-from sina_transport_rescue import choose as choose_transport_rescue
+from sina_transport_rescue import choose as choose_transport_rescue, retryable_record
 from sina_state_hash_guard import compute as checksum, seal as seal_state, verify as verify_state_hash
 
 ROOT=Path(__file__).resolve().parent
@@ -24,12 +24,10 @@ STATIC={
     "EXACT30_INCOMPLETE_NEVER_PASS",
     "SINA_HISTORY_EMPTY",
 }
-TRANSIENT=("SyntaxError:","IndexError:","JSONDecodeError:","TimeoutError:",
-           "ConnectionError:","HTTPError:")
-# Sina stores caught exception names as ClassName:<provider message>. A four-
-# attempt exhaustion is an UNKNOWN regardless of exception type. Only the
-# explicitly transient types above are eligible for transport rescue; every
-# other validated exception requires source review, never automatic promotion.
+# The source producer and the recovery/audit planes MUST share the same
+# parser-vs-transport classifier. Legacy SyntaxError/IndexError/KeyError
+# records are still UNKNOWN, but they are not retryable transport failures.
+# A four-attempt exhaustion never implies market-data PASS.
 EXCEPTION_RECORD=re.compile(r"^[A-Za-z_][A-Za-z_0-9]*:.{0,200}$",re.DOTALL)
 
 def audit(state,root,now):
@@ -99,7 +97,7 @@ def audit(state,root,now):
             # Keep nontransient or unrecognized provider exceptions UNKNOWN.
             # They are not rescue candidates and cannot count as PASS.
             category=("EXHAUSTED_TRANSIENT_PROVIDER_EXCEPTION"
-                      if info.startswith(TRANSIENT) else
+                      if retryable_record(info) else
                       "EXHAUSTED_OTHER_PROVIDER_EXCEPTION_REQUIRES_REVIEW")
             classified[category]+=1
         elif status=="UNKNOWN_RETRY":
@@ -222,8 +220,8 @@ def selftest():
        "pending_retry":0,"history_retryable":False}
     now=dt.datetime(2026,10,11,17,0,tzinfo=dt.timezone.utc)
     yes=audit(s,r,now)
-    assert yes["eligible_single_round_real_provider_retries_now"]==1
-    assert yes["independent_history_or_asof_proof_required_count"]==1
+    assert yes["eligible_single_round_real_provider_retries_now"]==0
+    assert yes["independent_history_or_asof_proof_required_count"]==2
     assert yes["unknown_count"]==2 and not yes["alpha_authority"]
     assert yes["known_status_counts"]==s["counts"]
     import copy
@@ -235,9 +233,9 @@ def selftest():
     seal_state(empty_source)
     empty_audit=audit(empty_source,r,now)
     assert empty_audit["unknown_reason_counts"]["SINA_HISTORY_EMPTY"]==1
-    assert empty_audit["independent_history_or_asof_proof_required_count"]==1
+    assert empty_audit["independent_history_or_asof_proof_required_count"]==2
     assert empty_audit["unknown_count"]==2
-    assert empty_audit["eligible_single_round_real_provider_retries_now"]==1
+    assert empty_audit["eligible_single_round_real_provider_retries_now"]==0
     assert empty_audit["alpha_authority"] is False
     assert empty_audit["source_proof_full_history_attested"] is False
     malicious_empty=copy.deepcopy(s)

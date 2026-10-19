@@ -7,8 +7,29 @@ same state epoch; ordinary insufficient-history responses are never retried.
 """
 from __future__ import annotations
 import datetime as dt
+import re
 
-TRANSIENT=("SyntaxError:","IndexError:","JSONDecodeError:","TimeoutError:","ConnectionError:","HTTPError:")
+# Persisted parser/schema failures are deterministic for the frozen ASOF.
+# A broad "HTTPError" prefix is likewise unsafe: 403 must not be retried.
+TRANSIENT=("TimeoutError:","ConnectionError:","ConnectionResetError:",
+           "ReadTimeout:","SSLError:","RemoteDisconnected:")
+
+def retryable_record(info):
+    """Source-error eligibility only, not market-data authority."""
+    if not isinstance(info,str):
+        return False
+    if info.startswith(TRANSIENT):
+        return True
+    if info.startswith("HTTPError:"):
+        # Legacy records need an explicit machine-readable HTTP status.
+        # Unknown/bare statuses are quarantined; only rate limits and
+        # retryable transport/server failures may consume one rescue.
+        m=re.search(r"(?<!\d)(\d{3})(?!\d)",info[len("HTTPError:"):])
+        if not m:
+            return False
+        code=int(m.group(1))
+        return code in {408,425,429} or 500 <= code <= 599
+    return False
 MIN_COOLDOWN_SECONDS=1800
 MAX_PER_RUN=32
 
@@ -41,7 +62,7 @@ def choose(state,now=None):
         if row.get("transport_rescue_round",0)!=0:
             continue
         info=row.get("info")
-        if not isinstance(info,str) or not info.startswith(TRANSIENT):
+        if not retryable_record(info):
             continue
         at=parse_time(row.get("updated_at_utc"))
         if at is None or (now-at).total_seconds()<MIN_COOLDOWN_SECONDS:
@@ -70,7 +91,7 @@ def selftest():
             "H":rec("UNKNOWN_RETRY_EXHAUSTED","TimeoutError:timed out")
         }
     }
-    assert choose(state,t)==["A","B","H"]
+    assert choose(state,t)==["H"]
     for mutation in [
         lambda s:s.update(cursor=7),
         lambda s:s.update(execution="ORDER"),
