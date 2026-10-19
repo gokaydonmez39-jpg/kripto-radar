@@ -30,6 +30,8 @@ ALLOWED_REASON_CODES={
     "ASOF_MISSING_REQUIRES_RESOLUTION",
     "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION",
     "EXACT30_INCOMPLETE_NEVER_PASS",
+    "SINA_SOURCE_SCHEMA_NONRETRYABLE",
+    "SINA_SOURCE_HTTP_NONRETRYABLE",
 }
 def reason_code(info):
     if isinstance(info,dict):
@@ -54,6 +56,10 @@ def reason_code(info):
 
 def recovery_class(code):
     """Stable incident grouping; advisory ONLY, never source recovery PASS."""
+    if code=="SINA_SOURCE_SCHEMA_NONRETRYABLE":
+        return "PROVIDER_PARSER_OR_SCHEMA_ERROR"
+    if code=="SINA_SOURCE_HTTP_NONRETRYABLE":
+        return "PROVIDER_HTTP_DEFINITIVE_NONRETRYABLE"
     if code.startswith("PROVIDER_EXCEPTION_"):
         subtype=code.removeprefix("PROVIDER_EXCEPTION_")
         if subtype in PARSER_EXCEPTION_CODES:
@@ -193,6 +199,10 @@ def selftest():
         assert recovery_class(reason)==expected
     assert reason_code({"reason":"ASOF_MISSING_REQUIRES_RESOLUTION"})=="ASOF_MISSING_REQUIRES_RESOLUTION"
     assert reason_code({"reason":"EXACT30_INCOMPLETE_NEVER_PASS"})=="EXACT30_INCOMPLETE_NEVER_PASS"
+    assert reason_code({"reason":"SINA_SOURCE_SCHEMA_NONRETRYABLE"})=="SINA_SOURCE_SCHEMA_NONRETRYABLE"
+    assert recovery_class("SINA_SOURCE_SCHEMA_NONRETRYABLE")=="PROVIDER_PARSER_OR_SCHEMA_ERROR"
+    assert reason_code({"reason":"SINA_SOURCE_HTTP_NONRETRYABLE"})=="SINA_SOURCE_HTTP_NONRETRYABLE"
+    assert recovery_class("SINA_SOURCE_HTTP_NONRETRYABLE")=="PROVIDER_HTTP_DEFINITIVE_NONRETRYABLE"
     assert reason_code("RuntimeError:provider unavailable")=="PROVIDER_EXCEPTION_RuntimeError"
     assert reason_code("SyntaxError:bad json")=="PROVIDER_EXCEPTION_SyntaxError"
     assert reason_code("IndexError:list index out of range")=="PROVIDER_EXCEPTION_IndexError"
