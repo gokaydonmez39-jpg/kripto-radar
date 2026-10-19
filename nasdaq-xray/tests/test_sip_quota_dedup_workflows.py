@@ -27,7 +27,8 @@ class QuotaDedupContract(unittest.TestCase):
         self.assertIn("workflow_dispatch",event)
         self.assertEqual(event["schedule"][0]["cron"],"10 22 * * 1-5")
         self.assertEqual(d["concurrency"]["cancel-in-progress"],"false")
-        self.assertTrue(d["jobs"]["coverage"].get("if") in (None,"true"))
+        self.assertEqual(d["jobs"]["coverage"].get("if"),
+            "${{ needs.session-gate.outputs.allow == 'true' }}")
 
     def test_candidate_scan_only_nightly_or_directly_requested(self):
         d=read("xray-candidate-local-alpaca-sip-recovery.yml")
