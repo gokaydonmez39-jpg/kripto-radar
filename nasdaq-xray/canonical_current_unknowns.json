@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-16",
+  "asof_et": "2026-10-19",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3190
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3190
+    "UNKNOWN_STATIC": 3189
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1016202618:01|||||||",
+  "official_footer": "File Creation Time: 1019202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3190
+    "UNKNOWN_STATIC": 3189
   },
-  "source_queue_hash": "7cdeda46ce56fbd2598c789cf30899f15a5a6ddd7fdc4eadb16b086d39174d71",
-  "source_state_hash": "5142c74cf64c0c998afcb9397c2d2f254dcab36f86969759cdf82a349225f6e0",
-  "source_unknown_count": 3190,
+  "source_queue_hash": "ccb5d3447244ce61aa309fce7c34dbd4a483d624e71221ab6aa8ca995c8c9ccf",
+  "source_state_hash": "f2db94e8ef9d68c9add88e602aad00100a4ff47056c5e40031ad79473875b8b0",
+  "source_unknown_count": 3189,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3190,
+  "unknown_count": 3189,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -10063,24 +10063,6 @@
       "security_name": "Cadiz, Inc. - Depositary Shares",
       "status": "UNKNOWN_STATIC"
     },
-    "CECO": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "CECO Environmental Corp. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "CELC": {
       "attempts": 0,
       "discovery": {
@@ -16252,7 +16234,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Etoiles Capital Group Co., Ltd. - Class A Ordinary Shares",
+      "security_name": "Etoiles Capital Group Co., Ltd. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "EGAN": {
@@ -24913,24 +24895,6 @@
       "security_name": "Interactive Brokers Group, Inc. - Class A Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "IBOC": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "International Bancshares Corporation - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "IBRX": {
       "attempts": 0,
       "discovery": {
@@ -29521,6 +29485,24 @@
       "security_name": "LCNB Corporation - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "LCU": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Lion Copper Corp. - Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
     "LCUT": {
       "attempts": 0,
       "discovery": {
@@ -30905,24 +30887,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Lead Real Estate Co., Ltd - American Depositary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
-    "LRHC": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "La Rosa Holdings Corp. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "LRMR": {
@@ -35530,7 +35494,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "National Healthcare Properties, Inc. - Class A Common Stock",
+      "security_name": "National Healthcare Properties, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "NHTC": {
@@ -48419,6 +48383,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Strata Critical Medical, Inc. - Class A Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "SRTM": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Stratum Holdings Corp. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "SRTS": {
