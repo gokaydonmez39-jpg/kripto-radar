@@ -11,6 +11,8 @@ on:
       - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
+      - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
+      - "nasdaq-xray/tests/test_alpaca_price_429_cliff_report.py"
       - ".github/workflows/xray-root-history-nontransient-exhausted-integrity.yml"
   push:
     branches: [main]
@@ -23,6 +25,8 @@ on:
       - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
+      - "nasdaq-xray/alpaca_personal_price_current_exact30.py"
+      - "nasdaq-xray/tests/test_alpaca_price_429_cliff_report.py"
       - ".github/workflows/xray-root-history-nontransient-exhausted-integrity.yml"
   workflow_dispatch:
 permissions:
@@ -114,6 +118,12 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s nasdaq-xray/tests -p test_sina_static_reason_pipeline.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_sina_static_reason_pipeline.py -v
+      - name: Offline Alpaca PRICE quota-cliff report negative regression
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+          python -m unittest discover -s nasdaq-xray/tests -p test_alpaca_price_429_cliff_report.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_alpaca_price_429_cliff_report.py -v
       - name: Never mistake offline-only evidence for a live source
         run: |
           set -euo pipefail
