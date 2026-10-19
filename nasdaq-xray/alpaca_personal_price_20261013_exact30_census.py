@@ -42,15 +42,17 @@ def dates30():
     demand(len(d)==30 and d[-1]==ASOF and len(set(d))==30,"OFFICIAL_30_CALENDAR")
     return d
 
-def scope(now=None):
+def scope(now=None, *, master_path=None, price_path=None):
     # Fail closed on a stale session: an old frozen census is never evidence
     # for the latest market date, even when the vendor endpoint still serves it.
     from source_epoch_freshness_guard import last_complete_session
     now=now or dt.datetime.now(dt.timezone.utc)
     demand(now.tzinfo is not None and
            last_complete_session(now)==ASOF,"NOT_LATEST_COMPLETED_ASOF")
-    master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
-    price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    master_path=Path(master_path) if master_path is not None else ROOT/"canonical_current_master_manifest.json"
+    price_path=Path(price_path) if price_path is not None else ROOT/"canonical_current_price_dv30.json"
+    master=json.loads(master_path.read_text())
+    price=json.loads(price_path.read_text())
     demand(master.get("asof_et")==price.get("asof_et")==ASOF,"EXACT_SOURCE_ASOF")
     symbols=price.get("unknown_symbols")
     demand(type(symbols) is list and symbols==sorted(set(symbols))
@@ -62,7 +64,7 @@ def scope(now=None):
            and price.get("execution")==master.get("execution")=="NONE"
            and price.get("real_money")==master.get("real_money")=="NO-GO",
            "MASTER_AND_PRICE_SAFETY")
-    return symbols,dates30(),blobsha(ROOT/"canonical_current_master_manifest.json"),blobsha(ROOT/"canonical_current_price_dv30.json")
+    return symbols,dates30(),blobsha(master_path),blobsha(price_path)
 
 def fetch(batch,dates,creds,calls,asof=ASOF):
     base="https://data.alpaca.markets/v2/stocks/bars"
@@ -143,25 +145,65 @@ def analyze(batch,daily,halfhour,dates):
     return found
 
 def selftest():
+    """Offline 13-Oct contract fixture, deliberately independent of current canonical ASOF.
+
+    A historical 13-Oct positive fixture tests contract mechanics only. It
+    NEVER authorizes a new production source, price, or R92. The real runner
+    still reads the canonical files and rejects stale ASOF in scope().
+    """
+    from tempfile import TemporaryDirectory
     d=dates30()
     demand(d[-1]==ASOF and len(d)==30,"TEST_30")
-    # Current 3184/545 source partition, not the earlier 3185-issuer
-    # independent HISTORY cohort. Never infer PRICE primary from their join.
     now=dt.datetime(2026,10,14,18,0,tzinfo=dt.timezone.utc)
-    symbols,days,master_sha,price_sha=scope(now)
-    demand(len(symbols)==545 and days==d and
-           len(master_sha)==len(price_sha)==40,"CURRENT_545_SHA_SCOPE")
-    try:scope(dt.datetime(2026,10,15,21,0,tzinfo=dt.timezone.utc))
-    except ValueError as exc:
-        demand("NOT_LATEST_COMPLETED_ASOF" in str(exc),"STALE_REASON")
-    else:raise AssertionError("OLD_13OCT_SCOPE_ACCEPTED_ON_15OCT")
+    fixture_symbols=["AAPL","MSFT"]
+    master={"asof_et":ASOF,"pass_symbols":fixture_symbols,
+            "unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO"}
+    price={"asof_et":ASOF,"unknown_symbols":fixture_symbols,
+           "unknown_count":len(fixture_symbols),
+           "unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO"}
+    with TemporaryDirectory(prefix="xray_price13_offline_") as temp:
+        master_path=Path(temp)/"frozen_test_master.json"
+        price_path=Path(temp)/"frozen_test_price.json"
+        def save():
+            master_path.write_text(json.dumps(master,sort_keys=True))
+            price_path.write_text(json.dumps(price,sort_keys=True))
+        def check(expected):
+            try:
+                scope(now,master_path=master_path,price_path=price_path)
+            except ValueError as exc:
+                demand("XRAY_PRICE_20261013_"+expected in str(exc),
+                       "WRONG_NEGATIVE_"+expected)
+            else:
+                raise AssertionError("INVALID_TEST_FIXTURE_ACCEPTED_"+expected)
+        save()
+        symbols,days,master_sha,price_sha=scope(
+            now,master_path=master_path,price_path=price_path)
+        demand(symbols==fixture_symbols and days==d and
+               master_sha==blobsha(master_path) and
+               price_sha==blobsha(price_path),"POSITIVE_FROZEN_FIXTURE")
+        try:
+            scope(dt.datetime(2026,10,15,21,0,tzinfo=dt.timezone.utc),
+                  master_path=master_path,price_path=price_path)
+        except ValueError as exc:
+            demand("NOT_LATEST_COMPLETED_ASOF" in str(exc),"STALE_REASON")
+        else:
+            raise AssertionError("OLD_13OCT_SCOPE_ACCEPTED_ON_15OCT")
+        price["asof_et"]="2026-10-16"
+        save();check("EXACT_SOURCE_ASOF")
+        price["asof_et"]=ASOF
+        price["unknown_count"]=999
+        save();check("C4_PRICE_UNKNOWN_SCOPE")
+        price["unknown_count"]=2
+        master["pass_symbols"]=["AAPL"]
+        save();check("MASTER_AND_PRICE_SAFETY")
     b=["AAPL","MSFT"]
-    demand(analyze(b,{}, {},d)==dict.fromkeys(b,"UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"),
+    demand(analyze(b,{}, {},d)==dict.fromkeys(
+           b,"UNKNOWN_INCOMPLETE_OR_INTEGRITY_SHADOW"),
            "MISSING_PRICE_NEVER_PASS")
     try:analyze(["AAPL"],{"OTHER":[]},{},d)
     except ValueError:pass
     else:raise AssertionError("FOREIGN_NOT_BLOCKED")
-    print("XRAY_PRICE13_OFFLINE_SELFTEST=PASS_REAL_545_SCOPE_FRESHNESS_SHA_30_SESSIONS_NO_PRIMARY")
+    print("XRAY_PRICE13_OFFLINE_SELFTEST=PASS_FROZEN_FIXTURE_STALE_REJECTION_NO_CURRENT_ASOF_ASSUMPTION_NO_PRIMARY")
 
 def main():
     p=argparse.ArgumentParser()
