@@ -23,6 +23,22 @@ ROOT=Path(__file__).resolve().parent
 BLOCKED_PRICE="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
 MEASURED_PRICE="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
 
+def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
+    """Strict pure predicate: stale/holiday/SHA/empty cohort cannot use provider quota."""
+    if not isinstance(now,dt.datetime) or now.tzinfo is None or now.utcoffset()!=dt.timedelta(0):
+        return False
+    if not isinstance(price,dict) or not isinstance(root,dict):
+        return False
+    if not isinstance(remote_sha,str) or not isinstance(expected_sha,str):
+        return False
+    return bool(now.date().isoformat()==latest
+        and price.get("asof_et")==root.get("asof_et")==latest
+        and price.get("unknown_never_pass") is True
+        and price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
+        and root.get("execution")=="NONE" and root.get("real_money")=="NO-GO"
+        and type(root.get("unknown_count")) is int and root.get("unknown_count")>0
+        and len(remote_sha)==40 and len(expected_sha)==40 and remote_sha==expected_sha)
+
 def classify_manual_root(event, price, root, *, scheduled_ready=False):
     if event not in ("push","workflow_dispatch","schedule"):
         raise ValueError("UNAUTHORIZED_ROOT_EVENT")
@@ -81,6 +97,34 @@ def selftest():
         assert positive=={"UNKNOWN_LT260_OR_52_WEEKS":1},positive
     finally:
         legacy.sip.evaluate_daily=original
+    scheduled_now=dt.datetime(2026,10,19,22,10,tzinfo=dt.timezone.utc)
+    scheduled_asof=last_complete_session(scheduled_now)
+    assert scheduled_asof=="2026-10-19","EXPECTED_NASDAQ_COMPLETED_DAY"
+    sp={"asof_et":scheduled_asof,"unknown_never_pass":True,
+        "execution":"NONE","real_money":"NO-GO"}
+    sr={"asof_et":scheduled_asof,"unknown_count":214,
+        "execution":"NONE","real_money":"NO-GO"}
+    sha="a"*40
+    assert scheduled_probe_allowed(scheduled_now,scheduled_asof,sp,sr,sha,sha)
+    holiday=dt.datetime(2026,11,26,22,10,tzinfo=dt.timezone.utc)
+    h_asof=last_complete_session(holiday)
+    assert h_asof=="2026-11-25","HOLIDAY_FRESHNESS_SOURCE"
+    for edits in (
+        {"now":holiday,"latest":h_asof},
+        {"now":dt.datetime(2026,10,19,22,10)},
+        {"price":dict(sp,asof_et="2026-10-16")},
+        {"root":dict(sr,asof_et="2026-10-16")},
+        {"root":dict(sr,unknown_count=0)},
+        {"root":dict(sr,unknown_count="214")},
+        {"root":dict(sr,execution="ORDER")},
+        {"price":dict(sp,unknown_never_pass=False)},
+        {"remote_sha":"b"*40},
+        {"expected_sha":""},
+    ):
+        args={"now":scheduled_now,"latest":scheduled_asof,
+            "price":sp,"root":sr,"remote_sha":sha,"expected_sha":sha}
+        args.update(edits)
+        assert not scheduled_probe_allowed(**args),("SCHEDULE_FALSE_POSITIVE",edits)
     px={"schema":"XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1",
         "status":BLOCKED_PRICE,"sample_count":0,
         "reason_counts":{"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1},
@@ -132,9 +176,10 @@ def selftest():
               "xray-alpaca-free-sip-shadow-proof.yml").read_text()
     assert 'cron: "10 22 * * 1-5"' in workflow
     assert "last_complete_session(now)" in workflow
-    assert 'remote==os.environ["GITHUB_SHA"]' in workflow
+    assert 'scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])' in workflow
     assert "steps.scheduled_root.outputs.ready == 'true'" in workflow
     assert "--limit 12 --output" in workflow
+    print("XRAY_SCHEDULED_ROOT_ELIGIBILITY=PASS_ONE_TRUE_TEN_FALSE_NO_HTTP")
     print("XRAY_ZERO_PRICE_ROOT_RESCUE=PASS_SCHEDULE_BOUNDED_AND_MANUAL_NEGATIVES_NO_ALPHA")
     print("XRAY_ALPACA_ROOT_STRICT_DISPATCH_V2=PASS_FAKE_CALENDAR_BLOCKED_REAL_CALENDAR_SHORT_UNKNOWN")
 
