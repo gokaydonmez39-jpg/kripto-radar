@@ -152,6 +152,30 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertEqual(wf["concurrency"].get("queue"), "max")
                 self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
 
+    def test_corporate_actions_live_alpaca_endpoint_shares_account_mutex(self):
+        # Main-only CA census uses the same Alpaca account as SIP history.
+        # It must not run outside the account-wide production quota gate.
+        import yaml
+        wf = yaml.load(
+            (ROOT.parent / ".github" / "workflows"
+             / "xray-alpaca-515-corporate-actions-shadow.yml").read_text(),
+            Loader=yaml.BaseLoader,
+        )
+        expected = (
+            "xray-alpaca-historical-sip-account-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || 'production' }}"
+        )
+        self.assertIn("run: python nasdaq-xray/alpaca_full_scope_ca_shadow.py",
+                      (ROOT.parent / ".github" / "workflows"
+                       / "xray-alpaca-515-corporate-actions-shadow.yml").read_text())
+        self.assertEqual(
+            wf["concurrency"]["group"], expected,
+            "ALPACA_CA_VENDOR_CALL_ESCAPES_ACCOUNT_MUTEX",
+        )
+        self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
+        self.assertEqual(wf["concurrency"].get("queue"), "max")
+
     def test_pacer_monotonic_actual_spacing_and_clock_regression(self):
         mod = importlib.import_module("alpaca_sip_request_pacer")
         fake = SimulatedClock()
