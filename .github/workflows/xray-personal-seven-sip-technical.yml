@@ -38,13 +38,13 @@ jobs:
           python nasdaq-xray/alpaca_personal_seven_technical_shadow.py --selftest
           python -O nasdaq-xray/alpaca_personal_seven_technical_shadow.py --selftest
       - name: Run actual SIP 260 daily/52 weekly A-B-D/R1 technical research
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: python nasdaq-xray/alpaca_personal_seven_technical_shadow.py --out "$RUNNER_TEMP/personal_seven_sip_technical_labels.json"
       - name: Verify no canonical authorization or vendor OHLCV
-        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         run: |
           python - <<'PY'
           import json,os
@@ -72,14 +72,14 @@ jobs:
           print("XRAY_PERSONAL_SEVEN_SECONDARY_TECH_AUDIT=PASS_NO_CANONICAL_NO_R92")
           PY
       - name: Validate exact full personal watch cohort without canonical AL
-        if: ${{ success() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ success() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         run: |
           python -m py_compile nasdaq-xray/personal_research_daily_attestation.py
           python nasdaq-xray/personal_research_daily_attestation.py --selftest
           python -O nasdaq-xray/personal_research_daily_attestation.py --selftest
           python nasdaq-xray/personal_research_daily_attestation.py --study "$RUNNER_TEMP/personal_seven_sip_technical_labels.json"
       - uses: actions/upload-artifact@v4
-        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         with:
           name: xray-personal-seven-technical-labels-no-ohlcv
           path: ${{ runner.temp }}/personal_seven_sip_technical_labels.json
