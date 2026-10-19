@@ -37,6 +37,33 @@ class PageQuotaContract(unittest.TestCase):
                 self.assertIn("PACER.pace()", portion, "PAGE_LEVEL_PACING_MISSING")
                 self.assertIn("urllib.request.urlopen(", portion)
 
+    def test_account_wide_workflow_mutex_and_intra_workflow_serial_io(self):
+        import yaml
+        files = (
+            "xray-personal-full-universe-sip-coverage.yml",
+            "xray-candidate-local-alpaca-sip-recovery.yml",
+            "xray-personal-full-cohort-early-watch.yml",
+            "xray-alpaca-delayed-sip-research.yml",
+        )
+        for name in files:
+            with self.subTest(name=name):
+                x = yaml.load(
+                    (ROOT.parent / ".github" / "workflows" / name).read_text(),
+                    Loader=yaml.BaseLoader,
+                )
+                self.assertEqual(
+                    x["concurrency"]["group"],
+                    "xray-alpaca-historical-sip-account-v1",
+                )
+                self.assertEqual(x["concurrency"]["cancel-in-progress"], "false")
+        candidate = yaml.load(
+            (ROOT.parent / ".github" / "workflows" / files[1]).read_text(),
+            Loader=yaml.BaseLoader,
+        )
+        price = candidate["jobs"]["personal-price-current-exact30"]
+        self.assertEqual(price["needs"], ["session-gate", "source-recovery"])
+        self.assertIn("needs.source-recovery.result == 'success'", price["if"])
+
     def test_pacer_monotonic_actual_spacing_and_clock_regression(self):
         mod = importlib.import_module("alpaca_sip_request_pacer")
         fake = SimulatedClock()
