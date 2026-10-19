@@ -125,6 +125,33 @@ class PageQuotaContract(unittest.TestCase):
         self.assertEqual(price["needs"], ["session-gate", "source-recovery"])
         self.assertIn("needs.source-recovery.result == 'success'", price["if"])
 
+    def test_push_triggered_secondary_sip_workflows_share_production_quota_mutex(self):
+        # Both workflows run on a main push that modifies shared SIP guard code.
+        # A distinct lock allows their vendor requests to overlap with the daily
+        # SIP full-universe scan although all use the SAME provider account.
+        import yaml
+        expected = (
+            "xray-alpaca-historical-sip-account-"
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.number || 'production' }}"
+        )
+        for name in (
+            "xray-alpaca-free-sip-shadow-proof.yml",
+            "xray-alpaca-full-515-260-sip-shadow.yml",
+        ):
+            with self.subTest(workflow=name):
+                wf = yaml.load(
+                    (ROOT.parent / ".github" / "workflows" / name).read_text(),
+                    Loader=yaml.BaseLoader,
+                )
+                self.assertIn("push", wf["on"])
+                self.assertEqual(
+                    wf["concurrency"]["group"], expected,
+                    "SECONDARY_HTTP_WORKFLOW_ESCAPES_SHARED_ACCOUNT_LOCK",
+                )
+                self.assertEqual(wf["concurrency"].get("queue"), "max")
+                self.assertEqual(wf["concurrency"]["cancel-in-progress"], "false")
+
     def test_pacer_monotonic_actual_spacing_and_clock_regression(self):
         mod = importlib.import_module("alpaca_sip_request_pacer")
         fake = SimulatedClock()
