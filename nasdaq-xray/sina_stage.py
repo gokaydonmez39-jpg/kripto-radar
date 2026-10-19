@@ -18,6 +18,7 @@ import math
 import os
 import re
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -767,7 +768,28 @@ def parse_hist(sym,asof,expected30):
         }
         if dv30<HARD_DV30:return "FAIL_DV30",info
         return "PASS",info
+    except (SyntaxError, IndexError, KeyError, TypeError) as e:
+        # Schema/parser failures cannot be fixed by repeating the same
+        # request within this frozen ASOF. Preserve UNKNOWN, quarantine the
+        # source and require independent evidence or an updated provider.
+        return "UNKNOWN_STATIC",{
+            "reason":"SINA_SOURCE_SCHEMA_NONRETRYABLE",
+            "exception_type":type(e).__name__,
+            "retryable_in_same_epoch":False,
+            "source_authority":"UNVERIFIED",
+        }
+    except urllib.error.HTTPError as e:
+        if int(e.code) in {400, 401, 403, 404, 410, 422}:
+            return "UNKNOWN_STATIC",{
+                "reason":"SINA_SOURCE_HTTP_NONRETRYABLE",
+                "http_status":int(e.code),
+                "retryable_in_same_epoch":False,
+                "source_authority":"UNVERIFIED",
+            }
+        return "UNKNOWN_RETRY",f"HTTPError:{int(e.code)}"
     except Exception as e:
+        # Only genuinely unknown/transport failures may enter the bounded
+        # retry budget. A retry is never PRICE/HISTORY/MC or R92 authority.
         return "UNKNOWN_RETRY",f"{type(e).__name__}:{str(e)[:200]}"
 
 def load_resolution_overlay(asof):
