@@ -167,6 +167,8 @@ class PageQuotaContract(unittest.TestCase):
             "xray-personal-current-sip-price-unknown-shadow.yml",
             "xray-personal-price-20261013-exact30.yml",
             "xray-p0-mc-full-514-sec-alpaca-shards.yml",
+            "xray-manual-decision-research-shadow.yml",
+            "xray-rth497-temporal-gap-canary.yml",
         )
         for name in vendor_files:
             with self.subTest(name=name):
