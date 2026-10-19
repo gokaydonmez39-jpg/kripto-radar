@@ -182,6 +182,8 @@ def selftest():
     def bad(modify,want):
         sample=dict(actual)
         modify(sample)
+        if sample == actual:
+            raise AssertionError("NEGATIVE_FIXTURE_MUTATION_NOOP:"+want)
         result=inventory(sample)
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
@@ -206,8 +208,8 @@ def selftest():
         "permissions:\n  contents: read","permissions:\n  contents: write",1)}),
         "SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY")
     bad(lambda x:x.update({recovery:x[recovery].replace(
-        "  source-recovery:\n    runs-on",
-        "  source-recovery:\n    permissions:\n      contents: write\n    runs-on",1)}),
+        "  source-recovery:\n    needs: [session-gate]\n",
+        "  source-recovery:\n    needs: [session-gate]\n    permissions:\n      contents: write\n",1)}),
         "SCHEDULED_SHADOW_WRITE_PRIVILEGE")
     bad(lambda x:x.update({recovery:x[recovery].replace(
         "needs: [source-recovery, personal-price-current-exact30]",

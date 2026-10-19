@@ -9,6 +9,7 @@ on:
       - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
       - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
+      - "nasdaq-xray/all_workflow_schedule_audit.py"
   push:
     branches: [main]
     paths:
@@ -18,6 +19,7 @@ on:
       - ".github/workflows/xray-candidate-local-alpaca-sip-recovery.yml"
       - ".github/workflows/xray-personal-current-sip-price-unknown-shadow.yml"
       - "nasdaq-xray/tests/test_sip_quota_dedup_workflows.py"
+      - "nasdaq-xray/all_workflow_schedule_audit.py"
 permissions:
   contents: read
 jobs:
@@ -45,6 +47,11 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_sip_quota_dedup_workflows.py -v
+      - name: Verify all workflow security inventory negatives and holiday gate interaction
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/all_workflow_schedule_audit.py --selftest
+          python -O nasdaq-xray/all_workflow_schedule_audit.py --selftest
       - name: Prove scheduled daily backup and no hourly source duplication
         run: |
           python - <<'PY'
