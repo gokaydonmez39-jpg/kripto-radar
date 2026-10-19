@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import argparse
 import collections
+import datetime as dt
 import hashlib
 import json
 from pathlib import Path
+from source_epoch_freshness_guard import last_complete_session
 
 ROOT = Path(__file__).resolve().parent
 TASK = "6a825366222081918997094d76e6ae46"
@@ -35,7 +37,9 @@ def blob(path):
     return hashlib.sha1((f"blob {len(b)}" + chr(0)).encode() + b).hexdigest()
 
 
-def collect(root):
+def collect(root, now_utc=None):
+    now_utc = now_utc if now_utc is not None else dt.datetime.now(dt.timezone.utc)
+    official_asof = last_complete_session(now_utc)
     documents = {}
     proof = {}
     for name, original in FILES.items():
@@ -48,10 +52,10 @@ def collect(root):
                 (f"blob {len(raw)}" + chr(0)).encode() + raw
             ).hexdigest(),
         }
-    return assess(documents, proof)
+    return assess(documents, proof, official_last_completed=official_asof)
 
 
-def assess(d, proof):
+def assess(d, proof, *, official_last_completed=None):
     for name in FILES:
         need(name in d and isinstance(d[name], dict), "MISSING_" + name.upper())
         row = d[name]
@@ -63,6 +67,18 @@ def assess(d, proof):
     root, master, price = (d["orchestrator"], d["master"], d["price"])
     last_history, last_terminal = d["history"], d["terminal"]
     asof = root["asof_et"]
+    # Production collects official completed XNAS ASOF independently of root.
+    if official_last_completed is None:
+        official_last_completed = asof  # isolated fixture mode only
+    try:
+        official_day=dt.date.fromisoformat(official_last_completed)
+        root_day=dt.date.fromisoformat(asof)
+    except (TypeError,ValueError) as exc:
+        raise ValueError("XRAY_CURRENT_EPOCH_INVALID_OFFICIAL_DATE") from exc
+    need(official_day.isoformat()==official_last_completed
+         and root_day.isoformat()==asof and root_day<=official_day,
+         "ROOT_FUTURE_RELATIVE_TO_OFFICIAL_ASOF")
+    root_current=asof==official_last_completed
     # The daily root may legitimately advance while canonical master/price
     # remain on the last settled session. Diagnose this as a BLOCKER rather
     # than throwing before a read-only stale-terminal report can be emitted.
@@ -138,6 +154,8 @@ def assess(d, proof):
     need(len(pending_syms) == pending and
          len(set(pending_syms)) == pending, "PENDING_SET_MISMATCH")
     blockers = []
+    if not root_current:
+        blockers.append("ROOT_NOT_LATEST_COMPLETED_OFFICIAL_ASOF")
     if not root_epoch_aligned:
         blockers.append("ROOT_MASTER_PRICE_EPOCH_DRIFT")
     if root.get("unknown_count") != 0:
@@ -156,6 +174,8 @@ def assess(d, proof):
     return {
         "schema": SCHEMA,
         "source_asof_et": asof,
+        "expected_latest_completed_official_asof_et": official_last_completed,
+        "root_is_latest_official_asof": root_current,
         "canonical_master_asof_et": master["asof_et"],
         "canonical_price_asof_et": price["asof_et"],
         "current_root_master_price_epoch_aligned": root_epoch_aligned,
@@ -178,6 +198,8 @@ def assess(d, proof):
         "diagnostic_blockers": blockers,
         "status": ("MIXED_SOURCE_EPOCH_FAIL_CLOSED_LAST_TERMINAL_STALE"
                    if not root_epoch_aligned else
+                   "OFFICIAL_ASOF_ROLLOVER_PENDING_LAST_TERMINAL_STALE"
+                   if not root_current else
                    "CURRENT_UPSTREAM_BLOCKED_LAST_TERMINAL_STALE"
                    if blockers else "UPSTREAM_DIAGNOSTICS_ONLY_FINAL_UNATTESTED"),
         "source_git_blobs": proof,
@@ -232,6 +254,15 @@ def selftest():
               "TERMINAL_NOT_CURRENT_ASOF",
               "RESEARCH_TECHNICAL_PENDING"], "SOURCE_STALE_CAUSAL_MAP")
     import copy
+    newer=assess(docs,proof,official_last_completed="2026-10-19")
+    need(newer["status"]=="OFFICIAL_ASOF_ROLLOVER_PENDING_LAST_TERMINAL_STALE"
+         and newer["root_is_latest_official_asof"] is False
+         and newer["diagnostic_blockers"][0]=="ROOT_NOT_LATEST_COMPLETED_OFFICIAL_ASOF"
+         and newer["r92_created_by_report"] is False,"OFFICIAL_ASOF_STALE_ROOT_BLOCKED")
+    try: assess(docs,proof,official_last_completed="2026-10-12")
+    except ValueError as exc:
+        need("ROOT_FUTURE_RELATIVE_TO_OFFICIAL_ASOF" in str(exc),"FUTURE_ROOT_BLOCKED")
+    else: raise AssertionError("FUTURE_ROOT_ACCEPTED")
     for label, change in (
         ("unknown_underreport", lambda v: v["price"].update(unknown_count=0)),
         ("unknown_missing_row", lambda v: v["price"]["results"].pop("AAPL")),
