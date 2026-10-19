@@ -38,7 +38,7 @@ jobs:
           python nasdaq-xray/p0_alpaca_515_raw_split_shadow.py --selftest
           python -O nasdaq-xray/p0_alpaca_515_raw_split_shadow.py --selftest
       - name: Measure current 515 raw + split pairs with same session mapping ASOF
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -46,7 +46,7 @@ jobs:
           python nasdaq-xray/p0_alpaca_515_raw_split_shadow.py \
              --out "$RUNNER_TEMP/xray_515_raw_split_research.json"
       - name: Verify exact current PRICE+MASTER source and keep authority false
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         run: |
           python - <<'PY'
           import json,os,subprocess
@@ -70,7 +70,7 @@ jobs:
           print("XRAY_DUAL_515_PROVIDER_MEASURED_NO_C417_AUTHORITY")
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
         with:
           name: xray-alpaca-515-raw-split-daily-shadow-sanitized
           path: ${{ runner.temp }}/xray_515_raw_split_research.json
