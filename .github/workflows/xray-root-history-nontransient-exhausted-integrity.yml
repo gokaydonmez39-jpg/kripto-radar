@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/root_history_recovery_microaudit.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
       - ".github/workflows/xray-root-history-nontransient-exhausted-integrity.yml"
@@ -11,6 +13,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/root_history_recovery_microaudit.py"
+      - "nasdaq-xray/sina_stage.py"
+      - "nasdaq-xray/tests/test_sina_stage_parser_retry.py"
       - "nasdaq-xray/sina_transport_rescue.py"
       - "nasdaq-xray/sina_state_hash_guard.py"
       - ".github/workflows/xray-root-history-nontransient-exhausted-integrity.yml"
@@ -89,6 +93,11 @@ jobs:
               raise RuntimeError("NONTRANSIENT_WAS_WRONGLY_ALLOWED_TO_RESCUE")
           print("XRAY_ROOT_HISTORY_NONTRANSIENT_EXHAUSTED=PASS_EXACT_2_UNKNOWNS_ONLY_TRANSIENT_RESCUABLE_NO_ALPHA")
           PY
+      - name: Actual Sina parse_hist exception retry regressions (no akshare or HTTP)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s nasdaq-xray/tests -p test_sina_stage_parser_retry.py -v
+          python -O -m unittest discover -s nasdaq-xray/tests -p test_sina_stage_parser_retry.py -v
       - name: Never mistake offline-only evidence for a live source
         run: |
           set -euo pipefail
