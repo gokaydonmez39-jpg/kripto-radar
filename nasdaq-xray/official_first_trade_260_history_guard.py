@@ -52,12 +52,62 @@ def validate_evidence(doc):
     need(dt.date.fromisoformat(BSP_FIRST) <
          dt.date.fromisoformat(ASOF_MIN), "SOURCE_TIME_ORDER")
 
+ETRA_FIRST = "2026-09-18"
+ETRA_REGISTRY = ROOT / "price_official_listing_registry.json"
+ETRA_SOURCE = ("https://ir.electra-therapeutics.com/news-releases/"
+               "news-release-details/electra-therapeutics-announces-pricing-upsized-3500-million")
+
+def etra_history_fence(asof, *, completed_sessions=None, evidence=None):
+    if type(asof) is not str:
+        raise ValueError("XRAY_ETRA_ASOF_TYPE")
+    day = dt.date.fromisoformat(asof)
+    need(day.isoformat() == asof, "ETRA_ASOF_FORMAT")
+    if asof < ETRA_FIRST:
+        return None
+    registry = evidence if evidence is not None else json.loads(ETRA_REGISTRY.read_text())
+    expected = {"first_trade_date": ETRA_FIRST,
+                "authority": "ISSUER_IR_PRIMARY", "source_url": ETRA_SOURCE,
+                "evidence_kind": "IPO_FIRST_TRADING_DATE"}
+    need(type(registry) is dict
+         and registry.get("schema") == "XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1"
+         and registry.get("authority") == "OFFICIAL_LISTING_DATE_FAIL_ONLY"
+         and registry.get("execution") == "NONE"
+         and registry.get("real_money") == "NO-GO"
+         and registry.get("unknown_never_pass") is True
+         and (registry.get("records") or {}).get("ETRA") == expected,
+         "ETRA_ISSUER_PRIMARY_EVIDENCE")
+    if completed_sessions is None:
+        import pandas_market_calendars as mcal
+        completed_sessions = [x.date().isoformat() for x in
+            mcal.get_calendar("NASDAQ").valid_days(
+                start_date=ETRA_FIRST, end_date=asof)]
+    need(type(completed_sessions) is list
+         and completed_sessions == sorted(set(completed_sessions))
+         and all(type(d) is str and ETRA_FIRST <= d <= asof
+                 for d in completed_sessions), "ETRA_SESSIONS_MALFORMED")
+    count = len(completed_sessions)
+    need(count <= (day - dt.date.fromisoformat(ETRA_FIRST)).days + 1,
+         "ETRA_SESSIONS_EXCEED_CALENDAR")
+    return {"symbol": "ETRA", "asof_et": asof,
+            "first_traded_nasdaq_date": ETRA_FIRST,
+            "completed_listed_sessions": count,
+            "required_own_history_sessions": LIMIT,
+            "own_listed_history_short": count < LIMIT,
+            "pre_ipo_bars_must_be_ignored": True,
+            "unverified_predecessor_cannot_fill_history": True,
+            "evidence_git_blob_sha": git_blob(ETRA_REGISTRY) if evidence is None else None,
+            "canonical_price_pass_created": False,
+            "canonical_history_pass_created": False,
+            "r92_created": False, "execution": "NONE", "real_money": "NO-GO"}
+
 def fence(symbol, asof, *, completed_sessions=None, evidence=None):
     """Return proof-bound local 260 result, or None outside this evidence scope.
 
     completed_sessions may be supplied only to deterministic offline selftests;
     the live call always computes actual NASDAQ sessions via pinned calendar.
     """
+    if symbol == "ETRA":
+        return etra_history_fence(asof, completed_sessions=completed_sessions, evidence=evidence)
     if symbol != "BSP":
         return None
     need(type(asof) is str and dt.date.fromisoformat(asof).isoformat() == asof,
@@ -143,6 +193,40 @@ def rebind_existing_research_results(results, asof):
     return 1
 
 
+def rebind_etra_research_results(results, asof):
+    """Terminalize already-cached ETRA UNKNOWN without a vendor retry."""
+    need(type(results) is dict, "ETRA_REBOUND_RESULTS_TYPE")
+    old = results.get("ETRA")
+    if old is None:
+        return 0
+    need(type(old) is dict and type(old.get("status")) is str,
+         "ETRA_REBOUND_ROW_MALFORMED")
+    info = fence("ETRA", asof)
+    if info is None or not info["own_listed_history_short"]:
+        return 0
+    reason = "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL"
+    if (old["status"] == "FAIL_HISTORY"
+            and (old.get("info") or {}).get("reason") == reason
+            and old.get("official_first_trade_failonly_rebound") is True):
+        return 0
+    if old["status"] not in {"PASS", "UNKNOWN_STATIC",
+                             "UNKNOWN_RETRY", "UNKNOWN_RETRY_EXHAUSTED"}:
+        return 0
+    results["ETRA"] = {**old, "status": "FAIL_HISTORY",
+        "prior_untrusted_status": old["status"],
+        "official_first_trade_failonly_rebound": True,
+        "info": {
+            "reason": reason,
+            "first_traded_nasdaq_date": info["first_traded_nasdaq_date"],
+            "completed_listed_sessions": info["completed_listed_sessions"],
+            "bars": info["completed_listed_sessions"],
+            "required_own_history_sessions": LIMIT,
+            "source_evidence_blob_sha": info["evidence_git_blob_sha"],
+            "vendor_history_pre_ipo_quarantined": True,
+            "no_synthetic_bar": True, "unknown_never_pass": True}}
+    return 1
+
+
 def selftest():
     doc = json.loads(EVIDENCE.read_text())
     validate_evidence(doc)
@@ -202,6 +286,56 @@ def selftest():
             pass
         else:
             raise AssertionError("BAD_EVIDENCE_ACCEPTED_" + name)
+    issuer = json.loads(ETRA_REGISTRY.read_text())
+    etra_days = [
+        (dt.date(2026, 9, 18) + dt.timedelta(days=i)).isoformat()
+        for i in range(32)
+    ]
+    etra = fence("ETRA", "2026-10-19",
+                 completed_sessions=etra_days, evidence=issuer)
+    need(etra["own_listed_history_short"]
+         and etra["completed_listed_sessions"] == 32
+         and not etra["canonical_history_pass_created"]
+         and not etra["canonical_price_pass_created"]
+         and not etra["r92_created"], "ETRA_FAIL_ONLY_EXPECTED")
+    need(fence("ETRA", "2026-09-17", completed_sessions=[], evidence=issuer)
+         is None, "ETRA_FUTURE_LISTING_LOOKAHEAD")
+    bad_etra = copy.deepcopy(issuer)
+    bad_etra["records"]["ETRA"]["first_trade_date"] = "2026-09-16"
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days,
+              evidence=bad_etra)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_FORGED_FIRST_TRADE_ACCEPTED")
+    bad_etra = copy.deepcopy(issuer)
+    bad_etra["records"]["ETRA"]["source_url"] = "https://example.com"
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days,
+              evidence=bad_etra)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_FORGED_ISSUER_ACCEPTED")
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days * 2,
+              evidence=issuer)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_DUPLICATE_SESSIONS_ACCEPTED")
+    rows = {"ETRA": {"status": "UNKNOWN_STATIC",
+                      "info": {"reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"}},
+            "AAPL": {"status": "PASS", "info": {"bars": 1000}}}
+    need(rebind_etra_research_results(rows, "2026-10-19") == 1
+         and rows["ETRA"]["status"] == "FAIL_HISTORY"
+         and rows["ETRA"]["prior_untrusted_status"] == "UNKNOWN_STATIC"
+         and rows["ETRA"]["info"]["bars"] < LIMIT
+         and rows["AAPL"]["status"] == "PASS"
+         and rebind_etra_research_results(rows, "2026-10-19") == 0,
+         "ETRA_REAL_CACHED_REBOUND_IDEMPOTENCE")
+    print("XRAY_ETRA_OFFICIAL_FAIL_ONLY_SELFTEST=PASS_NO_PRICE_HISTORY_R92_PROMOTION")
     print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
 
 def main():
