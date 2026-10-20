@@ -36,8 +36,11 @@ def verify(p, workflow):
              "ENTRY_ZONE_LEFT_ABOVE","TARGET_LEVEL_TOUCHED",
              "STOP_LEVEL_TOUCHED","INVALIDATED","EXPIRED",
              "OFFICIAL_HALT","EVENT_VETO","AMBIGUOUS_INTRABAR_ORDER"}
-    if (p.get("user_visible_event_scope") !=
-        "VERIFIED_REGISTERED_R92_BUY_OR_PRIOR_REGISTERED_MATERIAL_LIFECYCLE_ONLY"
+    if (p.get("user_visible_event_scope") != "VERIFIED_REGISTERED_R92_BUY_ONLY"
+        or p.get("registered_r92_lifecycle_followup_scope") !=
+           "PRIOR_VERIFIED_R92_MATERIAL_FOLLOWUP_ONLY_NEVER_NEW_SIGNAL"
+        or (p.get("emoji_alert_contract") or {}).get("user_visible_only") !=
+           "🟢 AL — DOĞRULANMIŞ R92"
         or not isinstance(follow,dict)
         or follow.get("schema")!="XRAY_VERIFIED_R92_LIFECYCLE_FOLLOWUP_POLICY_V1"
         or follow.get("enabled") is not True
