@@ -69,7 +69,7 @@ def audit(directory):
             if len(path)>4:
                 long_or_cycles.append(list(path));continue
             for n in adj.get(node,()):
-                if n in path:long_or_cycles.append(list(path)+(n,))
+                if n in path:long_or_cycles.append(list(path)+[n])
                 else:stack.append((n,path+(n,)))
         if len(long_or_cycles)>=15:break
     return {
@@ -103,6 +103,11 @@ def selftest():
         (p/"a.yml").write_text("name: A\non:\n  workflow_run:\n    workflows: [NOT_PRESENT]\n")
         require(audit(p)["unresolved_types"].get(
             "UNBOUND_OR_AMBIGUOUS_WORKFLOW_RUN")==1,"NEG_WORKFLOW_RUN")
+        (p/"a.yml").write_text("name: A\non:\n  workflow_run:\n    workflows: [B]\n")
+        (p/"b.yml").write_text("name: B\non:\n  workflow_run:\n    workflows: [A]\n")
+        checked=audit(p)
+        require(checked["long_or_cyclic_workflow_run_count"]>0,
+                "CYCLE_MUST_BE_SURFACED")
     print("XRAY_GRAPHIFY_ACTIONS_DAG=PASS_3_NEG_POS_OFFLINE_NO_ALPHA")
 
 if __name__=="__main__":
