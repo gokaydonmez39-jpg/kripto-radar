@@ -273,6 +273,15 @@ def tests() -> None:
     fresh = bound_proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
     assert len(fresh["pending_alerts"]) == 1
     assert fresh["pending_alerts"][0]["notification_status"] == "PENDING_NOT_DELIVERED"
+    # RED: persist replayable original observation and provenance. A naked
+    # opaque dedup string is not independent proof of the material event.
+    note = fresh["pending_alerts"][0]
+    if (note.get("source_sha") != b["source_hash"]
+            or note.get("observation_bar_end_utc") != iso(b["bar_end_utc"]).isoformat()
+            or note.get("setup") != "A"
+            or note.get("event_kind") != "BAR"
+            or not note.get("asof_observed_utc")):
+        raise RuntimeError("PENDING_ALERT_MISSING_IMMUTABLE_OBSERVATION_PROVENANCE")
     repeated = bound_proposal(fresh["registry"], {c["delivery_key"]: {"bar": b}},
                         "2026-10-08T19:10:00Z")
     assert len(repeated["pending_alerts"]) == 1
