@@ -128,8 +128,8 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
         if source_expiry is not None:
             if iso(source_expiry) != requested_expiry:
                 raise ValueError("CANONICAL_R92_EXPIRY_MISMATCH")
-        elif iso(current) >= requested_expiry:
-            raise ValueError("CANONICAL_R92_EXPIRY_MISMATCH")
+        expiry_due_without_source = (
+            source_expiry is None and iso(current) >= requested_expiry)
         if rec.get("candidate_asof_et") != candidate["source_asof_et"]:
             raise ValueError("CANDIDATE_ASOF_MISMATCH")
         previous = rec.get("followup") or {}
@@ -163,6 +163,11 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
                     or pending_note.get("status") not in material_states):
                 raise ValueError("PENDING_NOTIFICATION_RECORD_UNBOUND")
             pending.append(copy.deepcopy(pending_note))
+        if expiry_due_without_source:
+            # Material EXPIRED is unproven. Freeze future classification but
+            # retain every independently classified earlier queued notice.
+            updated["records"][delivery_key] = rec
+            continue
         evidence = observation.get(delivery_key, {})
         if not isinstance(evidence, dict):
             raise ValueError("OBSERVATION_INVALID")
@@ -341,13 +346,23 @@ def tests() -> None:
     old_registry = copy.deepcopy(good)
     old_registry["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(
         no_expiry["state_json"]["r92"][0])
+    freeze = bound_proposal(
+        old_registry, {}, "2026-10-16T20:00:00Z", pointer=no_expiry)
+    if freeze["pending_alerts"] or freeze["registry"] != old_registry:
+        raise RuntimeError("UNPROVEN_EXPIRY_CHANGED_STATE_OR_ALERTED")
+    # RED follow-up to expiry guard: never discard already-verified pending
+    # notices simply because this separate expiry proof is unavailable.
+    pending_on_expiry = copy.deepcopy(fresh["registry"])
+    pending_on_expiry["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(
+        no_expiry["state_json"]["r92"][0])
     try:
-        bound_proposal(old_registry, {}, "2026-10-16T20:00:00Z", pointer=no_expiry)
+        retained = bound_proposal(pending_on_expiry, {},
+                                  "2026-10-16T20:00:00Z", pointer=no_expiry)
     except ValueError as exc:
-        if str(exc) != "CANONICAL_R92_EXPIRY_MISMATCH":
-            raise
-    else:
-        raise RuntimeError("UNPROVEN_EXPIRY_WITH_MISSING_ORIGIN_ACCEPTED")
+        raise RuntimeError("UNVERIFIED_EXPIRY_BLOCKED_OLDER_PENDING_NOTICES") from exc
+    if (len(retained["pending_alerts"]) != 1 or
+            retained["pending_alerts"][0]["status"] != "ENTRY_ZONE_TOUCHED"):
+        raise RuntimeError("PENDING_EVENT_LOST_WHILE_EXPIRY_UNVERIFIED")
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
