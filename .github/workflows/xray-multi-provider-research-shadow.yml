@@ -177,6 +177,27 @@ jobs:
               "api_market_calls":0,"llm_calls":0},sort_keys=True))
           PY
 
+      - name: Resolve declared Actions needs and workflow_run edges separately from AST (offline)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'PyYAML==6.0.2'
+          python -m py_compile nasdaq-xray/research/graphify_workflow_dag_audit.py
+          python nasdaq-xray/research/graphify_workflow_dag_audit.py --selftest
+          python -O nasdaq-xray/research/graphify_workflow_dag_audit.py --selftest
+          python nasdaq-xray/research/graphify_workflow_dag_audit.py > "$RUNNER_TEMP/xray_graphify_actions_dag.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_graphify_actions_dag.json").read_text())
+          if j["schema"]!="XRAY_GRAPHIFY_ACTIONS_DAG_RESEARCH_V1":
+              raise SystemExit("SCHEMA_BAD")
+          if j["workflow_count"]<200 or j["declared_edge_count"]<20:
+              raise SystemExit("DAG_DISAPPEARED")
+          if j["r92_created"] or j["primary_pass_created"] or j["vendor_market_calls"]:
+              raise SystemExit("ALPHA_OR_VENDOR_SIDE_EFFECT")
+          print("XRAY_GRAPHIFY_ACTIONS_DAG_MEASURED="+json.dumps(j,sort_keys=True))
+          PY
   provider-shadow:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
