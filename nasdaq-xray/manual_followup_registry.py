@@ -61,6 +61,53 @@ def canonical_r92_index(pointer: dict) -> dict:
     return index
 
 
+def verify_pending_origin(candidate: dict, note: dict, now: str) -> None:
+    """Recompute the classifier's exact event key before any replay."""
+    kind = note.get("event_kind")
+    source = note.get("source_sha")
+    observed = note.get("asof_observed_utc")
+    bar_end = note.get("observation_bar_end_utc")
+    if (note.get("setup") != candidate.get("setup")
+            or kind not in ("BAR", "CONTROL")
+            or not isinstance(source, str)
+            or not isinstance(observed, str)):
+        raise ValueError("PENDING_NOTIFICATION_PROVENANCE_UNVERIFIED")
+    try:
+        obs_dt, now_dt = iso(observed), iso(now)
+        if obs_dt < iso(candidate["origin_at_utc"]) or obs_dt > now_dt:
+            raise ValueError("PENDING_NOTIFICATION_OBSERVATION_TIME_INVALID")
+        if kind == "BAR":
+            if (not isinstance(bar_end, str)
+                    or not isinstance(source, str)
+                    or len(source) not in (40, 64)
+                    or any(ch not in "0123456789abcdef" for ch in source)):
+                raise ValueError("PENDING_NOTIFICATION_SOURCE_INVALID")
+            bar_dt = iso(bar_end)
+            if not (iso(candidate["origin_at_utc"]) <= bar_dt <= obs_dt):
+                raise ValueError("PENDING_NOTIFICATION_BAR_TIME_INVALID")
+            fields = (candidate["delivery_key"], note["status"],
+                      bar_dt.isoformat(), source)
+        else:
+            if bar_end is not None or note["status"] not in (
+                    "EXPIRED", "OFFICIAL_HALT", "EVENT_VETO", "INVALIDATED"):
+                raise ValueError("PENDING_NOTIFICATION_CONTROL_INVALID")
+            if source.startswith("CLOCK_EXPIRES_AT:"):
+                if (note["status"] != "EXPIRED"
+                        or source != "CLOCK_EXPIRES_AT:" +
+                        iso(candidate["expires_at_utc"]).isoformat()
+                        or obs_dt < iso(candidate["expires_at_utc"])):
+                    raise ValueError("PENDING_NOTIFICATION_CLOCK_SOURCE_INVALID")
+            elif (len(source) not in (40, 64)
+                    or any(ch not in "0123456789abcdef" for ch in source)):
+                raise ValueError("PENDING_NOTIFICATION_CONTROL_SOURCE_INVALID")
+            fields = (candidate["delivery_key"], note["status"], source)
+        expected = hashlib.sha256("|".join(fields).encode()).hexdigest()
+        if expected != note.get("alert_dedup_key"):
+            raise ValueError("PENDING_NOTIFICATION_HASH_OR_SOURCE_MISMATCH")
+    except (TypeError, KeyError, OverflowError) as exc:
+        raise ValueError("PENDING_NOTIFICATION_PROVENANCE_UNVERIFIED") from exc
+
+
 def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonical_pointer: dict | None = None) -> dict:
     if not isinstance(registry, dict) or registry.get("schema") != SCHEMA:
         raise ValueError("REGISTRY_SCHEMA_INVALID")
@@ -162,6 +209,7 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
                     or pending_note.get("symbol") != candidate["symbol"]
                     or pending_note.get("status") not in material_states):
                 raise ValueError("PENDING_NOTIFICATION_RECORD_UNBOUND")
+            verify_pending_origin(candidate, pending_note, current)
             pending.append(copy.deepcopy(pending_note))
         if expiry_due_without_source:
             # Material EXPIRED is unproven. Freeze future classification but
@@ -197,8 +245,14 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
             if key not in dedup:
                 dedup.append(key)
                 note={"delivery_key": delivery_key, "symbol": candidate["symbol"],
-                      "status": result["status"], "alert_dedup_key": key,
+                      "setup": candidate["setup"], "status": result["status"],
+                      "alert_dedup_key": key, "source_sha": result["source_sha"],
+                      "asof_observed_utc": result["asof_observed_utc"],
+                      "observation_bar_end_utc": (
+                          result["last_bar_end_utc"] if evidence.get("bar") is not None else None),
+                      "event_kind": "BAR" if evidence.get("bar") is not None else "CONTROL",
                       "notification_status": "PENDING_NOT_DELIVERED", "orders": []}
+                verify_pending_origin(candidate, note, current)
                 existing_pending[key] = note
                 pending.append(copy.deepcopy(note))
         rec["followup"] = result
@@ -307,6 +361,24 @@ def tests() -> None:
             pass
         else:
             raise AssertionError("UNAUTHORIZED_OBSERVATION_ADMITTED")
+    # A forged source SHA, observation time or classifier kind must not be
+    # accepted just because the dedup key was once present in the ledger.
+    for name, replacement in (
+        ("source_sha", "d" * 40),
+        ("asof_observed_utc", "2026-10-09T19:10:00Z"),
+        ("observation_bar_end_utc", "2026-10-08T19:01:00+00:00"),
+        ("event_kind", "CONTROL"),
+    ):
+        forged = copy.deepcopy(fresh["registry"])
+        row = next(iter(forged["records"][c["delivery_key"]][
+            "pending_notifications"].values()))
+        row[name] = replacement
+        try:
+            bound_proposal(forged, {}, "2026-10-08T19:11:00Z")
+        except ValueError:
+            pass
+        else:
+            raise RuntimeError("FORGED_PENDING_EVENT_PROVENANCE_ACCEPTED:" + name)
     # RED: a forged pending notice with no dedup event must never rehydrate.
     unproven = copy.deepcopy(good)
     fake_key = "f" * 64
