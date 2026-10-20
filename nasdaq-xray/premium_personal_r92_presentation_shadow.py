@@ -209,6 +209,30 @@ def selftest():
         except ValueError:
             continue
         raise RuntimeError("XRAY_PREMIUM_FAIL_OPEN_"+name)
+    # Re-run source module's actual event code, not just its formatter, with
+    # optimized Python: unverified booleans must never create official vetoes.
+    import manual_signal_lifecycle_shadow as life
+    test_candidate,test_bar=life.fixtures()
+    now="2026-10-08T19:10:00Z"
+    need(life.event(test_candidate,test_bar,observed_at_utc=now)["status"]
+         == "ENTRY_ZONE_TOUCHED","ACTUAL_LIFECYCLE_POSITIVE")
+    flags=({"halt":True},{"material_event":True},{"invalidated":True})
+    for flag in flags:
+        try:life.event(test_candidate,test_bar,observed_at_utc=now,**flag)
+        except ValueError as err:
+            need(str(err)=="UNVERIFIED_CONTROL_FLAG_USE_CONTROL_EVENT",
+                 "WRONG_UNVERIFIED_CONTROL_ERROR")
+        else:raise RuntimeError("UNVERIFIED_OFFICIAL_FLAG_WAS_ACCEPTED")
+    official={"status":"OFFICIAL_HALT","symbol":"TEST","source_verified":True,
+              "authority":"OFFICIAL_TRADE_HALT","source_sha":"f"*40,
+              "observed_at_utc":"2026-10-08T19:09:00Z"}
+    need(life.control_event(test_candidate,observed_at_utc=now,
+                            official_control=official)["status"]=="OFFICIAL_HALT",
+         "CONTROL_VERIFIED_POSITIVE")
+    try:life.control_event(test_candidate,observed_at_utc=now,
+                            official_control={**official,"source_verified":False})
+    except ValueError:pass
+    else:raise RuntimeError("UNVERIFIED_CONTROL_WITNESS_ACCEPTED")
     need(len(invalid)==17,"COUNT")
     print("XRAY_PREMIUM_R92_FORMAT_SELFTEST=PASS_17_NEGATIVES_NO_USER_DELIVERY")
 
