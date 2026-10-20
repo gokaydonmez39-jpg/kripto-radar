@@ -1449,6 +1449,11 @@ def main():
     if state["confirmed_ipo_first_trade_history_rebound_count"]:
         print("XRAY_CONFIRMED_IPO_OFFICIAL_FIRST_TRADE_UNKNOWN_TO_FAIL_HISTORY="
               +str(state["confirmed_ipo_first_trade_history_rebound_count"]))
+    from official_first_trade_260_history_guard import rebind_chwm_ads_cached_history
+    state["chwm_sec_ads_history_rebound_count"] = (
+        rebind_chwm_ads_cached_history(results, asof))
+    if state["chwm_sec_ads_history_rebound_count"]:
+        print("XRAY_CHWM_SEC_CONFIRMED_ADS_UNKNOWN_TO_FAIL_HISTORY=1")
 
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
