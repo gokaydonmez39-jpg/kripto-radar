@@ -101,6 +101,7 @@ jobs:
           python nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py --selftest
           python -O nasdaq-xray/alpaca_root_asof_260_four_symbol_shadow.py --selftest
       - name: Research-only bounded exact30 five-symbol historical SIP runner probe
+        if: ${{ github.event_name != 'push' }}
         run: |
           python nasdaq-xray/alpaca_sip_exact30_backup_probe.py --out "$RUNNER_TEMP/xray_alpaca_exact30_backup.json"
           python - <<'PY'
@@ -138,6 +139,7 @@ jobs:
           print("XRAY_SIP_NO_SOURCE_PRIMARY_OR_R92=PASS")
           PY
       - name: Authorized one-call full RTH minute coverage probe (never DV30)
+        if: ${{ github.event_name != 'push' }}
         run: |
           python nasdaq-xray/alpaca_sip_rth_minute_onecall_shadow.py --out "$RUNNER_TEMP/xray_sip_rth_minute_onecall.json"
           python - <<'PY'
@@ -520,9 +522,11 @@ jobs:
           print("XRAY_SIP_RTH_BOUNDARY_AUDIT=PASS_390_MINUTES_DAILY_VOLUME_NOT_RTH_NO_GO")
           PY
       - name: Bounded delayed-SIP health readback
+        if: ${{ github.event_name != 'push' }}
         run: |
           python nasdaq-xray/alpaca_delayed_sip_research_shadow.py --out "$RUNNER_TEMP/alpaca_delayed_sip_health.json"
       - name: Enforce zero price publication zero GO
+        if: ${{ github.event_name != 'push' }}
         run: |
           python - <<'PY'
           import json,os,pathlib
@@ -535,7 +539,7 @@ jobs:
           print("XRAY_DELAYED_SIP_VENDOR_GUARD=PASS status="+j["status"])
           PY
       - name: Upload health only
-        if: always()
+        if: ${{ always() && github.event_name != 'push' }}
         uses: actions/upload-artifact@v4
         with:
           name: xray-alpaca-delayed-sip-health
