@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     outputs:
-      allow: ${{ steps.session.outputs.allow_compute }}
+      allow: ${{ steps.session.outputs.allow_compute == 'true' && steps.source.outputs.ready == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +31,13 @@ jobs:
       - name: Enforce ET exchange session on schedule; manual research explicit
         id: session
         run: python nasdaq-xray/root_weekend_quota_guard.py --emit
+      - name: Verify latest main SHA and current completed source epoch before provider IO
+        id: source
+        if: ${{ steps.session.outputs.allow_compute == 'true' }}
+        run: |
+          python -m py_compile nasdaq-xray/personal_sip_head_preflight.py
+          python nasdaq-xray/personal_sip_head_preflight.py --selftest
+          python nasdaq-xray/personal_sip_head_preflight.py --emit
 
   coverage:
     name: Verify every source symbol's delayed SIP session-day availability
@@ -58,6 +65,7 @@ jobs:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
+          python nasdaq-xray/personal_sip_head_preflight.py --check
           python nasdaq-xray/alpaca_full_universe_asof_sip_availability.py \
             --out "$RUNNER_TEMP/xray_personal_full_universe_sip_asof_coverage.json"
       - name: Verify exact full coverage classifications and zero alpha
@@ -113,6 +121,7 @@ jobs:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
+          python nasdaq-xray/personal_sip_head_preflight.py --check
           python nasdaq-xray/alpaca_full_universe_260_52_sip_shadow.py \
             --out "$RUNNER_TEMP/xray_nasdaq_full_260_52_sip_shadow.json"
       - name: Validate complete no-alpha history research partition
@@ -262,6 +271,7 @@ jobs:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
         run: |
+          python nasdaq-xray/personal_sip_head_preflight.py --check
           python nasdaq-xray/alpaca_personal_joint_260_d30_rth_shadow.py \
             --history "$RUNNER_TEMP/history/xray_nasdaq_full_260_52_sip_shadow.json" \
             --bridge "$RUNNER_TEMP/bridge/xray_personal_sip_root_bridge.json" \
