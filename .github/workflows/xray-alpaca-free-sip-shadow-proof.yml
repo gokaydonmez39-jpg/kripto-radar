@@ -96,7 +96,7 @@ jobs:
           PY
       - name: Bounded free historical SIP query only when PRIVATE keys available
         id: price_shadow
-        if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}
+        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -133,7 +133,7 @@ jobs:
           print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
           PY
       - name: Enforce actual delayed SIP HTTP measurement before success
-        if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}
+        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}
         env:
           XRAY_SCHEDULE_ROOT_READY: ${{ steps.scheduled_root.outputs.ready }}
         run: |
