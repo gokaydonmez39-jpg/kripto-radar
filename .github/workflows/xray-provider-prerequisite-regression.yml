@@ -49,14 +49,14 @@ jobs:
           normal=json.loads((base/"xray_omni_source_shadow.jsonl").read_text().splitlines()[0])
           optimized=json.loads((base/"xray_omni_source_optimized.jsonl").read_text().splitlines()[0])
           assert normal == optimized
-          assert normal["provider_count"]==12 and normal["exact_git_blob_edges"]==7
+          assert normal["provider_count"]==12 and normal["additional_unpromoted_candidate_count"]==11 and normal["exact_git_blob_edges"]==7
           assert normal["research_start"]=="CONFIGURED_READ_ONLY_MONITORING"
           assert normal["final_release"]=="NO_GO"
           assert normal["new_primary_created"] is False
           assert normal["new_r92_created"] is False
           assert normal["notifications_sent"] is False
           assert normal["market_vendor_calls"]==0
-          print("XRAY_OMNI_SOURCE_START=PASS_12_PROVIDERS_7_SHA_20_NEGATIVE_NO_FINAL_GO")
+          print("XRAY_OMNI_SOURCE_START=PASS_12_SOURCES_11_BACKUPS_7_SHA_23_NEGATIVES_NO_FINAL_GO")
           PY
       - name: Explicitly prohibit vendor calls and any automatic promotion
         run: |
