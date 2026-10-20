@@ -77,6 +77,13 @@ def validate_bar(b,c,begin,asof_now):
     if delay < -30:raise ValueError("FUTURE_PRICE_DATA")
     return ts,low,high,delay
 
+def ensure_observation_monotonic(prev, observed_at_utc):
+    """Reject retroactive observations before classification or terminal returns."""
+    prior=prev.get("asof_observed_utc")
+    if prior is not None and iso(observed_at_utc)<iso(prior):
+        raise ValueError("OBSERVATION_CLOCK_REGRESSION")
+
+
 def control_event(c,prev=None,*,observed_at_utc,official_control=None):
     """Clock/official-control transitions WITHOUT market bars or execution.
     This is a state classifier, NOT a live provider or notification receipt.
@@ -88,6 +95,7 @@ def control_event(c,prev=None,*,observed_at_utc,official_control=None):
     if prev:
         if prev.get("delivery_key")!=c["delivery_key"] or prev.get("status") not in STATES:
             raise ValueError("PREVIOUS_CONTROL_STATE_UNVERIFIED")
+        ensure_observation_monotonic(prev, observed_at_utc)
         if prev["status"] in CLOSED:
             return {"status":prev["status"],"transition":"TERMINAL_STATE_LOCKED",
                     "alert":False,"research_only":True,"orders":[],"user_notification_delivered":False}
@@ -147,6 +155,7 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
             raise ValueError("PREVIOUS_CANDIDATE_KEY_DRIFT")
         if prev.get("status") not in STATES:
             raise ValueError("PREVIOUS_STATE_INVALID")
+        ensure_observation_monotonic(prev, observed_at_utc)
         if prev.get("status") in CLOSED:
             return {"status":prev["status"],"transition":"TERMINAL_STATE_LOCKED",
                     "alert":False,"research_only":True,"orders":[]}
