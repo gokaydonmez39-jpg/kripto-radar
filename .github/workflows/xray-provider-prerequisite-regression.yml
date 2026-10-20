@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'nasdaq-xray/provider_runtime_readiness_summary.py'
+      - 'nasdaq-xray/omni_source_start_falsification_shadow.py'
       - 'nasdaq-xray/tests/test_provider_runtime_readiness_summary.py'
       - '.github/workflows/xray-provider-prerequisite-regression.yml'
       - '.github/workflows/xray-provider-access-observer.yml'
@@ -33,6 +34,30 @@ jobs:
           python -O nasdaq-xray/provider_runner_access_audit.py --selftest
           python -m unittest discover -s nasdaq-xray/tests -p 'test_provider_runtime_readiness_summary.py' -v
           python -O -m unittest discover -s nasdaq-xray/tests -p 'test_provider_runtime_readiness_summary.py' -v
+      - name: Independent 12-source 7-SHA start/final admission — Python and optimized
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/omni_source_start_falsification_shadow.py
+          python nasdaq-xray/omni_source_start_falsification_shadow.py --selftest
+          python -O nasdaq-xray/omni_source_start_falsification_shadow.py --selftest
+          python nasdaq-xray/omni_source_start_falsification_shadow.py --check-current > "$RUNNER_TEMP/xray_omni_source_shadow.jsonl"
+          python -O nasdaq-xray/omni_source_start_falsification_shadow.py --check-current > "$RUNNER_TEMP/xray_omni_source_optimized.jsonl"
+          python - <<'PY'
+          import json,os,pathlib
+          base=pathlib.Path(os.environ["RUNNER_TEMP"])
+          normal=json.loads((base/"xray_omni_source_shadow.jsonl").read_text().splitlines()[0])
+          optimized=json.loads((base/"xray_omni_source_optimized.jsonl").read_text().splitlines()[0])
+          assert normal == optimized
+          assert normal["provider_count"]==12 and normal["exact_git_blob_edges"]==7
+          assert normal["research_start"]=="CONFIGURED_READ_ONLY_MONITORING"
+          assert normal["final_release"]=="NO_GO"
+          assert normal["new_primary_created"] is False
+          assert normal["new_r92_created"] is False
+          assert normal["notifications_sent"] is False
+          assert normal["market_vendor_calls"]==0
+          print("XRAY_OMNI_SOURCE_START=PASS_12_PROVIDERS_7_SHA_20_NEGATIVE_NO_FINAL_GO")
+          PY
       - name: Explicitly prohibit vendor calls and any automatic promotion
         run: |
           python - <<'PY'
