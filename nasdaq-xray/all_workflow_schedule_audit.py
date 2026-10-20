@@ -148,8 +148,8 @@ def inventory(files):
                     pre_step.get("id")=="scheduled_root" and
                     pre_step.get("if")=="${{ github.event_name == 'schedule' }}"):
                 errors.append("ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
-            expected_guard=("${{ github.event_name != 'pull_request' && "
-                            "(github.event_name != 'schedule' || "
+            expected_guard=("${{ github.event_name == 'workflow_dispatch' || "
+                            "(github.event_name == 'schedule' && "
                             "steps.scheduled_root.outputs.ready == 'true') }}")
             for guard_step in (vendor_step,enforce_step):
                 if guard_step.get("if")!=expected_guard:
@@ -298,7 +298,7 @@ def selftest():
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
     shadow="xray-alpaca-free-sip-shadow-proof.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace(
-        "if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}",
+        "if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}",
         "if: ${{ github.event_name != 'pull_request' }}",1)}),
         "ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
     bad(lambda x:x.update({shadow:x[shadow].replace(
