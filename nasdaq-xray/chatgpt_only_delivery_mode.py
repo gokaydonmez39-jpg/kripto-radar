@@ -31,6 +31,36 @@ def verify(p, workflow):
         or p.get("unknown_never_pass") is not True
         or p.get("execution")!="NONE" or p.get("real_money")!="NO-GO"):
         raise ValueError("CHATGPT_ONLY_POLICY_MISMATCH")
+    follow=p.get("registered_r92_lifecycle_followup_policy")
+    allowed={"ENTRY_ZONE_APPROACHING","ENTRY_ZONE_TOUCHED",
+             "ENTRY_ZONE_LEFT_ABOVE","TARGET_LEVEL_TOUCHED",
+             "STOP_LEVEL_TOUCHED","INVALIDATED","EXPIRED",
+             "OFFICIAL_HALT","EVENT_VETO","AMBIGUOUS_INTRABAR_ORDER"}
+    if (p.get("user_visible_event_scope") !=
+        "VERIFIED_REGISTERED_R92_BUY_OR_PRIOR_REGISTERED_MATERIAL_LIFECYCLE_ONLY"
+        or not isinstance(follow,dict)
+        or follow.get("schema")!="XRAY_VERIFIED_R92_LIFECYCLE_FOLLOWUP_POLICY_V1"
+        or follow.get("enabled") is not True
+        or set(follow.get("allowed_material_states") or [])!=allowed
+        or len(follow.get("allowed_material_states") or [])!=len(allowed)
+        or follow.get("scope")!="ONLY_PREVIOUSLY_VERIFIED_AND_REGISTERED_R92"
+        or any(follow.get(k) is not True for k in (
+            "requires_candidate_r92_current_or_exact_immutable_origin",
+            "requires_material_transition_proven",
+            "requires_independent_authoritative_timestamped_data",
+            "requires_preserved_r92_entry_stop_target_levels",
+            "requires_durable_exact_dedup",
+            "requires_write_readback_before_notification_attempt",
+            "requires_original_r92_key_and_source_asof",
+            "source_stale_or_unknown_no_user_alert",
+            "watch_early_or_prescreen_no_user_alert",
+            "never_claim_trade_fill_or_profit",
+            "never_claim_platform_receipt_without_ack",
+            "no_new_task_or_channel","no_broker_or_orders",
+            "unknown_never_pass"))
+        or follow.get("execution")!="NONE"
+        or follow.get("real_money")!="NO-GO"):
+        raise ValueError("VERIFIED_R92_FOLLOWUP_POLICY_MISSING_OR_WEAKENED")
     must=[
         "issues: read",
         "if: steps.prep.outputs.ready == 'true' && false",
@@ -69,12 +99,22 @@ def selftest():
         (p,wf.replace("if: steps.prep.outputs.ready == 'true' && false",
                        "if: steps.prep.outputs.ready == 'true'")),
         (p,wf.replace("SUPPRESSED_CHATGPT_ONLY","MISSING_RETRY_REQUIRED")),
+        ({**p,"registered_r92_lifecycle_followup_policy":{
+            **p["registered_r92_lifecycle_followup_policy"],
+            "requires_independent_authoritative_timestamped_data":False}},wf),
+        ({**p,"registered_r92_lifecycle_followup_policy":{
+            **p["registered_r92_lifecycle_followup_policy"],
+            "requires_durable_exact_dedup":False}},wf),
+        ({**p,"registered_r92_lifecycle_followup_policy":{
+            **p["registered_r92_lifecycle_followup_policy"],
+            "allowed_material_states":["SOURCE_STALE"]}},wf),
+        ({**p,"user_visible_event_scope":"ANY_WATCH_OR_BUY"},wf),
     ]
     for altered,flow in cases:
         try:verify(altered,flow)
         except ValueError:continue
         raise AssertionError("CHATGPT_ONLY_NEGATIVE_BYPASS")
-    print("XRAY_CHATGPT_ONLY_DELIVERY_SELFTEST=PASS_1_POSITIVE_11_NEGATIVES")
+    print("XRAY_CHATGPT_ONLY_DELIVERY_SELFTEST=PASS_1_POSITIVE_15_NEGATIVES")
 
 
 def main():
