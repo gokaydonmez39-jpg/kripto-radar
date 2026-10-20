@@ -6,6 +6,8 @@ on:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
       - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
+      - "nasdaq-xray/workflow_run_feedback_cycle_guard.py"
+      - ".github/workflows/xray-resilience-observability.yml"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
   workflow_dispatch:
@@ -17,6 +19,8 @@ on:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
       - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
+      - "nasdaq-xray/workflow_run_feedback_cycle_guard.py"
+      - ".github/workflows/xray-resilience-observability.yml"
       - "nasdaq-xray/c418_provider_inventory_20261012.json"
       - "nasdaq-xray/c418_provider_routing_readiness.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
@@ -105,6 +109,16 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_GRAPHIFY_C417_REAL_CURRENT_BLOBS=PASS_7_EXPLICIT_EDGES_NO_ALPHA")
           PY
+      - name: "PR-only one-edge workflow_run cycle proof (10 negatives and optimized Python)"
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/workflow_run_feedback_cycle_guard.py
+          python nasdaq-xray/workflow_run_feedback_cycle_guard.py --selftest
+          python -O nasdaq-xray/workflow_run_feedback_cycle_guard.py --selftest
+          python nasdaq-xray/workflow_run_feedback_cycle_guard.py --check
+          echo 'XRAY_WORKFLOW_RUN_CYCLE=ONE_EDGE_CUT_NO_VENDOR_NO_R92'
   provider-shadow:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest

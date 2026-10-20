@@ -38,7 +38,9 @@ on:
       - "nasdaq-xray/health_chatgpt_runtime_guard.py"
       - ".github/workflows/xray-resilience-observability.yml"
   workflow_run:
-    workflows: ["XRAY Canonical Pointer Transition", "NASDAQ SWING XRAY Autonomous Data Plane"]
+    # Stop Final -> Pointer -> Resilience -> Final workflow_run recursion.
+    # Root, push, independent schedule and manual dispatch remain intact.
+    workflows: ["NASDAQ SWING XRAY Autonomous Data Plane"]
     types: [completed]
     branches: [main]
   schedule:
