@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-20T19:40:18.647150+00:00",
+  "generated_at_utc": "2026-10-20T21:25:27.818875+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -747,8 +747,18 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=10/20/2026"
     },
     "system_status_ipo": {
-      "item_count": 2,
+      "item_count": 3,
       "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "<p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>BTF</strong> before the opening on, Wednesday, October 21, 2026. All open GTC orders in symbol <strong>BTF</strong> will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br>",
+          "Message_dt": "Tue, 20 Oct 2026 20:10:34 GMT",
+          "SubjectLine": "Option Notice: Option Delisting",
+          "Time": "16:10:34",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">16:10:34</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\"><p>Nasdaq PHLX, NTX&nbsp;Options, Nasdaq ISE, Nasdaq MRX, Nasdaq Options Market &amp; Nasdaq GEMX&nbsp;will remove symbol <strong>BTF</strong> before the opening on, Wednesday, October 21, 2026. All open GTC orders in symbol <strong>BTF</strong> will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br></td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 20:10:34 GMT",
+          "title": "Option Notice: Option Delisting"
+        },
         {
           "Market": "NASDAQ Options,PHLX",
           "Message": "The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MCRY and Nasdaq GEMX&nbsp;effective at the opening of business on Wednesday, October 21, 2026: <strong>GORO, SSMR</strong>. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br><br><br>",
@@ -797,8 +807,23 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 49,
+      "item_count": 50,
       "items": [
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "15:39:23.110",
+          "IssueName": "Global Eng Gr Hd CL A Ord Shs",
+          "IssueSymbol": "GLE",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "15:39:23",
+          "ResumptionTradeTime": "15:44:23",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">15:39:23.110</td><td valign=\"top\">GLE</td><td valign=\"top\">Global Eng Gr Hd CL A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">15:39:23                      </td><td valign=\"top\">15:44:23                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "GLE"
+        },
         {
           "HaltDate": "10/20/2026",
           "HaltTime": "15:31:59.033",
