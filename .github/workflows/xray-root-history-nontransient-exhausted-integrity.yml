@@ -159,6 +159,18 @@ jobs:
           assert all(cohort[s]["info"]["bars"]<260 for s in symbols)
           assert all(cohort[s]["info"]["source_evidence_blob_sha"] for s in symbols)
           print("XRAY_ACCV_ADRX_REAL_ROOT_CACHE=PASS_TWO_FAIL_ONLY_NO_PROVIDER_NO_R92")
+          from official_first_trade_260_history_guard import rebind_chwm_ads_cached_history
+          chwm_prior=source["results"]["CHWM"]["status"]
+          assert chwm_prior in {"UNKNOWN_STATIC","FAIL_HISTORY"}
+          chwm={"CHWM":dict(source["results"]["CHWM"])}
+          expect=1 if chwm_prior=="UNKNOWN_STATIC" else 0
+          assert rebind_chwm_ads_cached_history(chwm,asof)==expect
+          assert rebind_chwm_ads_cached_history(chwm,asof)==0
+          assert chwm["CHWM"]["status"]=="FAIL_HISTORY"
+          assert chwm["CHWM"]["info"]["bars"]<260
+          assert chwm["CHWM"]["info"]["source_evidence_blob_sha"]
+          assert chwm["CHWM"]["info"]["asx_ordinary_history_not_inherited"] is True
+          print("XRAY_CHWM_SEC_REAL_CACHED_ROOT=PASS_FAIL_ONLY_ZERO_AL")
           PY
       - name: Never mistake offline-only evidence for a live source
         run: |
