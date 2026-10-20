@@ -11,6 +11,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 from pathlib import Path
 
 from manual_signal_lifecycle_shadow import (
@@ -104,6 +105,21 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
             raise ValueError("CANONICAL_R92_ORIGIN_MISMATCH")
         if rec.get("origin_r92_sha256") != origin_digest(origin):
             raise ValueError("CANONICAL_R92_ORIGIN_HASH_MISMATCH")
+        # A matching delivery key and canonical row digest must not license
+        # locally invented entry, stop, or profit-target geometry.
+        for local, registered in (("entry_low", "entry_low"),
+                                  ("entry_high", "entry_high"),
+                                  ("stop", "stop"), ("target", "r1")):
+            src = origin.get(registered)
+            value = candidate.get(local)
+            if (type(src) not in (int, float)
+                    or type(value) not in (int, float)
+                    or not math.isfinite(src) or not math.isfinite(value)
+                    or float(src) != float(value)):
+                raise ValueError("CANONICAL_R92_LEVEL_DRIFT")
+        registered_at = iso(origin.get("registered_at_utc"))
+        if iso(candidate.get("origin_at_utc")) < registered_at:
+            raise ValueError("CANDIDATE_ORIGIN_PREDATES_R92_REGISTRATION")
         if rec.get("candidate_asof_et") != candidate["source_asof_et"]:
             raise ValueError("CANDIDATE_ASOF_MISMATCH")
         previous = rec.get("followup") or {}
@@ -198,6 +214,9 @@ def tests() -> None:
     origin = {"schema": "XRAY_RESEARCH_CANDIDATE_R92_V1",
               "delivery_key": c["delivery_key"], "symbol": c["symbol"],
               "setup": "A", "asof_et": c["source_asof_et"],
+              "entry_low": c["entry_low"], "entry_high": c["entry_high"],
+              "stop": c["stop"], "r1": c["target"],
+              "registered_at_utc": c["origin_at_utc"],
               "execution": "NONE", "real_money": "NO-GO"}
     canonical = {"schema": "XRAY_GITHUB_DURABLE_STATE_V3",
                  "authority": "GITHUB_CURRENT_POINTER",
@@ -207,6 +226,20 @@ def tests() -> None:
     good["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(origin)
     def bound_proposal(reg, obs, stamp, *, pointer=canonical):
         return proposal(reg, obs, stamp, canonical_pointer=pointer)
+
+    # RED: a matching R92 key/hash must never license locally invented levels.
+    # Both counterfeit shapes remain valid LONG geometry, masking the drift.
+    for field, counterfeit in (("stop", 90.0), ("target", 110.0),
+                               ("entry_low", 101.0), ("entry_high", 103.5)):
+        forged = copy.deepcopy(good)
+        forged["records"][c["delivery_key"]]["manual_candidate"][field] = counterfeit
+        try:
+            bound_proposal(forged, {}, "2026-10-08T19:10:00Z")
+        except ValueError as exc:
+            if str(exc) != "CANONICAL_R92_LEVEL_DRIFT":
+                raise
+        else:
+            raise RuntimeError("FORGED_MANUAL_R92_LEVEL_ADMITTED:" + field)
 
     fresh = bound_proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
     assert len(fresh["pending_alerts"]) == 1
@@ -236,6 +269,19 @@ def tests() -> None:
             pass
         else:
             raise AssertionError("UNAUTHORIZED_OBSERVATION_ADMITTED")
+    # A manual source clock may not be backdated before actual R92 registration.
+    late = copy.deepcopy(canonical)
+    late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
+    shifted = copy.deepcopy(good)
+    shifted["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(
+        late["state_json"]["r92"][0])
+    try:
+        bound_proposal(shifted, {}, "2026-10-08T19:10:00Z", pointer=late)
+    except ValueError as exc:
+        if str(exc) != "CANDIDATE_ORIGIN_PREDATES_R92_REGISTRATION":
+            raise
+    else:
+        raise RuntimeError("BACKDATED_R92_LIFECYCLE_ORIGIN_ADMITTED")
     # No pointer, no key, mismatched setup and forged origin digest are all
     # rejected even when the manual registration label says REGISTERED.
     for mutation, expected in (
