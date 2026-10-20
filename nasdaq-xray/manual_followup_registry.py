@@ -348,6 +348,19 @@ def tests() -> None:
             raise
     else:
         raise RuntimeError("UNPROVEN_EXPIRY_WITH_MISSING_ORIGIN_ACCEPTED")
+    # RED follow-up to expiry guard: never discard already-verified pending
+    # notices simply because this separate expiry proof is unavailable.
+    pending_on_expiry = copy.deepcopy(fresh["registry"])
+    pending_on_expiry["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(
+        no_expiry["state_json"]["r92"][0])
+    try:
+        retained = bound_proposal(pending_on_expiry, {},
+                                  "2026-10-16T20:00:00Z", pointer=no_expiry)
+    except ValueError as exc:
+        raise RuntimeError("UNVERIFIED_EXPIRY_BLOCKED_OLDER_PENDING_NOTICES") from exc
+    if (len(retained["pending_alerts"]) != 1 or
+            retained["pending_alerts"][0]["status"] != "ENTRY_ZONE_TOUCHED"):
+        raise RuntimeError("PENDING_EVENT_LOST_WHILE_EXPIRY_UNVERIFIED")
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
