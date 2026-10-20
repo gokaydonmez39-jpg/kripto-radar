@@ -286,6 +286,56 @@ def selftest():
             pass
         else:
             raise AssertionError("BAD_EVIDENCE_ACCEPTED_" + name)
+    issuer = json.loads(ETRA_REGISTRY.read_text())
+    etra_days = [
+        (dt.date(2026, 9, 18) + dt.timedelta(days=i)).isoformat()
+        for i in range(32)
+    ]
+    etra = fence("ETRA", "2026-10-19",
+                 completed_sessions=etra_days, evidence=issuer)
+    need(etra["own_listed_history_short"]
+         and etra["completed_listed_sessions"] == 32
+         and not etra["canonical_history_pass_created"]
+         and not etra["canonical_price_pass_created"]
+         and not etra["r92_created"], "ETRA_FAIL_ONLY_EXPECTED")
+    need(fence("ETRA", "2026-09-17", completed_sessions=[], evidence=issuer)
+         is None, "ETRA_FUTURE_LISTING_LOOKAHEAD")
+    bad_etra = copy.deepcopy(issuer)
+    bad_etra["records"]["ETRA"]["first_trade_date"] = "2026-09-16"
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days,
+              evidence=bad_etra)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_FORGED_FIRST_TRADE_ACCEPTED")
+    bad_etra = copy.deepcopy(issuer)
+    bad_etra["records"]["ETRA"]["source_url"] = "https://example.com"
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days,
+              evidence=bad_etra)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_FORGED_ISSUER_ACCEPTED")
+    try:
+        fence("ETRA", "2026-10-19", completed_sessions=etra_days * 2,
+              evidence=issuer)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("ETRA_DUPLICATE_SESSIONS_ACCEPTED")
+    rows = {"ETRA": {"status": "UNKNOWN_STATIC",
+                      "info": {"reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"}},
+            "AAPL": {"status": "PASS", "info": {"bars": 1000}}}
+    need(rebind_etra_research_results(rows, "2026-10-19") == 1
+         and rows["ETRA"]["status"] == "FAIL_HISTORY"
+         and rows["ETRA"]["prior_untrusted_status"] == "UNKNOWN_STATIC"
+         and rows["ETRA"]["info"]["bars"] < LIMIT
+         and rows["AAPL"]["status"] == "PASS"
+         and rebind_etra_research_results(rows, "2026-10-19") == 0,
+         "ETRA_REAL_CACHED_REBOUND_IDEMPOTENCE")
+    print("XRAY_ETRA_OFFICIAL_FAIL_ONLY_SELFTEST=PASS_NO_PRICE_HISTORY_R92_PROMOTION")
     print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
 
 def main():
