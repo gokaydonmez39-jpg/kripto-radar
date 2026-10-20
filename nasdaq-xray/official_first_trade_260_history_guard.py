@@ -100,12 +100,126 @@ def etra_history_fence(asof, *, completed_sessions=None, evidence=None):
             "canonical_history_pass_created": False,
             "r92_created": False, "execution": "NONE", "real_money": "NO-GO"}
 
+# Strict issuer IPO subset with independent Nasdaq market-site opening witnesses.
+# The source registry is already in the repository; no provider queries required.
+# Neither expected listing wording alone nor unrelated ticker reuse grants an IPO fence.
+IPO_BELL_EVIDENCE = {
+    "ACCV": {
+        "first": "2026-09-30", "release": "2026-09-29",
+        "issuer_url": "https://investors.accelevation.com/news-releases/news-release-details/accelevation-announces-pricing-initial-public-offering",
+        "nasdaq_opening_bell": "https://www.nasdaq.com/events/accelevation-rings-opening-bell",
+    },
+    "ADRX": {
+        "first": "2026-09-25", "release": "2026-09-24",
+        "issuer_url": "https://investors.adarx.com/news-releases/news-release-details/adarx-pharmaceuticals-announces-pricing-upsized-4463-million",
+        "nasdaq_opening_bell": "https://www.nasdaq.com/events/adarx-pharmaceuticals-rings-opening-bell",
+    },
+}
+
+def confirmed_ipo_history_fence(symbol, asof, *, completed_sessions=None, evidence=None):
+    spec = IPO_BELL_EVIDENCE.get(symbol)
+    if spec is None:
+        return None
+    need(type(asof) is str, "IPO_ASOF_TYPE")
+    day = dt.date.fromisoformat(asof)
+    need(day.isoformat() == asof, "IPO_ASOF_INVALID")
+    first = dt.date.fromisoformat(spec["first"])
+    release = dt.date.fromisoformat(spec["release"])
+    need(release < first, "IPO_SOURCE_DATE_ORDER")
+    if day < first:
+        return None  # the listed instrument did not yet trade at this ASOF
+    registry = (evidence if evidence is not None
+                else json.loads(ETRA_REGISTRY.read_text()))
+    expected = {
+        "first_trade_date": spec["first"],
+        "authority": "ISSUER_IR_PRIMARY",
+        "source_url": spec["issuer_url"],
+        "evidence_kind": "IPO_FIRST_TRADING_DATE",
+    }
+    need(type(registry) is dict
+         and registry.get("schema") == "XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1"
+         and registry.get("authority") == "OFFICIAL_LISTING_DATE_FAIL_ONLY"
+         and registry.get("execution") == "NONE"
+         and registry.get("real_money") == "NO-GO"
+         and registry.get("unknown_never_pass") is True
+         and (registry.get("records") or {}).get(symbol) == expected,
+         "IPO_ISSUER_REGISTRY_MISMATCH")
+    if completed_sessions is None:
+        import pandas_market_calendars as mcal
+        completed_sessions = [
+            x.date().isoformat() for x in
+            mcal.get_calendar("NASDAQ").valid_days(
+                start_date=spec["first"], end_date=asof)
+        ]
+    need(type(completed_sessions) is list
+         and completed_sessions == sorted(set(completed_sessions))
+         and all(type(s) is str and spec["first"] <= s <= asof
+                 for s in completed_sessions), "IPO_BAD_SESSION_LIST")
+    count = len(completed_sessions)
+    need(count <= (day - first).days + 1, "IPO_MORE_SESSIONS_THAN_DAYS")
+    return {
+        "symbol": symbol, "asof_et": asof,
+        "source_publication_date": spec["release"],
+        "issuer_official_source_url": spec["issuer_url"],
+        "nasdaq_official_opening_bell_url": spec["nasdaq_opening_bell"],
+        "first_traded_nasdaq_date": spec["first"],
+        "completed_listed_sessions": count,
+        "required_own_history_sessions": LIMIT,
+        "own_listed_history_short": count < LIMIT,
+        "pre_ipo_bars_must_be_ignored": True,
+        "unverified_predecessor_cannot_fill_history": True,
+        "evidence_git_blob_sha": git_blob(ETRA_REGISTRY) if evidence is None else None,
+        "canonical_price_pass_created": False,
+        "canonical_history_pass_created": False,
+        "r92_created": False, "execution": "NONE", "real_money": "NO-GO",
+    }
+
+def rebind_confirmed_ipo_research_results(results, asof):
+    """Repair only cached issuer-IPO HISTORY unknowns; never add PASS."""
+    need(type(results) is dict, "IPO_RESULTS_NOT_DICT")
+    converted = 0
+    for symbol in sorted(IPO_BELL_EVIDENCE):
+        prior = results.get(symbol)
+        if prior is None:
+            continue
+        need(type(prior) is dict and type(prior.get("status")) is str,
+             "IPO_MALFORMED_ROW")
+        if prior["status"] not in {
+            "UNKNOWN_STATIC", "UNKNOWN_RETRY", "UNKNOWN_RETRY_EXHAUSTED"
+        }:
+            continue  # existing terminal FAIL and unrelated PASS untouched
+        info = confirmed_ipo_history_fence(symbol, asof)
+        if info is None or not info["own_listed_history_short"]:
+            continue
+        results[symbol] = {
+            **prior, "status": "FAIL_HISTORY",
+            "prior_untrusted_status": prior["status"],
+            "official_first_trade_failonly_rebound": True,
+            "info": {
+                "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+                "first_traded_nasdaq_date": info["first_traded_nasdaq_date"],
+                "completed_listed_sessions": info["completed_listed_sessions"],
+                "bars": info["completed_listed_sessions"],
+                "required_own_history_sessions": LIMIT,
+                "source_evidence_blob_sha": info["evidence_git_blob_sha"],
+                "issuer_opening_bell_confirmed": True,
+                "vendor_history_pre_ipo_quarantined": True,
+                "no_synthetic_bar": True, "unknown_never_pass": True,
+            },
+        }
+        converted += 1
+    return converted
+
+
 def fence(symbol, asof, *, completed_sessions=None, evidence=None):
     """Return proof-bound local 260 result, or None outside this evidence scope.
 
     completed_sessions may be supplied only to deterministic offline selftests;
     the live call always computes actual NASDAQ sessions via pinned calendar.
     """
+    if symbol in IPO_BELL_EVIDENCE:
+        return confirmed_ipo_history_fence(symbol, asof,
+            completed_sessions=completed_sessions, evidence=evidence)
     if symbol == "ETRA":
         return etra_history_fence(asof, completed_sessions=completed_sessions, evidence=evidence)
     if symbol != "BSP":
@@ -335,6 +449,48 @@ def selftest():
          and rows["AAPL"]["status"] == "PASS"
          and rebind_etra_research_results(rows, "2026-10-19") == 0,
          "ETRA_REAL_CACHED_REBOUND_IDEMPOTENCE")
+    real_registry = json.loads(ETRA_REGISTRY.read_text())
+    candidates = {"ACCV": "2026-09-30", "ADRX": "2026-09-25"}
+    ipo_test_rows = {
+        s: {"status": "UNKNOWN_STATIC", "info": {"reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"}}
+        for s in candidates
+    }
+    ipo_test_rows["AAPL"] = {"status": "PASS", "info": {"bars": 270}}
+    for s, first in candidates.items():
+        prior_day = (dt.date.fromisoformat(first) - dt.timedelta(days=1)).isoformat()
+        need(fence(s, prior_day, evidence=real_registry, completed_sessions=[]) is None,
+             "IPO_FUTURE_INFO_LEAK:" + s)
+        fake_days = [(dt.date.fromisoformat(first) + dt.timedelta(days=i)).isoformat()
+                     for i in range(4)]
+        x = fence(s, "2026-10-19", evidence=real_registry,
+                  completed_sessions=fake_days)
+        need(x["own_listed_history_short"] and x["completed_listed_sessions"] == 4
+             and x["unverified_predecessor_cannot_fill_history"] is True
+             and x["r92_created"] is False and x["canonical_history_pass_created"] is False,
+             "IPO_NO_PROMOTION:" + s)
+        for field, badval in (("first_trade_date", "2025-01-01"),
+                              ("source_url", "https://example.invalid")):
+            forged = copy.deepcopy(real_registry)
+            forged["records"][s][field] = badval
+            try:
+                fence(s, "2026-10-19", completed_sessions=fake_days, evidence=forged)
+            except ValueError:
+                pass
+            else:
+                raise RuntimeError("FORGED_IPO_EVIDENCE_NOT_REJECTED:" + s + ":" + field)
+        try:
+            fence(s, "2026-10-19", completed_sessions=fake_days * 2,
+                  evidence=real_registry)
+        except ValueError:
+            pass
+        else:
+            raise RuntimeError("DUPLICATE_IPO_SESSIONS_NOT_REJECTED:" + s)
+    need(rebind_confirmed_ipo_research_results(ipo_test_rows, "2026-10-19") == 2
+         and rebind_confirmed_ipo_research_results(ipo_test_rows, "2026-10-19") == 0
+         and all(ipo_test_rows[s]["status"] == "FAIL_HISTORY" for s in candidates)
+         and ipo_test_rows["AAPL"]["status"] == "PASS",
+         "IPO_REAL_ROOT_CLASS_REBOUND_IDEMPOTENT")
+    print("XRAY_ACC_ADRX_NASDAQ_CONFIRMED_IPO=PASS_TWO_FAIL_HISTORY_ZERO_R92")
     print("XRAY_ETRA_OFFICIAL_FAIL_ONLY_SELFTEST=PASS_NO_PRICE_HISTORY_R92_PROMOTION")
     print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
 

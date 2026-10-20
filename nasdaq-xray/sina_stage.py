@@ -1443,6 +1443,12 @@ def main():
         rebind_etra_research_results(results, asof))
     if state["etra_first_trade_history_rebound_count"]:
         print("XRAY_ETRA_OFFICIAL_FIRST_TRADE_UNKNOWN_TERMINAL_FAIL_HISTORY=1")
+    from official_first_trade_260_history_guard import rebind_confirmed_ipo_research_results
+    state["confirmed_ipo_first_trade_history_rebound_count"] = (
+        rebind_confirmed_ipo_research_results(results, asof))
+    if state["confirmed_ipo_first_trade_history_rebound_count"]:
+        print("XRAY_CONFIRMED_IPO_OFFICIAL_FIRST_TRADE_UNKNOWN_TO_FAIL_HISTORY="
+              +str(state["confirmed_ipo_first_trade_history_rebound_count"]))
 
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
