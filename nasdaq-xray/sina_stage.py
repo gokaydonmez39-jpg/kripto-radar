@@ -1438,6 +1438,11 @@ def main():
         rebind_existing_research_results(results,asof))
     if state["official_first_trade_history_rebound_count"]:
         print("XRAY_OFFICIAL_FIRST_TRADE_OLD_PASS_DEMOTED_FAIL_HISTORY_BSP=1")
+    from official_first_trade_260_history_guard import rebind_etra_research_results
+    state["etra_first_trade_history_rebound_count"] = (
+        rebind_etra_research_results(results, asof))
+    if state["etra_first_trade_history_rebound_count"]:
+        print("XRAY_ETRA_OFFICIAL_FIRST_TRADE_UNKNOWN_TERMINAL_FAIL_HISTORY=1")
 
     state["cursor"]=end
     state["processed_new_this_run"]=len(new)
