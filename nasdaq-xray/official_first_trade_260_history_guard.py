@@ -211,12 +211,124 @@ def rebind_confirmed_ipo_research_results(results, asof):
     return converted
 
 
+# CHWM is a Nasdaq ADS instrument, not the issuer's older ASX CHW shares.
+# A September 30 SEC exhibit stated *expected* trading. The October 2
+# issuer SEC exhibit says CHWM ADSs *began* trading on October 1, 2026.
+# Therefore the October 2 evidence is not available for October 1 PIT.
+CHWM_FIRST = "2026-10-01"
+CHWM_CONFIRMATION_PUBLISHED = "2026-10-02"
+CHWM_REGISTRY_SOURCE = (
+    "https://www.sec.gov/Archives/edgar/data/2113605/"
+    "000121390026106090/ea0307489-424b1_chilwa.htm"
+)
+CHWM_CONFIRMED_SOURCE = (
+    "https://www.sec.gov/Archives/edgar/data/2113605/"
+    "000121390026106489/ea030732001ex99-2.htm"
+)
+
+def chwm_ads_history_fence(asof, *, completed_sessions=None, evidence=None):
+    need(type(asof) is str, "CHWM_ASOF_TYPE")
+    current = dt.date.fromisoformat(asof)
+    need(current.isoformat() == asof, "CHWM_ASOF_FORMAT")
+    if asof < CHWM_CONFIRMATION_PUBLISHED:
+        return None
+    registry = evidence if evidence is not None else json.loads(ETRA_REGISTRY.read_text())
+    expected = {
+        "first_trade_date": CHWM_FIRST,
+        "authority": "SEC_PRIMARY",
+        "source_url": CHWM_REGISTRY_SOURCE,
+        "evidence_kind": "NASDAQ_LISTING_DATE",
+    }
+    need(type(registry) is dict
+         and registry.get("schema") == "XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1"
+         and registry.get("authority") == "OFFICIAL_LISTING_DATE_FAIL_ONLY"
+         and registry.get("execution") == "NONE"
+         and registry.get("real_money") == "NO-GO"
+         and registry.get("unknown_never_pass") is True
+         and (registry.get("records") or {}).get("CHWM") == expected,
+         "CHWM_SEC_ADS_REGISTRY_MISMATCH")
+    if completed_sessions is None:
+        import pandas_market_calendars as mcal
+        completed_sessions = [
+            day.date().isoformat() for day in
+            mcal.get_calendar("NASDAQ").valid_days(
+                start_date=CHWM_FIRST, end_date=asof)
+        ]
+    need(type(completed_sessions) is list
+         and completed_sessions == sorted(set(completed_sessions))
+         and all(type(day) is str and CHWM_FIRST <= day <= asof
+                 for day in completed_sessions), "CHWM_SESSION_PROOF_MALFORMED")
+    n = len(completed_sessions)
+    need(n <= (current - dt.date.fromisoformat(CHWM_FIRST)).days + 1,
+         "CHWM_SESSION_COUNT_GT_CALENDAR")
+    return {
+        "symbol": "CHWM", "asof_et": asof,
+        "first_traded_nasdaq_date": CHWM_FIRST,
+        "source_publication_date": CHWM_CONFIRMATION_PUBLISHED,
+        "actual_trade_sec_exhibit": CHWM_CONFIRMED_SOURCE,
+        "instrument": "CHWM_NASDAQ_AMERICAN_DEPOSITARY_SHARES",
+        "ordinary_share_prior_history_inherited": False,
+        "ads_ratio_ordinary_shares_per_ads": 10,
+        "completed_listed_sessions": n,
+        "required_own_history_sessions": LIMIT,
+        "own_listed_history_short": n < LIMIT,
+        "pre_ipo_bars_must_be_ignored": True,
+        "unverified_predecessor_cannot_fill_history": True,
+        "evidence_git_blob_sha": git_blob(ETRA_REGISTRY) if evidence is None else None,
+        "sec_exhibit_raw_html_sha256_captured": False,
+        "canonical_price_pass_created": False,
+        "canonical_history_pass_created": False,
+        "r92_created": False,
+        "execution": "NONE", "real_money": "NO-GO",
+    }
+
+def rebind_chwm_ads_cached_history(results, asof):
+    """Only demote CHWM cached SOURCE UNKNOWN; never derive a PASS."""
+    need(type(results) is dict, "CHWM_RESULTS_NOT_DICT")
+    prior = results.get("CHWM")
+    if prior is None:
+        return 0
+    need(type(prior) is dict and type(prior.get("status")) is str,
+         "CHWM_MALFORMED_ROW")
+    if prior["status"] not in {
+        "UNKNOWN_STATIC", "UNKNOWN_RETRY", "UNKNOWN_RETRY_EXHAUSTED"
+    }:
+        return 0
+    fence_info = chwm_ads_history_fence(asof)
+    if fence_info is None or not fence_info["own_listed_history_short"]:
+        return 0
+    results["CHWM"] = {
+        **prior,
+        "status": "FAIL_HISTORY",
+        "prior_untrusted_status": prior["status"],
+        "official_first_trade_failonly_rebound": True,
+        "info": {
+            "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+            "first_traded_nasdaq_date": fence_info["first_traded_nasdaq_date"],
+            "confirmation_publication_date": CHWM_CONFIRMATION_PUBLISHED,
+            "completed_listed_sessions": fence_info["completed_listed_sessions"],
+            "bars": fence_info["completed_listed_sessions"],
+            "required_own_history_sessions": LIMIT,
+            "source_evidence_blob_sha": fence_info["evidence_git_blob_sha"],
+            "actual_trade_sec_exhibit": CHWM_CONFIRMED_SOURCE,
+            "sec_exhibit_raw_html_sha256_captured": False,
+            "asx_ordinary_history_not_inherited": True,
+            "ads_ratio_ordinary_shares_per_ads": 10,
+            "no_synthetic_bar": True, "unknown_never_pass": True,
+        },
+    }
+    return 1
+
+
 def fence(symbol, asof, *, completed_sessions=None, evidence=None):
     """Return proof-bound local 260 result, or None outside this evidence scope.
 
     completed_sessions may be supplied only to deterministic offline selftests;
     the live call always computes actual NASDAQ sessions via pinned calendar.
     """
+    if symbol == "CHWM":
+        return chwm_ads_history_fence(asof, completed_sessions=completed_sessions,
+                                      evidence=evidence)
     if symbol in IPO_BELL_EVIDENCE:
         return confirmed_ipo_history_fence(symbol, asof,
             completed_sessions=completed_sessions, evidence=evidence)
