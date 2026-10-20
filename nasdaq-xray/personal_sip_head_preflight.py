@@ -107,7 +107,7 @@ def main():
         out=os.environ.get("GITHUB_OUTPUT")
         if not out:raise RuntimeError("GITHUB_OUTPUT_REQUIRED")
         with open(out,"a",encoding="utf-8") as fp:
-            fp.write("ready="+str(ready).lower()+"\\n")
+            fp.write("ready="+str(ready).lower()+"\n")
     if opts.check and not ready:
         raise SystemExit(2)
 
