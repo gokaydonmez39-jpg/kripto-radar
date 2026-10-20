@@ -1,12 +1,13 @@
 {
   "asof_et": "2026-10-19",
   "build": "2026-10-02.1",
+  "confirmed_ipo_first_trade_history_rebound_count": 2,
   "counts": {
     "FAIL_DV30": 1137,
-    "FAIL_HISTORY": 2,
+    "FAIL_HISTORY": 4,
     "FAIL_PRICE": 1338,
     "PASS": 496,
-    "UNKNOWN_STATIC": 216
+    "UNKNOWN_STATIC": 214
   },
   "cursor": 3189,
   "discovery": {
@@ -28752,7 +28753,7 @@
   },
   "discovery_source": "CANONICAL_FROZEN_FULL_IDENTITY_SAME_ASOF",
   "epoch_key": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER|MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD|FULL_IDENTITY|CANONICAL_FROZEN_IDENTITY:a718af3ed2c778d01bad421ea1077dcefb74243935bbb27d7afb48dbd281a0e4|SEC_SPAC_PROOF:9cdcfb21df658a0d58c8d8eea16ca022363de92c|ASOF_IDENTITY_PROOF:f804441905379d955ebaf4e44a63d6628cafa8eb|2026-10-19",
-  "etra_first_trade_history_rebound_count": 1,
+  "etra_first_trade_history_rebound_count": 0,
   "execution": "NONE",
   "expected30": [
     "2026-09-08",
@@ -32494,12 +32495,21 @@
       "attempts": 1,
       "info": {
         "bars": 14,
-        "price": 12.49,
-        "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+        "completed_listed_sessions": 14,
+        "first_traded_nasdaq_date": "2026-09-30",
+        "issuer_opening_bell_confirmed": true,
+        "no_synthetic_bar": true,
+        "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+        "required_own_history_sessions": 260,
+        "source_evidence_blob_sha": "2e6bcfe2465fef7d136ad4460bf5a27945c3c38a",
+        "unknown_never_pass": true,
+        "vendor_history_pre_ipo_quarantined": true
       },
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
-      "status": "UNKNOWN_STATIC",
+      "official_first_trade_failonly_rebound": true,
+      "prior_untrusted_status": "UNKNOWN_STATIC",
+      "status": "FAIL_HISTORY",
       "transport_rescue_round": 0,
       "updated_at_utc": "2026-10-20T01:59:47.511230+00:00"
     },
@@ -32993,12 +33003,21 @@
       "attempts": 1,
       "info": {
         "bars": 17,
-        "price": 17.63,
-        "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+        "completed_listed_sessions": 17,
+        "first_traded_nasdaq_date": "2026-09-25",
+        "issuer_opening_bell_confirmed": true,
+        "no_synthetic_bar": true,
+        "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+        "required_own_history_sessions": 260,
+        "source_evidence_blob_sha": "2e6bcfe2465fef7d136ad4460bf5a27945c3c38a",
+        "unknown_never_pass": true,
+        "vendor_history_pre_ipo_quarantined": true
       },
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
-      "status": "UNKNOWN_STATIC",
+      "official_first_trade_failonly_rebound": true,
+      "prior_untrusted_status": "UNKNOWN_STATIC",
+      "status": "FAIL_HISTORY",
       "transport_rescue_round": 0,
       "updated_at_utc": "2026-10-20T01:59:47.511358+00:00"
     },
@@ -83766,12 +83785,12 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "51b8eaa9073c8c7040b94b3b12e09ed3affe0cd8afdc7d1ff6ed3edf017f1006",
+  "state_hash": "01f2d1beacdb0a3cdbddc4fdedf118b320f99fab24314045b26ad5a9905bfefd",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
-  "unknown_count": 216,
+  "unknown_count": 214,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-20T15:00:54.082378+00:00"
+  "updated_at_utc": "2026-10-20T15:55:48.845153+00:00"
 }
