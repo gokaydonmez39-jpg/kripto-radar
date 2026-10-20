@@ -16,6 +16,9 @@ on:
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
   pull_request:
     paths:
+      - "nasdaq-xray/personal_sip_head_preflight.py"
+      - "nasdaq-xray/all_workflow_schedule_audit.py"
+      - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
       - "nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
       - "nasdaq-xray/alpaca_strict_daily_shadow_v2.py"
@@ -60,6 +63,8 @@ jobs:
           python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
           python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
           python nasdaq-xray/all_workflow_schedule_audit.py --selftest
+          python -m py_compile nasdaq-xray/personal_sip_head_preflight.py
+          python nasdaq-xray/personal_sip_head_preflight.py --selftest
       - name: Quota-free scheduled root ASOF and latest-main preflight
         id: scheduled_root
         if: ${{ github.event_name == 'schedule' }}

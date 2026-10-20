@@ -57,8 +57,19 @@ class QuotaDedupContract(unittest.TestCase):
                 d=read(filename)
                 gate=d["jobs"].get("session-gate")
                 self.assertIsNotNone(gate, "SCHEDULED_PROVIDER_SESSION_GATE_MISSING")
-                self.assertEqual(gate["outputs"]["allow"],
-                    "${{ steps.session.outputs.allow_compute }}")
+                expected_allow=("${{ steps.session.outputs.allow_compute == 'true' && "
+                                "steps.source.outputs.ready == 'true' }}"
+                                if filename=="xray-personal-full-universe-sip-coverage.yml"
+                                else "${{ steps.session.outputs.allow_compute }}")
+                self.assertEqual(gate["outputs"]["allow"],expected_allow)
+                if filename=="xray-personal-full-universe-sip-coverage.yml":
+                    source_steps=[step for step in gate["steps"]
+                                  if step.get("id")=="source"]
+                    self.assertEqual(len(source_steps),1)
+                    self.assertIn("personal_sip_head_preflight.py --selftest",
+                                  source_steps[0].get("run",""))
+                    self.assertIn("personal_sip_head_preflight.py --emit",
+                                  source_steps[0].get("run",""))
                 guard_steps=[s for s in gate["steps"] if
                     s.get("id")=="session"]
                 self.assertEqual(len(guard_steps),1)
