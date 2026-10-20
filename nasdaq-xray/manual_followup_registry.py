@@ -22,7 +22,45 @@ RESULT = "XRAY_MANUAL_RESEARCH_LIFECYCLE_PROPOSAL_V1"
 TASK = "6a825366222081918997094d76e6ae46"
 
 
-def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
+def origin_digest(row: dict) -> str:
+    """Canonical JSON fingerprint of the exact immutable R92 origin record."""
+    return hashlib.sha256(
+        json.dumps(row, sort_keys=True, separators=(",", ":"),
+                   ensure_ascii=False, allow_nan=False).encode("utf-8")
+    ).hexdigest()
+
+
+def canonical_r92_index(pointer: dict) -> dict:
+    if not isinstance(pointer, dict) or pointer.get("schema") not in (
+            "XRAY_GITHUB_DURABLE_STATE_V2", "XRAY_GITHUB_DURABLE_STATE_V3"):
+        raise ValueError("CANONICAL_R92_POINTER_INVALID")
+    if (pointer.get("authority") != "GITHUB_CURRENT_POINTER"
+            or pointer.get("execution") != "NONE"
+            or pointer.get("real_money") != "NO-GO"):
+        raise ValueError("CANONICAL_R92_POINTER_SAFETY_INVALID")
+    state = pointer.get("state_json")
+    if not isinstance(state, dict) or state.get("task_id") != TASK:
+        raise ValueError("CANONICAL_R92_TASK_INVALID")
+    r92, keys = state.get("r92"), state.get("delivery_keys")
+    if not isinstance(r92, list) or not isinstance(keys, list):
+        raise ValueError("CANONICAL_R92_REGISTRY_INVALID")
+    if len(keys) != len(set(keys)):
+        raise ValueError("CANONICAL_R92_DUPLICATE_DELIVERY_KEY")
+    index = {}
+    for row in r92:
+        if (not isinstance(row, dict)
+                or row.get("schema") != "XRAY_RESEARCH_CANDIDATE_R92_V1"
+                or row.get("execution") != "NONE"
+                or row.get("real_money") != "NO-GO"):
+            raise ValueError("CANONICAL_R92_RECORD_INVALID")
+        key = row.get("delivery_key")
+        if not isinstance(key, str) or not key or key not in keys or key in index:
+            raise ValueError("CANONICAL_R92_KEY_INVALID_OR_DUPLICATE")
+        index[key] = row
+    return index
+
+
+def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonical_pointer: dict | None = None) -> dict:
     if not isinstance(registry, dict) or registry.get("schema") != SCHEMA:
         raise ValueError("REGISTRY_SCHEMA_INVALID")
     if (registry.get("execution") != "NONE" or registry.get("real_money") != "NO-GO"
@@ -32,6 +70,9 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
     records = registry.get("records")
     if not isinstance(records, dict):
         raise ValueError("REGISTRY_RECORDS_INVALID")
+    if records and canonical_pointer is None:
+        raise ValueError("CANONICAL_R92_POINTER_REQUIRED")
+    index = canonical_r92_index(canonical_pointer) if records else {}
     if not isinstance(observation, dict):
         raise ValueError("OBSERVATION_FORMAT_INVALID")
     if set(observation) - set(records):
@@ -54,6 +95,15 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str) -> dict:
         if candidate.get("delivery_key") != delivery_key:
             raise ValueError("DELIVERY_KEY_DRIFT")
         validate_candidate(candidate)
+        origin = index.get(delivery_key)
+        if (not isinstance(origin, dict)
+                or origin.get("symbol") != candidate["symbol"]
+                or origin.get("asof_et") != candidate.get("source_asof_et")
+                or origin.get("setup") not in ("A", "B", "C", "D")
+                or origin.get("setup") != candidate.get("setup")):
+            raise ValueError("CANONICAL_R92_ORIGIN_MISMATCH")
+        if rec.get("origin_r92_sha256") != origin_digest(origin):
+            raise ValueError("CANONICAL_R92_ORIGIN_HASH_MISMATCH")
         if rec.get("candidate_asof_et") != candidate["source_asof_et"]:
             raise ValueError("CANDIDATE_ASOF_MISMATCH")
         previous = rec.get("followup") or {}
@@ -142,21 +192,37 @@ def tests() -> None:
             raise
     else:
         raise RuntimeError("FORGED_MANUAL_REGISTRY_ADMITTED_WITHOUT_CANONICAL_R92")
-    fresh = proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
+
+    # Offline-only synthetic canonical fixture: never production R92 evidence.
+    c["setup"] = "A"
+    origin = {"schema": "XRAY_RESEARCH_CANDIDATE_R92_V1",
+              "delivery_key": c["delivery_key"], "symbol": c["symbol"],
+              "setup": "A", "asof_et": c["source_asof_et"],
+              "execution": "NONE", "real_money": "NO-GO"}
+    canonical = {"schema": "XRAY_GITHUB_DURABLE_STATE_V3",
+                 "authority": "GITHUB_CURRENT_POINTER",
+                 "execution": "NONE", "real_money": "NO-GO",
+                 "state_json": {"task_id": TASK, "r92": [origin],
+                                "delivery_keys": [c["delivery_key"]]}}
+    good["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(origin)
+    def bound_proposal(reg, obs, stamp, *, pointer=canonical):
+        return proposal(reg, obs, stamp, canonical_pointer=pointer)
+
+    fresh = bound_proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
     assert len(fresh["pending_alerts"]) == 1
     assert fresh["pending_alerts"][0]["notification_status"] == "PENDING_NOT_DELIVERED"
-    repeated = proposal(fresh["registry"], {c["delivery_key"]: {"bar": b}},
+    repeated = bound_proposal(fresh["registry"], {c["delivery_key"]: {"bar": b}},
                         "2026-10-08T19:10:00Z")
     assert len(repeated["pending_alerts"]) == 1
     assert repeated["pending_alerts"][0] == fresh["pending_alerts"][0]
     # No delivery receipt exists: the alert MUST NOT disappear just because
     # the same bar was classified twice. A downstream publisher uses the
     # stable alert_dedup_key for idempotent delivery attempts.
-    after = proposal(repeated["registry"], {}, "2026-10-16T20:00:00Z")
+    after = bound_proposal(repeated["registry"], {}, "2026-10-16T20:00:00Z")
     assert len(after["pending_alerts"]) == 2
     assert set(x["status"] for x in after["pending_alerts"]) == {
         "ENTRY_ZONE_TOUCHED", "EXPIRED"}
-    repeated_expiry = proposal(after["registry"], {}, "2026-10-17T20:00:00Z")
+    repeated_expiry = bound_proposal(after["registry"], {}, "2026-10-17T20:00:00Z")
     assert len(repeated_expiry["pending_alerts"]) == 2
     assert repeated_expiry["pending_alerts"] == after["pending_alerts"]
     for bad in (
@@ -165,15 +231,40 @@ def tests() -> None:
         {c["delivery_key"]: {"bar": b, "official_control": {}}},
     ):
         try:
-            proposal(good, bad, "2026-10-08T19:10:00Z")
+            bound_proposal(good, bad, "2026-10-08T19:10:00Z")
         except ValueError:
             pass
         else:
             raise AssertionError("UNAUTHORIZED_OBSERVATION_ADMITTED")
+    # No pointer, no key, mismatched setup and forged origin digest are all
+    # rejected even when the manual registration label says REGISTERED.
+    for mutation, expected in (
+        (lambda p: p["state_json"].update(r92=[]), "CANONICAL_R92_ORIGIN_MISMATCH"),
+        (lambda p: p["state_json"]["r92"][0].update(setup="D"), "CANONICAL_R92_ORIGIN_MISMATCH"),
+        (lambda p: p["state_json"]["r92"][0].update(symbol="OTHER"), "CANONICAL_R92_ORIGIN_MISMATCH"),
+    ):
+        broken = copy.deepcopy(canonical)
+        mutation(broken)
+        try:
+            bound_proposal(good, {}, "2026-10-08T19:10:00Z", pointer=broken)
+        except ValueError as exc:
+            if str(exc) != expected:
+                raise
+        else:
+            raise RuntimeError("FORGED_CANONICAL_ORIGIN_WAS_ACCEPTED")
+    tampered = copy.deepcopy(good)
+    tampered["records"][c["delivery_key"]]["origin_r92_sha256"] = "0" * 64
+    try:
+        bound_proposal(tampered, {}, "2026-10-08T19:10:00Z")
+    except ValueError as exc:
+        if str(exc) != "CANONICAL_R92_ORIGIN_HASH_MISMATCH":
+            raise
+    else:
+        raise RuntimeError("FORGED_R92_ORIGIN_DIGEST_ACCEPTED")
     badregistry = copy.deepcopy(good)
     badregistry["records"][c["delivery_key"]]["manual_candidate"]["manual_approved"] = False
     try:
-        proposal(badregistry, {}, "2026-10-08T19:10:00Z")
+        bound_proposal(badregistry, {}, "2026-10-08T19:10:00Z")
     except ValueError:
         pass
     else:
@@ -185,6 +276,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--selftest", action="store_true")
     p.add_argument("--registry", default="nasdaq-xray/canonical_candidate_lifecycle_registry.json")
+    p.add_argument("--canonical-pointer", default="nasdaq-xray/chatgpt_canonical_state_v2.json")
     p.add_argument("--observations")
     p.add_argument("--observed-at-utc")
     p.add_argument("--out")
@@ -196,7 +288,8 @@ def main():
         raise SystemExit("OBSERVATION_TIME_AND_OUT_REQUIRED")
     registry = json.loads(Path(a.registry).read_text())
     events = json.loads(Path(a.observations).read_text()) if a.observations else {}
-    result = proposal(registry, events, a.observed_at_utc)
+    pointer = json.loads(Path(a.canonical_pointer).read_text())
+    result = proposal(registry, events, a.observed_at_utc, canonical_pointer=pointer)
     Path(a.out).write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
     print("XRAY_FOLLOWUP_PROPOSAL_ONLY_NO_DELIVERY count="
           + str(len(result["pending_alerts"])))
