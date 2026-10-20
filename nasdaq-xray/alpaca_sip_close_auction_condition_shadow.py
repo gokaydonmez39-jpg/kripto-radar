@@ -123,6 +123,14 @@ def selftest():
     require(report["condition_partition_counts"]=={
       "CLOSING_AUCTION_6":1,"EXTENDED_HOURS_T_EXCLUDE":14,
       "MARKET_CENTER_REFERENCE_M_EXCLUDE":2},"SAMPLE_PARTITION")
+    require(report["condition_partition_sizes_research_only"]=={
+        "CLOSING_AUCTION_6":100,
+        "EXTENDED_HOURS_T_EXCLUDE":1400,
+        "MARKET_CENTER_REFERENCE_M_EXCLUDE":200},"SIZE_PARTITION")
+    require(report["sample_scope_complete"] is False and
+            report["sample_input_rows_classified"] is True and
+            report["provider_pagination_and_corrections_attested"] is False,
+            "NO_FALSE_SAMPLE_COMPLETENESS")
     require(report["daily_rth_volume_verified"] is False and
             report["r92_created"] is False,"NONAUTHORITY")
     _,early,early_minutes=official_window("2026-11-27")
