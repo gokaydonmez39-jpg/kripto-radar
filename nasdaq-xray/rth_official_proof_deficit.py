@@ -37,6 +37,28 @@ def need(value,reason):
     if not value: raise ValueError("XRAY_RTH_PROOF_"+reason)
 
 
+def validate_trigger_source(event_name,event,observed_cross_run,repo):
+    """Read-only workflow_run provenance: exactly the authenticated parent run."""
+    if event_name!="workflow_run":
+        return
+    need(type(event) is dict and type(observed_cross_run) is int
+         and observed_cross_run>0 and type(repo) is str and repo,
+         "TRIGGER_EVENT_SHAPE")
+    wr=event.get("workflow_run")
+    need(type(wr) is dict and
+         wr.get("id")==observed_cross_run and
+         wr.get("status")=="completed" and
+         wr.get("conclusion")=="success" and
+         wr.get("head_branch")=="main" and
+         wr.get("name")=="XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)" and
+         wr.get("path")==".github/workflows/xray-cross-plane-blocker-reconciliation.yml" and
+         (wr.get("repository") or {}).get("full_name")==repo and
+         (wr.get("head_repository") or {}).get("full_name")==repo and
+         type(wr.get("head_sha")) is str and
+         re.fullmatch(r"[0-9a-f]{40}",wr["head_sha"]) is not None,
+         "TRIGGER_CROSS_RUN_NOT_LATEST_OR_TRUSTED")
+
+
 def universe_sha(symbols):
     return hashlib.sha256("\n".join(symbols).encode("ascii")).hexdigest()
 
