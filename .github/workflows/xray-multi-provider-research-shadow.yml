@@ -78,6 +78,47 @@ jobs:
           assert x["upstream_code_executed"] is False
           print("XRAY_TAURIC_REAL_CANONICAL_ADVISORY=PASS_ZERO_PRIMARY_ZERO_R92")
           PY
+      - name: Counterfactual pointer feedback cycle RED-to-GREEN (zero market APIs)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          root=Path(".github/workflows")
+          def targets(text):
+              blocks=text.split("\n  workflow_run:\n")
+              if len(blocks)!=2:raise RuntimeError("EXPECTED_ONE_WORKFLOW_RUN")
+              body=blocks[1].split("\n  ",1)[0]
+              match=re.search(r"(?m)^\s*workflows: (\[.*\])$",body)
+              if match is None:raise RuntimeError("WORKFLOW_RUN_TARGET_SCHEMA_DRIFT")
+              return json.loads(match.group(1))
+          p=(root/"xray-canonical-pointer-transition.yml").read_text()
+          r=(root/"xray-resilience-observability.yml").read_text()
+          f=(root/"xray-canonical-current-final.yml").read_text()
+          pointer="XRAY Canonical Pointer Transition"
+          resilience="XRAY Resilience + Official Witnesses"
+          final="XRAY Canonical Current Final Factory"
+          dataplane="NASDAQ SWING XRAY Autonomous Data Plane"
+          def has_cycle(rt):
+              return pointer in targets(rt) and resilience in targets(f) and final in targets(p)
+          expected_old=r.replace('["'+dataplane+'"]',
+              '["'+pointer+'", "'+dataplane+'"]')
+          if not has_cycle(expected_old):
+              raise RuntimeError("PREVIOUS_CYCLE_NOT_REPRODUCED")
+          if has_cycle(r):
+              raise RuntimeError("PRODUCTION_WORKFLOW_RUN_FEEDBACK_UNBROKEN")
+          if targets(r)!=[dataplane]:
+              raise RuntimeError("DATA_PLANE_PRIMARY_WAKE_LOST")
+          for expected in ("  schedule:", "  workflow_dispatch:", "  push:",
+                           'nasdaq-xray/chatgpt_canonical_state_v2.json'):
+              if expected not in r:raise RuntimeError("EXISTING_FALLBACK_REMOVED:"+expected)
+          if final not in targets(p):
+              raise RuntimeError("POINTER_FINAL_DEPENDENCY_LOST")
+          if resilience not in targets(f):
+              raise RuntimeError("FINAL_RESILIENCE_DEPENDENCY_LOST")
+          print("XRAY_GH_POINTER_RESILIENCE_CYCLE_RED_GREEN=PASS_ONE_EDGE_REMOVED_NO_PRIMARY_NO_R92")
+          PY
   provider-shadow:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
