@@ -134,6 +134,14 @@ def tests() -> None:
         "candidate_asof_et": c["source_asof_et"],
         "manual_candidate": c,
     }
+    # RED: a fabricated manual registry must not count as a canonical R92.
+    try:
+        proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
+    except ValueError as exc:
+        if str(exc) != "CANONICAL_R92_POINTER_REQUIRED":
+            raise
+    else:
+        raise RuntimeError("FORGED_MANUAL_REGISTRY_ADMITTED_WITHOUT_CANONICAL_R92")
     fresh = proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
     assert len(fresh["pending_alerts"]) == 1
     assert fresh["pending_alerts"][0]["notification_status"] == "PENDING_NOT_DELIVERED"
