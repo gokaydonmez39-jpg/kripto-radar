@@ -109,7 +109,7 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_GRAPHIFY_C417_REAL_CURRENT_BLOBS=PASS_7_EXPLICIT_EDGES_NO_ALPHA")
           PY
-      - name: PR-only one-edge workflow_run cycle proof: 10 negative cases and -O
+      - name: "PR-only one-edge workflow_run cycle proof (10 negatives and optimized Python)"
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
