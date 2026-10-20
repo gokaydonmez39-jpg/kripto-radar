@@ -124,6 +124,27 @@ jobs:
           python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
           python -m unittest discover -s nasdaq-xray/tests -p test_alpaca_price_429_cliff_report.py -v
           python -O -m unittest discover -s nasdaq-xray/tests -p test_alpaca_price_429_cliff_report.py -v
+      - name: Official ETRA issuer history source and cached unknown regression (offline)
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/official_first_trade_260_history_guard.py nasdaq-xray/sina_stage.py
+          python nasdaq-xray/official_first_trade_260_history_guard.py --selftest
+          python -O nasdaq-xray/official_first_trade_260_history_guard.py --selftest
+          python - <<'PY'
+          import json,sys
+          sys.path.insert(0,"nasdaq-xray")
+          from official_first_trade_260_history_guard import rebind_etra_research_results
+          source=json.load(open("nasdaq-xray/sina_state.json"))
+          assert source["asof_et"]=="2026-10-19"
+          assert source["results"]["ETRA"]["status"]=="UNKNOWN_STATIC"
+          rows={"ETRA":dict(source["results"]["ETRA"])}
+          assert rebind_etra_research_results(rows,source["asof_et"])==1
+          assert rows["ETRA"]["status"]=="FAIL_HISTORY"
+          assert rows["ETRA"]["info"]["completed_listed_sessions"]<260
+          assert rows["ETRA"]["info"]["source_evidence_blob_sha"]
+          assert rows["ETRA"]["prior_untrusted_status"]=="UNKNOWN_STATIC"
+          print("XRAY_ETRA_REAL_ROOT_UNKNOWN_TO_FAIL_ONLY=PASS_ZERO_VENDOR_CALLS_ZERO_AL")
+          PY
       - name: Never mistake offline-only evidence for a live source
         run: |
           set -euo pipefail
