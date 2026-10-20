@@ -77,19 +77,25 @@ def classify_sample(symbol,asof,trades,*,window_seconds=4):
     seen=set()
     counts={"CLOSING_AUCTION_6":0,"EXTENDED_HOURS_T_EXCLUDE":0,
             "MARKET_CENTER_REFERENCE_M_EXCLUDE":0}
+    sizes={key:0 for key in counts}
     for trade in trades:
         category=classify_one(trade,symbol,close,max_seconds=window_seconds)
         key=(trade["exchange"],trade["id"])
         require(key not in seen,"DUPLICATE_TRADE_ID")
         seen.add(key)
         counts[category]+=1
+        sizes[category]+=trade["size"]
     require(sum(counts.values())==len(trades),"COUNT_PARTITION")
+    require(sum(sizes.values())==sum(t["size"] for t in trades),"SIZE_PARTITION")
     return {"schema":SCHEMA,"symbol":symbol,"asof_et":asof,
             "close_time_utc":close.isoformat(),"official_session_minutes":minutes,
             "sample_window_seconds":window_seconds,
             "trade_records_inspected":len(trades),
             "condition_partition_counts":counts,
-            "sample_scope_complete":True,
+            "condition_partition_sizes_research_only":sizes,
+            "sample_input_rows_classified":True,
+            "sample_scope_complete":False,
+            "provider_pagination_and_corrections_attested":False,
             "whole_day_trade_coverage_verified":False,
             "all_trade_corrections_verified":False,
             "close_auction_full_coverage_verified":False,
