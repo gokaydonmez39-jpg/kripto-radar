@@ -3,13 +3,13 @@
   "asof_et": "2026-10-19",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-19",
-    "attempted_count": 477,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 477,
-    "engine_source_sha256": "f2bf052ec1709049285ed8f6b3001571da463e782ccc25b8c90397afea2b8c7b",
-    "evaluated_count": 475,
+    "engine_source_sha256": "e64c424e5ff9b97aec851c886c362a41ae3e1c19b93bed0b7ed3ba10927e20e0",
+    "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,10 +18,12 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 23,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 2,
+    "pending_count": 4,
     "pending_symbols": [
       "FISV",
-      "CCC"
+      "CCC",
+      "NSIT",
+      "GSAT"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -1515,12 +1517,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "GSAT": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
-        "terminal_scan": true
-      },
       "GTLB": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -2313,12 +2309,6 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "NSIT": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "NTAP": {
@@ -4109,7 +4099,7 @@
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "1a146b440f6477ec2c899d378e70edec56a42ace7267289f17ddd29025af63d4",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 113,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 111,
       "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 339,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 23,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2
@@ -4156,7 +4146,7 @@
   "history_unknown_reason_counts": {
     "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 34,
     "EXACT30_SESSIONS_INCOMPLETE": 4,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 150,
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 149,
     "STATIC_UNKNOWN_OTHER": 29
   },
   "late_asof_canary_probes_this_run": 0,
@@ -4168,9 +4158,9 @@
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 217,
+  "unknown_count": 216,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-20T07:50:06.811135+00:00",
+  "updated_at_utc": "2026-10-20T15:00:54.519391+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
