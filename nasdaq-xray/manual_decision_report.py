@@ -59,7 +59,12 @@ def may_use_frozen_blob(key:str,current:dict,terminal_asof:str):
     try:
         old=dt.date.fromisoformat(terminal_asof)
         new=dt.date.fromisoformat(str(current.get("asof_et") or ""))
-        return 0<(new-old).days<=7
+        # A fixed 7-day limit rejected an authentic 2026-10-07 terminal
+        # against a 2026-10-19 current source. Age alone cannot invalidate
+        # an immutable, exact-SHA verified *historical* source. The caller
+        # restores the terminal-bound Git blob, never the newer data, and the
+        # independent live-source/epoch guard denies current release.
+        return new>old
     except (ValueError,TypeError):
         return False
 
@@ -319,7 +324,24 @@ def selftest():
     assert may_use_frozen_blob("events",{"asof_et":"2026-10-07"},"2026-10-07") is True
     assert may_use_frozen_blob("events",{"asof_et":"2026-10-06"},"2026-10-07") is False
     assert may_use_frozen_blob("history",{"asof_et":"2026-10-07"},"2026-10-07") is False
-    assert may_use_frozen_blob("master",{"asof_et":"2026-10-25"},"2026-10-07") is False
+    # RED with the former hardcoded seven-day gate (12 calendar days):
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-19"},"2026-10-07") is True
+    assert may_use_frozen_blob("price",{"asof_et":"2026-10-19"},"2026-10-07") is True
+    # A historical source can be arbitrarily old if its Git blob SHA is
+    # exact; this helper does not grant current signal or delivery authority.
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-25"},"2026-10-07") is True
+    assert may_use_frozen_blob("master",{"asof_et":"invalid"},"2026-10-07") is False
+    assert may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"invalid") is False
+    assert may_use_frozen_blob("price",{"asof_et":"2026-10-06"},"2026-10-07") is False
+    assert may_use_frozen_blob("policy",{"asof_et":"2026-10-19"},"2026-10-07") is False
+    if may_use_frozen_blob("master",{"asof_et":"2026-10-19"},"2026-10-07") is not True:
+        raise RuntimeError("HISTORICAL_12_DAY_SOURCE_REJECTED")
+    if may_use_frozen_blob("price",{"asof_et":"2026-10-19"},"2026-10-07") is not True:
+        raise RuntimeError("HISTORICAL_12_DAY_PRICE_REJECTED")
+    if may_use_frozen_blob("history",{"asof_et":"2026-10-19"},"2026-10-07") is not False:
+        raise RuntimeError("UNBOUND_HISTORY_SCOPE_ACCEPTED")
+    if may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"2026-10-07") is not False:
+        raise RuntimeError("SAME_ASOF_MUTABLE_SOURCE_ACCEPTED")
     print("XRAY_MANUAL_DECISION_NEGATIVE_POSITIVE_SELFTEST=PASS")
 
 def main():
