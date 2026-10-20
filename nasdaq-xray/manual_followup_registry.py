@@ -208,6 +208,20 @@ def tests() -> None:
     def bound_proposal(reg, obs, stamp, *, pointer=canonical):
         return proposal(reg, obs, stamp, canonical_pointer=pointer)
 
+    # RED: a matching R92 key/hash must never license locally invented levels.
+    # Both counterfeit shapes remain valid LONG geometry, masking the drift.
+    for field, counterfeit in (("stop", 90.0), ("target", 110.0),
+                               ("entry_low", 101.0), ("entry_high", 103.5)):
+        forged = copy.deepcopy(good)
+        forged["records"][c["delivery_key"]]["manual_candidate"][field] = counterfeit
+        try:
+            bound_proposal(forged, {}, "2026-10-08T19:10:00Z")
+        except ValueError as exc:
+            if str(exc) != "CANONICAL_R92_LEVEL_DRIFT":
+                raise
+        else:
+            raise RuntimeError("FORGED_MANUAL_R92_LEVEL_ADMITTED:" + field)
+
     fresh = bound_proposal(good, {c["delivery_key"]: {"bar": b}}, "2026-10-08T19:10:00Z")
     assert len(fresh["pending_alerts"]) == 1
     assert fresh["pending_alerts"][0]["notification_status"] == "PENDING_NOT_DELIVERED"
