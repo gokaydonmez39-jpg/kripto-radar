@@ -96,8 +96,10 @@ jobs:
             nasdaq-xray/provider_automation_governance_selftest.py \
             nasdaq-xray/scheduler_failover_selftest.py
 
-      - name: Scheduler failover self-test
-        run: python nasdaq-xray/scheduler_failover_selftest.py
+      - name: Scheduler failover and exact cycle-cut invariant test (normal and -O)
+        run: |
+          python nasdaq-xray/scheduler_failover_selftest.py
+          python -O nasdaq-xray/scheduler_failover_selftest.py
 
       - name: Read-only ChatGPT Health task prompt drift classification
         shell: bash
