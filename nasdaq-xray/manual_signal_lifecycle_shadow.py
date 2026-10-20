@@ -16,7 +16,7 @@ STATES={"MONITORING","ENTRY_ZONE_APPROACHING","ENTRY_ZONE_LEFT_ABOVE",
         "ENTRY_ZONE_TOUCHED","TARGET_LEVEL_TOUCHED",
         "STOP_LEVEL_TOUCHED","INVALIDATED","EXPIRED",
         "AMBIGUOUS_INTRABAR_ORDER","OFFICIAL_HALT","SOURCE_STALE","EVENT_VETO"}
-CLOSED={"STOP_LEVEL_TOUCHED","TARGET_LEVEL_TOUCHED","INVALIDATED","EXPIRED","OFFICIAL_HALT","EVENT_VETO"}
+CLOSED={"STOP_LEVEL_TOUCHED","TARGET_LEVEL_TOUCHED","INVALIDATED","EXPIRED","OFFICIAL_HALT","EVENT_VETO","AMBIGUOUS_INTRABAR_ORDER"}
 SIDE_ONLY="LONG_RESEARCH_LEVELS_ONLY_NEVER_POSITION_OR_FILL"
 SYMBOL=re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
 
@@ -186,7 +186,7 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
     delivery_id=hashlib.sha256(key_text.encode()).hexdigest()
     return {"schema":SCHEMA,"symbol":c["symbol"],"delivery_key":c["delivery_key"],
             "status":status,"transition":status if fresh else "UNCHANGED",
-            "alert":fresh and status!="MONITORING",
+            "alert":fresh and status not in ("MONITORING","SOURCE_STALE"),
             "alert_dedup_key":delivery_id,
             "last_bar_end_utc":ts.isoformat(),"asof_observed_utc":iso(observed_at_utc).isoformat(),
             "source_sha":bar["source_hash"],"max_market_data_age_seconds":int(age),
@@ -282,6 +282,34 @@ def selftest():
                           official_control=invalid_control)
         except ValueError:pass
         else:raise AssertionError("UNVERIFIED_CONTROL_ADMITTED")
+    # Counterfactual: the same bar touched stop and target, but the path is
+    # unknowable from OHLC. Never later rewrite the ambiguous observation into
+    # a false take-profit/stop claim using a subsequent completed candle.
+    ambiguous=event(c,{**b,"low":94.0,"high":121.0},**kwargs)
+    if ambiguous["status"]!="AMBIGUOUS_INTRABAR_ORDER" or ambiguous["alert"] is not True:
+        raise RuntimeError("AMBIGUOUS_BAR_NOT_REPORTED_ONCE")
+    later_ts="2026-10-08T19:15:00Z"
+    for contradictory in (
+        {**b,"low":110.0,"high":121.0,"bar_end_utc":later_ts},
+        {**b,"low":94.0,"high":100.0,"bar_end_utc":later_ts},
+        {**b,"low":101.0,"high":103.0,"bar_end_utc":later_ts},
+    ):
+        locked=event(c,contradictory,ambiguous,observed_at_utc="2026-10-08T19:20:00Z")
+        if (locked.get("status")!="AMBIGUOUS_INTRABAR_ORDER" or
+            locked.get("transition")!="TERMINAL_STATE_LOCKED" or
+            locked.get("alert") is not False):
+            raise RuntimeError("AMBIGUOUS_OHLC_WAS_RECLASSIFIED_AS_PROFIT_STOP_OR_ENTRY")
+    locked_control=control_event(c,ambiguous,observed_at_utc="2026-10-08T19:20:00Z")
+    if (locked_control.get("status")!="AMBIGUOUS_INTRABAR_ORDER"
+        or locked_control.get("alert") is not False):
+        raise RuntimeError("AMBIGUOUS_STATE_UNLOCKED_BY_CLOCK")
+    # Freshness incidents are internal only; no candidate lifecycle alert.
+    stale_first=event(c,b,observed_at_utc="2026-10-08T19:40:00Z")
+    stale_repeat=event(c,b,stale_first,observed_at_utc="2026-10-08T19:45:00Z")
+    if (stale_first.get("status")!="SOURCE_STALE" or
+        stale_first.get("alert") is not False or
+        stale_repeat.get("alert") is not False):
+        raise RuntimeError("SOURCE_STALE_EXPOSED_AS_USER_FACING_ALERT")
     stopped=event(c,{**b,"low":94,"high":101},**kwargs)
     assert event(c,b,stopped,**kwargs)["transition"]=="TERMINAL_STATE_LOCKED"
     print("XRAY_MANUAL_FOLLOWUP_SHADOW_SELFTEST=PASS NO_ORDERS_NO_PUSH_CLAIM")
