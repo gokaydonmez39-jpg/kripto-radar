@@ -449,6 +449,48 @@ def selftest():
          and rows["AAPL"]["status"] == "PASS"
          and rebind_etra_research_results(rows, "2026-10-19") == 0,
          "ETRA_REAL_CACHED_REBOUND_IDEMPOTENCE")
+    real_registry = json.loads(ETRA_REGISTRY.read_text())
+    candidates = {"ACCV": "2026-09-30", "ADRX": "2026-09-25"}
+    ipo_test_rows = {
+        s: {"status": "UNKNOWN_STATIC", "info": {"reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"}}
+        for s in candidates
+    }
+    ipo_test_rows["AAPL"] = {"status": "PASS", "info": {"bars": 270}}
+    for s, first in candidates.items():
+        prior_day = (dt.date.fromisoformat(first) - dt.timedelta(days=1)).isoformat()
+        need(fence(s, prior_day, evidence=real_registry, completed_sessions=[]) is None,
+             "IPO_FUTURE_INFO_LEAK:" + s)
+        fake_days = [(dt.date.fromisoformat(first) + dt.timedelta(days=i)).isoformat()
+                     for i in range(4)]
+        x = fence(s, "2026-10-19", evidence=real_registry,
+                  completed_sessions=fake_days)
+        need(x["own_listed_history_short"] and x["completed_listed_sessions"] == 4
+             and x["unverified_predecessor_cannot_fill_history"] is True
+             and x["r92_created"] is False and x["canonical_history_pass_created"] is False,
+             "IPO_NO_PROMOTION:" + s)
+        for field, badval in (("first_trade_date", "2025-01-01"),
+                              ("source_url", "https://example.invalid")):
+            forged = copy.deepcopy(real_registry)
+            forged["records"][s][field] = badval
+            try:
+                fence(s, "2026-10-19", completed_sessions=fake_days, evidence=forged)
+            except ValueError:
+                pass
+            else:
+                raise RuntimeError("FORGED_IPO_EVIDENCE_NOT_REJECTED:" + s + ":" + field)
+        try:
+            fence(s, "2026-10-19", completed_sessions=fake_days * 2,
+                  evidence=real_registry)
+        except ValueError:
+            pass
+        else:
+            raise RuntimeError("DUPLICATE_IPO_SESSIONS_NOT_REJECTED:" + s)
+    need(rebind_confirmed_ipo_research_results(ipo_test_rows, "2026-10-19") == 2
+         and rebind_confirmed_ipo_research_results(ipo_test_rows, "2026-10-19") == 0
+         and all(ipo_test_rows[s]["status"] == "FAIL_HISTORY" for s in candidates)
+         and ipo_test_rows["AAPL"]["status"] == "PASS",
+         "IPO_REAL_ROOT_CLASS_REBOUND_IDEMPOTENT")
+    print("XRAY_ACC_ADRX_NASDAQ_CONFIRMED_IPO=PASS_TWO_FAIL_HISTORY_ZERO_R92")
     print("XRAY_ETRA_OFFICIAL_FAIL_ONLY_SELFTEST=PASS_NO_PRICE_HISTORY_R92_PROMOTION")
     print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
 
