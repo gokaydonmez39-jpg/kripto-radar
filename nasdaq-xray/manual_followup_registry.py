@@ -120,6 +120,16 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
         registered_at = iso(origin.get("registered_at_utc"))
         if iso(candidate.get("origin_at_utc")) < registered_at:
             raise ValueError("CANDIDATE_ORIGIN_PREDATES_R92_REGISTRATION")
+        # An expiry is a material user notification, never a calendar guess.
+        # Existing R92 rows lacking a fixed expiry may still be monitored,
+        # but must not fabricate EXPIRED from local-only candidate metadata.
+        source_expiry = origin.get("expires_at_utc")
+        requested_expiry = iso(candidate.get("expires_at_utc"))
+        if source_expiry is not None:
+            if iso(source_expiry) != requested_expiry:
+                raise ValueError("CANONICAL_R92_EXPIRY_MISMATCH")
+        elif iso(current) >= requested_expiry:
+            raise ValueError("CANONICAL_R92_EXPIRY_MISMATCH")
         if rec.get("candidate_asof_et") != candidate["source_asof_et"]:
             raise ValueError("CANDIDATE_ASOF_MISMATCH")
         previous = rec.get("followup") or {}
@@ -230,6 +240,7 @@ def tests() -> None:
               "entry_low": c["entry_low"], "entry_high": c["entry_high"],
               "stop": c["stop"], "r1": c["target"],
               "registered_at_utc": c["origin_at_utc"],
+              "expires_at_utc": c["expires_at_utc"],
               "execution": "NONE", "real_money": "NO-GO"}
     canonical = {"schema": "XRAY_GITHUB_DURABLE_STATE_V3",
                  "authority": "GITHUB_CURRENT_POINTER",
@@ -323,6 +334,20 @@ def tests() -> None:
     else:
         raise RuntimeError("UNVERIFIED_EARLY_EXPIRY_ADMITTED")
 
+    # Even when the original R92 does not store an expiry, the classifier
+    # may not mint an EXPIRED notice based only on a local timer.
+    no_expiry = copy.deepcopy(canonical)
+    no_expiry["state_json"]["r92"][0].pop("expires_at_utc")
+    old_registry = copy.deepcopy(good)
+    old_registry["records"][c["delivery_key"]]["origin_r92_sha256"] = origin_digest(
+        no_expiry["state_json"]["r92"][0])
+    try:
+        bound_proposal(old_registry, {}, "2026-10-16T20:00:00Z", pointer=no_expiry)
+    except ValueError as exc:
+        if str(exc) != "CANONICAL_R92_EXPIRY_MISMATCH":
+            raise
+    else:
+        raise RuntimeError("UNPROVEN_EXPIRY_WITH_MISSING_ORIGIN_ACCEPTED")
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
