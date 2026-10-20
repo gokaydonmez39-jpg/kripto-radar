@@ -55,27 +55,6 @@ jobs:
           python nasdaq-xray/alpaca_root_history_exact_260_selftest.py
           python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
           python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
-      - name: Bounded free historical SIP query only when PRIVATE keys available
-        id: price_shadow
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
-          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
-        run: |
-          python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --output "$RUNNER_TEMP/xray_alpaca_free_sip_shadow.json"
-          python - <<'PY'
-          import json,os
-          from pathlib import Path
-          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_free_sip_shadow.json").read_text())
-          assert j["schema"]=="XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1"
-          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
-          assert j["vendor_raw_bars_persisted"] is False
-          assert j["primary_mc_authority"] is False and j["c417_price_pass_promoted"] is False
-          assert j["candidate_created"] is False and j["device_receipt_proven"] is False
-          print("XRAY_ALPACA_SHADOW_SECURITY_CONTRACT=PASS_NO_PRIMARY_NO_TRADES_NO_RAW_BARS")
-          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as output:
-              output.write("source_status="+j["status"]+"\n")
-          PY
       - name: Quota-free scheduled root ASOF and latest-main preflight
         id: scheduled_root
         if: ${{ github.event_name == 'schedule' }}
@@ -105,6 +84,27 @@ jobs:
                 " price="+str(p.get("asof_et"))+
                 " root="+str(s.get("asof_et")))
           PY
+      - name: Bounded free historical SIP query only when PRIVATE keys available
+        id: price_shadow
+        if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --output "$RUNNER_TEMP/xray_alpaca_free_sip_shadow.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_free_sip_shadow.json").read_text())
+          assert j["schema"]=="XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1"
+          assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
+          assert j["vendor_raw_bars_persisted"] is False
+          assert j["primary_mc_authority"] is False and j["c417_price_pass_promoted"] is False
+          assert j["candidate_created"] is False and j["device_receipt_proven"] is False
+          print("XRAY_ALPACA_SHADOW_SECURITY_CONTRACT=PASS_NO_PRIMARY_NO_TRADES_NO_RAW_BARS")
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as output:
+              output.write("source_status="+j["status"]+"\n")
+          PY
       - name: Bounded root UNKNOWN historical source rescue shadow
         if: ${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true')) && (steps.price_shadow.outputs.source_status == 'SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY' || steps.price_shadow.outputs.source_status == 'BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE') }}
         env:
@@ -123,7 +123,7 @@ jobs:
           print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
           PY
       - name: Enforce actual delayed SIP HTTP measurement before success
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}
         env:
           XRAY_SCHEDULE_ROOT_READY: ${{ steps.scheduled_root.outputs.ready }}
         run: |
