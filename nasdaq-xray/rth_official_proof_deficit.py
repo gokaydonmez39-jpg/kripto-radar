@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cross-run SHA-anchored RTH proof deficit: 415/78/4 vs canonical 548 UNKNOWN.
+"""Cross-run SHA-anchored current RTH proof deficit; counts derive from authenticated inputs.
 
 Read-only classification and official evidence REQUIREMENTS. This cannot
 authenticate a caller-provided GitHub JSON, market-data rights, trade prints,
@@ -60,15 +60,19 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
          cross.get("r92_authority") is False and
          cross.get("unknown_never_pass") is True and
          cross.get("canonical_mutated") is False and
-         cross.get("canonical_price_dv30_unknown_count")==548 and
+         type(cross.get("universe_count")) is int and
+         cross["universe_count"]>0 and
+         type(cross.get("canonical_price_dv30_unknown_count")) is int and
+         0<cross["canonical_price_dv30_unknown_count"]<=cross["universe_count"] and
          cross.get("canonical_price_dv30_reported_pass_count_not_independently_attested")==0 and
-         cross.get("canonical_root_history_unknown_count")==223 and
-         cross.get("independent_research_history_260_52_unproven_count")==502 and
-         cross.get("universe_count")==3189 and
+         type(cross.get("canonical_root_history_unknown_count")) is int and
+         0<=cross["canonical_root_history_unknown_count"]<=cross["universe_count"] and
+         type(cross.get("independent_research_history_260_52_unproven_count")) is int and
+         0<=cross["independent_research_history_260_52_unproven_count"]<=cross["universe_count"] and
          cross.get("same_epoch_and_identity_does_not_establish_same_policy") is True and
          cross.get("canonical_price_primary_evidence_independently_verified_here") is False,
          "CROSS_PLANE_AUTHORITY_AND_SCOPE")
-    need(six.get("scope_count")==3189 and
+    need(six.get("scope_count")==cross["universe_count"] and
          six.get("registered_r92_count")==0 and
          six.get("c417_price_dv30_primary_attested") is False and
          six.get("source_rights_not_inferred") is True and
@@ -86,7 +90,8 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
     known=cross.get("canonical_unknown_symbolic_repair_worklist")
     routes=six.get("per_symbol_causal_routing")
     need(all(type(x) is dict for x in (rows,known,routes)) and
-         len(known)==548 and len(routes)==3189 and
+         len(known)==cross["canonical_price_dv30_unknown_count"] and
+         len(routes)==cross["universe_count"] and
          set(known).issubset(routes) and
          cross.get("root_universe_sha256")==
              six.get("exact_root_identity_scope_sha256")==
@@ -94,7 +99,8 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
          "SAME_EXACT_NASDAQ_UNIVERSE")
     cohort=sorted(rows)
     need(cohort and len(cohort)==joint.get("joint_cohort_count")==
-         six.get("joint260_daily30_research_scope")==497 and
+         six.get("joint260_daily30_research_scope") and
+         len(cohort)<=len(known) and
          universe_sha(cohort)==joint.get(
              "joint_history260_daily30_cohort_sha256") and
          set(cohort).issubset(known) and
@@ -109,18 +115,18 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
          joint.get("canonical_master_price_history_mc_untouched") is True,
          "RTH_NO_PRIMARY_EVIDENCE")
     classes=Counter(rows.values())
-    need(set(classes)=={HIGH,MID,UNK} and
+    need(set(classes).issubset({HIGH,MID,UNK}) and
          classes==joint.get("classification_counts") and
          classes[HIGH]==joint.get("rth_lower_bound_ge50m_shadow_count") and
          classes[MID]==joint.get("rth_ambiguous_shadow_count") and
          classes[UNK]==joint.get("rth_incomplete_or_unknown_count") and
-         classes[HIGH]+classes[MID]+classes[UNK]==497,
-         "497_EXACT_RTH_PARTITION")
+         classes[HIGH]+classes[MID]+classes[UNK]==len(cohort),
+         "EXACT_RTH_PARTITION")
     partial=joint.get("partial_missing_slot_research_by_symbol")
     failures=joint.get("symbol_rth_integrity_failure_codes")
     need(type(partial) is dict and type(failures) is dict and
          set(partial)==set(failures)=={k for k,v in rows.items() if v==UNK} and
-         set(failures.values())=={"EARLY_AND_FULL_BAR_COUNTS_EXACT"} and
+         set(failures.values()).issubset({"EARLY_AND_FULL_BAR_COUNTS_EXACT"}) and
          set(partial.values()).issubset({PART_HIGH,PART_MID,PART_REJECT}) and
          dict(sorted(Counter(partial.values()).items()))==
              joint.get("partial_missing_slot_research_counts") and
@@ -152,26 +158,28 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
             "eligible_for_c417_price_pass":False,
             "alpha_authority":False}
     missing=sorted(set(known)-set(cohort))
-    need(len(missing)==51 and
+    first_gates=Counter(known[s].get("research_first_unresolved_gate")
+                        for s in known)
+    need(len(missing)==len(known)-len(cohort) and
          all(known[s]["research_first_unresolved_gate"] in ("SOURCE","HISTORY")
              for s in missing) and
-         cross.get("canonical_price_unknown_by_personal_first_gate")==
-             {"SOURCE":31,"HISTORY":20,"PRICE_DV30":497} and
+         dict(first_gates)==cross.get("canonical_price_unknown_by_personal_first_gate") and
+         first_gates.get("PRICE_DV30",0)==len(cohort) and
          six.get("rth30_strict_complete_slot_lower_bound_observed")==classes[HIGH] and
          six.get("rth30_ambiguous_count")==classes[MID] and
          six.get("rth30_data_unknown_count")==classes[UNK] and
          six.get("rth30_partial_missing_slot_high_research_only_count")==
              sum(v==PART_HIGH for v in partial.values()),
-         "51_UNRESOLVED_OUTSIDE_RTH_OR_SHADOW_REPLAY")
+         "UNRESOLVED_OUTSIDE_RTH_OR_SHADOW_REPLAY")
     return {
         "schema":SCHEMA,"asof_et":asof,
         "upstream_source_workflow_run_id":upstream_run_id,
         "source_rth_raw_artifact_sha256":digests["rth"],
         "exact_root_universe_sha256":cross["root_universe_sha256"],
-        "source_universe_count":3189,
-        "canonical_price_dv30_unknown_count":548,
+        "source_universe_count":cross["universe_count"],
+        "canonical_price_dv30_unknown_count":len(known),
         "outside_complete_rth_cohort_unknown_count":len(missing),
-        "rth_exact_30session_research_cohort":497,
+        "rth_exact_30session_research_cohort":len(cohort),
         "rth_shadow_classification_counts":dict(sorted(classes.items())),
         "rth_complete_slot_research_high_count":classes[HIGH],
         "rth_auction_volume_ambiguous_count":classes[MID],
@@ -191,7 +199,7 @@ def reconcile(cross,six,joint,raw_joint,*,now_utc,upstream_run_id):
         "iphone_delivery_receipt_attested":False,
         "unknown_never_pass":True,
         "execution":"NONE","real_money":"NO-GO",
-        "status":"493_RTH_SHADOW_BOUNDS_AND_4_SLOT_GAPS_PROOF_DENIED_NO_AL",
+        "status":"RTH_SHADOW_BOUNDS_AND_SLOT_GAPS_PROOF_DENIED_NO_AL",
     }
 
 
