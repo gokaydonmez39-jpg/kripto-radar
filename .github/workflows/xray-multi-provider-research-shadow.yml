@@ -6,6 +6,7 @@ on:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
       - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
+      - "nasdaq-xray/ifixai_trajectory_falsification_shadow.py"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
   workflow_dispatch:
@@ -351,3 +352,37 @@ jobs:
             ${{ runner.temp }}/xray_12_provider_routing_readiness.json
           retention-days: 14
           if-no-files-found: error
+
+  ifixai-trajectory-falsification-pr:
+    # Research PR only. No production schedule, provider keys, output promotion or R92.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GEMINI_API_KEY: ""
+      GITHUB_TOKEN: ""
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Pinned upstream passive trajectory blind-spot falsification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/ifixai-trajectory-pilot"
+          "$RUNNER_TEMP/ifixai-trajectory-pilot/bin/python" -m pip install --disable-pip-version-check \
+            "ifixai @ git+https://github.com/ifixai-ai/iFixAi.git@15599839eccfc2ffcf181b0ca3651413416a9d40"
+          "$RUNNER_TEMP/ifixai-trajectory-pilot/bin/python" -m py_compile \
+            nasdaq-xray/ifixai_trajectory_falsification_shadow.py
+          "$RUNNER_TEMP/ifixai-trajectory-pilot/bin/python" \
+            nasdaq-xray/ifixai_trajectory_falsification_shadow.py --selftest
+          "$RUNNER_TEMP/ifixai-trajectory-pilot/bin/python" -O \
+            nasdaq-xray/ifixai_trajectory_falsification_shadow.py --selftest
+          echo 'XRAY_IFIXAI_PR_ONLY=8_SYNTHETIC_NO_VENDOR_NO_PRIMARY_NO_R92'
