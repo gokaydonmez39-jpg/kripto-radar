@@ -1,5 +1,10 @@
 name: XRAY Dynamic Official RTH Proof Deficit Admission (No AL)
 on:
+  workflow_run:
+    workflows:
+      - "XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)"
+    types: [completed]
+    branches: [main]
   pull_request:
     branches: [main]
     paths:
@@ -17,6 +22,7 @@ permissions:
   actions: read
 jobs:
   read-only-official-deficit:
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -27,7 +33,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install official calendar, no new market-provider calls
-        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0
+        run: python -m pip install --disable-pip-version-check pandas_market_calendars==5.4.0 PyYAML==6.0.2
       - name: Authenticated latest successful main run and exact 3 named artifacts
         env:
           GH_TOKEN: ${{ github.token }}
@@ -92,6 +98,12 @@ jobs:
               "XRAY Personal Full-Universe SIP EOD Coverage (Research Only)",
               {"six":"xray-personal-six-gate-causal-worklist-no-ohlcv",
                "joint":"xray-personal-joint-260-daily30-rth30-no-ohlcv"})
+          from rth_official_proof_deficit import validate_trigger_source
+          if os.environ.get("GITHUB_EVENT_NAME")=="workflow_run":
+              validate_trigger_source(
+                  "workflow_run",
+                  json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text()),
+                  cross_run,repo)
           cross=json.loads((root/"cross.json").read_bytes())
           six=json.loads((root/"six.json").read_bytes())
           joint_bytes=(root/"joint.json").read_bytes()
