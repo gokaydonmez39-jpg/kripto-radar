@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-20T13:45:45.658429+00:00",
+  "generated_at_utc": "2026-10-20T14:08:54.658987+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -787,8 +787,53 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 24,
+      "item_count": 27,
       "items": [
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "09:57:42.340",
+          "IssueName": "Revelation Biosciences Cmn",
+          "IssueSymbol": "REVB",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "09:57:42",
+          "ResumptionTradeTime": "10:02:42",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:57:42.340</td><td valign=\"top\">REVB</td><td valign=\"top\">Revelation Biosciences Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:57:42                      </td><td valign=\"top\">10:02:42                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "REVB"
+        },
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "09:57:12.670",
+          "IssueName": "MindForge Inc Ord A",
+          "IssueSymbol": "MF",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "09:57:12",
+          "ResumptionTradeTime": "10:07:12",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:57:12.670</td><td valign=\"top\">MF</td><td valign=\"top\">MindForge Inc Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:57:12                      </td><td valign=\"top\">10:07:12                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "MF"
+        },
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "09:47:08.276",
+          "IssueName": "XCHG Limited ADS",
+          "IssueSymbol": "XCH",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "09:47:08",
+          "ResumptionTradeTime": "09:52:08",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:47:08.276</td><td valign=\"top\">XCH</td><td valign=\"top\">XCHG Limited ADS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:47:08                      </td><td valign=\"top\">09:52:08                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "XCH"
+        },
         {
           "HaltDate": "10/20/2026",
           "HaltTime": "09:43:03.856",
@@ -799,8 +844,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/20/2026",
           "ResumptionQuoteTime": "09:43:03",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:43:03.856</td><td valign=\"top\">XLAB</td><td valign=\"top\">Exascale Labs Holdings Cl A CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:43:03                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "09:48:03",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:43:03.856</td><td valign=\"top\">XLAB</td><td valign=\"top\">Exascale Labs Holdings Cl A CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:43:03                      </td><td valign=\"top\">09:48:03                      </td></tr></table>",
           "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
           "title": "XLAB"
         },
@@ -814,8 +859,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/20/2026",
           "ResumptionQuoteTime": "09:41:25",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:41:25.650</td><td valign=\"top\">MF</td><td valign=\"top\">MindForge Inc Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:41:25                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "09:56:34",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:41:25.650</td><td valign=\"top\">MF</td><td valign=\"top\">MindForge Inc Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:41:25                      </td><td valign=\"top\">09:56:34                      </td></tr></table>",
           "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
           "title": "MF"
         },
@@ -829,8 +874,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/20/2026",
           "ResumptionQuoteTime": "09:40:10",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:40:10.306</td><td valign=\"top\">XCH</td><td valign=\"top\">XCHG Limited ADS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:40:10                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "09:45:10",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:40:10.306</td><td valign=\"top\">XCH</td><td valign=\"top\">XCHG Limited ADS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">09:40:10                      </td><td valign=\"top\">09:45:10                      </td></tr></table>",
           "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
           "title": "XCH"
         },
