@@ -19,6 +19,58 @@ import rth_official_proof_deficit as mod
 UTC=dt.timezone.utc
 
 
+class TriggerSourceProvenanceTests(unittest.TestCase):
+    def event(self):
+        repo="gokaydonmez39-jpg/kripto-radar"
+        return {"workflow_run":{
+            "id":12345,"status":"completed","conclusion":"success",
+            "head_branch":"main",
+            "name":"XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)",
+            "path":".github/workflows/xray-cross-plane-blocker-reconciliation.yml",
+            "repository":{"full_name":repo},
+            "head_repository":{"full_name":repo},
+            "head_sha":"a"*40}}
+
+    def test_same_main_success_event_binds_exact_cross_run(self):
+        mod.validate_trigger_source("workflow_run",self.event(),12345,
+                                    "gokaydonmez39-jpg/kripto-radar")
+
+    def test_triggered_run_authentication_cannot_be_bypassed(self):
+        variants=[
+            lambda e:e["workflow_run"].update(id=12346),
+            lambda e:e["workflow_run"].update(conclusion="failure"),
+            lambda e:e["workflow_run"].update(head_branch="other"),
+            lambda e:e["workflow_run"].update(name="UNTRUSTED"),
+            lambda e:e["workflow_run"].update(path=".github/workflows/other.yml"),
+            lambda e:e["workflow_run"]["head_repository"].update(full_name="other/repo"),
+            lambda e:e["workflow_run"].update(head_sha="not-a-sha"),
+        ]
+        for change in variants:
+            with self.subTest(case=str(change)):
+                e=self.event();change(e)
+                with self.assertRaisesRegex(ValueError,"TRIGGER_CROSS_RUN_NOT_LATEST_OR_TRUSTED"):
+                    mod.validate_trigger_source("workflow_run",e,12345,
+                        "gokaydonmez39-jpg/kripto-radar")
+
+    def test_workflow_research_trigger_and_read_only_scopes(self):
+        import yaml
+        workflow=Path(__file__).resolve().parents[2]/".github/workflows/xray-rth-official-proof-deficit.yml"
+        d=yaml.load(workflow.read_text(),Loader=yaml.BaseLoader)
+        self.assertEqual(d["on"]["workflow_run"],{
+            "workflows":["XRAY Cross-Plane SOURCE HISTORY PRICE Evidence Reconciliation (No AL)"],
+            "types":["completed"],"branches":["main"]})
+        self.assertEqual(d["permissions"],{"contents":"read","actions":"read"})
+        job=d["jobs"]["read-only-official-deficit"]
+        self.assertIn("github.event.workflow_run.conclusion == 'success'",
+                      job["if"])
+        self.assertIn("github.event.workflow_run.head_repository.full_name == github.repository",
+                      job["if"])
+        authentication=next(s["run"] for s in job["steps"]
+                            if s.get("name")=="Authenticated latest successful main run and exact 3 named artifacts")
+        self.assertIn("validate_trigger_source",authentication)
+        self.assertIn("GITHUB_EVENT_PATH",authentication)
+
+
 class AuthenticSymbolicEvidenceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
