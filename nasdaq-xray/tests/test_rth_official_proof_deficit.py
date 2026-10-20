@@ -30,7 +30,8 @@ class AuthenticSymbolicEvidenceTests(unittest.TestCase):
         cls.s=json.loads(Path(paths[1]).read_bytes())
         cls.raw=Path(paths[2]).read_bytes()
         cls.j=json.loads(cls.raw)
-        cls.now=dt.datetime(2026,10,16,18,tzinfo=UTC)
+        cls.now=(dt.datetime.fromisoformat(cls.j["asof_et"]).replace(tzinfo=UTC)
+                 +dt.timedelta(days=1,hours=12))
 
     def run_case(self,c=None,s=None,j=None,raw=None,now=None,run_id=38940917676):
         return mod.reconcile(
@@ -43,19 +44,40 @@ class AuthenticSymbolicEvidenceTests(unittest.TestCase):
 
     def test_real_497_partition_does_not_pretend_primary_pass(self):
         result=self.run_case()
-        self.assertEqual(result["rth_exact_30session_research_cohort"],497)
-        self.assertEqual(result["rth_complete_slot_research_high_count"],415)
-        self.assertEqual(result["rth_auction_volume_ambiguous_count"],78)
-        self.assertEqual(result["rth_incomplete_slot_count"],4)
-        self.assertEqual(result["outside_complete_rth_cohort_unknown_count"],51)
-        self.assertEqual(len(result["rth_proof_denied_per_symbol"]),497)
-        self.assertEqual(len(result["outside_rth_safe_actions"]),51)
-        self.assertEqual(result["canonical_price_dv30_unknown_count"],548)
-        self.assertEqual(result["partial_high_bar_low_is_not_true_price_floor_count"],1)
+        cohort=self.j["joint_cohort_count"]
+        counts=self.j["classification_counts"]
+        unknown=self.c["canonical_price_dv30_unknown_count"]
+        self.assertEqual(result["rth_exact_30session_research_cohort"],cohort)
+        self.assertEqual(result["rth_complete_slot_research_high_count"],counts.get(mod.HIGH,0))
+        self.assertEqual(result["rth_auction_volume_ambiguous_count"],counts.get(mod.MID,0))
+        self.assertEqual(result["rth_incomplete_slot_count"],counts.get(mod.UNK,0))
+        self.assertEqual(result["outside_complete_rth_cohort_unknown_count"],unknown-cohort)
+        self.assertEqual(len(result["rth_proof_denied_per_symbol"]),cohort)
+        self.assertEqual(len(result["outside_rth_safe_actions"]),unknown-cohort)
+        self.assertEqual(result["canonical_price_dv30_unknown_count"],unknown)
+        self.assertEqual(result["partial_high_bar_low_is_not_true_price_floor_count"],
+                         self.j["partial_missing_slot_research_counts"].get(mod.PART_HIGH,0))
         self.assertFalse(result["primary_c417_price_dv30_proven"])
         self.assertFalse(result["alpha_authority"])
         self.assertFalse(result["iphone_delivery_receipt_attested"])
         self.assertEqual(result["source_market_api_calls"],0)
+
+    def test_stale_count_claim_cannot_change_canonical_partition(self):
+        c=copy.deepcopy(self.c)
+        c["canonical_price_dv30_unknown_count"]+=1
+        with self.assertRaisesRegex(ValueError,"SAME_EXACT_NASDAQ_UNIVERSE"):
+            self.run_case(c=c)
+
+    def test_rth_mismatched_classification_claim_rejected(self):
+        j=copy.deepcopy(self.j)
+        j["rth_lower_bound_ge50m_shadow_count"]+=1
+        bb=json.dumps(j,sort_keys=True).encode()
+        s=copy.deepcopy(self.s)
+        s["input_report_sha256"]["rth"]=__import__("hashlib").sha256(bb).hexdigest()
+        c=copy.deepcopy(self.c)
+        c["six_gate_input_report_sha256"]=copy.deepcopy(s["input_report_sha256"])
+        with self.assertRaisesRegex(ValueError,"EXACT_RTH_PARTITION"):
+            self.run_case(c=c,s=s,j=j,raw=bb)
 
     def test_all_symbol_rows_strictly_nonpromotable(self):
         result=self.run_case()
