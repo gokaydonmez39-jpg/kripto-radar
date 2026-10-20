@@ -106,7 +106,29 @@ assert '"nasdaq-xray/scheduler_kick_final.json"' in final_wf or "'nasdaq-xray/sc
 # An observed successful root kick must wake official safety even if the
 # upstream PRICE/MC factory correctly defers with UNKNOWN.  This repairs
 # freshness, not source authority or candidate eligibility.
-assert 'workflows: ["XRAY Canonical Pointer Transition", "NASDAQ SWING XRAY Autonomous Data Plane"]' in resilience_wf
+# Pointer->Resilience workflow_run was intentionally CUT to break the
+# Final->Pointer->Resilience->Final feedback cycle.  Root completion,
+# pointer push fallback, schedule and independent manual dispatch remain.
+# Unlike bare assert, these production topology checks also run with -O.
+from workflow_run_feedback_cycle_guard import verify as _verify_cycle_cut
+_pointer_wf=(ROOT.parent/".github/workflows/xray-canonical-pointer-transition.yml").read_text()
+_cycle_cut=_verify_cycle_cut(resilience_wf,_pointer_wf,final_wf)
+if not (_cycle_cut["preserved_root_to_resilience"] is True
+        and _cycle_cut["preserved_resilience_to_final"] is True
+        and _cycle_cut["preserved_final_to_pointer"] is True
+        and _cycle_cut["market_or_R92_authority"] is False):
+    raise RuntimeError("XRAY_FAILOVER_NEW_GRAPH_AUTHORITY_DRIFT")
+_old_resilience=resilience_wf.replace(
+    'workflows: ["NASDAQ SWING XRAY Autonomous Data Plane"]',
+    'workflows: ["XRAY Canonical Pointer Transition", "NASDAQ SWING XRAY Autonomous Data Plane"]')
+if _old_resilience == resilience_wf:
+    raise RuntimeError("XRAY_FAILOVER_REGRESSION_MUTANT_NOT_CREATED")
+try:
+    _verify_cycle_cut(_old_resilience,_pointer_wf,final_wf)
+except ValueError:
+    pass
+else:
+    raise RuntimeError("XRAY_FAILOVER_OLD_FEEDBACK_CYCLE_FALSE_ACCEPTED")
 assert "    branches: [main]" in resilience_wf
 assert "if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'" in resilience_wf
 assert "Persist official safety independent of blocked research pointer" in resilience_wf

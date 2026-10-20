@@ -7,6 +7,7 @@ on:
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
       - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
       - "nasdaq-xray/workflow_run_feedback_cycle_guard.py"
+      - "nasdaq-xray/scheduler_failover_selftest.py"
       - ".github/workflows/xray-resilience-observability.yml"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
@@ -20,6 +21,7 @@ on:
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
       - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
       - "nasdaq-xray/workflow_run_feedback_cycle_guard.py"
+      - "nasdaq-xray/scheduler_failover_selftest.py"
       - ".github/workflows/xray-resilience-observability.yml"
       - "nasdaq-xray/c418_provider_inventory_20261012.json"
       - "nasdaq-xray/c418_provider_routing_readiness.py"
@@ -118,6 +120,8 @@ jobs:
           python nasdaq-xray/workflow_run_feedback_cycle_guard.py --selftest
           python -O nasdaq-xray/workflow_run_feedback_cycle_guard.py --selftest
           python nasdaq-xray/workflow_run_feedback_cycle_guard.py --check
+          python nasdaq-xray/scheduler_failover_selftest.py
+          python -O nasdaq-xray/scheduler_failover_selftest.py
           echo 'XRAY_WORKFLOW_RUN_CYCLE=ONE_EDGE_CUT_NO_VENDOR_NO_R92'
   provider-shadow:
     if: github.event_name != 'pull_request'
