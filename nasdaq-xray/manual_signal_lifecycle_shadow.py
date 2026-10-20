@@ -312,6 +312,26 @@ def selftest():
         raise RuntimeError("SOURCE_STALE_EXPOSED_AS_USER_FACING_ALERT")
     stopped=event(c,{**b,"low":94,"high":101},**kwargs)
     assert event(c,b,stopped,**kwargs)["transition"]=="TERMINAL_STATE_LOCKED"
+
+    # RED regression: a later classification may never travel backwards in
+    # observation time even when its OHLC candle timestamp is ordered.
+    initial=event(c,b,observed_at_utc="2026-10-08T19:20:00Z")
+    forward_bar={**b,"bar_end_utc":"2026-10-08T19:05:00Z",
+                 "low":102.5,"high":104.0}
+    for kind in ("MARKET_BAR","OFFICIAL_CONTROL"):
+        try:
+            if kind=="MARKET_BAR":
+                event(c,forward_bar,initial,observed_at_utc="2026-10-08T19:10:00Z")
+            else:
+                prior_control={**verified_control,
+                               "observed_at_utc":"2026-10-08T19:09:00Z"}
+                control_event(c,initial,observed_at_utc="2026-10-08T19:10:00Z",
+                              official_control=prior_control)
+        except ValueError as exc:
+            if str(exc)!="OBSERVATION_CLOCK_REGRESSION":
+                raise
+        else:
+            raise RuntimeError("OBSERVATION_CLOCK_REGRESSION_ACCEPTED:"+kind)
     print("XRAY_MANUAL_FOLLOWUP_SHADOW_SELFTEST=PASS NO_ORDERS_NO_PUSH_CLAIM")
 
 def main():
