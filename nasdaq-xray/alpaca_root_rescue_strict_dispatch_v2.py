@@ -106,6 +106,15 @@ def selftest():
         "execution":"NONE","real_money":"NO-GO"}
     sha="a"*40
     assert scheduled_probe_allowed(scheduled_now,scheduled_asof,sp,sr,sha,sha)
+    # Real scheduled run #39351414911: 01:17 UTC on Oct 20 is still
+    # 21:17 Oct 19 New York; UTC rollover cannot invalidate source ASOF.
+    delayed=dt.datetime(2026,10,20,1,17,tzinfo=dt.timezone.utc)
+    assert last_complete_session(delayed)==scheduled_asof
+    if not scheduled_probe_allowed(delayed,scheduled_asof,sp,sr,sha,sha):
+        raise RuntimeError("VALID_NASDAQ_SESSION_REJECTED_BY_UTC_DATE_ROLLOVER")
+    ny_next_day=dt.datetime(2026,10,20,4,1,tzinfo=dt.timezone.utc)
+    if scheduled_probe_allowed(ny_next_day,scheduled_asof,sp,sr,sha,sha):
+        raise RuntimeError("STALE_NEW_YORK_SOURCE_SESSION_ADMITTED")
     holiday=dt.datetime(2026,11,26,22,10,tzinfo=dt.timezone.utc)
     h_asof=last_complete_session(holiday)
     assert h_asof=="2026-11-25","HOLIDAY_FRESHNESS_SOURCE"
