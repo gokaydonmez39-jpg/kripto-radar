@@ -5,6 +5,7 @@ on:
     paths:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
+      - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
       - "nasdaq-xray/bq_history_onecall_shadow.py"
       - ".github/workflows/xray-multi-provider-research-shadow.yml"
   workflow_dispatch:
@@ -15,6 +16,7 @@ on:
     paths:
       - "nasdaq-xray/xray_multi_provider_research.py"
       - "nasdaq-xray/tauric_tradingagents_advisory_shadow.py"
+      - "nasdaq-xray/graphify_c417_sha_lineage_shadow.py"
       - "nasdaq-xray/c418_provider_inventory_20261012.json"
       - "nasdaq-xray/c418_provider_routing_readiness.py"
       - "nasdaq-xray/source_epoch_freshness_guard.py"
@@ -77,6 +79,31 @@ jobs:
           assert x["api_calls"]==x["llm_calls"]==0
           assert x["upstream_code_executed"] is False
           print("XRAY_TAURIC_REAL_CANONICAL_ADVISORY=PASS_ZERO_PRIMARY_ZERO_R92")
+          PY
+      - name: Graphify-compatible exact C4.17 SHA-lineage shadow (zero network)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/graphify_c417_sha_lineage_shadow.py
+          python nasdaq-xray/graphify_c417_sha_lineage_shadow.py --selftest
+          python -O nasdaq-xray/graphify_c417_sha_lineage_shadow.py --selftest
+          python nasdaq-xray/graphify_c417_sha_lineage_shadow.py --out "$RUNNER_TEMP/xray_graphify_sha_lineage.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_graphify_sha_lineage.json").read_text())
+          assert x["schema"]=="XRAY_GRAPHIFY_C417_SHA_LINEAGE_SHADOW_V1"
+          assert len(x["nodes"])==8 and len(x["edges"])==7
+          assert set(e["confidence"] for e in x["edges"])=={"EXTRACTED"}
+          assert all(set(("id","label","file_type","source_file")).issubset(n) for n in x["nodes"])
+          assert all(set(("source","target","relation","confidence","source_file")).issubset(e) for e in x["edges"])
+          assert all(e["relation"]=="depends_on_exact_sha" for e in x["edges"])
+          assert x["status"]=="SHA_BOUND_SHADOW_ONLY"
+          assert x["graphify_runtime_executed"] is False
+          assert x["source_authority_promoted"] is False
+          assert x["primary_pass_created"] is False and x["r92_created"] is False
+          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
+          print("XRAY_GRAPHIFY_C417_REAL_CURRENT_BLOBS=PASS_7_EXPLICIT_EDGES_NO_ALPHA")
           PY
   provider-shadow:
     if: github.event_name != 'pull_request'
@@ -295,6 +322,22 @@ jobs:
           assert not j["r92_created"] and not j["alpha_authority"] and not j["notification_queued"]
           print("XRAY_TAURIC_NO_SIGNAL_AUTHORITY=PASS")
           PY
+      - name: Re-check immutable C4.17 source-SHA graph only (no model or market calls)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/graphify_c417_sha_lineage_shadow.py --selftest
+          python -O nasdaq-xray/graphify_c417_sha_lineage_shadow.py --selftest
+          python nasdaq-xray/graphify_c417_sha_lineage_shadow.py --out "$RUNNER_TEMP/xray_graphify_sha_lineage.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          j=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_graphify_sha_lineage.json").read_text())
+          assert len(j["edges"])==7 and j["status"]=="SHA_BOUND_SHADOW_ONLY"
+          assert not j["source_authority_promoted"] and not j["r92_created"]
+          assert not j["primary_pass_created"]
+          print("XRAY_GRAPHIFY_OFFLINE_SOURCE_LINEAGE=PASS_NONAUTHORITY")
+          PY
       - name: Upload sanitized research-only operational telemetry
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -302,6 +345,7 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_multi_provider_shadow.json
             ${{ runner.temp }}/xray_tauric_research_shadow.json
+            ${{ runner.temp }}/xray_graphify_sha_lineage.json
             ${{ runner.temp }}/xray_bq_history_onecall_shadow.json
             ${{ runner.temp }}/xray_bq_mc_price_independent.json
             ${{ runner.temp }}/xray_12_provider_routing_readiness.json
