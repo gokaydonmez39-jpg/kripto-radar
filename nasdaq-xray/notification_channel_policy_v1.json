@@ -38,12 +38,51 @@
     "user_visible_only": "🟢 AL — DOĞRULANMIŞ R92",
     "watch_early_liquidity_source_fault_data_fault_wait_internal_only": true,
     "no_user_notification_from_watch_or_health_issues": true,
-    "registered_r92_candidate_local_full_c417_proof_required": true
+    "registered_r92_candidate_local_full_c417_proof_required": true,
+    "entry_touched": "✅ GİRİŞ BÖLGESİNE TEMAS (GERÇEK DOLUM DEĞİL)",
+    "target1_touched": "✅ T1 HEDEFE TEMAS (KÂR GARANTİSİ DEĞİL)",
+    "stop_touched": "🛑 STOP SEVİYESİNE TEMAS",
+    "cancelled": "🔴 İPTAL / SÜRE DOLDU / RESMÎ HALT",
+    "ambiguous": "⚠️ STOP VE HEDEF AYNI BARDA — SIRA BİLİNMİYOR"
   },
   "user_visible_event_scope": "VERIFIED_REGISTERED_R92_BUY_ONLY",
   "watch_and_early_research_internal_only": true,
   "source_and_data_faults_internal_only": true,
   "silent_when_no_new_verified_r92": true,
   "broker_orders_never_allowed": true,
-  "account_and_g9_not_research_signal_prerequisites": true
+  "account_and_g9_not_research_signal_prerequisites": true,
+  "registered_r92_lifecycle_followup_policy": {
+    "schema": "XRAY_VERIFIED_R92_LIFECYCLE_FOLLOWUP_POLICY_V1",
+    "enabled": true,
+    "scope": "ONLY_PREVIOUSLY_VERIFIED_AND_REGISTERED_R92",
+    "requires_candidate_r92_current_or_exact_immutable_origin": true,
+    "requires_material_transition_proven": true,
+    "requires_independent_authoritative_timestamped_data": true,
+    "requires_preserved_r92_entry_stop_target_levels": true,
+    "requires_durable_exact_dedup": true,
+    "requires_write_readback_before_notification_attempt": true,
+    "requires_original_r92_key_and_source_asof": true,
+    "allowed_material_states": [
+      "ENTRY_ZONE_APPROACHING",
+      "ENTRY_ZONE_TOUCHED",
+      "ENTRY_ZONE_LEFT_ABOVE",
+      "TARGET_LEVEL_TOUCHED",
+      "STOP_LEVEL_TOUCHED",
+      "INVALIDATED",
+      "EXPIRED",
+      "OFFICIAL_HALT",
+      "EVENT_VETO",
+      "AMBIGUOUS_INTRABAR_ORDER"
+    ],
+    "source_stale_or_unknown_no_user_alert": true,
+    "watch_early_or_prescreen_no_user_alert": true,
+    "never_claim_trade_fill_or_profit": true,
+    "never_claim_platform_receipt_without_ack": true,
+    "no_new_task_or_channel": true,
+    "no_broker_or_orders": true,
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "unknown_never_pass": true
+  },
+  "registered_r92_lifecycle_followup_scope": "PRIOR_VERIFIED_R92_MATERIAL_FOLLOWUP_ONLY_NEVER_NEW_SIGNAL"
 }
