@@ -114,6 +114,39 @@ def longbridge_result(reply):
             "missing_is_zero_volume": False, "history_pass": False,
             "primary_pass": False, "r92_created": False}
 
+def longbridge_latest_candles_scope(rows, asof):
+    """Separate documented latest-candles access from blocked history quota.
+
+    Date-list coverage is NOT exchange-calendar closure, vendor legal usage
+    right, daily RTH-only volume, or upstream independence. Never PRIMARY.
+    """
+    need(type(asof) is str and dt.date.fromisoformat(asof).isoformat() == asof,
+         "LB_BAD_ASOF")
+    need(type(rows) is list and 260 <= len(rows) <= 1000,
+         "LB_NOT_260_OBSERVED_ROWS")
+    days = []
+    for row in rows:
+        need(type(row) is dict, "LB_BAD_ROW")
+        stamp = instant(row.get("timestamp")).astimezone(NY)
+        need(stamp.time() == dt.time(0), "LB_NOT_ET_MIDNIGHT_DAILY")
+        day = stamp.date().isoformat()
+        need(day <= asof, "LB_FUTURE_DAY")
+        need(row.get("trade_session") == "Intraday", "LB_SESSION_TAG")
+        vol = row.get("volume")
+        need(type(vol) in (int, str) and str(vol).isdigit() and
+             0 < int(vol) < 10**13, "LB_BAD_VOLUME")
+        days.append(day)
+    need(days == sorted(set(days)) and days[-1] == asof,
+         "LB_DUPLICATE_ORDER_OR_STALE_ASOF")
+    return {"source_api": "LATEST_CANDLESTICKS_NOT_HISTORY_CANDLESTICKS",
+            "observed_260_daily_rows": True,
+            "official_exchange_sessions_verified": False,
+            "daily_volume_rth_only_proven": False,
+            "automated_market_data_license_verified": False,
+            "github_runner_entitlement_verified": False,
+            "history_primary_pass": False, "price_primary_pass": False,
+            "r92_created": False}
+
 def selftest():
     date = "2026-10-19"
     bars = [{"timestamp": "2026-10-19T04:00:00Z"}]
@@ -145,7 +178,31 @@ def selftest():
          not blocked["missing_is_zero_volume"], "QUOTA0_ERROR_ZERO_CANDLE")
     need(longbridge_result({})["status"] == "UNKNOWN_UNATTESTED_ENTITLEMENT",
          "NO_ERROR_NOT_RIGHTS")
+    # Pure synthetic calendar-spanning rows: structural only; not real Nasdaq dates.
+    day0 = dt.date.fromisoformat(date) - dt.timedelta(days=259)
+    lb = [{"timestamp": dt.datetime.combine(
+              day0 + dt.timedelta(days=i), dt.time(0), NY).isoformat(),
+           "volume": "100", "trade_session": "Intraday"} for i in range(260)]
+    good_lb = longbridge_latest_candles_scope(lb, date)
+    need(good_lb["observed_260_daily_rows"] is True and
+         good_lb["official_exchange_sessions_verified"] is False and
+         good_lb["automated_market_data_license_verified"] is False and
+         good_lb["history_primary_pass"] is False,
+         "LB_LATEST_NOT_PRIMARY")
     negatives = [
+      ("lb_under_260", lambda: longbridge_latest_candles_scope(lb[1:], date)),
+      ("lb_duplicate", lambda: longbridge_latest_candles_scope(
+          [*lb[:-1], dict(lb[-2])], date)),
+      ("lb_wrong_api_shape", lambda: longbridge_latest_candles_scope({}, date)),
+      ("lb_future", lambda: longbridge_latest_candles_scope(
+          [*lb[:-1], dict(lb[-1], timestamp="2026-10-20T00:00:00-04:00")], date)),
+      ("lb_session_unknown", lambda: longbridge_latest_candles_scope(
+          [*lb[:-1], dict(lb[-1], trade_session="UNKNOWN")], date)),
+      ("lb_volume_zero", lambda: longbridge_latest_candles_scope(
+          [*lb[:-1], dict(lb[-1], volume="0")], date)),
+      ("lb_volume_bool", lambda: longbridge_latest_candles_scope(
+          [*lb[:-1], dict(lb[-1], volume=True)], date)),
+      ("lb_asof_old", lambda: longbridge_latest_candles_scope(lb, "2026-10-16")),
       ("future_day", lambda: daily_scope(bars + [{"timestamp": "2026-10-20T04:00:00Z"}], [date])),
       ("duplicate_day", lambda: daily_scope(bars + bars, [date])),
       ("missing_day", lambda: daily_scope([], [date])),
@@ -171,9 +228,9 @@ def selftest():
         except ValueError:
             continue
         raise RuntimeError("XRAY_SIP_1600_FALSE_ACCEPT_" + label)
-    need(len(negatives) == 18, "NEGATIVE_COUNT")
+    need(len(negatives) == 26, "NEGATIVE_COUNT")
     print(json.dumps({"schema": SCHEMA,
-          "status": "PASS_18_NEGATIVES_5_CONTROLS_NO_PRIMARY_NO_R92",
+          "status": "PASS_26_NEGATIVES_6_CONTROLS_NO_PRIMARY_NO_R92",
           "vendor_calls": 0, "execution": "NONE", "real_money": "NO-GO",
           "primary_pass": False, "r92_created": False,
           "notification_sent": False}, sort_keys=True))
