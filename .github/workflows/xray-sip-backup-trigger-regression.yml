@@ -95,7 +95,8 @@ jobs:
               "SCHEDULED_SIP_VENDOR_MUST_REQUIRE_OFFICIAL_SESSION")
           assert jobs["coverage"]["needs"]==["session-gate"]
           sess=jobs["session-gate"]
-          assert sess["outputs"]["allow"]=="$"+"{{ steps.session.outputs.allow_compute }}"
+          assert sess["outputs"]["allow"]=="$"+"{{ steps.session.outputs.allow_compute == 'true' && steps.source.outputs.ready == 'true' }}"
+          assert any(step.get("id")=="source" and "personal_sip_head_preflight.py --emit" in step.get("run","") for step in sess["steps"])
           assert any(x.get("id")=="session" and
               "root_weekend_quota_guard.py --emit" in x.get("run","")
               for x in sess["steps"])
