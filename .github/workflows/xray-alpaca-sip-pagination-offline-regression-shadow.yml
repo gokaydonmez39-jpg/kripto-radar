@@ -4,12 +4,16 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py"
+      - "nasdaq-xray/alpaca_code_push_vendor_gate_selftest.py"
+      - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
       - ".github/workflows/xray-alpaca-sip-pagination-offline-regression-shadow.yml"
   push:
     branches: [audit/c417-alpaca-sip-paginated-history-20261010, main]
     paths:
       - "nasdaq-xray/alpaca_sip_paginated_transport_shadow.py"
       - "nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py"
+      - "nasdaq-xray/alpaca_code_push_vendor_gate_selftest.py"
+      - ".github/workflows/xray-alpaca-delayed-sip-research.yml"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
       - "nasdaq-xray/source_workflow_invocation_sha_selftest.py"
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
@@ -39,6 +43,8 @@ jobs:
           python nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py --selftest
           python -O nasdaq-xray/alpaca_sip_close_auction_condition_shadow.py --selftest
           python nasdaq-xray/source_workflow_invocation_sha_selftest.py
+          python nasdaq-xray/alpaca_code_push_vendor_gate_selftest.py
+          python -O nasdaq-xray/alpaca_code_push_vendor_gate_selftest.py
       - name: No provider invocation or fake history/MC/GO witness
         run: |
           python - <<'PY'
