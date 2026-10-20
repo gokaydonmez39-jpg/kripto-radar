@@ -269,6 +269,20 @@ def tests() -> None:
             pass
         else:
             raise AssertionError("UNAUTHORIZED_OBSERVATION_ADMITTED")
+    # RED: a forged pending notice with no dedup event must never rehydrate.
+    unproven = copy.deepcopy(good)
+    fake_key = "f" * 64
+    unproven["records"][c["delivery_key"]]["pending_notifications"] = {
+        fake_key: {"delivery_key": c["delivery_key"], "symbol": "OTHER",
+                   "status": "STOP_LEVEL_TOUCHED", "alert_dedup_key": fake_key,
+                   "notification_status": "PENDING_NOT_DELIVERED", "orders": []}}
+    try:
+        bound_proposal(unproven, {}, "2026-10-08T19:10:00Z")
+    except ValueError as exc:
+        if str(exc) != "PENDING_NOTIFICATION_RECORD_UNBOUND":
+            raise
+    else:
+        raise RuntimeError("ORPHAN_OR_FORGED_PENDING_FOLLOWUP_ACCEPTED")
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
