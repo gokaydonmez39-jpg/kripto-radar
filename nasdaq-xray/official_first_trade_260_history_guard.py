@@ -193,6 +193,40 @@ def rebind_existing_research_results(results, asof):
     return 1
 
 
+def rebind_etra_research_results(results, asof):
+    """Terminalize already-cached ETRA UNKNOWN without a vendor retry."""
+    need(type(results) is dict, "ETRA_REBOUND_RESULTS_TYPE")
+    old = results.get("ETRA")
+    if old is None:
+        return 0
+    need(type(old) is dict and type(old.get("status")) is str,
+         "ETRA_REBOUND_ROW_MALFORMED")
+    info = fence("ETRA", asof)
+    if info is None or not info["own_listed_history_short"]:
+        return 0
+    reason = "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL"
+    if (old["status"] == "FAIL_HISTORY"
+            and (old.get("info") or {}).get("reason") == reason
+            and old.get("official_first_trade_failonly_rebound") is True):
+        return 0
+    if old["status"] not in {"PASS", "UNKNOWN_STATIC",
+                             "UNKNOWN_RETRY", "UNKNOWN_RETRY_EXHAUSTED"}:
+        return 0
+    results["ETRA"] = {**old, "status": "FAIL_HISTORY",
+        "prior_untrusted_status": old["status"],
+        "official_first_trade_failonly_rebound": True,
+        "info": {
+            "reason": reason,
+            "first_traded_nasdaq_date": info["first_traded_nasdaq_date"],
+            "completed_listed_sessions": info["completed_listed_sessions"],
+            "bars": info["completed_listed_sessions"],
+            "required_own_history_sessions": LIMIT,
+            "source_evidence_blob_sha": info["evidence_git_blob_sha"],
+            "vendor_history_pre_ipo_quarantined": True,
+            "no_synthetic_bar": True, "unknown_never_pass": True}}
+    return 1
+
+
 def selftest():
     doc = json.loads(EVIDENCE.read_text())
     validate_evidence(doc)
