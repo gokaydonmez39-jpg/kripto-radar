@@ -156,6 +156,32 @@ def inventory(files):
                     errors.append("ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
         except (KeyError,IndexError,AttributeError,TypeError,ValueError,yaml.YAMLError):
             errors.append("ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
+    personal="xray-personal-full-universe-sip-coverage.yml"
+    if personal in files:
+        doc=files[personal]
+        try:
+            parsed=yaml.load(doc,Loader=yaml.BaseLoader)
+            jobs=parsed["jobs"]
+            gate=jobs["session-gate"]
+            source_step=next(s for s in gate["steps"] if s.get("id")=="source")
+            if ("personal_sip_head_preflight.py --emit" not in source_step.get("run","")
+                or "steps.source.outputs.ready == 'true'" not in gate["outputs"]["allow"]):
+                errors.append("PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
+            for jid,command in (
+                ("coverage","alpaca_full_universe_asof_sip_availability.py"),
+                ("history260","alpaca_full_universe_260_52_sip_shadow.py"),
+                ("joint-rth30-shadow","alpaca_personal_joint_260_d30_rth_shadow.py")):
+                steps=jobs[jid]["steps"]
+                vendor_step=next(s for s in steps if
+                                 "python nasdaq-xray/"+command in s.get("run",""))
+                script=vendor_step["run"]
+                if (script.find("personal_sip_head_preflight.py --check")<0
+                    or script.index("personal_sip_head_preflight.py --check")>
+                       script.index("python nasdaq-xray/"+command)):
+                    errors.append("PERSONAL_SIP_VENDOR_PREFLIGHT_MISSING:"+jid)
+        except (KeyError,IndexError,StopIteration,AttributeError,TypeError,
+                ValueError,yaml.YAMLError):
+            errors.append("PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -275,7 +301,16 @@ def selftest():
         "Quota-free scheduled root ASOF and latest-main preflight",
         "DISABLED scheduled root preflight",1)}),
         "ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
-    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_14_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
+    personal="xray-personal-full-universe-sip-coverage.yml"
+    bad(lambda x:x.update({personal:x[personal].replace(
+        "python nasdaq-xray/personal_sip_head_preflight.py --check",
+        "echo SKIP_MAIN_SHA_PREFLIGHT",1)}),
+        "PERSONAL_SIP_VENDOR_PREFLIGHT_MISSING")
+    bad(lambda x:x.update({personal:x[personal].replace(
+        "steps.source.outputs.ready == 'true'",
+        "true",1)}),
+        "PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_16_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
