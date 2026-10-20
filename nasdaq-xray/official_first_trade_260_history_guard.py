@@ -52,6 +52,54 @@ def validate_evidence(doc):
     need(dt.date.fromisoformat(BSP_FIRST) <
          dt.date.fromisoformat(ASOF_MIN), "SOURCE_TIME_ORDER")
 
+ETRA_FIRST = "2026-09-18"
+ETRA_REGISTRY = ROOT / "price_official_listing_registry.json"
+ETRA_SOURCE = ("https://ir.electra-therapeutics.com/news-releases/"
+               "news-release-details/electra-therapeutics-announces-pricing-upsized-3500-million")
+
+def etra_history_fence(asof, *, completed_sessions=None, evidence=None):
+    if type(asof) is not str:
+        raise ValueError("XRAY_ETRA_ASOF_TYPE")
+    day = dt.date.fromisoformat(asof)
+    need(day.isoformat() == asof, "ETRA_ASOF_FORMAT")
+    if asof < ETRA_FIRST:
+        return None
+    registry = evidence if evidence is not None else json.loads(ETRA_REGISTRY.read_text())
+    expected = {"first_trade_date": ETRA_FIRST,
+                "authority": "ISSUER_IR_PRIMARY", "source_url": ETRA_SOURCE,
+                "evidence_kind": "IPO_FIRST_TRADING_DATE"}
+    need(type(registry) is dict
+         and registry.get("schema") == "XRAY_PRICE_OFFICIAL_LISTING_REGISTRY_V1"
+         and registry.get("authority") == "OFFICIAL_LISTING_DATE_FAIL_ONLY"
+         and registry.get("execution") == "NONE"
+         and registry.get("real_money") == "NO-GO"
+         and registry.get("unknown_never_pass") is True
+         and (registry.get("records") or {}).get("ETRA") == expected,
+         "ETRA_ISSUER_PRIMARY_EVIDENCE")
+    if completed_sessions is None:
+        import pandas_market_calendars as mcal
+        completed_sessions = [x.date().isoformat() for x in
+            mcal.get_calendar("NASDAQ").valid_days(
+                start_date=ETRA_FIRST, end_date=asof)]
+    need(type(completed_sessions) is list
+         and completed_sessions == sorted(set(completed_sessions))
+         and all(type(d) is str and ETRA_FIRST <= d <= asof
+                 for d in completed_sessions), "ETRA_SESSIONS_MALFORMED")
+    count = len(completed_sessions)
+    need(count <= (day - dt.date.fromisoformat(ETRA_FIRST)).days + 1,
+         "ETRA_SESSIONS_EXCEED_CALENDAR")
+    return {"symbol": "ETRA", "asof_et": asof,
+            "first_traded_nasdaq_date": ETRA_FIRST,
+            "completed_listed_sessions": count,
+            "required_own_history_sessions": LIMIT,
+            "own_listed_history_short": count < LIMIT,
+            "pre_ipo_bars_must_be_ignored": True,
+            "unverified_predecessor_cannot_fill_history": True,
+            "evidence_git_blob_sha": git_blob(ETRA_REGISTRY) if evidence is None else None,
+            "canonical_price_pass_created": False,
+            "canonical_history_pass_created": False,
+            "r92_created": False, "execution": "NONE", "real_money": "NO-GO"}
+
 def fence(symbol, asof, *, completed_sessions=None, evidence=None):
     """Return proof-bound local 260 result, or None outside this evidence scope.
 
