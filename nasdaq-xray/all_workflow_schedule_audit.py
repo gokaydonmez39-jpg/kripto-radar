@@ -167,13 +167,17 @@ def inventory(files):
             if ("personal_sip_head_preflight.py --emit" not in source_step.get("run","")
                 or "steps.source.outputs.ready == 'true'" not in gate["outputs"]["allow"]):
                 errors.append("PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
-            for jid,command in (
-                ("coverage","alpaca_full_universe_asof_sip_availability.py"),
-                ("history260","alpaca_full_universe_260_52_sip_shadow.py"),
-                ("joint-rth30-shadow","alpaca_personal_joint_260_d30_rth_shadow.py")):
+            for jid,step_name,command in (
+                ("coverage","Measure all current Nasdaq root symbols without storing prices",
+                 "alpaca_full_universe_asof_sip_availability.py"),
+                ("history260","Measure exact 260 official sessions for every Nasdaq symbol",
+                 "alpaca_full_universe_260_52_sip_shadow.py"),
+                ("joint-rth30-shadow","Measure official 30-minute RTH completed-session lower bound on exact joint cohort",
+                 "alpaca_personal_joint_260_d30_rth_shadow.py")):
                 steps=jobs[jid]["steps"]
-                vendor_step=next(s for s in steps if
-                                 "python nasdaq-xray/"+command in s.get("run",""))
+                # Select the actual network step; prior offline selftests call
+                # the same command with --selftest and must not be misclassified.
+                vendor_step=next(s for s in steps if s.get("name")==step_name)
                 script=vendor_step["run"]
                 if (script.find("personal_sip_head_preflight.py --check")<0
                     or script.index("personal_sip_head_preflight.py --check")>
