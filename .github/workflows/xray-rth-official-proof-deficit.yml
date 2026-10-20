@@ -1,4 +1,4 @@
-name: XRAY RTH 497 Official Proof Deficit Admission (No AL)
+name: XRAY Dynamic Official RTH Proof Deficit Admission (No AL)
 on:
   pull_request:
     branches: [main]
@@ -107,7 +107,7 @@ jobs:
           print("XRAY_RTH_SOURCE_MAIN_RUN="+str(source_run))
           print("XRAY_RTH_REAL_SAME_RUN_RTH_SHA256=PASS")
           PY
-      - name: Test 497 actual symbolic records, adverse mutations and -O
+      - name: Test exact current symbolic RTH records, adverse mutations and -O
         env:
           XRAY_TEST_CROSS: ${{ runner.temp }}/rth_proof/cross.json
           XRAY_TEST_SIX: ${{ runner.temp }}/rth_proof/six.json
@@ -122,7 +122,7 @@ jobs:
           assert all(x not in c for x in ("urllib","requests","subprocess"))
           print("XRAY_RTH_ZERO_PROVIDER_ZERO_BROKER=PASS")
           PY
-      - name: Replay canonical 548 unknown intersection without OHLCV
+      - name: Replay exact canonical unknown intersection without OHLCV
         run: |
           python nasdaq-xray/rth_official_proof_deficit.py \
             --cross "$RUNNER_TEMP/rth_proof/cross.json" \
@@ -135,17 +135,23 @@ jobs:
           from pathlib import Path
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/
               "xray_rth_official_proof_deficit_no_al.json").read_text())
-          assert [x[k] for k in (
-              "rth_exact_30session_research_cohort",
-              "rth_complete_slot_research_high_count",
-              "rth_auction_volume_ambiguous_count",
-              "rth_incomplete_slot_count",
-              "outside_complete_rth_cohort_unknown_count")]==[497,415,78,4,51]
+          cross=json.loads((Path(os.environ["RUNNER_TEMP"])/"rth_proof/cross.json").read_text())
+          joint=json.loads((Path(os.environ["RUNNER_TEMP"])/"rth_proof/joint.json").read_text())
+          assert x["canonical_price_dv30_unknown_count"]==cross["canonical_price_dv30_unknown_count"]
+          assert x["source_universe_count"]==cross["universe_count"]
+          assert x["rth_exact_30session_research_cohort"]==joint["joint_cohort_count"]
+          assert x["rth_shadow_classification_counts"]==joint["classification_counts"]
+          assert x["rth_complete_slot_research_high_count"]==joint["rth_lower_bound_ge50m_shadow_count"]
+          assert x["rth_auction_volume_ambiguous_count"]==joint["rth_ambiguous_shadow_count"]
+          assert x["rth_incomplete_slot_count"]==joint["rth_incomplete_or_unknown_count"]
+          assert (x["rth_exact_30session_research_cohort"]+
+                  x["outside_complete_rth_cohort_unknown_count"]==
+                  x["canonical_price_dv30_unknown_count"])
           assert x["primary_c417_price_dv30_proven"] is False
           assert x["alpha_authority"] is False and x["r92_authority"] is False
           assert x["source_market_api_calls"]==0
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-          print("XRAY_RTH_REAL_415_78_4_PROOF_DENIAL=PASS_NO_AL")
+          print("XRAY_RTH_REAL_DYNAMIC_EXACT_PROOF_DENIAL=PASS_NO_AL")
           PY
       - uses: actions/upload-artifact@v4
         with:
