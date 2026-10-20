@@ -28941,9 +28941,9 @@
   "official_footer": "File Creation Time: 1020202617:01|||||||",
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
-  "processed_late_asof_canary_this_run": 0,
+  "processed_late_asof_canary_this_run": 1,
   "processed_late_asof_recheck_this_run": 0,
-  "processed_new_this_run": 189,
+  "processed_new_this_run": 0,
   "processed_retry_this_run": 0,
   "processed_transport_rescue_this_run": 0,
   "queue": [
@@ -32225,17 +32225,17 @@
       "updated_at_utc": "2026-10-20T21:26:12.717595+00:00"
     },
     "AAPL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 10056,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
-      "late_asof_canary_probe_round": 0,
+      "late_asof_canary_probe_round": 1,
       "late_asof_recheck_round": 0,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-10-20T21:26:12.717607+00:00"
+      "updated_at_utc": "2026-10-20T22:29:35.639976+00:00"
     },
     "AARD": {
       "attempts": 1,
@@ -76849,12 +76849,12 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "d5309a99aa909cf10a4f8609343c67867367baf044bdfac07484cb51d6fc4cd7",
+  "state_hash": "d4dfd630628c04064fe4b88a30a5a04920b1813b7dcbffd37bc29b8e44f34bdf",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
   "unknown_count": 3184,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-20T21:31:47.940923+00:00"
+  "updated_at_utc": "2026-10-20T22:29:35.944073+00:00"
 }
