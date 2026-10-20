@@ -310,6 +310,19 @@ def tests() -> None:
                 raise
         else:
             raise RuntimeError("FALSIFIED_PENDING_NOTE_ACCEPTED:" + field)
+    # RED: an arbitrary local expiry must not fabricate a terminal
+    # "candidate expired" event unrelated to immutable R92 provenance.
+    premature = copy.deepcopy(good)
+    premature["records"][c["delivery_key"]]["manual_candidate"][
+        "expires_at_utc"] = "2026-10-08T19:05:00Z"
+    try:
+        bound_proposal(premature, {}, "2026-10-08T19:10:00Z")
+    except ValueError as exc:
+        if str(exc) != "CANONICAL_R92_EXPIRY_MISMATCH":
+            raise
+    else:
+        raise RuntimeError("UNVERIFIED_EARLY_EXPIRY_ADMITTED")
+
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
