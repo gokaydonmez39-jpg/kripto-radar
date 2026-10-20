@@ -118,6 +118,30 @@ def evaluate(a, blobs, latest_session=None):
              x.get("mc_current_exact") is False and
              type(x.get("rights_state")) is str for x in sources),
          "FAKE_LICENSE_OR_MC")
+    additional = [
+        ("additional_evidence_only_discovery_20261012", "candidates",
+         "primary_admitted", 5),
+        ("additional_research_pit_public_sources_20261012", "new_vendor_candidates",
+         "primary_admitted", 3),
+        ("additional_direct_historical_mc_sources_20261012", "candidate_endpoints",
+         None, 3),
+    ]
+    extra_ids = []
+    for group_name, list_name, field, expected_count in additional:
+        group = inv.get(group_name)
+        need(type(group) is dict, "EXTRA_GROUP_" + group_name)
+        rows = group.get(list_name)
+        need(type(rows) is list and len(rows) == expected_count and
+             all(type(z) is dict and type(z.get("id")) is str for z in rows),
+             "EXTRA_COUNT_" + group_name)
+        for row in rows:
+            flag = field if field else (
+                "production_primary_allowed" if
+                row["id"] == "FINNHUB_HISTORIC_MC" else "primary_allowed")
+            need(row.get(flag) is False, "EXTRA_FALSE_PRIMARY_"+row["id"])
+            extra_ids.append(row["id"])
+    need(len(extra_ids)==len(set(extra_ids))==11,
+         "EXTRA_SOURCE_DUPLICATE_OR_COUNT")
     need(successor.get("effective_production_policy") == "C4.17"
          and successor.get("activation_status") == "PROPOSED_NOT_ACTIVATED"
          and successor.get("can_create_PRIMARY") is False
@@ -194,6 +218,8 @@ def evaluate(a, blobs, latest_session=None):
       "asof_et": asof,
       "inventory_observed_date": inv.get("observed_date"),
       "provider_count": len(sources),
+      "additional_unpromoted_candidate_count": len(extra_ids),
+      "additional_candidate_ids": sorted(extra_ids),
       "providers": [{"id":x["id"],"role":x["role"],
                      "rights_for_primary":False,"can_create_R92":False}
                     for x in sorted(sources,key=lambda z:z["id"])],
@@ -222,6 +248,7 @@ def selftest():
     report = evaluate(a, blobs)
     need(report["provider_count"] == 12 and
          report["exact_git_blob_edges"] == 7 and
+         report["additional_unpromoted_candidate_count"] == 11 and
          report["signal_start"] == "BLOCKED_NO_PRIMARY_NO_R92" and
          report["research_start"] == "CONFIGURED_READ_ONLY_MONITORING",
          "REAL_CURRENT_NO_ALPHA")
@@ -251,6 +278,9 @@ def selftest():
       ("BROKEN_MASTER_UNKNOWN",lambda a,b:a["master"].update(unknown_count=0)),
       ("FAKE_C418_VERSION",lambda a,b:a["resolver"].update(compiled_policy_version="C4.18")),
       ("UNKNOWN_PROVIDER",lambda a,b:a["inventory"]["sources"][0].update(id="FAKE_VENDOR")),
+      ("DIRECT_MC_FORGED",lambda a,b:a["inventory"]["additional_direct_historical_mc_sources_20261012"]["candidate_endpoints"][0].update(production_primary_allowed=True)),
+      ("PIT_CANDIDATE_FORGED",lambda a,b:a["inventory"]["additional_research_pit_public_sources_20261012"]["new_vendor_candidates"][0].update(primary_admitted=True)),
+      ("OTHER_CANDIDATE_FORGED",lambda a,b:a["inventory"]["additional_evidence_only_discovery_20261012"]["candidates"][0].update(primary_admitted=True)),
     ]
     for tag, edit in mutations:
         ax,bx=copy.deepcopy(a),copy.deepcopy(blobs)
@@ -260,8 +290,8 @@ def selftest():
         except (ValueError,KeyError,TypeError):
             continue
         raise RuntimeError("XRAY_OMNI_UNSAFE_MUTATION_ACCEPTED_"+tag)
-    need(len(mutations)==20,"NEGATIVE_COUNT")
-    print("XRAY_OMNI_START=PASS_20_NEGATIVES_12_PROVIDERS_7_SHA_NO_VENDOR_NO_PRIMARY_NO_R92")
+    need(len(mutations)==23,"NEGATIVE_COUNT")
+    print("XRAY_OMNI_START=PASS_23_NEGATIVES_12_SOURCES_11_CANDIDATES_7_SHA_NO_PRIMARY_NO_R92")
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser()
