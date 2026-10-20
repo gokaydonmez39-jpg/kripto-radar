@@ -602,6 +602,52 @@ def selftest():
          and all(ipo_test_rows[s]["status"] == "FAIL_HISTORY" for s in candidates)
          and ipo_test_rows["AAPL"]["status"] == "PASS",
          "IPO_REAL_ROOT_CLASS_REBOUND_IDEMPOTENT")
+    # October 2 SEC exhibit reports actual October 1 Nasdaq ADS trading.
+    # Never use the later confirmation in an October 1 PIT decision.
+    chwm_registry = json.loads(ETRA_REGISTRY.read_text())
+    need(fence("CHWM", "2026-10-01", evidence=chwm_registry,
+               completed_sessions=[]) is None, "CHWM_LATE_SEC_PROOF_LOOKAHEAD")
+    chwm_days = [(dt.date(2026, 10, 1) + dt.timedelta(days=k)).isoformat()
+                 for k in range(4)]
+    chwm = fence("CHWM", "2026-10-19", evidence=chwm_registry,
+                 completed_sessions=chwm_days)
+    need(chwm["own_listed_history_short"]
+         and chwm["completed_listed_sessions"] == 4
+         and chwm["ordinary_share_prior_history_inherited"] is False
+         and chwm["ads_ratio_ordinary_shares_per_ads"] == 10
+         and not chwm["canonical_history_pass_created"]
+         and not chwm["canonical_price_pass_created"]
+         and not chwm["r92_created"], "CHWM_SEC_CONFIRMED_FAIL_ONLY")
+    for field, value in (("first_trade_date", "2025-10-01"),
+                         ("source_url", "https://example.invalid/false"),
+                         ("evidence_kind", "BACKFILLED_FROM_ASX")):
+        forged = copy.deepcopy(chwm_registry)
+        forged["records"]["CHWM"][field] = value
+        try:
+            fence("CHWM", "2026-10-19", evidence=forged,
+                  completed_sessions=chwm_days)
+        except ValueError:
+            pass
+        else:
+            raise RuntimeError("CHWM_FORGED_SEC_LISTING_ACCEPTED:" + field)
+    try:
+        fence("CHWM", "2026-10-19", evidence=chwm_registry,
+              completed_sessions=chwm_days * 2)
+    except ValueError:
+        pass
+    else:
+        raise RuntimeError("CHWM_DUPLICATE_SESSIONS_ACCEPTED")
+    cached = {"CHWM": {"status": "UNKNOWN_STATIC",
+                        "info": {"reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"}},
+              "AAPL": {"status": "PASS", "info": {"bars": 1000}}}
+    need(rebind_chwm_ads_cached_history(cached, "2026-10-19") == 1
+         and cached["CHWM"]["status"] == "FAIL_HISTORY"
+         and cached["CHWM"]["info"]["bars"] < LIMIT
+         and cached["CHWM"]["info"]["asx_ordinary_history_not_inherited"]
+         and cached["AAPL"]["status"] == "PASS"
+         and rebind_chwm_ads_cached_history(cached, "2026-10-19") == 0,
+         "CHWM_SEC_FAIL_ONLY_REBIND_NOT_IDEMPOTENT")
+    print("XRAY_CHWM_ADS_SEC_ACTUAL_TRADE=PASS_FAIL_ONLY_NO_ASX_HISTORY_NO_ALPHA")
     print("XRAY_ACC_ADRX_NASDAQ_CONFIRMED_IPO=PASS_TWO_FAIL_HISTORY_ZERO_R92")
     print("XRAY_ETRA_OFFICIAL_FAIL_ONLY_SELFTEST=PASS_NO_PRICE_HISTORY_R92_PROMOTION")
     print("XRAY_FIRST_TRADE_BSP_SELFTEST=PASS_105_DAY_BOUND_5_NEGATIVES_OLD_PASS_DEMOTED_NO_R92")
