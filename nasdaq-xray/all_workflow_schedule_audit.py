@@ -21,6 +21,7 @@ EXPECTED={
  "nasdaq-xray-daily.yml":("30 * * * *",),
  "nasdaq-xray-delivery.yml":("*/15 * * * 1-5","7 * * * 0,6"),
  "xray-account-gate-reconcile.yml":("12 * * * *",),
+ "xray-alpaca-free-sip-shadow-proof.yml":("10 22 * * 1-5",),
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
  "xray-personal-full-universe-sip-coverage.yml":("10 22 * * 1-5",),
@@ -49,6 +50,7 @@ EXPECTED={
  "xray-watch-delivery-microaudit.yml":("5 13 * * 1-5","35 22 * * 1-5"),
 }
 READONLY_PROVIDER_SCHEDULED={
+ "xray-alpaca-free-sip-shadow-proof.yml",
  "xray-alpaca-delayed-sip-research.yml",
  "xray-candidate-local-alpaca-sip-recovery.yml",
  "xray-personal-full-universe-sip-coverage.yml",
@@ -129,6 +131,31 @@ def inventory(files):
                         errors.append("SCHEDULED_SHADOW_PUBLISHER_DEPENDENCIES_DRIFT:"+name)
             except (yaml.YAMLError,AttributeError,TypeError,ValueError):
                 errors.append("SCHEDULED_SHADOW_YAML_SCOPE_INVALID:"+name)
+    # Scheduled SIP HTTP must never precede the quota-free ROOT/HEAD check.
+    # This is topology evidence only, not authorization to promote SIP bars.
+    shadow_name="xray-alpaca-free-sip-shadow-proof.yml"
+    if shadow_name in files:
+        try:
+            shadow_doc=yaml.load(files[shadow_name],Loader=yaml.BaseLoader)
+            shadow_steps=shadow_doc["jobs"]["proof"]["steps"]
+            shadow_named={step.get("name"):(i,step)
+                          for i,step in enumerate(shadow_steps)
+                          if isinstance(step,dict) and step.get("name")}
+            pre_index,pre_step=shadow_named["Quota-free scheduled root ASOF and latest-main preflight"]
+            vendor_index,vendor_step=shadow_named["Bounded free historical SIP query only when PRIVATE keys available"]
+            enforce_index,enforce_step=shadow_named["Enforce actual delayed SIP HTTP measurement before success"]
+            if not (pre_index < vendor_index < enforce_index and
+                    pre_step.get("id")=="scheduled_root" and
+                    pre_step.get("if")=="${{ github.event_name == 'schedule' }}"):
+                errors.append("ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
+            expected_guard=("${{ github.event_name != 'pull_request' && "
+                            "(github.event_name != 'schedule' || "
+                            "steps.scheduled_root.outputs.ready == 'true') }}")
+            for guard_step in (vendor_step,enforce_step):
+                if guard_step.get("if")!=expected_guard:
+                    errors.append("ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
+        except (KeyError,IndexError,AttributeError,TypeError,ValueError,yaml.YAMLError):
+            errors.append("ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -168,6 +195,7 @@ def selftest():
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
     assert base["scheduled_count"]==len(EXPECTED)
+    assert base["automated_schedules"]["xray-alpaca-free-sip-shadow-proof.yml"]==["10 22 * * 1-5"]
     assert base["automated_schedules"]["xray-alpaca-delayed-sip-research.yml"]==["55 13 * * 1-5"]
     assert base["issue_writers"]==[]
     assert base["automated_schedules"]["xray-candidate-local-alpaca-sip-recovery.yml"]==["10 23 * * 1-5"]
@@ -238,7 +266,16 @@ def selftest():
             "if: steps.prep.outputs.ready == 'true' && false",
             "if: steps.prep.outputs.ready == 'true'")}),
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
-    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_12_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
+    shadow="xray-alpaca-free-sip-shadow-proof.yml"
+    bad(lambda x:x.update({shadow:x[shadow].replace(
+        "if: ${{ github.event_name != 'pull_request' && (github.event_name != 'schedule' || steps.scheduled_root.outputs.ready == 'true') }}",
+        "if: ${{ github.event_name != 'pull_request' }}",1)}),
+        "ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace(
+        "Quota-free scheduled root ASOF and latest-main preflight",
+        "DISABLED scheduled root preflight",1)}),
+        "ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_14_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
