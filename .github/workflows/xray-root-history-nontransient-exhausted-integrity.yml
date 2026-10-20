@@ -133,17 +133,32 @@ jobs:
           python - <<'PY'
           import json,sys
           sys.path.insert(0,"nasdaq-xray")
-          from official_first_trade_260_history_guard import rebind_etra_research_results
+          from official_first_trade_260_history_guard import (
+              rebind_etra_research_results, rebind_confirmed_ipo_research_results)
           source=json.load(open("nasdaq-xray/sina_state.json"))
-          assert source["asof_et"]=="2026-10-19"
-          assert source["results"]["ETRA"]["status"]=="UNKNOWN_STATIC"
+          asof=source["asof_et"]
+          assert asof>="2026-10-19"
+          etra_status=source["results"]["ETRA"]["status"]
+          assert etra_status in {"UNKNOWN_STATIC","FAIL_HISTORY"}
           rows={"ETRA":dict(source["results"]["ETRA"])}
-          assert rebind_etra_research_results(rows,source["asof_et"])==1
+          changed=rebind_etra_research_results(rows,asof)
+          assert changed==(1 if etra_status=="UNKNOWN_STATIC" else 0)
           assert rows["ETRA"]["status"]=="FAIL_HISTORY"
           assert rows["ETRA"]["info"]["completed_listed_sessions"]<260
           assert rows["ETRA"]["info"]["source_evidence_blob_sha"]
-          assert rows["ETRA"]["prior_untrusted_status"]=="UNKNOWN_STATIC"
-          print("XRAY_ETRA_REAL_ROOT_UNKNOWN_TO_FAIL_ONLY=PASS_ZERO_VENDOR_CALLS_ZERO_AL")
+          assert rebind_etra_research_results(rows,asof)==0
+          print("XRAY_ETRA_CURRENT_CACHE_FAIL_ONLY=PASS_IDEMPOTENT_ZERO_VENDOR_ZERO_AL")
+          symbols=("ACCV","ADRX")
+          before={s:source["results"][s]["status"] for s in symbols}
+          assert all(v in {"UNKNOWN_STATIC","FAIL_HISTORY"} for v in before.values())
+          cohort={s:dict(source["results"][s]) for s in symbols}
+          converted=rebind_confirmed_ipo_research_results(cohort,asof)
+          assert converted==sum(v=="UNKNOWN_STATIC" for v in before.values())
+          assert rebind_confirmed_ipo_research_results(cohort,asof)==0
+          assert all(cohort[s]["status"]=="FAIL_HISTORY" for s in symbols)
+          assert all(cohort[s]["info"]["bars"]<260 for s in symbols)
+          assert all(cohort[s]["info"]["source_evidence_blob_sha"] for s in symbols)
+          print("XRAY_ACCV_ADRX_REAL_ROOT_CACHE=PASS_TWO_FAIL_ONLY_NO_PROVIDER_NO_R92")
           PY
       - name: Never mistake offline-only evidence for a live source
         run: |
