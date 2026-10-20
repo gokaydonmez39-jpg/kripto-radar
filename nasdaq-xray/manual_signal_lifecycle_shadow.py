@@ -134,6 +134,12 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
           invalidated=False,max_age_minutes=35):
     """Produce a user-review event. STOP/TARGET are touches, never actual order fills."""
     begin,expires=validate_candidate(c)
+    # A caller-supplied True is not a verified SEC/issuer/halt source.
+    # Require a fresh provenance-checked control_event(...) witness instead.
+    if not all(type(flag) is bool for flag in (halt,material_event,invalidated)):
+        raise ValueError("UNVERIFIED_CONTROL_FLAG_TYPE")
+    if halt or material_event or invalidated:
+        raise ValueError("UNVERIFIED_CONTROL_FLAG_USE_CONTROL_EVENT")
     ts,low,high,age=validate_bar(bar,c,begin,observed_at_utc)
     prev=prev or {}
     if prev:
@@ -151,12 +157,8 @@ def event(c,bar,prev=None,*,observed_at_utc,halt=False,material_event=False,
             # A completed candle has been revised: do not generate contradictory
             # follow-up alerts until its provenance is independently reconciled.
             raise ValueError("COMPLETED_BAR_REVISION_UNVERIFIED")
-    if halt is True:status="OFFICIAL_HALT"
-    elif material_event is True:status="EVENT_VETO"
-    elif invalidated is True:status="INVALIDATED"
-    # Expiry follows the observation clock, even when no fresh market bar arrives.
-    # An expired research setup cannot remain indefinitely SOURCE_STALE.
-    elif iso(observed_at_utc)>=expires:status="EXPIRED"
+    # Expiry follows the observation clock even if the source becomes stale.
+    if iso(observed_at_utc)>=expires:status="EXPIRED"
     elif age>max_age_minutes*60:status="SOURCE_STALE"
     else:
         stop_hit=low<=finite(c["stop"])
@@ -226,9 +228,15 @@ def selftest():
     assert event(c,q,**kwargs)["status"]=="AMBIGUOUS_INTRABAR_ORDER"
     assert event(c,{**b,"low":94,"high":101},**kwargs)["status"]=="STOP_LEVEL_TOUCHED"
     assert event(c,{**b,"low":105,"high":121},**kwargs)["status"]=="TARGET_LEVEL_TOUCHED"
-    assert event(c,b,**kwargs,halt=True)["status"]=="OFFICIAL_HALT"
-    assert event(c,b,**kwargs,material_event=True)["status"]=="EVENT_VETO"
-    assert event(c,b,**kwargs,invalidated=True)["status"]=="INVALIDATED"
+    # No unverified boolean control can create an official halt, veto or invalidation.
+    for badflag in ({"halt":True}, {"material_event":True}, {"invalidated":True}):
+        try:
+            event(c,b,**kwargs,**badflag)
+        except ValueError as exc:
+            if str(exc)!="UNVERIFIED_CONTROL_FLAG_USE_CONTROL_EVENT":
+                raise
+        else:
+            raise RuntimeError("UNVERIFIED_BOOLEAN_CONTROL_ACCEPTED")
     assert event(c,b,observed_at_utc="2026-10-08T19:40:00Z")["status"]=="SOURCE_STALE"
     expired=event(c,b,observed_at_utc="2026-10-16T20:00:00Z")
     assert expired["status"]=="EXPIRED" and expired["alert"] is True
