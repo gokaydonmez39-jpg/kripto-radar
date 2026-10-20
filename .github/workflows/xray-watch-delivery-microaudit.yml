@@ -5,6 +5,8 @@ on:
     paths:
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
       - "nasdaq-xray/premium_personal_r92_presentation_shadow.py"
+      - "nasdaq-xray/chatgpt_only_delivery_mode.py"
+      - "nasdaq-xray/notification_channel_policy_v1.json"
       - ".github/workflows/xray-watch-delivery-microaudit.yml"
   workflow_dispatch:
   schedule:
@@ -17,6 +19,8 @@ on:
       - "nasdaq-xray/personal_watch_delivery_microaudit.py"
       - "nasdaq-xray/manual_signal_lifecycle_shadow.py"
       - "nasdaq-xray/premium_personal_r92_presentation_shadow.py"
+      - "nasdaq-xray/chatgpt_only_delivery_mode.py"
+      - "nasdaq-xray/notification_channel_policy_v1.json"
       - "nasdaq-xray/orchestrator_state.json"
       - "nasdaq-xray/sina_candidates.json"
       - "nasdaq-xray/personal_swing_radar_current.json"
@@ -48,6 +52,13 @@ jobs:
           python -m py_compile nasdaq-xray/personal_watch_delivery_microaudit.py
           python nasdaq-xray/personal_watch_delivery_microaudit.py --selftest
           python -O nasdaq-xray/personal_watch_delivery_microaudit.py --selftest
+      - name: Single-channel BUY and prior-registered-R92 follow-up policy guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python -O nasdaq-xray/chatgpt_only_delivery_mode.py --selftest
+          python nasdaq-xray/chatgpt_only_delivery_mode.py --check
       - name: Verified-only premium R92 display and fail-closed lifecycle controls (offline)
         shell: bash
         run: |
