@@ -43,7 +43,7 @@ def daily_scope(bars, expected):
     return {"exact_asof_days": len(days), "rth_volume_proven": False,
             "primary_price_pass": False, "r92_created": False}
 
-def close_minute(asof, bar_volume, rows):
+def close_minute(asof, bar_volume, rows, *, bar_trade_count=None):
     need(type(asof) is str and dt.date.fromisoformat(asof).isoformat() == asof,
          "BAD_ASOF")
     close = dt.datetime.combine(dt.date.fromisoformat(asof),
@@ -86,10 +86,16 @@ def close_minute(asof, bar_volume, rows):
         counts[kind] += 1
     counted = sum(value for key, value in sums.items() if key != "M_REFERENCE")
     need(counted == bar_volume, "VENDOR_MINUTE_SUM_MISMATCH")
+    if bar_trade_count is not None:
+        need(type(bar_trade_count) is int and bar_trade_count >= 0,
+             "BAR_TRADE_COUNT_TYPE")
+        need(len(rows) - counts["M_REFERENCE"] == bar_trade_count,
+             "BAR_TRADE_COUNT_M_REFERENCE_MISMATCH")
     return {
         "status": "SAMPLE_RECONCILED_NO_RTH_AUTHORITY",
         "counts": counts, "excluded_M_reference": sums["M_REFERENCE"] > 0,
         "sample_sum_matches_minute": True,
+        "sample_trade_count_matches_minute": bar_trade_count is not None,
         "pagination_complete_verified": False,
         "rth_only_volume_verified": False,
         "daily_sip_volume_is_rth": False,
@@ -119,7 +125,7 @@ def selftest():
             t(2, ["@", "T"], 20, "D"),
             t(3, ["@", "M"], 101),
             t(4, ["@", "I"], 5, "D")]
-    good = close_minute(date, 125, rows)
+    good = close_minute(date, 125, rows, bar_trade_count=3)
     need(good["counts"] == {"SIX": 1, "T": 1, "M_REFERENCE": 1,
                             "OTHER_AFTER_CLOSE": 1} and
          good["excluded_M_reference"] and
@@ -128,7 +134,7 @@ def selftest():
     # volume under the Alpaca condition table, but are NOT RTH.
     extended = rows + [t(5, ["@", "P", "T"], 7, "D"),
                        t(6, ["@", "W", "T"], 9, "P")]
-    checked_extended = close_minute(date, 141, extended)
+    checked_extended = close_minute(date, 141, extended, bar_trade_count=5)
     need(checked_extended["counts"]["T"] == 3 and
          not checked_extended["rth_only_volume_verified"],
          "VALID_T_P_W_MUST_REMAIN_NONRTH")
@@ -146,6 +152,8 @@ def selftest():
       ("naive", lambda: daily_scope([{"timestamp": "2026-10-19T00:00:00"}], [date])),
       ("wrong_et_midnight", lambda: daily_scope([{"timestamp": "2026-10-19T00:00:00Z"}], [date])),
       ("wrong_close_sum", lambda: close_minute(date, 126, rows)),
+      ("wrong_bar_trade_count", lambda: close_minute(date, 125, rows, bar_trade_count=4)),
+      ("bool_bar_trade_count", lambda: close_minute(date, 125, rows, bar_trade_count=True)),
       ("auction_T", lambda: close_minute(date, 125, [dict(rows[0], conditions=["@", "6", "T"]), *rows[1:]])),
       ("auction_M", lambda: close_minute(date, 125, [dict(rows[0], conditions=["@", "6", "M"]), *rows[1:]])),
       ("auction_wrong_exchange", lambda: close_minute(date, 125, [dict(rows[0], exchange="P"), *rows[1:]])),
@@ -163,9 +171,9 @@ def selftest():
         except ValueError:
             continue
         raise RuntimeError("XRAY_SIP_1600_FALSE_ACCEPT_" + label)
-    need(len(negatives) == 16, "NEGATIVE_COUNT")
+    need(len(negatives) == 18, "NEGATIVE_COUNT")
     print(json.dumps({"schema": SCHEMA,
-          "status": "PASS_16_NEGATIVES_4_CONTROLS_NO_PRIMARY_NO_R92",
+          "status": "PASS_18_NEGATIVES_5_CONTROLS_NO_PRIMARY_NO_R92",
           "vendor_calls": 0, "execution": "NONE", "real_money": "NO-GO",
           "primary_pass": False, "r92_created": False,
           "notification_sent": False}, sort_keys=True))
