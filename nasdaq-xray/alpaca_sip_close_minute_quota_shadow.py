@@ -7,7 +7,6 @@ this research into PRIMARY, C4.17 DV30, MC, R92 or notification.
 Sources: Alpaca Market Data FAQ and Longbridge Historical Candlesticks docs.
 """
 import argparse
-import copy
 import datetime as dt
 import json
 from zoneinfo import ZoneInfo
@@ -66,7 +65,7 @@ def close_minute(asof, bar_volume, rows):
         seen.add((exchange, ident))
         flags = row.get("conditions")
         need(type(flags) is list and bool(flags)
-             and all(type(c) is str and c in {"@", "6", "T", "M", "I", "F", "X"} for c in flags)
+             and all(type(c) is str and c in {"@", "6", "T", "M", "I", "F", "X", "P", "W"} for c in flags)
              and len(set(flags)) == len(flags), "UNRECOGNIZED_CONDITIONS")
         flags = set(flags)
         if "6" in flags:
@@ -77,7 +76,7 @@ def close_minute(asof, bar_volume, rows):
             need(flags.issubset({"@", "M", "I"}), "REFERENCE_M_MIXED")
             kind = "M_REFERENCE"
         elif "T" in flags:
-            need(flags.issubset({"@", "T", "I", "F"}), "EXTENDED_T_MIXED")
+            need(flags.issubset({"@", "T", "I", "F", "P", "W"}), "EXTENDED_T_MIXED")
             kind = "T"
         else:
             need("@" in flags and flags.issubset({"@", "I", "F", "X"}),
@@ -125,6 +124,14 @@ def selftest():
                             "OTHER_AFTER_CLOSE": 1} and
          good["excluded_M_reference"] and
          not good["rth_only_volume_verified"], "M_REFERENCE_DOUBLE_COUNT")
+    # Real 16:00 ET SIP sample included T+P and T+W; both retain
+    # volume under the Alpaca condition table, but are NOT RTH.
+    extended = rows + [t(5, ["@", "P", "T"], 7, "D"),
+                       t(6, ["@", "W", "T"], 9, "P")]
+    checked_extended = close_minute(date, 141, extended)
+    need(checked_extended["counts"]["T"] == 3 and
+         not checked_extended["rth_only_volume_verified"],
+         "VALID_T_P_W_MUST_REMAIN_NONRTH")
     blocked = longbridge_result({"error_code": 301607,
         "message": "history candlestick symbol count out of limit, requested:0/limit:0"})
     need(blocked["status"] == "BLOCKED_HISTORICAL_QUOTA_0" and
@@ -147,6 +154,8 @@ def selftest():
       ("outside_minute", lambda: close_minute(date, 125, [dict(rows[0], timestamp="2026-10-19T20:01:00Z"), *rows[1:]])),
       ("bool_volume", lambda: close_minute(date, 125, [dict(rows[0], size=True), *rows[1:]])),
       ("T_M_mixed", lambda: close_minute(date, 125, [rows[0], dict(rows[1], conditions=["@", "T", "M"]), *rows[2:]])),
+      ("P_without_T", lambda: close_minute(date, 125, [rows[0], dict(rows[1], conditions=["@", "P"]), *rows[2:]])),
+      ("W_without_T", lambda: close_minute(date, 125, [rows[0], dict(rows[1], conditions=["@", "W"]), *rows[2:]])),
     ]
     for label, action in negatives:
         try:
@@ -154,9 +163,9 @@ def selftest():
         except ValueError:
             continue
         raise RuntimeError("XRAY_SIP_1600_FALSE_ACCEPT_" + label)
-    need(len(negatives) == 14, "NEGATIVE_COUNT")
+    need(len(negatives) == 16, "NEGATIVE_COUNT")
     print(json.dumps({"schema": SCHEMA,
-          "status": "PASS_14_NEGATIVES_4_CONTROLS_NO_PRIMARY_NO_R92",
+          "status": "PASS_16_NEGATIVES_4_CONTROLS_NO_PRIMARY_NO_R92",
           "vendor_calls": 0, "execution": "NONE", "real_money": "NO-GO",
           "primary_pass": False, "r92_created": False,
           "notification_sent": False}, sort_keys=True))
