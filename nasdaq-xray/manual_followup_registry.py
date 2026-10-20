@@ -126,6 +126,15 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
         if previous:
             if previous.get("delivery_key") != delivery_key or previous.get("status") not in STATES:
                 raise ValueError("PREVIOUS_FOLLOWUP_INVALID")
+        # Pending notifications may only replay a previously classified
+        # material event for this immutable candidate. Never surface orphan
+        # queue rows or a fabricated SOURCE_STALE / unrelated symbol.
+        issued_keys = rec.get("alert_dedup_keys") or []
+        if (not isinstance(issued_keys, list)
+                or len(issued_keys) != len(set(issued_keys))
+                or any(not isinstance(k, str) or len(k) != 64 for k in issued_keys)):
+            raise ValueError("PENDING_NOTIFICATION_DEDUP_LEDGER_INVALID")
+        material_states = STATES - {"MONITORING", "SOURCE_STALE"}
         # Dedup means delivery-confirmed, not merely classified. Keep every
         # unacknowledged alert pending across retries and workflow restarts.
         existing_pending = rec.get("pending_notifications") or {}
@@ -139,6 +148,10 @@ def proposal(registry: dict, observation: dict, observed_at_utc: str, *, canonic
                     or pending_note.get("notification_status") != "PENDING_NOT_DELIVERED"
                     or pending_note.get("orders") != []):
                 raise ValueError("PENDING_NOTIFICATION_RECORD_INVALID")
+            if (pending_key not in issued_keys
+                    or pending_note.get("symbol") != candidate["symbol"]
+                    or pending_note.get("status") not in material_states):
+                raise ValueError("PENDING_NOTIFICATION_RECORD_UNBOUND")
             pending.append(copy.deepcopy(pending_note))
         evidence = observation.get(delivery_key, {})
         if not isinstance(evidence, dict):
@@ -283,6 +296,20 @@ def tests() -> None:
             raise
     else:
         raise RuntimeError("ORPHAN_OR_FORGED_PENDING_FOLLOWUP_ACCEPTED")
+    # Even a previously issued pending key may never be replayed under an
+    # unrelated symbol or a non-user-notifiable state.
+    for field, value in (("symbol", "OTHER"), ("status", "SOURCE_STALE")):
+        modified = copy.deepcopy(fresh["registry"])
+        rec = modified["records"][c["delivery_key"]]
+        first_pending = next(iter(rec["pending_notifications"].values()))
+        first_pending[field] = value
+        try:
+            bound_proposal(modified, {}, "2026-10-08T19:11:00Z")
+        except ValueError as exc:
+            if str(exc) != "PENDING_NOTIFICATION_RECORD_UNBOUND":
+                raise
+        else:
+            raise RuntimeError("FALSIFIED_PENDING_NOTE_ACCEPTED:" + field)
     # A manual source clock may not be backdated before actual R92 registration.
     late = copy.deepcopy(canonical)
     late["state_json"]["r92"][0]["registered_at_utc"] = "2026-10-08T18:30:00Z"
