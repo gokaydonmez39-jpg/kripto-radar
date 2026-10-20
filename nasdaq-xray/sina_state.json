@@ -1,13 +1,14 @@
 {
   "asof_et": "2026-10-19",
   "build": "2026-10-02.1",
-  "confirmed_ipo_first_trade_history_rebound_count": 2,
+  "chwm_sec_ads_history_rebound_count": 1,
+  "confirmed_ipo_first_trade_history_rebound_count": 0,
   "counts": {
     "FAIL_DV30": 1137,
-    "FAIL_HISTORY": 4,
+    "FAIL_HISTORY": 5,
     "FAIL_PRICE": 1338,
     "PASS": 496,
-    "UNKNOWN_STATIC": 214
+    "UNKNOWN_STATIC": 213
   },
   "cursor": 3189,
   "discovery": {
@@ -41350,13 +41351,25 @@
     "CHWM": {
       "attempts": 1,
       "info": {
+        "actual_trade_sec_exhibit": "https://www.sec.gov/Archives/edgar/data/2113605/000121390026106489/ea030732001ex99-2.htm",
+        "ads_ratio_ordinary_shares_per_ads": 10,
+        "asx_ordinary_history_not_inherited": true,
         "bars": 13,
-        "price": 5.01,
-        "reason": "SINA_DAILY_LT260_REQUIRES_INDEPENDENT_CONFIRMATION"
+        "completed_listed_sessions": 13,
+        "confirmation_publication_date": "2026-10-02",
+        "first_traded_nasdaq_date": "2026-10-01",
+        "no_synthetic_bar": true,
+        "reason": "OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL",
+        "required_own_history_sessions": 260,
+        "sec_exhibit_raw_html_sha256_captured": false,
+        "source_evidence_blob_sha": "2e6bcfe2465fef7d136ad4460bf5a27945c3c38a",
+        "unknown_never_pass": true
       },
       "late_asof_canary_probe_round": 0,
       "late_asof_recheck_round": 0,
-      "status": "UNKNOWN_STATIC",
+      "official_first_trade_failonly_rebound": true,
+      "prior_untrusted_status": "UNKNOWN_STATIC",
+      "status": "FAIL_HISTORY",
       "transport_rescue_round": 0,
       "updated_at_utc": "2026-10-20T02:00:50.668721+00:00"
     },
@@ -83785,12 +83798,12 @@
     "ZYBT": "Zhengye Biotechnology Holding Limited - Class A Ordinary Shares",
     "ZYME": "Zymeworks Inc. - Common Stock"
   },
-  "state_hash": "01f2d1beacdb0a3cdbddc4fdedf118b320f99fab24314045b26ad5a9905bfefd",
+  "state_hash": "dd6965b66616ae1537ec6d55d2c686d01f5a402007b0476c98dda7cf6d67e293",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
-  "unknown_count": 214,
+  "unknown_count": 213,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-10-20T15:55:48.845153+00:00"
+  "updated_at_utc": "2026-10-20T16:09:41.776900+00:00"
 }

@@ -8,7 +8,7 @@
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 477,
-    "engine_source_sha256": "40f162228947fa821634ca1255730fe5dc84c2de86e57ac7394a727ebce4b126",
+    "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
     "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
@@ -4146,7 +4146,7 @@
   "history_unknown_reason_counts": {
     "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 34,
     "EXACT30_SESSIONS_INCOMPLETE": 4,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 147,
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 146,
     "STATIC_UNKNOWN_OTHER": 29
   },
   "late_asof_canary_probes_this_run": 0,
@@ -4158,9 +4158,9 @@
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 214,
+  "unknown_count": 213,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-20T15:55:49.230533+00:00",
+  "updated_at_utc": "2026-10-20T16:09:42.034962+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
