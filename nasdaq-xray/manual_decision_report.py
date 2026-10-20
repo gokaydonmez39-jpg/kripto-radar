@@ -334,6 +334,14 @@ def selftest():
     assert may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"invalid") is False
     assert may_use_frozen_blob("price",{"asof_et":"2026-10-06"},"2026-10-07") is False
     assert may_use_frozen_blob("policy",{"asof_et":"2026-10-19"},"2026-10-07") is False
+    if may_use_frozen_blob("master",{"asof_et":"2026-10-19"},"2026-10-07") is not True:
+        raise RuntimeError("HISTORICAL_12_DAY_SOURCE_REJECTED")
+    if may_use_frozen_blob("price",{"asof_et":"2026-10-19"},"2026-10-07") is not True:
+        raise RuntimeError("HISTORICAL_12_DAY_PRICE_REJECTED")
+    if may_use_frozen_blob("history",{"asof_et":"2026-10-19"},"2026-10-07") is not False:
+        raise RuntimeError("UNBOUND_HISTORY_SCOPE_ACCEPTED")
+    if may_use_frozen_blob("master",{"asof_et":"2026-10-07"},"2026-10-07") is not False:
+        raise RuntimeError("SAME_ASOF_MUTABLE_SOURCE_ACCEPTED")
     print("XRAY_MANUAL_DECISION_NEGATIVE_POSITIVE_SELFTEST=PASS")
 
 def main():
