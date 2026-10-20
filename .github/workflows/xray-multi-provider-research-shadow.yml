@@ -78,6 +78,105 @@ jobs:
           assert x["upstream_code_executed"] is False
           print("XRAY_TAURIC_REAL_CANONICAL_ADVISORY=PASS_ZERO_PRIMARY_ZERO_R92")
           PY
+  graphify-ast-pilot-no-alpha:
+    # One-off PR evaluation only. Never run third-party parsers in production
+    # or in a job carrying API keys / delivery credentials.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Graphify 0.9.92 isolated local AST canary, no vendor or LLM credentials
+        env:
+          OPENAI_API_KEY: ""
+          ANTHROPIC_API_KEY: ""
+          GEMINI_API_KEY: ""
+          XRAY_ALPACA_DATA_KEY_ID: ""
+          XRAY_ALPACA_DATA_SECRET_KEY: ""
+          XRAY_MASSIVE_API_KEY: ""
+          XRAY_BQ_API_KEY: ""
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install --disable-pip-version-check 'graphifyy==0.9.92'
+          graphify --help >/dev/null
+          python - <<'PY'
+          import os,shutil
+          from pathlib import Path
+          root=Path("nasdaq-xray")
+          dst=Path(os.environ["RUNNER_TEMP"])/"graphify-xray-input"
+          dst.mkdir(parents=True,exist_ok=False)
+          focus=[
+              "sina_stage.py",
+              "official_first_trade_260_history_guard.py",
+              "price_dv30_phase.py",
+              "price_dv30_recover_from_fullstate.py",
+              "rth_official_proof_deficit.py",
+              "build_current_resolver_request.py",
+              "build_current_terminal.py",
+              "e2e_production_readiness.py",
+              "source_epoch_freshness_guard.py",
+              "alpaca_sip_close_auction_condition_shadow.py",
+              "alpaca_rth_minute_integrity_shadow.py",
+              "alpaca_rth_trade_gap_witness.py",
+              "delivery_prepare.py",
+              "tauric_tradingagents_advisory_shadow.py",
+              "personal_research_primary_engine_v1.py",
+              "personal_research_primary_engine_v2.py",
+          ]
+          for name in focus:
+              p=root/name
+              if not p.is_file() or p.is_symlink():
+                  raise SystemExit("MISSING_OR_UNSAFE_FOCUS_FILE:"+name)
+              shutil.copyfile(p,dst/name)
+          print("XRAY_GRAPHIFY_PILOT_SOURCE_COUNT="+str(len(focus)))
+          PY
+          graphify extract "$RUNNER_TEMP/graphify-xray-input" \
+            --code-only --no-cluster --no-dedup \
+            --out "$RUNNER_TEMP/graphify-xray-result"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"graphify-xray-result"
+          matches=list(root.rglob("graph.json"))
+          if len(matches)!=1:
+              raise SystemExit("GRAPHIFY_OUTPUT_COUNT_INVALID:"+str(len(matches)))
+          obj=json.loads(matches[0].read_text())
+          nodes=obj.get("nodes") or []
+          edges=obj.get("links",obj.get("edges",[]))
+          if not isinstance(nodes,list) or not isinstance(edges,list):
+              raise SystemExit("GRAPHIFY_SCHEMA_INVALID")
+          conf={}
+          rel={}
+          for e in edges:
+              if not isinstance(e,dict):raise SystemExit("GRAPHIFY_EDGE_NOT_OBJECT")
+              c=e.get("confidence","UNSPECIFIED")
+              if c not in ("EXTRACTED","INFERRED","AMBIGUOUS","UNSPECIFIED"):
+                  raise SystemExit("GRAPHIFY_UNEXPECTED_CONFIDENCE")
+              conf[c]=conf.get(c,0)+1
+              k=str(e.get("relation","unknown"));rel[k]=rel.get(k,0)+1
+          if len(nodes)<20 or len(edges)<10:
+              raise SystemExit("GRAPHIFY_EMPTY_OR_INCOMPLETE_CODE_GRAPH")
+          if not any(k in rel for k in ("calls","imports","references","contains")):
+              raise SystemExit("GRAPHIFY_NO_CODE_RELATION")
+          # AST graph does not attest GitHub workflow callbacks, provider
+          # rights, ASOF, raw OHLCV or the C4.17 release DAG.
+          print("XRAY_GRAPHIFY_AST_PILOT="+json.dumps({
+              "source_python_files":16,"nodes":len(nodes),"edges":len(edges),
+              "confidence_counts":conf,"relation_counts":rel,
+              "workflow_dependency_edges_attested":False,
+              "source_rights_attested":False,
+              "no_trading":True,"alpha_authority":False,"r92_created":False,
+              "api_market_calls":0,"llm_calls":0},sort_keys=True))
+          PY
+
   provider-shadow:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
