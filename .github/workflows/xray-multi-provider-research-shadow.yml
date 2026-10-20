@@ -91,7 +91,7 @@ jobs:
               if len(blocks)!=2:raise RuntimeError("EXPECTED_ONE_WORKFLOW_RUN")
               # Four-space YAML children must not be mistaken for a new
               # two-space event block. This previously truncated 'workflows'.
-              body=re.split(r"(?m)^  [A-Za-z_]+:\\s*$",blocks[1],maxsplit=1)[0]
+              body=blocks[1]  # every inspected workflow has exactly one such declaration
               match=re.search(r"(?m)^    workflows: (\[.*\])$",body)
               if match is None:raise RuntimeError("WORKFLOW_RUN_TARGET_SCHEMA_DRIFT")
               return json.loads(match.group(1))
