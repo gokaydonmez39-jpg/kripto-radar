@@ -55,6 +55,11 @@ jobs:
           python nasdaq-xray/alpaca_root_history_exact_260_selftest.py
           python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
           python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
+      - name: Audit all scheduled workflows and negative fixtures (zero market API calls)
+        run: |
+          python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+          python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
+          python nasdaq-xray/all_workflow_schedule_audit.py --selftest
       - name: Quota-free scheduled root ASOF and latest-main preflight
         id: scheduled_root
         if: ${{ github.event_name == 'schedule' }}
