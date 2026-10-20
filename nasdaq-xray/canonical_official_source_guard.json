@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-20T15:04:56.217847+00:00",
+  "generated_at_utc": "2026-10-20T15:22:22.036408+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -787,8 +787,38 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 36,
+      "item_count": 38,
       "items": [
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "11:15:42.250",
+          "IssueName": "Alpha Technology Group Cl A OS",
+          "IssueSymbol": "ATGL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "11:15:42",
+          "ResumptionTradeTime": "11:20:42",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:15:42.250</td><td valign=\"top\">ATGL</td><td valign=\"top\">Alpha Technology Group Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:15:42                      </td><td valign=\"top\">11:20:42                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "ATGL"
+        },
+        {
+          "HaltDate": "10/20/2026",
+          "HaltTime": "11:10:17.053",
+          "IssueName": "RF Acquisition Corp II",
+          "IssueSymbol": "RFAIU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/20/2026",
+          "ResumptionQuoteTime": "11:10:17",
+          "ResumptionTradeTime": "11:15:17",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:10:17.053</td><td valign=\"top\">RFAIU</td><td valign=\"top\">RF Acquisition Corp II</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:10:17                      </td><td valign=\"top\">11:15:17                      </td></tr></table>",
+          "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
+          "title": "RFAIU"
+        },
         {
           "HaltDate": "10/20/2026",
           "HaltTime": "11:01:04.783",
@@ -799,8 +829,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/20/2026",
           "ResumptionQuoteTime": "11:01:04",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:01:04.783</td><td valign=\"top\">ATGL</td><td valign=\"top\">Alpha Technology Group Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:01:04                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "11:06:04",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:01:04.783</td><td valign=\"top\">ATGL</td><td valign=\"top\">Alpha Technology Group Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/20/2026                    </td><td valign=\"top\">11:01:04                      </td><td valign=\"top\">11:06:04                      </td></tr></table>",
           "pubDate": "Tue, 20 Oct 2026 04:00:00 GMT",
           "title": "ATGL"
         },
