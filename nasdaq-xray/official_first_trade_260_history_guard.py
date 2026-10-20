@@ -106,6 +106,8 @@ def fence(symbol, asof, *, completed_sessions=None, evidence=None):
     completed_sessions may be supplied only to deterministic offline selftests;
     the live call always computes actual NASDAQ sessions via pinned calendar.
     """
+    if symbol == "ETRA":
+        return etra_history_fence(asof, completed_sessions=completed_sessions, evidence=evidence)
     if symbol != "BSP":
         return None
     need(type(asof) is str and dt.date.fromisoformat(asof).isoformat() == asof,
