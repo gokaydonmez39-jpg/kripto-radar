@@ -428,7 +428,7 @@ def selftest():
     tp={"asof_et":"2026-10-20","unknown_symbols":test_names,
         "unknown_count":3,"pass_count":0,"execution":"NONE",
         "real_money":"NO-GO","unknown_never_pass":True}
-    tm={"asof_et":"2026-10-20","pass_symbols":list(SAMPLE),
+    tm={"asof_et":"2026-10-20","pass_symbols":sorted(SAMPLE),
         "pass_count":len(SAMPLE),"execution":"NONE",
         "real_money":"NO-GO","unknown_never_pass":True}
     when=dt.datetime(2026,10,21,8,10,tzinfo=UTC)
