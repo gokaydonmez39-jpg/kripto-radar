@@ -65,17 +65,28 @@ def audit(directory):
     adj=defaultdict(set)
     for kind,a,b in edges:
         if kind=="workflow_run":adj[a].add(b)
-    long_or_cycles=[]
+    # A long valid chain is NOT a cycle. Keep distinct deterministic witnesses.
+    # Limit path expansion, fail the audit if the report would be incomplete.
+    long_paths=set(); cycles=set(); walks=0; max_walks=10000
     for start in sorted(adj):
         stack=[(start,(start,))]
         while stack:
+            walks+=1
+            require(walks<=max_walks,"PATH_ENUMERATION_BUDGET_EXCEEDED")
             node,path=stack.pop()
-            if len(path)>4:
-                long_or_cycles.append(list(path));continue
-            for n in adj.get(node,()):
-                if n in path:long_or_cycles.append(list(path)+[n])
-                else:stack.append((n,path+(n,)))
-        if len(long_or_cycles)>=15:break
+            if len(path)>=5:
+                long_paths.add(path[:5])
+            for nxt in sorted(adj.get(node,()),reverse=True):
+                if nxt in path:
+                    segment=path[path.index(nxt):]
+                    rotations=[segment[i:]+segment[:i] for i in range(len(segment))]
+                    canonical=min(rotations)
+                    cycles.add(canonical+(canonical[0],))
+                else:
+                    stack.append((nxt,path+(nxt,)))
+    # Backwards compatible combined count for consumers of the draft pilot,
+    # but the independent cycle/long counters are now authoritative.
+    long_or_cycles=sorted(long_paths)+sorted(cycles)
     return {
         "schema":SCHEMA,"workflow_count":len(docs),
         "declared_edge_count":len(edges),
@@ -84,8 +95,13 @@ def audit(directory):
         "unresolved_types":dict(Counter(x["type"] for x in bad)),
         "unresolved_sample":bad[:20],
         "unclassified_dynamic_count":len(dynamic),
+        "long_workflow_run_path_count":len(long_paths),
+        "long_workflow_run_path_sample":[list(p) for p in sorted(long_paths)[:8]],
+        "workflow_run_cycle_count":len(cycles),
+        "workflow_run_cycle_sample":[list(p) for p in sorted(cycles)[:8]],
+        "path_audit_complete":True,
         "long_or_cyclic_workflow_run_count":len(long_or_cycles),
-        "long_or_cyclic_sample":long_or_cycles[:8],
+        "long_or_cyclic_sample":[list(p) for p in long_or_cycles[:8]],
         "graph_proof":"DECLARATIONS_ONLY_NOT_RUNTIME",
         "github_runner_execution_verified":False,
         "llm_calls":0,"vendor_market_calls":0,
@@ -110,9 +126,23 @@ def selftest():
         (p/"a.yml").write_text("name: A\non:\n  workflow_run:\n    workflows: [B]\n")
         (p/"b.yml").write_text("name: B\non:\n  workflow_run:\n    workflows: [A]\n")
         checked=audit(p)
-        require(checked["long_or_cyclic_workflow_run_count"]>0,
-                "CYCLE_MUST_BE_SURFACED")
-    print("XRAY_GRAPHIFY_ACTIONS_DAG=PASS_3_NEG_POS_OFFLINE_NO_ALPHA")
+        require(checked["workflow_run_cycle_count"]==1 and
+                checked["long_workflow_run_path_count"]==0,
+                "CYCLE_MUST_BE_SURFACED_INDEPENDENTLY")
+        # Five legitimate workflow_run hops must NOT be reported as a cycle.
+        for index, name in enumerate(("A","B","C","D","E")):
+            suffix=chr(ord("a")+index)
+            predecessor=chr(ord("A")+index-1) if index else None
+            trigger=("on:\\n  workflow_run:\\n    workflows: ["+predecessor+"]\\n"
+                     if predecessor else "on:\\n  push:\\n")
+            (p/(suffix+".yml")).write_text(
+                ("name: "+name+"\\n"+trigger+"jobs:\\n  scan: {}\\n").replace("\\n","\n"))
+        chain=audit(p)
+        require(chain["workflow_run_cycle_count"]==0 and
+                chain["long_workflow_run_path_count"]>0 and
+                chain["path_audit_complete"] is True,
+                "LONG_CHAIN_NEVER_CYCLE")
+    print("XRAY_GRAPHIFY_ACTIONS_DAG=PASS_SEPARATE_LONG_PATH_AND_CYCLE_OFFLINE_NO_ALPHA")
 
 if __name__=="__main__":
     a=argparse.ArgumentParser()
