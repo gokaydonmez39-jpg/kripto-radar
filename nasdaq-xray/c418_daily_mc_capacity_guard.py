@@ -212,6 +212,18 @@ def selftest() -> None:
         except ValueError as err:
             require(code in str(err), "WRONG_NEGATIVE_REASON:" + code + ":" + str(err))
         else: raise RuntimeError("UNSAFE_MUTANT_ACCEPTED:" + code)
+    # C4.18 legal-use separation is a supply/MC capacity invariant:
+    # personal Alpaca SIP research cannot stand in for BQ/SEC PRIMARY MC.
+    source_policy=json.loads((ROOT/"source_successor_c418_proposal.json").read_text())
+    role=source_policy.get("research_rights_separation",{})
+    require(source_policy.get("effective_production_policy")=="C4.17"
+            and source_policy.get("activation_status")=="PROPOSED_NOT_ACTIVATED",
+            "PERSONAL_RESEARCH_POLICY_NOT_FROZEN")
+    require(role.get("classification")=="PERSONAL_NONCOMMERCIAL_RESEARCH_DISTINCT_FROM_PUBLIC_REDISTRIBUTION_V1"
+            and role.get("personal_research_findings_are_c417_primary") is False
+            and role.get("raw_market_data_publication_authorized") is False
+            and role.get("can_register_R92") is False,
+            "PERSONAL_ALPACA_RESEARCH_MISTAKEN_FOR_MC_PRIMARY")
     print("XRAY_C418_ZERO_SCOPE_MUST_NOT_CLAIM_DAILY_FEASIBILITY=PASS")
     print(f"XRAY_C418_DAILY_MC_CAPACITY_SELFTEST=PASS_7_DYNAMIC_14_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
 
