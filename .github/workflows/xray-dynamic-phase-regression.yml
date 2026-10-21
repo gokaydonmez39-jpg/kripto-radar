@@ -260,8 +260,11 @@ jobs:
             "asof_et":"2026-10-05","execution":"NONE","real_money":"NO-GO","unknown_never_pass":True,
             "source_master_count":3,"source_master_queue_hash":"Q",
             "counts":{"PASS_PRICE_DV30":1,"UNKNOWN":1,"BLOCK_CURRENT_RUN":1},
-            "results":{"PASS":{},"U":{},"B":{}},
+            "results":{"PASS":{"status":"PASS_PRICE_DV30"},
+                       "U":{"status":"UNKNOWN"},
+                       "B":{"status":"BLOCK_CURRENT_RUN"}},
             "pass_count":1,"pass_symbols":["PASS"],
+            "pass_hash":r.hashlib.sha256(b"PASS").hexdigest(),
             "unknown_count":1,"unknown_symbols":["U"],
             "blocked_count":1,"blocked_symbols":["B"],
           }
