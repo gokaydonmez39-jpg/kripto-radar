@@ -2,7 +2,9 @@
 """Read-only exact-ASOF Alpaca corporate-action census: no PRIMARY authority.
 
 Every PRICE PASS symbol plus QQQ is queried over the identical 260-day
-completed-session horizon. Requests are authenticated, key values and
+completed-session horizon. At zero PRICE PASS, at most 32 exact canonical
+UNKNOWNs are examined as a separate read-only diagnostic, WITHOUT QQQ.
+Requests are authenticated, key values and
 original vendor records remain in ephemeral process memory. Outputs contain
 only counts/type aggregates and Git file hashes. Vendor CA processing time is
 NOT PIT publication time; completeness, source licenses, C4.17 HISTORY,
@@ -101,10 +103,14 @@ def zero_price_ca_report(asof,daily):
     }
 
 
-def audit(asof,targets,start,fetch,*,now):
+def audit(asof,targets,start,fetch,*,now,zero_price_pass_unknown=False):
     if now.tzinfo is None or not sufficient_delay(asof,now):
         raise ValueError("ALPACA_CA_CURRENT_SESSION_HOLDBACK_UNVERIFIED")
-    if not targets or targets!=sorted(set(targets)) or "QQQ" not in targets:
+    if (type(zero_price_pass_unknown) is not bool or not targets
+        or targets!=sorted(set(targets))
+        or (zero_price_pass_unknown and
+            ("QQQ" in targets or len(targets)>32))
+        or (not zero_price_pass_unknown and "QQQ" not in targets)):
         raise ValueError("ALPACA_CA_SOURCE_SCOPE_INVALID")
     if start>=asof or not isinstance(start,str):
         raise ValueError("ALPACA_CA_HORIZON_INVALID")
@@ -228,9 +234,12 @@ def audit(asof,targets,start,fetch,*,now):
         "duplicate_cross_batch_events_deduped":cross_batch_duplicates,
         "unknown_vendor_group_events":unknown_group_count,
         "subject_not_in_requested_batch":unmatched_subjects,
-        "status":("SHADOW_SCOPE_COMPLETE_CA_NOT_PIT"
+        "status":(("SHADOW_UNKNOWN_COHORT_CA_SOURCE_COMPLETE_NOT_PIT"
+                   if zero_price_pass_unknown else
+                   "SHADOW_SCOPE_COMPLETE_CA_NOT_PIT")
                   if measured==len(targets) and fault is None
                   else "SHADOW_INCOMPLETE_OR_INVALID_CA"),
+        "zero_price_pass_unknown_research_only":zero_price_pass_unknown,
         "failure_reason_class":fault,
         "provider_data_quality":"complete",
         "provider_publication_time_attested":False,
@@ -311,12 +320,36 @@ def selftest():
     conflict=audit(asof,two_batches,"2025-09-29",mismatched,now=now)
     assert conflict["status"]=="SHADOW_INCOMPLETE_OR_INVALID_CA",conflict
     assert conflict["failure_reason_class"]=="ALPACA_CA_DUPLICATE_EVENT_CONFLICT",conflict
+    # Unknown-source research is not canonical CA/PIT clearance.
+    def unknown_pages(batch,start,end,token):
+        if batch!=["AAPL","MSFT"] or token is not None:
+            raise AssertionError("UNKNOWN_CA_REQUEST_SCOPE_WRONG")
+        return {"corporate_actions":{"forward_splits":[row("source-only")]},
+                "next_page_token":None}
+    source=audit(asof,["AAPL","MSFT"],"2025-09-29",
+                 unknown_pages,now=now,zero_price_pass_unknown=True)
+    if not (source["status"]=="SHADOW_UNKNOWN_COHORT_CA_SOURCE_COMPLETE_NOT_PIT"
+        and source["zero_price_pass_unknown_research_only"] is True
+        and source["canonical_pass_created"]==0
+        and source["r92_created"] is False
+        and source["symbol_local_CA_registry_completed"] is True):
+        raise AssertionError("UNKNOWN_CA_SHADOW_NOT_ATTESTED")
+    for bad_names in (["AAPL","QQQ"],["MSFT","AAPL"],["AAPL","AAPL"],
+                      [f"Z{i:03d}" for i in range(33)]):
+        try:
+            audit(asof,bad_names,"2025-09-29",unknown_pages,now=now,
+                  zero_price_pass_unknown=True)
+        except ValueError:pass
+        else:raise AssertionError("UNKNOWN_CA_BAD_SCOPE_ACCEPTED")
+    try:audit(asof,["AAPL","MSFT"],"2025-09-29",unknown_pages,now=now)
+    except ValueError:pass
+    else:raise AssertionError("LEGACY_CA_MUST_REQUIRE_QQQ")
     empty=zero_price_ca_report(asof,["2025-09-29"])
     assert empty["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST"
     assert empty["expected_symbols"]==empty["measured_symbols"]==0
     assert empty["pages_consumed"]==0 and empty["symbol_local_CA_registry_completed"] is False
     assert empty["canonical_pass_created"]==0 and empty["r92_created"] is False
-    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_ZERO_PRICE_NO_VENDOR_PIT_PRIMARY_9_NEGATIVE")
+    print("XRAY_ALPACA_CA_515_SELFTEST=PASS_UNKNOWN_SOURCE_5_ADVERSARIAL_NO_PRIMARY")
 
 
 def main():
@@ -341,11 +374,16 @@ def main():
         result=audit(asof,targets,daily[0],
                      lambda batch,start,end,token: request_page(
                          batch,start,end,key,secret,token),
-                     now=dt.datetime.now(UTC))
+                     now=dt.datetime.now(UTC),
+                     zero_price_pass_unknown=price["pass_count"]==0)
     result["source_price_blob_sha"]=blob_sha(PRICE)
     result["source_master_blob_sha"]=blob_sha(MASTER)
     result["source_price_pass_hash"]=price["pass_hash"]
     result["source_price_count"]=price["pass_count"]
+    result["price_unknown_count"]=price.get("unknown_count",0)
+    result["price_unknown_research_remaining"]=(
+        max(0,price["unknown_count"]-len(targets))
+        if price["pass_count"]==0 else 0)
     # This is a *census* of processed vendor CA rows, NOT asof PIT completeness.
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
     print("XRAY_ALPACA_CA_515_STATUS="+result["status"])
@@ -353,6 +391,7 @@ def main():
     print("XRAY_ALPACA_CA_515_SYMBOLS="+str(result["measured_symbols"]))
     if result["status"] not in {
             "SHADOW_SCOPE_COMPLETE_CA_NOT_PIT",
+            "SHADOW_UNKNOWN_COHORT_CA_SOURCE_COMPLETE_NOT_PIT",
             "BLOCKED_ZERO_PRICE_PASS_NO_CA_SOURCE_REQUEST"}:
         raise SystemExit(2)
 
