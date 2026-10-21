@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-21T06:34:49.347923+00:00",
+  "last_ingest_at_utc": "2026-10-21T08:52:41.950240+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 183,
+  "snapshot_count": 184,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -89572,6 +89572,182 @@
       },
       "payload_sha256": "a345f3726a03c1f9407ceb4f9be43f9c1a34c9f6298eeebecc0ff6c0f16c9a3e",
       "source": "trade_halts",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-21T08:52:40.817523+00:00",
+      "observed_at_utc": "2026-10-21T08:52:41.950204+00:00",
+      "payload": {
+        "row_count": 18,
+        "rows": [
+          {
+            "BX Action": "Delete",
+            "Company Name": "ETF Opportunities Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "ADDS"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Allspring Funds Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "AHIC"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Allspring Funds Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "AHYM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Allspring Funds Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "ASTM"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "BlackRock Capital Allocation Term Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "BCAT^"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "CoinShares ETF Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "BTF"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "CoinShares ETF Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "DIME"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "GMO Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "GMIE"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "ETF Opportunities Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "HELS"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Innovative Industrial Properties, Inc.",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "N",
+            "Symbol": "IIPR-B"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Madison Square Garden Sports Corp.",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "N",
+            "Symbol": "MSGK#"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "MSG Rangers Corp.",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "N",
+            "Symbol": "MSGR#"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Exchange Traded Concepts Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "MUSQ"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "PRIMECAP Odyssey Funds",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "POMG"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "BlackRock ETF Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "RBTX"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Schwab Strategic Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "SCIN"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Thrivent ETF Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "TLCE"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Thrivent ETF Trust",
+            "Effective Date": "10/21/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "TSIE"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "b4891b67b9c40c24747bc6267d7ca4da6ff7ffbdbdfe9be9a692d58816bb534c",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
