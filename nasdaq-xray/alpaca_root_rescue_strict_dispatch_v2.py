@@ -7,6 +7,7 @@ session requirement. This wrapper has no PRIMARY, AL or trading authority.
 from __future__ import annotations
 import argparse
 import datetime as dt
+from zoneinfo import ZoneInfo
 import json
 from pathlib import Path
 
@@ -31,7 +32,8 @@ def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
         return False
     if not isinstance(remote_sha,str) or not isinstance(expected_sha,str):
         return False
-    return bool(now.date().isoformat()==latest
+    return bool(now.astimezone(ZoneInfo("America/New_York")).date().isoformat()==latest
+        and last_complete_session(now)==latest
         and price.get("asof_et")==root.get("asof_et")==latest
         and price.get("unknown_never_pass") is True
         and price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
@@ -112,6 +114,19 @@ def selftest():
     assert last_complete_session(delayed)==scheduled_asof
     if not scheduled_probe_allowed(delayed,scheduled_asof,sp,sr,sha,sha):
         raise RuntimeError("VALID_NASDAQ_SESSION_REJECTED_BY_UTC_DATE_ROLLOVER")
+    # DST fallback: November 2 session is in EST (UTC-05), not EDT.
+    dst=dt.datetime(2026,11,2,23,10,tzinfo=dt.timezone.utc)
+    dst_asof=last_complete_session(dst)
+    if dst_asof!="2026-11-02":
+        raise RuntimeError("OFFICIAL_DST_ASOF_UNEXPECTED")
+    dst_price=dict(sp,asof_et=dst_asof)
+    dst_root=dict(sr,asof_et=dst_asof)
+    if not scheduled_probe_allowed(dst,dst_asof,dst_price,dst_root,sha,sha):
+        raise RuntimeError("DST_FALLBACK_SESSION_FALSELY_REJECTED")
+    # Pre-close on an official trading day must remain fail-closed.
+    preopen=dt.datetime(2026,10,19,14,0,tzinfo=dt.timezone.utc)
+    if scheduled_probe_allowed(preopen,scheduled_asof,sp,sr,sha,sha):
+        raise RuntimeError("INCOMPLETE_TODAY_SESSION_WAS_ADMITTED")
     ny_next_day=dt.datetime(2026,10,20,4,1,tzinfo=dt.timezone.utc)
     if scheduled_probe_allowed(ny_next_day,scheduled_asof,sp,sr,sha,sha):
         raise RuntimeError("STALE_NEW_YORK_SOURCE_SESSION_ADMITTED")
