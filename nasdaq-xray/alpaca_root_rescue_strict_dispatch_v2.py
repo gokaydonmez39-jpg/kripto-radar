@@ -185,8 +185,9 @@ def selftest():
         raise RuntimeError("ROOT_ROTATION_NEXT_SESSION_OFFSET")
     if rotating_root_unknown_offset("2026-10-21",223,12)!=24:
         raise RuntimeError("ROOT_ROTATION_THIRD_SESSION_OFFSET")
-    if rotating_root_unknown_offset("2026-11-26",223,12)==0:
-        raise RuntimeError("ROOT_ROTATION_HOLIDAY_ACCEPTED")
+    try:rotating_root_unknown_offset("2026-11-26",223,12)
+    except ValueError:pass
+    else:raise RuntimeError("ROOT_ROTATION_HOLIDAY_ACCEPTED")
     for bad in ((("2026-10-18",223,12)),(("2026-10-19",0,12)),
                 (("2026-10-19",223,0)),(("2026-10-19",223,33)),
                 (("2026-10-19",True,12)),(("2026-10-19",223,True)),
