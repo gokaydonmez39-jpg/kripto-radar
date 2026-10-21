@@ -154,7 +154,7 @@ jobs:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
         run: |
-          python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --limit 12 --output "$RUNNER_TEMP/xray_alpaca_root_unknown_rescue.json"
+          python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --limit 32 --output "$RUNNER_TEMP/xray_alpaca_root_unknown_rescue.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
