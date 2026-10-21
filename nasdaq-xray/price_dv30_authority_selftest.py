@@ -93,7 +93,18 @@ def verify_current_price_cache_partition_safety() -> None:
     print("XRAY_C417_PRICE_CACHED_PARTITION_INTEGRITY=PASS_REAL_SNAPSHOT_FOUR_NEGATIVES")
 
 
+def verify_runtime_envelope_contract():
+    """Runtime source envelope gates must survive python -O."""
+    import ast
+    import inspect
+    from price_dv30_recover_from_fullstate import main as production_main
+    tree = ast.parse(inspect.getsource(production_main))
+    if any(isinstance(node, ast.Assert) for node in ast.walk(tree)):
+        raise RuntimeError("PRICE_RESOLVER_INPUT_ASSERT_OPTIMIZED_AWAY")
+
+
 def main():
+    verify_runtime_envelope_contract()
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     asof=str(master.get("asof_et") or "")
     assert len(asof)==10,asof
