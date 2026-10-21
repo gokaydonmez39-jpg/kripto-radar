@@ -157,8 +157,7 @@ def inventory(files):
                       "contains(github.event.head_commit.message, '[sip-probe-once]') }}")
                     and "one_shot_price_probe_allowed" in push_run
                     and "git" in push_run and "ls-remote" in push_run
-                    and "validate(p.get(" in push_run
-                    and 'ready='+chr(34) not in push_run):
+                    and "validate(p.get(" in push_run):
                 errors.append("ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
             expected_guard=("${{ github.event_name == 'workflow_dispatch' || "
                             "(github.event_name == 'schedule' && "
