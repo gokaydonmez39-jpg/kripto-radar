@@ -111,14 +111,14 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
     # 260-session official holiday calendar nor 52-week corporate adjustment.
     return "SHADOW_30_BARS_OBSERVED","RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED",30
 
-def scheduled_unknown_cohort(unknown,asof,*,batch_size=12,rotation_session=None):
+def scheduled_unknown_cohort(unknown,asof,*,batch_size=32,rotation_session=None):
     """Rotate one bounded original PRICE-UNKNOWN diagnostic slice per XNAS day.
 
     This is research collection only. No SIP daily bar can grant original RTH
     volume, C4.17 PRICE PASS, market cap, R92, or delivery authority.
     """
     if (not isinstance(unknown,list) or unknown!=sorted(set(unknown))
-            or type(batch_size) is not int or not 1<=batch_size<=12):
+            or type(batch_size) is not int or not 1<=batch_size<=32):
         raise ValueError("SCHEDULED_PRICE_UNKNOWN_SCOPE_INVALID")
     if not unknown:
         return []
@@ -472,15 +472,15 @@ def selftest():
             else:raise AssertionError("INVALID_ASOF_MASQUERADED_AS_NOOP")
     # The scheduled daily source probe must visit new UNKNOWN rows instead of
     # the same fixed sample forever, including a partial final page.
-    expected=[f"X{i:03d}" for i in range(27)]
-    assert scheduled_unknown_cohort(expected,"2026-10-20")==expected[:12]
-    assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[12:24]
-    assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[24:]
-    assert scheduled_unknown_cohort(expected,"2026-10-23")==expected[:12]
+    expected=[f"X{i:03d}" for i in range(73)]
+    assert scheduled_unknown_cohort(expected,"2026-10-20")==expected[:32]
+    assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[32:64]
+    assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[64:]
+    assert scheduled_unknown_cohort(expected,"2026-10-23")==expected[:32]
     # Source snapshot one session behind: advance study rotation on
     # official observation session, NEVER advance the underlying data ASOF.
     assert scheduled_unknown_cohort(expected,"2026-10-20",
-                                    rotation_session="2026-10-21")==expected[12:24]
+                                    rotation_session="2026-10-21")==expected[32:64]
     try:scheduled_unknown_cohort(expected,"2026-10-20",
                                  rotation_session="2026-10-22")
     except ValueError:pass
@@ -490,9 +490,9 @@ def selftest():
     # reach bounded shadow transport, rather than silently looping forever.
     # All provider responses here are synthetic, and no real HTTP is allowed.
     for n_tail in (1,2):
-        tail_universe=[f"X{i:03d}" for i in range(24+n_tail)]
+        tail_universe=[f"X{i:03d}" for i in range(64+n_tail)]
         tail=scheduled_unknown_cohort(tail_universe,"2026-10-22")
-        if tail!=tail_universe[24:] or len(tail)!=n_tail:
+        if tail!=tail_universe[64:] or len(tail)!=n_tail:
             raise AssertionError("SIP_LAST_PARTIAL_COHORT_SELECTION_FAILED")
         tail_days=[x.date().isoformat() for x in
                    mcal.get_calendar("NASDAQ").valid_days(
@@ -527,13 +527,13 @@ def selftest():
                     (expected,"2026-11-26",12),
                     (expected,"2026-10-19",12),
                     (expected,"2026-10-20",0),
-                    (expected,"2026-10-20",13),
+                    (expected,"2026-10-20",33),
                     (expected,"2026-10-20",True),
                     (["X000","X000"],"2026-10-20",12)):
         try:scheduled_unknown_cohort(invalid[0],invalid[1],batch_size=invalid[2])
         except ValueError:pass
         else:raise AssertionError("SCHEDULED_PRICE_ROTATION_INVALID_ACCEPTED")
-    print("XRAY_SCHEDULED_PRICE_UNKNOWN_ROTATION=PASS_12_PER_DAY_4_SESSIONS_7_NEGATIVES_NO_HTTP_NO_AL")
+    print("XRAY_SCHEDULED_PRICE_UNKNOWN_ROTATION=PASS_32_PER_DAY_3_SESSIONS_7_NEGATIVES_NO_HTTP_NO_AL")
     test_names=sorted(SAMPLE[:3])
     tp={"asof_et":"2026-10-20","unknown_symbols":test_names,
         "unknown_count":3,"pass_count":0,"execution":"NONE",
