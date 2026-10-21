@@ -68,6 +68,17 @@ def load_gate_reporting():
         out["evidence"]["g9_runtime"]={"path":"nasdaq-xray/strict_g9_runtime_state.json","blob_sha":blob_sha(p),"runtime_status":j.get("status"),"adapter_status":j.get("adapter_status")}
     except Exception as e:
         out["evidence"]["g9_runtime"]={"status":"UNKNOWN","reason":type(e).__name__}
+    # Signal-only personal research NEVER reads broker/account contracts,
+    # account balances, positions or same-run provider probes. Account/G9
+    # FULL-GO remains a separate historical contract, not an R92 prerequisite.
+    if os.getenv("XRAY_NO_BROKER_ACCOUNT_IO")=="1":
+        out["account_status"]="ACCOUNT_NOT_APPLICABLE_SIGNAL_ONLY"
+        out["evidence"]["account_gate"]={
+          "status":"NOT_APPLICABLE_BROKERLESS_PERSONAL_RESEARCH",
+          "broker_network_io":False,
+          "balance_positions_read":False,
+        }
+        return out
     try:
         p=GATE_FILES["account_gate"]; j=load(p)
         assert j.get("schema")=="XRAY_ACCOUNT_GATE_CONTRACT_V1"
