@@ -266,9 +266,16 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
     # 403 or inadvertently request uncompleted market evidence.
     now=dt.datetime.now(UTC)
     try:
-        requested=dt.datetime.fromisoformat(period_end.replace("Z","+00:00"))
-        if requested.tzinfo is None:
-            raise ValueError("UNZONED")
+        if (type(period_end) is str and len(period_end)==10 and
+                dt.date.fromisoformat(period_end).isoformat()==period_end):
+            # Alpaca explicitly supports RFC3339 OR YYYY-MM-DD on the same
+            # historical endpoint. Date-only is midnight UTC, not naive.
+            requested=dt.datetime.combine(
+                dt.date.fromisoformat(period_end),dt.time.min,UTC)
+        else:
+            requested=dt.datetime.fromisoformat(period_end.replace("Z","+00:00"))
+            if requested.tzinfo is None:
+                raise ValueError("UNZONED")
     except (AttributeError,TypeError,ValueError) as exc:
         raise ValueError("ALPACA_INVALID_SIP_END_ZERO_HTTP") from exc
     if requested.astimezone(UTC)>now-GUARD_DELAY:
