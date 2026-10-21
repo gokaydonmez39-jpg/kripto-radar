@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - "nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py"
+      - "nasdaq-xray/p0_sec_alpaca_mc_cohort_shadow.py"
       - ".github/workflows/xray-p0-sec-alpaca-personal-mc-canary.yml"
   push:
     branches: [main]
@@ -33,6 +34,9 @@ jobs:
           python -m py_compile nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py
           python nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py --selftest
           python -O nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py --selftest
+          python -m py_compile nasdaq-xray/p0_sec_alpaca_mc_cohort_shadow.py
+          python nasdaq-xray/p0_sec_alpaca_mc_cohort_shadow.py --selftest
+          python -O nasdaq-xray/p0_sec_alpaca_mc_cohort_shadow.py --selftest
       - name: Measure official SEC + personal free historical SIP canary without persistence
         if: ${{ github.event_name != 'pull_request' }}
         env:
