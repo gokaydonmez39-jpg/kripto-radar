@@ -321,18 +321,12 @@ jobs:
             nasdaq-xray/build_current_terminal.py \
             nasdaq-xray/official_source_guard.py \
             nasdaq-xray/resilience_runtime.py \
-            nasdaq-xray/build_final_gate_overlay_v2.py \
-            nasdaq-xray/account_longbridge_mcp_v2_probe.py \
-            nasdaq-xray/account_longbridge_mcp_v2_vault.py \
-            nasdaq-xray/account_longbridge_mcp_v2_bootstrap.py \
-            nasdaq-xray/account_longbridge_mcp_v2_refresh.py \
-            nasdaq-xray/select_account_live_probe.py
+            nasdaq-xray/build_final_gate_overlay_v2.py
 
       - name: Install zero-dollar runtime
         if: steps.event.outputs.ready == 'true'
         run: |
           python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-runtime.txt
-          python -m pip install --disable-pip-version-check -r nasdaq-xray/requirements-account-mcp-probe.txt
 
       - name: Verify deterministic alpha semantics
         if: steps.event.outputs.ready == 'true'
@@ -340,19 +334,22 @@ jobs:
           python nasdaq-xray/test_alpha_semantics.py
           python nasdaq-xray/test_deep_repair_regressions.py
 
-      - name: Verify read-only ACCOUNT probe guard before secrets
+      - name: Verify signal-only brokerless boundary without network
         if: steps.event.outputs.ready == 'true'
-        shell: bash
         run: |
-          set -euo pipefail
-          python nasdaq-xray/account_longbridge_openapi_probe_selftest.py
-          python nasdaq-xray/account_longbridge_mcp_v2_probe_selftest.py
-          python nasdaq-xray/account_longbridge_mcp_v2_vault_selftest.py
-          python nasdaq-xray/account_longbridge_mcp_v2_refresh_selftest.py
-          python nasdaq-xray/select_account_live_probe_selftest.py
-          python nasdaq-xray/account_same_run_terminal_selftest.py
-          echo "XRAY_ACCOUNT_PRESECRET_GUARD=PASS commit=$GITHUB_SHA"
-
+          python - <<'PY'
+          from pathlib import Path
+          p=Path(".github/workflows/xray-canonical-current-final.yml")
+          s=p.read_text()
+          assert "secrets.LONGBRIDGE" not in s
+          assert "XRAY_ACCOUNT_LIVE_PROBE_STATE" not in s
+          assert "requirements-account-mcp-probe.txt" not in s
+          for phrase in ("Run same-run read-only "+"ACCOUNT probe",
+                         "Persist restricted MCP v2 "+"vault before account reads",
+                         "Synchronize reconciled "+"ACCOUNT control-plane"):
+              assert phrase not in s
+          print("XRAY_BROKERLESS_FINAL=PASS_ZERO_ACCOUNT_IO")
+          PY
       # No Longbridge account bootstrap, token, credential vault or
       # balance/position probing on the user's brokerless signal radar.
       - name: Validate exact committed deep history cache
