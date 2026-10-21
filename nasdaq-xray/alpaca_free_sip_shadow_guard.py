@@ -147,6 +147,38 @@ def load_scope(*, allow_no_representative=False):
         raise ValueError("UNVERIFIED_EXPECTED_30_SESSIONS")
     return m,p,symbols,dates,blob_sha(master_path),blob_sha(price_path)
 
+def one_shot_price_probe_allowed(now_utc,price,master,remote_sha,head_sha):
+    """Strict one-time source-measurement only, never PRICE PASS or R92."""
+    from source_epoch_freshness_guard import last_complete_session
+    if (not isinstance(now_utc,dt.datetime) or now_utc.tzinfo is None
+            or now_utc.utcoffset()!=dt.timedelta(0)):
+        return False
+    if not isinstance(price,dict) or not isinstance(master,dict):
+        return False
+    if (not isinstance(remote_sha,str) or not isinstance(head_sha,str)
+            or len(remote_sha)!=40 or len(head_sha)!=40
+            or remote_sha!=head_sha):
+        return False
+    try: asof=last_complete_session(now_utc)
+    except (ValueError,TypeError): return False
+    names=price.get("unknown_symbols")
+    scope=master.get("pass_symbols")
+    if (not isinstance(names,list) or not isinstance(scope,list)
+            or names!=sorted(set(names)) or scope!=sorted(set(scope))
+            or type(price.get("unknown_count")) is not int
+            or len(names)!=price["unknown_count"] or len(names)<3
+            or len(scope)!=master.get("pass_count")
+            or not set(names).issubset(set(scope))
+            or len([x for x in SAMPLE if x in names])<3):
+        return False
+    return bool(price.get("asof_et")==master.get("asof_et")==asof
+        and price.get("execution")==master.get("execution")=="NONE"
+        and price.get("real_money")==master.get("real_money")=="NO-GO"
+        and price.get("unknown_never_pass") is True
+        and master.get("unknown_never_pass") is True
+        and price.get("pass_count")==0)
+
+
 def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=None):
     """Consume ALL pages; no partial symbol cohort can appear complete.
 
@@ -392,6 +424,31 @@ def selftest():
             except ValueError as exc:
                 assert "EXACT_ASOF_SAFETY_SCOPE_INVALID" in str(exc)
             else:raise AssertionError("INVALID_ASOF_MASQUERADED_AS_NOOP")
+    test_names=sorted(SAMPLE[:3])
+    tp={"asof_et":"2026-10-20","unknown_symbols":test_names,
+        "unknown_count":3,"pass_count":0,"execution":"NONE",
+        "real_money":"NO-GO","unknown_never_pass":True}
+    tm={"asof_et":"2026-10-20","pass_symbols":list(SAMPLE),
+        "pass_count":len(SAMPLE),"execution":"NONE",
+        "real_money":"NO-GO","unknown_never_pass":True}
+    when=dt.datetime(2026,10,21,8,10,tzinfo=UTC)
+    sha="a"*40
+    if not one_shot_price_probe_allowed(when,tp,tm,sha,sha):
+        raise RuntimeError("ONE_SHOT_VALID_SOURCE_REFUSED")
+    for bad in (
+        (dt.datetime(2026,10,21,8,10),tp,tm,sha,sha),
+        (when,dict(tp,asof_et="2026-10-19"),tm,sha,sha),
+        (when,dict(tp,unknown_count=0),tm,sha,sha),
+        (when,dict(tp,pass_count=1),tm,sha,sha),
+        (when,dict(tp,unknown_symbols=["AAPL","AAPL","NVDA"]),tm,sha,sha),
+        (when,dict(tp,unknown_never_pass=False),tm,sha,sha),
+        (when,tp,dict(tm,asof_et="2026-10-19"),sha,sha),
+        (when,tp,dict(tm,pass_symbols=["AAPL"]),sha,sha),
+        (when,tp,tm,"b"*40,sha),
+        (when,tp,tm,"",sha)):
+        if one_shot_price_probe_allowed(*bad):
+            raise RuntimeError("ONE_SHOT_UNSAFE_SOURCE_PROBE_ACCEPTED")
+    print("XRAY_ONE_SHOT_SOURCE_GUARD=PASS_POSITIVE_TEN_NEGATIVE_NO_HTTP")
     print("XRAY_ALPACA_ZERO_PRICE_BOOTSTRAP=PASS_3_UNKNOWN_SHADOW_ONLY_NO_KEY_NO_HTTP_NEGATIVE_NO_R92")
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
     print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
