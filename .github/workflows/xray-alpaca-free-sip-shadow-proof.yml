@@ -196,6 +196,19 @@ jobs:
           if p["pass_count"]!=0 or p["unknown_count"]==0:
               print("XRAY_260_SCHEDULED_PRICE_UNKNOWN=NOOP_NO_ZERO_PASS_COHORT")
               sys.exit(0)
+          # Earlier same-run ROOT SIP access is authoritative for transport
+          # availability, NOT for price/MC/HISTORY PASS. Do not repeat a
+          # denied or quota-blocked SIP request in the 260-session stage.
+          from alpaca_root_rescue_strict_dispatch_v2 import prior_root_source_state
+          from alpaca_free_sip_shadow_guard import blob_sha
+          root_witness=Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_root_unknown_rescue.json"
+          if not root_witness.is_file():
+              raise RuntimeError("XRAY_260_PRIOR_ROOT_RECEIPT_MISSING_ZERO_FURTHER_HTTP")
+          state=prior_root_source_state(
+              json.loads(root_witness.read_text()),
+              p["asof_et"],blob_sha(Path("nasdaq-xray/canonical_current_price_dv30.json")))
+          if state=="STOP_FOLLOWUP_NO_PROVIDER_IO":
+              raise RuntimeError("XRAY_260_PRIOR_ROOT_SOURCE_BLOCKED_ZERO_FURTHER_HTTP")
           target=Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_260_unknown_research.json"
           subprocess.run([sys.executable,"nasdaq-xray/alpaca_full_scope_260_shadow.py",
               "--rotate-unknown","--out",str(target)],check=True)
