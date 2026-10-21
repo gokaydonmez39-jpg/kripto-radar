@@ -236,7 +236,7 @@ def price_snapshot_integrity(px,frozen_asof):
           and type(px.get("unknown_count")) is int and px["unknown_count"]==len(actual_unknown)
           and type(px.get("blocked_count")) is int and px["blocked_count"]==len(actual_blocked)
           and type(px.get("pass_count")) is int and px["pass_count"]==len(actual_passes)
-          and px.get("pass_hash")==hashlib.sha256("\\n".join(actual_passes).encode()).hexdigest()
+          and px.get("pass_hash")==hashlib.sha256("\n".join(actual_passes).encode()).hexdigest()
         )
     except Exception:
         return False
