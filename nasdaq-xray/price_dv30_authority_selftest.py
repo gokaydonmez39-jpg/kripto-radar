@@ -93,7 +93,47 @@ def verify_current_price_cache_partition_safety() -> None:
     print("XRAY_C417_PRICE_CACHED_PARTITION_INTEGRITY=PASS_REAL_SNAPSHOT_FOUR_NEGATIVES")
 
 
+def verify_runtime_envelope_contract():
+    """Runtime source envelope gates must survive python -O."""
+    import ast
+    import inspect
+    from price_dv30_recover_from_fullstate import main as production_main
+    tree = ast.parse(inspect.getsource(production_main))
+    if any(isinstance(node, ast.Assert) for node in ast.walk(tree)):
+        raise RuntimeError("PRICE_RESOLVER_INPUT_ASSERT_OPTIMIZED_AWAY")
+    from price_dv30_recover_from_fullstate import (
+        TASK_ID, validate_price_runtime_input,
+    )
+    symbols = [f"TEST{i:04d}" for i in range(3001)]
+    good = {"task_id": TASK_ID, "asof_et": "2026-10-20",
+            "queue": symbols, "results": {s: {} for s in symbols}}
+    checked = validate_price_runtime_input(good)
+    if checked[0] != "2026-10-20" or checked[1] != symbols:
+        raise RuntimeError("PRICE_RUNTIME_VALID_INPUT_REJECTED")
+    from copy import deepcopy
+    invalid = [
+        ("PRICE_RUNTIME_TASK_ID_INVALID", {"task_id": "UNAUTHORIZED_TASK"}),
+        ("PRICE_RUNTIME_ASOF_INVALID", {"asof_et": "2026-02-30"}),
+        ("PRICE_RUNTIME_ASOF_INVALID", {"asof_et": "2026-10-20EXTRA"}),
+        ("PRICE_RUNTIME_QUEUE_RESULTS_INVALID", {"queue": symbols[:3000]}),
+        ("PRICE_RUNTIME_QUEUE_RESULTS_INVALID", {"queue": symbols[:-1] + [symbols[0]]}),
+        ("PRICE_RUNTIME_QUEUE_RESULTS_INVALID", {"results": {s: {} for s in symbols[:-1]}}),
+        ("PRICE_RUNTIME_QUEUE_RESULTS_INVALID", {"results": list(symbols)}),
+    ]
+    for expected, changes in invalid:
+        bad = deepcopy(good)
+        bad.update(changes)
+        try:
+            validate_price_runtime_input(bad)
+        except ValueError as exc:
+            if str(exc) != expected:
+                raise RuntimeError("PRICE_RUNTIME_WRONG_REJECTION") from exc
+        else:
+            raise RuntimeError("PRICE_RUNTIME_BAD_INPUT_ACCEPTED:" + expected)
+
+
 def main():
+    verify_runtime_envelope_contract()
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     asof=str(master.get("asof_et") or "")
     assert len(asof)==10,asof
