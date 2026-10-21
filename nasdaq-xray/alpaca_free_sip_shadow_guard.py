@@ -284,9 +284,14 @@ def run(now=None,*,rotate_unknown=False,rotation_session=None):
         "candidate_created":False,"device_receipt_proven":False,
         "vendor_raw_bars_persisted":False,"reason_counts":{},"status":"BLOCKED",
     }
-    if len(symbols)<3:
-        # A missing authoritative PRICE cohort is a research NO-OP, not an
-        # HTTP/provider failure. Never synthesize symbols or spend quota.
+    if len(symbols)<3 and not (
+            rotate_unknown and bool(symbols)
+            and output["sample_role"]=="CURRENT_PRICE_UNKNOWN_DIAGNOSTIC_NEVER_PASS"):
+        # A missing authoritative PRICE cohort is a research NO-OP. An exact
+        # official-session scheduled rotation MAY research a final 1-2-symbol
+        # UNKNOWN tail: blocking it would permanently starve that cohort.
+        # The result is still strictly SHADOW, never PRICE PASS/MC/R92.
+        # Zero symbols and undersized unrotated/manual scopes still NO-OP.
         output["status"]="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
         output["reason_counts"]={"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1}
         return output
@@ -481,6 +486,43 @@ def selftest():
     except ValueError:pass
     else:raise AssertionError("PRICE_ROTATION_TWO_SESSION_LAG_ACCEPTED")
     assert scheduled_unknown_cohort(expected[:3],"2026-10-20")==expected[:3]
+    # Regression: a nonempty final 1/2-symbol scheduled UNKNOWN cohort must
+    # reach bounded shadow transport, rather than silently looping forever.
+    # All provider responses here are synthetic, and no real HTTP is allowed.
+    for n_tail in (1,2):
+        tail_universe=[f"X{i:03d}" for i in range(24+n_tail)]
+        tail=scheduled_unknown_cohort(tail_universe,"2026-10-22")
+        if tail!=tail_universe[24:] or len(tail)!=n_tail:
+            raise AssertionError("SIP_LAST_PARTIAL_COHORT_SELECTION_FAILED")
+        tail_days=[x.date().isoformat() for x in
+                   mcal.get_calendar("NASDAQ").valid_days(
+                       start_date="2026-09-01",end_date="2026-10-22")][-30:]
+        if len(tail_days)!=30 or tail_days[-1]!="2026-10-22":
+            raise AssertionError("SIP_TEST_OFFICIAL_30_CALENDAR_NOT_READY")
+        test_price={"asof_et":"2026-10-22","pass_symbols":[]}
+        def mock_scope(**kwargs):
+            if kwargs.get("rotate_unknown") is not True:
+                raise AssertionError("PARTIAL_COHORT_NONROTATED")
+            return {},test_price,tail,tail_days,"test-master","test-price"
+        seen=[]
+        def mock_batch(symbols,*args,**kwargs):
+            seen.append(list(symbols))
+            return {s:[bar(day) for day in tail_days] for s in symbols}
+        with patch.dict(globals(),{"load_scope":mock_scope,
+                                    "request_batch":mock_batch}), patch.dict(
+             os.environ,{"XRAY_ALPACA_DATA_KEY_ID":"offline-key",
+                         "XRAY_ALPACA_DATA_SECRET_KEY":"offline-secret"}):
+            result=run(dt.datetime(2026,10,23,1,tzinfo=UTC),
+                       rotate_unknown=True)
+        if (seen!=[tail] or result["sample_count"]!=n_tail
+                or result["status"]!="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
+                or result["reason_counts"]!={"SHADOW_30_BARS_OBSERVED|RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED":n_tail}
+                or result["primary_mc_authority"] is not False
+                or result["c417_price_pass_promoted"] is not False
+                or result["candidate_created"] is not False
+                or result["vendor_raw_bars_persisted"] is not False):
+            raise AssertionError("SIP_LAST_PARTIAL_COHORT_SHADOW_OR_SAFETY_FAILED")
+    print("XRAY_SCHEDULED_SIP_PARTIAL_TAIL=PASS_ONE_TWO_BOUNDED_OFFLINE_NO_PRIMARY_NO_R92")
     for invalid in ((expected,"2026-10-24",12),
                     (expected,"2026-11-26",12),
                     (expected,"2026-10-19",12),
