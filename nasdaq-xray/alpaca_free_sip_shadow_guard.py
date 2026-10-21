@@ -71,6 +71,31 @@ def sufficient_delay(asof:str,now:dt.datetime)->bool:
         raise ValueError("NOW_UNZONED")
     return now.astimezone(UTC)>=official_nasdaq_close_utc(asof)+GUARD_DELAY
 
+def bounded_sip_end(asof:str,now:dt.datetime,requested_end:str)->str:
+    """Cap a historical SIP request BEFORE the HTTP call.
+
+    Explicit next-day-midnight 'end' requests are future/recent SIP queries
+    during the evening after Nasdaq closes; Basic accounts can receive 403.
+    Preserve the full completed official session while leaving 20 minutes
+    between the exact request end and the current UTC time.
+    """
+    if not isinstance(now,dt.datetime) or now.tzinfo is None:
+        raise ValueError("SIP_END_NOW_UNZONED")
+    if not isinstance(requested_end,str):
+        raise ValueError("SIP_END_INVALID")
+    try:
+        desired=dt.datetime.fromisoformat(requested_end.replace("Z","+00:00"))
+    except ValueError as exc:
+        raise ValueError("SIP_END_INVALID") from exc
+    if desired.tzinfo is None:
+        raise ValueError("SIP_END_UNZONED")
+    official_close=official_nasdaq_close_utc(asof)
+    capped=min(desired.astimezone(UTC),now.astimezone(UTC)-GUARD_DELAY)
+    if capped<=official_close:
+        raise ValueError("SIP_END_CANNOT_INCLUDE_COMPLETE_OFFICIAL_SESSION")
+    return capped.isoformat()
+
+
 def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetime) -> tuple[str,str,int]:
     if not sufficient_delay(asof,now):
         return "UNKNOWN","HISTORICAL_SIP_HOLDBACK_NOT_EXPIRED",0
@@ -304,7 +329,9 @@ def run(now=None,*,rotate_unknown=False,rotation_session=None):
         output["reason_counts"]={"HISTORICAL_SIP_HOLDBACK_NOT_EXPIRED":len(symbols)}
         return output
     start=dt.datetime.combine(parse_date(asof)-dt.timedelta(days=440),dt.time(0,0),EST).astimezone(UTC).isoformat()
-    end=dt.datetime.combine(parse_date(asof)+dt.timedelta(days=1),dt.time(0,0),EST).astimezone(UTC).isoformat()
+    end=bounded_sip_end(
+        asof,now,dt.datetime.combine(parse_date(asof)+dt.timedelta(days=1),
+             dt.time(0,0),EST).astimezone(UTC).isoformat())
     try:res=request_batch(symbols,start,end,key,secret)
     except (RuntimeError,ValueError) as exc:
         why=str(exc)
@@ -321,6 +348,30 @@ def run(now=None,*,rotate_unknown=False,rotation_session=None):
 def selftest():
     dates=["2026-09-%02d"%x for x in range(1,29)]+["2026-10-07","2026-10-08"]
     now=dt.datetime(2026,10,9,14,tzinfo=UTC)
+    # A weekday evening must not send the *future* next midnight 'end'
+    # through the free delayed-SIP endpoint (403 risk). No vendor HTTP.
+    scheduled=dt.datetime(2026,10,20,22,10,tzinfo=UTC)
+    ny_midnight=dt.datetime(2026,10,21,4,0,tzinfo=UTC).isoformat()
+    assert bounded_sip_end("2026-10-20",scheduled,ny_midnight)==(
+        scheduled-GUARD_DELAY).isoformat()
+    after_midnight=dt.datetime(2026,10,21,5,0,tzinfo=UTC)
+    assert bounded_sip_end("2026-10-20",after_midnight,ny_midnight)==ny_midnight
+    early_close=official_nasdaq_close_utc("2026-11-27")
+    assert bounded_sip_end("2026-11-27",early_close+dt.timedelta(hours=1),
+                           "2026-11-28T05:00:00Z")==(
+                               early_close+dt.timedelta(minutes=40)).isoformat()
+    for bad in (
+        ("2026-10-20",scheduled,"2026-10-20T19:59:59Z"),
+        ("2026-10-20",official_nasdaq_close_utc("2026-10-20")
+            +GUARD_DELAY,ny_midnight),
+        ("2026-10-20",scheduled,"NOT_A_TIMESTAMP"),
+        ("2026-10-20",scheduled,"2026-10-21T04:00:00"),
+        ("2026-10-24",scheduled,ny_midnight),
+    ):
+        try:bounded_sip_end(*bad)
+        except ValueError:pass
+        else:raise AssertionError("RECENT_OR_UNTRUSTED_SIP_END_ACCEPTED")
+    print("XRAY_SIP_FREE_END_CUTOFF=PASS_EVENING_MIDNIGHT_5_NEGATIVES_NO_HTTP")
     # RED: a completed regular or early-close NASDAQ day is available
     # 20 minutes after the OFFICIAL RTH close, not after next midnight.
     import pandas_market_calendars as mcal
