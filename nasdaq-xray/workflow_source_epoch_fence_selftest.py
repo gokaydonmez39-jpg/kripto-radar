@@ -24,10 +24,16 @@ def main():
     a=(ROOT/".github/workflows/xray-account-gate-reconcile.yml").read_text()
     m=(ROOT/".github/workflows/xray-manual-decision-research-shadow.yml").read_text()
     need("ref: "+chr(36)+"{{ github.sha }}" in a,"ACCOUNT_PIN_MISSING")
-    need("TESTED_RECONCILER_BLOB" in a and "TESTED_SELFTEST_BLOB" in a
-         and "TESTED_FENCE_BLOB" in a,"ACCOUNT_CODE_FENCE_MISSING")
-    need("XRAY_ACCOUNT_TESTED_SOURCE_EPOCH_DRIFT" in a,"ACCOUNT_DRIFT_RULE_MISSING")
-    need(a.count("python nasdaq-xray/reconcile_account_gate_selftest.py")>=2,"ACCOUNT_RETEST_MISSING")
+    # Account gates are now inert historical diagnostics, not the user's
+    # brokerless signal production dependency. A write-capable source epoch
+    # fence is no longer applicable when the workflow cannot write at all.
+    need("  workflow_dispatch:" in a and "contents: read" in a
+         and "  schedule:" not in a and "  push:" not in a,
+         "ACCOUNT_STILL_ONGOING_OR_WRITE_CAPABLE")
+    need("git "+"push origin" not in a and "secrets." not in a,
+         "ACCOUNT_BROKERLESS_NEGATIVE_WRITE_OR_SECRET")
+    need(a.count("python nasdaq-xray/reconcile_account_gate_selftest.py")>=1,
+         "ACCOUNT_READONLY_SELFTEST_MISSING")
     need("github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha" in m,
          "MANUAL_UPSTREAM_PIN_MISSING")
     need("github.event.workflow_run.head_repository.full_name == github.repository" in m
