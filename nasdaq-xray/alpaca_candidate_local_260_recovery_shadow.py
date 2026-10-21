@@ -215,7 +215,12 @@ def audit(asof, symbols, daily, weeks, source_blob, fetch, now):
             data = fetch(subset, start, end, asof)
         except (RuntimeError, ValueError, OSError, TimeoutError) as exc:
             code = str(exc).upper()
-            if "429" in code or "RATE_LIMIT" in code:
+            if code in {"ALPACA_HTTP_401","ALPACA_HTTP_403"}:
+                # Auth/entitlement 4xx is a nonretryable account-level cliff.
+                # Never spend an additional source request on another batch.
+                failure = "UNKNOWN_SOURCE_HTTP_AUTH_OR_ENTITLEMENT"
+                circuit_open = True
+            elif "429" in code or "RATE_LIMIT" in code:
                 failure = "UNKNOWN_SOURCE_HTTP_429"
                 rate_limited = True
             else:
@@ -496,6 +501,25 @@ def selftest():
          "UNKNOWN_SOURCE_ROW_INVALID"
          and malformed["status"] == "UNKNOWN_SOURCE_PARTIAL_DATA",
          "MALFORMED_BAR_MUST_NEVER_LOOK_LIKE_COMPLETE_SOURCE")
+    # Adversarial provider denial: 120-symbol scope would need 10 batches,
+    # but a genuine HTTP403/401 MUST allow exactly one bounded source call.
+    denied_scope=["SYM%03d" % i for i in range(120)]
+    for denied in ("ALPACA_HTTP_403","ALPACA_HTTP_401"):
+        attempted=[0]
+        def reject(*unused):
+            attempted[0]+=1
+            raise RuntimeError(denied)
+        failclosed=audit(asof,denied_scope,daily,weeks,"a"*40,reject,now)
+        need(attempted[0]==1 and failclosed["upstream_request_count"]==1
+             and failclosed["source_circuit_breaker_open"] is True
+             and failclosed["failed_batch_count"]==1
+             and failclosed["research_history_source_observed_count"]==0
+             and failclosed["registered_r92_count"]==0
+             and failclosed["classification_counts"]=={
+               "UNKNOWN_SOURCE_HTTP_AUTH_OR_ENTITLEMENT":12,
+               "UNKNOWN_SOURCE_CIRCUIT_OPEN_NOT_QUERIED":108,
+             },"ENTITLEMENT_DENIAL_MUST_HARD_STOP_FIRST_BATCH")
+    print("XRAY_CANDIDATE_SIP_AUTH_CLIFF=PASS_401_403_SINGLE_CALL_120_SYMBOLS_NO_HTTP")
     print("XRAY_CANDIDATE_LOCAL_SIP_RECOVERY_SELFTEST=PASS_EXACT_PENDING_UNATTEMPTED_6_NEGATIVES_NO_PRIMARY_R92")
 
 def main():
