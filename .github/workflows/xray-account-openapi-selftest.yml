@@ -11,6 +11,12 @@ on:
       - "nasdaq-xray/requirements-account-probe.txt"
       - ".github/workflows/xray-account-openapi-selftest.yml"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "nasdaq-xray/account_same_run_terminal_selftest.py"
+      - "nasdaq-xray/build_current_terminal.py"
+      - ".github/workflows/xray-canonical-current-final.yml"
+      - ".github/workflows/xray-account-openapi-selftest.yml"
 
 permissions:
   contents: read
@@ -39,3 +45,22 @@ jobs:
 
       - name: Network-free same-run terminal witness selftest
         run: python nasdaq-xray/account_same_run_terminal_selftest.py
+
+      - name: Verify no broker or account provider is called from personal Final
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          final=Path(".github/workflows/xray-canonical-current-final.yml").read_text()
+          terminal=Path("nasdaq-xray/build_current_terminal.py").read_text()
+          assert final.count('XRAY_NO_BROKER_ACCOUNT_IO: "1"')==1
+          assert "XRAY_ACCOUNT_LIVE_PROBE_STATE" not in final
+          assert "secrets.LONGBRIDGE" not in final
+          assert "account_longbridge_mcp_v2_probe.py --" not in final
+          assert "account_longbridge_openapi_probe.py --" not in final
+          assert "requirements-account-mcp-probe.txt" not in final
+          assert "account_longbridge_mcp_v2_bootstrap.py\n" not in final
+          assert "account_longbridge_mcp_v2_refresh.py\n" not in final
+          assert "ACCOUNT_NOT_APPLICABLE_SIGNAL_ONLY" in final
+          assert "XRAY_NO_BROKER_ACCOUNT_IO" in terminal
+          print("XRAY_PERSONAL_FINAL_BROKERLESS_OFFLINE=PASS")
+          PY
