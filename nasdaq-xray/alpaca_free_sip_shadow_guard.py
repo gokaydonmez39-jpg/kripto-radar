@@ -93,7 +93,8 @@ def bounded_sip_end(asof:str,now:dt.datetime,requested_end:str)->str:
     capped=min(desired.astimezone(UTC),now.astimezone(UTC)-GUARD_DELAY)
     if capped<=official_close:
         raise ValueError("SIP_END_CANNOT_INCLUDE_COMPLETE_OFFICIAL_SESSION")
-    return capped.isoformat()
+    # Preserve exact verified historical bounds and their UTC format.
+    return requested_end if desired.astimezone(UTC)<=capped else capped.isoformat()
 
 
 def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetime) -> tuple[str,str,int]:
