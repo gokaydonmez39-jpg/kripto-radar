@@ -140,8 +140,9 @@ def run(offset=0,limit=12,now=None):
         return output
     start=dt.datetime.combine(sip.parse_date(asof)-dt.timedelta(days=440),
                               dt.time(0,0),sip.EST).astimezone(sip.UTC).isoformat()
-    end=dt.datetime.combine(sip.parse_date(asof)+dt.timedelta(days=1),
-                            dt.time(0,0),sip.EST).astimezone(sip.UTC).isoformat()
+    end=sip.bounded_sip_end(
+        asof,now,dt.datetime.combine(sip.parse_date(asof)+dt.timedelta(days=1),
+                  dt.time(0,0),sip.EST).astimezone(sip.UTC).isoformat())
     try:rows=sip.request_batch(syms,start,end,key,secret)
     except (RuntimeError,ValueError) as exc:
         code=str(exc)
