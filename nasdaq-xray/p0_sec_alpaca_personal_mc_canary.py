@@ -71,14 +71,31 @@ def measure(price,master,facts,sub,bars,asof,*,symbol=TICKER,cik=SEC_CIK):
             and len(cik)==10 and cik.isdigit(),"CANARY_IDENTITY_INVALID")
     require(price.get("asof_et")==master.get("asof_et")==asof,
             "CANONICAL_ASOF_DRIFT")
-    require(symbol in (price.get("pass_symbols") or []),"PRICE_NOT_IN_CANONICAL_PASS")
     require(symbol in (master.get("pass_symbols") or []),"MASTER_NO_EXACT_SECURITY")
     require(price.get("unknown_never_pass") is True and master.get("unknown_never_pass") is True
             and price.get("execution")=="NONE" and master.get("execution")=="NONE"
             and price.get("real_money")=="NO-GO" and master.get("real_money")=="NO-GO",
             "CANONICAL_SAFETY_INVALID")
-    require(sha256_lines(price["pass_symbols"])==price["pass_hash"],
+    passed=price.get("pass_symbols")
+    require(type(passed) is list and passed==sorted(set(passed))
+            and type(price.get("pass_count",len(passed))) is int
+            and price.get("pass_count",len(passed))==len(passed)
+            and sha256_lines(passed)==price.get("pass_hash"),
             "PRICE_PASS_SHA256_INVALID")
+    # A ZERO-PRICE-PASS epoch must not prevent independent SEC/SIP source
+    # diagnostics. This NEVER grants PRICE PASS or C4.17 MC authority.
+    # No other UNKNOWN cohorts are promoted or even probed here.
+    unknown=price.get("unknown_symbols")
+    unknown_scope=bool(
+        not passed and price.get("pass_count",0)==0
+        and type(unknown) is list and unknown==sorted(set(unknown))
+        and type(price.get("unknown_count")) is int
+        and len(unknown)==price["unknown_count"]
+        and symbol in unknown and type(price.get("results")) is dict
+        and type(price["results"].get(symbol)) is dict
+        and price["results"][symbol].get("status")=="UNKNOWN")
+    price_pass=symbol in passed
+    require(price_pass or unknown_scope,"PRICE_NOT_IN_CANONICAL_RESEARCH_SCOPE")
     require(str(facts.get("cik")).lstrip("0")==cik.lstrip("0") and
             str(sub.get("cik")).lstrip("0")==cik.lstrip("0"),
             "ISSUER_CIK_MISMATCH")
@@ -103,7 +120,11 @@ def measure(price,master,facts,sub,bars,asof,*,symbol=TICKER,cik=SEC_CIK):
     # the traded share CLASS. Issuance/splits/ADR from the filing to EOD
     # remain unverified. No independent primary MC crosscheck. Do not promote.
     return {"schema":SCHEMA,"asof_et":asof,"symbol":symbol,
-            "status":"SHADOW_SEC_PIT_AND_SIP_CLOSE_ARITHMETIC_VERIFIED_CLASS_CA_UNPROVEN",
+            "status":("SHADOW_SEC_PIT_SIP_CLOSE_PRICE_PASS_CLASS_CA_UNPROVEN"
+                      if price_pass else
+                      "SHADOW_SEC_PIT_SIP_CLOSE_PRICE_UNKNOWN_NO_PRIMARY"),
+            "canonical_price_pass":price_pass,
+            "price_unknown_source_study_only":not price_pass,
             "SEC_exact_CIK_and_filing_vintage_checked":True,
             "SEC_share_age_days":provenance.get("shares_age_days"),
             "Alpaca_sip_one_session_et_midnight_verified":True,
@@ -135,8 +156,37 @@ def selftest():
     from copy import deepcopy
     result=measure(p,m,f,sub,[bar],asof)
     require(result["calculated_MC_above_2B_unadjusted"] and
-            not result["C417_PRIMARY_MC"] and not result["GO"],
+            result["canonical_price_pass"] is True
+            and result["price_unknown_source_study_only"] is False
+            and not result["C417_PRIMARY_MC"] and not result["GO"],
             "CANARY_POSITIVE")
+    # Source-data bootstrap when CURRENT PRICE has 0 PASS; AAPL may only
+    # be studied as an explicit, exact-scope UNKNOWN.
+    u=deepcopy(p)
+    u.update(pass_symbols=[],pass_count=0,pass_hash=sha256_lines([]),
+             unknown_symbols=[TICKER],unknown_count=1,
+             results={TICKER:{"status":"UNKNOWN"}})
+    shadow=measure(u,m,f,sub,[bar],asof)
+    require(shadow["canonical_price_pass"] is False
+            and shadow["price_unknown_source_study_only"] is True
+            and shadow["calculated_MC_above_2B_unadjusted"] is True
+            and shadow["C417_CURRENT_PRIMARY_CREATED"]==0
+            and shadow["R92_created"] is False and shadow["GO"] is False
+            and shadow["numeric_shares_price_or_marketcap_persisted"] is False,
+            "UNKNOWN_NEVER_PROMOTED")
+    for name,mutate in (
+        ("UNKNOWN_NOT_IN_SCOPE",lambda a:a.update(unknown_symbols=["MSFT"])),
+        ("UNKNOWN_BAD_COUNT",lambda a:a.update(unknown_count=2)),
+        ("UNKNOWN_STATUS_FALSE_PASS",lambda a:a["results"][TICKER].update(status="PASS")),
+        ("UNKNOWN_EXTRA_PASS",lambda a:a.update(pass_symbols=[TICKER],pass_count=1)),
+        ("UNKNOWN_HASH_DRIFT",lambda a:a.update(pass_hash="0"*64)),
+        ("UNKNOWN_UNSORTED",lambda a:a.update(unknown_symbols=["NVDA",TICKER],unknown_count=2)),
+    ):
+        tampered=deepcopy(u)
+        mutate(tampered)
+        try:measure(tampered,m,f,sub,[bar],asof)
+        except (ValueError,KeyError,TypeError):pass
+        else:raise AssertionError("UNSAFE_ZERO_PASS_SOURCE_ACCEPTED:"+name)
     tests=0
     def red(label,P=p,M=m,F=f,S=sub,B=[bar],A=asof):
         nonlocal tests
@@ -166,7 +216,7 @@ def selftest():
     red("PRICE_HASH",P=pp)
     mm=deepcopy(m);mm["pass_symbols"]=[]
     red("MASTER_IDENTITY",M=mm)
-    print("XRAY_P0_PERSONAL_SEC_ALPACA_MC_CANARY=PASS_1_POSITIVE_21_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
+    print("XRAY_P0_PERSONAL_SEC_ALPACA_MC_CANARY=PASS_2_POSITIVE_27_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
 
 def main():
     a=argparse.ArgumentParser()
