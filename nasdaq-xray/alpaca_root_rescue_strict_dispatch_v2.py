@@ -126,6 +126,38 @@ def classify_manual_root(event, price, root, *, scheduled_ready=False):
     return ("MANUAL_ZERO_PRICE_ROOT_SHADOW_ONLY" if
             price["status"]==BLOCKED_PRICE else "MANUAL_PRICE_AND_ROOT_SHADOW_ONLY")
 
+
+def prior_root_source_state(witness, expected_asof, expected_price_sha):
+    """Reuse the same-run ROOT transport receipt before spending more SIP quota.
+
+    A BLOCKED witness is not a successful source measurement and must stop
+    downstream 260-session HTTP. The function never manufactures source PASS.
+    """
+    if not isinstance(witness, dict):
+        raise ValueError("ROOT_FOLLOWUP_WITNESS_MISSING")
+    counts=witness.get("reason_counts")
+    sampled=witness.get("sample_count")
+    if (witness.get("schema")!="XRAY_ROOT_UNKNOWN_SIP_RESCUE_SHADOW_V1"
+            or witness.get("asof_et")!=expected_asof
+            or witness.get("price_git_blob_sha")!=expected_price_sha
+            or witness.get("execution")!="NONE"
+            or witness.get("real_money")!="NO-GO"
+            or witness.get("primary_mc_authority") is not False
+            or witness.get("canonical_history_modified") is not False
+            or witness.get("candidate_created") is not False
+            or witness.get("vendor_raw_bars_persisted") is not False
+            or type(sampled) is not int or not 1<=sampled<=32
+            or not isinstance(counts,dict) or not counts
+            or any(type(n) is not int or n<=0 for n in counts.values())
+            or sum(counts.values())!=sampled):
+        raise ValueError("ROOT_FOLLOWUP_UNTRUSTED_SOURCE_WITNESS")
+    status=witness.get("status")
+    if status=="BLOCKED":
+        return "STOP_FOLLOWUP_NO_PROVIDER_IO"
+    if status=="SHADOW_HISTORICAL_SOURCE_DIAGNOSTIC_COMPLETE":
+        return "MEASURED_FOLLOWUP_ALLOWED"
+    raise ValueError("ROOT_FOLLOWUP_UNEXPECTED_SOURCE_STATUS")
+
 def selftest():
     asof="2026-10-08"
     all_dates=sorted(official_completed_sessions(asof))
@@ -281,6 +313,42 @@ def selftest():
     assert 'scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])' in workflow
     assert "steps.scheduled_root.outputs.ready == 'true'" in workflow
     assert "--limit 32 --output" in workflow
+
+    # An actual scheduled ROOT HTTP 403 must stop the subsequent 32-symbol
+    # 260-session vendor stage. Verify this without network access.
+    same_run={
+      "schema":"XRAY_ROOT_UNKNOWN_SIP_RESCUE_SHADOW_V1",
+      "asof_et":"2026-10-20","price_git_blob_sha":"b"*40,
+      "execution":"NONE","real_money":"NO-GO",
+      "primary_mc_authority":False,"canonical_history_modified":False,
+      "candidate_created":False,"vendor_raw_bars_persisted":False,
+      "sample_count":12,"reason_counts":{"ALPACA_HTTP_403":12},
+      "status":"BLOCKED",
+    }
+    assert prior_root_source_state(same_run,"2026-10-20","b"*40)=="STOP_FOLLOWUP_NO_PROVIDER_IO"
+    assert prior_root_source_state(dict(same_run,reason_counts={"ALPACA_HTTP_429":12}),
+                                   "2026-10-20","b"*40)=="STOP_FOLLOWUP_NO_PROVIDER_IO"
+    assert prior_root_source_state(dict(same_run,reason_counts={"PRIVATE_ALPACA_CREDENTIALS_REQUIRED":12}),
+                                   "2026-10-20","b"*40)=="STOP_FOLLOWUP_NO_PROVIDER_IO"
+    measured=dict(same_run,status="SHADOW_HISTORICAL_SOURCE_DIAGNOSTIC_COMPLETE",
+                  reason_counts={"SHADOW_LATEST_260_OFFICIAL_DATES_52_ISO_WEEKS_NOT_PRIMARY":12})
+    assert prior_root_source_state(measured,"2026-10-20","b"*40)=="MEASURED_FOLLOWUP_ALLOWED"
+    for invalid in (
+        dict(same_run,price_git_blob_sha="a"*40),
+        dict(same_run,asof_et="2026-10-19"),
+        dict(same_run,real_money="YES"),
+        dict(same_run,primary_mc_authority=True),
+        dict(same_run,canonical_history_modified=True),
+        dict(same_run,reason_counts={"ALPACA_HTTP_403":11}),
+        dict(same_run,sample_count=0),
+        dict(same_run,sample_count=True),
+        dict(same_run,status="PASS"),
+        {},
+    ):
+        try:prior_root_source_state(invalid,"2026-10-20","b"*40)
+        except ValueError:pass
+        else:raise RuntimeError("UNTRUSTED_ROOT_FOLLOWUP_WITNESS_ACCEPTED")
+    print("XRAY_SIP_ROOT_BLOCKED_FOLLOWUP=PASS_ZERO_SECOND_HTTP_10_NEGATIVES")
     print("XRAY_SCHEDULED_ROOT_ELIGIBILITY=PASS_ONE_TRUE_TEN_FALSE_NO_HTTP")
     print("XRAY_ZERO_PRICE_ROOT_RESCUE=PASS_SCHEDULE_BOUNDED_AND_MANUAL_NEGATIVES_NO_ALPHA")
     print("XRAY_ALPACA_ROOT_STRICT_DISPATCH_V2=PASS_FAKE_CALENDAR_BLOCKED_REAL_CALENDAR_SHORT_UNKNOWN")
