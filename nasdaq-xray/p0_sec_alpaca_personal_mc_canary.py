@@ -120,7 +120,7 @@ def measure(price,master,facts,sub,bars,asof,*,symbol=TICKER,cik=SEC_CIK):
     # the traded share CLASS. Issuance/splits/ADR from the filing to EOD
     # remain unverified. No independent primary MC crosscheck. Do not promote.
     return {"schema":SCHEMA,"asof_et":asof,"symbol":symbol,
-            "status":("SHADOW_SEC_PIT_SIP_CLOSE_PRICE_PASS_CLASS_CA_UNPROVEN"
+            "status":("SHADOW_SEC_PIT_AND_SIP_CLOSE_ARITHMETIC_VERIFIED_CLASS_CA_UNPROVEN"
                       if price_pass else
                       "SHADOW_SEC_PIT_SIP_CLOSE_PRICE_UNKNOWN_NO_PRIMARY"),
             "canonical_price_pass":price_pass,
