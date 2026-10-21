@@ -142,15 +142,28 @@ def inventory(files):
                           for i,step in enumerate(shadow_steps)
                           if isinstance(step,dict) and step.get("name")}
             pre_index,pre_step=shadow_named["Quota-free scheduled root ASOF and latest-main preflight"]
+            push_index,push_step=shadow_named["Quota-free exact-main one-shot SIP source preflight"]
             vendor_index,vendor_step=shadow_named["Bounded free historical SIP query only when PRIVATE keys available"]
             enforce_index,enforce_step=shadow_named["Enforce actual delayed SIP HTTP measurement before success"]
             if not (pre_index < vendor_index < enforce_index and
                     pre_step.get("id")=="scheduled_root" and
                     pre_step.get("if")=="${{ github.event_name == 'schedule' }}"):
                 errors.append("ALPACA_SCHEDULED_PREFLIGHT_ORDER_DRIFT")
+            push_run=push_step.get("run","")
+            if not (push_index < vendor_index < enforce_index
+                    and push_step.get("id")=="push_price"
+                    and push_step.get("if")==(
+                      "${{ github.event_name == 'push' && "
+                      "contains(github.event.head_commit.message, '[sip-probe-once]') }}")
+                    and 'one_shot_price_probe_allowed(now,p,m,remote,os.environ["GITHUB_SHA"])' in push_run
+                    and "git" in push_run and "ls-remote" in push_run
+                    and "validate(p.get(" in push_run):
+                errors.append("ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
             expected_guard=("${{ github.event_name == 'workflow_dispatch' || "
                             "(github.event_name == 'schedule' && "
-                            "steps.scheduled_root.outputs.ready == 'true') }}")
+                            "steps.scheduled_root.outputs.ready == 'true') || "
+                            "(github.event_name == 'push' && "
+                            "steps.push_price.outputs.ready == 'true') }}")
             for guard_step in (vendor_step,enforce_step):
                 if guard_step.get("if")!=expected_guard:
                     errors.append("ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
@@ -298,9 +311,17 @@ def selftest():
         "CHATGPT_ONLY_DELIVERY_USER_PREFERENCE_DRIFT")
     shadow="xray-alpaca-free-sip-shadow-proof.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace(
-        "if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}",
+        "if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') || (github.event_name == 'push' && steps.push_price.outputs.ready == 'true') }}",
         "if: ${{ github.event_name != 'pull_request' }}",1)}),
         "ALPACA_SCHEDULED_VENDOR_GUARD_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace(
+        "contains(github.event.head_commit.message, '[sip-probe-once]')",
+        "true",1)}),
+        "ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace(
+        "one_shot_price_probe_allowed(now,p,m,remote,os.environ[\"GITHUB_SHA\"])",
+        "True",1)}),
+        "ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
     bad(lambda x:x.update({shadow:x[shadow].replace(
         "Quota-free scheduled root ASOF and latest-main preflight",
         "DISABLED scheduled root preflight",1)}),

@@ -95,9 +95,38 @@ jobs:
                 " price="+str(p.get("asof_et"))+
                 " root="+str(s.get("asof_et")))
           PY
+      - name: Quota-free exact-main one-shot SIP source preflight
+        id: push_price
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[sip-probe-once]') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt,json,os,pathlib,subprocess,sys
+          sys.path.insert(0,"nasdaq-xray")
+          from alpaca_free_sip_shadow_guard import one_shot_price_probe_allowed,load_scope
+          from alpaca_official_30_workflow_preflight import validate
+          root=pathlib.Path("nasdaq-xray")
+          now=dt.datetime.now(dt.timezone.utc)
+          p=json.loads((root/"canonical_current_price_dv30.json").read_text())
+          m=json.loads((root/"canonical_current_master_manifest.json").read_text())
+          check=subprocess.run(["git","ls-remote","origin","refs/heads/main"],
+              text=True,capture_output=True,timeout=15,check=False)
+          remote=(check.stdout.split()[0] if check.returncode==0 and check.stdout.split() else "")
+          ready=one_shot_price_probe_allowed(now,p,m,remote,os.environ["GITHUB_SHA"])
+          ready=ready and validate(p.get("asof_et"),p.get("expected30"))=="EXACT_OFFICIAL_NASDAQ_LAST_30"
+          if ready:
+              _,_,cohort,_,_,_=load_scope(allow_no_representative=True)
+              ready=len(cohort)==3 and all(s in set(p["unknown_symbols"]) for s in cohort)
+          with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
+              f.write("ready="+str(ready).lower()+"\n")
+          print("XRAY_ONE_SHOT_SIP_PREFLIGHT="+(
+              "CURRENT_EXACT_SHA_THREE_UNKNOWN_SOURCE_PROBE" if ready
+              else "BLOCKED_NO_API_CALL_STALE_SHA_SCOPE_OR_CALENDAR"))
+          PY
       - name: Bounded free historical SIP query only when PRIVATE keys available
         id: price_shadow
-        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}
+        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') || (github.event_name == 'push' && steps.push_price.outputs.ready == 'true') }}
         env:
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
@@ -134,7 +163,7 @@ jobs:
           print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
           PY
       - name: Enforce actual delayed SIP HTTP measurement before success
-        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') }}
+        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') || (github.event_name == 'push' && steps.push_price.outputs.ready == 'true') }}
         env:
           XRAY_SCHEDULE_ROOT_READY: ${{ steps.scheduled_root.outputs.ready }}
         run: |
@@ -152,6 +181,10 @@ jobs:
               os.environ.get("GITHUB_EVENT_NAME",""),a,b,
               scheduled_ready=os.environ.get("XRAY_SCHEDULE_ROOT_READY")=="true")
           print("XRAY_ALPACA_LIVE_TRANSPORT="+result+"_NEVER_PRIMARY_OR_R92")
+          print("XRAY_ALPACA_SOURCE_PROBE_STATUS="+str(a.get("status")))
+          print("XRAY_ALPACA_SOURCE_PROBE_COUNTS="+json.dumps(a.get("reason_counts") or {},sort_keys=True))
+          if os.environ.get("GITHUB_EVENT_NAME")=="push" and a.get("status")!="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY":
+              raise RuntimeError("XRAY_ONE_SHOT_PROVIDER_MEASUREMENT_NOT_COMPLETED")
           PY
       - name: Archive counts-only operational evidence for 14 days
         if: always()
