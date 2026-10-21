@@ -280,7 +280,7 @@ def selftest():
     assert "last_complete_session(now)" in workflow
     assert 'scheduled_probe_allowed(now,latest,p,s,remote,os.environ["GITHUB_SHA"])' in workflow
     assert "steps.scheduled_root.outputs.ready == 'true'" in workflow
-    assert "--limit 12 --output" in workflow
+    assert "--limit 32 --output" in workflow
     print("XRAY_SCHEDULED_ROOT_ELIGIBILITY=PASS_ONE_TRUE_TEN_FALSE_NO_HTTP")
     print("XRAY_ZERO_PRICE_ROOT_RESCUE=PASS_SCHEDULE_BOUNDED_AND_MANUAL_NEGATIVES_NO_ALPHA")
     print("XRAY_ALPACA_ROOT_STRICT_DISPATCH_V2=PASS_FAKE_CALENDAR_BLOCKED_REAL_CALENDAR_SHORT_UNKNOWN")
