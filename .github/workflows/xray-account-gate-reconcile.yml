@@ -46,11 +46,11 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           wf=Path(".github/workflows/xray-account-gate-reconcile.yml").read_text()
-          assert "  schedule:" not in wf
-          assert "  push:" not in wf
-          assert "contents: write" not in wf
-          assert "  workflow_dispatch:" in wf
-          assert "git push origin" not in wf
-          assert "secrets." not in wf
+          assert "  "+"schedule:" not in wf
+          assert "  "+"push:" not in wf
+          assert "contents: "+"write" not in wf
+          assert "  "+"workflow_dispatch:" in wf
+          assert "git "+"push origin" not in wf
+          assert "secret"+"s." not in wf
           print("XRAY_ACCOUNT_RECONCILER=MANUAL_OFFLINE_READ_ONLY")
           PY
