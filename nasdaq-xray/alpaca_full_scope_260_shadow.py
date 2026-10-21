@@ -17,6 +17,7 @@ from pathlib import Path
 
 from alpaca_free_sip_shadow_guard import (
     request_batch, timestamp_date, sufficient_delay, blob_sha,
+    scheduled_unknown_cohort,
 )
 from current_history_source_request import expected_dates, sha256_lines
 
@@ -28,7 +29,7 @@ BATCH_SIZE=32
 UTC=dt.timezone.utc
 
 
-def scope(price,master):
+def scope(price,master,*,rotate_unknown=False,rotation_session=None):
     asof=price.get("asof_et")
     if (asof!=master.get("asof_et") or price.get("unknown_never_pass") is not True
             or master.get("unknown_never_pass") is not True):
@@ -67,7 +68,10 @@ def scope(price,master):
                        or result_rows[s].get("status")!="UNKNOWN"
                        for s in unknown)):
             raise ValueError("ZERO_PASS_UNKNOWN_SOURCE_PROVENANCE_INVALID")
-        targets=unknown[:BATCH_SIZE]
+        targets=(scheduled_unknown_cohort(
+            unknown,asof,batch_size=BATCH_SIZE,
+            rotation_session=rotation_session)
+            if rotate_unknown else unknown[:BATCH_SIZE])
     return asof,targets,daily,weeks
 
 
@@ -260,6 +264,30 @@ def selftest():
         try:scope(bad,no_equity_master)
         except ValueError:pass
         else:raise AssertionError("UNAUTHORIZED_ZERO_PASS_SOURCE:"+name)
+    # The original canonical PRICE unknown cohort must rotate over verified
+    # official Nasdaq sessions, not repeatedly scan the same 32 symbols.
+    asof_rotation="2026-10-20"
+    names=[f"X{i:03d}" for i in range(49)]
+    frozen={
+        "asof_et":asof_rotation,
+        "pass_symbols":[],"pass_count":0,"pass_hash":sha256_lines([]),
+        "unknown_symbols":names,"unknown_count":len(names),
+        "blocked_count":0,
+        "results":{name:{"status":"UNKNOWN"} for name in names},
+        "unknown_never_pass":True,"execution":"NONE","real_money":"NO-GO"}
+    master_rotation={"asof_et":asof_rotation,
+                     "pass_symbols":names,"unknown_never_pass":True,
+                     "execution":"NONE","real_money":"NO-GO"}
+    _,first,_,_=scope(frozen,master_rotation,rotate_unknown=True,
+                      rotation_session="2026-10-20")
+    _,second,_,_=scope(frozen,master_rotation,rotate_unknown=True,
+                       rotation_session="2026-10-21")
+    assert first==names[:32] and second==names[32:]
+    for invalid in ("2026-10-22","2026-10-24","2026-10-19"):
+        try:scope(frozen,master_rotation,rotate_unknown=True,
+                  rotation_session=invalid)
+        except ValueError:pass
+        else:raise AssertionError("STALE_OR_CLOSED_SIP_ROTATION_ACCEPTED:"+invalid)
     z=zero_scope_report(za,zd,zw)
     assert z["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_260_HISTORY_REQUEST"
     assert z["r92_created"] is False and z["current_c417_history_primary_authority"] is False
@@ -288,6 +316,8 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
     p.add_argument("--out",type=Path)
+    p.add_argument("--rotate-unknown",action="store_true",
+                   help="Existing scheduled research-only official XNAS rotation")
     args=p.parse_args()
     if args.selftest:
         selftest();return
@@ -295,7 +325,13 @@ def main():
         p.error("--out required")
     price=json.loads(PRICE.read_text())
     master=json.loads(MASTER.read_text())
-    asof,targets,daily,weeks=scope(price,master)
+    rotation_session=None
+    if args.rotate_unknown:
+        from source_epoch_freshness_guard import last_complete_session
+        rotation_session=last_complete_session(dt.datetime.now(UTC))
+    asof,targets,daily,weeks=scope(
+        price,master,rotate_unknown=args.rotate_unknown,
+        rotation_session=rotation_session)
     if not targets:
         # Only when even canonical UNKNOWN is empty is source reading empty.
         # Empty scope never creates benchmark-only history evidence.
@@ -315,6 +351,7 @@ def main():
     result["source_master_blob_sha"]=blob_sha(MASTER)
     result["source_price_pass_hash"]=price["pass_hash"]
     result["price_pass_count"]=price["pass_count"]
+    result["research_rotation_session"]=rotation_session
     result["price_unknown_count"]=price.get("unknown_count",0)
     result["price_unknown_research_remaining"]=(
         max(0,price["unknown_count"]-len(targets))
