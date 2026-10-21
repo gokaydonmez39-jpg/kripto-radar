@@ -50,6 +50,8 @@ def selftest():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--selftest",action="store_true")
+    ap.add_argument("--rotate-unknown",action="store_true",
+                    help="Scheduled-only bounded XNAS PRICE UNKNOWN source probe")
     ap.add_argument("--output",type=Path)
     args=ap.parse_args()
     if args.selftest:
@@ -59,12 +61,13 @@ def main():
     # historical SIP transport. No vendor raw bars are written to output.
     # Validate the official calendar even when the PRICE cohort is empty.
     # A zero-cohort NO-OP must not bypass provenance checks.
-    root,price,syms,days,*_ = legacy.load_scope(allow_no_representative=True)
+    root,price,syms,days,*_ = legacy.load_scope(
+        allow_no_representative=True,rotate_unknown=args.rotate_unknown)
     if validate(price["asof_et"],days)!="EXACT_OFFICIAL_NASDAQ_LAST_30":
         raise SystemExit("XRAY_ALPACA_STRICT_SOURCE_CALENDAR=BLOCKED")
     legacy.evaluate_daily=evaluate_daily_strict
     try:
-        result=legacy.run()
+        result=legacy.run(rotate_unknown=args.rotate_unknown)
     finally:
         legacy.evaluate_daily=_ORIGINAL_EVALUATE
     assert result["primary_mc_authority"] is False

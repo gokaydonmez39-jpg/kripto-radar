@@ -111,7 +111,34 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
     # 260-session official holiday calendar nor 52-week corporate adjustment.
     return "SHADOW_30_BARS_OBSERVED","RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED",30
 
-def load_scope(*, allow_no_representative=False):
+def scheduled_unknown_cohort(unknown,asof,*,batch_size=12):
+    """Rotate one bounded original PRICE-UNKNOWN diagnostic slice per XNAS day.
+
+    This is research collection only. No SIP daily bar can grant original RTH
+    volume, C4.17 PRICE PASS, market cap, R92, or delivery authority.
+    """
+    if (not isinstance(unknown,list) or unknown!=sorted(set(unknown))
+            or type(batch_size) is not int or not 1<=batch_size<=12):
+        raise ValueError("SCHEDULED_PRICE_UNKNOWN_SCOPE_INVALID")
+    if not unknown:
+        return []
+    first="2026-10-20"
+    try:
+        epoch=dt.date.fromisoformat(asof)
+        if epoch.isoformat()!=asof or asof<first:
+            raise ValueError("BEFORE_ROTATION_START")
+        sessions=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=first,end_date=asof)
+        if not len(sessions) or sessions[-1].date().isoformat()!=asof:
+            raise ValueError("CLOSED_OR_UNVERIFIED_NASDAQ_DAY")
+    except (AttributeError,TypeError,ValueError,OverflowError) as exc:
+        raise ValueError("SCHEDULED_PRICE_OFFICIAL_SESSION_REQUIRED") from exc
+    n=(len(unknown)+batch_size-1)//batch_size
+    start=((len(sessions)-1)%n)*batch_size
+    return unknown[start:start+batch_size]
+
+
+def load_scope(*, allow_no_representative=False, rotate_unknown=False):
     master_path=ROOT/"canonical_current_master_manifest.json"
     price_path=ROOT/"canonical_current_price_dv30.json"
     m=json.loads(master_path.read_text(encoding="utf-8"))
@@ -139,7 +166,8 @@ def load_scope(*, allow_no_representative=False):
                        for s in unknown)):
             raise ValueError("PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
         u=set(unknown)
-        symbols=[x for x in SAMPLE if x in u][:3]
+        symbols=(scheduled_unknown_cohort(unknown,p["asof_et"])
+                 if rotate_unknown else [x for x in SAMPLE if x in u][:3])
     if len(symbols)<3 and not allow_no_representative:
         raise ValueError("NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE")
     dates=p.get("expected30") or []
@@ -224,9 +252,10 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
 
     return collect_pages(symbols,fetch_page)
 
-def run(now=None):
+def run(now=None,*,rotate_unknown=False):
     if now is None:now=dt.datetime.now(UTC)
-    m,p,symbols,expected30,msha,psha=load_scope(allow_no_representative=True)
+    m,p,symbols,expected30,msha,psha=load_scope(
+        allow_no_representative=True,rotate_unknown=rotate_unknown)
     asof=p["asof_et"]
     output={
         "schema":SCHEMA,"asof_et":asof,"policy":"C4.17",
@@ -424,6 +453,25 @@ def selftest():
             except ValueError as exc:
                 assert "EXACT_ASOF_SAFETY_SCOPE_INVALID" in str(exc)
             else:raise AssertionError("INVALID_ASOF_MASQUERADED_AS_NOOP")
+    # The scheduled daily source probe must visit new UNKNOWN rows instead of
+    # the same fixed sample forever, including a partial final page.
+    expected=[f"X{i:03d}" for i in range(27)]
+    assert scheduled_unknown_cohort(expected,"2026-10-20")==expected[:12]
+    assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[12:24]
+    assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[24:]
+    assert scheduled_unknown_cohort(expected,"2026-10-23")==expected[:12]
+    assert scheduled_unknown_cohort(expected[:3],"2026-10-20")==expected[:3]
+    for invalid in ((expected,"2026-10-24",12),
+                    (expected,"2026-11-26",12),
+                    (expected,"2026-10-19",12),
+                    (expected,"2026-10-20",0),
+                    (expected,"2026-10-20",13),
+                    (expected,"2026-10-20",True),
+                    (["X000","X000"],"2026-10-20",12)):
+        try:scheduled_unknown_cohort(invalid[0],invalid[1],batch_size=invalid[2])
+        except ValueError:pass
+        else:raise AssertionError("SCHEDULED_PRICE_ROTATION_INVALID_ACCEPTED")
+    print("XRAY_SCHEDULED_PRICE_UNKNOWN_ROTATION=PASS_12_PER_DAY_4_SESSIONS_7_NEGATIVES_NO_HTTP_NO_AL")
     test_names=sorted(SAMPLE[:3])
     tp={"asof_et":"2026-10-20","unknown_symbols":test_names,
         "unknown_count":3,"pass_count":0,"execution":"NONE",

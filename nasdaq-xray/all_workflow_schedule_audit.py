@@ -159,6 +159,11 @@ def inventory(files):
                     and "git" in push_run and "ls-remote" in push_run
                     and "validate(p.get(" in push_run):
                 errors.append("ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
+            vendor_run=vendor_step.get("run","")
+            if not ('if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]' in vendor_run
+                    and "args+=(--rotate-unknown)" in vendor_run
+                    and 'alpaca_strict_daily_shadow_v2.py "${args[@]}"' in vendor_run):
+                errors.append("ALPACA_SCHEDULED_PRICE_ROTATION_MISSING")
             expected_guard=("${{ github.event_name == 'workflow_dispatch' || "
                             "(github.event_name == 'schedule' && "
                             "steps.scheduled_root.outputs.ready == 'true') || "
@@ -322,6 +327,9 @@ def selftest():
         "one_shot_price_probe_allowed(now,p,m,remote,os.environ[\"GITHUB_SHA\"])",
         "True",1)}),
         "ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace(
+        'args+=(--rotate-unknown)', 'echo SKIP_ROTATION',1)}),
+        "ALPACA_SCHEDULED_PRICE_ROTATION_MISSING")
     bad(lambda x:x.update({shadow:x[shadow].replace(
         "Quota-free scheduled root ASOF and latest-main preflight",
         "DISABLED scheduled root preflight",1)}),
