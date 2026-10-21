@@ -64,6 +64,19 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_full_scope_260_shadow.py
           python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
           python -O nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from alpaca_free_sip_shadow_guard import scheduled_unknown_cohort,blob_sha
+          from alpaca_sip_paginated_transport_shadow import MAX_PAGES
+          from current_history_source_request import sha256_lines
+          assert MAX_PAGES>=1 and all(callable(x) for x in
+              (scheduled_unknown_cohort,blob_sha,sha256_lines))
+          workflow=Path(".github/workflows/xray-alpaca-free-sip-shadow-proof.yml").read_text()
+          assert 'sys.path.insert(0,"nasdaq-xray")\n          p=json.loads' in workflow
+          print("XRAY_260_SCHEDULED_IMPORTS=PASS_OFFLINE_NO_VENDOR")
+          PY
       - name: Audit all scheduled workflows and negative fixtures (zero market API calls)
         run: |
           python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
@@ -178,6 +191,7 @@ jobs:
           python - <<'PY'
           import json,os,subprocess,sys
           from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
           p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
           if p["pass_count"]!=0 or p["unknown_count"]==0:
               print("XRAY_260_SCHEDULED_PRICE_UNKNOWN=NOOP_NO_ZERO_PASS_COHORT")
