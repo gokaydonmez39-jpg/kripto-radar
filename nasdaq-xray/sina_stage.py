@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from sina_transport_rescue import choose as choose_transport_rescue
 from sina_state_hash_guard import seal as seal_sina_state
+from sina_directory_run_fence import ENV_NAME as DIRECTORY_FENCE_ENV, read_once as official_directory_once
 from sina_identity_epoch import frozen_identity_fingerprint
 from sina_late_asof_recheck import choose as choose_late_asof, choose_canary_probe
 from sec_spac_manual_seed_appendonly_guard import prove as prove_manual_sec_seed
@@ -296,7 +297,11 @@ def exact_asof_membership_snapshot(asof):
         return None
 
 def official_nasdaq():
-    text=request_text(NASDAQ_DIR)
+    # Fetch a fresh official directory at ROOT start, then reuse the exact
+    # bytes for all same-run batch subprocesses; source footer must still
+    # match independently resolved official current completed ASOF.
+    text=official_directory_once(lambda: request_text(NASDAQ_DIR),
+                                 os.getenv(DIRECTORY_FENCE_ENV))
     lines=[x.strip("\r") for x in text.splitlines() if x.strip()]
     footer=next((x for x in reversed(lines) if x.startswith("File Creation Time:")),None)
     body="\n".join(x for x in lines if not x.startswith("File Creation Time:"))

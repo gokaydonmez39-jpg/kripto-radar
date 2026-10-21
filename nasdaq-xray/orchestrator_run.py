@@ -5,7 +5,7 @@ EXECUTION=NONE. REAL_MONEY=NO-GO. UNKNOWN!=PASS.
 Does not mutate ChatGPT canonical Durable State and never places orders.
 """
 from __future__ import annotations
-import hashlib, json, os, re, subprocess, sys
+import hashlib, json, os, re, subprocess, sys, atexit, tempfile
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -16,6 +16,7 @@ TASK_ID="6a825366222081918997094d76e6ae46"
 
 ENGINE_FILES=[
  "sina_stage.py",
+ "sina_directory_run_fence.py",
  "sina_identity_epoch.py",
  "sina_late_asof_recheck.py",
  "mc_zero_key.py",
@@ -643,6 +644,13 @@ def history_unknown_reason_partition(ss):
     return dict(sorted(out.items()))
 
 def main():
+    # All batches of this ONE root run must share the exact first NasdaqTrader
+    # official-directory snapshot. A new ROOT run fetches it again, and the
+    # downstream exact-ASOF/footer/identity guards retain full authority.
+    from sina_directory_run_fence import ENV_NAME, CACHE_FILENAME
+    private_dir=tempfile.TemporaryDirectory(prefix="xray-nasdaq-run-")
+    atexit.register(private_dir.cleanup)
+    os.environ[ENV_NAME]=str(Path(private_dir.name)/CACHE_FILENAME)
     now_et=datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York"))
     # Keep an all-UTC schedule without accidentally treating UTC Saturday as ET Friday loss.
     if now_et.weekday()>=5:
