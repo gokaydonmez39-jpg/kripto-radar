@@ -5,6 +5,9 @@ name: XRAY Account Gate Reconciler
 # push-triggered account reconciliation, secret access or GitHub writes.
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/xray-account-gate-reconcile.yml"
 
 permissions:
   contents: read
