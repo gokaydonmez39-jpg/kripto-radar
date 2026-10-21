@@ -260,6 +260,21 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
             if day.isoformat()!=asof:raise ValueError("INVALID_DATE")
         except (TypeError,ValueError) as exc:
             raise ValueError("ALPACA_EXACT_SYMBOL_MAPPING_ASOF_INVALID") from exc
+    # The free historical SIP endpoint explicitly forbids an 'end' in the
+    # latest 15 minutes. Enforce the holdback at the common transport boundary:
+    # callers that forget this gate cannot waste a vendor call on a predictable
+    # 403 or inadvertently request uncompleted market evidence.
+    now=dt.datetime.now(UTC)
+    try:
+        requested=dt.datetime.fromisoformat(period_end.replace("Z","+00:00"))
+        if requested.tzinfo is None:
+            raise ValueError("UNZONED")
+    except (AttributeError,TypeError,ValueError) as exc:
+        raise ValueError("ALPACA_INVALID_SIP_END_ZERO_HTTP") from exc
+    if requested.astimezone(UTC)>now-GUARD_DELAY:
+        if asof is None:
+            raise ValueError("ALPACA_RECENT_SIP_END_REQUIRES_EXACT_ASOF_ZERO_HTTP")
+        period_end=bounded_sip_end(asof,now,period_end)
     base={"symbols":",".join(symbols),"start":start,"end":period_end,
           "timeframe":"1Day","feed":"sip","adjustment":adjustment,"limit":10000}
     if asof is not None:base["asof"]=asof
@@ -525,6 +540,25 @@ def selftest():
     # The scheduled daily source probe must visit new UNKNOWN rows instead of
     # the same fixed sample forever, including a partial final page.
     expected=[f"X{i:03d}" for i in range(73)]
+    from unittest.mock import patch as no_http_patch
+    close_now=dt.datetime.now(UTC)
+    recent_end=(close_now+dt.timedelta(hours=1)).isoformat()
+    with no_http_patch("urllib.request.urlopen",side_effect=AssertionError("SIP_VENDOR_CALLED")):
+        try:
+            request_batch(["AAPL"],"2026-01-01T00:00:00Z",
+                          recent_end,"offline","offline")
+        except ValueError as exc:
+            assert str(exc)=="ALPACA_RECENT_SIP_END_REQUIRES_EXACT_ASOF_ZERO_HTTP"
+        else:
+            raise AssertionError("RECENT_SIP_NO_ASOF_TRANSPORT_NOT_BLOCKED")
+        try:
+            request_batch(["AAPL"],"2026-01-01T00:00:00Z",
+                          "INVALID_END","offline","offline")
+        except ValueError as exc:
+            assert str(exc)=="ALPACA_INVALID_SIP_END_ZERO_HTTP"
+        else:
+            raise AssertionError("BAD_SIP_END_TRANSPORT_NOT_BLOCKED")
+    print("XRAY_SIP_COMMON_TRANSPORT_HOLDBACK=PASS_NO_ASOF_NO_HTTP_BAD_END_NO_HTTP")
     assert scheduled_unknown_cohort(expected,"2026-10-20")==expected[:32]
     assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[32:64]
     assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[64:]
