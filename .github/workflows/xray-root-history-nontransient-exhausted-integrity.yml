@@ -169,7 +169,13 @@ jobs:
           assert chwm["CHWM"]["status"]=="FAIL_HISTORY"
           assert chwm["CHWM"]["info"]["bars"]<260
           assert chwm["CHWM"]["info"]["source_evidence_blob_sha"]
-          assert chwm["CHWM"]["info"]["asx_ordinary_history_not_inherited"] is True
+          info=chwm["CHWM"]["info"]
+          # A same-ASOF official first-trade hard FAIL takes precedence over
+          # older ASX non-inheritance metadata; both keep CHWM non-eligible.
+          assert (info.get("asx_ordinary_history_not_inherited") is True or
+                  (info.get("reason")=="OFFICIAL_FIRST_TRADE_LT260_HARD_HISTORY_FAIL"
+                   and info.get("completed_listed_sessions",260)<260
+                   and info.get("first_traded_nasdaq_date") is not None))
           print("XRAY_CHWM_SEC_REAL_CACHED_ROOT=PASS_FAIL_ONLY_ZERO_AL")
           PY
       - name: Never mistake offline-only evidence for a live source
