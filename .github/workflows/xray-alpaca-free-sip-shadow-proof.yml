@@ -13,6 +13,7 @@ on:
       - "nasdaq-xray/alpaca_official_30_workflow_preflight.py"
       - "nasdaq-xray/alpaca_strict_daily_shadow_v2.py"
       - "nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py"
+      - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
   pull_request:
     paths:
@@ -60,6 +61,9 @@ jobs:
           python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
           python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
           python -O nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_full_scope_260_shadow.py
+          python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
       - name: Audit all scheduled workflows and negative fixtures (zero market API calls)
         run: |
           python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
@@ -165,6 +169,38 @@ jobs:
           assert j["candidate_created"] is False and j["vendor_raw_bars_persisted"] is False
           print("XRAY_ALPACA_ROOT_RESCUE_GUARDS=PASS_NO_PRIMARY_NO_CANONICAL_WRITE")
           PY
+      - name: Bounded 260-day PRICE UNKNOWN source rotation on existing official session cron
+        if: ${{ github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true' }}
+        env:
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY }}
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,sys
+          from pathlib import Path
+          p=json.loads(Path("nasdaq-xray/canonical_current_price_dv30.json").read_text())
+          if p["pass_count"]!=0 or p["unknown_count"]==0:
+              print("XRAY_260_SCHEDULED_PRICE_UNKNOWN=NOOP_NO_ZERO_PASS_COHORT")
+              sys.exit(0)
+          target=Path(os.environ["RUNNER_TEMP"])/"xray_alpaca_260_unknown_research.json"
+          subprocess.run([sys.executable,"nasdaq-xray/alpaca_full_scope_260_shadow.py",
+              "--rotate-unknown","--out",str(target)],check=True)
+          j=json.loads(target.read_text())
+          required=min(32,p["unknown_count"])
+          if (j["schema"]!="XRAY_ALPACA_CURRENT_515_EXACT260_SIP_SHADOW_V1"
+              or j["status"]!="SHADOW_ZERO_PRICE_PASS_UNKNOWN_260_SOURCE_MEASURED_NO_AUTHORITY"
+              or j["expected_scope_count"]!=required
+              or j["measured_scope_count"]!=required
+              or j["zero_price_pass_unknown_research_only"] is not True
+              or j["source_market_data_rights_independently_attested"] is not False
+              or j["current_c417_history_primary_authority"] is not False
+              or j["canonical_history_pass_created"]!=0
+              or j["r92_created"] is not False
+              or j["execution"]!="NONE" or j["real_money"]!="NO-GO"):
+              raise RuntimeError("XRAY_260_SCHEDULED_SOURCE_NOT_MEASURED_OR_AUTHORITY_DRIFT")
+          print("XRAY_260_SCHEDULED_UNKNOWN_HISTORY="+str(j["measured_scope_count"])+
+                "_SIP_SOURCE_DIAGNOSTIC_ONLY_NO_PRIMARY_NO_R92")
+          PY
       - name: Enforce actual delayed SIP HTTP measurement before success
         if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && steps.scheduled_root.outputs.ready == 'true') || (github.event_name == 'push' && steps.push_price.outputs.ready == 'true') }}
         env:
@@ -197,5 +233,6 @@ jobs:
           path: |
             ${{ runner.temp }}/xray_alpaca_free_sip_shadow.json
             ${{ runner.temp }}/xray_alpaca_root_unknown_rescue.json
+            ${{ runner.temp }}/xray_alpaca_260_unknown_research.json
           retention-days: 14
           if-no-files-found: warn
