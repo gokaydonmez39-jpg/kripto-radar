@@ -22,6 +22,7 @@ from zoneinfo import ZoneInfo
 
 from alpaca_sip_exact30_backup_probe import personal_shadow_access
 from alpaca_sip_paginated_transport_shadow import collect_pages
+from alpaca_free_sip_shadow_guard import bounded_sip_end
 from source_epoch_freshness_guard import last_complete_session
 
 ROOT=Path(__file__).resolve().parent
@@ -201,11 +202,12 @@ def collect(scope,dates,fetch):
             "failure":failure,"coverage_complete":attempted==len(scope),
             "verified_rth_primary_count":0,"r92_created":False}
 
-def fetch_live(keys):
+def fetch_live(keys,now):
     kid,secret=keys
     def fetch(symbols,dates,token):
         start=dates[0]+"T00:00:00Z"
-        end=(dt.date.fromisoformat(dates[-1])+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
+        end=bounded_sip_end(dates[-1],now,
+             (dt.date.fromisoformat(dates[-1])+dt.timedelta(days=1)).isoformat()+"T00:00:00Z")
         params={"symbols":",".join(symbols),"timeframe":"1Day","start":start,
                 "end":end,"feed":"sip","adjustment":"raw",
                 "limit":"10000","sort":"asc"}
@@ -244,7 +246,7 @@ def main_report(master,price,now,env,fetch=None):
     if not kid or not secret:
         result["status"]="BLOCKED_CREDENTIALS_MISSING"
         return result
-    out=collect(scope,days,fetch if fetch is not None else fetch_live((kid,secret)))
+    out=collect(scope,days,fetch if fetch is not None else fetch_live((kid,secret),now))
     result.update(out)
     result["status"]=("SHADOW_540_DAILY_SIP_SCOPE_MEASURED_NOT_RTH"
         if out["coverage_complete"] else "BLOCKED_TRANSPORT_OR_PAGINATION_INCOMPLETE")
@@ -328,6 +330,27 @@ def selftest():
     e=collect(["AAPL"],days,lambda a,b,t:{"bars":{},"next_page_token":"x"})
     need(e["attempted"]==0 and not e["coverage_complete"]
          and e["api_calls"]<=MAX_CALLS,"PAGINATION_BLOCK")
+    # The original October 12 session closes at 20:00 UTC, but the
+    # requested next-day 00:00 UTC is in the future at the 21:10 UTC run.
+    # Intercept the outgoing request; no vendor IO, no quota expenditure.
+    from unittest.mock import patch
+    from contextlib import contextmanager
+    captured=[]
+    @contextmanager
+    def fake_urlopen(req,timeout=30):
+        from urllib.parse import urlparse,parse_qs
+        qs=parse_qs(urlparse(req.full_url).query)
+        captured.append(qs)
+        class FakeReply:
+            def read(self,size):return b'{"bars":{},"next_page_token":null}'
+        yield FakeReply()
+    with patch("urllib.request.urlopen",new=fake_urlopen):
+        fetch_live(("offline-id","offline-secret"),
+             dt.datetime(2026,10,12,21,10,tzinfo=UTC))(
+                 ["AAPL"],days,None)
+    assert len(captured)==1 and captured[0]["end"]==[
+        "2026-10-12T20:50:00+00:00"],captured
+    print("XRAY_540_DELAYED_SIP_END=PASS_OFFLINE_FUTURE_MIDNIGHT_CAPPED")
     print("XRAY_PERSONAL_540_SIP_SELFTEST=PASS_8_BAR_NEGATIVES_3_SCOPE_CASES_PRICE_TRIAGE_5USD_NO_HTTP")
 
 def main():
