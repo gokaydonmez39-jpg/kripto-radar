@@ -1696,11 +1696,34 @@ def load_official_halt_guard():
         return None,{"status":"UNKNOWN","reason":type(e).__name__+":"+str(e)[:160]}
 
 
+def validate_price_runtime_input(s):
+    """Guard canonical task, exact ASOF date and full symbol scope in -O too."""
+    from datetime import date
+    if not isinstance(s, dict) or s.get("task_id") != TASK_ID:
+        raise ValueError("PRICE_RUNTIME_TASK_ID_INVALID")
+    asof = s.get("asof_et")
+    if not isinstance(asof, str) or len(asof) != 10:
+        raise ValueError("PRICE_RUNTIME_ASOF_INVALID")
+    try:
+        if date.fromisoformat(asof).isoformat() != asof:
+            raise ValueError("PRICE_RUNTIME_ASOF_INVALID")
+    except (TypeError, ValueError) as exc:
+        raise ValueError("PRICE_RUNTIME_ASOF_INVALID") from exc
+    queue, old = s.get("queue"), s.get("results")
+    if (not isinstance(queue, list)
+            or len(queue) <= 3000
+            or not all(isinstance(sym, str) and sym and sym == sym.strip()
+                       for sym in queue)
+            or len(set(queue)) != len(queue)
+            or not isinstance(old, dict)
+            or set(queue) != set(old)):
+        raise ValueError("PRICE_RUNTIME_QUEUE_RESULTS_INVALID")
+    return asof, queue, old
+
+
 def main():
     s=json.loads(INPUT.read_text())
-    asof=s.get("asof_et")
-    assert s["task_id"]==TASK_ID and isinstance(asof,str) and len(asof)==10
-    queue=s["queue"];old=s["results"];assert len(queue)==len(old) and len(queue)>3000
+    asof, queue, old = validate_price_runtime_input(s)
     baseline_source="FULL_STATE"
     prior_thresholds={}
     if FORCE_POLICY_REPLAY or USE_CURRENT_BASELINE:
