@@ -155,7 +155,7 @@ def inventory(files):
                     and push_step.get("if")==(
                       "${{ github.event_name == 'push' && "
                       "contains(github.event.head_commit.message, '[sip-probe-once]') }}")
-                    and "one_shot_price_probe_allowed" in push_run
+                    and 'one_shot_price_probe_allowed(now,p,m,remote,os.environ["GITHUB_SHA"])' in push_run
                     and "git" in push_run and "ls-remote" in push_run
                     and "validate(p.get(" in push_run):
                 errors.append("ALPACA_ONE_SHOT_SOURCE_PREFLIGHT_DRIFT")
