@@ -7,7 +7,6 @@
       "CHOW",
       "EFTY",
       "HCHL",
-      "IBO",
       "LAWR",
       "MAGH",
       "MCTA",
@@ -67,7 +66,6 @@
       "FSEA",
       "GFAIW",
       "HCHL",
-      "IBO",
       "ILLR",
       "ILLRW",
       "LAWR",
@@ -101,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-21T17:31:45.895417+00:00",
+  "generated_at_utc": "2026-10-21T17:39:44.111539+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -814,13 +812,12 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 15,
+      "active_halt_count": 14,
       "active_halt_symbols": [
         "AZTR",
         "CHOW",
         "EFTY",
         "HCHL",
-        "IBO",
         "LAWR",
         "MAGH",
         "MCTA",
@@ -843,10 +840,10 @@
           "Market": "AMEX",
           "PauseThresholdPrice": "",
           "ReasonCode": "M",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">13:27:18.923</td><td valign=\"top\">IBO</td><td valign=\"top\">Impact BioMedical, Inc. Common Stock</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ResumptionDate": "10/21/2026",
+          "ResumptionQuoteTime": "13:32:18",
+          "ResumptionTradeTime": "13:32:18",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">13:27:18.923</td><td valign=\"top\">IBO</td><td valign=\"top\">Impact BioMedical, Inc. Common Stock</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">13:32:18                      </td><td valign=\"top\">13:32:18                      </td></tr></table>",
           "pubDate": "Wed, 21 Oct 2026 04:00:00 GMT",
           "title": "IBO"
         },
