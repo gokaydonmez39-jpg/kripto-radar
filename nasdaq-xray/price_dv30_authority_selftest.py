@@ -63,11 +63,42 @@ def verify_fractional_rallies_volume_guard(asof):
     print("XRAY_RALLIES_FRACTIONAL_VOLUME_RUNTIME_SELFTEST=PASS_POSITIVE_AND_NEGATIVE_TEST_ONLY")
 
 
+def verify_current_price_cache_partition_safety() -> None:
+    """Production baseline must not accept mismatched status/count/hash evidence."""
+    import copy
+    from price_dv30_recover_from_fullstate import price_snapshot_integrity
+    snap = json.loads((ROOT / "canonical_current_price_dv30.json").read_text())
+    asof = snap["asof_et"]
+    if not price_snapshot_integrity(snap, asof):
+        raise RuntimeError("KNOWN_CURRENT_PRICE_SNAPSHOT_FAILED_STRUCTURAL_BASELINE")
+    symbol = snap["unknown_symbols"][0]
+    forged = copy.deepcopy(snap)
+    forged["results"][symbol]["status"] = "PASS_PRICE_DV30"
+    if price_snapshot_integrity(forged, asof):
+        raise RuntimeError("CORRUPTED_PRICE_STATUS_PARTITION_ACCEPTED")
+    forged = copy.deepcopy(snap)
+    forged["pass_symbols"] = [symbol]
+    forged["pass_count"] = 1
+    if price_snapshot_integrity(forged, asof):
+        raise RuntimeError("CORRUPTED_PRICE_PASS_SET_ACCEPTED")
+    forged = copy.deepcopy(snap)
+    forged["counts"]["FAIL_PRICE"] += 1
+    forged["counts"]["FAIL_DV30"] -= 1
+    if price_snapshot_integrity(forged, asof):
+        raise RuntimeError("CORRUPTED_PRICE_COUNT_PARTITION_ACCEPTED")
+    forged = copy.deepcopy(snap)
+    forged["pass_hash"] = "0" * 64
+    if price_snapshot_integrity(forged, asof):
+        raise RuntimeError("CORRUPTED_PRICE_PASS_HASH_ACCEPTED")
+    print("XRAY_C417_PRICE_CACHED_PARTITION_INTEGRITY=PASS_REAL_SNAPSHOT_FOUR_NEGATIVES")
+
+
 def main():
     master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
     asof=str(master.get("asof_et") or "")
     assert len(asof)==10,asof
     verify_fractional_rallies_volume_guard(asof)
+    verify_current_price_cache_partition_safety()
     master_queue=list(master.get("pass_symbols") or [])
     assert master_queue and len(master_queue)==int(master.get("pass_count",-1))
 
