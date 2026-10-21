@@ -125,6 +125,21 @@ def load_scope(*, allow_no_representative=False):
     if not price_set.issubset(master_set) or len(price_set)!=int(p.get("pass_count",-1)):
         raise ValueError("UNIVERSE_PRICE_SET_MISMATCH")
     symbols=[x for x in SAMPLE if x in price_set]
+    # Critical bootstrap: zero PRICE-PASS must not silence authenticated
+    # historical-SIP research. Current PRICE-UNKNOWN rows may be sampled
+    # strictly for evidence collection; they can NEVER become canonical PASS.
+    if not symbols and allow_no_representative:
+        unknown=p.get("unknown_symbols")
+        if (not isinstance(unknown,list) or unknown!=sorted(set(unknown))
+                or type(p.get("unknown_count")) is not int
+                or len(unknown)!=p["unknown_count"]
+                or not set(unknown).issubset(master_set)
+                or not isinstance(p.get("results"),dict)
+                or any((p["results"].get(s) or {}).get("status") != "UNKNOWN"
+                       for s in unknown)):
+            raise ValueError("PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
+        u=set(unknown)
+        symbols=[x for x in SAMPLE if x in u][:3]
     if len(symbols)<3 and not allow_no_representative:
         raise ValueError("NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE")
     dates=p.get("expected30") or []
@@ -186,7 +201,11 @@ def run(now=None):
         "mode":"RESEARCH_ONLY_MANUAL_DECISION","execution":"NONE",
         "real_money":"NO-GO","unknown_never_pass":True,
         "master_git_blob_sha":msha,"price_git_blob_sha":psha,
-        "sample_count":len(symbols),"feed":"SIP_DELAYED_HISTORICAL",
+        "sample_count":len(symbols),
+        "sample_role":("CURRENT_PRICE_PASS_RESEARCH_ONLY" if
+                       symbols and all(s in set(p.get("pass_symbols") or []) for s in symbols)
+                       else "CURRENT_PRICE_UNKNOWN_DIAGNOSTIC_NEVER_PASS"),
+        "feed":"SIP_DELAYED_HISTORICAL",
         "price_adjustment":"RAW_NOT_CORP_ACTION_RECONCILED",
         "primary_mc_authority":False,"c417_price_pass_promoted":False,
         "candidate_created":False,"device_receipt_proven":False,
@@ -308,14 +327,16 @@ def selftest():
     assert evaluate_daily(intraday,dates,"2026-10-08",now)[1]=="OHLCV_OR_DATE_PARSE_ERROR", (
         "ALPACA_INTRADAY_BAR_ACCEPTED_AS_DAILY",
         evaluate_daily(intraday,dates,"2026-10-08",now))
-    # Regression: zero CURRENT PRICE PASS must be a quota-free, explicit NO-OP.
-    # Synthetic local metadata lives only in a disposable offline test fixture.
+    # Zero PRICE-PASS is not a source-data deadlock: sample only genuine
+    # canonical UNKNOWN symbols, without any candidate/R92 promotion.
     from tempfile import TemporaryDirectory
     with TemporaryDirectory(prefix="xray_free_sip_scope_test_") as temp:
         fake_root=pathlib.Path(temp)
         m={"asof_et":"2026-10-08","pass_symbols":list(SAMPLE),
            "unknown_never_pass":True}
         p={"asof_et":"2026-10-08","pass_symbols":[],"pass_count":0,
+           "unknown_symbols":sorted(SAMPLE[:3]),"unknown_count":3,
+           "results":{s:{"status":"UNKNOWN"} for s in SAMPLE[:3]},
            "unknown_never_pass":True,"expected30":dates}
         def save_fixture():
             (fake_root/"canonical_current_master_manifest.json").write_text(
@@ -325,28 +346,53 @@ def selftest():
         save_fixture()
         with patch.dict(globals(),{"ROOT":fake_root}), patch(
              "urllib.request.urlopen",side_effect=AssertionError(
-             "PROVIDER_CALLED_WITHOUT_CANONICAL_PRICE_SCOPE")), patch.dict(
+             "PROVIDER_CALLED_WITHOUT_CREDENTIALS")), patch.dict(
+             os.environ,{"XRAY_ALPACA_DATA_KEY_ID":"",
+                         "XRAY_ALPACA_DATA_SECRET_KEY":""}):
+            selected=load_scope(allow_no_representative=True)
+            assert selected[2]==list(SAMPLE[:3]),selected[2]
+            no_keys=run(now)
+            assert no_keys["status"]=="BLOCKED"
+            assert no_keys["sample_count"]==3 and no_keys["reason_counts"]=={
+                "ALPACA_PRIVATE_API_CREDENTIALS_REQUIRED":3}
+            assert no_keys["sample_role"]=="CURRENT_PRICE_UNKNOWN_DIAGNOSTIC_NEVER_PASS"
+            assert no_keys["primary_mc_authority"] is False
+            assert no_keys["candidate_created"] is False
+            assert no_keys["c417_price_pass_promoted"] is False
+        with patch.dict(globals(),{"ROOT":fake_root,
+             "request_batch":lambda *args,**kwargs:
+                 {s:sample for s in SAMPLE[:3]}}), patch.dict(
              os.environ,{"XRAY_ALPACA_DATA_KEY_ID":"offline-key",
                          "XRAY_ALPACA_DATA_SECRET_KEY":"offline-secret"}):
-            blocked=run(now)
-            assert blocked["status"]=="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
-            assert blocked["sample_count"]==0 and blocked["reason_counts"]=={
-                "NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1}
-            assert blocked["execution"]=="NONE" and blocked["real_money"]=="NO-GO"
-            assert blocked["primary_mc_authority"] is False
-            assert blocked["candidate_created"] is False
-            assert blocked["c417_price_pass_promoted"] is False
-            p["pass_symbols"]=list(SAMPLE[:3]);p["pass_count"]=3
-            save_fixture()
+            measured=run(now)
+            assert measured["status"]=="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
+            assert measured["reason_counts"]=={
+                "SHADOW_30_BARS_OBSERVED|RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED":3}
+            assert measured["primary_mc_authority"] is False
+            assert measured["c417_price_pass_promoted"] is False
+            assert measured["candidate_created"] is False
+            assert measured["vendor_raw_bars_persisted"] is False
+        p["unknown_symbols"]=["AAPL","AAPL","NVDA"]
+        save_fixture()
+        with patch.dict(globals(),{"ROOT":fake_root}):
+            try:load_scope(allow_no_representative=True)
+            except ValueError as exc:
+                assert "PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID" in str(exc)
+            else:raise AssertionError("DUPLICATE_UNKNOWN_SAMPLE_ACCEPTED")
+        p["unknown_symbols"]=[];p["unknown_count"]=0
+        p["pass_symbols"]=list(SAMPLE[:3]);p["pass_count"]=3
+        save_fixture()
+        with patch.dict(globals(),{"ROOT":fake_root}):
             valid=load_scope()
             assert valid[2]==list(SAMPLE[:3])
-            p["asof_et"]="2026-10-07"
-            save_fixture()
+        p["asof_et"]="2026-10-07"
+        save_fixture()
+        with patch.dict(globals(),{"ROOT":fake_root}):
             try:load_scope(allow_no_representative=True)
             except ValueError as exc:
                 assert "EXACT_ASOF_SAFETY_SCOPE_INVALID" in str(exc)
             else:raise AssertionError("INVALID_ASOF_MASQUERADED_AS_NOOP")
-    print("XRAY_ALPACA_ZERO_PRICE_SCOPE_NOOP=PASS_NO_HTTP_AND_MISMATCH_FAIL_CLOSED")
+    print("XRAY_ALPACA_ZERO_PRICE_BOOTSTRAP=PASS_3_UNKNOWN_SHADOW_ONLY_NO_KEY_NO_HTTP_NEGATIVE_NO_R92")
     print("XRAY_ALPACA_FREE_SIP_SHADOW_SELFTEST=PASS_HOLDBACK_30_SESSIONS_DUPLICATE_GAPS_ZERO_VOL_FUTURE")
     print("XRAY_ALPACA_SIP_PAGINATED_REQUEST_MOCK=PASS_TWO_PAGES_SCOPE_CONSTANT_NO_NETWORK")
 if __name__=="__main__":
