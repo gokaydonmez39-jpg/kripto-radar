@@ -593,6 +593,7 @@ jobs:
         if: steps.event.outputs.ready == 'true'
         env:
           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
+          XRAY_NO_BROKER_ACCOUNT_IO: "1"
         run: python nasdaq-xray/build_current_terminal.py
 
       - name: Structural terminal gate
@@ -617,17 +618,17 @@ jobs:
           assert t["execution"]=="NONE" and t["real_money"]=="NO-GO"
           assert t.get("final_gate_reporting_zero_alpha") is True
           g9=json.load(open("nasdaq-xray/strict_g9_runtime_state.json"))
-          ag=json.load(open("nasdaq-xray/account_gate_contract.json"))
           assert g9["execution"]=="NONE" and g9["real_money"]=="NO-GO"
-          assert ag["execution"]=="NONE" and ag["real_money"]=="NO-GO" and ag["provider"]=="PROVIDER_NEUTRAL"
           assert t["g9_global_status"]==("G9_PASS" if g9.get("g9_pass") is True else "G9_BLOCKED_FREE_AUTOMATION_PATH")
-          # Brokerless user-facing personal research: a live account is not
-          # consulted and no broker state can assert a false research GO.
-          assert t["account_status"]==ag["current_status"]
+          # No account/broker data, contracts, credentials, positions or money
+          # ever enter manual research terminal construction.
+          assert t["account_status"]=="ACCOUNT_NOT_APPLICABLE_SIGNAL_ONLY"
           assert "account_live_probe" not in (t.get("evidence") or {})
+          ag=(t.get("evidence") or {}).get("account_gate") or {}
+          assert ag.get("status")=="NOT_APPLICABLE_BROKERLESS_PERSONAL_RESEARCH"
+          assert ag.get("broker_network_io") is False
+          assert ag.get("balance_positions_read") is False
           assert t["evidence"]["g9_runtime"]["blob_sha"]==blob("nasdaq-xray/strict_g9_runtime_state.json")
-          assert t["evidence"]["account_gate"]["blob_sha"]==blob("nasdaq-xray/account_gate_contract.json")
-          assert t["evidence"]["account_gate"]["adapter_contract_blob_sha"]==blob("nasdaq-xray/account_provider_adapter_contract.json")
           assert t["compiled_policy_hash"]=="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
           assert e.get("compiled_policy_hash")==t["compiled_policy_hash"]
           assert e.get("compiled_policy_version")=="C4.17"
