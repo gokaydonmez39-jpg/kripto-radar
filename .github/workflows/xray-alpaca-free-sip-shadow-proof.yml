@@ -21,6 +21,7 @@ on:
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"
       - "nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py"
+      - "nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py"
       - "nasdaq-xray/alpaca_free_sip_shadow_guard.py"
       - "nasdaq-xray/alpaca_strict_daily_shadow_v2.py"
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
@@ -64,6 +65,9 @@ jobs:
           python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
           python nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
           python -O nasdaq-xray/alpaca_root_rescue_strict_dispatch_v2.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py
+          python nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
+          python -O nasdaq-xray/alpaca_candidate_local_260_recovery_shadow.py --selftest
           python -m py_compile nasdaq-xray/alpaca_full_scope_260_shadow.py
           python nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
           python -O nasdaq-xray/alpaca_full_scope_260_shadow.py --selftest
