@@ -136,6 +136,28 @@ def measure(price,master,facts,sub,bars,asof,*,symbol=TICKER,cik=SEC_CIK):
             "R92_created":False,"GO":False,"execution":"NONE","real_money":"NO-GO",
             "numeric_shares_price_or_marketcap_persisted":False}
 
+# A green CI run means the actual SEC+SIP source measurement was completed,
+# not merely that the safety guards passed. It is NOT C4.17 PRIMARY approval.
+SOURCE_SUCCESS="SHADOW_SEC_PIT_AND_SIP_CLOSE_ARITHMETIC_VERIFIED_CLASS_CA_UNPROVEN"
+
+def require_completed_source_canary(result):
+    require(type(result) is dict
+            and result.get("schema")==SCHEMA
+            and result.get("status")==SOURCE_SUCCESS
+            and result.get("SEC_exact_CIK_and_filing_vintage_checked") is True
+            and result.get("Alpaca_sip_one_session_et_midnight_verified") is True,
+            "SOURCE_NOT_ACTUALLY_ATTESTED")
+    require(result.get("C417_PRIMARY_MC") is False
+            and result.get("C417_CURRENT_PRIMARY_CREATED")==0
+            and result.get("R92_created") is False
+            and result.get("GO") is False
+            and result.get("numeric_shares_price_or_marketcap_persisted") is False
+            and result.get("execution")=="NONE"
+            and result.get("real_money")=="NO-GO",
+            "SOURCE_AUTHORITY_OR_SAFETY_LEAK")
+    return True
+
+
 def selftest():
     asof="2026-10-09"
     p={"asof_et":asof,"pass_symbols":[TICKER],
@@ -187,6 +209,21 @@ def selftest():
         try:measure(tampered,m,f,sub,[bar],asof)
         except (ValueError,KeyError,TypeError):pass
         else:raise AssertionError("UNSAFE_ZERO_PASS_SOURCE_ACCEPTED:"+name)
+    require(require_completed_source_canary(result) is True,
+            "SOURCE_STATUS_SUCCESS_NOT_RECOGNIZED")
+    for bad in (
+        dict(result,status="BLOCKED_OFFICIAL_SEC_USER_AGENT"),
+        dict(result,status="BLOCKED_ALPACA_PERSONAL_API_KEY"),
+        dict(result,status="UNKNOWN_SEC_ALPACA_PIT_SOURCE_OR_ARITHMETIC"),
+        dict(result,C417_PRIMARY_MC=True),
+        dict(result,R92_created=True),
+        dict(result,SEC_exact_CIK_and_filing_vintage_checked=False),
+        dict(result,Alpaca_sip_one_session_et_midnight_verified=False),
+        dict(result,real_money="YES"),
+    ):
+        try:require_completed_source_canary(bad)
+        except ValueError:pass
+        else:raise AssertionError("BLOCKED_OR_FALSE_PRIMARY_CANARY_ACCEPTED")
     tests=0
     def red(label,P=p,M=m,F=f,S=sub,B=[bar],A=asof):
         nonlocal tests
@@ -216,7 +253,7 @@ def selftest():
     red("PRICE_HASH",P=pp)
     mm=deepcopy(m);mm["pass_symbols"]=[]
     red("MASTER_IDENTITY",M=mm)
-    print("XRAY_P0_PERSONAL_SEC_ALPACA_MC_CANARY=PASS_2_POSITIVE_27_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
+    print("XRAY_P0_PERSONAL_SEC_ALPACA_MC_CANARY=PASS_2_POSITIVE_35_NEGATIVE_OPTIMIZER_SAFE_NO_PRIMARY")
 
 def main():
     a=argparse.ArgumentParser()
