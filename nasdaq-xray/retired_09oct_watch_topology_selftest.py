@@ -26,10 +26,11 @@ def selftest():
     for mandatory in (
         '"XRAY Live Truth Attestation"',
         '"XRAY E2E Production Readiness (Fail-Closed)"',
-        '"XRAY Account Gate Reconciler"',  # independent hourly completion wakes root watchdog
         'cron: "*/15 * * * 1-5"',
     ):
         assert mandatory in d,"LIVE_ROOT_WATCHDOG_REQUIRED_TRIGGER_REMOVED:"+mandatory
+    assert '"XRAY Account Gate Reconciler"' not in d, (
+        "BROKERLESS_ACCOUNT_RECONCILER_STILL_WAKES_WATCHDOG")
     assert "python nasdaq-xray/github_native_root_watchdog.py --out" in d, (
         "LIVE_ROOT_WATCHDOG_ACTION_REMOVED")
     print("XRAY_09OCT_EXPIRED_WATCH=PASS_MANUAL_ONLY_NO_DUPLICATE_ACTIONS_LIVE_ROOT_WATCHDOG_INTACT")
