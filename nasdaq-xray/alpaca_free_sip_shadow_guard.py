@@ -111,7 +111,7 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
     # 260-session official holiday calendar nor 52-week corporate adjustment.
     return "SHADOW_30_BARS_OBSERVED","RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED",30
 
-def scheduled_unknown_cohort(unknown,asof,*,batch_size=12):
+def scheduled_unknown_cohort(unknown,asof,*,batch_size=12,rotation_session=None):
     """Rotate one bounded original PRICE-UNKNOWN diagnostic slice per XNAS day.
 
     This is research collection only. No SIP daily bar can grant original RTH
@@ -123,13 +123,22 @@ def scheduled_unknown_cohort(unknown,asof,*,batch_size=12):
     if not unknown:
         return []
     first="2026-10-20"
+    rotation_session=asof if rotation_session is None else rotation_session
     try:
         epoch=dt.date.fromisoformat(asof)
-        if epoch.isoformat()!=asof or asof<first:
+        rotation=dt.date.fromisoformat(rotation_session)
+        if (epoch.isoformat()!=asof or rotation.isoformat()!=rotation_session
+                or asof<first or rotation_session<asof):
             raise ValueError("BEFORE_ROTATION_START")
-        sessions=mcal.get_calendar("NASDAQ").valid_days(
-            start_date=first,end_date=asof)
-        if not len(sessions) or sessions[-1].date().isoformat()!=asof:
+        cal=mcal.get_calendar("NASDAQ")
+        source_to_measured=cal.valid_days(
+            start_date=asof,end_date=rotation_session)
+        if (not 1<=len(source_to_measured)<=2
+                or source_to_measured[0].date().isoformat()!=asof
+                or source_to_measured[-1].date().isoformat()!=rotation_session):
+            raise ValueError("OVER_ONE_SESSION_STALE_OR_CLOSED_DAY")
+        sessions=cal.valid_days(start_date=first,end_date=rotation_session)
+        if not len(sessions) or sessions[-1].date().isoformat()!=rotation_session:
             raise ValueError("CLOSED_OR_UNVERIFIED_NASDAQ_DAY")
     except (AttributeError,TypeError,ValueError,OverflowError) as exc:
         raise ValueError("SCHEDULED_PRICE_OFFICIAL_SESSION_REQUIRED") from exc
@@ -138,7 +147,8 @@ def scheduled_unknown_cohort(unknown,asof,*,batch_size=12):
     return unknown[start:start+batch_size]
 
 
-def load_scope(*, allow_no_representative=False, rotate_unknown=False):
+def load_scope(*, allow_no_representative=False, rotate_unknown=False,
+               rotation_session=None):
     master_path=ROOT/"canonical_current_master_manifest.json"
     price_path=ROOT/"canonical_current_price_dv30.json"
     m=json.loads(master_path.read_text(encoding="utf-8"))
@@ -166,7 +176,8 @@ def load_scope(*, allow_no_representative=False, rotate_unknown=False):
                        for s in unknown)):
             raise ValueError("PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
         u=set(unknown)
-        symbols=(scheduled_unknown_cohort(unknown,p["asof_et"])
+        symbols=(scheduled_unknown_cohort(
+                     unknown,p["asof_et"],rotation_session=rotation_session)
                  if rotate_unknown else [x for x in SAMPLE if x in u][:3])
     if len(symbols)<3 and not allow_no_representative:
         raise ValueError("NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE")
@@ -252,10 +263,11 @@ def request_batch(symbols,start,period_end,key,secret,*,adjustment="raw",asof=No
 
     return collect_pages(symbols,fetch_page)
 
-def run(now=None,*,rotate_unknown=False):
+def run(now=None,*,rotate_unknown=False,rotation_session=None):
     if now is None:now=dt.datetime.now(UTC)
     m,p,symbols,expected30,msha,psha=load_scope(
-        allow_no_representative=True,rotate_unknown=rotate_unknown)
+        allow_no_representative=True,rotate_unknown=rotate_unknown,
+        rotation_session=rotation_session)
     asof=p["asof_et"]
     output={
         "schema":SCHEMA,"asof_et":asof,"policy":"C4.17",
@@ -460,6 +472,14 @@ def selftest():
     assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[12:24]
     assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[24:]
     assert scheduled_unknown_cohort(expected,"2026-10-23")==expected[:12]
+    # Source snapshot one session behind: advance study rotation on
+    # official observation session, NEVER advance the underlying data ASOF.
+    assert scheduled_unknown_cohort(expected,"2026-10-20",
+                                    rotation_session="2026-10-21")==expected[12:24]
+    try:scheduled_unknown_cohort(expected,"2026-10-20",
+                                 rotation_session="2026-10-22")
+    except ValueError:pass
+    else:raise AssertionError("PRICE_ROTATION_TWO_SESSION_LAG_ACCEPTED")
     assert scheduled_unknown_cohort(expected[:3],"2026-10-20")==expected[:3]
     for invalid in ((expected,"2026-10-24",12),
                     (expected,"2026-11-26",12),
