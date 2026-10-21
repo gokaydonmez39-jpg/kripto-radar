@@ -89,8 +89,8 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8") as f:
               f.write("ready="+str(ready).lower()+"\n")
           print("XRAY_SCHEDULED_ROOT_PREFLIGHT="+(
-              "CURRENT_EXACT_SHA_BOUNDED_SHADOW" if ready
-              else "STALE_OR_HOLIDAY_OR_SHA_DRIFT_ZERO_HTTP_NOOP"))
+              "LATEST_OR_PREVIOUS_OFFICIAL_SESSION_RESEARCH_ONLY" if ready
+              else "OVER_ONE_SESSION_STALE_OR_HOLIDAY_OR_SHA_DRIFT_ZERO_HTTP_NOOP"))
           print("XRAY_SCHEDULED_ROOT_ASOF="+latest+
                 " price="+str(p.get("asof_et"))+
                 " root="+str(s.get("asof_et")))

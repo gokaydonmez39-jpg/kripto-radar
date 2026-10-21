@@ -61,13 +61,20 @@ def main():
     # historical SIP transport. No vendor raw bars are written to output.
     # Validate the official calendar even when the PRICE cohort is empty.
     # A zero-cohort NO-OP must not bypass provenance checks.
+    now=dt.datetime.now(dt.timezone.utc)
+    rotation_session=None
+    if args.rotate_unknown:
+        from source_epoch_freshness_guard import last_complete_session
+        rotation_session=last_complete_session(now)
     root,price,syms,days,*_ = legacy.load_scope(
-        allow_no_representative=True,rotate_unknown=args.rotate_unknown)
+        allow_no_representative=True,rotate_unknown=args.rotate_unknown,
+        rotation_session=rotation_session)
     if validate(price["asof_et"],days)!="EXACT_OFFICIAL_NASDAQ_LAST_30":
         raise SystemExit("XRAY_ALPACA_STRICT_SOURCE_CALENDAR=BLOCKED")
     legacy.evaluate_daily=evaluate_daily_strict
     try:
-        result=legacy.run(rotate_unknown=args.rotate_unknown)
+        result=legacy.run(now,rotate_unknown=args.rotate_unknown,
+                          rotation_session=rotation_session)
     finally:
         legacy.evaluate_daily=_ORIGINAL_EVALUATE
     assert result["primary_mc_authority"] is False

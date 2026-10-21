@@ -52,6 +52,25 @@ def rotating_root_unknown_offset(asof,total,limit):
     cohorts=(total+limit-1)//limit
     return ((len(sessions)-1)%cohorts)*limit
 
+def bounded_historical_source_session(now,latest,asof):
+    """At most one XNAS session lag; research-only historical SIP, never AL."""
+    if (not isinstance(now,dt.datetime) or now.tzinfo is None
+            or now.utcoffset()!=dt.timedelta(0)
+            or not isinstance(latest,str) or not isinstance(asof,str)):
+        return False
+    try:
+        if (now.astimezone(ZoneInfo("America/New_York")).date().isoformat()!=latest
+                or last_complete_session(now)!=latest):
+            return False
+        sessions=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=asof,end_date=latest)
+        return (1<=len(sessions)<=2
+                and sessions[0].date().isoformat()==asof
+                and sessions[-1].date().isoformat()==latest)
+    except (AttributeError,ValueError,TypeError,OverflowError):
+        return False
+
+
 def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
     """Strict pure predicate: stale/holiday/SHA/empty cohort cannot use provider quota."""
     if not isinstance(now,dt.datetime) or now.tzinfo is None or now.utcoffset()!=dt.timedelta(0):
@@ -60,9 +79,8 @@ def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
         return False
     if not isinstance(remote_sha,str) or not isinstance(expected_sha,str):
         return False
-    return bool(now.astimezone(ZoneInfo("America/New_York")).date().isoformat()==latest
-        and last_complete_session(now)==latest
-        and price.get("asof_et")==root.get("asof_et")==latest
+    return bool(bounded_historical_source_session(now,latest,price.get("asof_et"))
+        and price.get("asof_et")==root.get("asof_et")
         and price.get("unknown_never_pass") is True
         and price.get("execution")=="NONE" and price.get("real_money")=="NO-GO"
         and root.get("execution")=="NONE" and root.get("real_money")=="NO-GO"
@@ -142,6 +160,20 @@ def selftest():
     assert last_complete_session(delayed)==scheduled_asof
     if not scheduled_probe_allowed(delayed,scheduled_asof,sp,sr,sha,sha):
         raise RuntimeError("VALID_NASDAQ_SESSION_REJECTED_BY_UTC_DATE_ROLLOVER")
+    # A one-offical-session canonical lag may perform SHADOW HTTP only:
+    # it cannot produce a current source record, MC, AL, or R92.
+    lag_now=dt.datetime(2026,10,21,22,10,tzinfo=dt.timezone.utc)
+    lag_asof=last_complete_session(lag_now)
+    assert lag_asof=="2026-10-21"
+    if not scheduled_probe_allowed(lag_now,lag_asof,
+                                   dict(sp,asof_et="2026-10-20"),
+                                   dict(sr,asof_et="2026-10-20"),sha,sha):
+        raise RuntimeError("ONE_SESSION_HISTORICAL_RESEARCH_FALSELY_BLOCKED")
+    if scheduled_probe_allowed(dt.datetime(2026,10,22,22,10,tzinfo=dt.timezone.utc),
+                               "2026-10-22",
+                               dict(sp,asof_et="2026-10-20"),
+                               dict(sr,asof_et="2026-10-20"),sha,sha):
+        raise RuntimeError("TWO_SESSION_STALE_SOURCE_ACCEPTED")
     # DST fallback: November 2 session is in EST (UTC-05), not EDT.
     dst=dt.datetime(2026,11,2,23,10,tzinfo=dt.timezone.utc)
     dst_asof=last_complete_session(dst)
@@ -268,10 +300,12 @@ def main():
     if (root_state.get("asof_et")!=price.get("asof_et")
             or validate(price.get("asof_et"),price.get("expected30"))!="EXACT_OFFICIAL_NASDAQ_LAST_30"):
         raise SystemExit("XRAY_ALPACA_ROOT_STRICT_CALENDAR=BLOCKED")
-    if price.get("asof_et")!=last_complete_session(dt.datetime.now(dt.timezone.utc)):
-        raise SystemExit("XRAY_ROOT_ASOF_STALE_NO_VENDOR")
+    now=dt.datetime.now(dt.timezone.utc)
+    latest=last_complete_session(now)
+    if not bounded_historical_source_session(now,latest,price.get("asof_et")):
+        raise SystemExit("XRAY_ROOT_ASOF_OVER_ONE_SESSION_STALE_NO_VENDOR")
     offset=(args.offset if args.offset is not None else
-            rotating_root_unknown_offset(price["asof_et"],
+            rotating_root_unknown_offset(latest,
                                           root_state.get("unknown_count"),
                                           args.limit))
     original=legacy.sip.evaluate_daily
