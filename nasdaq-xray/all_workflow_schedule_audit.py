@@ -16,11 +16,10 @@ WF=ROOT/".github"/"workflows"
 SCHEMA="XRAY_ALL_GITHUB_WORKFLOW_SCHEDULE_PRIVILEGE_AUDIT_V1"
 
 # Reviewed automatic schedules, exact enumerated set; no silent new provider cron.
-# Root, preopen, delivery, E2E, account, G9 and other safety services are included.
+# Root, preopen, delivery, E2E, G9 and other active safety services are included.
 EXPECTED={
  "nasdaq-xray-daily.yml":("30 * * * *",),
  "nasdaq-xray-delivery.yml":("*/15 * * * 1-5","7 * * * 0,6"),
- "xray-account-gate-reconcile.yml":("12 * * * *",),
  "xray-alpaca-free-sip-shadow-proof.yml":("10 22 * * 1-5",),
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
@@ -243,6 +242,8 @@ def selftest():
     base=inventory(actual)
     assert base["contract_status"]=="PASS",base["blockers"]
     assert base["scheduled_count"]==len(EXPECTED)
+    # Broker/account sync is retired from unattended signal-only processing.
+    assert "xray-account-gate-reconcile.yml" not in base["automated_schedules"]
     assert base["automated_schedules"]["xray-alpaca-free-sip-shadow-proof.yml"]==["10 22 * * 1-5"]
     assert base["automated_schedules"]["xray-alpaca-delayed-sip-research.yml"]==["55 13 * * 1-5"]
     assert base["issue_writers"]==[]
@@ -263,6 +264,11 @@ def selftest():
         result=inventory(sample)
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
+    bad(lambda x:x.update({"xray-account-gate-reconcile.yml":
+        x["xray-account-gate-reconcile.yml"].replace(
+          "  workflow_dispatch:\n",
+          '  schedule:\n    - cron: "12 * * * *"\n  workflow_dispatch:\n',1)}),
+        "UNREVIEWED_NEW_SCHEDULE")
     bad(lambda x:x.update({"nasdaq-xray.yml":x["nasdaq-xray.yml"]+
         '\nschedule:\n  - cron: "15 * * * *"\n'}),"UNREVIEWED_NEW_SCHEDULE")
     bad(lambda x:x.update({"xray-sec-mirror-cik-shadow.yml":
