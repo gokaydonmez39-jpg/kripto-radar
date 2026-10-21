@@ -48,7 +48,25 @@ def scope(price,master,sec_map):
                 x.get("unknown_never_pass") is True
                 for x in (price,master)),"SOURCE_SAFETY")
     require(isinstance(sec_map,dict),"SEC_ROUTE_MALFORMED")
-    expected=sorted(set(DEFAULT_CANARIES)&set(p))
+    # Canonical PRICE PASS is not a prerequisite for *independent source
+    # research*. In a zero-PASS epoch use only exact canonical UNKNOWNs,
+    # never promote UNKNOWN to PRICE/DV30/MC/R92 PASS.
+    if not p:
+        u=price.get("unknown_symbols")
+        rows=price.get("results")
+        require(type(price.get("pass_count")) is int and price["pass_count"]==0
+                and type(u) is list and u==sorted(set(u))
+                and type(price.get("unknown_count")) is int
+                and len(u)==price["unknown_count"]
+                and set(u).issubset(set(m))
+                and type(rows) is dict
+                and all(type(rows.get(s)) is dict
+                        and rows[s].get("status")=="UNKNOWN"
+                        for s in u),
+                "ZERO_PASS_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
+        expected=sorted(set(DEFAULT_CANARIES)&set(u))
+    else:
+        expected=sorted(set(DEFAULT_CANARIES)&set(p))
     require(len(expected)>=4 and
             len(expected)==len(set(expected)),
             "CANONICAL_CURRENT_BOUNDED_COHORT_TOO_SMALL")
@@ -66,7 +84,8 @@ def audited_results(price,master,route,sec_transport,alpaca_batch,asof):
     for sym,cik in route.items():
         try:
             facts,sub=sec_transport(sym,cik)
-            assert isinstance(facts,dict) and isinstance(sub,dict)
+            require(isinstance(facts,dict) and isinstance(sub,dict),
+                    "SEC_SOURCE_OBJECT_TYPES")
             result=measure(price,master,facts,sub,
                            alpaca_batch.get(sym,[]),asof,
                            symbol=sym,cik=cik)
@@ -115,6 +134,34 @@ def selftest():
     route={s:f"{1000+i:010d}" for i,s in enumerate(ps)}
     aa,rr=scope(p,m,route)
     require(aa==a and rr==route,"EXACT_SCOPE_POSITIVE")
+    # Test zero PRICE PASS bootstrap with the exact bounded UNKNOWN canaries.
+    u=deepcopy(p)
+    u.update(pass_symbols=[],pass_count=0,pass_hash=sha256_lines([]),
+             unknown_symbols=ps,unknown_count=len(ps),
+             results={s:{"status":"UNKNOWN"} for s in ps})
+    ab,rb=scope(u,m,route)
+    require(ab==a and rb==route and u["pass_count"]==0,
+            "ZERO_PASS_UNKNOWN_SOURCE_BOOTSTRAP")
+    for name,change in (
+        ("UNKNOWN_COUNT_DRIFT",lambda v:v.update(unknown_count=7)),
+        ("UNKNOWN_UNSORTED",lambda v:v.update(unknown_symbols=list(reversed(ps)))),
+        ("UNKNOWN_FALSE_PASS",lambda v:v["results"]["AAPL"].update(status="PASS")),
+        ("UNKNOWN_FOREIGN_SYMBOL",lambda v:v.update(
+            unknown_symbols=sorted(ps+["ZZZ"]),unknown_count=9)),
+        ("UNKNOWN_NO_RESULTS",lambda v:v.update(results={})),
+        ("UNKNOWN_PASS_HASH",lambda v:v.update(pass_hash="0"*64)),
+    ):
+        bad=deepcopy(u)
+        change(bad)
+        try:scope(bad,m,route)
+        except ValueError:pass
+        else:raise AssertionError("UNSAFE_ZERO_PASS_COHORT_ACCEPTED:"+name)
+    denied_research=audited_results(u,m,route,
+        lambda *a: (_ for _ in ()).throw(ValueError("DENIED")),{},a)
+    require(denied_research["attempted_count"]==len(route)
+            and denied_research["can_register_R92"] is False
+            and denied_research["primary_mc_created"]==0,
+            "ZERO_PRICE_PASS_NO_FALSE_MC_OR_R92")
     failures=0
     def red(name,fn):
         nonlocal failures
@@ -145,7 +192,7 @@ def selftest():
                 for x in result["outcomes"].values()) and
             result["primary_mc_created"]==0 and
             result["can_register_R92"] is False,"UNKNOWN_STAYS_UNKNOWN")
-    print("XRAY_PERSONAL_MC_8_COHORT_SELFTEST=PASS_2_POSITIVE_9_NEGATIVE_NO_VENDOR_NO_PRIMARY_PYTHON_O_SAFE")
+    print("XRAY_PERSONAL_MC_8_COHORT_SELFTEST=PASS_3_POSITIVE_15_NEGATIVE_NO_VENDOR_NO_PRIMARY_PYTHON_O_SAFE")
 
 def main():
     ap=argparse.ArgumentParser()
