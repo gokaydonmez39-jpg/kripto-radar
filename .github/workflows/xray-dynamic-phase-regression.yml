@@ -30,6 +30,13 @@ on:
       - ".github/workflows/xray-canonical-current-final.yml"
       - ".github/workflows/xray-canonical-current-post-mc.yml"
       - ".github/workflows/xray-dynamic-phase-regression.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
+      - "nasdaq-xray/price_dv30_authority_selftest.py"
+      - ".github/workflows/xray-canonical-current-pre-mc.yml"
+      - ".github/workflows/xray-dynamic-phase-regression.yml"
   workflow_dispatch:
 
 permissions:
@@ -142,7 +149,7 @@ jobs:
       - name: Assert identity-only replay preserves exact same-policy PRICE baseline
         run: |
           python - <<'PY'
-          import sys
+          import hashlib,sys
           from pathlib import Path
           sys.path.insert(0,"nasdaq-xray")
           import price_dv30_recover_from_fullstate as r
@@ -169,6 +176,7 @@ jobs:
             "unknown_count":0,"unknown_symbols":[],
             "blocked_count":1,"blocked_symbols":["C"],
             "pass_count":1,"pass_symbols":["A"],
+            "pass_hash":hashlib.sha256(b"A").hexdigest(),
             "results":{
               "A":{"status":"PASS_PRICE_DV30"},
               "B":{"status":"FAIL_DV30"},
@@ -176,6 +184,7 @@ jobs:
             },
           }
           assert r.current_price_baseline_valid(prior,full,asof,queue) is True
+          assert r.current_price_baseline_valid(dict(prior,pass_hash="0"*64),full,asof,queue) is False
           # Identity metadata may change while the PRICE queue remains byte-semantically identical.
           full2=dict(full,raw_identity_total=120,unknown_count=117)
           assert r.current_price_baseline_valid(prior,full2,asof,queue) is True
