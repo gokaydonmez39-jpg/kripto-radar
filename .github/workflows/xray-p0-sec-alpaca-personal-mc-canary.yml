@@ -1,6 +1,11 @@
 name: XRAY P0 SEC Alpaca Personal MC Arithmetic Canary (No GO)
 on:
   workflow_dispatch:
+  # Exercise actual PR source changes without secrets or vendor calls.
+  pull_request:
+    paths:
+      - "nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py"
+      - ".github/workflows/xray-p0-sec-alpaca-personal-mc-canary.yml"
   push:
     branches: [main]
     paths:
@@ -29,6 +34,7 @@ jobs:
           python nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py --selftest
           python -O nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py --selftest
       - name: Measure official SEC + personal free historical SIP canary without persistence
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           XRAY_SEC_USER_AGENT: ${{ secrets.XRAY_SEC_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID }}
@@ -37,6 +43,7 @@ jobs:
           python nasdaq-xray/p0_sec_alpaca_personal_mc_canary.py \
             --out "$RUNNER_TEMP/xray_p0_sec_alpaca_mc_canary.json"
       - name: Confirm no RAW/PRIMARY/R92/GO authority
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           python - <<'PY'
           import json,os
@@ -50,6 +57,7 @@ jobs:
           print("XRAY_P0_SEC_ALPACA_CANARY_RESULT="+x["status"])
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           name: xray-p0-personal-sec-alpaca-mc-canary-no-primary
           path: ${{ runner.temp }}/xray_p0_sec_alpaca_mc_canary.json
