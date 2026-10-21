@@ -20,6 +20,8 @@ from alpaca_free_sip_shadow_guard import (
     scheduled_unknown_cohort,
 )
 from current_history_source_request import expected_dates, sha256_lines
+from alpaca_sip_paginated_transport_shadow import MAX_PAGES
+from alpaca_sip_request_pacer import PACER, SipRequestPacer
 
 ROOT=Path(__file__).resolve().parent
 MASTER=ROOT/"canonical_current_master_manifest.json"
@@ -309,7 +311,14 @@ def selftest():
     assert blocked["counts"]["UNCHECKED_DUE_TO_TRANSPORT"]==3
     assert blocked["transport_error_class"]=="ALPACA_HTTP_429"
     assert blocked["status"]=="SHADOW_INCOMPLETE_TRANSPORT_OR_SCOPE"
-    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_ZERO_PASS_UNKNOWN_SOURCE_MEASURED_6_ADVERSARIAL_NO_VENDOR_NO_PRIMARY")
+    # Exact per-page quota telemetry must count even the first provider attempt.
+    virtual=[0.0]
+    pacer=SipRequestPacer(clock=lambda: virtual[0],
+                          sleeper=lambda delay: virtual.__setitem__(0,virtual[0]+delay))
+    assert pacer.request_attempts==0
+    pacer.pace();pacer.pace()
+    assert pacer.request_attempts==2 and virtual[0]>=pacer.interval
+    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_ZERO_PASS_UNKNOWN_SOURCE_MEASURED_6_ADVERSARIAL_NO_VENDOR_NO_PRIMARY_HTTP_PAGE_COUNTER")
 
 
 def main():
@@ -356,11 +365,31 @@ def main():
     result["price_unknown_research_remaining"]=(
         max(0,price["unknown_count"]-len(targets))
         if price["pass_count"]==0 else 0)
+    # Stock identifiers and hashes are safe to archive; vendor OHLCV never is.
+    # These fields allow the NEXT real scheduled run to prove that its selected
+    # 32 symbols differ from the first slice, with exact PRICE/MASTER blob SHAs.
+    result["research_symbols"]=list(targets)
+    result["research_symbols_sha256"]=sha256_lines(targets)
+    result["research_rotation_distinct_from_initial_32"]=bool(
+        args.rotate_unknown and price["pass_count"]==0
+        and targets!=price["unknown_symbols"][:BATCH_SIZE])
+    result["api_http_page_attempts"]=PACER.request_attempts
+    result["api_http_page_budget"]=MAX_PAGES*math.ceil(len(targets)/BATCH_SIZE)
+    result["api_http_min_pacing_interval_seconds"]=PACER.interval
+    if result["api_http_page_attempts"]>result["api_http_page_budget"]:
+        raise RuntimeError("XRAY_SIP_PAGE_QUOTA_ATTEMPTS_EXCEEDED_FAIL_CLOSED")
     # Only count-only/symbol IDs; no raw bars, no prices, no per-bar timestamps.
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_ALPACA_515_SHADOW_STATUS="+result["status"])
     print("XRAY_ALPACA_515_SHADOW_COUNTS="+json.dumps(result["counts"],sort_keys=True))
     print("XRAY_ALPACA_515_SHADOW_MEASURED="+str(result["measured_scope_count"]))
+    print("XRAY_ALPACA_515_SOURCE_SCOPE_SYMBOLS="+",".join(targets))
+    print("XRAY_ALPACA_515_SOURCE_SCOPE_SHA256="+result["research_symbols_sha256"])
+    print("XRAY_ALPACA_515_ROTATION_SESSION="+str(result["research_rotation_session"]))
+    print("XRAY_ALPACA_515_ROTATION_DISTINCT_FIRST32="+str(result["research_rotation_distinct_from_initial_32"]))
+    print("XRAY_ALPACA_515_HTTP_PAGE_ATTEMPTS="+str(result["api_http_page_attempts"])+
+          "_MAX="+str(result["api_http_page_budget"])+
+          "_PACE_SECONDS="+str(result["api_http_min_pacing_interval_seconds"]))
 
 
 if __name__=="__main__":

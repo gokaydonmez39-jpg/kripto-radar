@@ -34,6 +34,8 @@ class SipRequestPacer:
         self.clock = clock
         self.sleeper = sleeper
         self.last_request_at: float | None = None
+        # Number of paced outbound HTTP attempts in this process, never vendor data.
+        self.request_attempts: int = 0
 
     def pace(self) -> None:
         now = float(self.clock())
@@ -49,6 +51,7 @@ class SipRequestPacer:
                 if not math.isfinite(now) or now < self.last_request_at + self.interval - 1e-8:
                     raise ValueError("ALPACA_SIP_PACE_SLEEP_UNTRUSTWORTHY")
         self.last_request_at = now
+        self.request_attempts += 1
 
 
 PACER = SipRequestPacer()
