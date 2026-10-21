@@ -126,7 +126,25 @@ def main():
         assert missing["account_status"]!="ACCOUNT_PASS"
         assert missing["evidence"]["account_live_probe"]["network_attempted"] is False
 
+        # Manual signal release must never even READ a broker/account
+        # contract. A forged or preexisting account PASS path cannot revive it.
+        from unittest.mock import patch
+        with patch.dict(os.environ,{
+                "XRAY_NO_BROKER_ACCOUNT_IO":"1",
+                "XRAY_ACCOUNT_LIVE_PROBE_STATE":str(td/"absent_live_broker.json"),
+                "GITHUB_RUN_ID":"forbidden-broker-run"}):
+            mod.GATE_FILES={
+                "g9_runtime":td/"g9.json",
+                "account_gate":td/"missing_account_contract.json",
+                "account_adapter":td/"missing_adapter_contract.json"}
+            result=mod.load_gate_reporting()
+            if (result["account_status"]!="ACCOUNT_NOT_APPLICABLE_SIGNAL_ONLY"
+                    or "account_live_probe" in result["evidence"]
+                    or result["evidence"]["account_gate"].get("broker_network_io") is not False
+                    or result["evidence"]["account_gate"].get("balance_positions_read") is not False):
+                raise AssertionError("BROKERLESS_RESEARCH_ACCIDENTALLY_READS_ACCOUNT")
     print("XRAY_ACCOUNT_SAME_RUN_TERMINAL_SELFTEST=PASS")
+    print("XRAY_BROKERLESS_TERMINAL=PASS_NO_ACCOUNT_FILES_OR_NETWORK")
 
 if __name__=="__main__":
     main()
