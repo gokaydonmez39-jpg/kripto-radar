@@ -50,18 +50,17 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           python - <<'PY'
-          import json,os
+          import json,os,sys
           from pathlib import Path
+          sys.path.insert(0,"nasdaq-xray")
+          from p0_sec_alpaca_personal_mc_canary import require_completed_source_canary
           x=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray_p0_sec_alpaca_mc_canary.json").read_text())
-          assert x["schema"]=="XRAY_P0_SEC_ALPACA_MC_PERSONAL_CANARY_SHADOW_V1"
-          assert x["C417_PRIMARY_MC"] is False and x["C417_CURRENT_PRIMARY_CREATED"]==0
-          assert x["R92_created"] is False and x["GO"] is False
-          assert x["numeric_shares_price_or_marketcap_persisted"] is False
-          assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
-          print("XRAY_P0_SEC_ALPACA_CANARY_RESULT="+x["status"])
+          print("XRAY_P0_SEC_ALPACA_CANARY_RESULT="+str(x.get("status")))
+          require_completed_source_canary(x)
+          print("XRAY_P0_SEC_ALPACA_CANARY_LIVE_SOURCE=MEASURED_SHADOW_ONLY_NO_PRIMARY_NO_R92")
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ always() && github.event_name != 'pull_request' }}
         with:
           name: xray-p0-personal-sec-alpaca-mc-canary-no-primary
           path: ${{ runner.temp }}/xray_p0_sec_alpaca_mc_canary.json
