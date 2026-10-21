@@ -17,7 +17,7 @@ from pathlib import Path
 
 from alpaca_free_sip_shadow_guard import (
     request_batch, timestamp_date, sufficient_delay, blob_sha,
-    scheduled_unknown_cohort,
+    scheduled_unknown_cohort, bounded_sip_end,
 )
 from current_history_source_request import expected_dates, sha256_lines
 from alpaca_sip_paginated_transport_shadow import MAX_PAGES
@@ -153,7 +153,8 @@ def audit(asof,targets,daily,weeks,batch_fetch,*,now,
     measured=0
     transport_error=None
     start=daily[0]+"T00:00:00Z"
-    end=(dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+"T00:00:00Z"
+    end=bounded_sip_end(asof,now,
+         (dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+"T00:00:00Z")
     for i in range(0,len(targets),BATCH_SIZE):
         batch=targets[i:i+BATCH_SIZE]
         try:
@@ -307,6 +308,16 @@ def selftest():
     assert out["vendor_raw_bars_persisted"] is False
     def fail(*args):
         raise RuntimeError("ALPACA_HTTP_429")
+    # If latest NASDAQ session just ended, the requested calendar next-day
+    # boundary would still be in the future: enforce 20-minute holdback.
+    early=dt.datetime(2026,10,9,22,10,tzinfo=UTC)
+    expected_cutoff=(early-dt.timedelta(minutes=20)).isoformat()
+    def capped_fetch(batch,start,end):
+        assert end==expected_cutoff, ("RECENT_SIP_END",end,expected_cutoff)
+        return {symbol:good for symbol in batch}
+    capped=audit(a,t,d,w,capped_fetch,now=early)
+    assert capped["measured_scope_count"]==3
+    assert capped["canonical_history_pass_created"]==0
     blocked=audit(a,t,d,w,fail,now=now)
     assert blocked["counts"]["UNCHECKED_DUE_TO_TRANSPORT"]==3
     assert blocked["transport_error_class"]=="ALPACA_HTTP_429"
