@@ -56,6 +56,9 @@ jobs:
           python -m py_compile nasdaq-xray/alpaca_free_sip_shadow_guard.py nasdaq-xray/alpaca_root_unknown_rescue_shadow.py
           python nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
           python -O nasdaq-xray/alpaca_free_sip_shadow_guard.py --selftest
+          python -m py_compile nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py
+          python nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py --selftest
+          python -O nasdaq-xray/alpaca_540_personal_daily_sip_coverage.py --selftest
           python nasdaq-xray/alpaca_root_unknown_rescue_shadow.py --selftest
           python nasdaq-xray/alpaca_root_history_exact_260_selftest.py
           python nasdaq-xray/alpaca_strict_daily_shadow_v2.py --selftest
