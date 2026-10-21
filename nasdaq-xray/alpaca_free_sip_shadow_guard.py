@@ -134,8 +134,9 @@ def load_scope(*, allow_no_representative=False):
                 or type(p.get("unknown_count")) is not int
                 or len(unknown)!=p["unknown_count"]
                 or not set(unknown).issubset(master_set)
-                or any((p.get("results") or {}).get(s,{}).get("status") != "UNKNOWN"
-                       for s in unknown if "results" in p)):
+                or not isinstance(p.get("results"),dict)
+                or any((p["results"].get(s) or {}).get("status") != "UNKNOWN"
+                       for s in unknown)):
             raise ValueError("PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
         u=set(unknown)
         symbols=[x for x in SAMPLE if x in u][:3]
@@ -202,7 +203,7 @@ def run(now=None):
         "master_git_blob_sha":msha,"price_git_blob_sha":psha,
         "sample_count":len(symbols),
         "sample_role":("CURRENT_PRICE_PASS_RESEARCH_ONLY" if
-                       all(s in set(p.get("pass_symbols") or []) for s in symbols)
+                       symbols and all(s in set(p.get("pass_symbols") or []) for s in symbols)
                        else "CURRENT_PRICE_UNKNOWN_DIAGNOSTIC_NEVER_PASS"),
         "feed":"SIP_DELAYED_HISTORICAL",
         "price_adjustment":"RAW_NOT_CORP_ACTION_RECONCILED",
@@ -335,6 +336,7 @@ def selftest():
            "unknown_never_pass":True}
         p={"asof_et":"2026-10-08","pass_symbols":[],"pass_count":0,
            "unknown_symbols":sorted(SAMPLE[:3]),"unknown_count":3,
+           "results":{s:{"status":"UNKNOWN"} for s in SAMPLE[:3]},
            "unknown_never_pass":True,"expected30":dates}
         def save_fixture():
             (fake_root/"canonical_current_master_manifest.json").write_text(
@@ -357,8 +359,9 @@ def selftest():
             assert no_keys["primary_mc_authority"] is False
             assert no_keys["candidate_created"] is False
             assert no_keys["c417_price_pass_promoted"] is False
-        with patch.dict(globals(),{"ROOT":fake_root}), patch(
-             "request_batch",return_value={s:sample for s in SAMPLE[:3]}), patch.dict(
+        with patch.dict(globals(),{"ROOT":fake_root,
+             "request_batch":lambda *args,**kwargs:
+                 {s:sample for s in SAMPLE[:3]}}), patch.dict(
              os.environ,{"XRAY_ALPACA_DATA_KEY_ID":"offline-key",
                          "XRAY_ALPACA_DATA_SECRET_KEY":"offline-secret"}):
             measured=run(now)
