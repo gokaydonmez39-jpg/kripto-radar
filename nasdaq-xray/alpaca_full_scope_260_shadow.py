@@ -50,7 +50,24 @@ def scope(price,master):
     daily,weeks=expected_dates(asof)
     if len(daily)!=260 or len(weeks)!=52 or daily[-1]!=asof:
         raise ValueError("OFFICIAL_260_52_CALENDAR_INVALID")
-    targets=sorted(set(symbols)|{"QQQ"}) if symbols else []
+    if symbols:
+        targets=sorted(set(symbols)|{"QQQ"})
+    else:
+        # Zero PRICE PASS must not create a blanket no-data bootstrap deadlock.
+        # Source diagnostics may study bounded canonical UNKNOWN symbols ONLY;
+        # they cannot be classified as PRICE, HISTORY or MC PRIMARY.
+        unknown=price.get("unknown_symbols")
+        result_rows=price.get("results")
+        if (type(unknown) is not list or unknown!=sorted(set(unknown))
+                or type(price.get("unknown_count")) is not int
+                or price["unknown_count"]!=len(unknown)
+                or not set(unknown).issubset(set(master.get("pass_symbols") or []))
+                or type(result_rows) is not dict
+                or any(type(result_rows.get(s)) is not dict
+                       or result_rows[s].get("status")!="UNKNOWN"
+                       for s in unknown)):
+            raise ValueError("ZERO_PASS_UNKNOWN_SOURCE_PROVENANCE_INVALID")
+        targets=unknown[:BATCH_SIZE]
     return asof,targets,daily,weeks
 
 
@@ -114,11 +131,16 @@ def classify(rows,required_daily,required_weeks,asof):
     return "SHADOW_260_DAILY_52_WEEK_OBSERVED",count
 
 
-def audit(asof,targets,daily,weeks,batch_fetch,*,now):
+def audit(asof,targets,daily,weeks,batch_fetch,*,now,
+          zero_pass_unknown=False):
     if now.tzinfo is None or not sufficient_delay(asof,now):
         raise ValueError("SIP_20MIN_OFFICIAL_CLOSE_HOLDBACK_NOT_MET")
     if (len(targets)!=len(set(targets)) or targets!=sorted(targets)
-            or "QQQ" not in targets or len(daily)!=260 or len(weeks)!=52):
+            or len(daily)!=260 or len(weeks)!=52
+            or type(zero_pass_unknown) is not bool
+            or (zero_pass_unknown and
+                (not targets or len(targets)>BATCH_SIZE or "QQQ" in targets))
+            or (not zero_pass_unknown and "QQQ" not in targets)):
         raise ValueError("UNTRUSTED_TARGET_SCOPE")
     counters=collections.Counter()
     missing_by_reason={}
@@ -148,11 +170,14 @@ def audit(asof,targets,daily,weeks,batch_fetch,*,now):
     counters["UNCHECKED_DUE_TO_TRANSPORT"]+=len(targets)-measured
     return {
         "schema":SCHEMA,"asof_et":asof,"policy":"C4.17","control":"C4.27",
-        "status":("SHADOW_FULL_515_SCOPE_MEASURED_NO_AUTHORITY"
+        "status":(("SHADOW_ZERO_PRICE_PASS_UNKNOWN_260_SOURCE_MEASURED_NO_AUTHORITY"
+                   if zero_pass_unknown else
+                   "SHADOW_FULL_515_SCOPE_MEASURED_NO_AUTHORITY")
                   if measured==len(targets) and transport_error is None
                   else "SHADOW_INCOMPLETE_TRANSPORT_OR_SCOPE"),
         "expected_scope_count":len(targets),"measured_scope_count":measured,
-        "contains_qqq_benchmark":True,
+        "contains_qqq_benchmark":not zero_pass_unknown,
+        "zero_price_pass_unknown_research_only":zero_pass_unknown,
         "expected_daily_sessions":260,"required_completed_week_closes":52,
         "batch_size":BATCH_SIZE,"batches_attempted":(measured+BATCH_SIZE-1)//BATCH_SIZE+
                  (1 if transport_error else 0),
@@ -206,11 +231,37 @@ def selftest():
                    pass_hash=sha256_lines([]),unknown_count=2,
                    unknown_symbols=["AAA","BBB"])
     no_equity_master=dict(fake_master)
+    no_equity["results"]={s:{"status":"UNKNOWN"} for s in ["AAA","BBB"]}
     za,zt,zd,zw=scope(no_equity,no_equity_master)
-    assert za==asof and zt==[] and len(zd)==260
+    assert za==asof and zt==["AAA","BBB"] and len(zd)==260
+    now=dt.datetime(2026,10,10,20,tzinfo=UTC)
+    def unknown_fetch(batch,start,end):
+        return {sym:good for sym in batch}
+    researched=audit(za,zt,zd,zw,unknown_fetch,now=now,
+                     zero_pass_unknown=True)
+    assert researched["status"]=="SHADOW_ZERO_PRICE_PASS_UNKNOWN_260_SOURCE_MEASURED_NO_AUTHORITY"
+    assert researched["measured_scope_count"]==2
+    assert researched["zero_price_pass_unknown_research_only"] is True
+    assert researched["current_c417_history_primary_authority"] is False
+    assert researched["canonical_history_pass_created"]==0
+    assert researched["r92_created"] is False
+    # Noncanonical or forged UNKNOWN status must never authorize data collection.
+    import copy
+    for name,mutate in (
+        ("BAD_COUNT",lambda p:p.update(unknown_count=3)),
+        ("FORGED_PASS",lambda p:p["results"]["AAA"].update(status="PASS")),
+        ("BAD_ORDER",lambda p:p.update(unknown_symbols=["BBB","AAA"])),
+        ("FOREIGN",lambda p:p.update(unknown_symbols=["AAA","ZZZ"])),
+        ("MISSING_RESULTS",lambda p:p.update(results={})),
+        ("BAD_PASS_HASH",lambda p:p.update(pass_hash="0"*64)),
+    ):
+        bad=copy.deepcopy(no_equity)
+        mutate(bad)
+        try:scope(bad,no_equity_master)
+        except ValueError:pass
+        else:raise AssertionError("UNAUTHORIZED_ZERO_PASS_SOURCE:"+name)
     z=zero_scope_report(za,zd,zw)
     assert z["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_260_HISTORY_REQUEST"
-    assert z["expected_scope_count"]==0 and z["measured_scope_count"]==0
     assert z["r92_created"] is False and z["current_c417_history_primary_authority"] is False
     def mock_fetch(batch,start,end):
         assert set(batch)<=set(t) and "2025-09-29" in start
@@ -230,7 +281,7 @@ def selftest():
     assert blocked["counts"]["UNCHECKED_DUE_TO_TRANSPORT"]==3
     assert blocked["transport_error_class"]=="ALPACA_HTTP_429"
     assert blocked["status"]=="SHADOW_INCOMPLETE_TRANSPORT_OR_SCOPE"
-    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_ZERO_PASS_POSITIVE_6_NEGATIVE_NO_PROVIDER_NO_PRIMARY")
+    print("XRAY_ALPACA_515_EXACT260_SELFTEST=PASS_ZERO_PASS_UNKNOWN_SOURCE_MEASURED_6_ADVERSARIAL_NO_VENDOR_NO_PRIMARY")
 
 
 def main():
@@ -246,8 +297,8 @@ def main():
     master=json.loads(MASTER.read_text())
     asof,targets,daily,weeks=scope(price,master)
     if not targets:
-        # Real source is 0 canonical PRICE PASS. Never ask for benchmark
-        # or use credentials merely to create a misleading 260/52 witness.
+        # Only when even canonical UNKNOWN is empty is source reading empty.
+        # Empty scope never creates benchmark-only history evidence.
         result=zero_scope_report(asof,daily,weeks)
     else:
         key=os.getenv("XRAY_ALPACA_DATA_KEY_ID","").strip()
@@ -256,13 +307,18 @@ def main():
             raise SystemExit("XRAY_ALPACA_515=BLOCKED_PRIVATE_CREDENTIALS_UNAVAILABLE")
         def real(batch,start,end):
             return request_batch(batch,start,end,key,secret,adjustment="raw",asof=asof)
-        result=audit(asof,targets,daily,weeks,real,now=dt.datetime.now(UTC))
+        result=audit(asof,targets,daily,weeks,real,now=dt.datetime.now(UTC),
+                     zero_pass_unknown=price["pass_count"]==0)
     result["api_symbol_mapping_asof_et"]=asof
     result["security_identity_lineage_independently_verified"]=False
     result["source_price_blob_sha"]=blob_sha(PRICE)
     result["source_master_blob_sha"]=blob_sha(MASTER)
     result["source_price_pass_hash"]=price["pass_hash"]
     result["price_pass_count"]=price["pass_count"]
+    result["price_unknown_count"]=price.get("unknown_count",0)
+    result["price_unknown_research_remaining"]=(
+        max(0,price["unknown_count"]-len(targets))
+        if price["pass_count"]==0 else 0)
     # Only count-only/symbol IDs; no raw bars, no prices, no per-bar timestamps.
     args.out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print("XRAY_ALPACA_515_SHADOW_STATUS="+result["status"])
