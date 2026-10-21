@@ -10,6 +10,7 @@ import datetime as dt
 from zoneinfo import ZoneInfo
 import json
 from pathlib import Path
+import pandas_market_calendars as mcal
 
 import alpaca_root_unknown_rescue_shadow as legacy
 import alpaca_strict_daily_shadow_v2 as strict
@@ -23,6 +24,33 @@ ROOT=Path(__file__).resolve().parent
 # source diagnostics: this creates a zero-PASS bootstrap deadlock.
 BLOCKED_PRICE="BLOCKED_NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE"
 MEASURED_PRICE="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
+ROTATION_FIRST_SESSION="2026-10-19"
+
+def rotating_root_unknown_offset(asof,total,limit):
+    """Daily official XNAS epoch rotates one bounded diagnostic cohort.
+
+    The same 12 root unknowns on every unattended run is not coverage.
+    This function does not create PASS, track trades, or alter price authority.
+    """
+    if type(total) is not int or not 1<=total<=10000:
+        raise ValueError("ROOT_ROTATION_TOTAL_INVALID")
+    if type(limit) is not int or not 1<=limit<=32:
+        raise ValueError("ROOT_ROTATION_LIMIT_INVALID")
+    if type(asof) is not str:
+        raise ValueError("ROOT_ROTATION_ASOF_INVALID")
+    try:
+        day=dt.date.fromisoformat(asof)
+        first=dt.date.fromisoformat(ROTATION_FIRST_SESSION)
+        if day.isoformat()!=asof or day<first:
+            raise ValueError("ROOT_ROTATION_DATE_OUTSIDE_HISTORY")
+        sessions=mcal.get_calendar("NASDAQ").valid_days(
+            start_date=ROTATION_FIRST_SESSION,end_date=asof)
+        if not len(sessions) or sessions[-1].date().isoformat()!=asof:
+            raise ValueError("ROOT_ROTATION_NASDAQ_SESSION_REQUIRED")
+    except (TypeError,ValueError,OverflowError) as exc:
+        raise ValueError("ROOT_ROTATION_OFFICIAL_CALENDAR_REQUIRED") from exc
+    cohorts=(total+limit-1)//limit
+    return ((len(sessions)-1)%cohorts)*limit
 
 def scheduled_probe_allowed(now,latest,price,root,remote_sha,expected_sha):
     """Strict pure predicate: stale/holiday/SHA/empty cohort cannot use provider quota."""
@@ -149,6 +177,24 @@ def selftest():
             "price":sp,"root":sr,"remote_sha":sha,"expected_sha":sha}
         args.update(edits)
         assert not scheduled_probe_allowed(**args),("SCHEDULE_FALSE_POSITIVE",edits)
+    # Rotating schedule visits all bounded root cohorts, not the first 12
+    # again and again; explicit manual offsets remain available.
+    if rotating_root_unknown_offset("2026-10-19",223,12)!=0:
+        raise RuntimeError("ROOT_ROTATION_INITIAL_OFFSET")
+    if rotating_root_unknown_offset("2026-10-20",223,12)!=12:
+        raise RuntimeError("ROOT_ROTATION_NEXT_SESSION_OFFSET")
+    if rotating_root_unknown_offset("2026-10-21",223,12)!=24:
+        raise RuntimeError("ROOT_ROTATION_THIRD_SESSION_OFFSET")
+    try:rotating_root_unknown_offset("2026-11-26",223,12)
+    except ValueError:pass
+    else:raise RuntimeError("ROOT_ROTATION_HOLIDAY_ACCEPTED")
+    for bad in ((("2026-10-18",223,12)),(("2026-10-19",0,12)),
+                (("2026-10-19",223,0)),(("2026-10-19",223,33)),
+                (("2026-10-19",True,12)),(("2026-10-19",223,True)),
+                (("not-date",223,12))):
+        try:rotating_root_unknown_offset(*bad)
+        except ValueError:pass
+        else:raise RuntimeError("ROOT_ROTATION_UNSAFE_INPUT_ACCEPTED")
     px={"schema":"XRAY_ALPACA_FREE_SIP_SHADOW_GUARD_V1",
         "status":BLOCKED_PRICE,"sample_count":0,
         "reason_counts":{"NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE":1},
@@ -210,7 +256,7 @@ def selftest():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--selftest",action="store_true")
-    ap.add_argument("--offset",type=int,default=0)
+    ap.add_argument("--offset",type=int,default=None)
     ap.add_argument("--limit",type=int,default=12)
     ap.add_argument("--output",type=Path)
     args=ap.parse_args()
@@ -224,10 +270,14 @@ def main():
         raise SystemExit("XRAY_ALPACA_ROOT_STRICT_CALENDAR=BLOCKED")
     if price.get("asof_et")!=last_complete_session(dt.datetime.now(dt.timezone.utc)):
         raise SystemExit("XRAY_ROOT_ASOF_STALE_NO_VENDOR")
+    offset=(args.offset if args.offset is not None else
+            rotating_root_unknown_offset(price["asof_et"],
+                                          root_state.get("unknown_count"),
+                                          args.limit))
     original=legacy.sip.evaluate_daily
     legacy.sip.evaluate_daily=strict.evaluate_daily_strict
     try:
-        result=legacy.run(args.offset,args.limit)
+        result=legacy.run(offset,args.limit)
     finally:
         legacy.sip.evaluate_daily=original
     assert result["primary_mc_authority"] is False
