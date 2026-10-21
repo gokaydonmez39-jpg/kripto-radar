@@ -88,6 +88,35 @@ def inspect(p):
     require(p.get("rights_grant_document_sha256") is None
             and p.get("secondary_provider_rights_sha256") is None,
             "UNVERIFIED_LICENSE_CLAIM_INSERTED")
+    # Research permission is not a surrogate for licensed production use.
+    rights=p.get("research_rights_separation")
+    require(isinstance(rights,dict),"PERSONAL_RESEARCH_RIGHTS_CONTRACT_MISSING")
+    if isinstance(rights,dict):
+        require(rights.get("classification")==
+                "PERSONAL_NONCOMMERCIAL_RESEARCH_DISTINCT_FROM_PUBLIC_REDISTRIBUTION_V1"
+                and rights.get("research_policy")==CANARY
+                and rights.get("active_policy")=="C4.17",
+                "RESEARCH_ROLE_ESCALATED")
+        require(rights.get("historical_sip_basic_after_15min_documented") is True
+                and rights.get("basic_historical_rest_rate_limit_per_minute_documented")==200,
+                "ALPACA_DOCUMENTED_FREE_HISTORICAL_LIMITS_DRIFT")
+        require(rights.get("personal_research_algorithm_backtest_covered_by_alpaca_support_general_reply") is True
+                and rights.get("official_provider_docs")=="https://docs.alpaca.markets/us/docs/market-data-faq"
+                and rights.get("official_provider_limits")=="https://docs.alpaca.markets/us/docs/about-market-data-api"
+                and rights.get("support_context_url")=="https://forum.alpaca.markets/t/sip-data-collection/19863",
+                "PERSONAL_RESEARCH_EVIDENCE_MISSING")
+        require(rights.get("operator_scope")=="SOLE_ACCOUNT_OWNER_NONCOMMERCIAL_PRIVATE_RESEARCH_ONLY",
+                "RESEARCH_SCOPE_EXCEEDED")
+        for name in ("unattended_github_entitlement_for_this_account_verified",
+                     "applicable_exchange_non_display_entitlement_verified",
+                     "raw_market_data_publication_authorized",
+                     "derived_signals_third_party_distribution_authorized",
+                     "personal_research_findings_are_c417_primary",
+                     "can_register_R92","auto_purchase_or_upgrade"):
+            require(rights.get(name) is False,
+                    "UNATTESTED_RESEARCH_PERMISSION_ESCALATED:"+name)
+        require(rights.get("execution")=="NONE" and rights.get("real_money")=="NO-GO",
+                "PERSONAL_RESEARCH_EXECUTION_DRIFT")
     require(p.get("can_register_R92") is False and
             p.get("can_create_PRIMARY") is False,"CANONICAL_PROMOTION_FORBIDDEN")
     require(p.get("new_customer_payment_authorized") is False,"PAYMENT_CHANGE_FORBIDDEN")
@@ -142,11 +171,25 @@ def selftest(p):
         result=inspect(z)
         assert result["status"]=="REJECTED_INVALID_POLICY",(
             "UNAPPROVED_SOURCE_PROMOTION_ACCEPTED",name,result)
+    # Offline adversarial cases: community clarification must never become
+    # automatic license or R92 creation for an unattended GitHub run.
+    for flag in ("unattended_github_entitlement_for_this_account_verified",
+                 "applicable_exchange_non_display_entitlement_verified",
+                 "raw_market_data_publication_authorized",
+                 "derived_signals_third_party_distribution_authorized",
+                 "personal_research_findings_are_c417_primary","can_register_R92",
+                 "auto_purchase_or_upgrade"):
+        z=copy.deepcopy(p);z["research_rights_separation"][flag]=True
+        assert inspect(z)["status"]=="REJECTED_INVALID_POLICY",flag
+    z=copy.deepcopy(p);z["research_rights_separation"]["operator_scope"]="PUBLIC_SERVICE"
+    assert inspect(z)["status"]=="REJECTED_INVALID_POLICY"
+    z=copy.deepcopy(p);z.pop("research_rights_separation")
+    assert inspect(z)["status"]=="REJECTED_INVALID_POLICY"
     z=copy.deepcopy(p);z["numeric_thresholds"]["min_market_cap_usd"]=100000000
     assert inspect(z)["status"]=="REJECTED_INVALID_POLICY"
     assert inspect({})["status"]=="REJECTED_INVALID_POLICY"
     assert inspect(None)["status"]=="REJECTED_INVALID_POLICY"
-    print("XRAY_C418_PREFLIGHT_SELFTEST=PASS_POSITIVE_19_NEGATIVE_ZERO_PRODUCTION_AUTHORITY")
+    print("XRAY_C418_PREFLIGHT_SELFTEST=PASS_PERSONAL_RESEARCH_RIGHTS_DISTINCT_FROM_PRODUCTION_9_ADVERSARIAL_NO_AL")
 
 def main():
     ap=argparse.ArgumentParser()

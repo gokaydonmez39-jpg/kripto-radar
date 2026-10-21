@@ -21,14 +21,14 @@ EXPECTED = {
     ".github/workflows/xray-preopen-source-audit.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-c418-multi-source-contract.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-c418-sec-alpaca-intersection-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT),
-    ".github/workflows/xray-canonical-current-pre-mc.yml": (CHECKOUT, PYTHON, ARTIFACT),
+    ".github/workflows/xray-canonical-current-pre-mc.yml": (CHECKOUT, PYTHON, ARTIFACT, CHECKOUT, PYTHON),
     ".github/workflows/xray-canonical-current-post-mc.yml": (CHECKOUT, PYTHON, ARTIFACT, ARTIFACT),
     ".github/workflows/xray-canonical-current-final.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-final-gate-overlay-v2.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-strict-g9-gate.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-account-gate-reconcile.yml": (CHECKOUT, PYTHON),
     ".github/workflows/xray-live-truth-attestation.yml": (CHECKOUT, PYTHON, ARTIFACT),
-    ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, ARTIFACT, ARTIFACT, ARTIFACT),
+    ".github/workflows/xray-manual-decision-research-shadow.yml": (CHECKOUT, PYTHON, CHECKOUT, PYTHON, ARTIFACT, ARTIFACT, ARTIFACT),
     ".github/workflows/xray-sec-free-mc-transport-proof.yml": (CHECKOUT, PYTHON, ARTIFACT),
     ".github/workflows/xray-current-history-source-request.yml": (CHECKOUT, PYTHON, ARTIFACT),
 }
@@ -161,6 +161,8 @@ def selftest() -> None:
         "steps:",
         "  - uses: " + CHECKOUT,
         "  - uses: " + PYTHON,
+        "  - uses: " + CHECKOUT,
+        "  - uses: " + PYTHON,
         "  - name: Enforce exact source Final invocation vs current checked-out main",
         "    run: |",
         "      python nasdaq-xray/manual_workflow_trigger_sha_guard.py --selftest",
@@ -168,7 +170,7 @@ def selftest() -> None:
         "  - uses: " + ARTIFACT,
     ))
     manual_source=manual_source+"\n"+"\n".join(("  - uses: "+ARTIFACT, "  - uses: "+ARTIFACT))
-    assert verify(manual,manual_source)==5
+    assert verify(manual,manual_source)==7
     for altered in (
         manual_source.replace("--selftest","--skipped"),
         manual_source.replace("--out result.json","--unchecked result.json")):
@@ -209,7 +211,7 @@ def live() -> dict:
         if not file.is_file():
             raise ValueError("CRITICAL_WORKFLOW_MISSING:" + path)
         audited[path] = verify(path, file.read_text(encoding="utf-8"))
-    if sum(audited.values()) != 48:
+    if sum(audited.values()) != 52:
         raise ValueError("CRITICAL_ACTION_REFERENCE_COVERAGE_CHANGED")
     return audited
 
@@ -217,4 +219,4 @@ def live() -> dict:
 if __name__ == "__main__":
     selftest()
     d = live()
-    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_48_EXACT_OFFICIAL_SHAS")
+    print("XRAY_IMMUTABLE_ACTION_GUARD=PASS_16_WORKFLOWS_52_EXACT_OFFICIAL_SHAS")

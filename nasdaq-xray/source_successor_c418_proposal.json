@@ -100,5 +100,27 @@
   "new_customer_payment_authorized": false,
   "success_definition": "ONLY_LICENSED_REAL_SAME_ASOF_DATA_E2E_GIT_SHA_AND_DEVICE_RECEIPT_COUNTS_GO",
   "rollback": "KEEP_C4.17_ACTIVE_AND_DISABLE_C4.18_ON_ANY_SOURCE_DRIFT_LICENSE_UNKNOWN_OR_TEST_FAIL",
-  "policy_note": "User approval permits design of versioned successor; it never overrides upstream provider rights or substitutes evidence; no C4.17 silent promotion."
+  "policy_note": "User approval permits design of versioned successor; it never overrides upstream provider rights or substitutes evidence; no C4.17 silent promotion.",
+  "research_rights_separation": {
+    "classification": "PERSONAL_NONCOMMERCIAL_RESEARCH_DISTINCT_FROM_PUBLIC_REDISTRIBUTION_V1",
+    "research_policy": "C4.18-SOURCE-SUCCESSOR-PROPOSAL",
+    "active_policy": "C4.17",
+    "historical_sip_basic_after_15min_documented": true,
+    "basic_historical_rest_rate_limit_per_minute_documented": 200,
+    "personal_research_algorithm_backtest_covered_by_alpaca_support_general_reply": true,
+    "official_provider_docs": "https://docs.alpaca.markets/us/docs/market-data-faq",
+    "official_provider_limits": "https://docs.alpaca.markets/us/docs/about-market-data-api",
+    "support_context_url": "https://forum.alpaca.markets/t/sip-data-collection/19863",
+    "operator_scope": "SOLE_ACCOUNT_OWNER_NONCOMMERCIAL_PRIVATE_RESEARCH_ONLY",
+    "unattended_github_entitlement_for_this_account_verified": false,
+    "applicable_exchange_non_display_entitlement_verified": false,
+    "raw_market_data_publication_authorized": false,
+    "derived_signals_third_party_distribution_authorized": false,
+    "personal_research_findings_are_c417_primary": false,
+    "can_register_R92": false,
+    "auto_purchase_or_upgrade": false,
+    "execution": "NONE",
+    "real_money": "NO-GO",
+    "note": "Alpaca support general response is not an account-specific exchange license. Research may proceed within actual entitlements; no automatic PRIMARY promotion or raw-data disclosure."
+  }
 }
