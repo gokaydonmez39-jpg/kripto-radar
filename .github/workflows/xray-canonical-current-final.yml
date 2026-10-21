@@ -341,9 +341,9 @@ jobs:
           from pathlib import Path
           p=Path(".github/workflows/xray-canonical-current-final.yml")
           s=p.read_text()
-          assert "secrets.LONGBRIDGE" not in s
-          assert "XRAY_ACCOUNT_LIVE_PROBE_STATE" not in s
-          assert "requirements-account-mcp-probe.txt" not in s
+          assert ("secrets."+"LONGBRIDGE") not in s
+          assert ("XRAY_ACCOUNT_"+"LIVE_PROBE_STATE") not in s
+          assert ("requirements-account-"+"mcp-probe.txt") not in s
           for phrase in ("Run same-run read-only "+"ACCOUNT probe",
                          "Persist restricted MCP v2 "+"vault before account reads",
                          "Synchronize reconciled "+"ACCOUNT control-plane"):
