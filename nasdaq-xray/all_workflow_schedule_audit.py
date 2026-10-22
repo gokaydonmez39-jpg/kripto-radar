@@ -28,7 +28,6 @@ EXPECTED={
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
- "xray-e2e-production-readiness.yml":("13 * * * 1-5",),
  "xray-final-gate-overlay-v2.yml":("55 * * * 1-5",),
  "xray-final-gate-overlay.yml":("15 * * * *",),
  "xray-github-native-root-watchdog.yml":("*/15 * * * 1-5",),
@@ -301,10 +300,12 @@ def selftest():
         x["xray-alpaca-delayed-sip-research.yml"].replace(
             '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
         "SCHEDULED_CRON_CHANGED")
+    # Regression: a removed diagnostic cron must not silently reappear.
     bad(lambda x:x.update({"xray-e2e-production-readiness.yml":
         x["xray-e2e-production-readiness.yml"].replace(
-            '"13 * * * 1-5"','"14 * * * 1-5"')}),
-        "SCHEDULED_CRON_CHANGED")
+            "  workflow_dispatch:",
+            '  schedule:\n    - cron: "13 * * * 1-5"\n  workflow_dispatch:',1)}),
+        "UNREVIEWED_NEW_SCHEDULE")
     bad(lambda x:x.update({"xray-sec-mirror-cik-shadow.yml":
         x["xray-sec-mirror-cik-shadow.yml"].replace(
             "contents: read","contents: read\n  issues: write")}),

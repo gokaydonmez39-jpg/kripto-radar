@@ -222,7 +222,7 @@ jobs:
           j=json.loads(p.read_text())
           assert j["schema"]=="XRAY_ALL_GITHUB_WORKFLOW_SCHEDULE_PRIVILEGE_AUDIT_V1"
           assert j["contract_status"]=="PASS" and not j["blockers"]
-          assert j["scheduled_count"]==28 and j["expected_scheduled_count"]==28 and len(j["automated_schedules"])==28
+          assert j["scheduled_count"]==27 and j["expected_scheduled_count"]==27 and len(j["automated_schedules"])==27
           assert j["issue_writers"]==[]  # User preference: ChatGPT-only; zero GitHub Issue writers
           assert j["alpha_authority"] is False and j["device_delivery_attested"] is False
           assert j["execution"]=="NONE" and j["real_money"]=="NO-GO"
