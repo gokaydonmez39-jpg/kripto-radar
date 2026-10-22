@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Prove exact SHA, seven-day expiry and no authority with and without Python assertions
+      - name: Prove exact SHA, archival-only scope and no R92 under normal/optimized Python
         run: |
           python -m py_compile nasdaq-xray/manual_source_drift_forensics.py nasdaq-xray/tests/test_manual_source_drift_forensics.py
           python -m unittest discover -s nasdaq-xray/tests -p test_manual_source_drift_forensics.py -v
