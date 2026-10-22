@@ -36,9 +36,11 @@ jobs:
           python -m py_compile nasdaq-xray/personal_free_iex_eod_signal_radar.py
           python nasdaq-xray/personal_free_iex_eod_signal_radar.py --selftest
           python -O nasdaq-xray/personal_free_iex_eod_signal_radar.py --selftest
+  # On an explicitly reviewed main push, immediately probe the existing free
+  # personal source once. Never run vendor HTTP on untrusted PRs.
   research:
     needs: offline-regression
-    if: ${{ github.event_name != 'pull_request' && github.event_name != 'push' }}
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 13
     steps:
