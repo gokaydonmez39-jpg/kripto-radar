@@ -27,19 +27,26 @@ def fixture(day="2026-10-15"):
 
 
 class ManualSourceDriftTests(unittest.TestCase):
-    def test_oct15_master_oct7_terminal_is_blocked(self):
+    def test_oct15_master_oct7_terminal_archival_only_no_current_release(self):
         a,b,c,d=fixture()
         j=f.audit(a,b,c,d)
         self.assertEqual(j["day_delta_master_minus_terminal"],8)
-        self.assertEqual(j["status"],"SOURCE_INTEGRITY_BLOCKED")
-        self.assertFalse(j["archival_replay_allowed_by_existing_guard"])
+        # The existing frozen-blob policy has NO seven-day hard expiry.
+        # Historical context is allowed only with a restored immutable blob;
+        # it never establishes same-session production authority.
+        self.assertEqual(j["status"],
+                         "ARCHIVAL_TERMINAL_SOURCE_ALLOWED_NOT_CURRENT_RELEASE")
+        self.assertTrue(j["archival_replay_allowed_by_existing_guard"])
+        self.assertFalse(j["source_blob_exact"])
+        self.assertFalse(j["current_terminal_master_binding_exact"])
+        self.assertTrue(j["reporting_cannot_establish_current_c417_release"])
         self.assertFalse(j["alpha_authority"])
         self.assertFalse(j["r92_authority"])
         self.assertFalse(j["repair_autonomously_authorized"])
         self.assertFalse(j["manual_workflow_failure_suppressed"])
         self.assertEqual(j["signal_count"],0)
 
-    def test_seven_day_archival_exception_is_never_live(self):
+    def test_archival_exception_is_never_live(self):
         a,b,c,d=fixture("2026-10-14")
         j=f.audit(a,b,c,d)
         self.assertTrue(j["archival_replay_allowed_by_existing_guard"])
@@ -57,12 +64,34 @@ class ManualSourceDriftTests(unittest.TestCase):
         self.assertFalse(j["alpha_authority"])
         self.assertTrue(j["reporting_cannot_establish_current_c417_release"])
 
-    def test_one_day_ahead_future_and_backward_source_rejected_for_archival(self):
-        for day in ("2026-10-06","2026-10-20"):
+    def test_older_source_blocked_newer_source_archival_only(self):
+        # A master older than the terminal cannot be a historic successor.
+        a,b,c,d=fixture("2026-10-06")
+        j=f.audit(a,b,c,d)
+        self.assertEqual(j["status"],"SOURCE_INTEGRITY_BLOCKED")
+        self.assertFalse(j["archival_replay_allowed_by_existing_guard"])
+        # A newer master is archive-readable, however distant, but NEVER
+        # current or a valid AL/R92/delivery witness.
+        for day in ("2026-10-08","2026-10-15","2026-10-20","2026-10-22"):
             with self.subTest(day=day):
                 a,b,c,d=fixture(day)
-                self.assertEqual(f.audit(a,b,c,d)["status"],
-                                 "SOURCE_INTEGRITY_BLOCKED")
+                j=f.audit(a,b,c,d)
+                self.assertEqual(j["status"],
+                                 "ARCHIVAL_TERMINAL_SOURCE_ALLOWED_NOT_CURRENT_RELEASE")
+                self.assertFalse(j["current_terminal_master_binding_exact"])
+                self.assertFalse(j["alpha_authority"])
+                self.assertFalse(j["r92_authority"])
+                self.assertFalse(j["device_delivery_attested"])
+                self.assertEqual(j["signal_count"],0)
+
+    def test_same_blob_with_different_asof_cannot_be_current_or_archival(self):
+        a,b,c,d=fixture("2026-10-21")
+        a["evidence"]["master"]["blob_sha"]=f.blob(d)
+        j=f.audit(a,b,c,d)
+        self.assertEqual(j["status"],"SOURCE_INTEGRITY_BLOCKED")
+        self.assertFalse(j["current_terminal_master_binding_exact"])
+        self.assertFalse(j["archival_replay_allowed_by_existing_guard"])
+        self.assertFalse(j["alpha_authority"])
 
     def test_mismatched_bound_path_and_sha_must_fail(self):
         for key,val in (("path","nasdaq-xray/other.json"),
