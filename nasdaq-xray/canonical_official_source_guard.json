@@ -99,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-22T15:39:41.543259+00:00",
+  "generated_at_utc": "2026-10-22T17:28:43.591284+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -800,8 +800,53 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 48,
+      "item_count": 51,
       "items": [
+        {
+          "HaltDate": "10/22/2026",
+          "HaltTime": "12:59:02.090",
+          "IssueName": "Ribbon Acq Corp Ut",
+          "IssueSymbol": "RIBBU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/22/2026",
+          "ResumptionQuoteTime": "12:59:02",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:59:02.090</td><td valign=\"top\">RIBBU</td><td valign=\"top\">Ribbon Acq Corp Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:59:02                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 22 Oct 2026 04:00:00 GMT",
+          "title": "RIBBU"
+        },
+        {
+          "HaltDate": "10/22/2026",
+          "HaltTime": "12:34:54.043",
+          "IssueName": "Moderna, Inc. Common Stock",
+          "IssueSymbol": "MRNA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/22/2026",
+          "ResumptionQuoteTime": "12:34:54",
+          "ResumptionTradeTime": "12:39:54",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:34:54.043</td><td valign=\"top\">MRNA</td><td valign=\"top\">Moderna, Inc. Common Stock</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:34:54                      </td><td valign=\"top\">12:39:54                      </td></tr></table>",
+          "pubDate": "Thu, 22 Oct 2026 04:00:00 GMT",
+          "title": "MRNA"
+        },
+        {
+          "HaltDate": "10/22/2026",
+          "HaltTime": "12:08:24.123",
+          "IssueName": "Skydance Corporation Class B Common Stock",
+          "IssueSymbol": "SKYD",
+          "Market": "NYSE",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "10/22/2026",
+          "ResumptionQuoteTime": "12:13:38",
+          "ResumptionTradeTime": "12:13:38",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:08:24.123</td><td valign=\"top\">SKYD</td><td valign=\"top\">Skydance Corporation Class B Common Stock</td><td valign=\"top\">NYSE</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">12:13:38                      </td><td valign=\"top\">12:13:38                      </td></tr></table>",
+          "pubDate": "Thu, 22 Oct 2026 04:00:00 GMT",
+          "title": "SKYD"
+        },
         {
           "HaltDate": "10/22/2026",
           "HaltTime": "11:22:55.230",
