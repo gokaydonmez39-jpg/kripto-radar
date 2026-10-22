@@ -154,7 +154,7 @@ def terminal_price_partition_exact(price, master):
     if not isinstance(price, dict) or not isinstance(master, dict):
         return False
     try:
-        from price_dv30_recover_from_fullstate import price_snapshot_integrity
+        from price_snapshot_integrity import price_snapshot_integrity
         names = master.get("pass_symbols")
         if not (type(names) is list and all(type(x) is str and x for x in names)
                 and len(names) == len(set(names))
