@@ -144,6 +144,34 @@ def load_gate_reporting():
         out["evidence"]["account_gate"]={"status":"UNKNOWN","reason":type(e).__name__}
     return out
 
+def terminal_price_partition_exact(price, master):
+    """Validate current PRICE scope without requiring unrelated UNKNOWN == 0.
+
+    This is structural eligibility ONLY. A candidate still requires an exact
+    current MC bridge, HISTORY/LEGAL/Stage1/Deep/Final and delivery safety.
+    UNKNOWN stays UNKNOWN; no source rights or R92 authority is inferred.
+    """
+    if not isinstance(price, dict) or not isinstance(master, dict):
+        return False
+    try:
+        from price_dv30_recover_from_fullstate import price_snapshot_integrity
+        names = master.get("pass_symbols")
+        if not (type(names) is list and all(type(x) is str and x for x in names)
+                and len(names) == len(set(names))
+                and type(master.get("queue_total")) is int
+                and master["queue_total"] == len(names)):
+            return False
+        return bool(
+            price_snapshot_integrity(price, master.get("asof_et"))
+            and price.get("source_master_queue_hash") == master.get("queue_hash")
+            and type(price.get("source_master_count")) is int
+            and price["source_master_count"] == len(names)
+            and set(price.get("results") or {}) == set(names)
+        )
+    except (ImportError, OSError, TypeError, ValueError, KeyError):
+        return False
+
+
 def candidate_local_research_ready(pre,halt_safety,ft,alpha_source_binding_exact):
     """Candidate-local readiness must not inherit another finalist's UNKNOWN.
 
@@ -275,7 +303,7 @@ def main():
     assert int(m.get("raw_identity_total",-1))==int(m["queue_total"])+master_unknown_count
     assert len(set(m.get("unknown_symbols") or []))==master_unknown_count
     assert not (set(m.get("unknown_symbols") or []) & set(m.get("pass_symbols") or []))
-    assert p["execution"]=="NONE" and p["real_money"]=="NO-GO" and p["unknown_count"]==0
+    assert terminal_price_partition_exact(p,m), "CURRENT_PRICE_PARTITION_INVALID_OR_UNBOUND"
     price_blocked_count=int(p.get("blocked_count",(p.get("counts") or {}).get("BLOCK_CURRENT_RUN",0)) or 0)
     if "blocked_symbols" in p:
         assert price_blocked_count==len(set(p.get("blocked_symbols") or []))
