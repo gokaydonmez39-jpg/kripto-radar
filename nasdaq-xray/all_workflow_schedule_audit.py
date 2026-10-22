@@ -300,10 +300,12 @@ def selftest():
         x["xray-alpaca-delayed-sip-research.yml"].replace(
             '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
         "SCHEDULED_CRON_CHANGED")
+    # Regression: a removed diagnostic cron must not silently reappear.
     bad(lambda x:x.update({"xray-e2e-production-readiness.yml":
         x["xray-e2e-production-readiness.yml"].replace(
-            '"13 * * * 1-5"','"14 * * * 1-5"')}),
-        "SCHEDULED_CRON_CHANGED")
+            "  workflow_dispatch:",
+            '  schedule:\n    - cron: "13 * * * 1-5"\n  workflow_dispatch:',1)}),
+        "UNREVIEWED_NEW_SCHEDULE")
     bad(lambda x:x.update({"xray-sec-mirror-cik-shadow.yml":
         x["xray-sec-mirror-cik-shadow.yml"].replace(
             "contents: read","contents: read\n  issues: write")}),
