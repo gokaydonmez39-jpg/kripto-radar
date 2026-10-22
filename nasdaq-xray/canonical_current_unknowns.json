@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-21",
+  "asof_et": "2026-10-22",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3191
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3191
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1021202621:31|||||||",
+  "official_footer": "File Creation Time: 1022202615:41|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3191
   },
-  "source_queue_hash": "ccb5d3447244ce61aa309fce7c34dbd4a483d624e71221ab6aa8ca995c8c9ccf",
-  "source_state_hash": "10ea325b85eb5c5f44809c75c0b49e6c84e74f00a9ddc6544111fb881dfaf5ca",
-  "source_unknown_count": 3189,
+  "source_queue_hash": "f1e461a16b7f1a9009c3f40c7646f0331e9aea65d1fceda5ab98586d322a91b1",
+  "source_state_hash": "e4bdd264106ec29dc615d9537c80d06bf0b9a46dd0c2b643cd148a7aa2165af0",
+  "source_unknown_count": 3191,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3189,
+  "unknown_count": 3191,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -14237,6 +14237,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Dave Inc.  - Class A Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "DAVI": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Davion Healthcare Plc - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "DBGI": {
@@ -34631,6 +34649,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "NewAmsterdam Pharma Company N.V. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NANO": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Forge Nano Holdings Inc. - Common stock",
       "status": "UNKNOWN_STATIC"
     },
     "NATH": {
