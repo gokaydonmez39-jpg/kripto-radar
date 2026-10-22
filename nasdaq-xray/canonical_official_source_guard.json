@@ -3,10 +3,8 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
-      "AXNX",
       "AZTR",
       "CHOW",
-      "DKI",
       "EFTY",
       "EVEX.W",
       "HCHL",
@@ -57,7 +55,6 @@
     ],
     "veto_symbols": [
       "ARBEW",
-      "AXNX",
       "AZTR",
       "BBBYW",
       "BLFS",
@@ -65,7 +62,6 @@
       "COLA",
       "COLAR",
       "COLAU",
-      "DKI",
       "DRCT",
       "EFTY",
       "EVEX.W",
@@ -105,7 +101,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-22T10:38:37.135162+00:00",
+  "generated_at_utc": "2026-10-22T12:14:43.579757+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -767,12 +763,10 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 17,
+      "active_halt_count": 15,
       "active_halt_symbols": [
-        "AXNX",
         "AZTR",
         "CHOW",
-        "DKI",
         "EFTY",
         "EVEX.W",
         "HCHL",
@@ -797,11 +791,11 @@
           "IssueSymbol": "AXNX",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">AXNX</td><td valign=\"top\">Axonex AI Grp Ltd Ord Shs A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/22/2026",
+          "ResumptionQuoteTime": "08:55:00",
+          "ResumptionTradeTime": "09:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">AXNX</td><td valign=\"top\">Axonex AI Grp Ltd Ord Shs A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">08:55:00                      </td><td valign=\"top\">09:00:00                      </td></tr></table>",
           "pubDate": "Wed, 21 Oct 2026 04:00:00 GMT",
           "title": "AXNX"
         },
@@ -812,11 +806,11 @@
           "IssueSymbol": "DKI",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">DKI</td><td valign=\"top\">DarkIris Inc. CL A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/22/2026",
+          "ResumptionQuoteTime": "08:55:00",
+          "ResumptionTradeTime": "09:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/21/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">DKI</td><td valign=\"top\">DarkIris Inc. CL A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/22/2026                    </td><td valign=\"top\">08:55:00                      </td><td valign=\"top\">09:00:00                      </td></tr></table>",
           "pubDate": "Wed, 21 Oct 2026 04:00:00 GMT",
           "title": "DKI"
         },
