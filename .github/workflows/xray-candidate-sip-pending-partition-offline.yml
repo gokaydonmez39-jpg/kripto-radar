@@ -6,6 +6,8 @@ on:
       - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/terminal_price_partition_selftest.py"
+      - "nasdaq-xray/price_snapshot_integrity.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - ".github/workflows/xray-candidate-sip-pending-partition-offline.yml"
   push:
     branches: [main]
@@ -14,6 +16,8 @@ on:
       - "nasdaq-xray/personal_research_daily_attestation.py"
       - "nasdaq-xray/build_current_terminal.py"
       - "nasdaq-xray/terminal_price_partition_selftest.py"
+      - "nasdaq-xray/price_snapshot_integrity.py"
+      - "nasdaq-xray/price_dv30_recover_from_fullstate.py"
       - ".github/workflows/xray-candidate-sip-pending-partition-offline.yml"
 permissions:
   contents: read
@@ -42,7 +46,7 @@ jobs:
           python -O nasdaq-xray/personal_research_daily_attestation.py --selftest
       - name: Validate terminal candidate-local PRICE partial partition (no provider IO)
         run: |
-          python -m py_compile nasdaq-xray/build_current_terminal.py nasdaq-xray/terminal_price_partition_selftest.py
+          python -m py_compile nasdaq-xray/price_snapshot_integrity.py nasdaq-xray/build_current_terminal.py nasdaq-xray/terminal_price_partition_selftest.py
           python nasdaq-xray/terminal_price_partition_selftest.py
           python -O nasdaq-xray/terminal_price_partition_selftest.py
           echo "XRAY TERMINAL PRICE partial UNKNOWN partition was checked without PRIMARY, R92 or market API calls."
