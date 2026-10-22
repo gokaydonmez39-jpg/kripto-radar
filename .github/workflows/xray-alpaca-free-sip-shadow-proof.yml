@@ -17,6 +17,7 @@ on:
       - ".github/workflows/xray-alpaca-free-sip-shadow-proof.yml"
   pull_request:
     paths:
+      - "nasdaq-xray/alpaca_full_scope_260_shadow.py"
       - "nasdaq-xray/personal_sip_head_preflight.py"
       - "nasdaq-xray/all_workflow_schedule_audit.py"
       - ".github/workflows/xray-personal-full-universe-sip-coverage.yml"

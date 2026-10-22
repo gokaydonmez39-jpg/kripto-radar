@@ -142,7 +142,11 @@ def audit(asof,targets,daily,weeks,batch_fetch,*,now,
           zero_pass_unknown=False):
     if now.tzinfo is None or not sufficient_delay(asof,now):
         raise ValueError("SIP_20MIN_OFFICIAL_CLOSE_HOLDBACK_NOT_MET")
-    if (len(targets)!=len(set(targets)) or targets!=sorted(targets)
+    # ROOT-PASS-first priority deliberately differs from alphabetical order.
+    # Only the zero-PASS research lane may preserve that exact source order;
+    # ordinary PRICE-PASS / full-cohort paths retain alphabetical strictness.
+    if (len(targets)!=len(set(targets))
+            or (not zero_pass_unknown and targets!=sorted(targets))
             or len(daily)!=260 or len(weeks)!=52
             or type(zero_pass_unknown) is not bool
             or (zero_pass_unknown and
@@ -287,6 +291,34 @@ def selftest():
     _,second,_,_=scope(frozen,master_rotation,rotate_unknown=True,
                        rotation_session="2026-10-21")
     assert first==names[:32] and second==names[32:]
+    # Research ROOT-PASS priority is a bijection of canonical UNKNOWN, not an
+    # alphabetic set. Previously scope() selected a legitimate ranked slice
+    # but audit() rejected it before bounded HTTP even began.
+    prioritized=list(reversed(names))
+    _,ranked,ranked_days,ranked_weeks=scope(
+        frozen,master_rotation,rotate_unknown=True,
+        rotation_session="2026-10-20",ordered_unknown=prioritized)
+    assert ranked==prioritized[:32] and ranked!=sorted(ranked)
+    ranked_bars=[bar(day) for day in ranked_days]
+    def ranked_memory_fetch(batch,start,end):
+        assert batch==ranked and len(batch)==32
+        return {sym:ranked_bars for sym in batch}
+    ranked_result=audit(
+        asof_rotation,ranked,ranked_days,ranked_weeks,ranked_memory_fetch,
+        now=dt.datetime(2026,10,21,22,10,tzinfo=UTC),
+        zero_pass_unknown=True)
+    assert ranked_result["measured_scope_count"]==32
+    assert ranked_result["status"]=="SHADOW_ZERO_PRICE_PASS_UNKNOWN_260_SOURCE_MEASURED_NO_AUTHORITY"
+    assert ranked_result["canonical_history_pass_created"]==0
+    assert ranked_result["current_c417_history_primary_authority"] is False
+    assert ranked_result["r92_created"] is False
+    assert ranked_result["vendor_raw_bars_persisted"] is False
+    # Normal PRICE-PASS lane must still reject this unordered source cohort.
+    try:audit(
+        asof_rotation,ranked+["QQQ"],ranked_days,ranked_weeks,
+        ranked_memory_fetch,now=dt.datetime(2026,10,21,22,10,tzinfo=UTC))
+    except ValueError:pass
+    else:raise AssertionError("ORDINARY_PRICE_PASS_SCOPE_UNSORTED_ACCEPTED")
     for invalid in ("2026-10-22","2026-10-24","2026-10-19"):
         try:scope(frozen,master_rotation,rotate_unknown=True,
                   rotation_session=invalid)
