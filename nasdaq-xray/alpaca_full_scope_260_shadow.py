@@ -17,7 +17,7 @@ from pathlib import Path
 
 from alpaca_free_sip_shadow_guard import (
     request_batch, timestamp_date, sufficient_delay, blob_sha,
-    scheduled_unknown_cohort, bounded_sip_end,
+    scheduled_unknown_cohort, bounded_sip_end, ranked_root_pass_unknown,
 )
 from current_history_source_request import expected_dates, sha256_lines
 from alpaca_sip_paginated_transport_shadow import MAX_PAGES
@@ -31,7 +31,7 @@ BATCH_SIZE=32
 UTC=dt.timezone.utc
 
 
-def scope(price,master,*,rotate_unknown=False,rotation_session=None):
+def scope(price,master,*,rotate_unknown=False,rotation_session=None,ordered_unknown=None):
     asof=price.get("asof_et")
     if (asof!=master.get("asof_et") or price.get("unknown_never_pass") is not True
             or master.get("unknown_never_pass") is not True):
@@ -72,7 +72,8 @@ def scope(price,master,*,rotate_unknown=False,rotation_session=None):
             raise ValueError("ZERO_PASS_UNKNOWN_SOURCE_PROVENANCE_INVALID")
         targets=(scheduled_unknown_cohort(
             unknown,asof,batch_size=BATCH_SIZE,
-            rotation_session=rotation_session)
+            rotation_session=rotation_session,
+            ordered_source_research_symbols=ordered_unknown)
             if rotate_unknown else unknown[:BATCH_SIZE])
     return asof,targets,daily,weeks
 
@@ -349,9 +350,12 @@ def main():
     if args.rotate_unknown:
         from source_epoch_freshness_guard import last_complete_session
         rotation_session=last_complete_session(dt.datetime.now(UTC))
+    ordered_unknown=(ranked_root_pass_unknown(
+        price["unknown_symbols"],master,price)
+        if args.rotate_unknown and price.get("pass_count")==0 else None)
     asof,targets,daily,weeks=scope(
         price,master,rotate_unknown=args.rotate_unknown,
-        rotation_session=rotation_session)
+        rotation_session=rotation_session,ordered_unknown=ordered_unknown)
     if not targets:
         # Only when even canonical UNKNOWN is empty is source reading empty.
         # Empty scope never creates benchmark-only history evidence.
