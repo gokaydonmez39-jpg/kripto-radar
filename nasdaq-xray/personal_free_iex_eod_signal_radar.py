@@ -197,7 +197,11 @@ def selftest():
     for i,d in enumerate(dates):
         c=raw(i)
         if i==259:c=raw(258)+4
-        series.append({"t":d+"T04:00:00+00:00","o":c-0.1,
+        # Real Alpaca day bars are stamped at New York midnight; UTC
+        # offset changes between EST and EDT.
+        utc_midnight=datetime.fromisoformat(d+"T00:00:00").replace(
+            tzinfo=NY).astimezone(timezone.utc).isoformat()
+        series.append({"t":utc_midnight,"o":c-0.1,
                        "h":c+0.24,"l":c-0.4,"c":c,
                        "v":25000 if i==259 else 10000})
     label,_=indicator(series,dates)
