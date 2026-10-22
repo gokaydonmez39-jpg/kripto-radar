@@ -50,9 +50,12 @@ def analyze_data(root: dict, master: dict, price: dict, request: dict,
     identity = integer(master.get('pass_count'))
     unknown = integer(price.get('unknown_count'))
     price_pass = integer(price.get('pass_count'))
-    if price_pass + unknown + integer(price.get('blocked_count')) != identity:
-        # Provenance may have separate populations; reject a misleading arithmetic summary.
-        raise ValueError('PRICE_PARTITION_NOT_IDENTITY_EXACT')
+    blocked=integer(price.get('blocked_count'))
+    # The three canonical PRICE counters may refer to overlapping/residual scopes.
+    # Never assert they sum to the MASTER identity universe without proof that
+    # they form an exhaustive, disjoint partition. Validate only safe bounds.
+    if any(n > identity for n in (price_pass, unknown, blocked)):
+        raise ValueError('PRICE_COUNT_EXCEEDS_MASTER_IDENTITY')
     if integer(request.get('price_unknown_count')) != unknown:
         raise ValueError('REQUEST_UNKNOWN_MISMATCH')
     if request.get('source_price_blob_sha') is None or not SHA.fullmatch(str(request.get('source_price_blob_sha'))):
@@ -84,7 +87,9 @@ def analyze_data(root: dict, master: dict, price: dict, request: dict,
         'first_blocker':next((s for s in order if gates[s]),'NO_MISSING_SOURCE_IN_THIS_LIMITED_DIAGNOSTIC'),
         'gates':gates,
         'source_counts':{'identity_pass':identity,'price_pass':price_pass,
-                         'price_unknown':unknown,'mc_exact_bridge_matches':len(current_mc)},
+                         'price_unknown':unknown,'price_blocked':blocked,
+                         'price_counts_disjoint_and_exhaustive_proven':False,
+                         'mc_exact_bridge_matches':len(current_mc)},
         'source_asof':{'root':asof,'price':price.get('asof_et'),
                        'history':history.get('asof_et'),
                        'terminal':terminal.get('asof_et'),
@@ -156,7 +161,7 @@ def selftest() -> dict:
            lambda v:v[3].update(source_price_blob_sha='INVALID'),
            lambda v:v[3].update(price_unknown_count=5),
            lambda v:v[1].update(asof_et='2026-10-21'),
-           lambda v:v[2].update(pass_count=9),
+           lambda v:v[2].update(pass_count=11),
            lambda v:v[0].update(asof_et='INVALID')]
     for fn in funcs:
         v=copy.deepcopy(fixture());fn(v)
