@@ -394,7 +394,9 @@ def run(now=None,*,rotate_unknown=False,rotation_session=None):
     end=bounded_sip_end(
         asof,now,dt.datetime.combine(parse_date(asof)+dt.timedelta(days=1),
              dt.time(0,0),EST).astimezone(UTC).isoformat())
-    try:res=request_batch(symbols,start,end,key,secret)
+    # Alpaca defaults ticker mapping to today without explicit asof.
+    # Bind observations to this exact official exchange epoch.
+    try:res=request_batch(symbols,start,end,key,secret,asof=asof)
     except (RuntimeError,ValueError) as exc:
         why=str(exc)
         output["reason_counts"]={why if why.startswith("ALPACA_") else "ALPACA_UNEXPECTED_RESPONSE":len(symbols)}
@@ -510,6 +512,13 @@ def selftest():
         loaded=request_batch(["AAPL","MSFT"],"2025-01-01","2026-01-01",
                              "offline-key","offline-secret")
     assert len(seen)==2 and len(loaded["AAPL"])==len(loaded["MSFT"])==1
+    seen.clear()
+    with patch("urllib.request.urlopen",side_effect=mock_open):
+        frozen=request_batch(["AAPL","MSFT"],"2025-01-01","2026-01-01",
+                             "offline-key","offline-secret",asof="2026-01-01")
+    assert len(seen)==2 and len(frozen["AAPL"])==len(frozen["MSFT"])==1
+    assert all(page.get("asof")==["2026-01-01"] for page in seen)
+    print("XRAY_SIP_SYMBOL_PIT_ASOF=PASS_TWO_PAGES_FROZEN_NO_HTTP")
     # RED regression: an intraday record must never impersonate a daily SIP bar.
     # These are synthetic negative-test values, NEVER canonical market data.
     intraday=deepcopy(sample)
