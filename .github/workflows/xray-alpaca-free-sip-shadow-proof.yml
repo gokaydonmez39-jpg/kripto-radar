@@ -232,14 +232,18 @@ jobs:
               or j["r92_created"] is not False
               or j["execution"]!="NONE" or j["real_money"]!="NO-GO"):
               raise RuntimeError("XRAY_260_SCHEDULED_SOURCE_NOT_MEASURED_OR_AUTHORITY_DRIFT")
-          from alpaca_free_sip_shadow_guard import scheduled_unknown_cohort,blob_sha
+          from alpaca_free_sip_shadow_guard import (
+              scheduled_unknown_cohort,blob_sha,ranked_root_pass_unknown)
           from alpaca_sip_paginated_transport_shadow import MAX_PAGES
           from current_history_source_request import sha256_lines
           master_path=Path("nasdaq-xray/canonical_current_master_manifest.json")
           price_path=Path("nasdaq-xray/canonical_current_price_dv30.json")
+          master=json.loads(master_path.read_text())
+          ordered=ranked_root_pass_unknown(p["unknown_symbols"],master,p)
           expected=scheduled_unknown_cohort(
               p["unknown_symbols"],p["asof_et"],batch_size=32,
-              rotation_session=j["research_rotation_session"])
+              rotation_session=j["research_rotation_session"],
+              ordered_source_research_symbols=ordered)
           if (j.get("research_symbols")!=expected
               or j.get("research_symbols_sha256")!=sha256_lines(expected)
               or j.get("research_rotation_distinct_from_initial_32")
