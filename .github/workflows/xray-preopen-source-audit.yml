@@ -1,6 +1,11 @@
 name: XRAY Preopen Source and Alternative MC Readiness (Fail-Closed)
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/xray-preopen-source-audit.yml"
+      - "nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py"
   push:
     branches: [main]
     paths:
@@ -57,11 +62,30 @@ on:
 permissions:
   contents: read
   actions: read
+# A dense workflow_run fan-in must not terminate a preopen audit mid-proof.
+# Keep one pending successor; isolate PR offline tests from production.
 concurrency:
-  group: xray-preopen-source-audit-v1
-  cancel-in-progress: true
+  group: xray-preopen-source-audit-v1-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'production' }}
+  cancel-in-progress: false
+  queue: max
 jobs:
+  preopen-fanin-offline:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Prove preopen fan-in and last-main SHA safety without provider IO
+        run: |
+          set -euo pipefail
+          python -m py_compile nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
+          python nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
+          python -O nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
   audit:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -413,8 +437,28 @@ jobs:
               f.write("Live intraday/G9, primary DV30/MC, registered R92 and actual iPhone receipt: **NOT ATTESTED**.\n")
           print("XRAY_PREOPEN_WATCH_RECEIPT=NO_FALSE_GO_"+data["status"])
           PY
-      - name: Upload public operational counts only
+      - name: Fence completed preopen audit to still-current main before artifact publication
+        id: publish
         if: steps.epoch_guard.outputs.valid == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Earlier checks fence the start. A queued upstream writer may change
+          # the release epoch during the audit; stale evidence is never current.
+          actual_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ -n "$actual_main" ]] || {
+            echo "::error::XRAY_PREOPEN_PUBLISH_MAIN_UNAVAILABLE_FAIL_CLOSED"
+            exit 2
+          }
+          if [[ "$actual_main" != "$GITHUB_SHA" ]]; then
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "XRAY_PREOPEN_SOURCE_MOVED_DURING_AUDIT=NO_CURRENT_PUBLICATION"
+          else
+            echo "current=true" >> "$GITHUB_OUTPUT"
+            echo "XRAY_PREOPEN_PUBLISH_CURRENT_MAIN_SHA=PASS_NO_ALPHA_AUTHORITY"
+          fi
+      - name: Upload public operational counts only
+        if: steps.epoch_guard.outputs.valid == 'true' && steps.publish.outputs.current == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-preopen-source-readiness-v1
