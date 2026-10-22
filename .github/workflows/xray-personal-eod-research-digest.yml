@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_research_signal_digest.py"
+      - "nasdaq-xray/test_personal_digest_empty_watch_selftest.py"
       - "nasdaq-xray/xray_epoch_preflight_v25.py"
       - "nasdaq-xray/test_xray_epoch_preflight_v25.py"
       - "nasdaq-xray/personal_research_diagnostics.py"
@@ -14,6 +15,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_research_signal_digest.py"
+      - "nasdaq-xray/test_personal_digest_empty_watch_selftest.py"
       - "nasdaq-xray/xray_epoch_preflight_v25.py"
       - "nasdaq-xray/test_xray_epoch_preflight_v25.py"
       - "nasdaq-xray/personal_research_diagnostics.py"
@@ -45,6 +47,10 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile nasdaq-xray/personal_research_signal_digest.py
+          # Offline fixtures exercise the real digest selftest for empty/one/two WATCH rows.
+          python -m py_compile nasdaq-xray/test_personal_digest_empty_watch_selftest.py
+          python nasdaq-xray/test_personal_digest_empty_watch_selftest.py
+          python -O nasdaq-xray/test_personal_digest_empty_watch_selftest.py
           # Offline PR checks must be independent of currently refreshing production ASOF.
           # The publish job below still runs the original live digest --selftest
           # and refuses to publish if any real input date/SHA is inconsistent.
