@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/twelve_data_history_resume.py"
+      - "nasdaq-xray/twelve_data_history_full_pipeline_selftest.py"
       - ".github/workflows/xray-twelve-history-resume.yml"
   push:
     branches: [main]
@@ -46,6 +47,8 @@ jobs:
           python -m py_compile nasdaq-xray/twelve_data_history_resume.py
           python nasdaq-xray/twelve_data_history_resume.py --selftest
           python -O nasdaq-xray/twelve_data_history_resume.py --selftest
+          python nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
+          python -O nasdaq-xray/twelve_data_history_full_pipeline_selftest.py
   transport:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
