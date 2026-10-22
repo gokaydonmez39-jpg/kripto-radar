@@ -4,11 +4,13 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_free_iex_eod_signal_radar.py"
+      - "nasdaq-xray/personal_free_iex_advisory_guard.py"
       - ".github/workflows/xray-personal-free-iex-eod-signals.yml"
   push:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_free_iex_eod_signal_radar.py"
+      - "nasdaq-xray/personal_free_iex_advisory_guard.py"
       - ".github/workflows/xray-personal-free-iex-eod-signals.yml"
   workflow_dispatch:
   schedule:
@@ -36,6 +38,9 @@ jobs:
           python -m py_compile nasdaq-xray/personal_free_iex_eod_signal_radar.py
           python nasdaq-xray/personal_free_iex_eod_signal_radar.py --selftest
           python -O nasdaq-xray/personal_free_iex_eod_signal_radar.py --selftest
+          python -m py_compile nasdaq-xray/personal_free_iex_advisory_guard.py
+          python nasdaq-xray/personal_free_iex_advisory_guard.py
+          python -O nasdaq-xray/personal_free_iex_advisory_guard.py
   # On an explicitly reviewed main push, immediately probe the existing free
   # personal source once. Never run vendor HTTP on untrusted PRs.
   research:
