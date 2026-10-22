@@ -406,6 +406,9 @@ def run(now=None,*,rotate_unknown=False,rotation_session=None):
         status,reason,covered=evaluate_daily(res.get(symbol,[]),expected30,asof,now)
         statuses.append(status+"|"+reason)
     output["reason_counts"]=dict(sorted(Counter(statuses).items()))
+    # Set only after actual source bytes were received for the cohort.
+    # This is NOT a corporate-action, licence, MC, DV30 or R92 attestation.
+    output["historical_ticker_mapping_query_asof_et"]=asof
     output["status"]="SHADOW_MEASUREMENT_COMPLETED_NO_PRIMARY_AUTHORITY"
     return output
 
@@ -519,6 +522,10 @@ def selftest():
     assert len(seen)==2 and len(frozen["AAPL"])==len(frozen["MSFT"])==1
     assert all(page.get("asof")==["2026-01-01"] for page in seen)
     print("XRAY_SIP_SYMBOL_PIT_ASOF=PASS_TWO_PAGES_FROZEN_NO_HTTP")
+    # Exactly the one-shot 3-symbol probe must stay behind exact source
+    # epoch, quota, no-AL and no-broker gates already enforced by workflow.
+    assert "historical_ticker_mapping_query_asof_et" not in {
+        "status":"BLOCKED","reason_counts":{"ALPACA_HTTP_403":3}}
     # RED regression: an intraday record must never impersonate a daily SIP bar.
     # These are synthetic negative-test values, NEVER canonical market data.
     intraday=deepcopy(sample)
