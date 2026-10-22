@@ -46,13 +46,66 @@ MAX_CIPHERTEXT_BYTES=90000000
 class ProviderDenied(Exception):
     pass
 
+def personal_zero_pass_scope(s,root,master,price):
+    """Use the exact ROOT WATCH cohort for *secondary personal EOD research*.
+
+    Global PRICE=0 means no canonical AL eligibility, NOT zero legitimate
+    technical-research subjects. Never write any secondary classifications
+    back into canonical PRICE/MC/HISTORY/R92 authority.
+    """
+    watch=root.get("watch_radar") or {}
+    tech=root.get("candidate_technical_funnel") or {}
+    rows=watch.get("watchlist")
+    if (s.get("symbols")!=[] or s.get("targets")!=["QQQ"]
+        or price.get("pass_count")!=0
+        or price.get("unknown_count",0)<=0
+        or root.get("asof_et")!=s["asof"]
+        or watch.get("asof_et")!=s["asof"]
+        or tech.get("asof_et")!=s["asof"]
+        or root.get("execution")!="NONE" or root.get("real_money")!="NO-GO"
+        or watch.get("execution")!="NONE" or watch.get("real_money")!="NO-GO"
+        or watch.get("unknown_never_pass") is not True
+        or watch.get("all_eligible_candidates_tracked") is not True
+        or watch.get("watchlist_cap") is not None
+        or not isinstance(rows,list) or not rows
+        or len(rows)!=watch.get("watchlist_count")
+        or len(rows)!=watch.get("price_liquidity_screened_count")
+        or watch.get("source_candidates_sha256")!=tech.get("source_candidates_sha256")
+        or not isinstance(watch.get("watchlist_digest"),str)
+        or len(watch["watchlist_digest"])!=64
+        or any(c not in "0123456789abcdef" for c in watch["watchlist_digest"])
+        or not isinstance(master.get("pass_symbols"),list)):
+        raise ValueError("PERSONAL_ZERO_PASS_ROOT_WATCH_BINDING_INVALID")
+    names=[row.get("symbol") for row in rows if isinstance(row,dict)]
+    if (len(names)!=len(rows)
+        or any(not isinstance(sym,str) or not sym or sym!=sym.upper()
+               for sym in names)
+        or len(set(names))!=len(names)
+        or not set(names).issubset(set(master["pass_symbols"]))
+        or any(row.get("classification")!="WATCH_LIQUIDITY_PRE_SCREEN_ONLY"
+               or row.get("buy_signal") is not False for row in rows)):
+        raise ValueError("PERSONAL_ZERO_PASS_WATCH_IDENTITY_OR_ALPHA_INVALID")
+    names=sorted(names)
+    return dict(s,symbols=names,targets=sorted(set(names)|{"QQQ"}),
+                scope_hash=sha256_lines(
+                    ["PERSONAL_ROOT_WATCH_SECONDARY_NO_ALPHA",
+                     watch["watchlist_digest"]]+names),
+                research_population="PERSONAL_ROOT_WATCH_ZERO_CANONICAL_PRICE_PASS")
+
 def scope():
-    """A zero-PASS PRICE cohort is empty, NEVER phantom QQQ-only history."""
+    """Run Twelve Basic personal shadow for PRICE PASS or safe ROOT WATCH.
+
+    A genuine PRICE=0 snapshot must not silently suppress EVERY secondary
+    provider measurement. Root WATCH is independently bound by ASOF, exact
+    member identity and provenance, and remains ZERO canonical alpha.
+    """
     s=_raw_scope()
-    if not s["symbols"]:
-        assert s["targets"]==["QQQ"],"UNEXPECTED_EMPTY_PRICE_SCOPE_SHAPE"
-        s=dict(s,targets=[])
-    return s
+    if s["symbols"]:
+        return s
+    root=json.loads((ROOT/"orchestrator_state.json").read_text())
+    master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+    price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+    return personal_zero_pass_scope(s,root,master,price)
 
 def authorized(env):
     d=env.get("XRAY_TWELVE_LICENSE_EVIDENCE_SHA256","")
@@ -392,11 +445,47 @@ def selftest():
     from copy import deepcopy
     with TemporaryDirectory() as tmp:
         s=scope()
-        # Zero current PRICE PASS is legitimate production NO-GO. Synthetic
-        # nonempty test fixture is created ONLY in memory and never authority.
+        # PRICE PASS=0 is legitimate C4.17 NO-GO, not a prohibition
+        # on separately sourced personal WATCH EOD research. No synthetic
+        # public data, no canonical promotions, no paid vendor calls in CI.
         assert len(s["dates"])==260 and len(s["weeks"])==52
-        # The free Twelve 800-credit/day transport must be capable of
-        # completing the *current real PRICE+QQQ* cohort before next session.
+        assert s["symbols"] and s["targets"]==sorted(set(s["symbols"])|{"QQQ"})
+        live_root=json.loads((ROOT/"orchestrator_state.json").read_text())
+        live_master=json.loads((ROOT/"canonical_current_master_manifest.json").read_text())
+        live_price=json.loads((ROOT/"canonical_current_price_dv30.json").read_text())
+        if live_price["pass_count"]==0:
+            assert s["research_population"]=="PERSONAL_ROOT_WATCH_ZERO_CANONICAL_PRICE_PASS"
+            assert len(s["symbols"])==live_root["watch_radar"]["watchlist_count"]
+            assert set(s["symbols"])<=set(live_master["pass_symbols"])
+            from copy import deepcopy
+            wrong=deepcopy(live_root)
+            wrong["asof_et"]="2026-10-20"
+            no_access=deepcopy(live_root)
+            no_access["watch_radar"]["all_eligible_candidates_tracked"]=False
+            wrong_name=deepcopy(live_root)
+            wrong_name["watch_radar"]["watchlist"][0]["symbol"]="NONEXISTENT"
+            fake_alpha=deepcopy(live_root)
+            fake_alpha["watch_radar"]["watchlist"][0]["buy_signal"]=True
+            fake_cap=deepcopy(live_root)
+            fake_cap["watch_radar"]["watchlist_cap"]=100
+            wrong_digest=deepcopy(live_root)
+            wrong_digest["watch_radar"]["watchlist_digest"]="invalid"
+            bad_price=deepcopy(live_price)
+            bad_price["pass_count"]=1
+            for label,rr,pp in (
+                ("CROSS_ASOF",wrong,live_price),
+                ("TRUNCATED",no_access,live_price),
+                ("NOT_MASTER",wrong_name,live_price),
+                ("FAKE_BUY",fake_alpha,live_price),
+                ("WATCH_CAP",fake_cap,live_price),
+                ("NO_DIGEST",wrong_digest,live_price),
+                ("FAKE_ZERO_PASS",live_root,bad_price)):
+                try:personal_zero_pass_scope(
+                    dict(s,symbols=[],targets=["QQQ"]),rr,live_master,pp)
+                except ValueError:pass
+                else:raise AssertionError("PERSONAL_WATCH_FALSE_AUTHORITY_"+label)
+        # 800 credits/day with <=48 requests per run, including QQQ, must
+        # remain within documented Twelve Basic personal plan quota.
         # On the official Nasdaq 2026-11-27 early close (13:00 ET), an hourly
         # :53 run can fire only 13 times after 00:15 ET EOD release; standard
         # 16:00 ET days offer 16. This is planning capacity, NOT source proof.
