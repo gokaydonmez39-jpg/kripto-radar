@@ -163,14 +163,45 @@ def preopen_stale_noop_topology(raw):
     if len(trailing) < 12:
         raise ValueError("PREOPEN_TRUNCATED_STEP_LIST")
     expected = "steps.epoch_guard.outputs.valid == 'true'"
-    for step in trailing:
-        if not isinstance(step, dict) or step.get("if") != expected:
+    # The final artifact upload has a SECOND, stronger predicate. Do not
+    # accidentally reject it as 'unguarded' merely for requiring both.
+    # A stale publish is forbidden even when initial checkout was correct.
+    published = expected + " && steps.publish.outputs.current == 'true'"
+    for i, step in enumerate(trailing):
+        if not isinstance(step, dict):
+            raise ValueError("PREOPEN_UNGUARDED_STEP:NON_OBJECT")
+        condition = published if i == len(trailing) - 1 else expected
+        if step.get("if") != condition:
             raise ValueError("PREOPEN_UNGUARDED_STEP:" +
                              str(step.get("name") or step.get("uses")))
+    fence, upload = trailing[-2:]
+    if (fence.get("id") != "publish"
+            or fence.get("name") !=
+               "Fence completed preopen audit to still-current main before artifact publication"
+            or upload.get("name") != "Upload public operational counts only"
+            or "actions/upload-artifact@" not in str(upload.get("uses") or "")):
+        raise ValueError("PREOPEN_FINAL_PUBLISH_STEP_NOT_LAST_TWO")
+    publication = fence.get("run") or ""
+    for marker in (
+        'actual_main="$(git ls-remote origin refs/heads/main | cut -f1)"',
+        'if [[ "$actual_main" != "$GITHUB_SHA" ]]; then',
+        'echo "current=false" >> "$GITHUB_OUTPUT"',
+        'echo "current=true" >> "$GITHUB_OUTPUT"',
+        "XRAY_PREOPEN_SOURCE_MOVED_DURING_AUDIT=NO_CURRENT_PUBLICATION",
+        "XRAY_PREOPEN_PUBLISH_MAIN_UNAVAILABLE_FAIL_CLOSED",
+    ):
+        if marker not in publication:
+            raise ValueError("PREOPEN_FINAL_MAIN_GUARD_MISSING:" + marker)
+    if not any(step.get("name") ==
+               "Current NASDAQ official preopen truth report, never false release"
+               for step in trailing[:-2]):
+        raise ValueError("PREOPEN_RELEASE_PROOF_ORDER_INVALID")
     return {"status": "PASS_EXACT_STALE_NOOP_NO_EVIDENCE",
             "guarded_after_epoch_count": len(trailing),
             "stale_mixed_source_authorization": False,
-            "source_execution_requires_current_sha": True}
+            "source_execution_requires_current_sha": True,
+            "late_main_sha_publication_guard": True,
+            "false_current_artifact_upload_prohibited": True}
 
 
 def source_integrity():
@@ -286,6 +317,27 @@ def selftest():
         assert str(exc).startswith("PREOPEN_UNGUARDED_STEP")
     else:
         raise AssertionError("UNGUARDED_STALE_PREOPEN_ACTION_ACCEPTED")
+    # A valid stronger upload predicate is mandatory, not an exemption.
+    assert verified["late_main_sha_publication_guard"] is True
+    assert verified["false_current_artifact_upload_prohibited"] is True
+    for label, mutate in (
+        ("WEAK_UPLOAD", lambda steps: steps[-1].update(
+            {"if": "steps.epoch_guard.outputs.valid == 'true'"})),
+        ("WEAK_FINAL_SHA", lambda steps: steps[-2].update(
+            {"run": steps[-2]["run"].replace(
+                'if [[ "$actual_main" != "$GITHUB_SHA" ]]; then',
+                'if [[ "$actual_main" == "$GITHUB_SHA" ]]; then')})),
+        ("REMOVED_FINAL_FENCE", lambda steps: steps.pop(-2)),
+        ("PRECHECK_REMOVED", lambda steps: steps[-2].pop("if", None)),
+    ):
+        broken = deepcopy(obj)
+        mutate(broken["jobs"]["audit"]["steps"])
+        try: preopen_stale_noop_topology(yaml.safe_dump(broken))
+        except ValueError as exc:
+            assert str(exc).startswith(("PREOPEN_UNGUARDED_STEP",
+                                         "PREOPEN_FINAL_MAIN_GUARD_MISSING",
+                                         "PREOPEN_FINAL_PUBLISH_STEP_NOT_LAST_TWO")), (label,str(exc))
+        else: raise AssertionError("PREOPEN_FALSE_GREEN_" + label)
     tampered = deepcopy(obj)
     tampered["jobs"]["audit"]["steps"][1]["run"] = "echo valid=true"
     try:
