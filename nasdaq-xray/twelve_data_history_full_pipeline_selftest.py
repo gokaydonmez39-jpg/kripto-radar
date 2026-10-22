@@ -19,13 +19,26 @@ from history_transport_cache_guard import cache_path
 def main():
     s=scope()
     price=json.loads((Path(__file__).resolve().parent/"canonical_current_price_dv30.json").read_text())
-    assert len(s["symbols"])==price["pass_count"]
+    personal_watch=(s.get("research_population")==
+                    "PERSONAL_ROOT_WATCH_ZERO_CANONICAL_PRICE_PASS")
+    if personal_watch:
+        # Unverified secondary ROOT WATCH is NOT a C4.17 PRICE PASS set.
+        # Requiring len(WATCH)==len(PRICE PASS) silently prevented *any*
+        # backup measurement in the real 0-PASS epoch.
+        assert price["pass_count"]==0 and price["unknown_count"]>0
+        root=json.loads((Path(__file__).resolve().parent/
+                         "orchestrator_state.json").read_text())
+        assert len(s["symbols"])==root["watch_radar"]["watchlist_count"]
+        assert len(s["symbols"])>0
+        assert health(fresh(s),s,"SYNTHETIC_ONLY",0)["R92_AL"] is False
+    else:
+        assert len(s["symbols"])==price["pass_count"]
     assert len(s["dates"])==260 and len(s["weeks"])==52
     if not s["symbols"]:
         assert s["targets"]==[] and price["pass_count"]==0
         assert health(fresh(s),s,"BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",0)["target_count"]==0
         assert health(fresh(s),s,"BLOCKED_NO_CURRENT_PRICE_PASS_SCOPE",0)["R92_AL"] is False
-        print("XRAY_TWELVE_CURRENT_SCOPE_260_52_ENCRYPTED_FULL_SELFTEST=PASS_ZERO_PRICE_PASS_SCOPE_BLOCKED_NO_PHANTOM_QQQ_NO_ALPHA")
+        print("XRAY_TWELVE_CURRENT_SCOPE_260_52_ENCRYPTED_FULL_SELFTEST=PASS_NO_SUBSTITUTE_SOURCE_NO_ALPHA")
         return
     assert len(s["targets"])==len(set(s["symbols"])|{"QQQ"})
     with TemporaryDirectory(prefix="xray-twelve-current-scope-") as name:
@@ -48,13 +61,37 @@ def main():
         assert health(restored,s,"SYNTHETIC_ONLY",0)["complete_260_symbols"]==len(s["targets"])
         raw=temp/"private_csv"
         assert export_private(restored,s,raw)==len(s["targets"])
-        # Live PRICE may correctly have UNKNOWN (09-Oct: four symbols).
-        # A real UNKNOWN MUST be rejected; do not weaken the intake guard.
+        # Canonical PRICE UNKNOWN may legitimately coexist with separate
+        # research rows. The ingress allows a PARTIAL-UNKNOWN report but
+        # MUST NOT elevate it to canonical HISTORY, MC or a registered R92.
         if price.get("unknown_count",0)!=0:
-            try:evaluate(price,s["price_sha"],raw)
-            except ValueError as exc:
-                assert str(exc)=="PRICE_SCOPE_OR_SAFETY_INVALID"
-            else:raise AssertionError("REAL_PRICE_UNKNOWN_PROMOTED_IN_TEST")
+            observed=evaluate(price,s["price_sha"],raw)
+            assert observed["source_price_unknown_count"]==price["unknown_count"]
+            assert observed["canonical_history_pass_created"]==0
+            assert observed["primary_mc_pass_created"]==0
+            assert observed["can_register_R92"] is False
+            assert observed["current_history_authority_proven"] is False
+            if personal_watch:
+                assert observed["price_pass_count"]==0
+                assert observed["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_PRIVATE_HISTORY_INPUT"
+        if personal_watch:
+            # Stronger NEGATIVE than 'no signal': real zero-PASS PRICE and
+            # independently measured WATCH transport cannot ever enter the
+            # canonical history ingress, even with complete 260-day bars.
+            assert price["pass_count"]==0
+            assert health(restored,s,"SYNTHETIC_ONLY",0)["canonical_HISTORY_pass"] is False
+            assert health(restored,s,"SYNTHETIC_ONLY",0)["PRIMARY_MC_pass"] is False
+            assert health(restored,s,"SYNTHETIC_ONLY",0)["R92_AL"] is False
+            tampered=enc.read_bytes()
+            position=len(tampered)//2
+            assert 8<=position<len(tampered)-8
+            changed=b"A" if tampered[position:position+1]!=b"A" else b"B"
+            enc.write_bytes(tampered[:position]+changed+tampered[position+1:])
+            try:load(enc,s,c)
+            except ValueError:pass
+            else:raise AssertionError("PERSONAL_CIPHER_TAMPER_ACCEPTED")
+            print("XRAY_TWELVE_CURRENT_SCOPE_260_52_ENCRYPTED_FULL_SELFTEST=PASS_REAL_WATCH_COHORT_ENCRYPTED_ROUNDTRIP_CANONICAL_INGRESS_REJECTED_NO_R92")
+            return
         # Synthetic *control fixture* only, not a historical data source.
         # Test structural CSV mechanics with a logically complete input,
         # but never mutate live PRICE, its Git SHA or production authority.
