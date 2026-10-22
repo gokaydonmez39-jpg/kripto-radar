@@ -32,12 +32,12 @@ REQUIRED={
         "15 13 * * 1-5","15 14 * * 1-5"),
     "xray-research-watch-radar.yml":("17 15,20,23 * * 1-5",),
     "xray-strict-g9-gate.yml":("32 * * * 1-5",),
-    "xray-account-gate-reconcile.yml":("12 * * * *",),
+    "xray-account-gate-reconcile.yml":(),  # brokerless; no hourly account writer
     "xray-live-truth-attestation.yml":("13 * * * 1-5",),
     "xray-native-stage-relay-live.yml":(),
     "xray-manual-decision-research-shadow.yml":("17 21 * * 1-5",),
     "xray-final-gate-overlay-v2.yml":("55 * * * 1-5",),
-    "xray-e2e-production-readiness.yml":("13 * * * 1-5",),
+    "xray-e2e-production-readiness.yml":(),  # explicit/chain-triggered diagnostics only
     # Two non-core but independently scheduled control writers must not race
     # with the 15 critical workflows: keep their cron and writer lease audited.
     "xray-final-gate-overlay.yml":("15 * * * *",),
@@ -115,6 +115,20 @@ def validate_contract(files:dict[str,str], *, relay_source:str|None=None)->dict:
         actual=crons(files[name])
         if actual!=want:
             errors.append("CRON_DRIFT:"+name)
+    # A brokerage/account synchronizer is an unrelated historical service,
+    # not a background dependency of the user's signal-only Nasdaq radar.
+    account=files["xray-account-gate-reconcile.yml"]
+    if ("contents: read" not in account
+        or "contents: write" in account
+        or "  push:" in account
+        or "  schedule:" in account
+        or "git push origin" in account
+        or "secrets." in account):
+        errors.append("BROKERLESS_ACCOUNT_RECONCILER_BACKGROUND_IO_OR_WRITE")
+    # E2E fail-closed NO-GO is informative, not an hourly retry source.
+    e2e=files["xray-e2e-production-readiness.yml"]
+    if "  schedule:" in e2e:
+        errors.append("E2E_HOURLY_NO_GO_DIAGNOSTIC_RETRY")
     for label,(name,needles) in CHECKS.items():
         if any(n not in files[name] for n in needles):
             errors.append("SAFETY_STEP_MISSING:"+label)
@@ -272,7 +286,6 @@ def selftest():
         ("nasdaq-xray-daily.yml",'"30 * * * *"','"31 * * * *"'),
         ("xray-preopen-source-audit.yml",'"15 13 * * 1-5"','"16 13 * * 1-5"'),
         ("xray-strict-g9-gate.yml",'"32 * * * 1-5"','"33 * * * 1-5"'),
-        ("xray-account-gate-reconcile.yml",'"12 * * * *"','"13 * * * *"'),
         ("xray-final-gate-overlay-v2.yml",
          "group: xray-canonical-final-overlay-single-writer",
          "group: uncoordinated-v2-writer"),
@@ -305,6 +318,16 @@ def selftest():
         ("nasdaq-xray-delivery.yml","gh issue create",
          "gh issue create || gh issue create"),
     ]
+    for name in ("xray-account-gate-reconcile.yml",
+                 "xray-e2e-production-readiness.yml"):
+        unsafe=dict(files)
+        unsafe[name]=files[name]+"\n  schedule:\n    - cron: \"13 * * * *\"\n"
+        assert not validate_contract(unsafe)["ok"],("UNWANTED_HOURLY_CRON_ACCEPTED",name)
+    unsafe=dict(files)
+    unsafe["xray-account-gate-reconcile.yml"]=(
+        files["xray-account-gate-reconcile.yml"].replace(
+            "contents: read","contents: write"))
+    assert not validate_contract(unsafe)["ok"],"UNWANTED_ACCOUNT_WRITER_ACCEPTED"
     for name,needle,replacement in regressions:
         assert needle in files[name],(name,needle)
         modified=dict(files)
