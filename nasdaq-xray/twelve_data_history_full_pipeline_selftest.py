@@ -61,13 +61,19 @@ def main():
         assert health(restored,s,"SYNTHETIC_ONLY",0)["complete_260_symbols"]==len(s["targets"])
         raw=temp/"private_csv"
         assert export_private(restored,s,raw)==len(s["targets"])
-        # Live PRICE may correctly have UNKNOWN (09-Oct: four symbols).
-        # A real UNKNOWN MUST be rejected; do not weaken the intake guard.
+        # Canonical PRICE UNKNOWN may legitimately coexist with separate
+        # research rows. The ingress allows a PARTIAL-UNKNOWN report but
+        # MUST NOT elevate it to canonical HISTORY, MC or a registered R92.
         if price.get("unknown_count",0)!=0:
-            try:evaluate(price,s["price_sha"],raw)
-            except ValueError as exc:
-                assert str(exc)=="PRICE_SCOPE_OR_SAFETY_INVALID"
-            else:raise AssertionError("REAL_PRICE_UNKNOWN_PROMOTED_IN_TEST")
+            observed=evaluate(price,s["price_sha"],raw)
+            assert observed["source_price_unknown_count"]==price["unknown_count"]
+            assert observed["canonical_history_pass_created"]==0
+            assert observed["primary_mc_pass_created"]==0
+            assert observed["can_register_R92"] is False
+            assert observed["current_history_authority_proven"] is False
+            if personal_watch:
+                assert observed["price_pass_count"]==0
+                assert observed["status"]=="BLOCKED_ZERO_PRICE_PASS_NO_PRIVATE_HISTORY_INPUT"
         if personal_watch:
             # Stronger NEGATIVE than 'no signal': real zero-PASS PRICE and
             # independently measured WATCH transport cannot ever enter the
