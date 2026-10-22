@@ -19,8 +19,6 @@ on:
       - "XRAY Canonical Current Final Factory"
     types: [completed]
     branches: [main]
-  schedule:
-    - cron: "13 * * * 1-5"
 
 permissions:
   contents: read
