@@ -184,6 +184,33 @@ def build(root, master, price, blob_ids):
     }
 
 
+def mutation_watch_case(root, master, *, false_buy=False):
+    """Construct a valid-shaped WATCH fixture even when live WATCH is empty.
+
+    This changes only the local deep-copied negative-test input. It never
+    fabricates a production watchlist or a research candidate.
+    """
+    symbol = (master.get("pass_symbols") or ["AAPL"])[0]
+    row = {"symbol": symbol,
+           "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+           "buy_signal": bool(false_buy),
+           "setup_confirmation": "NOT_EVALUATED_HERE"}
+    n = 1 if false_buy else 2
+    watch = root["watch_radar"]
+    tech = root["candidate_technical_funnel"]
+    watch["watchlist"] = [deepcopy(row) for _ in range(n)]
+    watch["watchlist_count"] = n
+    watch["price_liquidity_screened_count"] = n
+    tech["candidate_count"] = n
+    tech["attempted_count"] = n
+    tech["evaluated_count"] = n
+    tech["pending_count"] = 0
+    tech["pending_symbols"] = []
+    tech["results"] = {symbol: {"status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER"}}
+    tech["recent_a_b_d_trigger_symbols"] = []
+    tech["recent_a_b_d_trigger_count"] = 0
+
+
 def selftest(root, master, price, blobs):
     result = build(root, master, price, blobs)
     require(result["watchlist_count"] == len(
@@ -195,23 +222,31 @@ def selftest(root, master, price, blobs):
     for label, change in (
         ("ASOF", lambda a,b,c:a.update(asof_et="2026-09-01")),
         ("NO_AL", lambda a,b,c:a["watch_radar"].update(registered_r92_count=1)),
-        ("DUP_TICKER", lambda a,b,c:a["watch_radar"]["watchlist"][0].update(
-            symbol=a["watch_radar"]["watchlist"][1]["symbol"])),
-        ("FALSE_BUY", lambda a,b,c:a["watch_radar"]["watchlist"][0].update(buy_signal=True)),
+        ("DUP_TICKER", lambda a,b,c:mutation_watch_case(a, b, false_buy=False)),
+        ("FALSE_BUY", lambda a,b,c:mutation_watch_case(a, b, false_buy=True)),
         ("SOURCE", lambda a,b,c:a["candidate_technical_funnel"].update(
-            watchlist_digest="0"*64)),
+            watchlist_digest="INVALID_DIGEST")),
         ("TRUNCATE", lambda a,b,c:a["watch_radar"].update(watchlist_cap=100)),
-        ("PENDING", lambda a,b,c:a["candidate_technical_funnel"].update(pending_count=0)),
-        ("PRICE", lambda a,b,c:c.update(source_master_count=1)),
-        ("MASTER", lambda a,b,c:b["pass_symbols"].pop()),
+        ("PENDING", lambda a,b,c:a["candidate_technical_funnel"].update(
+            pending_count=a["candidate_technical_funnel"]["pending_count"] + 1)),
+        ("PRICE", lambda a,b,c:c.update(source_master_count=b["pass_count"] + 1)),
+        ("MASTER", lambda a,b,c:b["pass_symbols"].append("INVALID!")),
         ("TRIGGER", lambda a,b,c:a["candidate_technical_funnel"][
             "recent_a_b_d_trigger_symbols"].append("UNPROVEN")),
     ):
         a,b,c = deepcopy(root),deepcopy(master),deepcopy(price)
         change(a,b,c)
-        try: build(a,b,c,blobs)
-        except ValueError: pass
-        else: raise AssertionError("FALSE_RESEARCH_DIGEST_PASS_"+label)
+        try:
+            build(a,b,c,blobs)
+        except ValueError as exc:
+            expected = {
+                "DUP_TICKER": "XRAY_PERSONAL_EOD_DIGEST_WATCH_SYMBOL_PROVENANCE",
+                "FALSE_BUY": "XRAY_PERSONAL_EOD_DIGEST_WATCH_NEVER_BUY",
+            }.get(label)
+            if expected is not None and str(exc) != expected:
+                raise AssertionError("WRONG_NEGATIVE_CAUSE_" + label) from exc
+        else:
+            raise AssertionError("FALSE_RESEARCH_DIGEST_PASS_"+label)
     print("XRAY_PERSONAL_RESEARCH_DIGEST_SELFTEST=PASS_10_MUTATIONS_NO_VENDOR_NO_FALSE_BUY")
 
 
