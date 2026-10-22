@@ -1,4 +1,8 @@
 name: XRAY Runner SIP ASOF Three-Symbol Canary (Research Only)
+# v29 bounded one-shot after policy-hardening push: maximum two paginated
+# historical SIP requests for ASOF, plus two for 13-slot RTH check.
+# PRIVATE secrets are supplied ONLY on main (never pull_request). Existing
+# canary reports counts/status only; it may not promote PRICE/DV30/MC/R92.
 on:
   workflow_dispatch:
   pull_request:
@@ -27,11 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.sha }}
           fetch-depth: 1
-      - uses: actions/setup-python@v5
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
       - name: Install pinned official NASDAQ session calendar
@@ -112,7 +117,7 @@ jobs:
           PY
       - name: Keep sanitized counts only; never store provider response
         if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-three-symbol-sip-asof-canary-counts-no-ohlcv
           path: |
