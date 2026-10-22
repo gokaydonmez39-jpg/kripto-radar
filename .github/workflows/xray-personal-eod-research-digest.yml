@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_research_signal_digest.py"
+      - "nasdaq-xray/personal_research_diagnostics.py"
       - "nasdaq-xray/personal_research_advisory_ledger_guard.py"
       - "nasdaq-xray/personal_research_advisory_ledger.json"
       - ".github/workflows/xray-personal-eod-research-digest.yml"
@@ -11,6 +12,7 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_research_signal_digest.py"
+      - "nasdaq-xray/personal_research_diagnostics.py"
       - "nasdaq-xray/personal_research_advisory_ledger_guard.py"
       - "nasdaq-xray/personal_research_advisory_ledger.json"
       - ".github/workflows/xray-personal-eod-research-digest.yml"
@@ -44,6 +46,9 @@ jobs:
           python -m py_compile nasdaq-xray/personal_research_advisory_ledger_guard.py
           python nasdaq-xray/personal_research_advisory_ledger_guard.py
           python -O nasdaq-xray/personal_research_advisory_ledger_guard.py
+          python -m py_compile nasdaq-xray/personal_research_diagnostics.py
+          python nasdaq-xray/personal_research_diagnostics.py --selftest
+          python -O nasdaq-xray/personal_research_diagnostics.py --selftest
   publish:
     needs: [offline-regression]
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -73,6 +78,22 @@ jobs:
           python nasdaq-xray/personal_research_signal_digest.py --selftest
           python -O nasdaq-xray/personal_research_signal_digest.py --selftest
           python nasdaq-xray/personal_research_signal_digest.py --out "$RUNNER_TEMP/personal_research_digest.json"
+          python nasdaq-xray/personal_research_diagnostics.py \
+            --digest "$RUNNER_TEMP/personal_research_digest.json" \
+            --out "$RUNNER_TEMP/personal_research_diagnostics.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads((Path(os.environ["RUNNER_TEMP"])/"personal_research_diagnostics.json").read_text())
+          assert d["status"]=="SOURCE_BOUND_RESEARCH_ONLY_NOT_BUY"
+          assert d["registered_r92_count"]==0 and not d["automated_alert_authority"]
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as f:
+              f.write("## XRAY personal research — verified source-bound diagnostics (NOT AL)\n\n")
+              f.write("ASOF: "+d["asof_et"]+"; WATCH: "+str(d["watch_count"])+"; rejected technical triggers: "+str(d["rejected_count"])+"; research setup candidates: "+str(d["candidate_count"])+"\n\n")
+              f.write("Source confidence: LOW / secondary EOD; no R92 or broker authority.\n\n")
+              f.write("| Blocker | Rejected triggers |\n|---|---:|\n")
+              for k,v in d["blocker_frequency"].items(): f.write(f"| {k} | {v} |\n")
+          PY
           echo "source_head=$here" >> "$GITHUB_OUTPUT"
       - name: Publish only exact still-current main research evidence, no BUY claim
         if: steps.input.outputs.source_head != ''
@@ -103,6 +124,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-personal-eod-research-digest-no-ohlcv
-          path: ${{ runner.temp }}/personal_research_digest.json
+          path: |
+            ${{ runner.temp }}/personal_research_digest.json
+            ${{ runner.temp }}/personal_research_diagnostics.json
           retention-days: 7
           if-no-files-found: ignore
