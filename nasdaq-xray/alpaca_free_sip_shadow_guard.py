@@ -137,7 +137,37 @@ def evaluate_daily(symbol_rows:list,expected30:list[str],asof:str,now:dt.datetim
     # 260-session official holiday calendar nor 52-week corporate adjustment.
     return "SHADOW_30_BARS_OBSERVED","RTH_AND_SPLIT_ADJUSTMENT_NOT_PRIMARY_ATTESTED",30
 
-def scheduled_unknown_cohort(unknown,asof,*,batch_size=32,rotation_session=None):
+def ranked_root_pass_unknown(unknown,master,price,root_path=None):
+    """Priority changes only research order, never C4.17 PRICE/MC/HISTORY."""
+    if not isinstance(unknown,list) or unknown!=sorted(set(unknown)):
+        raise ValueError("ROOT_PRIORITY_PRICE_UNKNOWN_SCOPE")
+    src=ROOT/"sina_state.json" if root_path is None else pathlib.Path(root_path)
+    if not src.is_file():return list(unknown)
+    try:root=json.loads(src.read_text(encoding="utf-8"))
+    except (OSError,UnicodeError,ValueError) as exc:
+        raise ValueError("ROOT_PRIORITY_SOURCE_UNREADABLE") from exc
+    if root.get("asof_et")!=price.get("asof_et"):return list(unknown)
+    queue=root.get("queue");rows=root.get("results")
+    if (root.get("schema")!="XRAY_NASDAQ_SCREENER_SINA_V2"
+        or root.get("execution")!="NONE" or root.get("real_money")!="NO-GO"
+        or root.get("unknown_never_pass") is not True
+        or root.get("status") not in {"HISTORY_PARTIAL","HISTORY_COMPLETE"}
+        or price.get("asof_et")!=master.get("asof_et")
+        or root.get("queue_hash")!=master.get("queue_hash")
+        or root.get("queue_hash")!=price.get("source_master_queue_hash")
+        or type(queue) is not list or queue!=sorted(set(queue))
+        or root.get("queue_total")!=len(queue) or root.get("cursor")!=len(queue)
+        or not isinstance(rows,dict) or set(rows)!=set(queue)
+        or not set(unknown).issubset(set(queue))):
+        raise ValueError("ROOT_PRIORITY_SAME_ASOF_QUEUE_NOT_EXACT")
+    passes={s for s,v in rows.items() if isinstance(v,dict)
+            and v.get("status")=="PASS"}
+    if int((root.get("counts") or {}).get("PASS",-1))!=len(passes):
+        raise ValueError("ROOT_PRIORITY_PASS_COUNTER_DRIFT")
+    return [s for s in unknown if s in passes]+[s for s in unknown if s not in passes]
+
+
+def scheduled_unknown_cohort(unknown,asof,*,batch_size=32,rotation_session=None,ordered_source_research_symbols=None):
     """Rotate one bounded original PRICE-UNKNOWN diagnostic slice per XNAS day.
 
     This is research collection only. No SIP daily bar can grant original RTH
@@ -168,9 +198,16 @@ def scheduled_unknown_cohort(unknown,asof,*,batch_size=32,rotation_session=None)
             raise ValueError("CLOSED_OR_UNVERIFIED_NASDAQ_DAY")
     except (AttributeError,TypeError,ValueError,OverflowError) as exc:
         raise ValueError("SCHEDULED_PRICE_OFFICIAL_SESSION_REQUIRED") from exc
-    n=(len(unknown)+batch_size-1)//batch_size
+    scope=unknown
+    if ordered_source_research_symbols is not None:
+        ordered=ordered_source_research_symbols
+        if (type(ordered) is not list or len(ordered)!=len(unknown)
+                or set(ordered)!=set(unknown) or len(set(ordered))!=len(ordered)):
+            raise ValueError("SCHEDULED_ROOT_PRIORITY_PARTITION_MISMATCH")
+        scope=ordered
+    n=(len(scope)+batch_size-1)//batch_size
     start=((len(sessions)-1)%n)*batch_size
-    return unknown[start:start+batch_size]
+    return scope[start:start+batch_size]
 
 
 def load_scope(*, allow_no_representative=False, rotate_unknown=False,
@@ -202,8 +239,10 @@ def load_scope(*, allow_no_representative=False, rotate_unknown=False,
                        for s in unknown)):
             raise ValueError("PRICE_UNKNOWN_DIAGNOSTIC_SCOPE_INVALID")
         u=set(unknown)
+        ordered=(ranked_root_pass_unknown(unknown,m,p) if rotate_unknown else None)
         symbols=(scheduled_unknown_cohort(
-                     unknown,p["asof_et"],rotation_session=rotation_session)
+                     unknown,p["asof_et"],rotation_session=rotation_session,
+                     ordered_source_research_symbols=ordered)
                  if rotate_unknown else [x for x in SAMPLE if x in u][:3])
     if len(symbols)<3 and not allow_no_representative:
         raise ValueError("NO_REPRESENTATIVE_CURRENT_PRICE_SCOPE")
@@ -566,6 +605,36 @@ def selftest():
         else:
             raise AssertionError("BAD_SIP_END_TRANSPORT_NOT_BLOCKED")
     print("XRAY_SIP_COMMON_TRANSPORT_HOLDBACK=PASS_NO_ASOF_NO_HTTP_BAD_END_NO_HTTP")
+    tiny=["AAPL","AMD","MSFT","NVDA"]
+    tmaster={"asof_et":"2026-10-20","queue_hash":"x"}
+    tprice={"asof_et":"2026-10-20","source_master_queue_hash":"x"}
+    from tempfile import TemporaryDirectory as _TempDir
+    with _TempDir() as tmp:
+        pth=pathlib.Path(tmp)/"root.json"
+        root={"schema":"XRAY_NASDAQ_SCREENER_SINA_V2",
+              "asof_et":"2026-10-20","execution":"NONE","real_money":"NO-GO",
+              "unknown_never_pass":True,"status":"HISTORY_PARTIAL",
+              "queue":tiny,"queue_hash":"x","queue_total":4,"cursor":4,
+              "results":{"AAPL":{"status":"UNKNOWN_STATIC"},
+                         "AMD":{"status":"PASS"},"MSFT":{"status":"PASS"},
+                         "NVDA":{"status":"FAIL_PRICE"}},
+              "counts":{"PASS":2}}
+        pth.write_text(json.dumps(root))
+        ranked=ranked_root_pass_unknown(tiny,tmaster,tprice,pth)
+        assert ranked==["AMD","MSFT","AAPL","NVDA"]
+        assert scheduled_unknown_cohort(tiny,"2026-10-20",batch_size=2,
+               ordered_source_research_symbols=ranked)==["AMD","MSFT"]
+        assert scheduled_unknown_cohort(tiny,"2026-10-21",batch_size=2,
+               ordered_source_research_symbols=ranked)==["AAPL","NVDA"]
+        pth.write_text(json.dumps(dict(root,queue_hash="wrong")))
+        try:ranked_root_pass_unknown(tiny,tmaster,tprice,pth)
+        except ValueError:pass
+        else:raise AssertionError("FORGED_ROOT_PRIORITY_ACCEPTED")
+        try:scheduled_unknown_cohort(tiny,"2026-10-20",batch_size=2,
+             ordered_source_research_symbols=["MSFT","MSFT","AMD","NVDA"])
+        except ValueError:pass
+        else:raise AssertionError("ROOT_PRIORITY_NONBIJECTIVE_ACCEPTED")
+    print("XRAY_ROOT_SIP_PRIORITY=PASS_OFFLINE_ZERO_EXTRA_HTTP_NO_PRIMARY")
     assert scheduled_unknown_cohort(expected,"2026-10-20")==expected[:32]
     assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[32:64]
     assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[64:]
