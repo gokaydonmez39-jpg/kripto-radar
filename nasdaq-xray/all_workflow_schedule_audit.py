@@ -28,7 +28,6 @@ EXPECTED={
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
  "xray-canonical-current-pre-mc.yml":("35 5-23 * * 1-5","35 0-3 * * 2-6"),
- "xray-e2e-production-readiness.yml":("13 * * * 1-5",),
  "xray-final-gate-overlay-v2.yml":("55 * * * 1-5",),
  "xray-final-gate-overlay.yml":("15 * * * *",),
  "xray-github-native-root-watchdog.yml":("*/15 * * * 1-5",),
