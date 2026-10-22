@@ -184,7 +184,11 @@ def scheduled_unknown_cohort(unknown,asof,*,batch_size=32,rotation_session=None,
         epoch=dt.date.fromisoformat(asof)
         rotation=dt.date.fromisoformat(rotation_session)
         if (epoch.isoformat()!=asof or rotation.isoformat()!=rotation_session
-                or asof<first or rotation_session<asof):
+                or rotation_session<first or rotation_session<asof):
+            # The observation window starts on 2026-10-20; an immutable
+            # 2026-10-19 source epoch is valid at the 2026-10-20 scheduled
+            # run if it is exactly ONE official NASDAQ session old.
+            # Calendar interval verification below rejects older sources.
             raise ValueError("BEFORE_ROTATION_START")
         cal=mcal.get_calendar("NASDAQ")
         source_to_measured=cal.valid_days(
@@ -655,6 +659,18 @@ def selftest():
     assert scheduled_unknown_cohort(expected,"2026-10-21")==expected[32:64]
     assert scheduled_unknown_cohort(expected,"2026-10-22")==expected[64:]
     assert scheduled_unknown_cohort(expected,"2026-10-23")==expected[:32]
+    # Previously rejected the very first permitted one-session-lag source:
+    # October 19 current PRICE observed on the October 20 scheduled session.
+    # Both are official Nasdaq sessions; data ASOF remains October 19.
+    assert scheduled_unknown_cohort(expected,"2026-10-19",
+                                    rotation_session="2026-10-20")==expected[:32]
+    # Unsettled / outside the first observation session must not advance.
+    for old_asof,day in (("2026-10-16","2026-10-20"),
+                         ("2026-10-19","2026-10-22"),
+                         ("2026-10-19","2026-10-19")):
+        try:scheduled_unknown_cohort(expected,old_asof,rotation_session=day)
+        except ValueError:pass
+        else:raise AssertionError("PRICE_ROTATION_STALE_OR_PRESCHEDULE_ACCEPTED")
     # Source snapshot one session behind: advance study rotation on
     # official observation session, NEVER advance the underlying data ASOF.
     assert scheduled_unknown_cohort(expected,"2026-10-20",
