@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-22T06:22:28.453908+00:00",
+  "last_ingest_at_utc": "2026-10-22T10:38:38.388898+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 197,
+  "snapshot_count": 198,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -94288,6 +94288,110 @@
       },
       "payload_sha256": "30a2c061707d0d80855aaf6bed75092f5cb21b990c2b27fa4f1731c4c7c59fc9",
       "source": "trade_halts",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-22T10:38:37.135162+00:00",
+      "observed_at_utc": "2026-10-22T10:38:38.388863+00:00",
+      "payload": {
+        "row_count": 10,
+        "rows": [
+          {
+            "BX Action": "Delete",
+            "Company Name": "Archimedes Tech SPAC Partners II Co.",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "ATII"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Archimedes Tech SPAC Partners II Co.",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "ATIIU"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Archimedes Tech SPAC Partners II Co.",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "ATIIW"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Davion Healthcare Plc",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "DAVI"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Tidal Trust IV",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "EMAG"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Northern Lights Fund Trust III",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "F",
+            "Symbol": "FIFT"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Tema ETF Trust",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "F",
+            "Symbol": "ICOM"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Forge Nano Holdings Inc.",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "NANO"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Forge Nano Holdings Inc.",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "NANOW"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Tema ETF Trust",
+            "Effective Date": "10/22/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "F",
+            "Symbol": "THRU"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "fe0a93515b47d58c63e00d86a19a2c926795436c6211115ea390c203acf87d5d",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
