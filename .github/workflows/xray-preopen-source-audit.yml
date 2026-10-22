@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/xray-preopen-source-audit.yml"
       - "nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py"
+      - "nasdaq-xray/repository_integrity_audit.py"
   push:
     branches: [main]
     paths:
@@ -84,6 +85,10 @@ jobs:
           python -m py_compile nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
           python nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
           python -O nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py
+          python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+          python -m py_compile nasdaq-xray/repository_integrity_audit.py
+          python nasdaq-xray/repository_integrity_audit.py --selftest
+          python -O nasdaq-xray/repository_integrity_audit.py --selftest
   audit:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
