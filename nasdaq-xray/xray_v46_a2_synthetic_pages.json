@@ -1,0 +1,93 @@
+{
+  "pages": [
+    {
+      "next_page_token": "tok_a",
+      "query": {
+        "asof": "2026-10-22",
+        "end": "2026-10-22T20:00:00Z",
+        "feed": "sip",
+        "limit": 2,
+        "sort": "asc",
+        "start": "2026-10-22T13:30:00Z",
+        "symbols": [
+          "AAPL",
+          "MSFT"
+        ]
+      },
+      "requested_page_token": null,
+      "synthetic_rows": [
+        {
+          "S": "AAPL",
+          "synthetic_key": "syn_a1",
+          "t": "2026-10-22T14:00:00.000000100Z"
+        },
+        {
+          "S": "AAPL",
+          "synthetic_key": "syn_a2",
+          "t": "2026-10-22T14:00:00.000000200Z"
+        }
+      ]
+    },
+    {
+      "next_page_token": "tok_b",
+      "query": {
+        "asof": "2026-10-22",
+        "end": "2026-10-22T20:00:00Z",
+        "feed": "sip",
+        "limit": 2,
+        "sort": "asc",
+        "start": "2026-10-22T13:30:00Z",
+        "symbols": [
+          "AAPL",
+          "MSFT"
+        ]
+      },
+      "requested_page_token": "tok_a",
+      "synthetic_rows": [
+        {
+          "S": "AAPL",
+          "synthetic_key": "syn_a3",
+          "t": "2026-10-22T14:00:00.000000250Z"
+        }
+      ]
+    },
+    {
+      "next_page_token": null,
+      "query": {
+        "asof": "2026-10-22",
+        "end": "2026-10-22T20:00:00Z",
+        "feed": "sip",
+        "limit": 2,
+        "sort": "asc",
+        "start": "2026-10-22T13:30:00Z",
+        "symbols": [
+          "AAPL",
+          "MSFT"
+        ]
+      },
+      "requested_page_token": "tok_b",
+      "synthetic_rows": [
+        {
+          "S": "MSFT",
+          "synthetic_key": "syn_m1",
+          "t": "2026-10-22T14:30:00Z"
+        }
+      ]
+    }
+  ],
+  "query": {
+    "asof": "2026-10-22",
+    "end": "2026-10-22T20:00:00Z",
+    "feed": "sip",
+    "limit": 2,
+    "sort": "asc",
+    "start": "2026-10-22T13:30:00Z",
+    "symbols": [
+      "AAPL",
+      "MSFT"
+    ]
+  },
+  "sample_type": "OFFLINE_SYNTHETIC_FIXTURE_NOT_PROVIDER_DATA",
+  "schema": "XRAY_V46_A2_SYNTHETIC_STOCK_TRADES_PAGINATION_V1",
+  "source_reference": "https://docs.alpaca.markets/us/reference/stocktrades-1"
+}
