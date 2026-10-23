@@ -113,6 +113,21 @@ KNOWN_CORE_INCIDENT = {
 }
 
 
+# Alpaca project maintainer's dated reconciliation of two DIFFERENT
+# historical ingestion gaps; a claim about the vendor dataset only.
+# https://github.com/alpacahq/Alpaca-API/issues/288
+PROVIDER_BACKFILL_REPORTS = (
+    {'date': '2026-10-07', 'feeds': ('SIP',),
+     'maintainer_report_utc': '2026-10-14T21:00:49Z',
+     'provenance': 'https://github.com/alpacahq/Alpaca-API/issues/288',
+     'scope': 'HISTORICAL_TRADES_QUOTES'},
+    {'date': '2026-10-15', 'feeds': ('SIP', 'IEX'),
+     'maintainer_report_utc': '2026-10-16T19:19:38Z',
+     'provenance': 'https://github.com/alpacahq/Alpaca-API/issues/288',
+     'scope': 'HISTORICAL_TRADES_QUOTES_MINUTE_BARS'},
+)
+
+
 def historical_session_incident_audit(session_days: list[str],
                                       feed: str = 'SIP') -> dict:
     """Offline session risk overlay. Never attests provider replay or access.
@@ -140,12 +155,21 @@ def historical_session_incident_audit(session_days: list[str],
     require(dates == sorted(set(dates)), 'INCIDENT_SESSION_DUP_OR_ORDER')
     matched = (feed in KNOWN_CORE_INCIDENT['feeds'] and
                KNOWN_CORE_INCIDENT['et_date'] in dates)
+    claimed_backfills = [
+        {'date': report['date'], 'reported_at_utc': report['maintainer_report_utc'],
+         'scope': report['scope'], 'source_url': report['provenance']}
+        for report in PROVIDER_BACKFILL_REPORTS
+        if report['date'] in dates and feed in report['feeds']
+    ]
     return {
         'schema': 'XRAY_V40_ALPACA_INCIDENT_QUARANTINE_SHADOW_V1',
         'claimed_session_dates_count': len(dates),
         'feed': feed,
         'documented_core_session_incident': matched,
         'documented_incident_id': KNOWN_CORE_INCIDENT['id'] if matched else None,
+        'vendor_reported_historical_backfills': claimed_backfills,
+        'vendor_report_does_not_attest_local_dataset': True,
+        'oct15_provider_window_disagreement_review_required': matched,
         'incident_evidence_url': KNOWN_CORE_INCIDENT['source_url'] if matched else None,
         'status': ('INCIDENT_BACKFILL_RECONCILIATION_REQUIRED' if matched
                    else 'NO_DOCUMENTED_INCIDENT_MATCH_NOT_COMPLETENESS_PROOF'),
