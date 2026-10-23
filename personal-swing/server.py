@@ -31,7 +31,7 @@ def make_handler(directory):
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             route=urllib.parse.urlsplit(self.path).path
-            if route in ('/','/index.html'):p=BASE/'private_index.html';mime='text/html; charset=utf-8'
+            if route in ('/','/index.html'):p=BASE/'index.html';mime='text/html; charset=utf-8'
             elif route=='/api/latest':p=root/'latest.json';mime='application/json; charset=utf-8'
             elif route=='/api/journal':p=root/'journal.json';mime='application/json; charset=utf-8'
             elif route=='/api/progress':p=root/'progress.json';mime='application/json; charset=utf-8'
