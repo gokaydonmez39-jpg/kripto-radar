@@ -8,6 +8,8 @@ import argparse
 import json
 import sys
 import os
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import fcntl
 from pathlib import Path
 import engine
@@ -47,6 +49,20 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
             fcntl.flock(h.fileno(),fcntl.LOCK_UN)
 
 
+def current_completed_session(now=None):
+    """Only process TODAY's fully completed Nasdaq ET equity session.
+
+    Schedule is UTC; Turkey is +03 and New York changes offset.
+    A US holiday, weekend, or unfinished session returns None with no provider IO.
+    """
+    instant = now or datetime.now(timezone.utc)
+    if instant.tzinfo is None:
+        raise ValueError('AWARE_NOW_REQUIRED')
+    today_et = instant.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+    completed = engine.trading_asof(instant).isoformat()
+    return completed if completed == today_et else None
+
+
 def main(argv=None):
     p=argparse.ArgumentParser(description='Personal, read-only daily START/FINAL scan')
     p.add_argument('--dir',default='private-data')
@@ -57,7 +73,11 @@ def main(argv=None):
     p.add_argument('--followups',action='store_true')
     p.add_argument('--github-safe-log',action='store_true',help='Suppress per-symbol detail')
     a=p.parse_args(argv)
-    asof=a.asof or engine.trading_asof().isoformat()
+    asof=a.asof if a.asof else current_completed_session()
+    if asof is None:
+        print(json.dumps({'status':'SKIPPED_NO_COMPLETED_CURRENT_ET_SESSION',
+                          'execution':'NONE','market_data_called':False},sort_keys=True))
+        return 0
     symbols=runner.get_scope(watchlist_file=a.watchlist_file)
     try:
         summary=run_once(asof=asof,symbols=symbols,directory=a.dir,
