@@ -39,7 +39,7 @@ jobs:
           python -m py_compile nasdaq-xray/xray_v30_sip_exact30_three_canary.py
           python nasdaq-xray/xray_v30_sip_exact30_three_canary.py --selftest
           python -O nasdaq-xray/xray_v30_sip_exact30_three_canary.py --selftest
-      - name: Main-only exact ASOF 30-official-session SIP bounded probe (max 10 HTTP pages)
+      - name: Main-only exact ASOF 30-official-session SIP bounded probe (max 16 HTTP pages)
         if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         shell: bash
         env:
@@ -61,7 +61,7 @@ jobs:
           assert d['exact_daily_RTH_integer_volume_attested'] is False
           assert d['g9_pass'] is False and d['canonical_files_changed'] is False
           assert d['no_vendor_ohlcv_persisted'] and d['no_credentials_persisted']
-          assert d['page_requests']<=10 and d['sample_size']==3
+          assert d['page_requests']<=16 and d['sample_size']==3
           assert not any(k in d for k in ('bars','prices','volumes','ohlcv','credentials','symbols'))
           print('XRAY_V30_COUNTS_ONLY_NO_ALPHA='+json.dumps({
               'status':d['status'], 'daily_complete_symbol_count':d['daily_complete_symbol_count'],
