@@ -34,6 +34,40 @@ class SyntheticEODGateTests(unittest.TestCase):
                          (0,'NONE','NO-GO'))
         self.assertEqual(x['orders'],[])
 
+
+    def test_negative_correction_delta_reduces_final_volume(self):
+        d=sample()
+        r=d['synthetic_replay']
+        r['corrected_delta_microshares']=-1_000_000
+        r['net_all_hours_microshares']=9_000_000
+        r['rth_continuous_microshares']=5_000_000
+        r['closing_auction_microshares']=2_000_000
+        r['rth_including_auction_microshares']=7_000_000
+        d['utp_issue_summaries'][2]['volume_microshares']=9_000_000
+        d['provider_auction']['volume_microshares']=2_000_000
+        result=audit(d)
+        self.assertTrue(result['synthetic_net_corrections_arithmetic_checked'])
+        self.assertFalse(result['actual_correction_lineage_and_source_coverage_verified'])
+        self.assertFalse(result['a3_release_ready'])
+
+    def test_negative_correction_underflow_cannot_make_negative_volume(self):
+        d=sample();d['synthetic_replay']['corrected_delta_microshares']=-11_000_000
+        self.assertRaises(EODScopeBlocked,audit,d)
+
+    def test_non_correction_negative_amounts_still_rejected(self):
+        for field in ('original_microshares','canceled_microshares',
+                      'net_all_hours_microshares','extended_hours_microshares',
+                      'closing_auction_microshares','rth_continuous_microshares'):
+            with self.subTest(field=field):
+                d=sample();d['synthetic_replay'][field]=-1
+                self.assertRaises(EODScopeBlocked,audit,d)
+
+    def test_correction_delta_boolean_and_fractional_float_rejected(self):
+        for val in (True,-0.5,-1.2,'-100'):
+            with self.subTest(value=val):
+                d=sample();d['synthetic_replay']['corrected_delta_microshares']=val
+                self.assertRaises(EODScopeBlocked,audit,d)
+
     def test_provider_auction_not_added_twice(self):
         self.bad(lambda d:d['synthetic_replay'].__setitem__(
             'rth_including_auction_microshares',15000000))
