@@ -57,6 +57,28 @@ class ReplayTests(unittest.TestCase):
         ev=[trade(),corr(t='2026-10-23T11:00:00Z')]
         self.assertEqual(self.good(ev)['active_trade_count_research_only'],1)
 
+    def test_reject_matching_invalid_symbol(self):
+        # Matching symbol does not make an invalid ticker safe to process.
+        ev = trade(S='A/PL')
+        with self.assertRaises(EvidenceBlocked):
+            replay([ev], 'A/PL')
+
+    def test_reject_backwards_nanos(self):
+        a = trade(t='2026-10-22T19:30:00.123456789Z')
+        b = trade(i=12, t='2026-10-22T19:30:00.123456100Z')
+        with self.assertRaises(EvidenceBlocked):
+            self.good([a, b])
+
+    def test_allow_forward_nanos(self):
+        a = trade(t='2026-10-22T19:30:00.123456100Z')
+        b = trade(i=12, t='2026-10-22T19:30:00.123456789Z')
+        self.assertEqual(self.good([a,b])['active_trade_count_research_only'], 2)
+
+    def test_reject_unrepresentable_precision(self):
+        a = trade(t='2026-10-22T19:30:00.1234567891Z')
+        with self.assertRaises(EvidenceBlocked):
+            self.good([a])
+
     def test_negative_mutations(self):
         cases = [
             ([trade(),trade()], 'duplicate original'),
