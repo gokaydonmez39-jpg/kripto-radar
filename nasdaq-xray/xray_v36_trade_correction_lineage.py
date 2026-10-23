@@ -99,6 +99,69 @@ def _same_old(old: dict, ev: dict, prefix: str) -> bool:
             old['c'] == _conditions(ev[prefix+'c']))
 
 
+
+# Fixed, published provider incident. The interval is an operational observation,
+# NOT proof that the historical repaired dataset is still missing trades.
+# Source: https://status.alpaca.markets/incidents/8tvqz47bxs2v
+KNOWN_CORE_INCIDENT = {
+    'id': 'ALPACA_VENDOR_MARKET_DATA_2026_10_15',
+    'et_date': '2026-10-15',
+    'start_et': '13:32',
+    'resolved_et': '14:46',
+    'feeds': ('SIP', 'IEX'),
+    'source_url': 'https://status.alpaca.markets/incidents/8tvqz47bxs2v',
+}
+
+
+def historical_session_incident_audit(session_days: list[str],
+                                      feed: str = 'SIP') -> dict:
+    """Offline session risk overlay. Never attests provider replay or access.
+
+    This accepts *claimed* session dates; it does not verify the NYSE calendar.
+    Use a licensed, independently reconciled completed historical dataset
+    before changing downstream market-data status. BOATS overnight issues
+    are NOT evidence of SIP regular-session loss.
+    """
+    require(type(session_days) is list and 1 <= len(session_days) <= 30,
+            'INCIDENT_SESSION_COUNT')
+    require(type(feed) is str and feed in ('SIP', 'IEX', 'BOATS'),
+            'INCIDENT_FEED_SCOPE')
+    dates = []
+    for raw in session_days:
+        require(type(raw) is str and re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}', raw)
+                is not None, 'INCIDENT_DATE_FORMAT')
+        try:
+            parsed = datetime.strptime(raw, '%Y-%m-%d').date()
+        except ValueError as exc:
+            raise EvidenceBlocked('XRAY_V36_INCIDENT_DATE_INVALID') from exc
+        require(parsed.isoformat() == raw and parsed.weekday() < 5,
+                'INCIDENT_NON_TRADING_WEEKDAY')
+        dates.append(raw)
+    require(dates == sorted(set(dates)), 'INCIDENT_SESSION_DUP_OR_ORDER')
+    matched = (feed in KNOWN_CORE_INCIDENT['feeds'] and
+               KNOWN_CORE_INCIDENT['et_date'] in dates)
+    return {
+        'schema': 'XRAY_V40_ALPACA_INCIDENT_QUARANTINE_SHADOW_V1',
+        'claimed_session_dates_count': len(dates),
+        'feed': feed,
+        'documented_core_session_incident': matched,
+        'documented_incident_id': KNOWN_CORE_INCIDENT['id'] if matched else None,
+        'incident_evidence_url': KNOWN_CORE_INCIDENT['source_url'] if matched else None,
+        'status': ('INCIDENT_BACKFILL_RECONCILIATION_REQUIRED' if matched
+                   else 'NO_DOCUMENTED_INCIDENT_MATCH_NOT_COMPLETENESS_PROOF'),
+        'official_calendar_verified': False,
+        'provider_recovery_backfill_verified': False,
+        'trade_cancel_correction_coverage_verified': False,
+        'settled_daily_rth_volume_verified': False,
+        'feed_subscription_entitlement_verified': False,
+        'market_data_usage_rights_verified': False,
+        'canonical_price_pass': False,
+        'registered_r92_count': 0,
+        'execution': 'NONE', 'real_money': 'NO-GO',
+        'unknown_never_pass': True,
+    }
+
+
 def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
            provider_rights_attested: bool = False) -> dict:
     """Deterministic integrity check of GIVEN events, not proof of stream coverage.
