@@ -17,8 +17,9 @@ NY=ZoneInfo('America/New_York')
 UTC=dt.timezone.utc
 SYMBOLS=('AAPL','MSFT','NVDA')
 SCHEMA='XRAY_SIP_EXACT30_THREE_SYMBOL_SHADOW_V1'
-MAX_PAGES_PER_LEG=5
-MAX_HTTP_REQUESTS=10
+MAX_DAILY_PAGES=4
+MAX_HALFHOUR_PAGES=12
+MAX_HTTP_REQUESTS=MAX_DAILY_PAGES+MAX_HALFHOUR_PAGES
 MAX_BYTES_PER_RESPONSE=4_000_000
 ENDPOINT='https://data.alpaca.markets/v2/stocks/bars'
 
@@ -126,13 +127,15 @@ def build_report(measured,*,pages,request_status):
       'execution':'NONE','real_money':'NO-GO','unknown_never_pass':True,
       'no_vendor_ohlcv_persisted':True,'no_credentials_persisted':True}
 
-def pages(symbols,timeframe,start,end,asof,key,secret):
+def pages(symbols,timeframe,start,end,asof,key,secret,*,page_budget):
     need(bool(key and secret),'NO_RUNNER_CREDENTIALS')
+    need(type(page_budget) is int and 1<=page_budget<=MAX_HTTP_REQUESTS,
+         'PAGE_BUDGET_INVALID')
     base={'symbols':','.join(symbols),'timeframe':timeframe,'start':start,
           'end':end,'asof':asof,'feed':'sip','adjustment':'raw',
           'sort':'asc','limit':10000}
     all_={x:[] for x in symbols};token=None;seen=set()
-    for i in range(MAX_PAGES_PER_LEG):
+    for i in range(page_budget):
         q=dict(base)
         if token is not None:q['page_token']=token
         req=urllib.request.Request(ENDPOINT+'?'+urllib.parse.urlencode(q),headers={
@@ -191,12 +194,13 @@ def run(root, master, price, *,asof,key,secret,now):
     phase='DAILY'
     try:
         ds,np1=pages(SYMBOLS,'1Day',start.astimezone(UTC).isoformat(),
-                      end.astimezone(UTC).isoformat(),asof,key,secret)
+                      end.astimezone(UTC).isoformat(),asof,key,secret,page_budget=MAX_DAILY_PAGES)
         first=min(s[0] for s in sessions.values())
         last=max(s[-1] for s in sessions.values())+dt.timedelta(minutes=30)
         phase='HALFHOUR'
-        ins,np2=pages(SYMBOLS,'30Min',first.isoformat(),last.isoformat(),asof,key,secret)
+        ins,np2=pages(SYMBOLS,'30Min',first.isoformat(),last.isoformat(),asof,key,secret,page_budget=MAX_HALFHOUR_PAGES)
         phase='COUNTS'
+        need(np1+np2<=MAX_HTTP_REQUESTS,'GLOBAL_PAGE_BUDGET_EXCEEDED')
         result=summarize(days,sessions,ds,ins)
         complete=result['daily_complete_symbol_count']==3 and result['rth_30min_complete_symbol_count']==3
         return build_report(result,pages=np1+np2,
@@ -228,6 +232,8 @@ def selftest():
     days,sessions=official('2026-10-22')
     assert len(days)==30 and days[0]=='2026-09-11'
     assert all(len(v)==13 for v in sessions.values())
+    assert MAX_DAILY_PAGES+MAX_HALFHOUR_PAGES==16
+    assert MAX_DAILY_PAGES>=1 and MAX_HALFHOUR_PAGES>=10
     close_after=(max(v[-1] for v in sessions.values())+dt.timedelta(minutes=31))
     assert close_after==dt.datetime(2026,10,22,20,1,tzinfo=UTC)
     assert close_after<dt.datetime(2026,10,23,0,0,tzinfo=UTC)
