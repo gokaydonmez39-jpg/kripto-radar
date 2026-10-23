@@ -1,0 +1,25 @@
+{
+  "schema":"XRAY_V50_A3_SYNTHETIC_EOD_AU_VV_SCOPE_V1",
+  "sample_type":"SYNTHETIC_REFERENCE_ONLY_NO_SIP_DATA",
+  "utp_spec":"https://utpplan.com/DOC/UtpBinaryOutputSpec-3.0a.pdf",
+  "auction_doc":"https://docs.alpaca.markets/us/v1.1/reference/stockauctionsingle-1",
+  "symbol":"AAPL","session_day":"2026-10-22","et_open":"09:30","et_close":"16:00",
+  "actual_evidence_attested":false,
+  "synthetic_replay":{
+    "original_microshares":12000000,
+    "canceled_microshares":2000000,
+    "corrected_delta_microshares":3000000,
+    "net_all_hours_microshares":13000000,
+    "extended_hours_microshares":2000000,
+    "rth_continuous_microshares":7000000,
+    "closing_auction_microshares":4000000,
+    "rth_including_auction_microshares":11000000
+  },
+  "utp_issue_summaries":[
+    {"category":"A","message_type":"U","scope":"ISSUE_FULL_REPORTED_DAY","issue":"AAPL","session_day":"2026-10-22","phase":"INITIAL_PRELIMINARY","volume_microshares":12000000,"synthetic_end_report_control_seen":false},
+    {"category":"A","message_type":"U","scope":"ISSUE_FULL_REPORTED_DAY","issue":"AAPL","session_day":"2026-10-22","phase":"SECOND_PRELIMINARY","volume_microshares":12000000,"synthetic_end_report_control_seen":false},
+    {"category":"A","message_type":"U","scope":"ISSUE_FULL_REPORTED_DAY","issue":"AAPL","session_day":"2026-10-22","phase":"FINAL_AFTER_END_TRADE_REPORTING","volume_microshares":13000000,"synthetic_end_report_control_seen":true}
+  ],
+  "utp_all_issues_snapshot":{"category":"V","message_type":"V","scope":"ALL_NASDAQ_ISSUES_ALL_MARKETS","session_day":"2026-10-22","volume_microshares":600000000},
+  "provider_auction":{"source":"ALPACA_HISTORICAL_AUCTIONS_SYNTHETIC","scope":"ONE_ISSUE_CLOSING_AUCTION","issue":"AAPL","session_day":"2026-10-22","volume_microshares":4000000,"real_auction_trade_ids_matched":false}
+}
