@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-22",
+  "asof_et": "2026-10-23",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3191
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3192
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3191
+    "UNKNOWN_STATIC": 3192
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1022202621:31|||||||",
+  "official_footer": "File Creation Time: 1023202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3191
+    "UNKNOWN_STATIC": 3192
   },
-  "source_queue_hash": "f1e461a16b7f1a9009c3f40c7646f0331e9aea65d1fceda5ab98586d322a91b1",
-  "source_state_hash": "c0aebb44da546ba5408d3bedc00a36217c9e365ff6a3134ac553bdaced7fa067",
-  "source_unknown_count": 3191,
+  "source_queue_hash": "54fec6659fbe33fd919d04d36baeacb68f71958dfafb630fb64d06bcbb934e02",
+  "source_state_hash": "e0cdca3e775177ac120ba9059b0427c2d7027e72cf5cc1da9684e49d65dddb55",
+  "source_unknown_count": 3192,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3191,
+  "unknown_count": 3192,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -3833,6 +3833,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Asia Pacific Wire & Cable Corporation Limited  - Common shares, Par value .01 per share",
+      "status": "UNKNOWN_STATIC"
+    },
+    "APXC": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Apex Critical Metals Corp. - American Depositary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "APXT": {
@@ -31375,6 +31393,24 @@
       "security_name": "Lexicon Pharmaceuticals, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "LYCA": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Lycia Therapeutics, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "LYEL": {
       "attempts": 0,
       "discovery": {
@@ -45773,24 +45809,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Sadot Group Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "SDST": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Stardust Power Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "SEAT": {
