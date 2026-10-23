@@ -10,6 +10,7 @@ transition is discussed; not a historical security master.
 Sources: RT-222 https://docs.alpaca.markets/us/reference/stocktrades-1
          RT-240 https://www.sec.gov/Archives/edgar/data/798354/000119312525254670/d17957d8k.htm
          RT-263 https://www.sec.gov/Archives/edgar/data/798354/000079835426000009/fi-20251231.htm
+         RT-098 https://docs.alpaca.markets/us/docs/market-data-faq
 NO NETWORK, NO DATA, NO ORDERS, NO LICENSE, NO MARKET OR SIGNAL AUTHORITY.
 """
 from __future__ import annotations
@@ -78,12 +79,23 @@ def audit(query: object) -> dict:
     retrospective_alias_risk = (pre_transfer and not no_mapping and
                                 asof_date is not None and asof_date >= TRANSITION and
                                 query['query_symbol'] == 'FISV')
+    # Official Alpaca FAQ RT-098 observed NEXT-DAY mapping availability on
+    # FB -> META in 2022. Applicability to FI -> FISV is UNKNOWN, NOT proven.
+    # This is a missing-data risk on the transfer day, never a claim that an
+    # actual FISV data gap occurred. No vendor query was performed.
+    provider_same_day_rename_mapping_not_attested = (
+        first <= TRANSITION <= last and not no_mapping)
+    transfer_day_source_identity_uncertain = (
+        first == last == TRANSITION and asof_date == TRANSITION and
+        decision == TRANSITION and not no_mapping)
     # An `asof=-` request disables mapping, but that STILL does not prove
     # historical listing/venue or missing old symbols.
     if future_identity:
         status = 'FUTURE_API_ASOF_LOOKAHEAD_BLOCKED'
     elif crosses:
         status = 'CROSS_TRANSITION_VENUE_PARTITION_REQUIRED'
+    elif transfer_day_source_identity_uncertain:
+        status = 'TRANSFER_DAY_MAPPING_AVAILABILITY_UNVERIFIED'
     elif retrospective_alias_risk:
         status = 'HISTORIC_NYSE_TRADE_MAY_BE_RELABELLED_FISV'
     elif no_mapping:
@@ -99,6 +111,11 @@ def audit(query: object) -> dict:
         'api_asof_is_after_historical_decision': future_identity,
         'api_asof_mapping_disabled': no_mapping,
         'retrospective_alias_risk': retrospective_alias_risk,
+        'provider_same_day_rename_mapping_not_attested': provider_same_day_rename_mapping_not_attested,
+        'alpaca_faq_tplus_one_observed_only_for_fb_meta_example': True,
+        'fisv_mapping_rename_day_proven': False,
+        'provider_rename_mapping_delayed_for_fisv_proven': False,
+        'alpaca_rename_faq_source_reference': 'RT-098',
         'return_symbol_is_historical_listing_evidence': False,
         'sec_8k_2025_10_29_plan_is_realization_proof': False,
         'sec_10k_retrospective_confirmation_known_asof_decision': decision > RETRO_DISCLOSURE,
