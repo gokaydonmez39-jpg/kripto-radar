@@ -79,6 +79,36 @@ class ReplayTests(unittest.TestCase):
         with self.assertRaises(EvidenceBlocked):
             self.good([a])
 
+
+    def test_reject_mixed_eastern_sessions_distinct_ids(self):
+        ev=[trade(i=10,t='2026-10-22T19:30:00Z'),
+            trade(i=11,t='2026-10-23T19:30:00Z')]
+        with self.assertRaises(EvidenceBlocked):
+            self.good(ev)
+
+    def test_reject_mixed_eastern_sessions_reused_id(self):
+        ev=[trade(i=10,t='2026-10-22T19:30:00Z'),
+            trade(i=10,t='2026-10-23T19:30:00Z')]
+        with self.assertRaises(EvidenceBlocked):
+            self.good(ev)
+
+    def test_two_utc_dates_single_eastern_day(self):
+        ev=[trade(i=10,t='2026-10-22T22:00:00Z'),
+            trade(i=11,t='2026-10-23T01:00:00Z')]
+        result=self.good(ev)
+        self.assertEqual(result['active_trade_count_research_only'],2)
+        self.assertTrue(result['single_et_civil_date_of_original_trades_enforced'])
+        self.assertFalse(result['official_session_calendar_partition_attested'])
+        self.assertFalse(result['full_participant_and_reporting_facility_scope_proven'])
+
+    def test_late_correction_after_eastern_midnight(self):
+        initial=trade(i=10,t='2026-10-22T19:30:00Z')
+        corrected=corr(t='2026-10-23T11:00:00Z')
+        result=self.good([initial, corrected])
+        self.assertEqual(result['active_trade_count_research_only'],1)
+        self.assertFalse(result['historic_30_session_correction_lineage_verified'])
+        self.assertFalse(result['canonical_price_pass'])
+
     def test_negative_mutations(self):
         cases = [
             ([trade(),trade()], 'duplicate original'),
