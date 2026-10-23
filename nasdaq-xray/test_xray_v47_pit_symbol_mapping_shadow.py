@@ -35,6 +35,29 @@ class AliasTests(unittest.TestCase):
         self.assertFalse(s['window_crosses_2025_11_11_listing_transfer'])
         self.assertFalse(s['daily_venue_master_independently_checked'])
 
+    def test_transfer_day_asof_mapping_latency_not_proven(self):
+        # Alpaca FAQ documents T+1 availability for FB/META example ONLY.
+        # The FISV transfer day must not receive the same-day identity PASS.
+        s=self.run_with(window_first='2025-11-11', window_last='2025-11-11',
+                        decision_asof='2025-11-11',api_asof='2025-11-11')
+        self.assertTrue(s['provider_same_day_rename_mapping_not_attested'])
+        self.assertEqual(s['status'], 'TRANSFER_DAY_MAPPING_AVAILABILITY_UNVERIFIED')
+        self.assertFalse(s['a2_actual_historical_pages_verified'])
+
+    def test_tplus_one_example_does_not_prove_fisv_same_day(self):
+        s=self.run_with(window_first='2025-11-11',window_last='2025-11-11',
+                        decision_asof='2025-11-12',api_asof='2025-11-12')
+        self.assertTrue(s['provider_same_day_rename_mapping_not_attested'])
+        self.assertFalse(s['fisv_mapping_rename_day_proven'])
+        self.assertFalse(s['canonical_price_pass'])
+
+    def test_mapping_disabled_not_falsely_treated_as_fisv_proof(self):
+        s=self.run_with(window_first='2025-11-11',window_last='2025-11-11',
+                        decision_asof='2025-11-11',api_asof='-')
+        self.assertFalse(s['provider_same_day_rename_mapping_not_attested'])
+        self.assertTrue(s['api_asof_mapping_disabled'])
+        self.assertFalse(s['fisv_mapping_rename_day_proven'])
+
     def test_asof_after_decision_is_future_identity_lookahead(self):
         s=self.run_with(window_first='2025-11-10',window_last='2025-11-10',
                         decision_asof='2025-11-10',api_asof='2026-10-22')
