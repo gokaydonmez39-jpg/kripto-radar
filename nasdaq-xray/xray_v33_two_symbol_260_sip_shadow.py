@@ -31,9 +31,12 @@ def stamp(s):
     need(d.tzinfo is not None,'TIME_UNZONED')
     return d.astimezone(NY).date().isoformat()
 
-def summarize(expected,bars):
+def summarize(expected,bars,weeks):
     need(type(expected) is list and len(expected)==260 and len(set(expected))==260
          and expected==sorted(expected),'CALENDAR_INTEGRITY')
+    need(type(weeks) is list and len(weeks)==52 and len(set(weeks))==52
+         and weeks==sorted(weeks) and set(weeks).issubset(expected),
+         'OFFICIAL_52_WEEK_CLOSE_SCOPE')
     need(type(bars) is dict and set(bars).issubset(SYMBOLS),'SOURCE_SYMBOL_SCOPE')
     proof={}
     for sym in SYMBOLS:
@@ -52,6 +55,9 @@ def summarize(expected,bars):
                     and prices[1]>=max(prices[0],prices[2],prices[3])):invalid+=1
         missing=len(set(expected)-seen)
         proof[sym]={'expected':260,'observed':len(seen),'missing':missing,
+                    'completed_week_closes_expected':52,
+                    'completed_week_closes_observed':len(set(weeks)&seen),
+                    'research_52_completed_weeks_present':len(set(weeks)&seen)==52,
                     'invalid':invalid,'duplicate':duplicate,'outside':outside,
                     'research_exact260_present':missing==0 and invalid==0 and duplicate==0}
     proof['FISV']['legacy_FI_date_scope_exists']=sum(day<CHANGE for day in expected)>0
@@ -111,8 +117,11 @@ def selftest():
         midnight=dt.datetime.combine(dt.date.fromisoformat(d),dt.time(0,0),NY)
         return {'t':midnight.astimezone(UTC).isoformat(),'o':10,'h':11,'l':9,'c':10.5,'v':1000}
     good={s:[bar(d) for d in days] for s in SYMBOLS}
-    positive=summarize(days,good)
-    need(all(positive[s]['research_exact260_present'] for s in SYMBOLS),'POSITIVE')
+    weeks=days[-52:]
+    positive=summarize(days,good,weeks)
+    need(all(positive[s]['research_exact260_present'] and
+             positive[s]['research_52_completed_weeks_present'] for s in SYMBOLS),
+         'POSITIVE_260_52')
     cases=[lambda z:z['CCC'].pop(),lambda z:z['FISV'].append(dict(z['FISV'][-1])),
        lambda z:z['CCC'][10].update(v=0),lambda z:z['CCC'][10].update(v=10.2),
        lambda z:z['FISV'][5].update(h=8),lambda z:z['FISV'][5].update(l=12),
@@ -121,7 +130,7 @@ def selftest():
     import copy
     for f in cases:
         x=copy.deepcopy(good);f(x)
-        try:res=summarize(days,x)
+        try:res=summarize(days,x,weeks)
         except Blocked:continue
         need(not all(res[s]['research_exact260_present'] for s in SYMBOLS),'NEGATIVE_ACCEPTED')
     safe=report('2026-10-22',positive,'RESEARCH_ONLY')
@@ -144,15 +153,17 @@ def main():
         need(set(tech.get('pending_symbols',[]))==set(SYMBOLS) and
             all(tech.get('results',{}).get(s,{}).get('status')=='UNKNOWN_260_OFFICIAL_HISTORY' for s in SYMBOLS),
             'ACTUAL_PENDING_SCOPE_CHANGED')
-        from history_transport_cache_guard import official_completed_sessions
-        expected=sorted(official_completed_sessions(asof))[-260:]
-        need(len(expected)==260 and expected[-1]==asof,'CALENDAR_MISSING')
+        from current_history_source_request import expected_dates
+        expected,weeks=expected_dates(asof)
+        need(len(expected)==260 and expected[-1]==asof and len(weeks)==52
+             and set(weeks).issubset(expected),'OFFICIAL_260_52_CALENDAR_MISSING')
         key=os.getenv('XRAY_ALPACA_DATA_KEY_ID') or os.getenv('XRAY_ALPACA_API_KEY_ID') or ''
         secret=os.getenv('XRAY_ALPACA_DATA_SECRET_KEY') or os.getenv('XRAY_ALPACA_API_SECRET_KEY') or ''
         rows,pages=api(expected,asof,key,secret)
-        result=summarize(expected,rows)
-        status=('RESEARCH_EXACT260_BOTH_PRESENT_NOT_PRIMARY' if all(
-             result[s]['research_exact260_present'] for s in SYMBOLS)
+        result=summarize(expected,rows,weeks)
+        status=('RESEARCH_EXACT260_52W_BOTH_PRESENT_NOT_PRIMARY' if all(
+             result[s]['research_exact260_present'] and
+             result[s]['research_52_completed_weeks_present'] for s in SYMBOLS)
              else 'UNKNOWN_RESEARCH_260_INCOMPLETE')
         out=report(asof,result,status,pages)
     except urllib.error.HTTPError as e:
