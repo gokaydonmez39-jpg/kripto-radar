@@ -12,7 +12,8 @@ References: https://docs.alpaca.markets/us/v1.1/docs/real-time-stock-pricing-dat
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
+import re
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -43,15 +44,26 @@ def _identity(ev: dict, trade_id: Any) -> tuple[str, int]:
     return (ev['x'], trade_id)
 
 
-def _time(ev: dict) -> datetime:
-    require(type(ev.get('t')) is str, 'TIMESTAMP')
+def _time(ev: dict) -> int:
+    # Alpaca SIP timestamps can have nanosecond resolution. datetime alone
+    # truncates the last three digits and can miss a backwards event.
+    raw = ev.get('t')
+    require(type(raw) is str, 'TIMESTAMP')
+    match = re.fullmatch(
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+        r'(?:\.(\d{1,9}))?(?:Z|[+-]\d{2}:\d{2})', raw)
+    require(match is not None, 'TIMESTAMP_RFC3339_NANO')
     try:
-        value = datetime.fromisoformat(ev['t'].replace('Z', '+00:00'))
+        parsed = datetime.fromisoformat(raw.replace('Z', '+00:00'))
     except ValueError as exc:
         raise EvidenceBlocked('XRAY_V36_TIMESTAMP_INVALID') from exc
-    require(value.tzinfo is not None and value.utcoffset() is not None,
+    require(parsed.tzinfo is not None and parsed.utcoffset() is not None,
             'TIMESTAMP_NAIVE')
-    return value
+    utc_sec = parsed.astimezone(timezone.utc).replace(microsecond=0)
+    delta = utc_sec - datetime(1970, 1, 1, tzinfo=timezone.utc)
+    seconds = delta.days * 86400 + delta.seconds
+    nanos = int((match.group(1) or '').ljust(9, '0') or '0')
+    return seconds * 1_000_000_000 + nanos
 
 
 def _conditions(c: Any) -> tuple[str, ...]:
@@ -85,8 +97,8 @@ def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
     The truth of the provided 'source_complete' claim cannot be independently
     established here. It is NEVER upgraded to certified market-data authority.
     """
-    require(type(symbol) is str and symbol.isascii() and
-            symbol.isupper() and 1 <= len(symbol) <= 7, 'SYMBOL_SCOPE')
+    require(type(symbol) is str and re.fullmatch(r'[A-Z][A-Z0-9]{0,6}', symbol)
+            is not None, 'SYMBOL_SCOPE')
     require(type(events) is list and 0 < len(events) <= 100000,
             'SAMPLE_SIZE')
     require(type(source_complete) is bool and
@@ -95,7 +107,7 @@ def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
     retired: set[tuple[str, int]] = set()
     seen_ids: set[tuple[str, int]] = set()
     counts = Counter()
-    last_received: datetime | None = None
+    last_received: int | None = None
 
     for event in events:
         require(type(event) is dict, 'EVENT_OBJECT')
