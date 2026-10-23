@@ -26,6 +26,13 @@ on:
     workflows:
       - "XRAY Canonical Current Pre-MC Factory"
     types: [completed]
+  # Independent fallback. Pre-MC can be dispatched by an Actions scheduler:
+  # chained workflow_run may not start under GitHub's event/depth limits.
+  # Match the existing weekday Pre-MC cron with a later minute.
+  # Existing checked-out source SHA/ASOF + CAS guards still decide publication.
+  schedule:
+    - cron: "51 5-23 * * 1-5"
+    - cron: "51 0-3 * * 2-6"
   workflow_dispatch:
 concurrency:
   group: xray-personal-eod-research-digest-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'main' }}
@@ -46,6 +53,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # The independent schedule must keep fail-closed source checks and
+          # never run with PR secrets / altered market-data authority.
+          grep -Fq 'cron: "51 5-23 * * 1-5"' .github/workflows/xray-personal-eod-research-digest.yml
+          grep -Fq 'cron: "51 0-3 * * 2-6"' .github/workflows/xray-personal-eod-research-digest.yml
           python -m py_compile nasdaq-xray/personal_research_signal_digest.py
           # Offline fixtures exercise the real digest selftest for empty/one/two WATCH rows.
           python -m py_compile nasdaq-xray/test_personal_digest_empty_watch_selftest.py
