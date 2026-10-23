@@ -134,6 +134,37 @@ class ReplayTests(unittest.TestCase):
         self.assertFalse(result['official_calendar_verified'])
         self.assertFalse(result['trade_cancel_correction_coverage_verified'])
 
+
+    def test_provider_oct7_report_is_not_local_sip_revalidation(self):
+        r=historical_session_incident_audit(['2026-10-07'],'SIP')
+        self.assertFalse(r['documented_core_session_incident'])
+        self.assertEqual([x['date'] for x in r['vendor_reported_historical_backfills']],
+                         ['2026-10-07'])
+        self.assertTrue(r['vendor_report_does_not_attest_local_dataset'])
+        self.assertFalse(r['provider_recovery_backfill_verified'])
+        self.assertFalse(r['canonical_price_pass'])
+
+    def test_provider_oct15_historical_backfill_claim_not_a_pass(self):
+        r=historical_session_incident_audit(['2026-10-15'],'SIP')
+        self.assertTrue(r['documented_core_session_incident'])
+        self.assertEqual([x['date'] for x in r['vendor_reported_historical_backfills']],
+                         ['2026-10-15'])
+        self.assertTrue(r['oct15_provider_window_disagreement_review_required'])
+        self.assertEqual(r['status'],'INCIDENT_BACKFILL_RECONCILIATION_REQUIRED')
+        self.assertFalse(r['provider_recovery_backfill_verified'])
+        self.assertFalse(r['settled_daily_rth_volume_verified'])
+
+    def test_no_sip_historical_backfill_attribution_to_boats(self):
+        r=historical_session_incident_audit(['2026-10-07','2026-10-15'],'BOATS')
+        self.assertEqual(r['vendor_reported_historical_backfills'],[])
+        self.assertFalse(r['documented_core_session_incident'])
+        self.assertEqual(r['registered_r92_count'],0)
+
+    def test_iex_only_oct15_provider_backfill_not_oct7(self):
+        r=historical_session_incident_audit(['2026-10-07','2026-10-15'],'IEX')
+        self.assertEqual([x['date'] for x in r['vendor_reported_historical_backfills']],
+                         ['2026-10-15'])
+
     def test_incident_overlay_input_fail_closed(self):
         invalid=[
             ([], 'SIP'),(['2026-10-15','2026-10-15'],'SIP'),
