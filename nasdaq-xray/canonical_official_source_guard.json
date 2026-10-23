@@ -99,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-23T17:26:47.553709+00:00",
+  "generated_at_utc": "2026-10-23T17:45:57.732691+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -900,8 +900,23 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 67,
+      "item_count": 68,
       "items": [
+        {
+          "HaltDate": "10/23/2026",
+          "HaltTime": "13:40:03.590",
+          "IssueName": "Braiin Limited Common Stock",
+          "IssueSymbol": "BRAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/23/2026",
+          "ResumptionQuoteTime": "13:40:03",
+          "ResumptionTradeTime": "13:45:03",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">13:40:03.590</td><td valign=\"top\">BRAI</td><td valign=\"top\">Braiin Limited Common Stock</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">13:40:03                      </td><td valign=\"top\">13:45:03                      </td></tr></table>",
+          "pubDate": "Fri, 23 Oct 2026 04:00:00 GMT",
+          "title": "BRAI"
+        },
         {
           "HaltDate": "10/23/2026",
           "HaltTime": "12:54:44.616",
