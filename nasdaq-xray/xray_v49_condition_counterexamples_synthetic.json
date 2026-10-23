@@ -1,0 +1,19 @@
+{
+  "schema":"XRAY_V49_ALPACA_TAPE_C_CONDITION_SYNTHETIC_ONLY_V1",
+  "sample_type":"ILLUSTRATIVE_SYNTHETIC_TRADES_NO_MARKET_AUTHORITY",
+  "reference":"https://docs.alpaca.markets/us/docs/market-data-faq",
+  "tape":"C",
+  "cases":[
+    {"name":"ODDLOT_ONLY","synthetic_trades":[{"conditions":["I"],"synthetic_price":"10.00","synthetic_size":7}]},
+    {"name":"ODDLOT_AND_REGULAR","synthetic_trades":[
+      {"conditions":["@"],"synthetic_price":"10.00","synthetic_size":100},
+      {"conditions":["I"],"synthetic_price":"9.00","synthetic_size":7},
+      {"conditions":["@","4","I"],"synthetic_price":"10.50","synthetic_size":3},
+      {"conditions":["R"],"synthetic_price":"11.00","synthetic_size":5}
+    ]},
+    {"name":"DAILY_CORRECTED_CLOSE","synthetic_trades":[
+      {"conditions":["@"],"synthetic_price":"10.00","synthetic_size":100},
+      {"conditions":["9"],"synthetic_price":"10.25","synthetic_size":0}
+    ]}
+  ]
+}
