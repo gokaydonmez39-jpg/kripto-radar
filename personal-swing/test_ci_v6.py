@@ -101,7 +101,9 @@ class OfflineCIPipeline(unittest.TestCase):
             thr.start()
             try:
                 url='http://127.0.0.1:'+str(srv.server_address[1])+'/'
-                with urllib.request.urlopen(url,timeout=3) as response:
+                # CI runners may define an HTTP proxy; loopback must never route through it.
+                direct=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+                with direct.open(url,timeout=3) as response:
                     self.assertEqual(response.status,200)
                     self.assertIn(b'XRAY',response.read())
                     self.assertIn('no-store',response.headers['Cache-Control'])
