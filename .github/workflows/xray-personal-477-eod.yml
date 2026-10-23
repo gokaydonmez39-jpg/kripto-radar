@@ -5,6 +5,11 @@ on:
     paths:
       - 'personal-swing/**'
       - '.github/workflows/xray-personal-477-eod.yml'
+  # One controlled smoke run when this workflow itself changes on main.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xray-personal-477-eod.yml'
   workflow_dispatch:
   schedule:
     # 23:15 UTC is after 16:00 NY RTH close + 45m in both DST seasons.
