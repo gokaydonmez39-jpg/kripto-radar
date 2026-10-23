@@ -115,4 +115,36 @@ class OfflineCIPipeline(unittest.TestCase):
                 read_batch=lambda group,asof:{},batch_size=1)
             self.assertFalse(summary['final_ready'])
 
+class OfficialExchangeDSTTransition(unittest.TestCase):
+    """Real NY IANA timezone and XNAS calendar; never fixed UTC offsets."""
+    def test_october_26_normal_close_turkey_2300(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        close=datetime(2026,10,26,16,0,tzinfo=ZoneInfo('America/New_York'))
+        tr=close.astimezone(ZoneInfo('Europe/Istanbul'))
+        self.assertEqual((tr.hour,tr.minute,tr.date().isoformat()),(23,0,'2026-10-26'))
+        self.assertEqual(close.utcoffset().total_seconds(),-4*3600)
+
+    def test_november_2_normal_close_turkey_next_midnight(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        close=datetime(2026,11,2,16,0,tzinfo=ZoneInfo('America/New_York'))
+        tr=close.astimezone(ZoneInfo('Europe/Istanbul'))
+        self.assertEqual((tr.hour,tr.minute,tr.date().isoformat()),(0,0,'2026-11-03'))
+        self.assertEqual(close.utcoffset().total_seconds(),-5*3600)
+
+    def test_november_2_not_complete_before_45min(self):
+        from datetime import datetime,timezone
+        self.assertEqual(engine.trading_asof(datetime(2026,11,2,21,44,tzinfo=timezone.utc)).isoformat(),'2026-10-30')
+        self.assertEqual(engine.trading_asof(datetime(2026,11,2,21,46,tzinfo=timezone.utc)).isoformat(),'2026-11-02')
+
+    def test_fixed_2315_utc_workflow_after_close_in_both_seasons(self):
+        from datetime import datetime,timedelta,timezone
+        import exchange_calendars as ec
+        cal=ec.get_calendar('XNAS')
+        for d in ('2026-10-26','2026-11-02'):
+            finish=cal.session_close(d).to_pydatetime()+timedelta(minutes=45)
+            scheduler=datetime.fromisoformat(d+'T23:15:00+00:00')
+            self.assertGreaterEqual(scheduler,finish)
+
 if __name__=='__main__':unittest.main()
