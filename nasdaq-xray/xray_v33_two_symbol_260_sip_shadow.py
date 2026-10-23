@@ -62,6 +62,15 @@ def summarize(expected,bars,weeks):
                     'research_exact260_present':missing==0 and invalid==0 and duplicate==0}
     proof['FISV']['legacy_FI_date_scope_exists']=sum(day<CHANGE for day in expected)>0
     proof['FISV']['legacy_FI_expected_sessions']=sum(day<CHANGE for day in expected)
+    # Official issuer-continuity bars are NOT 260 NASDAQ-listed sessions.
+    # Fiserv transferred its LISTING from NYSE (FI) to Nasdaq (FISV) on
+    # 2025-11-11. Document both populations explicitly, including the
+    # exact older FI sessions that Alpaca asof mapping can return.
+    before=proof['FISV']['legacy_FI_expected_sessions']
+    proof['FISV']['nasdaq_listed_sessions_in_required_260']=260-before
+    proof['FISV']['fully_260_nasdaq_listed_sessions_proven']=before==0
+    proof['FISV']['prior_nyse_listed_history_eligibility_authorized']=False
+    proof['FISV']['issuer_continuity_from_asof_mapping_only']=True
     return proof
 
 def report(asof,stats=None,status='BLOCKED',pages=0):
@@ -70,7 +79,9 @@ def report(asof,stats=None,status='BLOCKED',pages=0):
             'sip_pages_used':pages,'sip_max_pages':MAX_PAGES,
             'historical_FISV_FI_issuer_continuity_claim':'OFFICIAL_NASDAQ_LISTING_2025_11_11_AND_PROVIDER_ASOF_MAPPING_RESEARCH',
             'research_presence_only':True,
-            'corporate_actions_adjustments_proven':False,'30_day_exact_RTH_volume_proven':False,
+            'corporate_actions_adjustments_proven':False,
+            'historical_cross_venue_eligibility_policy_approved':False,
+            '30_day_exact_RTH_volume_proven':False,
             'trade_correction_lineage_proven':False,'non_display_automation_rights_proven':False,
             'canonical_history_pass_authority':False,'canonical_price_pass_authority':False,
             'mc_authority':False,'g9_authority':False,'r92_count':0,'iphone_receipt_attested':False,
@@ -122,6 +133,15 @@ def selftest():
     need(all(positive[s]['research_exact260_present'] and
              positive[s]['research_52_completed_weeks_present'] for s in SYMBOLS),
          'POSITIVE_260_52')
+    # The synthetic calendar includes pre-Nov11 2025 dates. Its presence
+    # never proves FISV accumulated 260 completed Nasdaq-listed sessions.
+    f=positive['FISV']
+    need(f['legacy_FI_expected_sessions']>0
+         and f['nasdaq_listed_sessions_in_required_260']+
+             f['legacy_FI_expected_sessions']==260
+         and f['fully_260_nasdaq_listed_sessions_proven'] is False
+         and f['prior_nyse_listed_history_eligibility_authorized'] is False,
+         'CROSS_VENUE_FALSE_NASDAQ_260')
     cases=[lambda z:z['CCC'].pop(),lambda z:z['FISV'].append(dict(z['FISV'][-1])),
        lambda z:z['CCC'][10].update(v=0),lambda z:z['CCC'][10].update(v=10.2),
        lambda z:z['FISV'][5].update(h=8),lambda z:z['FISV'][5].update(l=12),
