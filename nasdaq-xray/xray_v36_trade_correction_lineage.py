@@ -13,11 +13,13 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import re
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
 SCHEMA = 'XRAY_V36_OFFLINE_SIP_TRADE_EVENT_REPLAY_V1'
+ET = ZoneInfo('America/New_York')
 
 class EvidenceBlocked(ValueError):
     pass
@@ -66,6 +68,13 @@ def _time(ev: dict) -> int:
     return seconds * 1_000_000_000 + nanos
 
 
+def _et_civil_day(nanos: int) -> str:
+    # A conservative fail-closed scope, not a proof of an official market
+    # session. Overnight corrections belong to the original trade's scope.
+    return datetime.fromtimestamp(nanos // 1_000_000_000, tz=timezone.utc)\
+        .astimezone(ET).date().isoformat()
+
+
 def _conditions(c: Any) -> tuple[str, ...]:
     require(type(c) is list and 1 <= len(c) <= 4 and
             all(type(v) is str and len(v) == 1 for v in c), 'CONDITION_FORMAT')
@@ -108,6 +117,7 @@ def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
     seen_ids: set[tuple[str, int]] = set()
     counts = Counter()
     last_received: int | None = None
+    first_trade_et_civil_day: str | None = None
 
     for event in events:
         require(type(event) is dict, 'EVENT_OBJECT')
@@ -121,6 +131,14 @@ def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
         last_received = when
         require(event.get('u') is None, 'REST_U_IS_NOT_STREAM_EVENT')
         if typ == 't':
+            # Feed/participant trade IDs may legitimately repeat in another
+            # session. This single-stream function MUST NOT roll across days:
+            # a genuine 30-session replay requires isolated daily partitions.
+            et_day = _et_civil_day(when)
+            if first_trade_et_civil_day is None:
+                first_trade_et_civil_day = et_day
+            require(et_day == first_trade_et_civil_day,
+                    'MULTI_SESSION_TRADE_SCOPE_UNSUPPORTED')
             key = _identity(event, event.get('i'))
             require(key not in seen_ids, 'DUPLICATE_OR_REUSED_ID')
             seen_ids.add(key)
@@ -163,6 +181,9 @@ def replay(events: list[dict], symbol: str, *, source_complete: bool = False,
             'cancels_errors_seen': counts['cancels_errors'],
             'active_trade_count_research_only': len(active),
             'event_ids_unique_and_linked_in_supplied_sample': True,
+            'single_et_civil_date_of_original_trades_enforced': True,
+            'official_session_calendar_partition_attested': False,
+            'full_participant_and_reporting_facility_scope_proven': False,
             'complete_source_stream_caller_claim': source_complete,
             'provider_rights_caller_claim': provider_rights_attested,
             'independently_attested_full_stream': False,
