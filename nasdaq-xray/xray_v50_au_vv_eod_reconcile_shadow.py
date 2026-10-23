@@ -33,9 +33,15 @@ def require(p: bool, code: str) -> None:
         raise EODScopeBlocked('XRAY_V50_' + code)
 
 
-def micros(n: Any, label: str) -> int:
+def micros(n: Any, label: str, *, signed: bool = False) -> int:
     # Never float shares (SIP fractional trade precision is up to 6 decimals).
-    require(type(n) is int and 0 <= n < 1_000_000_000_000_000_000, label)
+    # A correction replaces prior quantity and may DECREASE the reported volume.
+    # Therefore ONLY the aggregate correction DELTA is signed. All absolute
+    # share-volume components and reported official summary volumes are >= 0.
+    bound = 1_000_000_000_000_000_000
+    valid = (type(n) is int and
+             ((-bound < n < bound) if signed else (0 <= n < bound)))
+    require(valid, label)
     return n
 
 
@@ -73,11 +79,13 @@ def audit(doc: Any) -> dict:
              'closing_auction_microshares','rth_including_auction_microshares'}
     keys(sample, terms, 'REPLAY_FIELDS')
     for k in terms:
-        micros(sample[k], 'INTEGER_MICROSHARES_'+k)
+        micros(sample[k], 'INTEGER_MICROSHARES_'+k,
+               signed=(k == 'corrected_delta_microshares'))
     require(sample['canceled_microshares'] <= sample['original_microshares'],
             'CANCEL_GT_ORIGINAL')
     net = (sample['original_microshares'] - sample['canceled_microshares'] +
            sample['corrected_delta_microshares'])
+    require(net >= 0, 'NEGATIVE_NET_AFTER_CORRECTION')
     require(net == sample['net_all_hours_microshares'], 'NET_CORRECTION_MATH')
     rth = sample['rth_continuous_microshares'] + sample['closing_auction_microshares']
     require(rth == sample['rth_including_auction_microshares'],
