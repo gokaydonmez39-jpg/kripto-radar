@@ -2,7 +2,7 @@
 """Offline deterministic positive/negative regression for XRAY v36."""
 from copy import deepcopy
 import unittest
-from xray_v36_trade_correction_lineage import EvidenceBlocked, replay
+from xray_v36_trade_correction_lineage import EvidenceBlocked, replay, historical_session_incident_audit
 
 S='AAPL'; Z='2026-10-22T19:30:00Z'
 
@@ -108,6 +108,43 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(result['active_trade_count_research_only'],1)
         self.assertFalse(result['historic_30_session_correction_lineage_verified'])
         self.assertFalse(result['canonical_price_pass'])
+
+
+    def test_oct15_sip_outage_requires_historical_reconciliation(self):
+        result=historical_session_incident_audit(['2026-10-14','2026-10-15','2026-10-16'],'SIP')
+        self.assertTrue(result['documented_core_session_incident'])
+        self.assertEqual(result['status'],'INCIDENT_BACKFILL_RECONCILIATION_REQUIRED')
+        self.assertFalse(result['provider_recovery_backfill_verified'])
+        self.assertFalse(result['canonical_price_pass'])
+
+    def test_oct15_iex_outage_same_source_risk(self):
+        result=historical_session_incident_audit(['2026-10-15'],'IEX')
+        self.assertTrue(result['documented_core_session_incident'])
+        self.assertEqual(result['registered_r92_count'],0)
+
+    def test_boats_scope_does_not_invent_rth_sip_outage(self):
+        result=historical_session_incident_audit(['2026-10-15','2026-10-21'],'BOATS')
+        self.assertFalse(result['documented_core_session_incident'])
+        self.assertFalse(result['canonical_price_pass'])
+
+    def test_no_outage_match_never_means_source_complete(self):
+        result=historical_session_incident_audit(['2026-10-14','2026-10-16'],'SIP')
+        self.assertFalse(result['documented_core_session_incident'])
+        self.assertEqual(result['status'],'NO_DOCUMENTED_INCIDENT_MATCH_NOT_COMPLETENESS_PROOF')
+        self.assertFalse(result['official_calendar_verified'])
+        self.assertFalse(result['trade_cancel_correction_coverage_verified'])
+
+    def test_incident_overlay_input_fail_closed(self):
+        invalid=[
+            ([], 'SIP'),(['2026-10-15','2026-10-15'],'SIP'),
+            (['2026-10-16','2026-10-15'],'SIP'),
+            (['2026-10-17'],'SIP'),(['2026-02-30'],'SIP'),
+            (['2026-10-15'],'NASDAQ'),(['2026-10-15'],None),
+            (['2026-10-15',42],'SIP'),
+        ]
+        for dates,feed in invalid:
+            with self.subTest(dates=dates,feed=feed),self.assertRaises(EvidenceBlocked):
+                historical_session_incident_audit(dates,feed)
 
     def test_negative_mutations(self):
         cases = [
