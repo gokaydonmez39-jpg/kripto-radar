@@ -147,4 +147,29 @@ class OfficialExchangeDSTTransition(unittest.TestCase):
             scheduler=datetime.fromisoformat(d+'T23:15:00+00:00')
             self.assertGreaterEqual(scheduler,finish)
 
+class DailyHolidayAndFreshnessGuard(unittest.TestCase):
+    """Scheduled runs cannot recycle a previous session as today's new signal."""
+    def test_monday_before_close_never_reuses_friday(self):
+        from datetime import datetime, timezone
+        self.assertIsNone(daily_job.current_completed_session(
+            datetime(2026,10,26,19,30,tzinfo=timezone.utc)))
+    def test_monday_after_45_minutes_is_accepted(self):
+        from datetime import datetime, timezone
+        self.assertEqual(daily_job.current_completed_session(
+            datetime(2026,10,26,21,0,tzinfo=timezone.utc)),'2026-10-26')
+    def test_november_standard_time_preclose_is_not_fresh(self):
+        from datetime import datetime, timezone
+        self.assertIsNone(daily_job.current_completed_session(
+            datetime(2026,11,2,20,45,tzinfo=timezone.utc)))
+        self.assertEqual(daily_job.current_completed_session(
+            datetime(2026,11,2,23,15,tzinfo=timezone.utc)),'2026-11-02')
+    def test_november_thanksgiving_holiday_skipped(self):
+        from datetime import datetime, timezone
+        self.assertIsNone(daily_job.current_completed_session(
+            datetime(2026,11,26,23,15,tzinfo=timezone.utc)))
+    def test_saturday_skipped(self):
+        from datetime import datetime, timezone
+        self.assertIsNone(daily_job.current_completed_session(
+            datetime(2026,10,24,23,15,tzinfo=timezone.utc)))
+
 if __name__=='__main__':unittest.main()
