@@ -3839,7 +3839,7 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "126b8d44572f9cc6bdce86a9d0fd66d90c5d054db49269456f0db4d8bacfa873",
+    "source_candidates_sha256": "32e3eb47d40ce94166206e3e0aed1165918d8f0ef2097b5a1ce60b4624956427",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 62,
       "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 393,
@@ -3848,7 +3848,7 @@
     },
     "transient_retry_count": 2,
     "unknown_never_pass": true,
-    "watchlist_digest": "182bd3131f488e57ef92fbfb2c2eef4c6a4987a306d1284a65a3b0135d401d38"
+    "watchlist_digest": "a311736d4849c35794734519cc2c4845739bbed0a5d4102c6ce89283ec97c3f2"
   },
   "cursor": 3191,
   "downstream_invalidation": {
@@ -3902,7 +3902,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 219,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-23T01:28:35.511094+00:00",
+  "updated_at_utc": "2026-10-23T04:59:00.298995+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -3912,14 +3912,7 @@
     "candidate_local_special_review": null,
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
-    "new_watchlist_symbols": [
-      "CHKP",
-      "CTSH",
-      "EBAY",
-      "EXLS",
-      "SLS",
-      "SSRM"
-    ],
+    "new_watchlist_symbols": [],
     "no_longer_in_top_watchlist": [],
     "orders": [],
     "price_liquidity_screened_count": 477,
@@ -3927,7 +3920,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "126b8d44572f9cc6bdce86a9d0fd66d90c5d054db49269456f0db4d8bacfa873",
+    "source_candidates_sha256": "32e3eb47d40ce94166206e3e0aed1165918d8f0ef2097b5a1ce60b4624956427",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4873,7 +4866,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 38.77,
-        "dv30_usd_observed": 667005440.2,
+        "dv30_usd_observed": 669120556.93,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "AST SpaceMobile, Inc. - Class A Common Stock",
@@ -5068,6 +5061,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 19.09,
+        "dv30_usd_observed": 512671712.77,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Applied Digital Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "APLD",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 212.51,
         "dv30_usd_observed": 512630598.48,
         "exact_completed_sessions": 30,
@@ -5077,20 +5084,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTAP",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 19.09,
-        "dv30_usd_observed": 511829757.87,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Applied Digital Corporation - Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "APLD",
         "tracking_state": "PERSISTING"
       },
       {
@@ -5511,7 +5504,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EBAY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5665,7 +5658,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CTSH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5713,7 +5706,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 82.28,
-        "dv30_usd_observed": 343980358.19,
+        "dv30_usd_observed": 344037871.91,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Interactive Brokers Group, Inc. - Class A Common Stock",
@@ -5825,7 +5818,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 12.06,
-        "dv30_usd_observed": 314013670.3,
+        "dv30_usd_observed": 314487025.3,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Rivian Automotive, Inc. - Class A Common Stock",
@@ -5951,7 +5944,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 69.75,
-        "dv30_usd_observed": 293221823.38,
+        "dv30_usd_observed": 293238284.38,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "10x Genomics, Inc. - Common Stock",
@@ -6119,7 +6112,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 72.4,
-        "dv30_usd_observed": 271045224.98,
+        "dv30_usd_observed": 271134240.77,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Affirm Holdings, Inc. - Class A Common Stock",
@@ -6301,7 +6294,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 179.99,
-        "dv30_usd_observed": 239595353.59,
+        "dv30_usd_observed": 240029129.5,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Vicor Corporation - Common Stock",
@@ -6959,7 +6952,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 85.73,
-        "dv30_usd_observed": 171577877.95,
+        "dv30_usd_observed": 171691555.94,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Rambus, Inc. - Common Stock",
@@ -7863,7 +7856,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHKP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8261,7 +8254,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 31.08,
-        "dv30_usd_observed": 98841679.72,
+        "dv30_usd_observed": 98849869.3,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "News Corporation - Class A Common Stock",
@@ -9263,7 +9256,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SSRM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9473,7 +9466,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9857,7 +9850,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 40.36,
-        "dv30_usd_observed": 62279341.7,
+        "dv30_usd_observed": 62304687.78,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Symbotic Inc. - Class A Common Stock",
@@ -10033,7 +10026,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10612,6 +10605,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 477,
-    "watchlist_digest": "182bd3131f488e57ef92fbfb2c2eef4c6a4987a306d1284a65a3b0135d401d38"
+    "watchlist_digest": "a311736d4849c35794734519cc2c4845739bbed0a5d4102c6ce89283ec97c3f2"
   }
 }
