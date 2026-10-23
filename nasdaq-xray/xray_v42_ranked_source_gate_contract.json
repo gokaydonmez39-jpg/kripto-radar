@@ -1,0 +1,543 @@
+{
+  "schema": "XRAY_V42_CURATED_SOURCE_TO_GATE_CONTRACT_V1",
+  "asof_date": "2026-10-23",
+  "origin_archive": "XRAY_v41_RT262",
+  "origin_source_count": 262,
+  "archive_id_url_sha256": "4a72117e33c4bb97beb50c47dd9a7600f12d52d9beb7ae7594da1d8dff5d8dbb",
+  "original_roundtable_posts_direct_verified_this_step": 0,
+  "execution": "NONE",
+  "real_money": "NO-GO",
+  "broker": false,
+  "orders": [],
+  "source_authority": false,
+  "canonical_price_pass": false,
+  "issuer_mc_pass": false,
+  "g9_pass": false,
+  "c417_pass": false,
+  "registered_r92_count": 0,
+  "iphone_receipt_attested": false,
+  "unknown_never_pass": true,
+  "gates": [
+    {
+      "id": "A0",
+      "type": "EXTERNAL_RIGHTS",
+      "description": "Provider entitlements: exact account, non-display, retention, unattended runner and distribution",
+      "depends_on": [],
+      "state": "BLOCKED_ACCOUNT_SPECIFIC_WRITTEN_RIGHTS",
+      "source_ids": [
+        "RT-260",
+        "RT-247",
+        "RT-248",
+        "RT-243"
+      ],
+      "acceptance": "No vendor bulk replay or automated use from generalized Basic public docs",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A1",
+      "type": "SESSION_SCOPE",
+      "description": "Official market sessions, venue identity, early closes and economic time",
+      "depends_on": [],
+      "state": "PARTIAL_OFFICIAL_DOCS_ONLY",
+      "source_ids": [
+        "RT-128",
+        "RT-081"
+      ],
+      "acceptance": "Official calendar parsed and each of 30 sessions individually verified",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A2",
+      "type": "PAGINATION",
+      "description": "Authorized SIP request coverage, token exhaustion, source epoch, rate limits",
+      "depends_on": [
+        "A0",
+        "A1"
+      ],
+      "state": "BLOCKED_VENDOR_PULL_AND_PAGE_PROOF",
+      "source_ids": [
+        "RT-222",
+        "RT-129"
+      ],
+      "acceptance": "Every page/next token exhausted; source epoch and immutable provenance",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A3",
+      "type": "SIP_VOLUME",
+      "description": "Cancel/error/correction chain, sale conditions, auction and independent settled volume",
+      "depends_on": [
+        "A2"
+      ],
+      "state": "BLOCKED_30_SESSION_DATA_RECONCILIATION",
+      "source_ids": [
+        "RT-242",
+        "RT-207",
+        "RT-244",
+        "RT-249",
+        "RT-251",
+        "RT-232"
+      ],
+      "acceptance": "Every scoped symbol-session reconciled; no orphan correction or missing volume",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A4",
+      "type": "INCIDENT_BACKFILL",
+      "description": "2026-10-07/15 Alpaca restoration separately from local fresh data",
+      "depends_on": [
+        "A2",
+        "A3"
+      ],
+      "state": "BLOCKED_LOCAL_REVALIDATION",
+      "source_ids": [
+        "RT-256",
+        "RT-233"
+      ],
+      "acceptance": "Corrected historical snapshots independently reread and reconciled",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A5",
+      "type": "POINT_IN_TIME_MC",
+      "description": "SEC PIT issuer share class, reported shares, corporate actions, SEC publish timing",
+      "depends_on": [
+        "A1"
+      ],
+      "state": "BLOCKED_PIT_ISSUER_CLASS_EVIDENCE",
+      "source_ids": [
+        "RT-052",
+        "RT-131",
+        "RT-158",
+        "RT-106"
+      ],
+      "acceptance": "Same-ASOF issuer-specific class/CA and EDGAR dissemination proof",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A6",
+      "type": "G9_OFFICIAL_EVENT",
+      "description": "Nasdaq halt codes and SEC issuer material events as of decision time",
+      "depends_on": [
+        "A1"
+      ],
+      "state": "BLOCKED_OFFICIAL_EVENT_SWEEP",
+      "source_ids": [
+        "RT-172",
+        "RT-173",
+        "RT-146"
+      ],
+      "acceptance": "Official G9 halt/corporate event sweep complete at causal timestamp",
+      "release_ready": false,
+      "independently_attested": false
+    },
+    {
+      "id": "A7",
+      "type": "C417_R92_DELIVERY",
+      "description": "Compiled C4.17, independent R92 registry, verified iPhone receipt",
+      "depends_on": [
+        "A3",
+        "A4",
+        "A5",
+        "A6"
+      ],
+      "state": "BLOCKED_INDEPENDENT_SIGNAL_AND_RECEIPT",
+      "source_ids": [
+        "RT-198",
+        "RT-185",
+        "RT-225"
+      ],
+      "acceptance": "Certified independent R92 and actual iPhone delivery receipt",
+      "release_ready": false,
+      "independently_attested": false
+    }
+  ],
+  "ranked_sources": [
+    {
+      "rank": 1,
+      "source_id": "RT-260",
+      "name": "Alpaca Market Data API current Basic/Algo Trader Plus historical entitlement overview",
+      "url": "https://docs.alpaca.markets/us/docs/about-market-data-api",
+      "gate": "A0",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Provider basic plan is not account-specific legal entitlement",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 2,
+      "source_id": "RT-247",
+      "name": "Alpaca Terms and Conditions — Personal and Non-Commercial Usage",
+      "url": "https://files.alpaca.markets/disclosures/library/TermsAndConditions.pdf",
+      "gate": "A0",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Personal and noncommercial agreement applicability requires review",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 3,
+      "source_id": "RT-248",
+      "name": "Alpaca Customer Agreement — Section 30 Market Data Rights and Redistribution",
+      "url": "https://files.alpaca.markets/disclosures/library/AcctAppMarginAndCustAgmt.pdf",
+      "gate": "A0",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Market data rights and retention need exact agreement review",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 4,
+      "source_id": "RT-243",
+      "name": "UTP Plan official Data Administration — policies, subscriber, vendor, non-display declarations",
+      "url": "https://www.utpplan.com/data_admin",
+      "gate": "A0",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "UTP SIP licensed vendor and nondisplay policy check",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 5,
+      "source_id": "RT-128",
+      "name": "Nasdaq Trader Official Trading Calendar",
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=Calendar",
+      "gate": "A1",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Nasdaq official sessions and early closes",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 6,
+      "source_id": "RT-081",
+      "name": "exchange_calendars",
+      "url": "https://github.com/gerrymanoim/exchange_calendars",
+      "gate": "A1",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Calendar crosscheck concept only; no third-party install",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 7,
+      "source_id": "RT-222",
+      "name": "Alpaca Historical Trades — next_page_token and sorted multi-symbol trade order",
+      "url": "https://docs.alpaca.markets/us/reference/stocktrades-1",
+      "gate": "A2",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Historical trades next page token and response coverage",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 8,
+      "source_id": "RT-129",
+      "name": "Alpaca Historical Stock Bars — API pagination contract",
+      "url": "https://docs.alpaca.markets/us/v1.1/reference/stockbars",
+      "gate": "A2",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Historical bars pagination, feed and adjustment semantics",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 9,
+      "source_id": "RT-242",
+      "name": "UTP Plan Data Feed Services Specification v4.1 (September 2026)",
+      "url": "https://www.utpplan.com/DOC/UtpBinaryOutputSpec.pdf",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "UTP SIP cancel correction condition authority",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 10,
+      "source_id": "RT-207",
+      "name": "UTP SIP UTDF specification v14.4 — historical trade-condition matrix",
+      "url": "https://www.nasdaqtrader.com/content/technicalsupport/specifications/utp/utdfspecification.pdf",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "UTDF volume condition and late correction semantics",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 11,
+      "source_id": "RT-244",
+      "name": "Alpaca Real-time Stock Data streaming trade correction and cancel/error schema",
+      "url": "https://docs.alpaca.markets/us/v1.1/docs/real-time-stock-pricing-data",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Alpaca streaming trade correction/cancel event schema",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 12,
+      "source_id": "RT-249",
+      "name": "NYSE Daily TAQ consolidated market data, trade and administration archives",
+      "url": "https://www.nyse.com/data-products/catalog/daily-taq/",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "NYSE Daily TAQ consolidated historical reconciliation alternative",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 13,
+      "source_id": "RT-251",
+      "name": "NYSE Daily TAQ Client Specification v4.3 — correction indicator and session-scoped IDs",
+      "url": "https://beta.nyse.com/publicdocs/nyse/data/Daily_TAQ_Client_Spec_v4.3.pdf",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "NYSE Daily TAQ current 2026 protocol for corrections",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 14,
+      "source_id": "RT-232",
+      "name": "Alpaca Official Historical Stock Auctions (single symbol)",
+      "url": "https://docs.alpaca.markets/us/v1.1/reference/stockauctionsingle-1",
+      "gate": "A3",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Alpaca closing auction research source not volume clearance",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 15,
+      "source_id": "RT-256",
+      "name": "Alpaca official Oct 15 2026 third-party SIP/IEX market-data incident",
+      "url": "https://status.alpaca.markets/incidents/8tvqz47bxs2v",
+      "gate": "A4",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Alpaca Oct15 SIP/IEX stream interruption fact",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 16,
+      "source_id": "RT-233",
+      "name": "Alpaca staff explanation: historical trade update flag u canceled/incorrect/corrected",
+      "url": "https://forum.alpaca.markets/t/persistent-ionq-sip-trade-bar-mismatch-2-trades-and-2-shares/19339",
+      "gate": "A4",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Alpaca stated historical SIP trade/bar correction mismatches",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 17,
+      "source_id": "RT-052",
+      "name": "SEC EDGAR data.sec.gov",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "gate": "A5",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "SEC EDGAR official PIT company-filing source",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 18,
+      "source_id": "RT-131",
+      "name": "SEC official shares-outstanding XBRL scaling/tagging alert",
+      "url": "https://www.sec.gov/newsroom/whats-new/osd-announcement-2210-dqreminder-entitycommonstocksharesoutstanding",
+      "gate": "A5",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "SEC XBRL reported shares dimensional pitfalls",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 19,
+      "source_id": "RT-158",
+      "name": "SEC EDGAR XBRL Guide 2026-06-29 — Shares Outstanding Dimensional Context",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/xbrl-guide-2026-06-29.pdf",
+      "gate": "A5",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "SEC XBRL shares/class dimensions",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 20,
+      "source_id": "RT-106",
+      "name": "Alpaca Corporate Actions Data API (official)",
+      "url": "https://docs.alpaca.markets/us/v1.1/reference/corporateactions-1",
+      "gate": "A5",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Corporate-action provenance research not automatic PIT capitalization",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 21,
+      "source_id": "RT-172",
+      "name": "Nasdaq Trader — Free Trade Halt RSS Feed",
+      "url": "https://classic.nasdaqtrader.com/Trader.aspx?id=TradeHaltRSS",
+      "gate": "A6",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Nasdaq official halts read-only with rights review",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 22,
+      "source_id": "RT-173",
+      "name": "Nasdaq Trader — Trading Halt Reason Codes",
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=TradeHaltCodes",
+      "gate": "A6",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Nasdaq halt reason codes",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 23,
+      "source_id": "RT-146",
+      "name": "SEC Form 8-K — Official Form and Instructions",
+      "url": "https://www.sec.gov/divisions/corpfin/forms/8-k.htm",
+      "gate": "A6",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "SEC 8-K official issuer events",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 24,
+      "source_id": "RT-198",
+      "name": "GitHub Actions — Secure use",
+      "url": "https://docs.github.com/en/actions/reference/security/secure-use",
+      "gate": "A7",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "GitHub Actions read-only safety and token permissions",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 25,
+      "source_id": "RT-185",
+      "name": "GitHub Actions — Troubleshooting workflows",
+      "url": "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows",
+      "gate": "A7",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "GitHub workflow scheduler diagnostics",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 26,
+      "source_id": "RT-225",
+      "name": "GitHub official Git blob API — exact SHA historical PRICE proof",
+      "url": "https://docs.github.com/en/rest/git/blobs",
+      "gate": "A7",
+      "source_archive_priority": "P0",
+      "provenance": "ARCHIVED_SOURCE_LINK_MANUAL_REVIEW",
+      "integration": "READ_ONLY_ACCEPTANCE_REFERENCE",
+      "application": "Git blob SHA immutable source provenance",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 27,
+      "source_id": "RT-001",
+      "name": "imozuru",
+      "url": "https://github.com/MaryCache/imozuru",
+      "gate": "HOLD",
+      "source_archive_priority": "P0",
+      "provenance": "THIRD_PARTY_TOOL_DO_NOT_INSTALL",
+      "integration": "RESEARCH_PATTERN_ONLY_NOT_INSTALLED",
+      "application": "Roundtable secondary/original X attribution unproven; optional audit concept",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 28,
+      "source_id": "RT-002",
+      "name": "Codebase Memory MCP",
+      "url": "https://github.com/DeusData/codebase-memory-mcp",
+      "gate": "HOLD",
+      "source_archive_priority": "P0",
+      "provenance": "THIRD_PARTY_TOOL_DO_NOT_INSTALL",
+      "integration": "RESEARCH_PATTERN_ONLY_NOT_INSTALLED",
+      "application": "Optional external MCP; no installation and no primary price authority",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 29,
+      "source_id": "RT-003",
+      "name": "Cloudflare Security Audit Skill",
+      "url": "https://github.com/cloudflare/security-audit-skill",
+      "gate": "HOLD",
+      "source_archive_priority": "P0",
+      "provenance": "THIRD_PARTY_TOOL_DO_NOT_INSTALL",
+      "integration": "RESEARCH_PATTERN_ONLY_NOT_INSTALLED",
+      "application": "Optional security skill; inspect sources before installation",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 30,
+      "source_id": "RT-064",
+      "name": "QMD",
+      "url": "https://github.com/tobi/qmd",
+      "gate": "HOLD",
+      "source_archive_priority": "P0",
+      "provenance": "THIRD_PARTY_TOOL_DO_NOT_INSTALL",
+      "integration": "RESEARCH_PATTERN_ONLY_NOT_INSTALLED",
+      "application": "Optional local research memory tool; no installation",
+      "verified_link_in_archive": true
+    },
+    {
+      "rank": 31,
+      "source_id": "RT-067",
+      "name": "Open Code Review",
+      "url": "https://github.com/alibaba/open-code-review",
+      "gate": "HOLD",
+      "source_archive_priority": "P0",
+      "provenance": "THIRD_PARTY_TOOL_DO_NOT_INSTALL",
+      "integration": "RESEARCH_PATTERN_ONLY_NOT_INSTALLED",
+      "application": "Optional external code-review automation; no installation",
+      "verified_link_in_archive": true
+    }
+  ],
+  "design_notes": {
+    "known_alpaca_repaired_snapshot_not_revalidated": true,
+    "generic_plan_does_not_grant_account_entitlement": true,
+    "third_party_roundtable_tools_not_installed": true,
+    "no_external_provider_request_performed": true,
+    "draft_pr250_not_merged": true,
+    "local_shadow_contract_not_certified_production": true
+  }
+}
