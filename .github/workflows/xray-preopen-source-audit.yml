@@ -7,6 +7,7 @@ on:
       - ".github/workflows/xray-preopen-source-audit.yml"
       - "nasdaq-xray/preopen_fanin_nonpreemptive_selftest.py"
       - "nasdaq-xray/repository_integrity_audit.py"
+      - "nasdaq-xray/all_workflow_schedule_audit.py"
   push:
     branches: [main]
     paths:
@@ -89,6 +90,9 @@ jobs:
           python -m py_compile nasdaq-xray/repository_integrity_audit.py
           python nasdaq-xray/repository_integrity_audit.py --selftest
           python -O nasdaq-xray/repository_integrity_audit.py --selftest
+          # Reject unreviewed schedules, cron drift and illicit write scopes in PR.
+          python -m py_compile nasdaq-xray/all_workflow_schedule_audit.py
+          python nasdaq-xray/all_workflow_schedule_audit.py --selftest
   audit:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
