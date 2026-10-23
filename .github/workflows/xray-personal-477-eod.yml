@@ -1,0 +1,62 @@
+name: XRAY Personal 477 EOD Daily Health (Research Only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'personal-swing/**'
+      - '.github/workflows/xray-personal-477-eod.yml'
+  workflow_dispatch:
+  schedule:
+    # 23:15 UTC is after 16:00 NY RTH close + 45m in both DST seasons.
+    - cron: '15 23 * * 1-5'
+permissions:
+  contents: read
+concurrency:
+  group: xray-personal-477-daily-eod
+  cancel-in-progress: false
+jobs:
+  offline-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Calendar and regression dependencies
+        run: python -m pip install -r personal-swing/requirements.txt
+      - name: Static tests before any data API access
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest
+  daily-private-scan:
+    needs: offline-guard
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 42
+    # This job does not export signals, raw bars, or journal to public repo.
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install XNAS calendar
+        run: python -m pip install -r personal-swing/requirements.txt
+      - name: Require data-only keys, do not print secrets
+        shell: bash
+        run: |
+          if [[ -z "$XRAY_ALPACA_DATA_KEY_ID" || -z "$XRAY_ALPACA_DATA_SECRET_KEY" ]]; then
+            echo 'BLOCKED_MISSING_DATA_ONLY_API_CREDENTIALS' >&2
+            exit 3
+          fi
+      - name: Run no-broker personal EOD scan (ephemeral private data)
+        shell: bash
+        working-directory: personal-swing
+        run: |
+          python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log
+      - name: Data is ephemeral (intentional privacy limitation)
+        run: echo 'No public HTML, signal JSON, broker API, or artifacts published. Task alert is separate.'
