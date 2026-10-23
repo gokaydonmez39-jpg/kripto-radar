@@ -5,7 +5,6 @@
     "active_halt_symbols": [
       "AZTR",
       "EFTY",
-      "ELME",
       "HCHL",
       "LAWR",
       "MAGH",
@@ -62,7 +61,6 @@
       "COLAU",
       "DRCT",
       "EFTY",
-      "ELME",
       "FSEA",
       "GFAIW",
       "HCHL",
@@ -99,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-23T20:39:15.266263+00:00",
+  "generated_at_utc": "2026-10-23T22:37:34.666141+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -749,8 +747,18 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=10/23/2026"
     },
     "system_status_ipo": {
-      "item_count": 13,
+      "item_count": 14,
       "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "<p>Nasdaq PHLX, Nasdaq ISE, Nasdaq MRX &amp; Nasdaq Options Market will remove symbol ELME1 before the opening on, Monday, October 26, 2026. All open GTC orders in symbol ELME1will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br>",
+          "Message_dt": "Fri, 23 Oct 2026 20:56:19 GMT",
+          "SubjectLine": "Option Notice: Option Delisting",
+          "Time": "16:56:19",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">16:56:19</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\"><p>Nasdaq PHLX, Nasdaq ISE, Nasdaq MRX &amp; Nasdaq Options Market will remove symbol ELME1 before the opening on, Monday, October 26, 2026. All open GTC orders in symbol ELME1will be cancelled after the close of business today. Please contact Nasdaq Option Listings at 215-496-1266 with any questions.</p><br><br><br></td></tr></table>",
+          "pubDate": "Fri, 23 Oct 2026 20:56:19 GMT",
+          "title": "Option Notice: Option Delisting"
+        },
         {
           "Market": "NASDAQ Options,PHLX",
           "Message": "The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MRX and Nasdaq GEMX&nbsp;effective at the opening of business on Monday, October 26, 2026: <strong>PSUS &amp; HOST</strong>. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br><br><br>",
@@ -892,11 +900,10 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 14,
+      "active_halt_count": 13,
       "active_halt_symbols": [
         "AZTR",
         "EFTY",
-        "ELME",
         "HCHL",
         "LAWR",
         "MAGH",
@@ -1714,11 +1721,11 @@
           "IssueSymbol": "ELME",
           "Market": "NYSE",
           "PauseThresholdPrice": "",
-          "ReasonCode": "H11",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">09:26:04.661</td><td valign=\"top\">ELME</td><td valign=\"top\">Elme Communities Common Stock</td><td valign=\"top\">NYSE</td><td valign=\"top\">H11</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "D",
+          "ResumptionDate": "10/23/2026",
+          "ResumptionQuoteTime": "16:34:00",
+          "ResumptionTradeTime": "16:34:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">09:26:04.661</td><td valign=\"top\">ELME</td><td valign=\"top\">Elme Communities Common Stock</td><td valign=\"top\">NYSE</td><td valign=\"top\">D</td><td valign=\"top\"></td><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">16:34:00                      </td><td valign=\"top\">16:34:00                      </td></tr></table>",
           "pubDate": "Fri, 23 Oct 2026 04:00:00 GMT",
           "title": "ELME"
         },
