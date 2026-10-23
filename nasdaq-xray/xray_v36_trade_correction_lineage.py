@@ -128,7 +128,7 @@ def historical_session_incident_audit(session_days: list[str],
             'INCIDENT_FEED_SCOPE')
     dates = []
     for raw in session_days:
-        require(type(raw) is str and re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}', raw)
+        require(type(raw) is str and re.fullmatch(r'\d{4}-\d{2}-\d{2}', raw)
                 is not None, 'INCIDENT_DATE_FORMAT')
         try:
             parsed = datetime.strptime(raw, '%Y-%m-%d').date()
