@@ -99,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-23T17:45:57.732691+00:00",
+  "generated_at_utc": "2026-10-23T19:26:54.762396+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -749,8 +749,18 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=10/23/2026"
     },
     "system_status_ipo": {
-      "item_count": 12,
+      "item_count": 13,
       "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MRX and Nasdaq GEMX&nbsp;effective at the opening of business on Monday, October 26, 2026: <strong>PSUS &amp; HOST</strong>. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br><br><br>",
+          "Message_dt": "Fri, 23 Oct 2026 18:22:34 GMT",
+          "SubjectLine": "Option Notice: New Listing Start Date",
+          "Time": "14:22:34",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">14:22:34</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\">The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MRX and Nasdaq GEMX&nbsp;effective at the opening of business on Monday, October 26, 2026: <strong>PSUS &amp; HOST</strong>. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br><br><br></td></tr></table>",
+          "pubDate": "Fri, 23 Oct 2026 18:22:34 GMT",
+          "title": "Option Notice: New Listing Start Date"
+        },
         {
           "Market": "NASDAQ",
           "Message": "<p>IPO Notice Update: The initial public offering of Lycia Therapeutics, Inc.- LYCA, has officially opened for trading.</p>\n<p>Time:11:54:50<br>\nPrice: $28.55<br>\nShares: 229,921</p>\n<p>For additional information please contact Nasdaq Trading Services at (212) 231-5180.<br>\n<br>\n<br>\n<br>\n</p><br><br>",
@@ -900,8 +910,23 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 68,
+      "item_count": 69,
       "items": [
+        {
+          "HaltDate": "10/23/2026",
+          "HaltTime": "15:17:40.770",
+          "IssueName": "Ping An Biomedical Co Cl A Ord",
+          "IssueSymbol": "PASW",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/23/2026",
+          "ResumptionQuoteTime": "15:17:40",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">15:17:40.770</td><td valign=\"top\">PASW</td><td valign=\"top\">Ping An Biomedical Co Cl A Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/23/2026                    </td><td valign=\"top\">15:17:40                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Fri, 23 Oct 2026 04:00:00 GMT",
+          "title": "PASW"
+        },
         {
           "HaltDate": "10/23/2026",
           "HaltTime": "13:40:03.590",
