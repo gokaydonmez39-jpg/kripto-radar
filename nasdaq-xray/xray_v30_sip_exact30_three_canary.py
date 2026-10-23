@@ -188,12 +188,15 @@ def run(root, master, price, *,asof,key,secret,now):
     end=max(slots[-1] for slots in sessions.values())+dt.timedelta(minutes=31)
     need(end<=now.astimezone(UTC)-dt.timedelta(minutes=15),
          'DAILY_END_NOT_PAST_DELAY_WINDOW')
+    phase='DAILY'
     try:
         ds,np1=pages(SYMBOLS,'1Day',start.astimezone(UTC).isoformat(),
                       end.astimezone(UTC).isoformat(),asof,key,secret)
         first=min(s[0] for s in sessions.values())
         last=max(s[-1] for s in sessions.values())+dt.timedelta(minutes=30)
+        phase='HALFHOUR'
         ins,np2=pages(SYMBOLS,'30Min',first.isoformat(),last.isoformat(),asof,key,secret)
+        phase='COUNTS'
         result=summarize(days,sessions,ds,ins)
         complete=result['daily_complete_symbol_count']==3 and result['rth_30min_complete_symbol_count']==3
         return build_report(result,pages=np1+np2,
@@ -205,8 +208,17 @@ def run(root, master, price, *,asof,key,secret,now):
         status=('RUNNER_SIP_HTTP_401_AUTHENTICATION' if ex.code==401 else
                 'RUNNER_SIP_HTTP_403_POLICY_OR_WINDOW_UNKNOWN' if ex.code==403 else
                 'RUNNER_SIP_RATE_LIMITED' if ex.code==429 else 'RUNNER_SIP_HTTP_UNKNOWN')
-    except (urllib.error.URLError,GateError,OSError,TimeoutError,ValueError,TypeError,json.JSONDecodeError):
-        status='RUNNER_SIP_TRANSPORT_OR_PROVENANCE_UNKNOWN'
+    except GateError as exc:
+        # Preserve only our static enumerated error code and non-sensitive phase.
+        # Never echo vendor bodies/URLs, symbol observations or credentials.
+        code=str(exc)
+        if not re.fullmatch(r'XRAY_V30_[A-Z0-9_]{1,75}',code):
+            code='XRAY_V30_UNCLASSIFIED'
+        status='RUNNER_SIP_'+phase+'_'+code
+    except (urllib.error.URLError,OSError,TimeoutError):
+        status='RUNNER_SIP_'+phase+'_NETWORK_UNKNOWN'
+    except (ValueError,TypeError,json.JSONDecodeError,KeyError):
+        status='RUNNER_SIP_'+phase+'_RESPONSE_PARSING_UNKNOWN'
     return build_report({'asof_et':asof,'official_sessions':30,
         'expected_halfhour_slots_per_symbol':sum(map(len,sessions.values()))},
         pages=0,request_status=status)
@@ -249,6 +261,8 @@ def selftest():
     except GateError:n+=1
     else:raise AssertionError('SATURDAY_ACCEPTED')
     proof=build_report(ans,pages=2,request_status='EXACT30_THIRTEEN_SLOTS_PER_SESSION_SHADOW_ONLY')
+    assert re.fullmatch(r'XRAY_V30_[A-Z0-9_]{1,75}', 'XRAY_V30_VENDOR_BAR_INVALID')
+    assert not re.fullmatch(r'XRAY_V30_[A-Z0-9_]{1,75}', 'https://forbidden.example/token')
     assert proof['full_c417_price_dv30_authority'] is False and proof['registered_r92'] is False
     assert proof['closing_auction_and_trade_corrections_attested'] is False
     assert all(k not in proof for k in ('bars','ohlcv','quotes','prices','volumes','credentials'))
