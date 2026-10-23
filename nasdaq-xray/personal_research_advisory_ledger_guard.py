@@ -122,19 +122,28 @@ def selftest():
          and reserve(original,raw,"6a825366222081918997094d76e6ae46") is None,
          "CURRENT_ZERO_CANDIDATES_SILENT")
     # Positive is synthetic and confined to RAM; it MUST never be committed.
+    # A real digest with zero triggers is an ordinary, safe market outcome.
+    # Never dereference a missing live trigger to build regression fixtures.
     test=deepcopy(raw)
-    trigger=test["recent_technical_triggers"][0]
-    trigger["status"]="RESEARCH_SETUP_CANDIDATE"
-    trigger["unresolved_or_rejected"]=[]
+    trigger={"symbol":"SIMULATED","status":"RESEARCH_SETUP_CANDIDATE",
+             "not_a_trade_or_R92":True,
+             "technical_source_confidence":"LIMITED_SECONDARY_EOD",
+             "math_formula_audited":True,"unresolved_or_rejected":[]}
+    test["recent_technical_triggers"]=[trigger]
+    test["recent_technical_trigger_count"]=1
     test["status"]="PERSONAL_RESEARCH_SETUP_CANDIDATES_AVAILABLE"
     test["research_setup_candidate_symbols"]=[trigger["symbol"]]
     test["research_setup_candidate_count"]=1
     positive=reserve(original,test,"6a825366222081918997094d76e6ae46")
-    need(positive is not None and len(positive["entries"])==1
+    need(positive is not None and len(positive["entries"])==len(original["entries"])+1
          and positive["entries"][0]["status"]==RESERVED
          and positive["entries"][0]["device_receipt_attested"] is False
          and reserve(positive,test,"6a825366222081918997094d76e6ae46") is None,
          "RESERVATION_EXACT_ONCE")
+    # Ensure our test did not mutate the live digest, and no fake R92 exists.
+    need(raw["recent_technical_triggers"]==json.loads(
+         (ROOT/"personal_research_signal_digest.json").read_text())["recent_technical_triggers"]
+         and raw.get("registered_r92_count")==0, "SYNTHETIC_FIXTURE_ISOLATION")
     mutants=(
         ("FALSE_R92",lambda d:d.update(registered_r92_count=1)),
         ("FAKE_RECEIPT",lambda d:d.update(iphone_receipt_attested=True)),

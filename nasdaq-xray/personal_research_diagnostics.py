@@ -182,8 +182,11 @@ def selftest():
         ("RAW", lambda x: x.update(no_raw_ohlcv_or_levels_exported=False)),
         ("CONFIDENCE", lambda x: x["source_confidence"].update(grade="HIGH")),
         ("BAD_ASOF", lambda x: x.update(asof_et="2026-13-21")),
-        ("DUP_WATCH", lambda x: x["liquidity_watch_symbols"].append(
-            x["liquidity_watch_symbols"][0])),
+        # A zero-WATCH real digest is valid; mutate only an isolated copy.
+        # Duplicate sentinel names must fail the watch partition even if
+        # the actual watchlist has no rows.
+        ("DUP_WATCH", lambda x: x["liquidity_watch_symbols"].extend(
+            ["SIMULATED","SIMULATED"])),
         ("BAD_EVALUATED", lambda x: x.update(technical_evaluated_count=-1)),
         ("FALSE_TRIGGER", lambda x: x.update(
             recent_technical_trigger_count=d["recent_technical_trigger_count"] + 1)),
