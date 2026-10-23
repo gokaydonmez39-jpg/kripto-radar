@@ -24,6 +24,9 @@ EXPECTED={
  "xray-alpaca-delayed-sip-research.yml":("55 13 * * 1-5",),
  "xray-candidate-local-alpaca-sip-recovery.yml":("10 23 * * 1-5",),
  "xray-personal-full-universe-sip-coverage.yml":("10 22 * * 1-5",),
+ # Existing fail-closed personal research scheduled fallbacks, reviewed v35.
+ "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
+ "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
@@ -52,6 +55,7 @@ READONLY_PROVIDER_SCHEDULED={
  "xray-alpaca-delayed-sip-research.yml",
  "xray-candidate-local-alpaca-sip-recovery.yml",
  "xray-personal-full-universe-sip-coverage.yml",
+ "xray-personal-free-iex-eod-signals.yml",
   "xray-personal-full-cohort-early-watch.yml",
  "xray-massive-grouped-history-resume.yml",
  "xray-multi-provider-research-shadow.yml",
@@ -300,6 +304,19 @@ def selftest():
         x["xray-alpaca-delayed-sip-research.yml"].replace(
             '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
         "SCHEDULED_CRON_CHANGED")
+    # Reviewed cron contracts are exact; any new cadence or provider writes fail.
+    bad(lambda x:x.update({"xray-personal-eod-research-digest.yml":
+        x["xray-personal-eod-research-digest.yml"].replace(
+            '"51 5-23 * * 1-5"', '"52 5-23 * * 1-5"', 1)}),
+        "SCHEDULED_CRON_CHANGED")
+    bad(lambda x:x.update({"xray-personal-free-iex-eod-signals.yml":
+        x["xray-personal-free-iex-eod-signals.yml"].replace(
+            '"55 12 * * 1-5"', '"56 12 * * 1-5"', 1)}),
+        "SCHEDULED_CRON_CHANGED")
+    bad(lambda x:x.update({"xray-personal-free-iex-eod-signals.yml":
+        x["xray-personal-free-iex-eod-signals.yml"].replace(
+            "contents: read", "contents: write", 1)}),
+        "SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY")
     # Regression: a removed diagnostic cron must not silently reappear.
     bad(lambda x:x.update({"xray-e2e-production-readiness.yml":
         x["xray-e2e-production-readiness.yml"].replace(
