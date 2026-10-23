@@ -181,7 +181,13 @@ def run(root, master, price, *,asof,key,secret,now):
             'expected_halfhour_slots_per_symbol':sum(map(len,sessions.values()))},
             pages=0,request_status='RUNNER_CREDENTIALS_NOT_CONFIGURED')
     start=dt.datetime.fromisoformat(days[0]+'T00:00:00').replace(tzinfo=NY)
-    end=dt.datetime.fromisoformat((dt.date.fromisoformat(asof)+dt.timedelta(days=1)).isoformat()+'T00:00:00').replace(tzinfo=NY)
+    # Daily bars use their NY session-date timestamp; querying until NEXT midnight
+    # makes the end bound FUTURE in a post-close US-evening GitHub run. Under
+    # delayed historical SIP plans this can produce a 403 delay-window rejection.
+    # Close+1min covers the completed daily aggregation without a future end.
+    end=max(slots[-1] for slots in sessions.values())+dt.timedelta(minutes=31)
+    need(end<=now.astimezone(UTC)-dt.timedelta(minutes=15),
+         'DAILY_END_NOT_PAST_DELAY_WINDOW')
     try:
         ds,np1=pages(SYMBOLS,'1Day',start.astimezone(UTC).isoformat(),
                       end.astimezone(UTC).isoformat(),asof,key,secret)
@@ -194,8 +200,11 @@ def run(root, master, price, *,asof,key,secret,now):
           request_status='EXACT30_THIRTEEN_SLOTS_PER_SESSION_SHADOW_ONLY' if complete
                 else 'EXACT30_MISSING_OR_INTEGRITY_UNKNOWN_SHADOW')
     except urllib.error.HTTPError as ex:
-        status='RUNNER_SIP_HTTP_AUTH_DENIED' if ex.code in (401,403) else (
-               'RUNNER_SIP_RATE_LIMITED' if ex.code==429 else 'RUNNER_SIP_HTTP_UNKNOWN')
+        # HTTP 403 is ambiguous: SIP plan, delayed-window, or provider policy.
+        # Never conflate it with bad credentials or pretend we know the cause.
+        status=('RUNNER_SIP_HTTP_401_AUTHENTICATION' if ex.code==401 else
+                'RUNNER_SIP_HTTP_403_POLICY_OR_WINDOW_UNKNOWN' if ex.code==403 else
+                'RUNNER_SIP_RATE_LIMITED' if ex.code==429 else 'RUNNER_SIP_HTTP_UNKNOWN')
     except (urllib.error.URLError,GateError,OSError,TimeoutError,ValueError,TypeError,json.JSONDecodeError):
         status='RUNNER_SIP_TRANSPORT_OR_PROVENANCE_UNKNOWN'
     return build_report({'asof_et':asof,'official_sessions':30,
@@ -207,6 +216,9 @@ def selftest():
     days,sessions=official('2026-10-22')
     assert len(days)==30 and days[0]=='2026-09-11'
     assert all(len(v)==13 for v in sessions.values())
+    close_after=(max(v[-1] for v in sessions.values())+dt.timedelta(minutes=31))
+    assert close_after==dt.datetime(2026,10,22,20,1,tzinfo=UTC)
+    assert close_after<dt.datetime(2026,10,23,0,0,tzinfo=UTC)
     def bar(t):return {'t':t.isoformat(),'o':10,'h':11,'l':9,'c':10.5,'v':1100}
     ds={s:[bar(dt.datetime.fromisoformat(d+'T04:00:00+00:00')) for d in days] for s in SYMBOLS}
     # Sep timezone has EDT UTC offset -4 for 2026 dates in fixture.
