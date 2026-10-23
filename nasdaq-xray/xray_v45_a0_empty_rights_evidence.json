@@ -1,0 +1,50 @@
+{
+  "schema": "XRAY_V45_A0_EVIDENCE_INTAKE_SHADOW_V1",
+  "asof_date": "2026-10-23",
+  "catalog_schema": "XRAY_V42_CURATED_SOURCE_TO_GATE_CONTRACT_V1",
+  "provider": "ALPACA",
+  "usage": "PRIVATE_PERSONAL_RESEARCH_UNATTENDED_RUNNER",
+  "catalog_source_ids": [
+    "RT-260",
+    "RT-247",
+    "RT-248",
+    "RT-243"
+  ],
+  "claims": {
+    "account_specific_plan_and_feed": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "historical_sip_trades_quotes_and_bars": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "unattended_github_runner_processing": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "non_display_usage_classification": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "private_cache_and_retention": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "public_or_mobile_derived_outputs": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    },
+    "full_cancel_correction_replay_provision": {
+      "status": "MISSING",
+      "document_sha256": null,
+      "document_date": null
+    }
+  }
+}
