@@ -67,7 +67,7 @@ class ResearchEvidenceTests(unittest.TestCase):
     def test_form4_purchase_only_research(self):
         x=r.form4_transaction_evidence(form4_sample(), expected_cik=CIK,
                    accepted_utc="2026-10-23T15:00:00Z",cutoff_utc=CUT)
-        self.assertEqual(x[0]["classification"],"OPEN_MARKET_PURCHASE_REVIEW")
+        self.assertEqual(x[0]["classification"],"PURCHASE_MARKET_OR_PRIVATE_REVIEW")
         self.assertEqual(x[0]["action"],"MANUAL_REVIEW_ONLY")
         self.assertEqual(x[0]["planned_10b5_1"],"UNKNOWN_REQUIRES_FULL_FILING_REVIEW")
 
