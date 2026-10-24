@@ -147,7 +147,7 @@ def form4_transaction_evidence(xml_text, *, expected_cik, accepted_utc, cutoff_u
         if code not in ("P", "S", "M"):
             classification = "UNCLASSIFIED"
         else:
-            classification = {"P": "OPEN_MARKET_PURCHASE_REVIEW", "S": "SALE_REVIEW",
+            classification = {"P": "PURCHASE_MARKET_OR_PRIVATE_REVIEW", "S": "SALE_REVIEW",
                               "M": "OPTION_EXERCISE_NOT_OPEN_MARKET_PURCHASE"}[code]
         value_element = next((x for x in item.iter()
                               if _local(x.tag) == "transactionDate"), None)
