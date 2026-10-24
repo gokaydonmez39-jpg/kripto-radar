@@ -149,14 +149,9 @@ def form4_transaction_evidence(xml_text, *, expected_cik, accepted_utc, cutoff_u
         else:
             classification = {"P": "OPEN_MARKET_PURCHASE_REVIEW", "S": "SALE_REVIEW",
                               "M": "OPTION_EXERCISE_NOT_OPEN_MARKET_PURCHASE"}[code]
-        day = _first_text(item, "transactionDate")
-        trans_date = None
-        if day:
-            # Look for <transactionDate><value>YYYY-MM-DD</value>
-            value_element = next((x for x in item.iter()
-                                  if _local(x.tag) == "transactionDate"), None)
-            if value_element is not None:
-                trans_date = _first_text(value_element, "value")
+        value_element = next((x for x in item.iter()
+                              if _local(x.tag) == "transactionDate"), None)
+        trans_date = _first_text(value_element, "value") if value_element is not None else None
         if trans_date:
             strict_day(trans_date)
         if amended:
