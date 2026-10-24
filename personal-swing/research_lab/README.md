@@ -8,7 +8,7 @@
 - research_runner.py --mode catalogue: 88-source registry schema, deduplication and permission audit.
 - research_runner.py --mode pair --input /PRIVATE/bar-comparison.json: local, authorized two-provider PIT OHLCV QA, diagnostic only. Never commit real/private bars.
 - research_runner.py --mode github-watch: GET-only public GitHub metadata for 22 research code repositories (existence, archive, push timestamp, default branch). No external package execution or vendor market API calls.
-- The dedicated research-only Actions workflow runs normal and optimized Python offline tests on PRs. Weekly Sunday 05:41 UTC on main plus manual dispatch performs bounded GitHub metadata polling only. Cron execution may be delayed.
+- The dedicated research-only Actions workflow runs normal and optimized Python offline tests on PRs. Daily 05:41 UTC (08:41 Turkey time) on main plus manual dispatch performs bounded public GitHub metadata polling only and fails the run if any of the 22 repos becomes UNKNOWN or archived. Cron execution may be delayed.
 - Chat-session read-only Massive and Alpaca IEX API calls already returned real dated daily bars for two historical equities. No raw data were copied to public GitHub; connected-chat access does NOT authorize the GitHub runner to fetch these providers unattended.
 
 ## Data providers and verified gating facts
@@ -29,10 +29,11 @@ All external data keys, source licenses, distribution rights, timestamp proof, e
 ## Work cadence
 
 1. Every research PR: source catalogue + local synthetic regression tests in both normal and optimized Python; fail closed.
-2. Weekly on main after merge: public GitHub source health of 22 code repositories, only repo metadata. Missing or rate limited source becomes UNKNOWN. No model or market data inference.
+2. Daily on main after merge: public GitHub source health of 22 code repositories, only repo metadata. Missing, archived or rate-limited source becomes UNKNOWN, and scheduled metadata job fails to make this observable. No model or market data inference. A GitHub failure does not automatically mean a source was malicious or market feed failed.
 3. When lawful private data and proper license exist: isolated vendor adapter sample, point-in-time and venue comparison to read-only Alpaca IEX; log provenance privately.
 4. Statistical experiments: pre-register targets/factors, minimum historical span as a heuristic 500+ verified XNAS sessions, 15-session purge/embargo for overlapping labels, rolling-origin out-of-sample, transaction costs, splits, false positives, multiple tests, regime sensitivity, alternate source cross-check. No such full OOS experiment is reported as completed.
-5. Promotion remains approval-gated even after a positive result. Neither GitHub metadata freshness nor model popularity demonstrates alpha.
+5. A separate existing ChatGPT research-quality task performs lightweight daily status checks and a deeper Sunday evidence review, reporting only verified operational changes. ChatGPT task notifications must be enabled in user settings; repository schedules do not send phone push.
+6. Promotion remains approval-gated even after a positive result. Neither GitHub metadata freshness nor model popularity demonstrates alpha.
 
 ## Local commands
 
