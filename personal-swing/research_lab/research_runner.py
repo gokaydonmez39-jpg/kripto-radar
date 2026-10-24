@@ -204,8 +204,13 @@ def github_monitor(registry, *, opener=None, token=None, max_items=22):
         except (HTTPError,URLError,TimeoutError,ValueError,KeyError,OSError) as e:
             results.append({"repo":name,"status":"UNKNOWN_UNREACHABLE",
                             "error_type":type(e).__name__})
+    available=sum(x["status"]=="AVAILABLE" for x in results)
     return {"schema":"XRAY_GITHUB_METADATA_WATCH_V1",
             "sources_checked":len(results),
+            "available_count":available,
+            "unknown_or_archived_count":len(results)-available,
+            "market_vendor_api_integrated_count":0,
+            "research_models_executed_count":0,
             "github_public_only":True,"market_data_fetched":False,
             "source_code_executed":False,"production_changed":False,
             "result":results}
@@ -215,6 +220,8 @@ def main(argv=None):
     p.add_argument("--mode",choices=["catalogue","pair","github-watch"],default="catalogue")
     p.add_argument("--input",help="PRIVATE local file; never commit real OHLCV")
     p.add_argument("--catalogue",default=str(CATALOG))
+    p.add_argument("--require-all-available",action="store_true",
+                   help="For GitHub metadata mode, fail when one or more of the 22 repos is unavailable")
     args=p.parse_args(argv)
     registry=read_registry(args.catalogue)
     if args.mode=="catalogue":
@@ -226,6 +233,13 @@ def main(argv=None):
     else:
         outcome=github_monitor(registry,token=os.environ.get("GITHUB_TOKEN"))
     print(json.dumps(outcome,ensure_ascii=False,sort_keys=True))
+    if args.require_all_available:
+        if args.mode != "github-watch":
+            raise SystemExit("REQUIRE_ALL_ONLY_GITHUB_WATCH")
+        if outcome["available_count"] != 22:
+            print("XRAY_RESEARCH_SOURCE_HEALTH=DEGRADED_GITHUB_METADATA_ONLY")
+            raise SystemExit(3)
+        print("XRAY_RESEARCH_SOURCE_HEALTH=PASS_22_PUBLIC_GITHUB_METADATA_ONLY")
 
 if __name__=="__main__":
     main()
