@@ -6,8 +6,9 @@ No API network calls, broker access, orders, private Google Sheets writes, or us
 ## Implemented and guarded
 1. research_sources_v1.json: 49 sources in supplied sequence and P0/P1/P2/P3 levels. Every source has unattended collection OFF and no AL promotion rights. Source 50 has not been supplied.
 2. research_evidence.py: offline SEC filings (8-K, 10-K, 10-Q, Form 4, 13F) with issuer CIK/ticker and acceptance UTC checks; SEC document accession/link validation; Form4 P/S/M distinction and amendment status; 13F filing lag; FRED/ALFRED vintages with explicit publication UTC timestamp.
-3. test_research_evidence.py: negative tests for identity, future filings, amendment, option exercise vs purchases, 13F lag, vintage revisions and missing release proof.
-4. Existing 477-stock engine thresholds, fixed stops and targets, 15-session candidate journal, C4.17 policy and ChatGPT task prompts are UNCHANGED.
+3. test_research_evidence.py: negative tests for identity, future filings, amendment, option exercise vs purchases, 13F lag, vintage revisions, source-catalogue guards and missing release proof.
+4. research_validation.py + test_research_validation.py: offline 15-session stop/target touch ambiguity, gap and missing-bar safeguards, and embargoed purged walk-forward partition. No fills or out-of-sample alpha conclusions are asserted.
+5. Existing 477-stock engine thresholds, fixed stops and targets, 15-session candidate journal, C4.17 policy and ChatGPT task prompts are UNCHANGED.
 
 ## Safe offline execution
 cd personal-swing
