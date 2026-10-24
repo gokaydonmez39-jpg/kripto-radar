@@ -73,6 +73,10 @@ def validate_catalogues(old, new):
         if repo in NEW_FINANCIAL_ACTION_DENIAL:
             _deny_if(item.get("decision") != "REJECT_OUT_OF_SCOPE",
                      "MONEY_TOOL_PROMOTION_FORBIDDEN")
+        if repo in ("shner-elmo/TradingView-Screener",
+                    "atilaahmettaner/tradingview-mcp"):
+            _deny_if(item.get("decision") != "BLOCKED_TRADINGVIEW_NON_DISPLAY",
+                     "TRADINGVIEW_NON_DISPLAY_PROHIBITION")
         if repo == "alpacahq/alpaca-mcp-server":
             _deny_if(item.get("decision") != "OFFLINE_INTERFACE_REVIEW_ONLY",
                      "TRADING_MCP_PROMOTION_FORBIDDEN")
