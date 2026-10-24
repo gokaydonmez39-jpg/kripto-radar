@@ -33,8 +33,8 @@ jobs:
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_ci_v6 test_v6_alpaca_rest
-          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'
