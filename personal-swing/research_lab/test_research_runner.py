@@ -103,6 +103,10 @@ class ResearchRunnerTest(unittest.TestCase):
             return FakeHTTPResponse(b)
         out=github_monitor(self.registry,opener=fetch)
         self.assertEqual(out["sources_checked"],22)
+        self.assertEqual(out["available_count"],22)
+        self.assertEqual(out["unknown_or_archived_count"],0)
+        self.assertEqual(out["market_vendor_api_integrated_count"],0)
+        self.assertEqual(out["research_models_executed_count"],0)
         self.assertTrue(all(x["status"]=="AVAILABLE" for x in out["result"]))
         self.assertTrue(all(x.startswith("https://api.github.com/repos/") for x in seen))
         self.assertFalse(out["market_data_fetched"])
@@ -113,5 +117,17 @@ class ResearchRunnerTest(unittest.TestCase):
         result=github_monitor(self.registry,opener=error)
         self.assertEqual(result["sources_checked"],22)
         self.assertTrue(all(r["status"]=="UNKNOWN_UNREACHABLE" for r in result["result"]))
+        self.assertEqual(result["available_count"],0)
+        self.assertEqual(result["unknown_or_archived_count"],22)
+
+    def test_github_archived_repo_stays_unavailable(self):
+        def archived(req,timeout=None):
+            repo=req.full_url.removeprefix("https://api.github.com/repos/")
+            return FakeHTTPResponse(json.dumps({"full_name":repo,"archived":True,
+                "pushed_at":"2026-10-23T00:00:00Z","default_branch":"main"}).encode("utf-8"))
+        result=github_monitor(self.registry,opener=archived)
+        self.assertEqual(result["available_count"],0)
+        self.assertEqual(result["unknown_or_archived_count"],22)
+        self.assertTrue(all(x["status"]=="UNKNOWN_OR_ARCHIVED" for x in result["result"]))
 
 if __name__=="__main__":unittest.main()
