@@ -153,6 +153,27 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(x["sec"]["coverage"],"NOT_SUPPLIED")
         self.assertEqual(x["macro"]["coverage"],"NOT_SUPPLIED")
 
+    def test_49_source_policy_manifest_closed_by_default(self):
+        path = Path(__file__).with_name("research_sources_v1.json")
+        d = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(d["schema"], "XRAY_49_SOURCE_POLICY_MANIFEST_V1")
+        self.assertEqual(d["source_count"], len(d["sources"]))
+        self.assertEqual(len(d["sources"]), 49)
+        self.assertEqual([s["no"] for s in d["sources"]], list(range(1, 50)))
+        from collections import Counter
+        self.assertEqual(Counter(s["priority"] for s in d["sources"]),
+                         {"P0":1, "P1":7, "P2":24, "P3":17})
+        self.assertTrue(all(not s["unattended_collection_enabled"] for s in d["sources"]))
+        self.assertTrue(all(not s["can_generate_buy_signal"] for s in d["sources"]))
+        self.assertTrue(all(not s["can_override_r92_gates"] for s in d["sources"]))
+        self.assertFalse(d["global_controls"]["enabled_for_production"])
+
+    def test_form4_transaction_date_is_not_filing_date(self):
+        x=r.form4_transaction_evidence(form4_sample(),
+                  expected_cik=CIK,accepted_utc="2026-10-23T15:00:00Z",cutoff_utc=CUT)
+        self.assertEqual(x[0]["transaction_date"],"2026-10-22")
+        self.assertEqual(x[0]["accepted_utc"],"2026-10-23T15:00:00+00:00")
+
     def test_cli_fails_on_overwrite(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/"evidence.json"
