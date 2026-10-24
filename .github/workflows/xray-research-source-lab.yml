@@ -11,8 +11,8 @@ on:
       - '.github/workflows/xray-research-source-lab.yml'
   workflow_dispatch:
   schedule:
-    # Weekly public GitHub project-metadata freshness audit; NOT a price scan.
-    - cron: '41 5 * * 0'
+    # Daily public GitHub project-metadata freshness audit; NOT a price scan.
+    - cron: '41 5 * * *'
 permissions:
   contents: read
 concurrency:
@@ -45,4 +45,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Public GitHub repository metadata ONLY, no vendor data access
-        run: python personal-swing/research_lab/research_runner.py --mode github-watch
+        run: python personal-swing/research_lab/research_runner.py --mode github-watch --require-all-available
