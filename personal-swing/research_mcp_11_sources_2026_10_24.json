@@ -37,10 +37,10 @@
       "canonical_url": "https://github.com/shner-elmo/TradingView-Screener",
       "pinned_sha": "5422d9012752353c59a31d13f54ceba55c265d9d",
       "license": "MIT",
-      "decision": "RIGHTS_BLOCKED_RESEARCH",
+      "decision": "BLOCKED_TRADINGVIEW_NON_DISPLAY",
       "priority": "P2",
       "expected_nonproduction_value": "Candidate secondary screener cross-check for official Nasdaq IEX breakout/RSI; no promotion",
-      "blocking_reason": "TradingView API endpoint is exposed by a third-party wrapper; data usage/automation rights and official RTH alignment not established; user-account cookies not allowed",
+      "blocking_reason": "TradingView public Terms section 3 explicitly forbids automated algorithmic decision-making and non-display market-data usage without separately authorized rights. Repository's MIT code license cannot grant underlying vendor feed entitlement; no API or scanner integration, session cookie extraction or automated query is authorized. https://www.tradingview.com/policies/",
       "ownership_verified": true,
       "api_connected": false,
       "model_installed": false,
@@ -85,10 +85,10 @@
       "canonical_url": "https://github.com/atilaahmettaner/tradingview-mcp",
       "pinned_sha": "8e3e2be87522abc4266216bfe88b20eba511c3b3",
       "license": "MIT",
-      "decision": "RIGHTS_BLOCKED_RESEARCH",
+      "decision": "BLOCKED_TRADINGVIEW_NON_DISPLAY",
       "priority": "P2",
       "expected_nonproduction_value": "Candidate multi-timeframe technical/statistical feature cross-check on independently legal PIT data",
-      "blocking_reason": "Not official TradingView; self-host public endpoint reliance; third-party data rights, RTH session cutoffs, TA model definitions and timing unverified; no npm impersonators",
+      "blocking_reason": "TradingView public Terms section 3 explicitly forbids automated algorithmic decision-making and non-display market-data usage without separately authorized rights. Repository's MIT code license cannot grant underlying vendor feed entitlement; no API or scanner integration, session cookie extraction or automated query is authorized. https://www.tradingview.com/policies/",
       "ownership_verified": true,
       "api_connected": false,
       "model_installed": false,
@@ -256,7 +256,7 @@
       "decision": "OFFLINE_SYNTHETIC_PILOT",
       "priority": "P1",
       "expected_nonproduction_value": "Independent synthetic SEC filings/CIK/Form4 parser schema comparator to existing offline SEC EDGAR adapter",
-      "blocking_reason": "Third party not SEC; AGPL, no remote HTTP authentication, SEC fair-access and User-Agent privacy; fresh EDGAR data unconnected and no active issuer-event veto",
+      "blocking_reason": "Third party not SEC; AGPL, no remote HTTP authentication, SEC fair-access and User-Agent privacy; fresh EDGAR data unconnected and no active issuer-event veto; Official SEC fair-access maximum 10 aggregate req/s and truthful declared User-Agent, issuer release/PIT validation: https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
       "ownership_verified": true,
       "api_connected": false,
       "model_installed": false,
@@ -295,5 +295,9 @@
       "may_use_secrets": false,
       "may_send_money": false
     }
-  ]
+  ],
+  "legal_findings": {
+    "tradingview_non_display": "BLOCKED; public terms section 3 expressly bars automated market-data processing / algorithmic decisions without separate written authorization: https://www.tradingview.com/policies/",
+    "sec_fair_access": "Official SEC permits lawful public EDGAR retrieval subject to its current 10 requests/sec aggregate fair-access policy and declared identity; no client connected in this research: https://www.sec.gov/about/developer-resources"
+  }
 }
