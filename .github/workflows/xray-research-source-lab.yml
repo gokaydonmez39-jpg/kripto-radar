@@ -1,0 +1,48 @@
+name: XRAY Research Source Lab (Read-Only)
+on:
+  pull_request:
+    paths:
+      - 'personal-swing/research_lab/**'
+      - '.github/workflows/xray-research-source-lab.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'personal-swing/research_lab/**'
+      - '.github/workflows/xray-research-source-lab.yml'
+  workflow_dispatch:
+  schedule:
+    # Weekly public GitHub project-metadata freshness audit; NOT a price scan.
+    - cron: '41 5 * * 0'
+permissions:
+  contents: read
+concurrency:
+  group: xray-research-source-lab-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Fail-closed registry and synthetic comparison tests
+        run: |
+          python -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
+          python -O -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
+          python personal-swing/research_lab/research_runner.py --mode catalogue
+  github-source-freshness:
+    needs: offline-contracts
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Public GitHub repository metadata ONLY, no vendor data access
+        run: python personal-swing/research_lab/research_runner.py --mode github-watch
