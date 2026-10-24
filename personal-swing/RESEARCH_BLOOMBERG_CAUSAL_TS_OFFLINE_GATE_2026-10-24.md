@@ -32,3 +32,17 @@ Experimental use, if approved later:
 - Cannot generate AL, WATCH, critical event, R92, device notification, trade, stop/target update or an automated veto.
 - CVLT/LOGI dated records and original stop/target levels remain immutable.
 - This is a **review spec only**, not integration, test result or backtest. Promotion would require a separate explicit approval, independently reviewed license/rights, pinned dependency and isolated acceptance evidence.
+
+
+## Isolated executable gate added on this draft branch
+
+- \`causal_offline_gate.py\`: pure-standard-library point-in-time/attestation/chronology screening with no broker, no network access and no production write actions.
+- \`test_causal_offline_gate.py\`: 10 wholly synthetic regression cases, designed to reject future-feature leakage, impossible outcomes, unreviewed upstream revisions, missing session row, insufficient 15-session embargo, invalid provenance and enabled alerts.
+- Local developer preflight, after separately obtaining the branch, from \`personal-swing/\`:
+
+\`\`\`shell
+python -m unittest -q test_causal_offline_gate
+python -O -m unittest -q test_causal_offline_gate
+\`\`\`
+
+**Evidence boundary:** This code is an input-contract checker only. Its externally supplied attestation booleans do NOT independently verify exchange calendars, data accuracy, licensing, broker entitlement or publisher timestamps. The synthetic fixture deliberately includes dates that are NOT a real XNAS calendar. No Bloomberg package, pretrained model, real OHLCV, observational edge discovery, out-of-sample alpha comparison, production scan or delivery test has been executed or validated by this spec. An actual research benchmark remains BLOCKED until independently authenticated point-in-time source data and rights are provided. This specification may not be used to authorize live AL signals.
