@@ -43,6 +43,11 @@ class CataloguePolicyTests(unittest.TestCase):
             lambda old, new: _edit(new, "alpacahq/alpaca-mcp-server").__setitem__("may_place_order", True),
             "SOURCE_PRIVILEGE_ESCALATION")
 
+    def test_tradingview_algorithmic_feed_cannot_promote(self):
+        self.check_rejected(
+            lambda old, new: _edit(new, "shner-elmo/TradingView-Screener").__setitem__("decision", "OFFLINE_SYNTHETIC_PILOT"),
+            "TRADINGVIEW_NON_DISPLAY_PROHIBITION")
+
     def test_alpaca_trading_mcp_only_interface(self):
         self.check_rejected(
             lambda old, new: _edit(new, "alpacahq/alpaca-mcp-server").__setitem__("decision", "OFFLINE_SYNTHETIC_PILOT"),
