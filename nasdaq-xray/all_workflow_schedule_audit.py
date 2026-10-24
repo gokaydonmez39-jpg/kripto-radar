@@ -42,7 +42,7 @@ EXPECTED={
  "xray-preopen-source-audit.yml":("5 12 * * 1-5","25 12 * * 1-5",
                                     "5 13 * * 1-5","15 13 * * 1-5",
                                     "15 14 * * 1-5"),
- "xray-research-source-lab.yml":("41 5 * * 0",),
+ "xray-research-source-lab.yml":("41 5 * * *",),
  "xray-research-watch-radar.yml":("0 13 * * 1-5","17 15,20,23 * * 1-5"),
  "xray-resilience-observability.yml":("47 * * * 1-5","47 */3 * * 0,6"),
  "xray-sec-mirror-cik-shadow.yml":("37 13 * * 1-5",),
@@ -260,7 +260,7 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
-    assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * 0"]
+    assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * *"]
     assert "xray-research-source-lab.yml" in base["extra_readonly_provider_scheduled"]
     assert "xray-personal-477-eod.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-watch-delivery-microaudit.yml"]==["5 13 * * 1-5","35 22 * * 1-5"]
