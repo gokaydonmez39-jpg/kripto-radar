@@ -27,6 +27,7 @@ EXPECTED={
  # Existing fail-closed personal research scheduled fallbacks, reviewed v35.
  "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
  "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
+ "xray-personal-477-eod.yml":("15 23 * * 1-5",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
@@ -56,6 +57,7 @@ READONLY_PROVIDER_SCHEDULED={
  "xray-candidate-local-alpaca-sip-recovery.yml",
  "xray-personal-full-universe-sip-coverage.yml",
  "xray-personal-free-iex-eod-signals.yml",
+ "xray-personal-477-eod.yml",
   "xray-personal-full-cohort-early-watch.yml",
  "xray-massive-grouped-history-resume.yml",
  "xray-multi-provider-research-shadow.yml",
@@ -255,6 +257,8 @@ def selftest():
     assert base["automated_schedules"]["xray-personal-full-universe-sip-coverage.yml"]==["10 22 * * 1-5"]
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
+    assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
+    assert "xray-personal-477-eod.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-watch-delivery-microaudit.yml"]==["5 13 * * 1-5","35 22 * * 1-5"]
     assert base["automated_schedules"]["xray-manual-decision-research-shadow.yml"]==["17 21 * * 1-5","15 13 * * 1-5"]
     assert "xray-personal-full-cohort-early-watch.yml" in base["extra_readonly_provider_scheduled"]
