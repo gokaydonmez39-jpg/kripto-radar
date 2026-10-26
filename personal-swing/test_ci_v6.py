@@ -146,6 +146,32 @@ class OfflineCIPipeline(unittest.TestCase):
         bar={'timestamp':'2026-10-22T04:00:00Z','open':103.,'high':104.,'low':98.,'close':102.,'volume':10000}
         with self.assertRaisesRegex(ValueError,'FOLLOWUP_MISSING'):
             tracker.track_symbol(sig,[bar],'2026-10-22')
+    def test_missing_trailing_followup_asof_bar_is_rejected_unchanged(self):
+        """A valid Friday prefix cannot masquerade as a checked Monday ASOF."""
+        sig={'symbol':'CVLT','status':'OPEN','asof_et':'2026-10-22',
+             'processed_through':'2026-10-22','stop':95.,'target_2r':110.,
+             'reference_close':100.,'days_held':0,'events':[]}
+        old_state=sig.copy()
+        old_state['events']=[]
+        friday={'timestamp':'2026-10-23T04:00:00Z','open':102.,'high':104.,
+                'low':99.,'close':102.,'volume':10000}
+        with self.assertRaisesRegex(ValueError,'FOLLOWUP_ASOF_BAR_MISSING'):
+            tracker.track_symbol(sig,[friday],'2026-10-26')
+        self.assertEqual(sig,old_state)
+
+    def test_prior_proven_stop_may_close_before_missing_later_asof(self):
+        """A terminal stop on Friday is valid without fabricating Monday prices."""
+        sig={'symbol':'CVLT','status':'OPEN','asof_et':'2026-10-22',
+             'processed_through':'2026-10-22','stop':95.,'target_2r':110.,
+             'reference_close':100.,'days_held':0,'events':[]}
+        friday={'timestamp':'2026-10-23T04:00:00Z','open':99.,'high':102.,
+                'low':94.,'close':97.,'volume':10000}
+        tracker.track_symbol(sig,[friday],'2026-10-26')
+        self.assertEqual(sig['status'],'CLOSED')
+        self.assertEqual(sig['outcome'],'STOP_TOUCHED')
+        self.assertEqual(sig['closed_date'],'2026-10-23')
+        self.assertEqual(sig['days_held'],1)
+
     def test_private_html_server_responds_only_to_loopback(self):
         import threading, urllib.request
         from http.server import ThreadingHTTPServer
