@@ -37,6 +37,11 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
                 'invalid_or_missing':snap['insufficient_data_symbols'],
                 'remaining':snap['remaining_symbols'],
                 'final_ready':snap['valid_data_coverage_complete'],
+                # Safe public diagnostics: identity and policy hashes, NEVER bars/signals.
+                # Downstream private Sheet writer must independently recompute the
+                # exact scope and session; these hashes are correlation witnesses.
+                'scope_sha256':snap['scope_sha256'],
+                'analysis_fingerprint_sha256':snap['analysis_fingerprint_sha256'],
                 'no_execution':True,
             }
             if snap['valid_data_coverage_complete']:
