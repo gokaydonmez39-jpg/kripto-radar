@@ -58,8 +58,15 @@ def parse_ledger(matrix):
             raise LedgerRefused('UNEXPECTED_EVENT_CELLS')
         identity=row[0] if row else ''
         status=row[17] if len(row)>17 else ''
-        if not isinstance(identity,str) or not identity:
+        if len(row)<18 or not isinstance(identity,str) or not identity:
             raise LedgerRefused('EVENT_MISSING_KEY')
+        try:
+            episode=int(identity.rsplit('|',1)[1])
+            expected=event_key(row[2],row[3],row[4],row[5],episode)
+        except (IndexError,TypeError,ValueError) as exc:
+            raise LedgerRefused('EVENT_IDENTITY_MISMATCH') from exc
+        if identity!=expected or row[1]!=f'{row[2]}|{row[3]}':
+            raise LedgerRefused('EVENT_IDENTITY_MISMATCH')
         if identity in found:
             raise LedgerRefused('DUPLICATE_EVENT_KEY')
         if status not in ALLOWED_STATES:
