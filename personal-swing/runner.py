@@ -32,6 +32,24 @@ def sha_symbols(symbols):
     return hashlib.sha256(('\n'.join(symbols)+'\n').encode()).hexdigest()
 
 
+def analysis_fingerprint():
+    """Bind resumable rows to the EXACT code and IEX interpretation that made them.
+
+    Reusing an ASOF+universe checkpoint after an indicator or runner change can
+    otherwise silently mix incompatible AL/IZLE/ELE decisions. The fingerprint
+    deliberately includes both analysis modules, dependencies, and feed policy.
+    """
+    digest=hashlib.sha256()
+    digest.update(b'XRAY_PERSONAL_IEX_DAILY_RAW_XNAS_ANALYSIS_FINGERPRINT_V1\n')
+    for name in ('engine.py','runner.py','requirements.txt'):
+        path=Path(__file__).resolve().with_name(name)
+        digest.update(name.encode('ascii')+b'\0')
+        digest.update(path.read_bytes())
+        digest.update(b'\0')
+    digest.update(b'feed=iex;timeframe=1Day;adjustment=raw;calendar=XNAS')
+    return digest.hexdigest()
+
+
 def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None):
     if watchlist_file:
         j=json.loads(Path(watchlist_file).read_text(encoding='utf-8'))
@@ -52,20 +70,30 @@ def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None):
 
 def fresh_checkpoint(path, asof, symbols):
     h=sha_symbols(symbols)
+    fingerprint=analysis_fingerprint()
     p=Path(path)
     if p.exists():
         data=json.loads(p.read_text(encoding='utf-8'))
         if data.get('schema')!=CHECKPOINT_SCHEMA:raise ValueError('INVALID_CHECKPOINT_SCHEMA')
-        if data.get('asof_et')==asof and data.get('scope_sha256')==h and data.get('scope_count')==len(symbols):
+        if (data.get('asof_et')==asof and data.get('scope_sha256')==h
+                and data.get('scope_count')==len(symbols)
+                and data.get('analysis_fingerprint_sha256')==fingerprint):
             rows=data.get('rows')
             if not isinstance(rows,dict) or not set(rows).issubset(set(symbols)):
                 raise ValueError('CHECKPOINT_SCOPE_CORRUPTION')
             return data
         # Do not overwrite the prior day's checkpoint without preserving it.
-        archive=p.with_name(f'{p.stem}_{data.get("asof_et","unknown")}_{data.get("scope_sha256","")[:10]}.json')
-        if archive.exists():raise RuntimeError('CHECKPOINT_ARCHIVE_COLLISION')
+        old_version=str(data.get('analysis_fingerprint_sha256') or 'legacy')[:10]
+        stem=f'{p.stem}_{data.get("asof_et","unknown")}_{data.get("scope_sha256","")[:10]}_{old_version}'
+        # Keep EVERY prior checkpoint; never clobber another policy revision.
+        archive=p.with_name(stem+'.json')
+        index=0
+        while archive.exists():
+            index+=1
+            archive=p.with_name(f'{stem}_{index}.json')
         p.replace(archive)
     return {'schema':CHECKPOINT_SCHEMA,'asof_et':asof,'scope_sha256':h,
+            'analysis_fingerprint_sha256':fingerprint,
             'scope_count':len(symbols),'symbols':symbols,'rows':{},'error_groups':[],
             'finished':False}
 
@@ -129,6 +157,7 @@ def scan(asof, symbols, output_dir, *, batch_size=10, max_batches=None,
                  'schema':SCHEMA,'requested_symbols':len(symbols),
                  'processed_symbols':len(rows),'remaining_symbols':len(symbols)-len(rows),
                  'scope_sha256':cp['scope_sha256'],
+                 'analysis_fingerprint_sha256':cp['analysis_fingerprint_sha256'],
                  'coverage_complete':cp['finished'],
                  'partial_scan':not cp['finished'],
                  'failed_groups':errors,
@@ -163,7 +192,7 @@ def main(argv=None):
     print(json.dumps({'asof_et':asof,'requested':len(syms),
           'processed':result['processed_symbols'],'complete':result['coverage_complete'],
           'decisions':result['counts']},ensure_ascii=False))
-    return 0 if result['coverage_complete'] else 2
+    return 0 if result['valid_data_coverage_complete'] else 2
 
 
 if __name__=='__main__':sys.exit(main())
