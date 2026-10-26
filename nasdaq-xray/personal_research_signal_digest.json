@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-10-23",
+  "asof_et": "2026-10-26",
   "automated_alert_authority": false,
   "broker": false,
   "candidate_setup_is_not_R92": true,
@@ -17,16 +17,16 @@
   "research_setup_candidate_count": 0,
   "research_setup_candidate_symbols": [],
   "schema": "XRAY_PERSONAL_EOD_RESEARCH_DIGEST_V1",
-  "source_candidates_sha256": "c49e153df6a94bc689b39c2b68eab3bfe880e8ae0ed18a3c0204ef23a1e4ba6c",
+  "source_candidates_sha256": "aa5d145fae3a66c3b94a1437a4d402997f5b25b7c67ef2688b491fe786c5aa20",
   "source_confidence": {
     "grade": "LOW",
     "rationale": "Existing SINA price observations and calendar-bound formula audits; independent original RTH volume, split lineage, primary MC and event clearance unproven",
     "source_quality_not_probability": true
   },
   "source_epoch_blobs": {
-    "master": "70fbb139811f584c782d5149a29e8e4d6b798b08",
-    "price": "cf9f7ac0ad4153b089a05f3c5e8f44478f99d252",
-    "root": "730be8dbd601716c13b5b928fd48aff174b40df1"
+    "master": "97270a8bc7cbb467b1b1b3e9a21439271235949d",
+    "price": "25a285db1108f9a8cf92cc66549e319e751b6aca",
+    "root": "a1478232282436438790174119bf136d22844b38"
   },
   "status": "PERSONAL_LIQUIDITY_WATCH_AND_REJECTED_TRIGGERS",
   "technical_evaluated_count": 0,
@@ -34,5 +34,5 @@
   "technical_state_counts": {},
   "unknown_never_pass": true,
   "watchlist_count": 0,
-  "watchlist_digest": "b2f03012d3de692c2db7c272fb0e9bba43d1e559b586170d760a250379b864f4"
+  "watchlist_digest": "c5140c89743dfb82e41f0c0eb4d129a5b0878d0e1b8c3fe7be8947d95c5e4006"
 }
