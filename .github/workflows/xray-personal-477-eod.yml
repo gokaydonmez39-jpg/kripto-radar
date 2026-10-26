@@ -63,5 +63,31 @@ jobs:
         working-directory: personal-swing
         run: |
           python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log
+      - name: Verify exact private 477-scoped handoff without publishing signals
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          import runner
+          path=Path(os.environ['RUNNER_TEMP'])/'xray-private-data'/'latest.json'
+          snap=json.loads(path.read_text(encoding='utf-8'))
+          symbols=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json')
+          assert len(symbols)==len(set(symbols))==477
+          assert snap.get('requested_symbols')==snap.get('processed_symbols')==477
+          assert snap.get('valid_data_symbols')==477
+          assert snap.get('insufficient_data_symbols')==snap.get('remaining_symbols')==0
+          assert snap.get('valid_data_coverage_complete') is True
+          assert snap.get('new_signal_publishable') is True
+          assert snap.get('scope_sha256')==runner.sha_symbols(symbols)
+          assert snap.get('analysis_fingerprint_sha256')==runner.analysis_fingerprint()
+          assert len(snap.get('rows',[]))==477
+          assert [row['symbol'] for row in snap['rows']]==symbols
+          assert all(row.get('asof_et')==snap.get('asof_et') and
+                     row.get('decision') in ('AL','IZLE','ELE')
+                     for row in snap['rows'])
+          print('XRAY_PERSONAL_GITHUB_HANDOFF=PASS_477_477_SOURCE_POLICY_SHA_BOUND_PRIVATE')
+          PY
       - name: Data is ephemeral (intentional privacy limitation)
-        run: echo 'No public HTML, signal JSON, broker API, or artifacts published. Task alert is separate.'
+        run: echo 'No public signal JSON, broker API or artifacts published. Only the ChatGPT private Sheet task persists candidate history.'
