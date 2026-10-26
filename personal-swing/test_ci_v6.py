@@ -227,4 +227,82 @@ class DailyHolidayAndFreshnessGuard(unittest.TestCase):
         self.assertIsNone(daily_job.current_completed_session(
             datetime(2026,10,24,23,15,tzinfo=timezone.utc)))
 
+class PrivateSheetEventOutboxContract(unittest.TestCase):
+    """Pure adversarial checks. No real Google Sheet, iOS or private signals."""
+    import alert_ledger_contract as contract
+
+    @staticmethod
+    def make_event(code='STOP_TOUCHED',status=None):
+        import alert_ledger_contract as lc
+        row=['']*20
+        row[0]=lc.event_key('2026-10-22','CVLT','2026-10-26',code,1)
+        row[1]='2026-10-22|CVLT'
+        row[2]='2026-10-22';row[3]='CVLT';row[4]='2026-10-26'
+        row[5]=code
+        row[17]=status or lc.REQUESTED
+        return row
+
+    def test_event_identity_deterministic_and_bad_inputs_rejected(self):
+        import alert_ledger_contract as lc
+        x=lc.event_key('2026-10-22','CVLT','2026-10-26','STOP_TOUCHED',1)
+        self.assertEqual(x,lc.event_key('2026-10-22','CVLT','2026-10-26','STOP_TOUCHED',1))
+        for args in [('2026-10-22','CVLT','2026-10-21','STOP_TOUCHED',1),
+                     ('2026-10-22','cvlt','2026-10-26','STOP_TOUCHED',1),
+                     ('2026-10-22','CVLT','2026-10-26','MADE_UP_EVENT',1),
+                     ('2026-10-22','CVLT','2026-10-26','STOP_TOUCHED',0)]:
+            with self.assertRaises(lc.LedgerRefused):
+                lc.event_key(*args)
+
+    def test_new_event_after_readback_can_request_once_only(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);row=self.make_event()
+        good=lc.verify_first_reservation([header],[header,row],[row[0]])
+        self.assertTrue(good['request_allowed_after_readback'])
+        self.assertFalse(good['device_delivery_attested'])
+        with self.assertRaisesRegex(lc.LedgerRefused,'ALREADY_RECORDED'):
+            lc.verify_first_reservation([header,row],[header,row],[row[0]])
+
+    def test_missing_reserved_row_cannot_claim_send(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);row=self.make_event()
+        with self.assertRaisesRegex(lc.LedgerRefused,'READBACK_MISSING'):
+            lc.verify_first_reservation([header],[header],[row[0]])
+
+    def test_duplicate_event_key_and_sheet_header_drift_block(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);row=self.make_event()
+        with self.assertRaisesRegex(lc.LedgerRefused,'DUPLICATE_EVENT_KEY'):
+            lc.parse_ledger([header,row,row])
+        with self.assertRaisesRegex(lc.LedgerRefused,'SHEET_HEADER_DRIFT'):
+            lc.parse_ledger([header[:-1],row])
+
+    def test_corrupt_identity_and_unknown_status_block(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);row=self.make_event()
+        broken=row.copy();broken[1]='WRONG_CANDIDATE'
+        with self.assertRaisesRegex(lc.LedgerRefused,'EVENT_IDENTITY_MISMATCH'):
+            lc.parse_ledger([header,broken])
+        broken=row.copy();broken[17]='DELIVERED_WITHOUT_ACK'
+        with self.assertRaisesRegex(lc.LedgerRefused,'UNKNOWN_DELIVERY_STATE'):
+            lc.parse_ledger([header,broken])
+
+    def test_other_event_is_preserved_when_new_event_is_reserved(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);old=self.make_event('TARGET_TOUCHED')
+        new=self.make_event('STOP_TOUCHED')
+        existing=[header,old]
+        self.assertTrue(lc.verify_first_reservation(existing,[header,old,new],[new[0]])['request_allowed_after_readback'])
+        mutated=old.copy();mutated[17]=lc.UNKNOWN
+        with self.assertRaisesRegex(lc.LedgerRefused,'EXISTING_EVENT_CHANGED'):
+            lc.verify_first_reservation(existing,[header,mutated,new],[new[0]])
+        other=self.make_event('NEAR_STOP')
+        with self.assertRaisesRegex(lc.LedgerRefused,'UNEXPECTED_CONCURRENT'):
+            lc.verify_first_reservation(existing,[header,old,new,other],[new[0]])
+
+    def test_requested_row_is_unknown_not_claimed_delivered(self):
+        import alert_ledger_contract as lc
+        header=list(lc.EVENT_HEADER);row=self.make_event()
+        self.assertEqual(lc.delivery_status([header,row],row[0]),'DELIVERY_UNKNOWN_NO_RESEND')
+        self.assertEqual(lc.delivery_status([header],'UNSEEN'),'NOT_RECORDED')
+
 if __name__=='__main__':unittest.main()
