@@ -125,7 +125,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-26T06:48:06.464642+00:00",
+  "generated_at_utc": "2026-10-26T11:32:47.563314+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -1230,133 +1230,70 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 14,
+      "row_count": 7,
       "rows": [
         {
-          "BX Action": "Delete",
-          "Company Name": "Arcosa, Inc.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "ACA"
-        },
-        {
           "BX Action": "Add",
-          "Company Name": "Apex Critical Metals Corp.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "APXC"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Lufax Holding Ltd",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "LU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Lufax Holding Ltd",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "LU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Lycia Therapeutics, Inc.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Q",
-          "Symbol": "LYCA"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Listed Funds Trust",
-          "Effective Date": "10/23/2026",
+          "Company Name": "Hartford Funds Exchange-Traded Trust",
+          "Effective Date": "10/26/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "OVQ"
+          "Symbol": "ACIN"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Pine Tree Acquisition Corp.",
-          "Effective Date": "10/23/2026",
+          "Company Name": "Calamos ETF Trust",
+          "Effective Date": "10/26/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "PAXG"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Pine Tree Acquisition Corp.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "PAXGR"
+          "Primary Listing Market": "P",
+          "Symbol": "CAYN"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Perfect Corp.",
-          "Effective Date": "10/23/2026",
+          "Company Name": "Morgan Stanley ETF Trust",
+          "Effective Date": "10/26/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "CDEI"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "EA Series Trust",
+          "Effective Date": "10/26/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "GFGF"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Gunnison Copper Corp.",
+          "Effective Date": "10/26/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "A",
+          "Symbol": "GUNN"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "AB Active ETFs, Inc.",
+          "Effective Date": "10/26/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "RADD"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Weave Communications, Inc.",
+          "Effective Date": "10/26/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "N",
-          "Symbol": "PERF"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "QQDH"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "SAB Biotherapeutics, Inc.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "SABSW"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Stardust Power Inc.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "SDST"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Stardust Power Inc.",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "SDSTW"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Listed Funds Trust",
-          "Effective Date": "10/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "SMNG"
+          "Symbol": "WEAV"
         }
       ],
       "status": "PASS",

@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-26T06:48:08.068482+00:00",
+  "last_ingest_at_utc": "2026-10-26T11:32:48.929615+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 235,
+  "snapshot_count": 236,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -112431,6 +112431,83 @@
       },
       "payload_sha256": "4c690210889615e288912f14504b8e66cbae43c827d23cf65ce7b4273bb51282",
       "source": "security_status",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-26T11:32:47.563314+00:00",
+      "observed_at_utc": "2026-10-26T11:32:48.929574+00:00",
+      "payload": {
+        "row_count": 7,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "Hartford Funds Exchange-Traded Trust",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "ACIN"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Calamos ETF Trust",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "CAYN"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Morgan Stanley ETF Trust",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "CDEI"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "EA Series Trust",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "G",
+            "Symbol": "GFGF"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Gunnison Copper Corp.",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "A",
+            "Symbol": "GUNN"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "AB Active ETFs, Inc.",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "RADD"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Weave Communications, Inc.",
+            "Effective Date": "10/26/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "N",
+            "Symbol": "WEAV"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "8255aeb01a9e8c0034b38258113bb30fe52133324fc359715d7522874f99a1d2",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
