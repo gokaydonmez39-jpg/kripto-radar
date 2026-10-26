@@ -122,6 +122,12 @@ def track_symbol(signal,bars,asof,expiry_sessions=15):
             draft['hypothetical_result_pct']=round(100*(shadow_exit/draft['reference_close']-1),3)
             draft['result_is_hypothetical_not_executable_fill']=True
             break
+    # An open episode cannot be called evaluated-through-ASOF when the source
+    # returned only an older contiguous prefix. Do not advance a partial day.
+    # A proven earlier STOP/TARGET may close without the later bar because the
+    # terminal episode ends at the first valid contact.
+    if draft['status']=='OPEN' and draft['processed_through']!=asof:
+        raise ValueError('FOLLOWUP_ASOF_BAR_MISSING_NO_ADVANCE')
     signal.clear();signal.update(draft)
     return signal
 
