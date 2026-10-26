@@ -37,6 +37,7 @@ jobs:
           python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
+          python -m py_compile engine.py runner.py daily_job.py tracker.py
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'
