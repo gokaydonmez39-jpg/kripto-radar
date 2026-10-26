@@ -83,7 +83,10 @@ jobs:
           assert snap.get('scope_sha256')==runner.sha_symbols(symbols)
           assert snap.get('analysis_fingerprint_sha256')==runner.analysis_fingerprint()
           assert len(snap.get('rows',[]))==477
-          assert [row['symbol'] for row in snap['rows']]==symbols
+          # engine.assemble intentionally sorts by AL/IZLE/ELE then RVOL, not watchlist order.
+          returned=[row['symbol'] for row in snap['rows']]
+          assert len(returned)==len(set(returned))==477
+          assert set(returned)==set(symbols)
           assert all(row.get('asof_et')==snap.get('asof_et') and
                      row.get('decision') in ('AL','IZLE','ELE')
                      for row in snap['rows'])
