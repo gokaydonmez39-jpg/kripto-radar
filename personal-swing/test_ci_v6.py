@@ -59,6 +59,61 @@ class OfflineCIPipeline(unittest.TestCase):
             self.assertEqual(s['insufficient_data_symbols'],2)
             self.assertFalse(s['new_signal_publishable'])
             self.assertFalse((Path(out)/'latest.json').exists())
+    def test_cli_exit_rejects_all_rows_present_with_invalid_data(self):
+        """An all-processed but invalid IEX response is NEVER shell success."""
+        from unittest.mock import patch
+        from contextlib import redirect_stdout
+        import io
+        with tempfile.TemporaryDirectory() as out:
+            with patch.object(engine,'validate_asof'), patch.object(engine,'live_read',return_value={}):
+                with redirect_stdout(io.StringIO()):
+                    code=runner.main(['--symbols','CVLT','--asof',ASOF,'--dir',out])
+            self.assertEqual(code,2)
+            cp=json.loads((Path(out)/'checkpoint.json').read_text())
+            self.assertEqual(len(cp['rows']),1)
+            self.assertEqual(cp['rows']['CVLT']['decision'],'VERI_YETERSIZ')
+            self.assertFalse((Path(out)/'latest.json').exists())
+
+    def test_same_asof_computation_change_invalidates_checkpoint(self):
+        """Changed analysis must never reuse successful old AL/IZLE/ELE rows."""
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as out:
+            symbols=['CVLT','AAPL']
+            calls=[]
+            def reader(group,day):
+                calls.append(tuple(group))
+                return synthetic_bars(day,group)
+            with patch.object(runner,'analysis_fingerprint',return_value='f'*64):
+                first=runner.scan(ASOF,symbols,out,read_batch=reader)
+            self.assertEqual(len(calls),1)
+            self.assertEqual(first['analysis_fingerprint_sha256'],'f'*64)
+            calls.clear()
+            with patch.object(runner,'analysis_fingerprint',return_value='a'*64):
+                second=runner.scan(ASOF,symbols,out,read_batch=reader)
+            self.assertEqual(len(calls),1)
+            self.assertEqual(second['analysis_fingerprint_sha256'],'a'*64)
+            archives=list(Path(out).glob('checkpoint_*.json'))
+            self.assertEqual(len(archives),1)
+            self.assertEqual(json.loads(archives[0].read_text())['analysis_fingerprint_sha256'],'f'*64)
+
+    def test_old_checkpoint_without_policy_hash_cannot_be_reused(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as out:
+            with patch.object(runner,'analysis_fingerprint',return_value='b'*64):
+                runner.scan(ASOF,['CVLT'],out,read_batch=lambda group,day:synthetic_bars(day,group))
+            cp=Path(out)/'checkpoint.json'
+            state=json.loads(cp.read_text())
+            state.pop('analysis_fingerprint_sha256')
+            cp.write_text(json.dumps(state))
+            calls=[]
+            def reader(group,day):
+                calls.append(group)
+                return synthetic_bars(day,group)
+            with patch.object(runner,'analysis_fingerprint',return_value='b'*64):
+                result=runner.scan(ASOF,['CVLT'],out,read_batch=reader)
+            self.assertEqual(calls,[['CVLT']])
+            self.assertTrue(result['valid_data_coverage_complete'])
+
     def test_missing_response_retains_previous_final(self):
         with tempfile.TemporaryDirectory() as out:
             p=Path(out)/'latest.json'
