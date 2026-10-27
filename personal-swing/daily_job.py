@@ -55,17 +55,24 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
 
 
 def current_completed_session(now=None):
-    """Only process TODAY's fully completed Nasdaq ET equity session.
+    """Last official XNAS EOD only within a bounded close+45m freshness window.
 
-    Schedule is UTC; Turkey is +03 and New York changes offset.
-    A US holiday, weekend, or unfinished session returns None with no provider IO.
+    A GitHub schedule may run after 00:00 New York time yet still belong to
+    yesterday's completed session. Reject pre-close scans, holidays, weekends
+    and old recycled epochs; NEVER choose an unfinished trading day.
     """
-    instant = now or datetime.now(timezone.utc)
+    from datetime import timedelta
+    import exchange_calendars as ec
+    instant = (now or datetime.now(timezone.utc))
     if instant.tzinfo is None:
         raise ValueError('AWARE_NOW_REQUIRED')
-    today_et = instant.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+    instant = instant.astimezone(timezone.utc)
     completed = engine.trading_asof(instant).isoformat()
-    return completed if completed == today_et else None
+    cal = ec.get_calendar('XNAS')
+    ready_at = cal.session_close(completed).to_pydatetime() + timedelta(minutes=45)
+    # A short after-midnight schedule delay must not erase the prior EOD scan.
+    # By the next opening this is safely outside the last-session window.
+    return completed if ready_at <= instant <= ready_at + timedelta(hours=10) else None
 
 
 def main(argv=None):
