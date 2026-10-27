@@ -1,0 +1,7 @@
+# NASDAQ research hypothesis preregistration — method inspired by AutoHypothesis, not its runtime
+
+[AutoHypothesis](https://github.com/arteemg/AutoHypothesis) documents separated development, holdback, walk-forward and final holdout stages. **The source runtime is NOT installed or executed.** Its README acknowledges survivorship bias from current constituent lists in historical tests, live yfinance dependencies and agent-driven model rewriting. No verifiable license file was found in the inspected repository metadata/tree, despite a README badge; do not copy code until license grant can be independently verified.
+
+This independently written pure standard-library module requires explicit split boundaries, point-in-time universe as-of <= development end, immutable dataset/model fingerprints and recorded number of tested hypotheses. One-shot stage order is validated; no model is trained, no alpha generated. Tests simulate tampering, premature/unlocked holdout, present-day constituents projected backwards and unknown search multiplicity. These are API-level guardrails; do NOT prove the underlying universe truly was point-in-time or that test data was licensed. Manual independent data validation remains mandatory.
+
+PROHIBITED: running an external autonomous agent over the 477 watchlist, letting an LLM rewrite the production AL algorithm, importing unknown yfinance payloads into private Sheets, treating synthetic method tests as realized returns.
