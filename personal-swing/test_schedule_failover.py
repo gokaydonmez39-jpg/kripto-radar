@@ -53,7 +53,7 @@ class OfficialXnasFailover(unittest.TestCase):
             called=[]
             result=sf.run(now=utc(instant),
                 read_runs=lambda:called.append('GET'),
-                request_dispatch=lambda:called.append('POST'))
+                request_dispatch=lambda asof:called.append('POST:'+asof))
             self.assertEqual(called,[])
             self.assertEqual(result['status'],'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
 
@@ -69,12 +69,12 @@ class OfficialXnasFailover(unittest.TestCase):
         def get():
             calls.append('GET')
             return {'workflow_runs':[],'total_count':0}
-        def dispatch():
-            calls.append('POST')
+        def dispatch(asof):
+            calls.append('POST:'+asof)
             return True
         x=sf.run(now=utc('2026-10-27T00:25:00Z'),read_runs=get,
                  request_dispatch=dispatch)
-        self.assertEqual(calls,['GET','POST'])
+        self.assertEqual(calls,['GET','POST:2026-10-26'])
         self.assertEqual(x['status'],'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED')
         self.assertEqual(x['dispatch_requested'],True)
 
@@ -107,8 +107,8 @@ class OfficialXnasFailover(unittest.TestCase):
             return {'workflow_runs':[
                 record(created='2026-10-27T02:04:34Z',event='schedule')],
                 'total_count':1}
-        def dispatch():
-            calls.append('POST')
+        def dispatch(asof):
+            calls.append('POST:'+asof)
             return True
         result=sf.run(now=utc('2026-10-27T05:17:32Z'),read_runs=get,
                       request_dispatch=dispatch)
@@ -121,8 +121,8 @@ class OfficialXnasFailover(unittest.TestCase):
         result=sf.run(now=utc('2026-10-27T05:17:32Z'),
                       read_runs=lambda:calls.append('GET') or
                           {'workflow_runs':[],'total_count':0},
-                      request_dispatch=lambda:calls.append('POST') or True)
-        self.assertEqual(calls,['GET','POST'])
+                      request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
+        self.assertEqual(calls,['GET','POST:2026-10-26'])
         self.assertEqual(result['asof_et'],'2026-10-26')
         self.assertTrue(result['dispatch_requested'])
 
@@ -130,14 +130,14 @@ class OfficialXnasFailover(unittest.TestCase):
         calls=[]
         x=sf.run(now=utc('2026-10-27T00:25:00Z'),
                  read_runs=lambda:{'missing':'data'},
-                 request_dispatch=lambda:calls.append('POST'))
+                 request_dispatch=lambda asof:calls.append('POST:'+asof))
         self.assertEqual(calls,[])
         self.assertEqual(x['status'],'BLOCKED_INVALID_GITHUB_RUN_RESPONSE')
 
     def test_negative_dispatch_ack_cannot_be_success(self):
         x=sf.run(now=utc('2026-10-27T00:25:00Z'),
             read_runs=lambda:{'workflow_runs':[],'total_count':0},
-            request_dispatch=lambda:False)
+            request_dispatch=lambda asof:False)
         self.assertEqual(x['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
         self.assertFalse(x['dispatch_requested'])
 
