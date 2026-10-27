@@ -3,13 +3,13 @@
   "asof_et": "2026-10-26",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-26",
-    "attempted_count": 475,
+    "attempted_count": 478,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 478,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 473,
+    "evaluated_count": 476,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,13 +18,10 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 17,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 5,
+    "pending_count": 2,
     "pending_symbols": [
       "FISV",
-      "CCC",
-      "OLED",
-      "WAY",
-      "UBSI"
+      "CCC"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -2367,6 +2364,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "OLED": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "OLLI": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3261,6 +3264,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "UBSI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "UCTT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3487,6 +3496,12 @@
         "terminal_scan": true
       },
       "VTRS": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "WAY": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
@@ -3783,8 +3798,8 @@
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "b2f119211800b3a4afcc7210d5015e9e945759d866e3ea5b715edfc65337c502",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 106,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 350,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 107,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 352,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 16,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
@@ -3845,7 +3860,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 218,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-27T01:46:06.907500+00:00",
+  "updated_at_utc": "2026-10-27T05:22:37.882088+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -3855,32 +3870,7 @@
     "candidate_local_special_review": null,
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
-    "new_watchlist_symbols": [
-      "ABCL",
-      "APA",
-      "ASND",
-      "AUGO",
-      "AVT",
-      "BBIO",
-      "CGON",
-      "CHEF",
-      "CHYM",
-      "CRDO",
-      "DKNG",
-      "DOX",
-      "ERAS",
-      "EVRG",
-      "FER",
-      "GEHC",
-      "GFS",
-      "IBKR",
-      "IESC",
-      "KDP",
-      "NVAX",
-      "OZK",
-      "RIOT",
-      "SOFI"
-    ],
+    "new_watchlist_symbols": [],
     "no_longer_in_top_watchlist": [],
     "orders": [],
     "price_liquidity_screened_count": 478,
@@ -4366,7 +4356,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRDO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4786,7 +4776,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SOFI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5640,7 +5630,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KDP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5682,7 +5672,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IBKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5892,7 +5882,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RIOT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6032,7 +6022,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DKNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6200,7 +6190,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6382,7 +6372,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GEHC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6438,7 +6428,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GFS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6774,7 +6764,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BBIO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6858,7 +6848,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASND",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7138,7 +7128,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EVRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7726,7 +7716,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7880,7 +7870,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHYM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8216,7 +8206,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FER",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8762,7 +8752,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IESC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9014,7 +9004,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AUGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9238,7 +9228,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ERAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9518,7 +9508,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OZK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9532,7 +9522,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVAX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9588,7 +9578,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CGON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9896,7 +9886,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHEF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10134,7 +10124,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ABCL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10386,7 +10376,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DOX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
