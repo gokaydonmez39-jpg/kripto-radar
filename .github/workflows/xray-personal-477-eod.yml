@@ -11,8 +11,15 @@ on:
     paths:
       - '.github/workflows/xray-personal-477-eod.yml'
   workflow_dispatch:
+    inputs:
+      asof_et:
+        description: 'Optional official XNAS completed session YYYY-MM-DD for verified delayed fallback; empty = auto-current'
+        required: false
+        type: string
+        default: ''
   schedule:
-    # 23:15 UTC is after 16:00 NY RTH close + 45m in both DST seasons.
+    # 23:15 UTC is safely AFTER official 16:00 NY close+45m;
+    # actual margin varies by DST (summer >3h, winter >2h).
     - cron: '15 23 * * 1-5'
 permissions:
   contents: read
@@ -64,17 +71,36 @@ jobs:
       - name: Run no-broker personal EOD scan (ephemeral private data)
         shell: bash
         working-directory: personal-swing
+        env:
+          REQUESTED_ASOF: ${{ inputs.asof_et }}
         run: |
-          python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log
+          set -euo pipefail
+          args=()
+          if [[ -n "$REQUESTED_ASOF" ]]; then
+            [[ "$REQUESTED_ASOF" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo 'BLOCKED_INVALID_WORKFLOW_DISPATCH_ASOF'; exit 2; }
+            args+=(--asof "$REQUESTED_ASOF")
+          fi
+          python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log "${args[@]}"
       - name: Verify exact private 477-scoped handoff without publishing signals
         working-directory: personal-swing
         shell: bash
+        env:
+          REQUESTED_ASOF: ${{ inputs.asof_et }}
         run: |
           python - <<'PY'
           import json,os,re
           from pathlib import Path
           import runner
           path=Path(os.environ['RUNNER_TEMP'])/'xray-private-data'/'latest.json'
+          if not path.exists():
+              # Smoke runs before the official close+45m are no-ops,
+              # not a false failure and never a claimed EOD handoff.
+              import daily_job
+              requested=os.environ.get('REQUESTED_ASOF','')
+              if requested or daily_job.current_completed_session() is not None:
+                  raise RuntimeError('MISSING_PRIVATE_LATEST_WHILE_ELIGIBLE')
+              print('XRAY_PERSONAL_NOOP_PRE_SESSION_NO_MARKET_DATA')
+              raise SystemExit(0)
           snap=json.loads(path.read_text(encoding='utf-8'))
           symbols=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json')
           assert len(symbols)==len(set(symbols))==477
