@@ -2,7 +2,9 @@
 """Bounded, personal-477-only GitHub Actions schedule fallback. No market IO.
 
 Checks whether the production personal EOD workflow received ANY main-branch
-run after today's official XNAS close+45m. The fallback dispatches once only
+run after the most recently eligible official XNAS close+45m. GitHub schedule
+jobs can run after midnight in New York; never mistake the next calendar day
+for the completed prior session. The fallback dispatches once only
 when the primary GitHub scheduler appears absent. A failed producer is NOT
 a scheduler gap and must be left fail-closed. This program never reads bars,
 secrets, personal Sheets, broker APIs, or candidate identities.
@@ -20,6 +22,9 @@ WORKFLOW='xray-personal-477-eod.yml'
 NY=ZoneInfo('America/New_York')
 VALID_EVENTS=frozenset(('schedule','workflow_dispatch','push'))
 VALID_STATUSES=frozenset(('requested','waiting','queued','pending','in_progress','completed'))
+# GitHub schedule delay can cross NY midnight. Limit backfill dispatch to
+# a 10-hour window following that SESSION's close+45m, never an ancient day.
+MAX_FALLBACK_AGE=timedelta(hours=10)
 
 
 def decision(now, runs, *, calendar=None):
@@ -28,34 +33,45 @@ def decision(now, runs, *, calendar=None):
     if now.tzinfo is None:
         raise ValueError('AWARE_UTC_NOW_REQUIRED')
     instant=now.astimezone(timezone.utc)
-    today=instant.astimezone(NY).date().isoformat()
+    local_date=instant.astimezone(NY).date().isoformat()
     cal=calendar or ec.get_calendar('XNAS')
-    if not cal.is_session(today):
-        return 'NOOP_NON_XNAS_SESSION',today
-    cutoff=cal.session_close(today).to_pydatetime()+timedelta(minutes=45)
+    # The fallback is scheduled Tue-Sat in UTC, for the PREVIOUS
+    # Mon-Fri NY close. A delayed GitHub job often crosses 00:00 NY.
+    # Do not silently skip a valid closed session merely because local
+    # calendar day switched to the next yet-unopened session.
+    candidate=cal.date_to_session(local_date,direction='previous')
+    candidate_date=candidate.date().isoformat()
+    if cal.is_session(local_date):
+        today_cutoff=cal.session_close(candidate).to_pydatetime()+timedelta(minutes=45)
+        if instant<today_cutoff:
+            candidate=cal.previous_session(candidate)
+            candidate_date=candidate.date().isoformat()
+    cutoff=cal.session_close(candidate).to_pydatetime()+timedelta(minutes=45)
     if instant<cutoff:
-        return 'NOOP_SESSION_NOT_READY',today
+        return 'NOOP_SESSION_NOT_READY',candidate_date
+    if instant-cutoff>MAX_FALLBACK_AGE:
+        return 'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW',candidate_date
     if not isinstance(runs,list):
-        return 'BLOCKED_RUN_COLLECTION_UNKNOWN',today
+        return 'BLOCKED_RUN_COLLECTION_UNKNOWN',candidate_date
     for item in runs:
         if not isinstance(item,dict):
-            return 'BLOCKED_MALFORMED_RUN',today
+            return 'BLOCKED_MALFORMED_RUN',candidate_date
         if item.get('event') not in VALID_EVENTS or item.get('head_branch')!='main':
             continue
         try:
             created=datetime.fromisoformat(item['created_at'].replace('Z','+00:00'))
         except (KeyError,TypeError,ValueError):
-            return 'BLOCKED_RUN_TIMESTAMP_UNKNOWN',today
+            return 'BLOCKED_RUN_TIMESTAMP_UNKNOWN',candidate_date
         if created.tzinfo is None:
-            return 'BLOCKED_RUN_TIMESTAMP_NAIVE',today
+            return 'BLOCKED_RUN_TIMESTAMP_NAIVE',candidate_date
         if created>=cutoff:
             status=item.get('status')
             if status not in VALID_STATUSES:
-                return 'BLOCKED_RUN_STATUS_UNKNOWN',today
+                return 'BLOCKED_RUN_STATUS_UNKNOWN',candidate_date
             # ANY queued/completed run in the same fresh trading epoch
             # suppresses retry. Even failure can be a correct fail-closed gate.
-            return 'NOOP_CURRENT_EPOCH_RUN_EXISTS',today
-    return 'DISPATCH_ONE_MISSING_SCHEDULE',today
+            return 'NOOP_CURRENT_EPOCH_RUN_EXISTS',candidate_date
+    return 'DISPATCH_ONE_MISSING_SCHEDULE',candidate_date
 
 
 def api_json(url,token,method='GET',body=None):
@@ -79,7 +95,8 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
     """Injectable vendor operations for offline, network-free negative tests."""
     now=now or datetime.now(timezone.utc)
     if now.tzinfo is None:raise ValueError('AWARE_NOW_REQUIRED')
-    # Calendar first: no GitHub API IO on a weekend, holiday or before close.
+    # Calendar first: no GitHub API IO outside the actual completed-session
+    # fallback window (including on weekends, holidays and delayed jobs).
     preliminary,_=decision(now,[],calendar=None)
     if preliminary!='DISPATCH_ONE_MISSING_SCHEDULE':
         return {'status':preliminary,'dispatch_requested':False}
