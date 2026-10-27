@@ -14,7 +14,7 @@ def row(day, ref, stop, target, held, *,symbol='AAA'):
 
 def sheet():
     return [list(CANDIDATE_HEADER),
-            row('2026-10-22',100.,95.,110.,1),
+            row('2026-10-22',100.,90.,120.,1),
             row('2026-10-23',102.,97.,112.,0)]
 
 
@@ -97,7 +97,7 @@ class LifecycleTruthTests(unittest.TestCase):
         rows=[list(CANDIDATE_HEADER),row('2026-10-22',100.,95.,110.,0)]
         with self.assertRaisesRegex(ValueError,'FOLLOWUP_ASOF_BAR_MISSING'):
             life.build_updates(rows,'2026-10-26',
-                lambda symbols,day:{'AAA':[bar('2026-10-23',h=104,l=99)]})
+                lambda symbols,day:{'AAA':[bar('2026-10-23',o=101.,h=104.,l=99.,c=102.)]})
 
     def test_duplicate_iex_bar_blocks(self):
         with self.assertRaisesRegex(ValueError,'DUPLICATE_FOLLOWUP_BAR'):
