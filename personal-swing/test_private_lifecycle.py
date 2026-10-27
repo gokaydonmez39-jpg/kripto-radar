@@ -31,20 +31,32 @@ def fetch(symbols,asof):
 class FakeApi:
     def __init__(self):
         self.rows=sheet()
-        self.sheet_ids={'candidate':432}
+        self.sheet_ids={'candidate':432,'alerts':433}
+        self.alert_rows=[list(life.ALERT_HEADER)]
         self.writes=0
         self.corrupt=False
 
     def check_metadata(self):return True
 
     def read(self,title,last_column):
-        assert title=='ADAY_GECMISI' and last_column=='M'
-        return copy.deepcopy(self.rows)
+        if title=='ADAY_GECMISI' and last_column=='M':
+            return copy.deepcopy(self.rows)
+        if title=='UYARI_OLAYLARI' and last_column=='T':
+            return copy.deepcopy(self.alert_rows)
+        raise AssertionError('unknown private table')
 
     def request(self,path,*,method='GET',body=None):
         assert path==':batchUpdate' and method=='POST'
         self.writes+=1
         for command in body['requests']:
+            if 'appendCells' in command:
+                obj=command['appendCells']
+                assert obj['sheetId']==433
+                for item in obj['rows']:
+                    self.alert_rows.append([
+                        v['userEnteredValue']['stringValue']
+                        for v in item['values']])
+                continue
             obj=command['updateCells']
             assert obj['start']['sheetId']==432
             index=obj['start']['rowIndex']
@@ -72,6 +84,9 @@ class LifecycleTruthTests(unittest.TestCase):
         result=life.synchronize(api,'2026-10-26',fetch)
         self.assertEqual(result['status'],'LIFECYCLE_READBACK_PASS')
         self.assertEqual(result['terminal_updates'],1)
+        self.assertEqual(result['terminal_events_reserved'],1)
+        self.assertEqual(len(api.alert_rows),2)
+        self.assertEqual(api.alert_rows[1][17],life.EVENT_PENDING)
         self.assertFalse(result['device_ack'])
         self.assertEqual(api.writes,1)
         after=copy.deepcopy(api.rows)
@@ -79,6 +94,7 @@ class LifecycleTruthTests(unittest.TestCase):
         self.assertEqual(again['evaluated'],0)
         self.assertEqual(api.writes,1)
         self.assertEqual(after,api.rows)
+        self.assertEqual(len(api.alert_rows),2)
 
     def test_old_levels_and_alert_status_are_immutable(self):
         api=FakeApi()
@@ -139,6 +155,49 @@ class LifecycleTruthTests(unittest.TestCase):
         api=FakeApi()
         api.corrupt=True
         with self.assertRaisesRegex(HandoffBlocked,'LIFECYCLE_READBACK_ORIGINAL_MODIFIED'):
+            life.synchronize(api,'2026-10-26',fetch)
+
+    def test_terminal_event_and_closed_episode_are_same_transaction(self):
+        api=FakeApi()
+        life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(api.writes,1)
+        self.assertEqual(api.alert_rows[1][1],'2026-10-23|AAA')
+        self.assertEqual(api.alert_rows[1][4],'2026-10-26')
+        self.assertEqual(api.alert_rows[1][5],
+                         'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
+        self.assertIn('BOTH_TOUCHED',api.rows[2][7])
+        self.assertEqual(api.alert_rows[1][17],
+                         'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+
+    def test_duplicate_terminal_event_key_blocks_before_any_update(self):
+        api=FakeApi()
+        plan=life.build_updates(api.rows,'2026-10-26',fetch)
+        event=plan['updates'][1]['event']
+        row=[event['event_key']]+['fake']*19
+        api.alert_rows.extend([row,row])
+        with self.assertRaisesRegex(HandoffBlocked,
+                                    'LIFECYCLE_ALERT_DUPLICATE_OR_INVALID'):
+            life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(api.writes,0)
+
+    def test_alarm_header_drift_blocks_before_update(self):
+        api=FakeApi()
+        api.alert_rows[0][0]='WRONG_EVENT_HEADER'
+        with self.assertRaisesRegex(HandoffBlocked,'LIFECYCLE_ALERT_HEADER_DRIFT'):
+            life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(api.writes,0)
+
+    def test_terminal_outbox_readback_mutation_is_blocked(self):
+        api=FakeApi()
+        def corrupted_read(title,last_col):
+            if title=='ADAY_GECMISI':
+                return copy.deepcopy(api.rows)
+            values=copy.deepcopy(api.alert_rows)
+            if len(values)>1:
+                values[1][8]='CORRUPTED_STOP'
+            return values
+        api.read=corrupted_read
+        with self.assertRaisesRegex(HandoffBlocked,'LIFECYCLE_ALERT_READBACK'):
             life.synchronize(api,'2026-10-26',fetch)
 
     def test_fifteenth_session_expires_at_close(self):
