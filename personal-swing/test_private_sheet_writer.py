@@ -190,6 +190,23 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         self.assertIn('exit 3',writer)
         self.assertNotIn('exit 0',writer.split('BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS')[1])
 
+    def test_private_auth_preflight_is_read_only_and_exposes_no_secrets(self):
+        workflow=Path(__file__).resolve().parent.parent/'.github/workflows/xray-personal-477-eod.yml'
+        text=workflow.read_text(encoding='utf-8')
+        self.assertIn('  private-sheets-auth-preflight:',text)
+        segment=text.split('  private-sheets-auth-preflight:',1)[1].split(
+            '  private-episode-followups:',1)[0]
+        self.assertIn('PRIVATE_SHEETS_PREFLIGHT=READ_PASS_WRITE_NOT_VERIFIED',segment)
+        self.assertIn('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON',segment)
+        self.assertIn('XRAY_PRIVATE_SPREADSHEET_ID',segment)
+        self.assertIn('api.check_metadata()',segment)
+        self.assertIn("api.read('ADAY_GECMISI','M')",segment)
+        self.assertIn("api.read('TARAMA_KAYITLARI','J')",segment)
+        self.assertIn("api.read('UYARI_OLAYLARI','T')",segment)
+        self.assertNotIn('api.apply(',segment)
+        self.assertNotIn(':batchUpdate',segment)
+        self.assertNotIn('private_sheet_writer.py --snapshot',segment)
+
     def test_no_credentials_is_explicit_nonzero_not_fake_success(self):
         with tempfile.TemporaryDirectory() as root:
             file=Path(root)/'snap.json'
