@@ -1,0 +1,7 @@
+# NASDAQ-only vectorbt v1.2.0 execution accounting parity (synthetic CI)
+
+This test installs real [vectorbt Community v1.2.0](https://github.com/polakowo/vectorbt), with **Apache 2.0 + Commons Clause** terms (NOT plain Apache 2.0). This is a personal research-only suitability check; do not commercialize without reviewing the actual license. No vectorbt PRO or paid key is used. Future license review required if business distribution arises.
+
+Portfolio generated from fixed offline synthetic five-bar prices, explicit next-bar buy, later exit, with/without 1% fee, independent expected final cash, and zero-position boundary. A 1% fee is intentionally exaggerated for test visibility. This does NOT recreate NASDAQ 15-session intrabar stop/target, risk gaps, price opening fills or live candidate state. It may never replace existing deterministic EOD AL, lifecycle or ChatGPT alert logic without additional PIT/full-market/backtest and explicit approval.
+
+**Research gate only:** Real historical 477-asset backtest requires survivorship-aware universe snapshots, historically licensed point-in-time prices, fees/spreads, a frozen holdout and no in-sample selection bias. CI PASS proves a small accounting contract, not financial edge.
