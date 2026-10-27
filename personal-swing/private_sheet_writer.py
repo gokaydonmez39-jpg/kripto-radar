@@ -176,7 +176,9 @@ class SheetApi:
                 info, scopes=['https://www.googleapis.com/auth/spreadsheets'])
             credentials.refresh(AuthRequest())
             self.token=credentials.token
-        except (ValueError, KeyError, TypeError) as exc:
+        except Exception:
+            # Provider exceptions can contain OAuth diagnostics. Never expose
+            # exception values or tracebacks in public Actions job output.
             raise HandoffBlocked('GOOGLE_AUTH_CONFIGURATION_INVALID') from None
         require(bool(self.token), 'GOOGLE_TOKEN_NOT_AVAILABLE')
         spreadsheet_id=os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID','')
@@ -253,8 +255,9 @@ def main(argv=None):
         # Public log contains aggregate count only, never symbol or signal rows.
         print(json.dumps(out,sort_keys=True))
         return 0
-    except (HandoffBlocked,handoff_guard.HandoffInvalid,ValueError,KeyError,
-            RuntimeError,FileNotFoundError) as exc:
+    except Exception as exc:
+        # In particular: no HTTP body, credentials, private row or endpoint
+        # may appear in a public workflow log, even for unexpected failures.
         print(json.dumps({'status':'PRIVATE_SHEET_SYNC_BLOCKED',
                           'reason_type':type(exc).__name__,
                           'execution':'NONE','device_ack':False},sort_keys=True))
