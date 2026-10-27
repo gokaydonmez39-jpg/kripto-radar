@@ -92,7 +92,12 @@ def plan(snapshot, candidates, scans, run_url):
             # Historical levels are IMMUTABLE; do not rewrite or rederive them.
             for index,field in ((4,'close'),(5,'indicative_stop'),
                                 (6,'indicative_target_2r')):
-                require(abs(numeric(old[index]) - row[field]) < 0.011,
+                # Existing rows may display 2dp while the engine stores 3dp.
+                # 1-cent drift is NOT ordinary rounding; treat it as a conflict.
+                cell=str(old[index]).replace(',', '.')
+                digits=len(cell.split('.',1)[1]) if '.' in cell else 0
+                tolerance=min(0.00501,0.5*10**(-min(digits,3))+0.00001)
+                require(abs(numeric(old[index]) - row[field]) <= tolerance,
                         'CANDIDATE_ORIGINAL_LEVEL_CONFLICT')
             continue
         appended_candidates.append([
@@ -124,8 +129,14 @@ def plan(snapshot, candidates, scans, run_url):
     require(len(old_candidates) + len(appended_candidates) < MAX_ROWS and
             len(old_scans) + len(appended_scans) < MAX_ROWS,
             'SHEET_CAPACITY_REACHED')
+    expected_keys=[asof+'|'+r['symbol'] for r in all_al]
+    all_rows={r[0]:r for r in old_candidates+appended_candidates}
+    expected_rows={key:list(all_rows[key]) for key in expected_keys}
+    scan_row=matching_scans[0] if matching_scans else appended_scans[0]
     return {'candidate_rows':appended_candidates,'scan_rows':appended_scans,
-            'asof_et':asof,'expected_keys':[asof+'|'+r['symbol'] for r in all_al],
+            'asof_et':asof,'expected_keys':expected_keys,
+            'expected_candidate_rows':expected_rows,
+            'expected_scan_row':list(scan_row),
             'expected_count':len(all_al)}
 
 
@@ -149,15 +160,28 @@ def payload_from_plan(p, sheet_ids=None):
 
 
 def verify_readback(p, candidates, scans):
+    """Readback must prove VALUES and provenance, not only the existence of keys."""
     cr=rows_only(candidates,CANDIDATE_HEADER)
     sr=rows_only(scans,SCAN_HEADER)
-    require(sum(r[0] == p['asof_et'] for r in sr) == 1, 'SCAN_READBACK_MISSING_OR_DUPLICATE')
-    for key in p['expected_keys']:
-        require(sum(row[0] == key for row in cr) == 1,
-                'CANDIDATE_READBACK_MISSING_OR_DUPLICATE')
-    matches=[r for r in sr if r[0] == p['asof_et']]
-    require(len(matches[0]) >= 8 and numeric(matches[0][7]) == p['expected_count'],
+    all_candidate_keys=[r[0] for r in cr]
+    all_scan_keys=[r[0] for r in sr]
+    require(len(set(all_candidate_keys))==len(all_candidate_keys),
+            'CANDIDATE_READBACK_DUPLICATE_KEY')
+    require(len(set(all_scan_keys))==len(all_scan_keys),
+            'SCAN_READBACK_DUPLICATE_ASOF')
+    require(sum(r[0] == p['asof_et'] for r in sr) == 1,
+            'SCAN_READBACK_MISSING_OR_DUPLICATE')
+    matching_scan=next(r for r in sr if r[0]==p['asof_et'])
+    require(matching_scan == p['expected_scan_row'],
+            'SCAN_READBACK_PROVENANCE_OR_VALUES_CHANGED')
+    require(len(matching_scan) >= 8 and
+            numeric(matching_scan[7]) == p['expected_count'],
             'SCAN_COUNT_READBACK_MISMATCH')
+    observed={r[0]:r for r in cr}
+    for key in p['expected_keys']:
+        require(key in observed,'CANDIDATE_READBACK_MISSING_OR_DUPLICATE')
+        require(observed[key] == p['expected_candidate_rows'][key],
+                'CANDIDATE_READBACK_LEVELS_OR_VALUES_CHANGED')
     return {'status':'PRIVATE_SHEET_READBACK_PASS','asof_et':p['asof_et'],
             'candidates':p['expected_count'],'device_ack':False}
 
@@ -202,13 +226,21 @@ class SheetApi:
             raise HandoffBlocked('GOOGLE_SHEETS_TRANSPORT_'+type(exc).__name__) from None
 
     def check_metadata(self):
-        data=self.request('?fields=sheets.properties(sheetId,title)')
+        data=self.request('?fields=properties(timeZone),sheets.properties(sheetId,title)')
+        require(data.get('properties',{}).get('timeZone')=='Europe/Istanbul',
+                'SHEET_TIMEZONE_DRIFT')
         sheets={x['properties']['title']:x['properties']['sheetId']
                 for x in data.get('sheets',[]) if 'properties' in x}
-        require(type(sheets.get('ADAY_GECMISI')) is int and
-                type(sheets.get('TARAMA_KAYITLARI')) is int and
-                sheets['ADAY_GECMISI'] != sheets['TARAMA_KAYITLARI'],
+        required={'PANEL','ADAY_GECMISI','TARAMA_KAYITLARI',
+                  'KURALLAR','UYARI_OLAYLARI'}
+        require(required.issubset(sheets) and
+                all(type(sheets[k]) is int for k in required) and
+                len({sheets[k] for k in required})==len(required),
                 'SHEET_TAB_OR_ID_DRIFT')
+        panel=self.read('PANEL','A')
+        require(bool(panel) and bool(panel[0]) and
+                panel[0][0]=='XRAY — KİŞİSEL NASDAQ START / FINAL',
+                'SHEET_PANEL_IDENTITY_MISMATCH')
         self.sheet_ids={'candidate':sheets['ADAY_GECMISI'],
                         'scan':sheets['TARAMA_KAYITLARI']}
 
