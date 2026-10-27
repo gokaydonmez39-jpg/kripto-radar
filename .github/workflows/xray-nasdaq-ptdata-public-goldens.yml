@@ -1,0 +1,53 @@
+name: XRAY NASDAQ PtData Public PIT Goldens (RESEARCH ONLY)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/xray-nasdaq-ptdata-public-goldens.yml'
+      - 'research/NASDAQ_PTDATA_RESEARCH_README.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xray-nasdaq-ptdata-public-goldens.yml'
+      - 'research/NASDAQ_PTDATA_RESEARCH_README.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-pit-correctness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Fetch pinned MIT public-source golden test suite, no auth
+        run: |
+          git clone -q https://github.com/ptdata-io/ptdata-correctness.git external_ptdata_goldens
+          cd external_ptdata_goldens
+          git checkout -q 19502bee9807b959b779b58be043e935b87c0afc
+          test "$(git rev-parse HEAD)" = "19502bee9807b959b779b58be043e935b87c0afc"
+          python -m pip install -r requirements.txt
+      - name: Run live free public PIT goldens — no local/private market data
+        env:
+          PTDATA_BASE_URL: https://api.ptdata.io
+        run: |
+          cd external_ptdata_goldens
+          python -m pytest tests -q -ra --junitxml=ptdata-public.xml
+      - name: Require non-vacuous evaluated real provider assertions
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          root=ET.parse('external_ptdata_goldens/ptdata-public.xml').getroot()
+          suite=root.find('testsuite') if root.tag=='testsuites' else root
+          tests=int(suite.get('tests','0'))
+          skipped=int(suite.get('skipped','0'))
+          failures=int(suite.get('failures','0'))+int(suite.get('errors','0'))
+          passed=tests-skipped-failures
+          print(f"PTDATA_GOLDENS total={tests} passed={passed} skipped={skipped} failed={failures}")
+          assert failures==0 and passed>=10, "INSUFFICIENT_LIVE_PIT_GOLDENS"
+          PY
+      - name: Research-only, no trading or NASDAQ alert path
+        run: echo 'PIT_RESEARCH_ONLY; NO_477_AL_CHANGE; NO_SHEETS; NO_ORDERS; NO_ALERTS'
