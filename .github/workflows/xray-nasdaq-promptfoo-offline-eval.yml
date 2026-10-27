@@ -1,0 +1,45 @@
+name: XRAY NASDAQ Promptfoo Synthetic Offline Evaluation
+on:
+  pull_request:
+    paths:
+      - 'research/nasdaq_promptfoo_provider.cjs'
+      - 'research/nasdaq_promptfooconfig.yaml'
+      - '.github/workflows/xray-nasdaq-promptfoo-offline-eval.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/nasdaq_promptfoo_provider.cjs'
+      - 'research/nasdaq_promptfooconfig.yaml'
+      - '.github/workflows/xray-nasdaq-promptfoo-offline-eval.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-synthetic-notifications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PROMPTFOO_DISABLE_TELEMETRY: '1'
+      PROMPTFOO_DISABLE_UPDATE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Install Promptfoo 0.125.1 with no external model keys
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund promptfoo@0.125.1
+      - name: Run six synthetic NASDAQ-only test cases
+        run: ./node_modules/.bin/promptfoo eval --config research/nasdaq_promptfooconfig.yaml --output /tmp/nasdaq-promptfoo-results.json
+      - name: Assert six independent fixture results succeeded
+        run: |
+          node - <<'JS'
+          const fs=require('node:fs');
+          const data=JSON.parse(fs.readFileSync('/tmp/nasdaq-promptfoo-results.json','utf8'));
+          const rows=data.results?.results||data.results||[];
+          if(!Array.isArray(rows)||rows.length!==6||rows.some(z=>z.success!==true)){throw new Error('NASDAQ_PROMPTFOO_FAIL_CLOSED');}
+          console.log('NASDAQ_PROMPTFOO=PASS; six synthetic cases; no delivery');
+          JS
+      - name: No production delivery permission
+        run: echo 'SYNTHETIC_ONLY; NO_AL; NO_MARKET_DATA; NO_PRIVATE_SHEET; NO_PUSH'
