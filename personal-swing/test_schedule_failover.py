@@ -42,7 +42,7 @@ class OfficialXnasFailover(unittest.TestCase):
 
     def test_no_dispatch_before_xnas_close_plus_45_minutes(self):
         v,_=sf.decision(utc('2026-10-26T20:44:00Z'),[])
-        self.assertEqual(v,'NOOP_SESSION_NOT_READY')
+        self.assertEqual(v,'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
 
     def test_november_dst_standard_time_correct(self):
         v,day=sf.decision(utc('2026-11-03T00:25:00Z'),[])
@@ -55,7 +55,7 @@ class OfficialXnasFailover(unittest.TestCase):
                 read_runs=lambda:called.append('GET'),
                 request_dispatch=lambda:called.append('POST'))
             self.assertEqual(called,[])
-            self.assertEqual(result['status'],'NOOP_NON_XNAS_SESSION')
+            self.assertEqual(result['status'],'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
 
     def test_malformed_and_unknown_status_fail_closed(self):
         instant=utc('2026-10-27T00:25:00Z')
@@ -77,6 +77,54 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,['GET','POST'])
         self.assertEqual(x['status'],'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED')
         self.assertEqual(x['dispatch_requested'],True)
+
+    def test_delayed_github_job_after_ny_midnight_still_checks_monday(self):
+        # Real scheduler incident: 27 Oct 05:17 UTC = Tuesday 01:17 NY.
+        # Monday 26 Oct close+45m remains the eligible target.
+        v,day=sf.decision(utc('2026-10-27T05:17:32Z'),[])
+        self.assertEqual((v,day),('DISPATCH_ONE_MISSING_SCHEDULE','2026-10-26'))
+
+    def test_real_october_primary_run_suppresses_delayed_duplicate(self):
+        v,day=sf.decision(
+            utc('2026-10-27T05:17:32Z'),
+            [record(created='2026-10-27T02:04:34Z',event='schedule')])
+        self.assertEqual((v,day),('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-10-26'))
+
+    def test_delayed_outside_ten_hour_window_fails_closed(self):
+        # The user must not see a silent or very late replay.
+        v,day=sf.decision(utc('2026-10-27T08:45:00Z'),[])
+        self.assertEqual((v,day),('NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW','2026-10-26'))
+
+    def test_early_close_is_measured_from_official_close(self):
+        # Friday after Thanksgiving 2026, XNAS 13:00 ET early close.
+        v,day=sf.decision(utc('2026-11-28T00:25:00Z'),[])
+        self.assertEqual((v,day),('DISPATCH_ONE_MISSING_SCHEDULE','2026-11-27'))
+
+    def test_delayed_runner_uses_prior_session_and_will_not_dispatch_if_run_exists(self):
+        calls=[]
+        def get():
+            calls.append('GET')
+            return {'workflow_runs':[
+                record(created='2026-10-27T02:04:34Z',event='schedule')],
+                'total_count':1}
+        def dispatch():
+            calls.append('POST')
+            return True
+        result=sf.run(now=utc('2026-10-27T05:17:32Z'),read_runs=get,
+                      request_dispatch=dispatch)
+        self.assertEqual(calls,['GET'])
+        self.assertEqual(result['status'],'NOOP_CURRENT_EPOCH_RUN_EXISTS')
+        self.assertEqual(result['asof_et'],'2026-10-26')
+
+    def test_delayed_runner_dispatches_exactly_once_if_missing(self):
+        calls=[]
+        result=sf.run(now=utc('2026-10-27T05:17:32Z'),
+                      read_runs=lambda:calls.append('GET') or
+                          {'workflow_runs':[],'total_count':0},
+                      request_dispatch=lambda:calls.append('POST') or True)
+        self.assertEqual(calls,['GET','POST'])
+        self.assertEqual(result['asof_et'],'2026-10-26')
+        self.assertTrue(result['dispatch_requested'])
 
     def test_invalid_github_collection_blocks_dispatch(self):
         calls=[]
