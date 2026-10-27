@@ -117,6 +117,7 @@ jobs:
         shell: bash
         env:
           XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+          XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
         run: |
           set -euo pipefail
           path="$RUNNER_TEMP/xray-private-data/latest.json"
@@ -124,8 +125,8 @@ jobs:
             echo 'PRIVATE_SHEET_SYNC=SKIPPED_NO_COMPLETED_SESSION'
             exit 0
           fi
-          if [[ -z "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" ]]; then
-            echo 'PRIVATE_SHEET_SYNC=BLOCKED_NO_AUTH_NOT_A_DELIVERY_PASS'
+          if [[ -z "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" || -z "$XRAY_PRIVATE_SPREADSHEET_ID" ]]; then
+            echo 'PRIVATE_SHEET_SYNC=BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS'
             exit 0
           fi
           python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
