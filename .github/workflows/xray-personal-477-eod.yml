@@ -127,7 +127,7 @@ jobs:
           fi
           if [[ -z "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" || -z "$XRAY_PRIVATE_SPREADSHEET_ID" ]]; then
             echo 'PRIVATE_SHEET_SYNC=BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS'
-            exit 0
+            exit 3
           fi
           python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
           python private_sheet_writer.py --snapshot "$path"
