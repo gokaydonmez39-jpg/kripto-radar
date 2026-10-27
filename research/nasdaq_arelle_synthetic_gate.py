@@ -74,7 +74,7 @@ def examine_fictional_xbrl(path: Path, cik: str, accepted_et: datetime, asof_et:
 
 def arelle_offline_probe(path: Path) -> int:
     """Independent Arelle model load: no network, fail closed on taxonomy/schema errors."""
-    from arelle import Cntlr, ModelManager
+    from arelle import Cntlr, ModelManager, Validate
 
     controller = Cntlr.Cntlr()
     controller.webCache.workOffline = True
@@ -83,6 +83,7 @@ def arelle_offline_probe(path: Path) -> int:
         model = manager.load(str(path))
         if model is None or model.modelDocument is None:
             raise ShadowGateBlocked("ARELLE_DOCUMENT_NOT_LOADED")
+        Validate.validate(model)
         if model.errors:
             raise ShadowGateBlocked("ARELLE_SCHEMA_OR_VALIDATION_ERRORS")
         if len(model.facts) != 1:
