@@ -242,7 +242,8 @@ class SheetApi:
                 panel[0][0]=='XRAY — KİŞİSEL NASDAQ START / FINAL',
                 'SHEET_PANEL_IDENTITY_MISMATCH')
         self.sheet_ids={'candidate':sheets['ADAY_GECMISI'],
-                        'scan':sheets['TARAMA_KAYITLARI']}
+                        'scan':sheets['TARAMA_KAYITLARI'],
+                        'alerts':sheets['UYARI_OLAYLARI']}
 
     def read(self, title, last_column):
         address=quote("'{0}'!A1:{1}{2}".format(title,last_column,MAX_ROWS),safe='')
