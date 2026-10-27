@@ -14,9 +14,11 @@ RUN='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001'
 
 def snapshot():
     rows=[{'asof_et':'2026-10-26','symbol':s,'decision':'ELE'} for s in SYMS]
+    # Deliberately fictional synthetic fixtures; never check in real
+    # privately observed candidate identities or stop/target levels.
     for symbol,price,atr,stop,target in [
-            ('TSLA',391.69,13.06,365.57,443.93),
-            ('NSIT',178.775,6.064,166.647,203.031)]:
+            (SYMS[0],100.,2.5,95.,110.),
+            (SYMS[1],200.,5.,190.,220.)]:
         r=next(x for x in rows if x['symbol']==symbol)
         r.update(decision='AL',close=price,atr14=atr,
                  indicative_stop=stop,indicative_target_2r=target,
