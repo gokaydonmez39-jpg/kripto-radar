@@ -1,0 +1,35 @@
+name: XRAY Independent Scientific Evidence Lab (NO AL)
+on:
+  pull_request:
+    paths:
+      - 'research/scientific_methodology_lab.py'
+      - 'research/test_scientific_methodology_lab.py'
+      - '.github/workflows/xray-scientific-evidence-lab.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/scientific_methodology_lab.py'
+      - 'research/test_scientific_methodology_lab.py'
+      - '.github/workflows/xray-scientific-evidence-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-scientific-methods:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Fail-closed scientific evidence and adversarial tests (NO secrets)
+        run: |
+          python -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
+          python -O -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
+      - name: No production mutation or delivery
+        run: echo 'RESEARCH_ONLY; NO_AL; NO_BROKER; NO_SHEETS_WRITE; NO_NOTIFICATIONS'
