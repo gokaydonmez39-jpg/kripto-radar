@@ -17,7 +17,15 @@ import exchange_calendars as ec
 import daily_job
 import engine
 import tracker
-from private_sheet_writer import SheetApi, HandoffBlocked, numeric, require, CANDIDATE_HEADER
+from private_sheet_writer import SheetApi, HandoffBlocked, numeric, require, CANDIDATE_HEADER, as_cells
+
+ALERT_HEADER = (
+    'OLAY_ANAHTARI','ADAY_ANAHTARI','AL_ASOF_ET','SEMBOL',
+    'OLAY_ASOF_ET','OLAY_KODU','ONCELIK','IEX_KAPANIS_USD',
+    'ORIJINAL_STOP_USD','ORIJINAL_HEDEF_USD','SMA20','SMA50',
+    'DESTEK_20','DIRENC_20','TEPE_52','TAKIP_SEANSI',
+    'BIRINCIL_KANIT_URL','BILDIRIM_DURUMU','BILDIRIM_ZAMANI_TR','NOT')
+EVENT_PENDING = 'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST'
 
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
 MAX_EPISODES = 4770
@@ -111,7 +119,24 @@ def build_updates(values, asof, read_batch):
             status='KAPALI • '+item['outcome']+' • %d/15 SEANS'%held
             cells=[status,item['closed_date'],item['outcome'],
                    str(item['hypothetical_result_pct']).replace('.',',')]
+        event=None
+        if item['status']=='CLOSED':
+            day=item['closed_date']
+            observed=[b for b in bars_by_symbol[symbol]
+                      if str(b.get('timestamp',''))[:10]==day]
+            require(len(observed)==1,'LIFECYCLE_TERMINAL_BAR_NOT_UNIQUE')
+            last=item['events'][-1]
+            event={
+                'event_key':episode['id']+'|'+day+'|'+item['outcome']+'|1',
+                'episode_id':episode['id'],
+                'original_asof':episode['asof_et'],'symbol':symbol,
+                'event_day':day,'event_code':item['outcome'],
+                'iex_close':observed[0]['close'],
+                'stop':episode['stop'],'target':episode['target_2r'],
+                'days_held':held,'gap':bool(last.get('gap_below_stop')),
+            }
         updates.append({
+            'event':event,
             'sheet_row_index':episode['sheet_row_index'],
             'id':episode['id'],
             'original_row':episode['original_row'],
@@ -124,6 +149,45 @@ def build_updates(values, asof, read_batch):
             'asof_et':asof}
 
 
+def plan_outbox_events(plan, alert_values):
+    require(isinstance(alert_values,list) and alert_values and
+            tuple(alert_values[0])==ALERT_HEADER,'LIFECYCLE_ALERT_HEADER_DRIFT')
+    existing={}
+    for row in alert_values[1:]:
+        if not row or not any(str(x) for x in row):
+            continue
+        require(len(row)>=18 and row[0] not in existing,
+                'LIFECYCLE_ALERT_DUPLICATE_OR_INVALID')
+        existing[row[0]]=list(row)
+    new_rows=[]
+    expected={}
+    for update in plan['updates']:
+        event=update['event']
+        if event is None:
+            continue
+        kind=event['event_code']
+        priority=('KRITIK' if kind in ('STOP_TOUCHED','BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
+                  else 'HEDEF' if kind=='TARGET_TOUCHED' else 'SURE_SONU')
+        row=[event['event_key'],event['episode_id'],event['original_asof'],
+             event['symbol'],event['event_day'],kind,priority,
+             str(event['iex_close']),str(event['stop']),str(event['target']),
+             '','','','','',str(event['days_held'])+'/15','',
+             EVENT_PENDING,'',
+             'Verified historical Alpaca IEX daily bar; theoretical contact only; '
+             'gap_below_stop='+str(event['gap'])+'; never executable fill']
+        old=existing.get(event['event_key'])
+        if old is not None:
+            require(len(old)>=20 and old[:10]==row[:10] and
+                    old[15]==row[15] and
+                    old[17] in (EVENT_PENDING,'ALERT_REQUESTED_NOT_DEVICE_ACK'),
+                    'LIFECYCLE_EVENT_CONFLICT')
+            expected[event['event_key']]=list(old)
+        else:
+            new_rows.append(row)
+            expected[event['event_key']]=row
+    return {'new_rows':new_rows,'expected':expected}
+
+
 def to_batch_requests(plan, sheet_id):
     """Change only H-K. A-G original stop/target/price are NEVER written."""
     return [{'updateCells':{
@@ -133,6 +197,19 @@ def to_batch_requests(plan, sheet_id):
                             for v in u['new_cells']]}],
         'fields':'userEnteredValue'}}
         for u in plan['updates']]
+
+
+def verify_outbox_readback(outbox, observed):
+    require(observed and tuple(observed[0])==ALERT_HEADER,
+            'LIFECYCLE_ALERT_READBACK_HEADER')
+    rows=[r for r in observed[1:] if r and r[0]]
+    keys=[r[0] for r in rows]
+    require(len(keys)==len(set(keys)),'LIFECYCLE_ALERT_READBACK_DUPLICATE')
+    keyed={r[0]:list(r) for r in rows}
+    for key,original in outbox['expected'].items():
+        require(key in keyed and keyed[key]==original,
+                'LIFECYCLE_ALERT_READBACK_MISSING_OR_CHANGED')
+    return True
 
 
 def verify_readback(plan, after):
@@ -160,18 +237,29 @@ def synchronize(api, asof, read_batch):
     api.check_metadata()
     before=api.read('ADAY_GECMISI','M')
     plan=build_updates(before,asof,read_batch)
-    require(api.read('ADAY_GECMISI','M')==before,
+    alert_before=api.read('UYARI_OLAYLARI','T')
+    outbox=plan_outbox_events(plan,alert_before)
+    require(api.read('ADAY_GECMISI','M')==before and
+            api.read('UYARI_OLAYLARI','T')==alert_before,
             'LIFECYCLE_CONCURRENT_MODIFICATION')
     if plan['updates']:
         require(isinstance(api.sheet_ids,dict) and
-                type(api.sheet_ids.get('candidate')) is int,
+                type(api.sheet_ids.get('candidate')) is int and
+                type(api.sheet_ids.get('alerts')) is int,
                 'LIFECYCLE_SHEET_ID_NOT_VERIFIED')
-        request={'requests':to_batch_requests(plan,api.sheet_ids['candidate'])}
-        api.request(':batchUpdate',method='POST',body=request)
+        reqs=to_batch_requests(plan,api.sheet_ids['candidate'])
+        if outbox['new_rows']:
+            reqs.extend(as_cells(outbox['new_rows'],
+                                 api.sheet_ids['alerts']) for _ in (0,))
+        # One atomic Google batch: terminal candidate row and event outbox
+        # either commit together or are both rejected by the Sheets API.
+        api.request(':batchUpdate',method='POST',body={'requests':reqs})
         verify_readback(plan,api.read('ADAY_GECMISI','M'))
+        verify_outbox_readback(outbox,api.read('UYARI_OLAYLARI','T'))
     return {'status':'LIFECYCLE_READBACK_PASS',
             'asof_et':asof,
             'evaluated':plan['evaluated'],'terminal_updates':plan['closed'],
+            'terminal_events_reserved':len(outbox['new_rows']),
             'open_episodes_before':plan['total_open'],
             'device_ack':False,
             'notification_delivery':'NOT_ATTEMPTED_BY_GITHUB'}
