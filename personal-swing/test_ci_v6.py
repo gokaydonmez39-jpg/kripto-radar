@@ -190,6 +190,31 @@ class OfflineCIPipeline(unittest.TestCase):
                     self.assertIn('no-store',response.headers['Cache-Control'])
             finally:
                 srv.shutdown();srv.server_close();thr.join(3)
+    def test_disabled_followup_cannot_be_reported_as_zero_events(self):
+        with tempfile.TemporaryDirectory() as out:
+            summary=daily_job.run_once(
+                asof=ASOF,symbols=['CVLT'],directory=out,
+                read_batch=lambda group,day:synthetic_bars(day,group),
+                batch_size=1,followups=False)
+            self.assertTrue(summary['final_ready'])
+            self.assertIsNone(summary['history_outcome_changes'])
+            self.assertFalse(summary['followups_attempted'])
+            self.assertEqual(summary['followup_status'],
+                             'NOT_RUN_NO_PERSISTED_HISTORY')
+            self.assertFalse(summary['historical_episode_coverage_verified'])
+
+    def test_local_followups_never_claim_persistent_coverage(self):
+        with tempfile.TemporaryDirectory() as out:
+            summary=daily_job.run_once(
+                asof=ASOF,symbols=['CVLT'],directory=out,
+                read_batch=lambda group,day:synthetic_bars(day,group),
+                batch_size=1,followups=True)
+            self.assertTrue(summary['final_ready'])
+            self.assertTrue(summary['followups_attempted'])
+            self.assertEqual(summary['followup_status'],
+                             'LOCAL_EPHEMERAL_JOURNAL_NOT_FULL_HISTORY')
+            self.assertFalse(summary['historical_episode_coverage_verified'])
+
     def test_daily_job_no_keys_wont_be_reported_as_success(self):
         with tempfile.TemporaryDirectory() as out:
             summary=daily_job.run_once(asof=ASOF,symbols=['CVLT'],directory=out,

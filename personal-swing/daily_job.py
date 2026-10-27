@@ -43,12 +43,26 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
                 'scope_sha256':snap['scope_sha256'],
                 'analysis_fingerprint_sha256':snap['analysis_fingerprint_sha256'],
                 'no_execution':True,
+                # A freshly provisioned GitHub runner has no durable journal.
+                # The private Sheet is the source of truth for older episodes.
+                # 0 changes means "checked, none changed" ONLY with evidence.
+                'followups_attempted':False,
+                'followup_status':'NOT_RUN_INCOMPLETE_SCAN',
+                'historical_episode_coverage_verified':False,
+                'history_outcome_changes':None,
             }
             if snap['valid_data_coverage_complete']:
                 state=tracker.process_snapshot(dest/'latest.json',dest/'journal.json',
                                                fetch_followups=followups)
                 summary['new_entries']=len(state['new_signals'])
-                summary['history_outcome_changes']=len(state['closed_signals'])
+                summary['followups_attempted']=bool(followups)
+                if followups:
+                    summary['followup_status']=('LOCAL_EPHEMERAL_ERRORS'
+                        if state['followup_errors'] else
+                        'LOCAL_EPHEMERAL_JOURNAL_NOT_FULL_HISTORY')
+                    summary['history_outcome_changes']=len(state['closed_signals'])
+                else:
+                    summary['followup_status']='NOT_RUN_NO_PERSISTED_HISTORY'
             return summary
         finally:
             fcntl.flock(h.fileno(),fcntl.LOCK_UN)
