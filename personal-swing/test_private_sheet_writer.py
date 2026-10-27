@@ -141,6 +141,44 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                     w.synchronize(data,RUN,api)
                 self.assertEqual(api.apply_count,0)
 
+    def test_readback_rejects_corrupted_new_stop(self):
+        p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
+                 [list(w.SCAN_HEADER)],RUN)
+        candidates=[list(w.CANDIDATE_HEADER)]+copy.deepcopy(p['candidate_rows'])
+        scans=[list(w.SCAN_HEADER)]+copy.deepcopy(p['scan_rows'])
+        candidates[1][5]='1,00'
+        with self.assertRaisesRegex(w.HandoffBlocked,'READBACK'):
+            w.verify_readback(p,candidates,scans)
+
+    def test_readback_rejects_corrupted_new_scan_provenance(self):
+        p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
+                 [list(w.SCAN_HEADER)],RUN)
+        candidates=[list(w.CANDIDATE_HEADER)]+copy.deepcopy(p['candidate_rows'])
+        scans=[list(w.SCAN_HEADER)]+copy.deepcopy(p['scan_rows'])
+        scans[1][8]='https://github.com/unrelated/actions/runs/123'
+        with self.assertRaisesRegex(w.HandoffBlocked,'READBACK'):
+            w.verify_readback(p,candidates,scans)
+
+    def test_existing_price_one_cent_conflict_is_not_rounding(self):
+        p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
+                 [list(w.SCAN_HEADER)],RUN)
+        old=copy.deepcopy(p['candidate_rows'][0])
+        old[4]='100,01'
+        with self.assertRaisesRegex(w.HandoffBlocked,'CANDIDATE_ORIGINAL_LEVEL_CONFLICT'):
+            w.plan(snapshot(),[list(w.CANDIDATE_HEADER),old],
+                   [list(w.SCAN_HEADER)],RUN)
+
+    def test_wrong_workbook_timezone_and_missing_panel_are_rejected(self):
+        api=w.SheetApi.__new__(w.SheetApi)
+        api.token='test-only'
+        api.base='unused'
+        api.sheet_ids=None
+        api.request=lambda path: {'properties':{'timeZone':'Etc/UTC'},
+                                  'sheets':[{'properties':{'title':'ADAY_GECMISI','sheetId':101}},
+                                            {'properties':{'title':'TARAMA_KAYITLARI','sheetId':102}}]}
+        with self.assertRaisesRegex(w.HandoffBlocked,'SHEET'):
+            api.check_metadata()
+
     def test_no_credentials_is_explicit_nonzero_not_fake_success(self):
         with tempfile.TemporaryDirectory() as root:
             file=Path(root)/'snap.json'
