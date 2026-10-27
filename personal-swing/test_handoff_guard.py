@@ -14,7 +14,8 @@ def sample():
           for symbol in SYMS]
     rows[0].update(decision='AL',close=100.,atr14=2.5,
                    indicative_stop=95.,indicative_target_2r=110.,
-                   relative_iex_volume=1.5,rsi14=55.)
+                   relative_iex_volume=1.5,rsi14=55.,
+                   sma20=98.,sma50=96.,prior_high20=99.,atr_risk_pct=5.)
     return {'scope_sha256':SCOPE,'analysis_fingerprint_sha256':POLICY,
         'requested_symbols':477,'processed_symbols':477,'valid_data_symbols':477,
         'insufficient_data_symbols':0,'remaining_symbols':0,
@@ -96,6 +97,35 @@ class FailClosedEodHandoff(unittest.TestCase):
             snap=sample();snap['asof_et']=day
             with self.subTest(day=day),self.assertRaises(h.HandoffInvalid):
                 check(snap)
+
+    def test_corrupt_al_policy_fields_rejected(self):
+        """A tampered checkpoint must never smuggle an AL past handoff."""
+        bad=[
+            ('close',4.99), ('relative_iex_volume',1.299),
+            ('rsi14',44.99), ('rsi14',75.01),
+            ('sma20',101.), ('sma50',99.),
+            ('prior_high20',101.), ('atr_risk_pct',8.01),
+            ('atr14',0.), ('atr14',float('nan'))
+        ]
+        for field,value in bad:
+            with self.subTest(field=field,value=value):
+                snap=sample()
+                snap['rows'][0][field]=value
+                with self.assertRaises(h.HandoffInvalid):
+                    check(snap)
+
+    def test_al_boundary_values_not_falsely_rejected(self):
+        snap=sample()
+        row=snap['rows'][0]
+        row['relative_iex_volume']=1.3
+        row['rsi14']=45.
+        row['atr14']=4.
+        row['indicative_stop']=92.
+        row['indicative_target_2r']=116.
+        row['atr_risk_pct']=8.
+        self.assertEqual(check(snap)['new_signal_count'],1)
+        row['rsi14']=75.
+        self.assertEqual(check(snap)['new_signal_count'],1)
 
     def test_optimizer_mode_no_assert_dependency(self):
         self.assertNotIn('assert ',open(h.__file__,encoding='utf-8').read())

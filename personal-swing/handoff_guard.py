@@ -70,12 +70,26 @@ def validate_snapshot(snap,symbols,*,scope_sha,policy_sha):
     for x in rows:
         if x['decision']!='AL':
             continue
+        # Never trust a persisted checkpoint's AL label by itself. All
+        # indicators are rounded at output (3dp prices, 2dp RSI/risk), so
+        # use non-strict geometry only for comparisons of rounded prices.
+        # The analysis engine itself enforces the strict raw comparisons.
         fields=('close','atr14','indicative_stop','indicative_target_2r',
-                'relative_iex_volume','rsi14')
+                'relative_iex_volume','rsi14','sma20','sma50',
+                'prior_high20','atr_risk_pct')
         require(all(type(x.get(k)) in (int,float) and math.isfinite(x[k])
                     for k in fields),'AL_NONFINITE_FIELD')
         close,stop,target=x['close'],x['indicative_stop'],x['indicative_target_2r']
-        require(0<stop<close<target,'AL_LEVEL_ORDER')
+        atr=x['atr14']
+        require(close>=5 and atr>0 and 0<stop<close<target,'AL_LEVEL_ORDER')
+        require(0<x['sma50']<=x['sma20']<=close and
+                0<x['prior_high20']<=close,'AL_TREND_OR_BREAKOUT_INVALID')
+        require(x['relative_iex_volume']>=1.3,'AL_RVOL_BELOW_THRESHOLD')
+        require(45<=x['rsi14']<=75,'AL_RSI_OUTSIDE_POLICY')
+        require(0<x['atr_risk_pct']<=8,'AL_RISK_OUTSIDE_POLICY')
+        require(abs(stop-(close-2*atr))<=0.005,'AL_STOP_NOT_2ATR')
+        require(abs(x['atr_risk_pct']-200*atr/close)<=0.03,
+                'AL_RISK_ATR_INCONSISTENT')
         require(abs(target-(close+2*(close-stop)))<=0.005,'AL_NOT_2R')
     return {'asof_et':day,'universe_valid':477,'new_signal_count':expected['TEKNIK_AL_ADAYI'],
             'policy_sha256':policy_sha,'scope_sha256':scope_sha,
