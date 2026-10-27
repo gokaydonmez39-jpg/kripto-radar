@@ -253,6 +253,27 @@ class DailyHolidayAndFreshnessGuard(unittest.TestCase):
         self.assertIsNone(daily_job.current_completed_session(
             datetime(2026,10,24,23,15,tzinfo=timezone.utc)))
 
+    def test_gitHub_schedule_delayed_past_ny_midnight_keeps_previous_epoch(self):
+        from datetime import datetime, timezone
+        self.assertEqual(daily_job.current_completed_session(
+            datetime(2026,10,27,5,17,32,tzinfo=timezone.utc)),'2026-10-26')
+
+    def test_preopen_next_day_outside_safe_window_cannot_recycle_prior_signal(self):
+        from datetime import datetime, timezone
+        self.assertIsNone(daily_job.current_completed_session(
+            datetime(2026,10,27,8,0,tzinfo=timezone.utc)))
+
+    def test_november_standard_time_delayed_eod_selects_monday(self):
+        from datetime import datetime, timezone
+        self.assertEqual(daily_job.current_completed_session(
+            datetime(2026,11,3,5,17,tzinfo=timezone.utc)),'2026-11-02')
+
+    def test_after_friday_midnight_delayed_saturday_uses_friday_only_when_fresh(self):
+        from datetime import datetime, timezone
+        self.assertEqual(daily_job.current_completed_session(
+            datetime(2026,10,24,2,0,tzinfo=timezone.utc)),'2026-10-23')
+
+
 class PrivateSheetEventOutboxContract(unittest.TestCase):
     """Pure adversarial checks. No real Google Sheet, iOS or private signals."""
     import alert_ledger_contract as contract
