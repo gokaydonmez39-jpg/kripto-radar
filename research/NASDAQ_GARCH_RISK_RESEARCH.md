@@ -1,0 +1,5 @@
+# NASDAQ GARCH independent risk research — A5
+
+This PR runs **actual pinned MIT source** from [GARCH Method](https://github.com/Miles-Deutscher/Garch-Method) (`1951fe9ea007d1e4a69e12c70104bc862f0252a7`) in isolated GitHub CI without secrets, live price feeds or notification permissions. Uses **252 equity sessions** for annualization rather than the upstream CLI's other-market default. All input prices are deterministic SYNTHETIC; tests the minimum 500-return history gate, finite variance, and prefix invariance under perturbations in future observations.
+
+**Scope**: Forecast VOLATILITY MAGNITUDE, not return direction or a buy decision. A 52-bar NASDAQ IEX signal dataset is insufficient for the source default's >=500-return GARCH fit; production 477-ticker risk forecasts are explicitly **NOT** implemented. Compare to a realized-volatility/ATR benchmark using legally usable **point-in-time ~510+** equity sessions and out-of-sample evaluation before any risk overlay adoption. Never alter current fixed stop/target, sizing, 15-session logic, EOD signal engine or ChatGPT alerts automatically.

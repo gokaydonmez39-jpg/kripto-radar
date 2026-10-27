@@ -1,0 +1,39 @@
+name: XRAY NASDAQ GARCH Volatility Risk Shadow (NO AL)
+on:
+  pull_request:
+    paths:
+      - 'research/test_nasdaq_garch_shadow.py'
+      - '.github/workflows/xray-nasdaq-garch-volatility-shadow.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/test_nasdaq_garch_shadow.py'
+      - '.github/workflows/xray-nasdaq-garch-volatility-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-garch-volatility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install independent risk libraries without feed/broker extras
+        run: python -m pip install 'arch>=6,<9' 'pandas>=2,<4' 'numpy>=1.24,<3'
+      - name: Clone pinned MIT volatility research source (no execution API)
+        run: |
+          git clone -q https://github.com/Miles-Deutscher/Garch-Method.git external_garch_source
+          cd external_garch_source
+          git checkout -q 1951fe9ea007d1e4a69e12c70104bc862f0252a7
+          test "$(git rev-parse HEAD)" = "1951fe9ea007d1e4a69e12c70104bc862f0252a7"
+      - name: Falsify future data leakage, weak history, wrong annualization
+        run: |
+          python -m unittest discover -s research -p 'test_nasdaq_garch_shadow.py' -v
+          python -O -m unittest discover -s research -p 'test_nasdaq_garch_shadow.py' -v
+      - name: No NASDAQ trading, data or notification mutation
+        run: echo 'NASDAQ_GARCH_MAGNITUDE_SHADOW_ONLY; NO_AL; NO_ORDERS; NO_SHEETS; NO_ALERT'
