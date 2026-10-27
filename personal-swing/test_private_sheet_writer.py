@@ -179,6 +179,17 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(w.HandoffBlocked,'SHEET'):
             api.check_metadata()
 
+    def test_missing_authorization_is_not_green(self):
+        """The private writer must be a required production step."""
+        workflow=Path(__file__).resolve().parent.parent/'.github/workflows/xray-personal-477-eod.yml'
+        source=workflow.read_text(encoding='utf-8')
+        start=source.index('      - name: Private Google Sheets writer')
+        end=source.index('      - name: No public delivery',start)
+        writer=source[start:end]
+        self.assertIn('BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS',writer)
+        self.assertIn('exit 3',writer)
+        self.assertNotIn('exit 0',writer.split('BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS')[1])
+
     def test_no_credentials_is_explicit_nonzero_not_fake_success(self):
         with tempfile.TemporaryDirectory() as root:
             file=Path(root)/'snap.json'
