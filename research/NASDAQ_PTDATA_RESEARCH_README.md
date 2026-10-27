@@ -1,0 +1,7 @@
+# NASDAQ-only PtData PIT golden tests — read-only research
+
+Source: [ptdata-io/ptdata-correctness](https://github.com/ptdata-io/ptdata-correctness), MIT; pinned commit `19502bee9807b959b779b58be043e935b87c0afc`. Only the provider's openly documented free evaluation surface `https://api.ptdata.io` is queried, with no API key, private records or user account data. Test pass requires >=10 LIVE passing historical-golden assertions, zero failures, skipped cases reported rather than hidden.
+
+**Scope:** corporate fundamentals, filings, index membership and historical-known-by date correctness as implemented by the vendor; NOT Alpaca IEX EOD prices, individual 477 symbol live signal decisions or trade fills. PtData explicitly excludes public redistributable raw prices and its free tier is for evaluation only. This source MUST NOT be introduced as a new production AL authority on the basis of this test. Past known 477 Nasdaq watchlist is NOT a survivorship-free investable universe. Only upgrade after paid rights/latency/completeness/end-to-end PIT evidence and explicit approval.
+
+Test limitations: remote provider outages, rate limiting, quota, domain/API drift or changed goldens must produce failure; they do not downgrade to a fake PASS. The companion suite intentionally skips cases currently outside the provider's product surface. No production automated refresh, no key storage, no notification changes.
