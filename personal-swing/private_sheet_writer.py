@@ -18,9 +18,6 @@ from urllib.request import Request, urlopen
 import handoff_guard
 import runner
 
-SPREADSHEET_ID = '1TT5MtHOAEew09mQTanQ6uIpgWNS_fzf4KrlkcpI-jrI'
-CANDIDATE_SHEET_ID = 432001001
-SCAN_SHEET_ID = 432001002
 CANDIDATE_HEADER = ('ALARM KİMLİĞİ','ASOF ET','SEMBOL','SINIF',
                     'IEX KAPANIŞ USD','STOP 2ATR','HEDEF 2R','TAKİP DURUMU',
                     'KAPANIŞ SEANSI','SONUÇ','TEORİK %','BİLDİRİM','KAYNAK / NOT')
@@ -139,12 +136,15 @@ def as_cells(rows, sheet_id):
         'fields':'userEnteredValue'}}
 
 
-def payload_from_plan(p):
+def payload_from_plan(p, sheet_ids=None):
+    # Tests use arbitrary dummy IDs; production resolves private IDs via
+    # authenticated metadata and never embeds them in the public repository.
+    ids=sheet_ids if sheet_ids is not None else {'scan':1,'candidate':2}
     req=[]
     if p['scan_rows']:
-        req.append(as_cells(p['scan_rows'], SCAN_SHEET_ID))
+        req.append(as_cells(p['scan_rows'], ids['scan']))
     if p['candidate_rows']:
-        req.append(as_cells(p['candidate_rows'], CANDIDATE_SHEET_ID))
+        req.append(as_cells(p['candidate_rows'], ids['candidate']))
     return {'requests':req}
 
 
@@ -179,9 +179,15 @@ class SheetApi:
         except (ValueError, KeyError, TypeError) as exc:
             raise HandoffBlocked('GOOGLE_AUTH_CONFIGURATION_INVALID') from None
         require(bool(self.token), 'GOOGLE_TOKEN_NOT_AVAILABLE')
+        spreadsheet_id=os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID','')
+        require(isinstance(spreadsheet_id,str) and
+                len(spreadsheet_id)>=20 and spreadsheet_id.replace('-','').replace('_','').isalnum(),
+                'PRIVATE_SHEET_ID_NOT_CONFIGURED')
+        self.base=BATCH_ENDPOINT+spreadsheet_id
+        self.sheet_ids=None
 
     def request(self, path, *, method='GET', body=None):
-        url=BATCH_ENDPOINT+SPREADSHEET_ID+path
+        url=self.base+path
         raw=json.dumps(body,ensure_ascii=False).encode('utf-8') if body is not None else None
         req=Request(url, data=raw, method=method,
                     headers={'Authorization':'Bearer '+self.token,
@@ -197,16 +203,20 @@ class SheetApi:
         data=self.request('?fields=sheets.properties(sheetId,title)')
         sheets={x['properties']['title']:x['properties']['sheetId']
                 for x in data.get('sheets',[]) if 'properties' in x}
-        require(sheets.get('ADAY_GECMISI')==CANDIDATE_SHEET_ID and
-                sheets.get('TARAMA_KAYITLARI')==SCAN_SHEET_ID,
+        require(type(sheets.get('ADAY_GECMISI')) is int and
+                type(sheets.get('TARAMA_KAYITLARI')) is int and
+                sheets['ADAY_GECMISI'] != sheets['TARAMA_KAYITLARI'],
                 'SHEET_TAB_OR_ID_DRIFT')
+        self.sheet_ids={'candidate':sheets['ADAY_GECMISI'],
+                        'scan':sheets['TARAMA_KAYITLARI']}
 
     def read(self, title, last_column):
         address=quote("'{0}'!A1:{1}{2}".format(title,last_column,MAX_ROWS),safe='')
         return self.request('/values/'+address+'?valueRenderOption=FORMATTED_VALUE').get('values',[])
 
     def apply(self,p):
-        data=payload_from_plan(p)
+        require(isinstance(self.sheet_ids,dict),'MISSING_AUTHENTICATED_SHEET_METADATA')
+        data=payload_from_plan(p,self.sheet_ids)
         if data['requests']:
             self.request(':batchUpdate',method='POST',body=data)
 
