@@ -1,0 +1,38 @@
+name: XRAY NASDAQ Arelle Fictional XBRL Offline Shadow
+on:
+  pull_request:
+    paths:
+      - 'research/nasdaq_arelle_synthetic_gate.py'
+      - 'research/test_nasdaq_arelle_synthetic_gate.py'
+      - '.github/workflows/xray-nasdaq-arelle-shadow.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/nasdaq_arelle_synthetic_gate.py'
+      - 'research/test_nasdaq_arelle_synthetic_gate.py'
+      - '.github/workflows/xray-nasdaq-arelle-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-arelle-shadow-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  no-secrets-fictional-xbrl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install pinned Apache-2.0 Arelle only in isolated research job
+        run: python -m pip install 'arelle-release==2.47.3'
+      - name: Nine offline fictional tests, optimized and ordinary interpreter
+        run: |
+          python -m unittest discover -s research -p 'test_nasdaq_arelle_synthetic_gate.py' -v
+          python -O -m unittest discover -s research -p 'test_nasdaq_arelle_synthetic_gate.py' -v
+      - name: Preserve production isolation
+        run: echo 'NASDAQ_ARELLE_SHADOW_ONLY; NO_MARKET; NO_AL; NO_ORDERS; NO_PRIVATE_SHEET; NO_PUSH'
