@@ -1,0 +1,46 @@
+description: XRAY synthetic NASDAQ offline contract (not live ChatGPT)
+prompts:
+  - '{{event}}'
+providers:
+  - id: file://nasdaq_promptfoo_provider.cjs
+tests:
+  - description: VALID_POSITIVE
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":477,"asof":"2026-10-27","final_asof":"2026-10-27","unique":true,"previously_requested":false,"source_verified":true,"sheet_readback":true,"close":100,"stop":95,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: contains
+        value: "XRAY NASDAQ | TEST"
+      - type: contains
+        value: "Teorik stop 95"
+      - type: not-contains
+        value: "iPhone'a teslim"
+  - description: MISSING_SYMBOL_COVERAGE
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":476,"asof":"2026-10-27","final_asof":"2026-10-27","unique":true,"previously_requested":false,"source_verified":true,"sheet_readback":true,"close":100,"stop":95,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: equals
+        value: "BLOCKED_COVERAGE"
+  - description: STALE_ASOF
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":477,"asof":"2026-10-26","final_asof":"2026-10-27","unique":true,"previously_requested":false,"source_verified":true,"sheet_readback":true,"close":100,"stop":95,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: equals
+        value: "BLOCKED_ASOF"
+  - description: REPEAT_OLD_AL
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":477,"asof":"2026-10-27","final_asof":"2026-10-27","unique":true,"previously_requested":true,"source_verified":true,"sheet_readback":true,"close":100,"stop":95,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: equals
+        value: "BLOCKED_DEDUP"
+  - description: UNVERIFIED_SHEET
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":477,"asof":"2026-10-27","final_asof":"2026-10-27","unique":true,"previously_requested":false,"source_verified":true,"sheet_readback":false,"close":100,"stop":95,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: equals
+        value: "BLOCKED_EVIDENCE"
+  - description: BAD_STOP_GEOMETRY
+    vars:
+      event: '{"scope":"NASDAQ_477","final":true,"valid":477,"asof":"2026-10-27","final_asof":"2026-10-27","unique":true,"previously_requested":false,"source_verified":true,"sheet_readback":true,"close":100,"stop":105,"target":110,"symbol":"TEST"}'
+    assert:
+      - type: equals
+        value: "BLOCKED_GEOMETRY"
