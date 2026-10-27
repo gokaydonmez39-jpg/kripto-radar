@@ -40,8 +40,8 @@ jobs:
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation
-          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
           python -m py_compile engine.py runner.py daily_job.py tracker.py
@@ -88,37 +88,27 @@ jobs:
           REQUESTED_ASOF: ${{ inputs.asof_et }}
         run: |
           python - <<'PY'
-          import json,os,re
+          import json,os
           from pathlib import Path
           import runner
+          import handoff_guard
           path=Path(os.environ['RUNNER_TEMP'])/'xray-private-data'/'latest.json'
+          requested=os.environ.get('REQUESTED_ASOF','').strip()
           if not path.exists():
-              # Smoke runs before the official close+45m are no-ops,
-              # not a false failure and never a claimed EOD handoff.
+              # Workflow-file push before the market close is a safe no-op.
               import daily_job
-              requested=os.environ.get('REQUESTED_ASOF','')
               if requested or daily_job.current_completed_session() is not None:
                   raise RuntimeError('MISSING_PRIVATE_LATEST_WHILE_ELIGIBLE')
               print('XRAY_PERSONAL_NOOP_PRE_SESSION_NO_MARKET_DATA')
               raise SystemExit(0)
           snap=json.loads(path.read_text(encoding='utf-8'))
+          if requested and snap.get('asof_et')!=requested:
+              raise RuntimeError('WORKFLOW_DISPATCH_ASOF_MISMATCH')
           symbols=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json')
-          assert len(symbols)==len(set(symbols))==477
-          assert snap.get('requested_symbols')==snap.get('processed_symbols')==477
-          assert snap.get('valid_data_symbols')==477
-          assert snap.get('insufficient_data_symbols')==snap.get('remaining_symbols')==0
-          assert snap.get('valid_data_coverage_complete') is True
-          assert snap.get('new_signal_publishable') is True
-          assert snap.get('scope_sha256')==runner.sha_symbols(symbols)
-          assert snap.get('analysis_fingerprint_sha256')==runner.analysis_fingerprint()
-          assert len(snap.get('rows',[]))==477
-          # engine.assemble intentionally sorts by AL/IZLE/ELE then RVOL, not watchlist order.
-          returned=[row['symbol'] for row in snap['rows']]
-          assert len(returned)==len(set(returned))==477
-          assert set(returned)==set(symbols)
-          assert all(row.get('asof_et')==snap.get('asof_et') and
-                     row.get('decision') in ('AL','IZLE','ELE')
-                     for row in snap['rows'])
+          # Explicit exceptions, never Python assert (disabled under -O).
+          handoff_guard.validate_snapshot(snap,symbols,
+              scope_sha=runner.sha_symbols(symbols),
+              policy_sha=runner.analysis_fingerprint())
           print('XRAY_PERSONAL_GITHUB_HANDOFF=PASS_477_477_SOURCE_POLICY_SHA_BOUND_PRIVATE')
           PY
       - name: Data is ephemeral (intentional privacy limitation)
