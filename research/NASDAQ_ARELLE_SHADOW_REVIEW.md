@@ -2,7 +2,7 @@
 
 **Scope:** Only the XRAY Personal NASDAQ Swing Radar research directory and a new PR-only CI workflow. No production import, scheduler, broker, AL/stop/target, 477-scope, Sheet or push permission is introduced.
 
-**Provider:** [Arelle](https://github.com/Arelle/Arelle), PyPI package `arelle-release==2.47.3`. Apache-2.0. PyPI release dated 2026-10-26, Python >=3.10; CI pins Python 3.12. Published wheel SHA256: `e3a4837ab0b8af0525ec7d1f01e5262f4e378cd8f196e2d3319ed725cae2e3bf`. Pinning a version alone does not pin the full transitive dependency graph.
+**Provider:** [Arelle](https://github.com/Arelle/Arelle), PyPI package `arelle-release==2.47.3`. Apache-2.0. PyPI release dated 2026-10-26, Python >=3.11; CI pins Python 3.12. Published wheel SHA256: `e3a4837ab0b8af0525ec7d1f01e5262f4e378cd8f196e2d3319ed725cae2e3bf`. Pinning a version alone does not pin the full transitive dependency graph.
 
 **Goal:** Test that a fully fictional one-fact XBRL instance can pass separate deterministically audited CIK / context / acceptance timestamp / XNAS close / local schema / finite numerical checks *and* be independently parsed by genuine Arelle offline with exactly one fact and no reported errors. Negative tests reject lookahead, wrong issuer, remote taxonomy reference, XML entities, non-finite numbers, duplicate contexts, naïve datetime.
 
