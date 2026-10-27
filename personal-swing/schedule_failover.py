@@ -111,7 +111,9 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
     verdict,session=decision(now,payload['workflow_runs'])
     if verdict!='DISPATCH_ONE_MISSING_SCHEDULE':
         return {'status':verdict,'asof_et':session,'dispatch_requested':False}
-    accepted=request_dispatch()
+    # Bind the fallback dispatch to the exact eligible XNAS date: the
+    # downstream worker can start still later, across another midnight.
+    accepted=request_dispatch(session)
     if accepted is not True:
         return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED','asof_et':session,
                 'dispatch_requested':False}
@@ -131,10 +133,11 @@ def main(argv=None):
     base='https://api.github.com/repos/'+repo+'/actions/workflows/'+WORKFLOW
     def get_runs():
         return api_json(base+'/runs?per_page=50',token)
-    def dispatch():
+    def dispatch(session):
         if args.dry_run:
             return True
-        return api_json(base+'/dispatches',token,method='POST',body={'ref':'main'})['dispatch_accepted']
+        return api_json(base+'/dispatches',token,method='POST',
+                        body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
         result=run(read_runs=get_runs,request_dispatch=dispatch)
         if args.dry_run and result.get('dispatch_requested'):
