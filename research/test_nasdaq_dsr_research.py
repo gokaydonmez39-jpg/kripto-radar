@@ -23,10 +23,21 @@ class TestBacktestHonesty(unittest.TestCase):
         b=expected_max_sharpe(200,0.01)
         self.assertGreater(b,a)
 
-    def test_more_fat_tail_penalty(self):
-        thin=deflated_research_confidence(**P,n_trials=20)["dsr"]
-        fat=deflated_research_confidence(**{**P,"kurt":8},n_trials=20)["dsr"]
-        self.assertLessEqual(fat,thin)
+    def test_tail_effect_above_multiple_trial_benchmark(self):
+        # Only assert direction when observed Sharpe is ABOVE the null benchmark.
+        # Below the benchmark a larger variance pushes CDF back toward 0.5.
+        strong={**P,"sr":0.35}
+        self.assertGreater(strong["sr"],expected_max_sharpe(20,strong["var_sr"]))
+        thin=deflated_research_confidence(**strong,n_trials=20)["dsr"]
+        fat=deflated_research_confidence(**{**strong,"kurt":8},n_trials=20)["dsr"]
+        self.assertLess(fat,thin)
+
+    def test_tail_effect_below_benchmark_cannot_be_claimed_monotonic_penalty(self):
+        weak={**P,"sr":0.02}
+        self.assertLess(weak["sr"],expected_max_sharpe(20,weak["var_sr"]))
+        thin=deflated_research_confidence(**weak,n_trials=20)["dsr"]
+        fat=deflated_research_confidence(**{**weak,"kurt":8},n_trials=20)["dsr"]
+        self.assertGreater(fat,thin)
 
     def test_tiny_sample_refused(self):
         with self.assertRaises(InsufficientEvidence):
