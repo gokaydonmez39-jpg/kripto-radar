@@ -4,12 +4,14 @@ on:
     paths:
       - 'research/nasdaq_arelle_synthetic_gate.py'
       - 'research/test_nasdaq_arelle_synthetic_gate.py'
+      - 'research/NASDAQ_ARELLE_SHADOW_REVIEW.md'
       - '.github/workflows/xray-nasdaq-arelle-shadow.yml'
   push:
     branches: [main]
     paths:
       - 'research/nasdaq_arelle_synthetic_gate.py'
       - 'research/test_nasdaq_arelle_synthetic_gate.py'
+      - 'research/NASDAQ_ARELLE_SHADOW_REVIEW.md'
       - '.github/workflows/xray-nasdaq-arelle-shadow.yml'
   workflow_dispatch:
 permissions:
@@ -29,7 +31,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install pinned Apache-2.0 Arelle only in isolated research job
-        run: python -m pip install 'arelle-release==2.47.3'
+        run: |
+          python -m pip install 'arelle-release==2.47.3'
+          python -m pip check
       - name: Nine offline fictional tests, optimized and ordinary interpreter
         run: |
           python -m unittest discover -s research -p 'test_nasdaq_arelle_synthetic_gate.py' -v
