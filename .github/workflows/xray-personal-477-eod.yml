@@ -1,4 +1,8 @@
 name: XRAY Personal 477 EOD Daily Health (Research Only)
+# XRAY A31 completed-28-Oct EOD idempotency check (existing workflow push):
+# replay MUST keep ASOF|SYMBOL key counts constant, preserve immutable stops,
+# pass Google Sheet write/readback, lifecycle and full PANEL reconciliation.
+# No extra cadence, generated alarms, trading or crypto-related modification.
 # XRAY 2026-10-28 after-close controlled START/FINAL activation: comment-only.
 # A protected main push to this existing workflow triggers one real 477 IEX EOD
 # for the latest eligible completed XNAS session, then private Sheets readback,
