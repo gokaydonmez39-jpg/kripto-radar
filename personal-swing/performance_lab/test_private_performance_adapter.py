@@ -259,6 +259,19 @@ class PrivateBridge(unittest.TestCase):
         with self.assertRaisesRegex(a.EvidenceBlocked,'READ_ONLY_SHEET_WHITELIST'):
             obj.read('KURALLAR','T')
 
+    def test_allowlisted_a14_failure_code_is_static(self):
+        self.assertEqual(
+            a.public_failure_reason(a.EvidenceBlocked('CANDIDATE_UNRECOGNIZED_LIFECYCLE')),
+            'CANDIDATE_UNRECOGNIZED_LIFECYCLE')
+
+    def test_arbitrary_error_can_never_publish_private_content(self):
+        for error in [a.EvidenceBlocked('CVLT private price 100 token SECRET'),
+                      ValueError('CVLT / private api key data'),
+                      RuntimeError('HTTP private row')]:
+            result=a.public_failure_reason(error)
+            self.assertEqual(result,'UNCLASSIFIED_PRIVATE_A14_BLOCK')
+            self.assertNotIn('CVLT',result)
+
     def test_credential_scope_is_declared_readonly(self):
         import inspect
         src=inspect.getsource(a.PrivateSheetReadOnly.__init__)

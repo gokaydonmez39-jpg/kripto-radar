@@ -211,6 +211,13 @@ jobs:
           python -m pip install -r personal-swing/requirements.txt
           python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
           python -m pip check
+      - name: Independent raw IEX split-like gap and historical issuance source witness
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          python raw_corporate_action_witness.py
       - name: Validate completed EOD epoch then perform zero-write scientific audit
         working-directory: personal-swing
         shell: bash
@@ -227,12 +234,5 @@ jobs:
           from performance_lab.private_performance_adapter import live_entrypoint
           sys.exit(live_entrypoint())
           PY
-      - name: Independent raw IEX split-like gap and historical issuance source witness
-        working-directory: personal-swing
-        shell: bash
-        run: |
-          set -euo pipefail
-          set +x
-          python raw_corporate_action_witness.py
       - name: No orders or devices delivered in this research workflow
         run: echo 'XRAY_A14=RESEARCH_ONLY_NO_SHEETS_WRITE_NO_ORDERS_NO_NOTIFICATION_DEVICE_ACK_NO_AL_RULE_CHANGE'
