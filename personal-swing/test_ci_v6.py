@@ -377,4 +377,23 @@ class PrivateSheetEventOutboxContract(unittest.TestCase):
         self.assertEqual(lc.delivery_status([header,row],row[0]),'DELIVERY_UNKNOWN_NO_RESEND')
         self.assertEqual(lc.delivery_status([header],'UNSEEN'),'NOT_RECORDED')
 
+    def test_verified_pending_outbox_is_not_delivery_or_replay(self):
+        """Pending status from GitHub terminal handoff must parse, not deliver."""
+        import alert_ledger_contract as lc
+        header = list(lc.EVENT_HEADER)
+        pending = self.make_event('STOP_TOUCHED')
+        pending[17] = lc.CONFIRMED_PENDING
+        parsed = lc.parse_ledger([header, pending])
+        self.assertEqual(parsed[pending[0]]['status'], lc.CONFIRMED_PENDING)
+        self.assertEqual(
+            lc.delivery_status([header, pending], pending[0]),
+            'DELIVERY_UNKNOWN_NO_RESEND'
+        )
+        with self.assertRaisesRegex(
+            lc.LedgerRefused, 'EVENT_ALREADY_RECORDED_NO_RESEND'
+        ):
+            lc.verify_first_reservation(
+                [header, pending], [header, pending], [pending[0]]
+            )
+
 if __name__=='__main__':unittest.main()
