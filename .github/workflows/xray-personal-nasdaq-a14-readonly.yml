@@ -1,4 +1,8 @@
 name: XRAY Personal NASDAQ A14 Private Evidence Shadow (No Trades)
+# A18 verification: historical issuance SHA fields may be separated by commas,
+# periods or semicolons. Exact SHAs, uniqueness, original 477 scope and policy
+# still gate every accepted observation; old SHA-free candidates remain excluded.
+# This change triggers one already-gated push smoke; it adds no schedule or alerts.
 on:
   push:
     branches: [main]
