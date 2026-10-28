@@ -166,7 +166,9 @@ jobs:
             python -m unittest discover -v -p "$file"
             python -O -m unittest discover -v -p "$file"
           done
-          python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py nasdaq_challenger_protocol.py private_flight_recorder.py
+          python -m unittest discover -v -s .. -p 'test_raw_corporate_action_witness.py'
+          python -O -m unittest discover -v -s .. -p 'test_raw_corporate_action_witness.py'
+          python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py nasdaq_challenger_protocol.py private_flight_recorder.py ../raw_corporate_action_witness.py
   private-research-after-eod:
     # HARD GATES: origin is successful same-repo non-PR main EOD;
     # no private job at all until main branch protection and admin-enabled
@@ -223,5 +225,12 @@ jobs:
           from performance_lab.private_performance_adapter import live_entrypoint
           sys.exit(live_entrypoint())
           PY
+      - name: Independent raw IEX split-like gap and historical issuance source witness
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          python raw_corporate_action_witness.py
       - name: No orders or devices delivered in this research workflow
         run: echo 'XRAY_A14=RESEARCH_ONLY_NO_SHEETS_WRITE_NO_ORDERS_NO_NOTIFICATION_DEVICE_ACK_NO_AL_RULE_CHANGE'
