@@ -282,7 +282,8 @@ class PrivateSheetReadOnly:
 
     def read(self, title, last_column):
         need((title,last_column) in
-             {('ADAY_GECMISI','M'),('TARAMA_KAYITLARI','J')},
+             {('ADAY_GECMISI','M'),('TARAMA_KAYITLARI','J'),
+              ('UYARI_OLAYLARI','T'),('PANEL','B')},
              'READ_ONLY_SHEET_WHITELIST')
         range_a1 = quote(f"'{title}'!A1:{last_column}{MAX_PRIVATE_ROWS}",safe='')
         return self._get('/values/'+range_a1+'?valueRenderOption=FORMATTED_VALUE').get('values',[])
