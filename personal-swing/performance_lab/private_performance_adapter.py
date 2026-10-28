@@ -281,12 +281,30 @@ class PrivateSheetReadOnly:
              <= titles, 'EXPECTED_PRIVATE_SHEET_MISSING')
 
 
-def live_entrypoint():
-    """Only stdout whitelist; even unexpected failure never emits private payload."""
-    try:
+def accepted_private_asof(asof_override=None):
+    """Independent completed-session proof for one-time protected-main smoke.
+
+    Daily workflow_run keeps its existing close+45m bounded-freshness gate.
+    The one-shot post-merge smoke can verify ONLY the latest officially
+    completed XNAS session, without accepting arbitrary backdated epochs.
+    """
+    if asof_override is None:
         asof = daily_job.current_completed_session()
         need(type(asof) is str and len(asof)==10,
              'NO_COMPLETED_OFFICIAL_SESSION')
+        return asof
+    need(type(asof_override) is str and len(asof_override)==10,
+         'SMOKE_ASOF_FORMAT')
+    iso(asof_override)
+    need(asof_override == engine.trading_asof().isoformat(),
+         'SMOKE_NOT_LATEST_COMPLETED_XNAS_SESSION')
+    return asof_override
+
+
+def live_entrypoint(*, asof_override=None):
+    """Only stdout whitelist; even unexpected failure never emits private payload."""
+    try:
+        asof = accepted_private_asof(asof_override)
         creds = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON','')
         sheet_id = os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID','')
         need(bool(creds) and bool(sheet_id),'PRIVATE_CREDENTIALS_NOT_CONFIGURED')
