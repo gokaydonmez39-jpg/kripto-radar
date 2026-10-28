@@ -1,5 +1,9 @@
 name: XRAY Personal NASDAQ A14 Private Evidence Shadow (No Trades)
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xray-personal-nasdaq-a14-readonly.yml'
   pull_request:
     branches: [main]
     paths:
@@ -17,6 +21,29 @@ concurrency:
   group: xray-personal-nasdaq-private-research-shadow
   cancel-in-progress: false
 jobs:
+  configuration-readiness:
+    # No secrets, network calls, private records or new cadence. This attests
+    # the actual GitHub job context before any private researcher is allowed.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    env:
+      XRAY_REF_PROTECTED: ${{ github.ref_protected }}
+      XRAY_PRIVATE_FLAG: ${{ vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED }}
+    steps:
+      - name: Check activation gates without reading secret or user data
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          if [[ "${XRAY_REF_PROTECTED}" == "true" && "${XRAY_PRIVATE_FLAG}" == "true" ]]; then
+            echo 'XRAY_A15_SECURITY_GATE=READY_FOR_NEXT_SUCCESSFUL_EOD'
+          else
+            echo 'XRAY_A15_SECURITY_GATE=HOLD_BRANCH_PROTECTION_OR_REPOSITORY_FLAG'
+          fi
+          echo 'XRAY_A15_RESEARCH_SOURCE=GITHUB_EVENT_CONTEXT_NO_PRIVATE_API_NO_ORDERS'
   offline-scientific-guard:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
