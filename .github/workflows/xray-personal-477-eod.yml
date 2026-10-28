@@ -1,4 +1,12 @@
 name: XRAY Personal 477 EOD Daily Health (Research Only)
+# A19 one-shot workflow_run integration acceptance:
+# A protected-main push to this FILE runs the EXISTING EOD workflow once;
+# pre-close it emits SKIPPED_NO_COMPLETED_CURRENT_ET_SESSION (no vendor
+# market bars, new AL, Sheet writes or notification). GitHub's successful
+# completed EOD emits workflow_run for the already-installed protected
+# A14 research shadow; that downstream job must independently attest its
+# origin and emit SKIPPED_NO_COMPLETED_CURRENT_XNAS_SESSION_NO_DATA_USED.
+# NO cron added; no production AL or lifecycle code changed.
 on:
   pull_request:
     branches: [main]
