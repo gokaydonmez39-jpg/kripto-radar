@@ -257,7 +257,7 @@ class PrivateBridge(unittest.TestCase):
     def test_sentinel_metadata_cannot_request_other_private_tab(self):
         obj=a.PrivateSheetReadOnly.__new__(a.PrivateSheetReadOnly)
         with self.assertRaisesRegex(a.EvidenceBlocked,'READ_ONLY_SHEET_WHITELIST'):
-            obj.read('UYARI_OLAYLARI','T')
+            obj.read('KURALLAR','T')
 
     def test_credential_scope_is_declared_readonly(self):
         import inspect
