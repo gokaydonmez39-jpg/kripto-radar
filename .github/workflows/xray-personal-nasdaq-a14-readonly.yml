@@ -162,10 +162,12 @@ jobs:
           set -euo pipefail
           python -m pip install -r ../requirements.txt
           python -m pip check
-          for file in test_nasdaq_performance_guard.py test_private_performance_adapter.py test_nasdaq_challenger_protocol.py test_private_flight_recorder.py ../test_raw_corporate_action_witness.py; do
+          for file in test_nasdaq_performance_guard.py test_private_performance_adapter.py test_nasdaq_challenger_protocol.py test_private_flight_recorder.py; do
             python -m unittest discover -v -p "$file"
             python -O -m unittest discover -v -p "$file"
           done
+          python -m unittest discover -v -s .. -p 'test_raw_corporate_action_witness.py'
+          python -O -m unittest discover -v -s .. -p 'test_raw_corporate_action_witness.py'
           python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py nasdaq_challenger_protocol.py private_flight_recorder.py ../raw_corporate_action_witness.py
   private-research-after-eod:
     # HARD GATES: origin is successful same-repo non-PR main EOD;
