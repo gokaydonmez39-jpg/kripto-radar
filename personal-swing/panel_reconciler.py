@@ -20,6 +20,9 @@ RUN_RE = re.compile(
 EXPECTED_LABELS = {
     8: 'Son doğrulanmış tarama seansı',
     9: 'GitHub çalışma kanıtı',
+    10: 'GÜNCELLİK NOTU',
+    12: 'START',
+    13: 'FINAL motoru',
     15: 'Sinyal geçmişi',
 }
 
@@ -67,7 +70,12 @@ def plan(panel, candidate_table, scan_table):
         matches += int(r[1] == day)
     require(len(identities) == len(set(identities)), 'PANEL_DUPLICATE_EPISODE')
     require(matches == int(numeric(s[7])), 'PANEL_NEW_EPISODE_COUNT_MISMATCH')
-    # Preserve legacy custom panel comments, real alert state and all A-G prices.
+    open_count = sum(str(r[7]).startswith('AÇIK • ') for r in candidates)
+    closed_count = sum(str(r[7]).startswith('KAPALI • ') for r in candidates)
+    require(open_count + closed_count == len(candidates),
+            'PANEL_UNKNOWN_LIFECYCLE_STATUS')
+    # Derived dashboard only. Preserve original prices, events, delivery and
+    # user-owned notes outside this agreed source-of-truth summary rectangle.
     values = {
         8: [day,
             'Alpaca IEX EOD · 477/477 geçerli · 0 eksik · FINAL READY · '
@@ -75,6 +83,16 @@ def plan(panel, candidate_table, scan_table):
         9: [str(s[8]),
             'GitHub EOD kaynak kanıtı · private Sheet readback ayrı · '
             'iPhone cihaz ACK bilinmiyor'],
+        10: ['Son FINAL '+day+'; toplam '+str(len(candidates))+
+             ' gözlem: '+str(open_count)+' açık, '+str(closed_count)+
+             ' kapalı; '+str(matches)+' yeni AL.',
+             'Tek borsa IEX · teorik risk · gerçek fill ve iPhone cihaz ACK yok'],
+        12: ['BAŞARILI',
+             day+' · IEX 477/477 geçerli · 0 eksik · 52 ardışık XNAS '
+             've özgün scope/policy SHA kaydı'],
+        13: ['BAŞARILI',
+             day+' · FINAL READY · '+str(matches)+
+             ' yeni teknik AL · source readback PASS · otomatik emir yok'],
         15: [str(len(candidates))+' TEKNİK KAYIT',
              'ASOF|SEMBOL ayrı gözlem; orijinal stop ve hedef değişmez; '
              'son doğrulanmış EOD '+day],
