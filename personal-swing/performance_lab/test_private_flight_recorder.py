@@ -130,6 +130,30 @@ class FlightNegativeTests(unittest.TestCase):
         b[2][1][17]=g.EVENT_PENDING
         self.assertEqual(g.inspect(*b)['pending_device_ack'],1)
 
+    def test_user_attested_sheet_status_not_equivalent_to_system_device_ack(self):
+        b=data()
+        b[2][1][17]='DEVICE_ACK_USER_ATTESTED'
+        status=g.inspect(*b)
+        self.assertEqual(status['user_attested_status_rows'],1)
+        self.assertEqual(status['pending_device_ack'],1)
+        self.assertEqual(status['device_receipts_verified'],0)
+        self.assertEqual(status['state'],'PASS_PENDING_DEVICE_ACK')
+
+    def test_explicit_unknown_delivery_state_is_valid_but_not_delivered(self):
+        b=data()
+        b[2][1][17]='DELIVERY_UNKNOWN_REVIEW_REQUIRED'
+        status=g.inspect(*b)
+        self.assertEqual(status['explicit_unknown_status_rows'],1)
+        self.assertEqual(status['pending_device_ack'],1)
+        self.assertEqual(status['device_receipts_verified'],0)
+        self.assertEqual(status['state'],'PASS_PENDING_DEVICE_ACK')
+
+    def test_unverified_delivered_claim_fails_closed(self):
+        b=data()
+        b[2][1][17]='PHONE_DELIVERED'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'UNATTESTED_DELIVERY_STATE'):
+            g.inspect(*b)
+
     def test_duplicate_event_blocks(self):
         b=data()
         b[2].append(list(b[2][1]))
