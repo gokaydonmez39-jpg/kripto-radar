@@ -1,0 +1,13 @@
+# A14 gated daily NASDAQ scientific observation: security and acceptance
+
+Release identity: A14 is the consolidated, single-copy A11+A12+A13 implementation, layered on the **current main branch**. Previous PRs #286 and #287 remain unmerged drafts.
+
+**Integration:** This workflow has no cron. It listens only to successful completed original EOD workflow runs on the repository main branch. PRs execute synthetic tests without secrets. The reader checks the original successful EOD commit and receives only the existing data-only Alpaca and private Sheets service account secret. The Google access token requests **spreadsheets.readonly**; file system outputs, public financial logs, alerts and trading are prohibited. No original EOD job, watchlist, stop/target, existing private lifecycle, ChatGPT automation, or crypto radar is modified.
+
+**Security admission is fail-closed:** GitHub must attest `github.ref_protected == true`, an administrator must set the explicit repository variable `XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED=true`, and the protected `private-nasdaq-research` environment must be configured for authorized reviewers and scoped secrets before a private run is considered accepted. The connected GitHub API cannot modify branch protection (403); these are real unmet conditions, not paper approvals. DO NOT bypass these gates to get a green badge.
+
+**Private real-evidence acceptance:** as of Oct 27, 2026 completed XNAS, six original private candidate rows have valid immutable stop/2R geometry and matching IEX source closes and lifecycle day counts. Six are open; zero have completed. Scans for Oct 22 and 23 do not preserve contemporaneous algorithm SHA; three candidates are unproven historical issuance and remain excluded. Oct 26/27 records carry source+policy hashes but still require a trusted autonomous A14 job before considering the private pipeline accepted. An independent one-off read-only check cannot certify persistent workflow access. No real trading PnL, execution fills, independent matched benchmark or preregistered out-of-sample alpha can be asserted from this cohort.
+
+**CI acceptance:** all existing 62 synthetic tests must pass in both normal and optimized Python, plus dependency check and no side-effect isolation. This is code QA only. Source/vendor license, CVE, PAT/secrets hygiene, pricing, lookahead prevention, market gaps, survivorship, sample power and independent security review are separately necessary to certify real statistical performance.
+
+**Explicit HOLD:** no automatic AL model promotion, no real-money decisions, no broker endpoints, and no new ChatGPT notification tasks. Data adapter and challenger output may say HOLD or BLOCKED. A green CI or job-success icon does not imply actual profitability.
