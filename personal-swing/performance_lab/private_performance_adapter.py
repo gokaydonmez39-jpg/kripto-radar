@@ -318,6 +318,34 @@ def accepted_private_asof(asof_override=None):
     return asof_override
 
 
+# Public-safe, hard-coded failure categories only. No symbol, price, path,
+# HTTP body, credential, private row, or arbitrary exception text is printed.
+SAFE_A14_REASONS = frozenset((
+    'CANDIDATE_UNRECOGNIZED_LIFECYCLE',
+    'CANDIDATE_STOP_TARGET_DRIFT',
+    'CANDIDATE_INVALID_HELD_DAYS',
+    'MISSING_CURRENT_477_FINAL_SCAN',
+    'CURRENT_SCAN_NOT_477_COMPLETE',
+    'CURRENT_SCAN_SCOPE_OR_POLICY_MISMATCH',
+    'PRIVATE_SHEET_DAY_COUNT_STALE_OR_CONFLICT',
+    'PRIVATE_SHEET_TERMINAL_STATE_CONFLICT',
+    'PRIVATE_SHEET_TERMINAL_OUTCOME_DRIFT',
+    'ORIGINAL_IEX_CLOSE_MISMATCH',
+    'MISSING_DUE_FOLLOWUP_BAR',
+    'MISSING_FULL_15_SESSION_WINDOW',
+    'SHEET_CHANGED_DURING_READ_ONLY_AUDIT',
+    'SOURCE_UNTRUSTED',
+    'UNEXPECTED_PROVIDER_SYMBOL_UNIVERSE',
+    'PROVIDER_MISSING_SYMBOL_HISTORY',
+))
+
+def public_failure_reason(exc):
+    """Only a predefined static code; NEVER the raw exception string."""
+    if type(exc) is EvidenceBlocked and str(exc) in SAFE_A14_REASONS:
+        return str(exc)
+    return 'UNCLASSIFIED_PRIVATE_A14_BLOCK'
+
+
 def live_entrypoint(*, asof_override=None):
     """Only stdout whitelist; even unexpected failure never emits private payload."""
     try:
@@ -346,8 +374,11 @@ def live_entrypoint(*, asof_override=None):
                           'no_orders':True,'no_alert_delivery':True},
                          sort_keys=True))
         return 0
-    except Exception:
-        print('XRAY_PRIVATE_PERFORMANCE=BLOCKED_NO_PUBLISH_NO_WRITES')
+    except Exception as exc:
+        print(json.dumps({'state':'BLOCKED_NO_PUBLISH_NO_WRITES',
+                          'reason_code':public_failure_reason(exc),
+                          'writes':False,'orders':False,'device_ack':False},
+                          sort_keys=True))
         return 3
 
 
