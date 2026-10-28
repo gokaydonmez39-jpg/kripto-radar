@@ -1,0 +1,68 @@
+name: XRAY Personal NASDAQ A20 Scientific Final START Attestation (NO TRADES)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'personal-swing/performance_lab/final_start_attestor.py'
+      - 'personal-swing/performance_lab/test_final_start_attestor.py'
+      - 'personal-swing/performance_lab/A20_FINAL_START_RUNBOOK.md'
+      - '.github/workflows/xray-personal-nasdaq-a20-final-start.yml'
+  # A single attestation on protected main once this workflow is introduced.
+  # NO cron, no workflow_run listener, no second radar, no notification task.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xray-personal-nasdaq-a20-final-start.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: xray-personal-nasdaq-a20-final-start-${{ github.event_name }}
+  cancel-in-progress: false
+jobs:
+  deterministic-scientific-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify research START is never trading, overconfidence or device proof
+        shell: bash
+        working-directory: personal-swing/performance_lab
+        run: |
+          set -euo pipefail
+          python -m unittest discover -v -p 'test_final_start_attestor.py'
+          python -O -m unittest discover -v -p 'test_final_start_attestor.py'
+          python -m py_compile final_start_attestor.py test_final_start_attestor.py
+  protected-main-live-evidence-attestation:
+    needs: deterministic-scientific-gates
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      GITHUB_REF_PROTECTED: ${{ github.ref_protected }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Independent real GitHub EOD/A14/Resilience metadata-only proof
+        working-directory: personal-swing/performance_lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          python final_start_attestor.py
+      - name: Explicit limitations — NOT a backtest or broker authorization
+        run: echo 'XRAY_A20=START_RESEARCH_ONLY_NO_BROKER_NO_ORDERS_ALPHA_HOLD_NEXT_EOD_UNPROVEN'
