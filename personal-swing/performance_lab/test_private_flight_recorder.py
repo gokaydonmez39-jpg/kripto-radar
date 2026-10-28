@@ -14,7 +14,7 @@ def data():
         '100','95','110','AÇIK • 0/15 SEANS','','','',
         'ALERT_REQUESTED_NOT_DEVICE_ACK','fake']]
     s=[[ *g.SCAN_HEADER ],
-       [DAY,'fake','477','477','477','0','TRUE','1','private','not real']]
+       [DAY,'fake','477','477','477','0','TRUE','1','private','scopeSHA='+'a'*64+';algorithmSHA='+'b'*64]]
     e=[[ *g.ALERT_HEADER ],
        [EVENT,KEY,DAY,'FAKE',DAY,'AL_NEW_EPISODE','YENİ AL',
         '100','95','110','','','','','','0/15','','ALERT_REQUESTED_NOT_DEVICE_ACK','','fake']]
@@ -43,6 +43,87 @@ class FlightNegativeTests(unittest.TestCase):
         x=g.inspect(*b)
         self.assertEqual(x['event_count'],0)
         self.assertEqual(x['device_receipts_verified'],0)
+        self.assertEqual(x['state'],'PENDING_CURRENT_EOD_OUTBOX_RESERVATION')
+        self.assertEqual(x['unreserved_current_eod_al'],1)
+
+    def test_confirmed_verified_AL_outbox_is_complete(self):
+        x=g.inspect(*data(),expected_asof=DAY)
+        self.assertEqual(x['matched_new_al_outbox'],1)
+        self.assertEqual(x['unreserved_prior_eod_al'],0)
+        self.assertEqual(x['source_verified_issuance_days'],1)
+
+    def test_expected_completed_eod_must_exist(self):
+        b=data()
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'EXPECTED_COMPLETED_EOD_MISSING'):
+            g.inspect(*b,expected_asof='2026-10-28')
+
+    def test_verified_scan_new_count_drift_blocks(self):
+        b=data()
+        b[1][1][7]='2'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'SCAN_AL_CANDIDATE_COUNT_MISMATCH'):
+            g.inspect(*b)
+
+    def test_current_scan_missing_SHA_blocks(self):
+        b=data()
+        b[1][1][9]='unsigned source'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'CURRENT_SCAN_SHA_MISSING'):
+            g.inspect(*b)
+
+    def test_partial_SHA_does_not_convert_to_legacy(self):
+        b=data()
+        b[1][1][9]='scopeSHA='+'a'*64
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'CURRENT_SCAN_SHA_MISSING'):
+            g.inspect(*b)
+
+    def test_prior_verified_AL_without_event_blocks_silently_missing_alert(self):
+        b=data()
+        old='2026-10-26'
+        older=[old,'fake','477','477','477','0','TRUE','1','private',b[1][1][9]]
+        b[1].insert(1,older)
+        new_row=list(b[0][1])
+        new_row[0]=old+'|FAKE';new_row[1]=old;new_row[7]='AÇIK • 1/15 SEANS'
+        b[0].append(new_row)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'SILENT_MISSING_PRIOR_AL_EVENT'):
+            g.inspect(*b)
+
+    def test_prior_unproven_legacy_episode_may_lack_AL_event(self):
+        b=data()
+        old='2026-10-26'
+        b[1].insert(1,[old,'manual','477','477','477','0','TRUE','1','private','no original hashes'])
+        older=list(b[0][1])
+        older[0]=old+'|FAKE';older[1]=old;older[7]='AÇIK • 1/15 SEANS'
+        b[0].append(older)
+        x=g.inspect(*b)
+        self.assertEqual(x['source_unproven_issuance_days'],1)
+        self.assertEqual(x['matched_new_al_outbox'],1)
+
+    def test_historical_policy_hash_mismatch_fails(self):
+        b=data()
+        old='2026-10-26'
+        bad='scopeSHA='+'a'*64+';algorithmSHA='+'c'*64
+        b[1].insert(1,[old,'auto','477','477','477','0','TRUE','0','private',bad])
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b)
+
+    def test_closed_episode_without_terminal_event_blocks(self):
+        b=data()
+        b[0][1][7]='KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        b[0][1][8]=DAY
+        b[0][1][9]='STOP_TOUCHED'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'MISSING_TERMINAL_EVENT'):
+            g.inspect(*b)
+
+    def test_closed_episode_with_matching_terminal_event_passes(self):
+        b=data()
+        b[0][1][7]='KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        b[0][1][8]=DAY;b[0][1][9]='STOP_TOUCHED'
+        row=list(b[2][1])
+        row[0]=KEY+'|'+DAY+'|STOP_TOUCHED|1'
+        row[5]='STOP_TOUCHED'
+        b[2].append(row)
+        x=g.inspect(*b)
+        self.assertEqual(x['matched_terminal_outbox'],1)
+        self.assertEqual(x['closed_count'],1)
 
     def test_event_confirmation_pending_is_not_ack(self):
         b=data()
