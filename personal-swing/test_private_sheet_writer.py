@@ -117,6 +117,34 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(w.HandoffBlocked,'EXISTING_SCAN_EPOCH_CONFLICT'):
             w.synchronize(snapshot(),RUN,api)
 
+    def test_same_asof_source_proof_mutations_block_before_write(self):
+        api = FakeApi()
+        w.synchronize(snapshot(), RUN, api)
+        original = api.scans[1][9]
+        data = snapshot()
+        cases = [
+            original.replace('scopeSHA=' + data['scope_sha256'],
+                             'scopeSHA=' + 'f' * 64),
+            original.replace('algorithmSHA=' + data['analysis_fingerprint_sha256'],
+                             'algorithmSHA=' + 'f' * 64),
+            ';'.join(part for part in original.split(';')
+                     if not part.startswith('scopeSHA=')),
+            original + ';scopeSHA=' + data['scope_sha256'],
+        ]
+        for altered in cases:
+            with self.subTest(altered=altered != original):
+                self.assertNotEqual(altered, original)
+                api.scans[1][9] = altered
+                with self.assertRaisesRegex(
+                        w.HandoffBlocked,
+                        'EXISTING_SCAN_SOURCE_(SHA_CONFLICT|PROOF_MISSING_OR_MALFORMED)'):
+                    w.synchronize(data, RUN, api)
+                self.assertEqual(api.apply_count, 1)
+        api.scans[1][9] = original
+        w.synchronize(data, RUN, api)
+        self.assertEqual(len(api.scans), 2)
+        self.assertEqual(len(api.candidates), 3)
+
     def test_concurrent_row_change_fails_closed_before_write(self):
         api=FakeApi()
         api.change_on_second_read=True
