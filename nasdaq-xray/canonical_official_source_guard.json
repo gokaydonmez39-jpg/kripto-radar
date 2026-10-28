@@ -95,7 +95,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-28T19:44:42.716826+00:00",
+  "generated_at_utc": "2026-10-28T21:19:59.413459+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -794,8 +794,23 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 46,
+      "item_count": 47,
       "items": [
+        {
+          "HaltDate": "10/28/2026",
+          "HaltTime": "15:55:01.816",
+          "IssueName": "Masonglory Ltd Ord A",
+          "IssueSymbol": "FFTT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/28/2026",
+          "ResumptionQuoteTime": "15:55:01",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:55:01.816</td><td valign=\"top\">FFTT</td><td valign=\"top\">Masonglory Ltd Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:55:01                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Wed, 28 Oct 2026 04:00:00 GMT",
+          "title": "FFTT"
+        },
         {
           "HaltDate": "10/28/2026",
           "HaltTime": "15:40:32.350",
@@ -806,8 +821,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "10/28/2026",
           "ResumptionQuoteTime": "15:40:32",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:40:32.350</td><td valign=\"top\">JDZG</td><td valign=\"top\">JIADE LIMITED CL A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:40:32                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:40:32.350</td><td valign=\"top\">JDZG</td><td valign=\"top\">JIADE LIMITED CL A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">15:40:32                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
           "pubDate": "Wed, 28 Oct 2026 04:00:00 GMT",
           "title": "JDZG"
         },
