@@ -204,18 +204,16 @@ def audit_plan(plan, read_batch):
         need((legacy['status'] == 'OPEN') == item['is_open'],
              'PRIVATE_SHEET_TERMINAL_STATE_CONFLICT')
         if not item['is_open']:
-            need(legacy['outcome'] == item['old_outcome'] and
-                 str(item['row'][8]) == legacy['closed_date'] and
-                 str(item['row'][9]) == legacy['outcome'] and
-                 abs(_num(item['row'][10]) -
-                     Decimal(str(abs(legacy['hypothetical_result_pct'])))) <= Decimal('.0051')
-                 if legacy['hypothetical_result_pct'] >= 0 else
+            recorded = str(item['row'][10]).strip().replace(',', '.')
+            need(bool(re.fullmatch(r'-?[0-9]+(?:\\.[0-9]+)?', recorded)),
+                 'PRIVATE_SHEET_TERMINAL_PCT_INVALID')
+            recorded_pct = Decimal(recorded)
+            need(recorded_pct.is_finite() and
                  legacy['outcome'] == item['old_outcome'] and
                  str(item['row'][8]) == legacy['closed_date'] and
                  str(item['row'][9]) == legacy['outcome'] and
-                 abs(Decimal(str(legacy['hypothetical_result_pct'])) -
-                     Decimal(str(item['row'][10]).replace(',','.'))) <= Decimal('.0051'),
-                 'PRIVATE_SHEET_TERMINAL_OUTCOME_DRIFT')
+                 abs(recorded_pct - Decimal(str(legacy['hypothetical_result_pct'])))
+                 <= Decimal('.0051'), 'PRIVATE_SHEET_TERMINAL_OUTCOME_DRIFT')
         episode = {'episode_id': item['key'], 'symbol': item['symbol'],
                    'signal_asof': item['start'], 'data_through': plan['asof'],
                    'source': SOURCE, 'scope_sha256': plan['scope_sha'],
