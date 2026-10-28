@@ -32,7 +32,12 @@ from nasdaq_performance_guard import (SOURCE, EvidenceBlocked, evaluate_episode,
                                       iso, need, price)
 
 SYMBOL_RE = re.compile(r'^[A-Z][A-Z0-9.]{0,15}$')
-SCAN_SHA_RE = re.compile(r'(?:^|;)scopeSHA=([0-9a-f]{64});algorithmSHA=([0-9a-f]{64})(?:;|$)')
+# Historical issuer notes may place individually bound hashes in a narrative
+# separated by commas, periods or semicolons; SHA bytes must never change.
+SCAN_SCOPE_RE = re.compile(r'(?<![A-Za-z0-9_])scopeSHA=([0-9a-f]{64})(?![A-Za-z0-9_])')
+SCAN_POLICY_RE = re.compile(r'(?<![A-Za-z0-9_])algorithmSHA=([0-9a-f]{64})(?![A-Za-z0-9_])')
+SCAN_SCOPE_FIELD_RE = re.compile(r'(?<![A-Za-z0-9_])scopeSHA=')
+SCAN_POLICY_FIELD_RE = re.compile(r'(?<![A-Za-z0-9_])algorithmSHA=')
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
 CLOSE_RE = re.compile(r'^KAPALI • ([A-Z_]+) • ([0-9]{1,2})/15 SEANS$')
 ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
@@ -63,8 +68,19 @@ def _cohort(values, header):
 
 
 def _fingerprints(note):
-    match = SCAN_SHA_RE.search(str(note))
-    return match.groups() if match else None
+    """Only one exact lowercase SHA-256 per named field, in any safe punctuation.
+
+    A missing/invalid historical field remains unproven. Duplicate, conflicting,
+    or partially spoofed provenance blocks processing instead of choosing a SHA.
+    """
+    raw = str(note)
+    scope = SCAN_SCOPE_RE.findall(raw)
+    policy = SCAN_POLICY_RE.findall(raw)
+    need(len(SCAN_SCOPE_FIELD_RE.findall(raw)) <= 1 and
+         len(SCAN_POLICY_FIELD_RE.findall(raw)) <= 1 and
+         len(scope) <= 1 and len(policy) <= 1,
+         'SCAN_DUPLICATE_PROVENANCE_FIELD')
+    return (scope[0], policy[0]) if len(scope) == len(policy) == 1 else None
 
 
 def source_plan(candidate_values, scan_values, asof, universe, scope_sha, policy_sha):
