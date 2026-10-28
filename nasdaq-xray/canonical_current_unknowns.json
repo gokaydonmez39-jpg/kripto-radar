@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-10-27",
+  "asof_et": "2026-10-28",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3191
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3191
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1027202618:01|||||||",
+  "official_footer": "File Creation Time: 1028202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3191
   },
-  "source_queue_hash": "eee8aa3b3ffece30981f83e7b61c84d318ab8394303667f92cb8ef89462d5eef",
-  "source_state_hash": "2f64ec268998aa554b2dd209ba6cb68d46d8e53ad743bc74361472e6f613e3dc",
+  "source_queue_hash": "f182c3a8590164900dec69b4e7ca4701bf0a12590758938d6b4832f77cc4b594",
+  "source_state_hash": "c01eaa012cc8408fe6a9522d09ea8f3ffb90f76329266db5cd7900cb3a24c504",
   "source_unknown_count": 3191,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3191,
@@ -18721,6 +18721,24 @@
       "security_name": "FF EAI Robotics Ecosystem Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "FFTT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Masonglory Limited - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
     "FGBI": {
       "attempts": 0,
       "discovery": {
@@ -34055,24 +34073,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Motorsport Games Inc. - Class A Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "MSGY": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Masonglory Limited - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "MSLE": {
