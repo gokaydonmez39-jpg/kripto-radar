@@ -348,25 +348,32 @@ def public_failure_reason(exc):
 
 def live_entrypoint(*, asof_override=None):
     """Only stdout whitelist; even unexpected failure never emits private payload."""
+    stage = 'EPOCH'
     try:
         asof = accepted_private_asof(asof_override)
         creds = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON','')
         sheet_id = os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID','')
         need(bool(creds) and bool(sheet_id),'PRIVATE_CREDENTIALS_NOT_CONFIGURED')
+        stage = 'PRIVATE_AUTH_AND_METADATA'
         api = PrivateSheetReadOnly(creds,sheet_id)
         api.verify_metadata()
+        stage = 'SHEET_SOURCE_READ'
         values = api.read('ADAY_GECMISI','M')
         scans = api.read('TARAMA_KAYITLARI','J')
         universe = runner.get_scope(watchlist_file=str(ROOT/'nasdaq_watchlist_477.json'))
+        stage = 'SOURCE_PLAN'
         plan = source_plan(values,scans,asof,universe,
                            runner.sha_symbols(universe),runner.analysis_fingerprint())
+        stage = 'AUDIT_PLAN_AND_VENDOR'
         result = audit_plan(plan,engine.live_read)
         # No race-prone persisted result: readback must be bit-for-bit stable.
+        stage = 'READBACK'
         need(values == api.read('ADAY_GECMISI','M') and
              scans == api.read('TARAMA_KAYITLARI','J'),
              'SHEET_CHANGED_DURING_READ_ONLY_AUDIT')
         # Public log only whitelisted integer counters/status; no symbols, prices,
         # returns, raw bars, sheet IDs, token, full exception or incident keys.
+        stage = 'SAFE_AGGREGATE_OUTPUT'
         print(json.dumps({'state':result['status'],
                           'verified':result['verified_episodes'],
                           'unproven':result['excluded_issuance'],
@@ -377,6 +384,8 @@ def live_entrypoint(*, asof_override=None):
     except Exception as exc:
         print(json.dumps({'state':'BLOCKED_NO_PUBLISH_NO_WRITES',
                           'reason_code':public_failure_reason(exc),
+                          'stage':stage if stage in {'EPOCH','PRIVATE_AUTH_AND_METADATA','SHEET_SOURCE_READ','SOURCE_PLAN','AUDIT_PLAN_AND_VENDOR','READBACK','SAFE_AGGREGATE_OUTPUT'} else 'UNKNOWN',
+                          'exception_class':type(exc).__name__ if type(exc).__name__ in {'EvidenceBlocked','ValueError','TypeError','KeyError','IndexError','RuntimeError','AttributeError','PermissionError','HTTPError','URLError','TimeoutError'} else 'UNCLASSIFIED',
                           'writes':False,'orders':False,'device_ack':False},
                           sort_keys=True))
         return 3
