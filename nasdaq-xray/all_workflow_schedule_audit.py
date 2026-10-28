@@ -28,6 +28,8 @@ EXPECTED={
  "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
  "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
  "xray-personal-477-eod.yml":("15 23 * * 1-5",),
+ # Exact already deployed personal EOD failover, never a second signal producer.
+ "xray-personal-477-schedule-fallback.yml":("25 0 * * 2-6",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
@@ -210,6 +212,48 @@ def inventory(files):
         except (KeyError,IndexError,StopIteration,AttributeError,TypeError,
                 ValueError,yaml.YAMLError):
             errors.append("PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
+    # Explicitly register ONLY the reviewed bounded personal-477 scheduler
+    # failover. It may dispatch the existing EOD workflow when its scheduled
+    # run is absent; it must never scan prices, publish candidates or trade.
+    fallback_name="xray-personal-477-schedule-fallback.yml"
+    if fallback_name in files:
+        try:
+            source=files[fallback_name]
+            document=yaml.load(source,Loader=yaml.BaseLoader)
+            jobs=document["jobs"]
+            dispatch=jobs["dispatch-if-missing"]
+            offline=jobs["offline-negative-regression"]
+            run_step=next(x for x in dispatch["steps"] if
+                          x.get("name")=="Dispatch personal DATA-ONLY scan only on verified missing scheduler epoch")
+            run_script=run_step.get("run","")
+            triggers=document["on"]
+            inputs=triggers["workflow_dispatch"]["inputs"]
+            top_perm=document["permissions"]
+            job_perm=dispatch["permissions"]
+            valid=(
+                top_perm.get("contents")=="read"
+                and job_perm.get("contents")=="read"
+                and job_perm.get("actions")=="write"
+                and dispatch.get("needs")=="offline-negative-regression"
+                and offline.get("permissions",{}).get("contents")=="read"
+                and inputs["dry_run"].get("default")=="true"
+                and len(triggers["schedule"])==1
+                and triggers["schedule"][0].get("cron")=="25 0 * * 2-6"
+                and "github.event_name == 'schedule'" in dispatch.get("if","")
+                and "github.event_name == 'workflow_dispatch'" in dispatch.get("if","")
+                and "schedule_failover.py" in run_script
+                and "--dry-run" in run_script
+                and "DRY_RUN_INPUT" in str(run_step.get("env",{}))
+                and "GITHUB_TOKEN" in str(run_step.get("env",{}))
+                and "XRAY_ALPACA" not in source
+                and "XRAY_PRIVATE_SHEET" not in source
+                and "issues: write" not in source
+                and "git push" not in source
+            )
+            if not valid:
+                errors.append("PERSONAL_EOD_FALLBACK_BOUNDARY_DRIFT")
+        except (KeyError,StopIteration,AttributeError,TypeError,ValueError,yaml.YAMLError):
+            errors.append("PERSONAL_EOD_FALLBACK_BOUNDARY_DRIFT")
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -260,6 +304,7 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
+    assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["25 0 * * 2-6"]
     assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * *"]
     assert "xray-research-source-lab.yml" in base["extra_readonly_provider_scheduled"]
     assert "xray-personal-477-eod.yml" in base["extra_readonly_provider_scheduled"]
