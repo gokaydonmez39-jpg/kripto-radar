@@ -18,6 +18,8 @@ DAY2='2026-10-23'
 DAY3='2026-10-26'
 SRC='a'*64
 POL='b'*64
+BAD='c'*64
+SHORT='b'*63
 UNIVERSE=['FAKE']+['X%04d'%i for i in range(476)]
 
 
@@ -78,15 +80,15 @@ class PrivateBridge(unittest.TestCase):
         self.assertEqual(a._fingerprints(narrative),(SRC,POL))
         self.assertEqual(a._fingerprints(canonical),(SRC,POL))
         self.assertEqual(a._fingerprints('No original SHA evidence'),None)
-        self.assertEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={'c'*64}'),(SRC,'c'*64))
-        self.assertNotEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={'c'*64}'),(SRC,POL))
+        self.assertEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={BAD}'),(SRC,'c'*64))
+        self.assertNotEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={BAD}'),(SRC,POL))
         rr=scans()
         rr[-1][9]=narrative
         self.assertEqual(len(plan(histories=rr)['verified']),1)
 
     def test_duplicate_conflicted_or_truncated_provenance_fail_closed(self):
         for payload in (
-            f'scopeSHA={SRC};algorithmSHA={POL};scopeSHA={'c'*64}',
+            f'scopeSHA={SRC};algorithmSHA={POL};scopeSHA={BAD}',
             f'scopeSHA={SRC};algorithmSHA={POL};algorithmSHA={POL}',
             f'scopeSHA={SRC};algorithmSHA={POL};scopeSHA=INVALID',
             f'scopeSHA={SRC};algorithmSHA={POL};algorithmSHA=INVALID',
@@ -95,7 +97,7 @@ class PrivateBridge(unittest.TestCase):
                 a._fingerprints(payload)
         self.assertIsNone(a._fingerprints(f'xscopeSHA={SRC};algorithmSHA={POL}'))
         self.assertIsNone(a._fingerprints(f'scopeSHA={SRC}x;algorithmSHA={POL}'))
-        self.assertIsNone(a._fingerprints(f'scopeSHA={SRC};algorithmSHA={'b'*63}'))
+        self.assertIsNone(a._fingerprints(f'scopeSHA={SRC};algorithmSHA={SHORT}'))
 
     def test_historical_manual_without_sha_remains_excluded(self):
         rr=scans(no_issuance=True)
