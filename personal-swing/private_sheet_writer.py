@@ -55,6 +55,22 @@ def rows_only(table, header):
     return [list(row) for row in table[1:] if row and any(v != '' for v in row)]
 
 
+def scan_source_proof(note):
+    """Require exactly one canonical fingerprint for each replay authority."""
+    require(isinstance(note, str),
+            'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED')
+    parts = [part.strip() for part in note.split(';')]
+    proof = {}
+    for label in ('scopeSHA', 'algorithmSHA'):
+        hits = [part[len(label)+1:] for part in parts
+                if part.startswith(label + '=')]
+        require(len(hits) == 1 and len(hits[0]) == 64
+                and all(ch in '0123456789abcdef' for ch in hits[0]),
+                'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED')
+        proof[label] = hits[0]
+    return proof
+
+
 def plan(snapshot, candidates, scans, run_url):
     """Pure deterministic idempotent append plan; never changes prior cells.
 
@@ -119,6 +135,12 @@ def plan(snapshot, candidates, scans, run_url):
         require(actual == [477.,477.,477.,0.,float(len(all_al))] and
                 str(existing[6]).upper() == 'TRUE',
                 'EXISTING_SCAN_EPOCH_CONFLICT')
+        require(len(existing) >= 10,
+                'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED')
+        proof = scan_source_proof(existing[9])
+        require(proof['scopeSHA'] == snapshot['scope_sha256'] and
+                proof['algorithmSHA'] == snapshot['analysis_fingerprint_sha256'],
+                'EXISTING_SCAN_SOURCE_SHA_CONFLICT')
     else:
         appended_scans = [[
             asof, 'GitHub auto VERIFIED IEX EOD', '477', '477', '477', '0',
