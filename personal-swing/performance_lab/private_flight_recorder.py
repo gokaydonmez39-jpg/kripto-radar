@@ -18,7 +18,7 @@ from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER
 from private_lifecycle import ALERT_HEADER, EVENT_PENDING
 from performance_lab.private_performance_adapter import PrivateSheetReadOnly
 
-CANDIDATE_KEY = re.compile(r'^([0-9]{4}-[0-9]{2}-[0-9]{2})\\|([A-Z][A-Z0-9.]{0,15})$')
+CANDIDATE_KEY = re.compile(r'^([0-9]{4}-[0-9]{2}-[0-9]{2})\|([A-Z][A-Z0-9.]{0,15})$')
 PENDING = frozenset((EVENT_PENDING, 'ALERT_REQUESTED_NOT_DEVICE_ACK'))
 EVENT_CODES = frozenset((
     'AL_NEW_EPISODE', 'STOP_TOUCHED', 'TARGET_TOUCHED',
