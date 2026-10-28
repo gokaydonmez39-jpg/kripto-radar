@@ -21,6 +21,8 @@ import daily_job
 
 CANDIDATE_KEY = re.compile(r'^([0-9]{4}-[0-9]{2}-[0-9]{2})\|([A-Z][A-Z0-9.]{0,15})$')
 PENDING = frozenset((EVENT_PENDING, 'ALERT_REQUESTED_NOT_DEVICE_ACK'))
+UNKNOWN = 'DELIVERY_UNKNOWN_REVIEW_REQUIRED'
+USER_ATTESTED = 'DEVICE_ACK_USER_ATTESTED'
 EVENT_CODES = frozenset((
     'AL_NEW_EPISODE', 'STOP_TOUCHED', 'TARGET_TOUCHED',
     'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE'
@@ -132,6 +134,8 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     event_keys = set()
     pending = 0
     unknown_delivery = 0
+    user_attested_status_rows = 0
+    explicit_unknown_status_rows = 0
     for row in alerts:
         need(len(row) >= 18, 'FLIGHT_EVENT_INCOMPLETE')
         eventkey = value(row,0)
@@ -150,8 +154,15 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         status = value(row,17)
         if status in PENDING:
             pending += 1
+        elif status == USER_ATTESTED:
+            # A Sheet user-attested label is not independent platform/device ACK.
+            user_attested_status_rows += 1
+            pending += 1
+        elif status == UNKNOWN:
+            explicit_unknown_status_rows += 1
+            pending += 1
         else:
-            # A new or unknown status is not evidence of an iPhone ACK.
+            # Arbitrary DELIVERY claims and unrecognized states are forbidden.
             unknown_delivery += 1
         event_keys.add(eventkey)
     need(unknown_delivery == 0, 'FLIGHT_UNATTESTED_DELIVERY_STATE')
@@ -204,6 +215,8 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'unreserved_prior_eod_al':missing_prior,
         'matched_terminal_outbox':len(terminal_expected),
         'pending_device_ack':pending,
+        'user_attested_status_rows':user_attested_status_rows,
+        'explicit_unknown_status_rows':explicit_unknown_status_rows,
         'device_receipts_verified':0,
         'panel_non_authoritative_stale':panel_stale,
         'panel_missing_asof':not bool(panel_last),
