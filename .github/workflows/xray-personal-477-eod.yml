@@ -1,4 +1,9 @@
 name: XRAY Personal 477 EOD Daily Health (Research Only)
+# XRAY 2026-10-28 after-close controlled START/FINAL activation: comment-only.
+# A protected main push to this existing workflow triggers one real 477 IEX EOD
+# for the latest eligible completed XNAS session, then private Sheets readback,
+# lifecycle, PANEL reconciliation and existing A14/A21/A22/A23 shadow chain.
+# Original cron, CLI policy, EOD decisions, source hashes and outbox unchanged.
 # A19 one-shot workflow_run integration acceptance:
 # A protected-main push to this FILE runs the EXISTING EOD workflow once;
 # pre-close it emits SKIPPED_NO_COMPLETED_CURRENT_ET_SESSION (no vendor
