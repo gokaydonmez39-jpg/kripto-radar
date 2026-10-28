@@ -1,0 +1,79 @@
+name: XRAY NASDAQ A12 Private Evidence Watch (READ ONLY)
+on:
+  pull_request:
+    branches: [main, xray/personal-nasdaq-a11-evidence-intelligence-lab-20261028]
+    paths:
+      - 'personal-swing/performance_lab/**'
+      - '.github/workflows/xray-nasdaq-a12-private-performance-shadow.yml'
+  workflow_run:
+    workflows:
+      - 'XRAY Personal 477 EOD Daily Health (Research Only)'
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-a12-private-performance
+  cancel-in-progress: false
+jobs:
+  offline-security-and-science:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Existing exchange calendar only
+        run: |
+          python -m pip install -r personal-swing/requirements.txt
+          python -m pip check
+      - name: Synthetic adversarial A11+A12 tests; ordinary and -O
+        working-directory: personal-swing/performance_lab
+        run: |
+          python -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
+          python -m unittest discover -v -p 'test_private_performance_adapter.py'
+          python -O -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
+          python -O -m unittest discover -v -p 'test_private_performance_adapter.py'
+          python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py
+  private-shadow-observation:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.event != 'pull_request')
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    environment: private-nasdaq-research
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+      XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Existing IEX/XNAS and Google read-only OAuth dependencies
+        run: |
+          python -m pip install -r personal-swing/requirements.txt
+          python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
+          python -m pip check
+      - name: Run private evidence watch; no public performance payload
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          python performance_lab/private_performance_adapter.py
+      - name: Explicit no-merge and no-device-delivery witness
+        run: echo 'A12=PRIVATE_READ_ONLY_AGGREGATES_ONLY; NO_SHEETS_WRITES; NO_BROKER; NO_ALERT_DELIVERY; NO_RULE_CHANGES; OOS_AND_REAL_FILLS_NOT_PROVEN'
