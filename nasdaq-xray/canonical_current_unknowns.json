@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-10-26",
+  "asof_et": "2026-10-27",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3192
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3191
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3192
+    "UNKNOWN_STATIC": 3191
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1026202621:31|||||||",
+  "official_footer": "File Creation Time: 1027202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3192
+    "UNKNOWN_STATIC": 3191
   },
-  "source_queue_hash": "b5c9e074d8aa263e739dae52de1d4516b28f48bae403ee1b9f9d88190100ed4c",
-  "source_state_hash": "9fac3312b3c1655e4fab83c03182bea24625911e1abdc4d30d9f2d5db9ea2587",
-  "source_unknown_count": 3192,
+  "source_queue_hash": "eee8aa3b3ffece30981f83e7b61c84d318ab8394303667f92cb8ef89462d5eef",
+  "source_state_hash": "1a1b3b4b81ef54f93d05cbde9bd1b049df9e59fd8c624ebb58a730409edf2d43",
+  "source_unknown_count": 3191,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3192,
+  "unknown_count": 3191,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -34741,24 +34741,6 @@
       "security_name": "Forge Nano Holdings Inc. - Common stock",
       "status": "UNKNOWN_STATIC"
     },
-    "NATH": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Nathan's Famous, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "NATR": {
       "attempts": 0,
       "discovery": {
@@ -39094,7 +39076,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Banzai International, Inc. - Class A Common Stock",
+      "security_name": "Parabolic Technologies, Inc. - Class A Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "PARK": {
