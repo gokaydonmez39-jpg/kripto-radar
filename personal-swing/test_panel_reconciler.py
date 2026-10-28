@@ -16,6 +16,9 @@ class FakeApi:
             self.panel.append([''])
         self.panel[8]=['Son doğrulanmış tarama seansı','2026-10-26','stale']
         self.panel[9]=['GitHub çalışma kanıtı','https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/123','old']
+        self.panel[10]=['GÜNCELLİK NOTU','2026-10-26','stale']
+        self.panel[12]=['START','BAŞARILI','26 Ekim']
+        self.panel[13]=['FINAL motoru','BAŞARILI','26 Ekim']
         self.panel[15]=['Sinyal geçmişi','0 TEKNİK KAYIT','old']
         self.candidates=[list(CANDIDATE_HEADER),
                          [DAY+'|AAAA',DAY,'AAAA','TEKNİK AL ADAYI',
@@ -75,6 +78,9 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertEqual(api.writes,1)
         self.assertEqual(api.panel[8][1],DAY)
         self.assertEqual(api.panel[9][1],URL)
+        self.assertIn('1 gözlem: 1 açık, 0 kapalı',api.panel[10][1])
+        self.assertIn(DAY,api.panel[12][2])
+        self.assertIn(DAY,api.panel[13][2])
         self.assertEqual(api.panel[15][1],'1 TEKNİK KAYIT')
         self.assertEqual(api.candidates,original_candidates)
         self.assertEqual(api.scans,original_scans)
@@ -86,6 +92,23 @@ class PanelReconcileTests(unittest.TestCase):
         again=p.synchronize(api)
         self.assertFalse(again['changed'])
         self.assertEqual(api.writes,1)
+
+    def test_closed_episodes_are_counted_without_changing_their_levels(self):
+        api=FakeApi()
+        api.candidates[1][7]='KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        api.candidates[1][8]=DAY
+        api.candidates[1][9]='STOP_TOUCHED'
+        original=copy.deepcopy(api.candidates)
+        p.synchronize(api)
+        self.assertIn('1 gözlem: 0 açık, 1 kapalı',api.panel[10][1])
+        self.assertEqual(api.candidates,original)
+
+    def test_unknown_status_blocks_all_dashboard_writes(self):
+        api=FakeApi()
+        api.candidates[1][7]='FILLED_REAL_TRADE'
+        with self.assertRaisesRegex(HandoffBlocked,'PANEL_UNKNOWN_LIFECYCLE_STATUS'):
+            p.synchronize(api)
+        self.assertEqual(api.writes,0)
 
     def test_no_477_final_never_writes(self):
         api=FakeApi()
