@@ -2,11 +2,15 @@
 import copy
 import unittest
 import raw_corporate_action_witness as w
+import exchange_calendars as ec
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER
 
 URL='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001'
 DAY='2026-10-28'
 DATES=['2026-10-26','2026-10-27','2026-10-28']
+CAL=ec.get_calendar('XNAS')
+FIRST=CAL.session_offset(CAL.date_to_session(DATES[0]),-51)
+WINDOW=[str(x.date()) for x in CAL.sessions_in_range(FIRST,DAY)]
 
 
 def fixture():
@@ -18,7 +22,7 @@ def fixture():
             '0','TRUE','0',URL,'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64]]
     bars={'AAA':[{'timestamp':d+'T04:00:00+00:00',
                   'open':100.,'high':102.,'low':98.,'close':100.,
-                  'volume':1000.} for d in DATES]}
+                  'volume':1000.} for d in WINDOW]}
     return candidates,scans,bars
 
 
@@ -30,14 +34,14 @@ class RawCaWitnessTests(unittest.TestCase):
                          'NO_LARGE_RAW_DISCONTINUITY_CA_STATUS_UNVERIFIED')
         self.assertFalse(result['corporate_action_cleared'])
         self.assertFalse(result['independent_vendor_corporate_action_confirmed'])
-        self.assertEqual(result['raw_session_bars_checked'],3)
+        self.assertEqual(result['raw_session_bars_checked'],len(WINDOW))
         self.assertFalse(result['sheet_writes'])
         self.assertFalse(result['device_ack'])
 
     def test_split_like_half_price_is_review_not_execution(self):
         c,s,b=fixture()
-        b['AAA'][1].update(open=50.,high=51.,low=49.,close=50.)
-        b['AAA'][2].update(open=50.,high=52.,low=49.,close=50.)
+        b['AAA'][-2].update(open=50.,high=51.,low=49.,close=50.)
+        b['AAA'][-1].update(open=50.,high=52.,low=49.,close=50.)
         out=w.inspect(c,s,b,DAY)
         self.assertEqual(out['large_raw_open_gap_count'],1)
         self.assertEqual(out['state'],'REVIEW_REQUIRED')
@@ -45,28 +49,43 @@ class RawCaWitnessTests(unittest.TestCase):
 
     def test_reverse_split_double_price_is_review(self):
         c,s,b=fixture()
-        b['AAA'][1].update(open=200.,high=201.,low=198.,close=200.)
-        b['AAA'][2].update(open=200.,high=201.,low=199.,close=200.)
+        b['AAA'][-2].update(open=200.,high=201.,low=198.,close=200.)
+        b['AAA'][-1].update(open=200.,high=201.,low=199.,close=200.)
         self.assertEqual(w.inspect(c,s,b,DAY)['state'],'REVIEW_REQUIRED')
 
     def test_true_large_earnings_gap_also_needs_review_not_claim_split(self):
         c,s,b=fixture()
-        b['AAA'][1].update(open=70.,high=73.,low=69.,close=72.)
+        b['AAA'][-2].update(open=70.,high=73.,low=69.,close=72.)
         out=w.inspect(c,s,b,DAY)
         self.assertEqual(out['state'],'REVIEW_REQUIRED')
         self.assertFalse(out['corporate_action_cleared'])
 
     def test_changed_original_close_is_flagged_even_without_gap(self):
         c,s,b=fixture()
-        b['AAA'][0]['close']=99.
+        b['AAA'][-3]['close']=99.
         result=w.inspect(c,s,b,DAY)
         self.assertEqual(result['historical_issuance_close_mismatches'],1)
         self.assertEqual(result['state'],'REVIEW_REQUIRED')
 
     def test_one_cent_is_not_mere_rounding(self):
         c,s,b=fixture()
-        b['AAA'][0]['close']=100.02
+        b['AAA'][-3]['close']=100.02
         self.assertEqual(w.inspect(c,s,b,DAY)['state'],'REVIEW_REQUIRED')
+
+    def test_split_like_discontinuity_before_original_signal_is_detected(self):
+        c,s,b=fixture()
+        # The prior code only inspected after issuance: this must audit
+        # the original SMA/ATR 52-bar input window too.
+        b['AAA'][-12].update(open=50.,high=51.,low=49.,close=50.)
+        out=w.inspect(c,s,b,DAY)
+        self.assertEqual(out['state'],'REVIEW_REQUIRED')
+        self.assertGreater(out['large_raw_open_gap_count'],0)
+
+    def test_missing_pre_signal_indicator_bar_blocks(self):
+        c,s,b=fixture()
+        b['AAA'].pop(3)
+        with self.assertRaisesRegex(w.ActionWitnessBlocked,'RAW_MISSING_XNAS_SESSION'):
+            w.inspect(c,s,b,DAY)
 
     def test_missing_raw_session_fails_closed(self):
         c,s,b=fixture()
@@ -82,13 +101,13 @@ class RawCaWitnessTests(unittest.TestCase):
 
     def test_invalid_ohlc_fails_closed(self):
         c,s,b=fixture()
-        b['AAA'][2]['low']=110.
+        b['AAA'][-1]['low']=110.
         with self.assertRaisesRegex(w.ActionWitnessBlocked,'INVALID_RAW_PRICE_RANGE'):
             w.inspect(c,s,b,DAY)
 
     def test_nan_fails_closed(self):
         c,s,b=fixture()
-        b['AAA'][1]['close']=float('nan')
+        b['AAA'][-2]['close']=float('nan')
         with self.assertRaisesRegex(w.ActionWitnessBlocked,'INVALID_RAW_OHLCV'):
             w.inspect(c,s,b,DAY)
 
@@ -123,7 +142,7 @@ class RawCaWitnessTests(unittest.TestCase):
 
     def test_rounded_two_decimal_original_price_is_accepted(self):
         c,s,b=fixture()
-        b['AAA'][0]['close']=100.004
+        b['AAA'][-3]['close']=100.004
         self.assertEqual(w.inspect(c,s,b,DAY)['state'],
                          'NO_LARGE_RAW_DISCONTINUITY_CA_STATUS_UNVERIFIED')
 
@@ -134,7 +153,7 @@ class RawCaWitnessTests(unittest.TestCase):
         result=w.inspect(c,s,b,DAY)
         self.assertEqual(result['candidate_count'],2)
         self.assertEqual(result['unique_symbol_count'],1)
-        self.assertEqual(result['raw_session_bars_checked'],3)
+        self.assertEqual(result['raw_session_bars_checked'],len(WINDOW))
 
 
 if __name__=='__main__':
