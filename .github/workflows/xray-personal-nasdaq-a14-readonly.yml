@@ -92,6 +92,13 @@ jobs:
           python -m pip install -r personal-swing/requirements.txt
           python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
           python -m pip check
+      - name: A23 independent 52-session source witness during protected-main smoke
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +x
+          python raw_corporate_action_witness.py
       - name: Exact latest official completed XNAS readback; never historical signal replay
         working-directory: personal-swing
         shell: bash
