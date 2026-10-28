@@ -48,8 +48,8 @@ jobs:
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle
-          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
           python -m py_compile engine.py runner.py daily_job.py tracker.py
@@ -223,5 +223,10 @@ jobs:
             args+=(--asof "$REQUESTED_ASOF")
           fi
           python private_lifecycle.py "${args[@]}"
+      - name: Reconcile PANEL from verified private scan and immutable candidate ledger
+        working-directory: personal-swing
+        run: |
+          set -euo pipefail
+          python panel_reconciler.py
       - name: Private follow-up does not claim device delivery
         run: echo 'GitHub followup only updates proven dated theoretical status; existing ChatGPT task remains responsible for outbox reservation and iPhone delivery.'
