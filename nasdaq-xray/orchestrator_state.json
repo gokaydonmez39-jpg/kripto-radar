@@ -3,13 +3,13 @@
   "asof_et": "2026-10-27",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-27",
-    "attempted_count": 434,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
-    "candidate_count": 434,
+    "candidate_count": 477,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 432,
+    "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,10 +18,12 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 17,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 2,
+    "pending_count": 4,
     "pending_symbols": [
       "FISV",
-      "CCC"
+      "CCC",
+      "RLAY",
+      "OLED"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -235,6 +237,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "ALHC": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "ALKS": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -269,6 +277,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "AMGN": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "AMKR": {
@@ -317,6 +331,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "ARWR": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "ASML": {
@@ -499,6 +519,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "CALM": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "CAMT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -550,6 +576,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "CDW": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "CELC": {
@@ -679,6 +711,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "CIFR": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "CINF": {
@@ -811,6 +849,18 @@
         "terminal_scan": true
       },
       "CORZ": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "COST": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "CPB": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -1028,6 +1078,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "DAVE": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "DBX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1223,6 +1279,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "EXEL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "EXLS": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1361,6 +1423,12 @@
         "terminal_scan": true
       },
       "FTAI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "FTNT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -1549,6 +1617,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "HQY": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "HSIC": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1568,6 +1642,12 @@
         "terminal_scan": true
       },
       "HUT": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "HWC": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -1603,6 +1683,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "IESC": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "ILMN": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1610,6 +1696,12 @@
         "terminal_scan": true
       },
       "INCY": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "INDV": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -1628,6 +1720,12 @@
         "terminal_scan": true
       },
       "INTC": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "INTU": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -1675,6 +1773,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "JBHT": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "JKHY": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1703,6 +1807,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "KOD": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "KRYS": {
@@ -1795,6 +1905,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "LQDA": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "LRCX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1879,6 +1995,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "MEDP": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "MELI": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -1889,6 +2011,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "MIDD": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "MIRM": {
@@ -1957,6 +2085,24 @@
         "history_source": "SINA_US_DAILY",
         "status": "TECHNICAL_GEOMETRY_NOT_APPROVED",
         "technical_observation_ready": false,
+        "terminal_scan": true
+      },
+      "MMSI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "MNDY": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "MNST": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "MPWR": {
@@ -2041,6 +2187,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "MTCH": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "MTSI": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2119,6 +2271,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "NTAP": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "NTLA": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2177,6 +2335,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "NXPI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "NXST": {
@@ -2251,7 +2415,19 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "OZK": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "PANW": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "PAYX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2282,6 +2458,12 @@
         "terminal_scan": true
       },
       "PENG": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "PEP": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2377,6 +2559,12 @@
         "terminal_scan": true
       },
       "POOL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "POWL": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2495,6 +2683,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "RARE": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "REG": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2544,12 +2738,6 @@
         "terminal_scan": true
       },
       "RKLB": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "RLAY": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2675,6 +2863,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "SEZL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "SFM": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2747,6 +2941,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "SOFI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "SRRK": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2777,6 +2977,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "STRL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "STX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2799,6 +3005,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "SYRE": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "TARS": {
@@ -2887,6 +3099,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "TGTX": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "TIGO": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2921,6 +3139,18 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "TRI": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "TRMB": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "TRMD": {
@@ -3002,6 +3232,12 @@
         "terminal_scan": true
       },
       "TXG": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "TXN": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3312,6 +3548,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "WFRD": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "WGS": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3383,6 +3625,12 @@
         "terminal_scan": true
       },
       "WMG": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "WMT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
@@ -3533,17 +3781,17 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "e892652f50b28440c6b50caa7ec955f130d15e07b1e4e9dc642623c617860cd3",
+    "source_candidates_sha256": "4fa12ea5d028eef16a6d40d8ef58c6e3c245dadf1b18de6f5b3b50f7281d6567",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 90,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 325,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 105,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 351,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 16,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
     "transient_retry_count": 2,
     "unknown_never_pass": true,
-    "watchlist_digest": "f75e4cf933e721f93b904743372d461f21201e8ed111056d8c971b501cf644ce"
+    "watchlist_digest": "45a13e7281946733945b75484dcd0e5b2f50a1b64435c3c81491ff1266589277"
   },
   "cursor": 3191,
   "downstream_invalidation": {
@@ -3576,14 +3824,14 @@
   "execution": "NONE",
   "full_universe_identity": true,
   "g9_status": "BLOCKED",
-  "history_asof_bar_missing_count": 395,
+  "history_asof_bar_missing_count": 41,
   "history_provider_exception_exhausted_count": 0,
   "history_retry_reason": "NO_RETRYABLE_HISTORY_WORK_REMAINS",
   "history_retryable": false,
   "history_unknown_reason_counts": {
-    "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 395,
-    "EXACT30_SESSIONS_INCOMPLETE": 4,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 137,
+    "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 41,
+    "EXACT30_SESSIONS_INCOMPLETE": 5,
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 146,
     "STATIC_UNKNOWN_OTHER": 26
   },
   "late_asof_canary_probes_this_run": 0,
@@ -3595,166 +3843,72 @@
   "schema": "XRAY_ORCHESTRATOR_V1",
   "status": "PARTIAL_HISTORY",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 562,
+  "unknown_count": 218,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-28T00:43:48.805309+00:00",
+  "updated_at_utc": "2026-10-28T05:35:35.048821+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
     "asof_et": "2026-10-27",
     "authority": "OPEN_PRICE_LIQUIDITY_RESEARCH_WATCH_ONLY",
-    "candidate_count_from_source": 449,
+    "candidate_count_from_source": 497,
     "candidate_local_special_review": null,
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
     "new_watchlist_symbols": [
-      "AAOI",
-      "AAON",
-      "AAPL",
-      "ABNB",
-      "ACGL",
-      "ADBE",
-      "ADP",
-      "ADSK",
-      "AEP",
-      "ALGN",
-      "ALM",
-      "ALNY",
-      "AMD",
-      "AMKR",
-      "AMZN",
-      "ASML",
-      "ASST",
-      "AVAV",
-      "AVGO",
-      "AXON",
-      "BKNG",
-      "BRZE",
-      "CBRL",
-      "CCC",
-      "CDNA",
-      "CHDN",
-      "CHKP",
-      "CINF",
-      "CLSK",
-      "COCO",
-      "COLB",
-      "CORZ",
-      "CRDO",
-      "CROX",
-      "CRSP",
-      "CRUS",
-      "CRWV",
-      "CSX",
-      "CTAS",
-      "CVCO",
-      "DASH",
-      "DKNG",
-      "DOCU",
-      "DPZ",
-      "EBAY",
-      "EXC",
-      "EXE",
-      "EXLS",
-      "FER",
-      "FFIV",
-      "FIVN",
-      "FRPT",
-      "FRSH",
-      "FSLY",
-      "FTAI",
-      "FWONK",
-      "GEHC",
-      "GEN",
-      "GILD",
-      "GLPI",
-      "GLXY",
-      "GNTX",
-      "GOOG",
-      "GOOGL",
-      "GSAT",
-      "HAS",
-      "HBAN",
-      "HOOD",
-      "HSIC",
-      "HST",
-      "HTFL",
-      "IBKR",
-      "ISRG",
-      "KLAC",
-      "KLIC",
-      "KMB",
-      "KYMR",
-      "LAMR",
-      "LECO",
-      "LFUS",
-      "LGND",
-      "LIN",
-      "LITE",
-      "LOGI",
-      "LRCX",
-      "LSCC",
-      "LSTR",
-      "LULU",
-      "LUNR",
-      "MCHP",
-      "MDB",
-      "MDGL",
-      "MRVL",
-      "MSFT",
-      "MU",
-      "MYRG",
-      "NKTR",
-      "NTNX",
-      "NTRS",
-      "NVDA",
-      "NVMI",
-      "OLLI",
-      "ON",
-      "OPCH",
-      "ORLY",
-      "PLTR",
-      "PLXS",
-      "PTEN",
-      "QUBT",
-      "RGEN",
-      "RKLB",
-      "ROST",
-      "RVMD",
-      "SAIC",
-      "SAIL",
-      "SBAC",
-      "SBET",
-      "SBUX",
-      "SDGR",
-      "SEIC",
-      "SITM",
-      "SMCI",
-      "SNPS",
-      "STLD",
-      "SWKS",
-      "TARS",
-      "USAR",
-      "VIAV",
-      "VICR",
-      "VNOM",
-      "VRSK",
-      "WSC",
-      "WTW",
-      "WULF",
-      "XMTR",
-      "XP",
-      "ZS"
+      "ALHC",
+      "AMGN",
+      "ARWR",
+      "CALM",
+      "CDW",
+      "CIFR",
+      "COST",
+      "CPB",
+      "DAVE",
+      "EXEL",
+      "FTNT",
+      "HQY",
+      "HWC",
+      "IESC",
+      "INDV",
+      "INTU",
+      "JBHT",
+      "KOD",
+      "LQDA",
+      "MEDP",
+      "MIDD",
+      "MMSI",
+      "MNDY",
+      "MNST",
+      "MTCH",
+      "NTAP",
+      "NXPI",
+      "OLED",
+      "OZK",
+      "PAYX",
+      "PEP",
+      "POWL",
+      "RARE",
+      "SEZL",
+      "SOFI",
+      "STRL",
+      "SYRE",
+      "TGTX",
+      "TRI",
+      "TRMB",
+      "TXN",
+      "WFRD",
+      "WMT"
     ],
     "no_longer_in_top_watchlist": [],
     "orders": [],
-    "price_liquidity_screened_count": 434,
+    "price_liquidity_screened_count": 477,
     "real_money": "NO-GO",
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "e892652f50b28440c6b50caa7ec955f130d15e07b1e4e9dc642623c617860cd3",
-    "source_rows_excluded": 15,
+    "source_candidates_sha256": "4fa12ea5d028eef16a6d40d8ef58c6e3c245dadf1b18de6f5b3b50f7281d6567",
+    "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
       {
@@ -3769,7 +3923,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3783,7 +3937,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVDA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3825,7 +3979,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAPL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3839,7 +3993,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3867,7 +4021,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MSFT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3881,7 +4035,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMZN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3895,7 +4049,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3909,7 +4063,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3923,7 +4077,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3937,7 +4091,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LITE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3951,7 +4105,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MRVL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -3965,7 +4119,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PLTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4049,7 +4203,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRWV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4063,7 +4217,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LRCX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4096,6 +4250,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 119.32,
+        "dv30_usd_observed": 2295474126.87,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Walmart Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "WMT",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 1635.5699,
         "dv30_usd_observed": 2265057554.76,
         "exact_completed_sessions": 30,
@@ -4105,7 +4273,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASML",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4124,6 +4292,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 992.13,
+        "dv30_usd_observed": 2071030313.28,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Costco Wholesale Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "COST",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 94.56,
         "dv30_usd_observed": 1992822627.68,
         "exact_completed_sessions": 30,
@@ -4133,7 +4315,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HOOD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4189,6 +4371,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KLAC",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 308.91,
+        "dv30_usd_observed": 1651809173.17,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Texas Instruments Incorporated - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "TXN",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4203,7 +4399,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRDO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4231,7 +4427,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RKLB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4259,6 +4455,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SMCI",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 133.5,
+        "dv30_usd_observed": 1235132343.64,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "PepsiCo, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "PEP",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4301,7 +4511,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BKNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4334,6 +4544,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 447.95,
+        "dv30_usd_observed": 1123046819.2,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Amgen Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "AMGN",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 248.36,
         "dv30_usd_observed": 1019955147.8,
         "exact_completed_sessions": 30,
@@ -4343,6 +4567,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADBE",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 328.45,
+        "dv30_usd_observed": 1001631311.41,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Intuit Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "INTU",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4371,7 +4609,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SNPS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4413,7 +4651,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LIN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4441,7 +4679,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAOI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4455,7 +4693,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GILD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4483,7 +4721,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ISRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4497,7 +4735,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4530,6 +4768,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 253.5,
+        "dv30_usd_observed": 745639068.84,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "NXP Semiconductors N.V. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "NXPI",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 103.04,
         "dv30_usd_observed": 699726265.18,
         "exact_completed_sessions": 30,
@@ -4539,6 +4791,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SBUX",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 16.4,
+        "dv30_usd_observed": 693024863.42,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "SoFi Technologies, Inc.  - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "SOFI",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4623,7 +4889,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MCHP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4637,6 +4903,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DASH",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 185.0,
+        "dv30_usd_observed": 614082269.79,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Fortinet, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "FTNT",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4651,7 +4931,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ZS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4693,7 +4973,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MDB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4707,7 +4987,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ABNB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4735,6 +5015,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADP",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 227.58,
+        "dv30_usd_observed": 514645905.65,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "NetApp, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "NTAP",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -4894,6 +5188,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 8.48,
+        "dv30_usd_observed": 472457806.0,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Cipher Digital Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "CIFR",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 52.27,
         "dv30_usd_observed": 469010385.38,
         "exact_completed_sessions": 30,
@@ -4903,7 +5211,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CSX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4917,7 +5225,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ROST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4959,7 +5267,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WULF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4987,7 +5295,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ORLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5029,7 +5337,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HBAN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5043,7 +5351,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AEP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5057,7 +5365,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LULU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5085,7 +5393,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SWKS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5099,7 +5407,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5127,7 +5435,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KMB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5141,6 +5449,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EBAY",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 45.44,
+        "dv30_usd_observed": 399098552.68,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Monster Beverage Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MNST",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -5225,7 +5547,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5239,7 +5561,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CTAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5281,7 +5603,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RVMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5393,7 +5715,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IBKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5436,6 +5758,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTC",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 109.26,
+        "dv30_usd_observed": 336527943.33,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Paychex, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "PAYX",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -5561,7 +5897,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5659,7 +5995,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5673,7 +6009,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "XP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5701,7 +6037,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALNY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5729,7 +6065,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DKNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5762,6 +6098,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 367.5,
+        "dv30_usd_observed": 275645866.07,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Sterling Infrastructure, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "STRL",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 490.94,
         "dv30_usd_observed": 275092668.14,
         "exact_completed_sessions": 30,
@@ -5771,7 +6121,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SITM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5813,7 +6163,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FTAI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5911,7 +6261,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FFIV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5925,7 +6275,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ACGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5967,7 +6317,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VICR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5995,7 +6345,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DPZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6023,7 +6373,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GEHC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6037,7 +6387,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6149,6 +6499,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGEN",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 231.95,
+        "dv30_usd_observed": 213731067.6,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "J.B. Hunt Transport Services, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "JBHT",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -6177,7 +6541,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FWONK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6191,7 +6555,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "STLD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6205,7 +6569,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VRSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6261,7 +6625,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LSCC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6275,7 +6639,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GEN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6289,7 +6653,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CORZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6322,6 +6686,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 161.41,
+        "dv30_usd_observed": 194443768.64,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "CDW Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "CDW",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 116.6,
         "dv30_usd_observed": 193889695.37,
         "exact_completed_sessions": 30,
@@ -6345,7 +6723,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VIAV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6373,7 +6751,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6429,7 +6807,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CLSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6443,7 +6821,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTRS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6457,7 +6835,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVAV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6541,7 +6919,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "USAR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6569,7 +6947,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6597,7 +6975,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DOCU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6667,7 +7045,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6695,6 +7073,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTNX",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 673.79,
+        "dv30_usd_observed": 163063611.67,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Medpace Holdings, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MEDP",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -6737,7 +7129,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SBAC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6849,7 +7241,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WTW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6905,7 +7297,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OLLI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6920,6 +7312,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TW",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 20.68,
+        "dv30_usd_observed": 145787193.39,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "The Campbell's Company - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "CPB",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -6948,6 +7354,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXSM",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 45.44,
+        "dv30_usd_observed": 144992357.71,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Liquidia Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "LQDA",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -6994,6 +7414,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 116.41,
+        "dv30_usd_observed": 139325931.84,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Thomson Reuters Corp - Common Shares",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "TRI",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 27.37,
         "dv30_usd_observed": 139011100.89,
         "exact_completed_sessions": 30,
@@ -7003,7 +7437,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FSLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7017,7 +7451,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7115,7 +7549,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MDGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7274,6 +7708,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 43.69,
+        "dv30_usd_observed": 127348978.83,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Match Group, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MTCH",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 158.25,
         "dv30_usd_observed": 127159686.59,
         "exact_completed_sessions": 30,
@@ -7367,7 +7815,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CROX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7395,7 +7843,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHKP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7424,6 +7872,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "Z",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 65.35,
+        "dv30_usd_observed": 120773452.49,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Exelixis, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "EXEL",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -7493,6 +7955,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLXY",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 63.16,
+        "dv30_usd_observed": 116554407.69,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Trimble Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "TRMB",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -7596,6 +8072,34 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 99.045,
+        "dv30_usd_observed": 110139102.74,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Spyre Therapeutics, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "SYRE",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 59.03,
+        "dv30_usd_observed": 110122281.11,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Arrowhead Pharmaceuticals, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "ARWR",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 11.56,
         "dv30_usd_observed": 108712457.44,
         "exact_completed_sessions": 30,
@@ -7605,7 +8109,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LUNR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7689,6 +8193,34 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FER",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 161.36,
+        "dv30_usd_observed": 102630492.77,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Powell Industries, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "POWL",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 328.47,
+        "dv30_usd_observed": 102534144.3,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Dave Inc.  - Class A Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "DAVE",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -7717,7 +8249,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLPI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7731,7 +8263,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVMI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7745,7 +8277,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CCC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7759,7 +8291,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CINF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7820,6 +8352,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 91.32,
+        "dv30_usd_observed": 96009133.15,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Kodiak Sciences Inc - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "KOD",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 44.32,
         "dv30_usd_observed": 95858036.72,
         "exact_completed_sessions": 30,
@@ -7843,7 +8389,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HSIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7857,7 +8403,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SAIL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7899,7 +8445,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LECO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8011,7 +8557,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CDNA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8025,7 +8571,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KYMR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8053,7 +8599,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHDN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8067,7 +8613,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VNOM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8156,6 +8702,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 56.44,
+        "dv30_usd_observed": 86703473.2,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "TG Therapeutics, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "TGTX",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 49.89,
         "dv30_usd_observed": 86130325.11,
         "exact_completed_sessions": 30,
@@ -8179,7 +8739,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRUS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8212,6 +8772,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 99.615,
+        "dv30_usd_observed": 83316914.2,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "monday.com Ltd. - Ordinary Shares",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MNDY",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 49.11,
         "dv30_usd_observed": 82446139.53,
         "exact_completed_sessions": 30,
@@ -8235,7 +8809,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRSP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8254,6 +8828,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 227.405,
+        "dv30_usd_observed": 81997170.98,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "IES Holdings, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "IESC",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 97.14,
         "dv30_usd_observed": 81450413.37,
         "exact_completed_sessions": 30,
@@ -8263,7 +8851,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "XMTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8277,7 +8865,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8291,7 +8879,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OPCH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8305,7 +8893,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LOGI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8319,7 +8907,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8333,7 +8921,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LAMR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8347,7 +8935,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LFUS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8361,6 +8949,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HTFL",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 62.37,
+        "dv30_usd_observed": 78209624.41,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Cal-Maine Foods, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "CALM",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -8403,7 +9005,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SEIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8436,6 +9038,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 8.05,
+        "dv30_usd_observed": 75514231.14,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Alignment Healthcare, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "ALHC",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 31.04,
         "dv30_usd_observed": 75375935.84,
         "exact_completed_sessions": 30,
@@ -8445,7 +9061,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COLB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8473,7 +9089,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTEN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8530,6 +9146,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DNTH",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 100.88,
+        "dv30_usd_observed": 74432112.3,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "HealthEquity, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "HQY",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -8613,7 +9243,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8674,6 +9304,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 89.64,
+        "dv30_usd_observed": 71674033.95,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Weatherford International plc - Ordinary shares",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "WFRD",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 311.73,
         "dv30_usd_observed": 71393593.28,
         "exact_completed_sessions": 30,
@@ -8683,7 +9327,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LGND",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8823,7 +9467,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NKTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8851,7 +9495,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MYRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8866,6 +9510,20 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APPF",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 50.77,
+        "dv30_usd_observed": 68367217.12,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Bank OZK - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "OZK",
+        "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
         "buy_signal": false,
@@ -8926,6 +9584,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 34.72,
+        "dv30_usd_observed": 67660859.77,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Indivior Pharmaceuticals, Inc.  - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "INDV",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 37.13,
         "dv30_usd_observed": 67561202.7,
         "exact_completed_sessions": 30,
@@ -8935,7 +9607,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FIVN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9061,7 +9733,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9075,7 +9747,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FRPT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9108,6 +9780,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 72.48,
+        "dv30_usd_observed": 62398977.97,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Hancock Whitney Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "HWC",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 19.895,
         "dv30_usd_observed": 62193078.47,
         "exact_completed_sessions": 30,
@@ -9131,7 +9817,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SBET",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9150,6 +9836,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 16.75,
+        "dv30_usd_observed": 61358116.64,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Ultragenyx Pharmaceutical Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "RARE",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 26.72,
         "dv30_usd_observed": 61013425.62,
         "exact_completed_sessions": 30,
@@ -9159,7 +9859,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SDGR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9257,7 +9957,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FRSH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9299,7 +9999,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PLXS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9411,6 +10111,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BRZE",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 127.36,
+        "dv30_usd_observed": 55720004.18,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Sezzle Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "SEZL",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -9439,7 +10153,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GNTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9467,7 +10181,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KLIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9509,7 +10223,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LSTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9537,7 +10251,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "QUBT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9551,6 +10265,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SAIC",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 93.53,
+        "dv30_usd_observed": 53953909.94,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Merit Medical Systems, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MMSI",
         "tracking_state": "NEW_ON_WATCHLIST"
       },
       {
@@ -9579,7 +10307,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TARS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9593,7 +10321,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CBRL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9710,6 +10438,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 115.0,
+        "dv30_usd_observed": 52655670.2,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "The Middleby Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "MIDD",
+        "tracking_state": "NEW_ON_WATCHLIST"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 539.21,
         "dv30_usd_observed": 52567608.03,
         "exact_completed_sessions": 30,
@@ -9719,7 +10461,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CVCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9789,7 +10531,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GSAT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9803,7 +10545,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WSC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9832,10 +10574,24 @@
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RLAY",
         "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 90.36,
+        "dv30_usd_observed": 50150616.41,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Universal Display Corporation - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "OLED",
+        "tracking_state": "NEW_ON_WATCHLIST"
       }
     ],
     "watchlist_cap": null,
-    "watchlist_count": 434,
-    "watchlist_digest": "f75e4cf933e721f93b904743372d461f21201e8ed111056d8c971b501cf644ce"
+    "watchlist_count": 477,
+    "watchlist_digest": "45a13e7281946733945b75484dcd0e5b2f50a1b64435c3c81491ff1266589277"
   }
 }
