@@ -72,6 +72,38 @@ def plan(rows=None, histories=None, **kwargs):
 
 
 class PrivateBridge(unittest.TestCase):
+    def test_historical_issuer_note_sha_parser_preserves_exact_hashes(self):
+        narrative=f'Historical 477 verified, scopeSHA={SRC}, algorithmSHA={POL}. GitHub run confirmed'
+        canonical=f'scopeSHA={SRC};algorithmSHA={POL};NO_ORDERS'
+        self.assertEqual(a._fingerprints(narrative),(SRC,POL))
+        self.assertEqual(a._fingerprints(canonical),(SRC,POL))
+        self.assertEqual(a._fingerprints('No original SHA evidence'),None)
+        self.assertEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={'c'*64}'),(SRC,'c'*64))
+        self.assertNotEqual(a._fingerprints(f'scopeSHA={SRC}, algorithmSHA={'c'*64}'),(SRC,POL))
+        rr=scans()
+        rr[-1][9]=narrative
+        self.assertEqual(len(plan(histories=rr)['verified']),1)
+
+    def test_duplicate_conflicted_or_truncated_provenance_fail_closed(self):
+        for payload in (
+            f'scopeSHA={SRC};algorithmSHA={POL};scopeSHA={'c'*64}',
+            f'scopeSHA={SRC};algorithmSHA={POL};algorithmSHA={POL}',
+            f'scopeSHA={SRC};algorithmSHA={POL};scopeSHA=INVALID',
+            f'scopeSHA={SRC};algorithmSHA={POL};algorithmSHA=INVALID',
+        ):
+            with self.assertRaisesRegex(a.EvidenceBlocked,'SCAN_DUPLICATE_PROVENANCE_FIELD'):
+                a._fingerprints(payload)
+        self.assertIsNone(a._fingerprints(f'xscopeSHA={SRC};algorithmSHA={POL}'))
+        self.assertIsNone(a._fingerprints(f'scopeSHA={SRC}x;algorithmSHA={POL}'))
+        self.assertIsNone(a._fingerprints(f'scopeSHA={SRC};algorithmSHA={'b'*63}'))
+
+    def test_historical_manual_without_sha_remains_excluded(self):
+        rr=scans(no_issuance=True)
+        rr[-1][9]=f'26 Oct observed, scopeSHA={SRC}, algorithmSHA={POL}.'
+        actual=plan(histories=rr)
+        self.assertEqual(actual['excluded_unproven_issuance'],1)
+        self.assertEqual(actual['verified'],[])
+
     def test_zero_missing_symbol_is_valid_nonnegative_scan_count(self):
         self.assertEqual(a._count('0'), Decimal(0))
         self.assertEqual(a._count('477'), Decimal(477))
