@@ -154,6 +154,41 @@ class FlightNegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(g.FlightRecorderBlocked,'UNATTESTED_DELIVERY_STATE'):
             g.inspect(*b)
 
+    def test_gap_annotation_must_be_paired_with_exact_stop_event(self):
+        b=data()
+        b[0][1][7]='KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        b[0][1][8]=DAY
+        b[0][1][9]='STOP_TOUCHED'
+        original=b[2][1]
+        original[0]=KEY+'|'+DAY+'|STOP_TOUCHED|1'
+        original[5]='STOP_TOUCHED'
+        gap=list(original)
+        gap[0]=KEY+'|'+DAY+'|GAP_BELOW_STOP|1'
+        gap[5]='GAP_BELOW_STOP'
+        b[2].append(gap)
+        status=g.inspect(*b)
+        self.assertEqual(status['matched_terminal_outbox'],1)
+        self.assertEqual(status['paired_gap_below_stop_annotations'],1)
+        self.assertEqual(status['device_receipts_verified'],0)
+
+    def test_unpaired_gap_annotation_is_blocked(self):
+        b=data()
+        b[2][1][0]=KEY+'|'+DAY+'|GAP_BELOW_STOP|1'
+        b[2][1][5]='GAP_BELOW_STOP'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'UNPAIRED_GAP_STOP_EVENT'):
+            g.inspect(*b)
+
+    def test_gap_different_day_cannot_borrow_other_stop(self):
+        b=data()
+        # Stop touch on signal day cannot justify a gap on following day.
+        gap=list(b[2][1])
+        gap[0]=KEY+'|2026-10-28|GAP_BELOW_STOP|1'
+        gap[4]='2026-10-28'
+        gap[5]='GAP_BELOW_STOP'
+        b[2].append(gap)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'EVENT_WRONG_EPISODE_OR_DAY'):
+            g.inspect(*b)
+
     def test_duplicate_event_blocks(self):
         b=data()
         b[2].append(list(b[2][1]))

@@ -25,7 +25,8 @@ UNKNOWN = 'DELIVERY_UNKNOWN_REVIEW_REQUIRED'
 USER_ATTESTED = 'DEVICE_ACK_USER_ATTESTED'
 EVENT_CODES = frozenset((
     'AL_NEW_EPISODE', 'STOP_TOUCHED', 'TARGET_TOUCHED',
-    'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE'
+    'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE',
+    'GAP_BELOW_STOP'
 ))
 MAX_ROWS = 1000
 
@@ -132,6 +133,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         if start in verified_days:
             verified_episode_keys[start].append(key)
     event_keys = set()
+    gap_event_owner_days = []
     pending = 0
     unknown_delivery = 0
     user_attested_status_rows = 0
@@ -165,6 +167,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             # Arbitrary DELIVERY claims and unrecognized states are forbidden.
             unknown_delivery += 1
         event_keys.add(eventkey)
+        if code == 'GAP_BELOW_STOP':
+            gap_event_owner_days.append((owner,event_day))
+    # GAP_BELOW_STOP is an annotation on a genuine stop touch, not a
+    # standalone terminal. A lone gap event must never become a valid exit.
+    for owner,event_day in gap_event_owner_days:
+        need(f'{owner}|{event_day}|STOP_TOUCHED|1' in event_keys,
+             'FLIGHT_UNPAIRED_GAP_STOP_EVENT')
     need(unknown_delivery == 0, 'FLIGHT_UNATTESTED_DELIVERY_STATE')
     for scan in scans:
         day = value(scan,0)
@@ -214,6 +223,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'unreserved_current_eod_al':missing_current,
         'unreserved_prior_eod_al':missing_prior,
         'matched_terminal_outbox':len(terminal_expected),
+        'paired_gap_below_stop_annotations':len(gap_event_owner_days),
         'pending_device_ack':pending,
         'user_attested_status_rows':user_attested_status_rows,
         'explicit_unknown_status_rows':explicit_unknown_status_rows,
