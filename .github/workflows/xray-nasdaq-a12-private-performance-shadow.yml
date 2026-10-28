@@ -37,9 +37,11 @@ jobs:
         run: |
           python -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
           python -m unittest discover -v -p 'test_private_performance_adapter.py'
+          python -m unittest discover -v -p 'test_nasdaq_challenger_protocol.py'
           python -O -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
           python -O -m unittest discover -v -p 'test_private_performance_adapter.py'
-          python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py
+          python -O -m unittest discover -v -p 'test_nasdaq_challenger_protocol.py'
+          python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py nasdaq_challenger_protocol.py
   private-shadow-observation:
     if: >-
       github.event_name == 'workflow_dispatch' ||
