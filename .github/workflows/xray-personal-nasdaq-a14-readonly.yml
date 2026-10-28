@@ -16,6 +16,8 @@ on:
     branches: [main]
     paths:
       - 'personal-swing/performance_lab/**'
+      - 'personal-swing/raw_corporate_action_witness.py'
+      - 'personal-swing/test_raw_corporate_action_witness.py'
       - '.github/workflows/xray-personal-nasdaq-a14-readonly.yml'
   workflow_run:
     workflows:

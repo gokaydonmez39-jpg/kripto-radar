@@ -93,8 +93,11 @@ def inspect(candidate_values, scan_values, bars, asof):
                  'INVALID_RAW_PRICE_RANGE')
             byday[day]=b
         needed_start=min(d for d,_ in issuances[sym])
-        # Full source-window chronology, not the sparse selected bar dates.
-        expected=[str(x.date()) for x in cal.sessions_in_range(needed_start,asof)]
+        # AL metrics consume 52 contiguous daily bars INCLUDING 51 sessions
+        # preceding the original signal. Start reviewing that exact original
+        # indicator window; looking only AFTER the AL misses earlier splits.
+        first=cal.session_offset(cal.date_to_session(needed_start),-51)
+        expected=[str(x.date()) for x in cal.sessions_in_range(first,asof)]
         need(all(d in byday for d in expected), 'RAW_MISSING_XNAS_SESSION')
         raw_bars_reviewed+=len(expected)
         previous=None
