@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER
 from private_lifecycle import ALERT_HEADER, EVENT_PENDING
-from performance_lab.private_performance_adapter import PrivateSheetReadOnly
+from performance_lab.private_performance_adapter import PrivateSheetReadOnly, _fingerprints
+import daily_job
 
 CANDIDATE_KEY = re.compile(r'^([0-9]{4}-[0-9]{2}-[0-9]{2})\|([A-Z][A-Z0-9.]{0,15})$')
 PENDING = frozenset((EVENT_PENDING, 'ALERT_REQUESTED_NOT_DEVICE_ACK'))
@@ -59,7 +60,7 @@ def price(text):
     return v
 
 
-def inspect(candidate_table, scan_table, event_table, panel_table):
+def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_asof=None):
     """No writes. Delivery ACK is NEVER accepted from a Sheet status."""
     candidates = rows(candidate_table, CANDIDATE_HEADER)
     scans = rows(scan_table, SCAN_HEADER)
@@ -73,6 +74,28 @@ def inspect(candidate_table, scan_table, event_table, panel_table):
              ((2,'477'),(3,'477'),(4,'477'),(5,'0'))) and
          value(last, 6).upper() == 'TRUE', 'FLIGHT_SCAN_NOT_FULL_FINAL')
     cutoff = days[-1]
+    if expected_asof is not None:
+        need(cutoff == expected_asof, 'FLIGHT_EXPECTED_COMPLETED_EOD_MISSING')
+    # Only source- and algorithm-fingerprint-matched production days must
+    # receive complete AL outbox rows. SHA-free pre-handoff historical
+    # observations remain explicitly unproven, not silently invented.
+    issuance_fingerprints = {value(scan,0): _fingerprints(value(scan,9))
+                             for scan in scans}
+    latest_fp = issuance_fingerprints[cutoff]
+    need(latest_fp is not None, 'FLIGHT_CURRENT_SCAN_SHA_MISSING')
+    verified_days = set()
+    for scan in scans:
+        day = value(scan,0)
+        note = value(scan,9)
+        fp = issuance_fingerprints[day]
+        if fp is None:
+            need('scopeSHA=' not in note and 'algorithmSHA=' not in note,
+                 'FLIGHT_PARTIAL_SHA_PROVENANCE')
+            continue
+        need(fp == latest_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+        verified_days.add(day)
+    verified_episode_keys = {day: [] for day in verified_days}
+    terminal_expected = set()
     keys = set()
     episodes = {}
     open_n = closed_n = 0
@@ -95,10 +118,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table):
             need(value(row,8) != '' and value(row,9) != '',
                  'FLIGHT_CLOSED_MISSING_EVIDENCE')
             closed_n += 1
+            terminal_day, terminal_kind = value(row,8), value(row,9)
+            need(start <= terminal_day <= cutoff and terminal_kind in EVENT_CODES
+                 and terminal_kind != 'AL_NEW_EPISODE',
+                 'FLIGHT_TERMINAL_EVENT_INVALID')
+            terminal_expected.add(f'{key}|{terminal_day}|{terminal_kind}|1')
         else:
             raise FlightRecorderBlocked('FLIGHT_UNKNOWN_EPISODE_STATUS')
         keys.add(key)
         episodes[key] = (start,symbol,stop,target)
+        if start in verified_days:
+            verified_episode_keys[start].append(key)
     event_keys = set()
     pending = 0
     unknown_delivery = 0
@@ -125,6 +155,31 @@ def inspect(candidate_table, scan_table, event_table, panel_table):
             unknown_delivery += 1
         event_keys.add(eventkey)
     need(unknown_delivery == 0, 'FLIGHT_UNATTESTED_DELIVERY_STATE')
+    for scan in scans:
+        day = value(scan,0)
+        if day not in verified_days:
+            continue
+        new_count = value(scan,7)
+        need(re.fullmatch(r'(?:0|[1-9][0-9]*)', new_count) is not None,
+             'FLIGHT_NEW_AL_COUNT_NONINTEGER')
+        need(len(verified_episode_keys[day]) == int(new_count),
+             'FLIGHT_SCAN_AL_CANDIDATE_COUNT_MISMATCH')
+    need(terminal_expected <= event_keys, 'FLIGHT_MISSING_TERMINAL_EVENT')
+    missing_current = 0
+    missing_prior = 0
+    confirmed_al = 0
+    for day, candidate_keys in verified_episode_keys.items():
+        for key in candidate_keys:
+            event_key = f'{key}|{day}|AL_NEW_EPISODE|1'
+            if event_key in event_keys:
+                confirmed_al += 1
+            elif day == cutoff:
+                # Expected while the existing hourly notification task has
+                # not yet visited the freshly completed production EOD.
+                missing_current += 1
+            else:
+                missing_prior += 1
+    need(missing_prior == 0, 'FLIGHT_SILENT_MISSING_PRIOR_AL_EVENT')
     panel_last = ''
     if isinstance(panel_table,list):
         for row in panel_table:
@@ -133,13 +188,21 @@ def inspect(candidate_table, scan_table, event_table, panel_table):
                 break
     panel_stale = bool(panel_last) and panel_last != cutoff
     return {
-        'schema':'XRAY_PRIVATE_A21_FLIGHT_RECORDER_V1',
-        'state':'PASS_PENDING_DEVICE_ACK' if pending else 'PASS_NO_PENDING_EVENTS',
+        'schema':'XRAY_PRIVATE_A22_ZERO_LOSS_SENTINEL_V1',
+        'state':('PENDING_CURRENT_EOD_OUTBOX_RESERVATION' if missing_current
+                 else 'PASS_PENDING_DEVICE_ACK' if pending
+                 else 'PASS_NO_PENDING_EVENTS'),
         'latest_verified_scan_asof':cutoff,
         'candidate_count':len(candidates),
         'open_count':open_n,
         'closed_count':closed_n,
         'event_count':len(alerts),
+        'source_verified_issuance_days':len(verified_days),
+        'source_unproven_issuance_days':len(days)-len(verified_days),
+        'matched_new_al_outbox':confirmed_al,
+        'unreserved_current_eod_al':missing_current,
+        'unreserved_prior_eod_al':missing_prior,
+        'matched_terminal_outbox':len(terminal_expected),
         'pending_device_ack':pending,
         'device_receipts_verified':0,
         'panel_non_authoritative_stale':panel_stale,
@@ -163,7 +226,8 @@ def live_entrypoint():
         api.verify_metadata()
         first=[api.read('ADAY_GECMISI','M'),api.read('TARAMA_KAYITLARI','J'),
                api.read('UYARI_OLAYLARI','T'),api.read('PANEL','B')]
-        status=inspect(*first)
+        eligible = daily_job.current_completed_session()
+        status=inspect(*first, expected_asof=eligible)
         # Double-read prevents a torn candidate/outbox snapshot from
         # becoming a false health certificate during concurrent Sheet writes.
         second=[api.read('ADAY_GECMISI','M'),api.read('TARAMA_KAYITLARI','J'),
