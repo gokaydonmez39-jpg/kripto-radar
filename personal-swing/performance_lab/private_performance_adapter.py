@@ -47,6 +47,13 @@ def _num(value):
     return price(s)
 
 
+def _count(value):
+    need(type(value) in (str, int, float), 'SCAN_COUNT_TYPE')
+    raw = str(value).strip().replace(',', '.')
+    need(bool(re.fullmatch(r'[0-9]+(?:\\.0+)?', raw)), 'SCAN_COUNT_NONINTEGER')
+    return Decimal(raw)
+
+
 def _cohort(values, header):
     need(type(values) is list and len(values) > 0, 'MISSING_PRIVATE_SHEET_TABLE')
     need(tuple(values[0]) == header, 'PRIVATE_SHEET_HEADER_DRIFT')
@@ -85,7 +92,7 @@ def source_plan(candidate_values, scan_values, asof, universe, scope_sha, policy
     need(asof in by_day, 'MISSING_CURRENT_477_FINAL_SCAN')
     last = by_day[asof]
     need(len(last) >= 10 and
-         [_num(last[x]) for x in (2,3,4,5)] ==
+         [_count(last[x]) for x in (2,3,4,5)] ==
          [Decimal(477),Decimal(477),Decimal(477),Decimal(0)] and
          str(last[6]).upper() == 'TRUE',
          'CURRENT_SCAN_NOT_477_COMPLETE')
