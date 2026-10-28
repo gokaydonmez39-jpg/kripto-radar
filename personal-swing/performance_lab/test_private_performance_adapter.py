@@ -72,6 +72,26 @@ def plan(rows=None, histories=None, **kwargs):
 
 
 class PrivateBridge(unittest.TestCase):
+    def test_zero_missing_symbol_is_valid_nonnegative_scan_count(self):
+        self.assertEqual(a._count('0'), Decimal(0))
+        self.assertEqual(a._count('477'), Decimal(477))
+        self.assertEqual(len(plan()['verified']), 1)
+        with self.assertRaisesRegex(a.EvidenceBlocked, 'SCAN_COUNT_NONINTEGER'):
+            a._count('1.5')
+
+    def test_signed_stop_loss_matches_unmodified_tracker(self):
+        rows = sheet()
+        rows[1][7] = 'KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        rows[1][8:11] = [DAY2, 'STOP_TOUCHED', '-5']
+        def stop_data(symbols, asof):
+            data = fetch_open(symbols,asof)
+            data['FAKE'][1] = bar(DAY2,100,102,94,98)
+            return data
+        result = a.audit_plan(plan(rows),stop_data)
+        self.assertEqual(result['n_complete'], 1)
+        self.assertFalse(result['rule_change'])
+        self.assertFalse(result['real_fill_proven'])
+
     def test_valid_two_day_open_is_censored_not_winner(self):
         x=a.audit_plan(plan(),fetch_open)
         self.assertEqual((x['verified_episodes'],x['n_complete'],x['n_censored']),
