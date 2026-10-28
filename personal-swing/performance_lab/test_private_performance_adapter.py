@@ -92,6 +92,22 @@ class PrivateBridge(unittest.TestCase):
         self.assertFalse(result['rule_change'])
         self.assertFalse(result['real_fill_proven'])
 
+    def test_latest_session_only_smoke_replay_and_no_backdate(self):
+        from datetime import date
+        with patch.object(a.engine,'trading_asof', return_value=date(2026,10,27)):
+            self.assertEqual(a.accepted_private_asof('2026-10-27'),'2026-10-27')
+            with self.assertRaisesRegex(a.EvidenceBlocked,'SMOKE_NOT_LATEST_COMPLETED'):
+                a.accepted_private_asof('2026-10-26')
+            with self.assertRaisesRegex(a.EvidenceBlocked,'SMOKE_NOT_LATEST_COMPLETED'):
+                a.accepted_private_asof('2026-10-28')
+            with self.assertRaises(a.EvidenceBlocked):
+                a.accepted_private_asof('2026/10/27')
+        with patch.object(a.daily_job,'current_completed_session',return_value=DAY3):
+            self.assertEqual(a.accepted_private_asof(),DAY3)
+        with patch.object(a.daily_job,'current_completed_session',return_value=None):
+            with self.assertRaisesRegex(a.EvidenceBlocked,'NO_COMPLETED_OFFICIAL_SESSION'):
+                a.accepted_private_asof()
+
     def test_valid_two_day_open_is_censored_not_winner(self):
         x=a.audit_plan(plan(),fetch_open)
         self.assertEqual((x['verified_episodes'],x['n_complete'],x['n_censored']),
