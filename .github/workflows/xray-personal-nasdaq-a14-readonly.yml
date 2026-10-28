@@ -1,4 +1,7 @@
 name: XRAY Personal NASDAQ A14 Private Evidence Shadow (No Trades)
+# A26 2026-10-28 protected-main read-only diagnostic: emit ONLY allowlisted
+# blocker stage and exception class, never private symbol, price or credentials.
+# This comment-only workflow change triggers existing one-time protected push gate.
 # A22: existing A21 job now also compares SHA-verified candidate issuance against
 # exact AL outbox reservations, rejects missing prior-day alarms and missing
 # closed-session terminal event; current-day unreserved AL stays PENDING until
