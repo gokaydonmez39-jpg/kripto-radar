@@ -272,6 +272,25 @@ class PrivateBridge(unittest.TestCase):
             self.assertEqual(result,'UNCLASSIFIED_PRIVATE_A14_BLOCK')
             self.assertNotIn('CVLT',result)
 
+    def test_terminal_percent_turkish_and_us_decimal_are_identical(self):
+        self.assertEqual(a.terminal_percent('-4,924'), Decimal('-4.924'))
+        self.assertEqual(a.terminal_percent('-6.646'), Decimal('-6.646'))
+        self.assertEqual(a.terminal_percent('0'), Decimal('0'))
+        self.assertEqual(a.terminal_percent('12.5'), Decimal('12.5'))
+
+    def test_terminal_percent_rejects_junk_and_nonfinite(self):
+        for bad in ('-4.924 SECRET', 'NaN', 'inf', '1,2,3', '1e10', '',
+                    '12%'):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(a.EvidenceBlocked,'PRIVATE_SHEET_TERMINAL_PCT_INVALID'):
+                    a.terminal_percent(bad)
+
+    def test_final_scan_numeric_decimal_zero_is_accepted(self):
+        self.assertEqual(a._count('477.0'),Decimal(477))
+        self.assertEqual(a._count('0,00'),Decimal(0))
+        with self.assertRaisesRegex(a.EvidenceBlocked,'SCAN_COUNT_NONINTEGER'):
+            a._count('477.5')
+
     def test_credential_scope_is_declared_readonly(self):
         import inspect
         src=inspect.getsource(a.PrivateSheetReadOnly.__init__)

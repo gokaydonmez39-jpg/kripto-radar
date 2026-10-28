@@ -1,4 +1,6 @@
 name: XRAY Personal NASDAQ A14 Private Evidence Shadow (No Trades)
+# A28 2026-10-28 controlled read-only retest of repaired terminal
+# percentage parsing: accepts comma/dot decimals, never changes existing prices.
 # A27 2026-10-28 after-close A14 scientific code-only diagnostic: expanded
 # immutable, allowlisted error-code vocabulary, no private-data exposure.
 # A26 2026-10-28 protected-main read-only diagnostic: emit ONLY allowlisted

@@ -52,10 +52,22 @@ def _num(value):
     return price(s)
 
 
+def terminal_percent(value):
+    """Turkish/standard decimal percent; reject arbitrary data and nonfinite."""
+    need(type(value) in (str,int,float,Decimal),
+         'PRIVATE_SHEET_TERMINAL_PCT_INVALID')
+    recorded = str(value).strip().replace(',', '.')
+    need(bool(re.fullmatch(r'-?[0-9]+(?:\.[0-9]+)?', recorded)),
+         'PRIVATE_SHEET_TERMINAL_PCT_INVALID')
+    value = Decimal(recorded)
+    need(value.is_finite(), 'PRIVATE_SHEET_TERMINAL_PCT_INVALID')
+    return value
+
+
 def _count(value):
     need(type(value) in (str, int, float), 'SCAN_COUNT_TYPE')
     raw = str(value).strip().replace(',', '.')
-    need(bool(re.fullmatch(r'[0-9]+(?:\\.0+)?', raw)), 'SCAN_COUNT_NONINTEGER')
+    need(bool(re.fullmatch(r'[0-9]+(?:\.0+)?', raw)), 'SCAN_COUNT_NONINTEGER')
     return Decimal(raw)
 
 
@@ -220,10 +232,7 @@ def audit_plan(plan, read_batch):
         need((legacy['status'] == 'OPEN') == item['is_open'],
              'PRIVATE_SHEET_TERMINAL_STATE_CONFLICT')
         if not item['is_open']:
-            recorded = str(item['row'][10]).strip().replace(',', '.')
-            need(bool(re.fullmatch(r'-?[0-9]+(?:\\.[0-9]+)?', recorded)),
-                 'PRIVATE_SHEET_TERMINAL_PCT_INVALID')
-            recorded_pct = Decimal(recorded)
+            recorded_pct = terminal_percent(item['row'][10])
             need(recorded_pct.is_finite() and
                  legacy['outcome'] == item['old_outcome'] and
                  str(item['row'][8]) == legacy['closed_date'] and
