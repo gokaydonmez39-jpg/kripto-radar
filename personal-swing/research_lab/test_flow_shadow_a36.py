@@ -164,7 +164,7 @@ class A36Research(unittest.TestCase):
             "INVALID_OR_FUTURE_SAMPLE")
     def test_ticks_non_utc(self):
         self.fails("ticks", lambda d: d["quotes"][0].update(
-            timestamp="2026-10-28T10:00:01-04:00"), "UTC_REQUIRED")
+            timestamp="2026-10-28T10:00:01-04:00"), "UTC_NANOSECOND_TIMESTAMP_REQUIRED")
     def test_ticks_zero_price(self):
         self.fails("ticks", lambda d: d["trades"][0].update(price=0),
                    "INVALID_NUMERIC")
@@ -204,6 +204,46 @@ class A36Research(unittest.TestCase):
         d["cutoff_utc"] = "2026-10-25T14:00:06Z"
         with self.assertRaisesRegex(f.FlowBlocked, "NOT_XNAS_RTH"):
             f.evaluate_ticks(d)
+
+    def test_nanosecond_future_quote_cannot_classify_past_trade(self):
+        d = ticks()
+        d["trades"] = [dict(d["trades"][0],
+                            timestamp="2026-10-28T14:00:01.000000100Z")]
+        d["quotes"] = [dict(d["quotes"][0],
+                            timestamp="2026-10-28T14:00:01.000000900Z")]
+        r = f.evaluate_ticks(d)
+        self.assertEqual(r["unknown_reasons"]["NO_PRIOR_QUOTE"], 1)
+        self.assertEqual(r["classified_count"], 0)
+
+    def test_exact_nanosecond_ordered_quote_is_eligible(self):
+        d = ticks()
+        d["trades"] = [dict(d["trades"][0],
+                            timestamp="2026-10-28T14:00:01.000000900Z")]
+        d["quotes"] = [dict(d["quotes"][0],
+                            timestamp="2026-10-28T14:00:01.000000100Z")]
+        r = f.evaluate_ticks(d)
+        self.assertEqual(r["inferred_buy_trades"], 1)
+        self.assertEqual(r["unclassified_count"], 0)
+
+    def test_exact_simultaneous_quote_not_causal(self):
+        d = ticks()
+        d["trades"] = [dict(d["trades"][0],
+                            timestamp="2026-10-28T14:00:01.000000500Z")]
+        d["quotes"] = [dict(d["quotes"][0],
+                            timestamp="2026-10-28T14:00:01.000000500Z")]
+        r = f.evaluate_ticks(d)
+        self.assertEqual(r["unknown_reasons"]["NO_PRIOR_QUOTE"], 1)
+
+    def test_trade_correction_cancel_or_incorrect_is_unknown(self):
+        for update in ("cancelled", "incorrect", "corrected"):
+            with self.subTest(update=update):
+                d = ticks()
+                d["trades"][0]["update"] = update
+                r = f.evaluate_ticks(d)
+                self.assertEqual(
+                    r["unknown_reasons"]["CANCELLED_OR_CORRECTED_TRADE"], 1
+                )
+                self.assertEqual(r["inferred_buy_trades"], 0)
 
     def test_ticks_sample_not_complete_even_if_caller_claims(self):
         d=ticks()
