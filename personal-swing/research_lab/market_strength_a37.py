@@ -98,6 +98,7 @@ def analyze(*, asof, cutoff_utc, symbols, bars, benchmark, feed="iex", basis="ra
     require(all(isinstance(s, str) and SYM.fullmatch(s) for s in symbols), "BAD_TICKER")
     require(len(set(symbols)) == len(symbols), "DUPLICATE_UNIVERSE")
     require(isinstance(expected_scope_sha256, str) and re.fullmatch("[a-f0-9]{64}", expected_scope_sha256), "MISSING_AUTHORITY_SCOPE_SHA")
+    require(expected_scope_sha256 == CANONICAL_SCOPE_SHA, "UNAPPROVED_SCOPE_SHA_OVERRIDE")
     computed_scope_sha256 = hashlib.sha256(("\n".join(symbols) + "\n").encode()).hexdigest()
     require(computed_scope_sha256 == expected_scope_sha256, "SCOPE_SHA_MISMATCH")
     require("QQQ" not in symbols, "BENCHMARK_IN_UNIVERSE_AMBIGUITY")
@@ -128,7 +129,8 @@ def analyze(*, asof, cutoff_utc, symbols, bars, benchmark, feed="iex", basis="ra
     return {"schema": SCHEMA, "asof_et": asof, "cutoff_utc": cutoff.isoformat(),
             "feed": feed, "basis": basis, "benchmark": "QQQ",
             "universe": EXPECTED_UNIVERSE, "covered": EXPECTED_UNIVERSE,
-            "scope_sha256": computed_scope_sha256,
+            "scope_sha256": computed_scope_sha256, "canonical_scope_verified": True,
+            "raw_source_provenance_independently_verified": False,
             "complete_official_sessions": len(sessions),
             "breadth_above_sma20_count": above20,
             "breadth_above_sma20_pct": round(100 * above20 / EXPECTED_UNIVERSE, 6),

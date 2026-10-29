@@ -1,6 +1,8 @@
 """A37 negative-fixture audit; no vendor traffic or real signals."""
 import copy
 import hashlib
+import json
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 import unittest
 from market_strength_a37 import (analyze, official_sessions, ShadowBlocked,
@@ -9,7 +11,7 @@ from market_strength_a37 import (analyze, official_sessions, ShadowBlocked,
 ASOF = "2026-10-28"
 SESSIONS = official_sessions(ASOF)
 CUTOFF = "2026-10-29T00:00:00Z"
-SYMBOLS = [f"X{i:03d}" for i in range(EXPECTED_UNIVERSE)]
+SYMBOLS = json.loads((Path(__file__).resolve().parents[1] / "nasdaq_watchlist_477.json").read_text(encoding="utf-8"))["liquidity_watch_symbols"]
 TEST_SCOPE_SHA = hashlib.sha256(("\n".join(SYMBOLS)+"\n").encode()).hexdigest()
 
 def fixture():
@@ -44,6 +46,8 @@ class TestA37(unittest.TestCase):
         for k in ("may_generate_al","may_change_stops","may_write_sheets","may_emit_alert","may_trade"):
             self.assertIs(r[k],False)
         self.assertEqual(r["market_strength_site_calls"],0)
+        self.assertTrue(r["canonical_scope_verified"])
+        self.assertFalse(r["raw_source_provenance_independently_verified"])
 
     def test_replay_deterministic(self):
         self.assertEqual(analyze(**self.good), analyze(**self.good))
@@ -97,7 +101,7 @@ class TestA37(unittest.TestCase):
         self.runbad(lambda x: x["bars"][SYMBOLS[0]][3].update(known_at_utc="2026-10-29T00:00:00"), "NAIVE_KNOWN_AT")
 
     def test_pinned_authority_sha(self):
-        self.runbad(lambda x: x.update(expected_scope_sha256="0"*64), "SCOPE_SHA_MISMATCH")
+        self.runbad(lambda x: x.update(expected_scope_sha256="0"*64), "UNAPPROVED_SCOPE_SHA_OVERRIDE")
 
     def test_unsupported_feed(self):
         self.runbad(lambda x: x.update(feed="marketstrength"), "UNAUTHORIZED_FEED_OR_BASIS")
