@@ -1,0 +1,62 @@
+name: XRAY Personal NASDAQ A34 Preopen Read-Only Acceptance
+on:
+  pull_request:
+    paths:
+      - personal-swing/preopen_a34.py
+      - personal-swing/test_preopen_a34.py
+      - .github/workflows/xray-nasdaq-a34-preopen.yml
+  push:
+    branches: [main]
+    paths:
+      - personal-swing/preopen_a34.py
+      - personal-swing/test_preopen_a34.py
+      - .github/workflows/xray-nasdaq-a34-preopen.yml
+  workflow_dispatch:
+  schedule:
+    # 13:17 in Turkey, before XNAS opens even when US DST changes.
+    # GitHub cron is not a guaranteed scheduler. No user delivery claimed.
+    - cron: '17 10 * * 1-5'
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-a34-private-preopen
+  cancel-in-progress: false
+jobs:
+  offline-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r personal-swing/requirements.txt
+      - name: A34 fail-closed preopen proof and optimized Python tests
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_preopen_a34
+          python -O -m unittest -q test_preopen_a34
+          python -m py_compile preopen_a34.py
+          python -O -m py_compile preopen_a34.py
+  private-preopen:
+    needs: [offline-guard]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+      XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Only read-only provider and Sheets dependencies
+        run: |
+          python -m pip install -r personal-swing/requirements.txt
+          python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+      - name: Private 477 IEX + source SHA + lifecycle + PANEL audit
+        working-directory: personal-swing
+        run: python preopen_a34.py
