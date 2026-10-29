@@ -5,6 +5,8 @@ on:
     paths:
       - personal-swing/research_lab/flow_shadow_a36.py
       - personal-swing/research_lab/test_flow_shadow_a36.py
+      - personal-swing/research_lab/flow_capture_a36.py
+      - personal-swing/research_lab/test_flow_capture_a36.py
       - personal-swing/research_lab/WHALE_FLOW_A36_RESEARCH.md
       - .github/workflows/xray-nasdaq-a36-flow-shadow.yml
   push:
@@ -34,8 +36,8 @@ jobs:
         run: |
           python -m unittest discover -q -s personal-swing/research_lab -p 'test_*.py'
           python -O -m unittest discover -q -s personal-swing/research_lab -p 'test_*.py'
-          python -m py_compile personal-swing/research_lab/flow_shadow_a36.py
-          python -O -m py_compile personal-swing/research_lab/flow_shadow_a36.py
+          python -m py_compile personal-swing/research_lab/flow_shadow_a36.py personal-swing/research_lab/flow_capture_a36.py
+          python -O -m py_compile personal-swing/research_lab/flow_shadow_a36.py personal-swing/research_lab/flow_capture_a36.py
       - name: Confirm no private market data, provider API or alert job
         run: |
           echo 'A36_OFFLINE_RESEARCH_ONLY: no API credentials, no market-data capture, no signal writes, no notification, no broker'
