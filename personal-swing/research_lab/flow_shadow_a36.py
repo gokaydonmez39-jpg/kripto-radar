@@ -81,7 +81,11 @@ def evaluate_eod(doc):
     need(type(asof) is str and bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", asof)),
          "BAD_ASOF")
     try:
-        need(cal.is_session(asof), "NOT_XNAS_SESSION")
+        is_session = cal.is_session(asof)
+    except (ValueError, TypeError, OverflowError):
+        raise FlowBlocked("INVALID_CALENDAR_DATE") from None
+    need(is_session, "NOT_XNAS_SESSION")
+    try:
         expected = [str(s.date()) for s in
                     cal.sessions_window(cal.date_to_session(asof), -52)]
     except (ValueError, TypeError, OverflowError):
