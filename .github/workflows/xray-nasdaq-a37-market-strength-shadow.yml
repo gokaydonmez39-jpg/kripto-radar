@@ -8,6 +8,8 @@ on:
       - 'personal-swing/research_lab/a37_source_receipt.py'
       - 'personal-swing/research_lab/test_a37_source_receipt.py'
       - 'personal-swing/research_lab/a37_connected_iex_20261028_receipt.json'
+      - 'personal-swing/research_lab/a37_external_release_gate.py'
+      - 'personal-swing/research_lab/test_a37_external_release_gate.py'
       - '.github/workflows/xray-nasdaq-a37-market-strength-shadow.yml'
   workflow_dispatch:
 permissions:
@@ -29,8 +31,10 @@ jobs:
           python -O -m unittest -q test_market_strength_a37
           python -m unittest -q test_a37_source_receipt
           python -O -m unittest -q test_a37_source_receipt
+          python -m unittest -q test_a37_external_release_gate
+          python -O -m unittest -q test_a37_external_release_gate
           python a37_source_receipt.py
-          python -m py_compile a37_source_receipt.py test_a37_source_receipt.py
+          python -m py_compile a37_source_receipt.py test_a37_source_receipt.py a37_external_release_gate.py test_a37_external_release_gate.py
           python -m py_compile market_strength_a37.py test_market_strength_a37.py
           python -O -m py_compile market_strength_a37.py test_market_strength_a37.py
       - name: Offline-only static denial guard
@@ -40,6 +44,9 @@ jobs:
           s=Path('personal-swing/research_lab/market_strength_a37.py').read_text()
           for forbidden in ('import requests','import urllib','import socket','import httpx','subprocess','import ccxt'):
               assert forbidden not in s, forbidden
+          ext=Path('personal-swing/research_lab/a37_external_release_gate.py').read_text()
+          assert 'RESEARCH_ENGINEERING_READY_BUT_SCIENTIFIC_FINAL_NO_GO' in ext
+          assert 'may_merge_to_production' in ext
           for required in ('"may_generate_al": False','"may_change_stops": False',
                            '"may_write_sheets": False','"may_emit_alert": False',
                            '"may_trade": False','"market_strength_site_calls": 0'):
