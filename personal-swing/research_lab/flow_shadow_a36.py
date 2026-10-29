@@ -263,15 +263,64 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
     }
 
 
+def evaluate_cohort(doc):
+    """477 exact, immutable-watchlist-scoped offline aggregation, no signal leak.
+
+    This verifies submitted snapshots against a caller-supplied scope SHA; it
+    does not authenticate that the caller actually used the owner's watchlist
+    or collected all raw provider pages from Alpaca.
+    """
+    import hashlib
+    need(type(doc) is dict and doc.get("schema") ==
+         "XRAY_NASDAQ_A36_COHORT_RESEARCH_INPUT_V1", "BAD_COHORT_SCHEMA")
+    watchlist = doc.get("watchlist")
+    need(type(watchlist) is list and len(watchlist) == 477 and
+         len(set(watchlist)) == 477 and
+         all(type(x) is str and SYMBOL.fullmatch(x) for x in watchlist),
+         "COHORT_WATCHLIST_NOT_EXACT_477")
+    digest = hashlib.sha256(("\n".join(watchlist)+"\n").encode()).hexdigest()
+    sha = doc.get("expected_scope_sha256")
+    need(type(sha) is str and bool(re.fullmatch(r"[0-9a-f]{64}", sha))
+         and sha == digest, "COHORT_SCOPE_SHA_CONFLICT")
+    series = doc.get("snapshots")
+    need(type(series) is list and len(series) == 477, "COHORT_COVERAGE_INCOMPLETE")
+    keys = [x.get("symbol") if type(x) is dict else None for x in series]
+    need(len(set(keys)) == 477 and set(keys) == set(watchlist),
+         "COHORT_MISSING_DUPLICATE_OR_EXTRA_SYMBOL")
+    asofs = {x.get("asof_et") for x in series}
+    need(len(asofs) == 1, "COHORT_ASOF_MIXED")
+    tags = {}
+    for item in series:
+        need(item.get("feed") == "IEX", "COHORT_PRODUCTION_SOURCE_NOT_IEX")
+        sample = evaluate_eod(item)
+        tag = sample["research_tag"]
+        tags[tag] = tags.get(tag, 0) + 1
+    return {
+        "schema": SCHEMA_REPORT,
+        "layer": "FULL_SCOPE_EOD_PROXY_OFFLINE_ONLY",
+        "asof_et": series[0]["asof_et"],
+        "scope_sha256": digest,
+        "supplied_symbols_validated": 477,
+        "supplied_sessions_validated": 52,
+        "research_tags": tags,
+        "live_provider_collection_proven": False,
+        "real_trade_quote_side_proven": False,
+        "research_status": "OFFLINE_COHORT_VALIDATION_NOT_PRODUCTION",
+        **DENIAL,
+    }
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="A36 local-only research; no network")
-    parser.add_argument("--mode", choices=("eod", "ticks"), required=True)
+    parser.add_argument("--mode", choices=("eod", "ticks", "cohort"), required=True)
     parser.add_argument("--input", required=True,
                         help="Private local snapshot JSON. NEVER commit it.")
     args = parser.parse_args(argv)
     try:
         data = json.loads(Path(args.input).read_text(encoding="utf-8"))
-        result = evaluate_eod(data) if args.mode == "eod" else evaluate_ticks(data)
+        result = (evaluate_eod(data) if args.mode == "eod" else
+                  evaluate_ticks(data) if args.mode == "ticks" else
+                  evaluate_cohort(data))
         print(json.dumps(result, sort_keys=True, allow_nan=False))
         return 0
     except Exception:
