@@ -6,6 +6,7 @@
       "EFTY",
       "HCHL",
       "LAWR",
+      "LTRYW",
       "MAGH",
       "MCTA",
       "OST",
@@ -66,6 +67,7 @@
       "ILLRW",
       "LAWR",
       "LESL",
+      "LTRYW",
       "MAGH",
       "MAMK",
       "MCTA",
@@ -95,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-29T19:52:22.756136+00:00",
+  "generated_at_utc": "2026-10-29T23:37:51.998124+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -878,11 +880,12 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 13,
       "active_halt_symbols": [
         "EFTY",
         "HCHL",
         "LAWR",
+        "LTRYW",
         "MAGH",
         "MCTA",
         "OST",
@@ -894,8 +897,53 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 52,
+      "item_count": 55,
       "items": [
+        {
+          "HaltDate": "10/29/2026",
+          "HaltTime": "16:25:00.000",
+          "IssueName": "FingerMotion, Inc. Cm St",
+          "IssueSymbol": "FNGR",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T3",
+          "ResumptionDate": "10/29/2026",
+          "ResumptionQuoteTime": "16:45:00",
+          "ResumptionTradeTime": "16:50:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/29/2026                    </td><td valign=\"top\">16:25:00.000</td><td valign=\"top\">FNGR</td><td valign=\"top\">FingerMotion, Inc. Cm St</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">10/29/2026                    </td><td valign=\"top\">16:45:00                      </td><td valign=\"top\">16:50:00                      </td></tr></table>",
+          "pubDate": "Thu, 29 Oct 2026 04:00:00 GMT",
+          "title": "FNGR"
+        },
+        {
+          "HaltDate": "10/29/2026",
+          "HaltTime": "16:00:10.000",
+          "IssueName": "Sports Entnmt Gmg Glb Cp Wts",
+          "IssueSymbol": "LTRYW",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T12",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/29/2026                    </td><td valign=\"top\">16:00:10.000</td><td valign=\"top\">LTRYW</td><td valign=\"top\">Sports Entnmt Gmg Glb Cp Wts</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T12</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 29 Oct 2026 04:00:00 GMT",
+          "title": "LTRYW"
+        },
+        {
+          "HaltDate": "10/29/2026",
+          "HaltTime": "15:52:55.046",
+          "IssueName": "Melar Acquisition Cp I Ord A",
+          "IssueSymbol": "MACI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "10/29/2026",
+          "ResumptionQuoteTime": "15:52:55",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/29/2026                    </td><td valign=\"top\">15:52:55.046</td><td valign=\"top\">MACI</td><td valign=\"top\">Melar Acquisition Cp I Ord A  </td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">10/29/2026                    </td><td valign=\"top\">15:52:55                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Thu, 29 Oct 2026 04:00:00 GMT",
+          "title": "MACI"
+        },
         {
           "HaltDate": "10/29/2026",
           "HaltTime": "14:59:36.426",
