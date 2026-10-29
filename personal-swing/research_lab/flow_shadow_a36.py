@@ -160,6 +160,14 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
     cutoff = utc_stamp(doc.get("cutoff_utc"))
     need(start < end <= cutoff and (end-start) <= timedelta(minutes=5),
          "INVALID_OR_FUTURE_SAMPLE_WINDOW")
+    # Do not silently mix RTH with premarket, auction or after-hours prints.
+    import exchange_calendars as ec
+    from zoneinfo import ZoneInfo
+    cal = ec.get_calendar("XNAS")
+    day = start.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+    need(cal.is_session(day), "NOT_XNAS_RTH_SESSION")
+    need(cal.session_open(day).to_pydatetime() <= start < end <=
+         cal.session_close(day).to_pydatetime(), "OUTSIDE_XNAS_RTH")
     trades, quotes = doc.get("trades"), doc.get("quotes")
     need(type(trades) is list and type(quotes) is list,
          "TRADE_QUOTE_LIST_REQUIRED")
@@ -181,7 +189,7 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
     counts = {"INFERRED_BUY": 0, "INFERRED_SELL": 0, "UNKNOWN": 0}
     reasons = {"NONSTANDARD_CONDITION": 0, "NO_PRIOR_QUOTE": 0,
                "STALE_QUOTE": 0, "WIDE_OR_INVALID_SPREAD": 0,
-               "TRADE_AT_MID": 0}
+               "PRICE_OUTSIDE_QUOTED_SPREAD": 0, "TRADE_AT_MID": 0}
     buy_size = sell_size = unknown_size = 0.0
     for trade in trades:
         need(type(trade) is dict, "BAD_TRADE")
@@ -225,6 +233,10 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
                         bid <= 0 or ask <= bid or
                         200 * (ask-bid) / (ask+bid) > max_spread_pct):
                         why = "WIDE_OR_INVALID_SPREAD"
+                    elif price < bid or price > ask:
+                        # Out-of-quote executions can be genuine market events,
+                        # but a stale/non-NBBO quote cannot certify their side.
+                        why = "PRICE_OUTSIDE_QUOTED_SPREAD"
                     else:
                         middle = (bid+ask)/2
                         if price > middle:
