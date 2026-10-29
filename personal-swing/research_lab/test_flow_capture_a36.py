@@ -96,6 +96,11 @@ class CaptureA36(unittest.TestCase):
         with self.assertRaisesRegex(FlowBlocked,"PROVIDER_SYMBOL_MISMATCH"):
             run(request_json=mismatch)
 
+    def test_request_page_budget_is_bounded(self):
+        self.assertLessEqual(c.MAX_PAGES, 10)
+        self.assertLessEqual(c.MAX_SYMBOLS * 2 * c.MAX_PAGES, 100)
+        self.assertLessEqual(c.MAX_RECORDS, 10000)
+
     def test_pagination_two_pages_complete(self):
         def paging(url, headers):
             x=urlsplit(url)
