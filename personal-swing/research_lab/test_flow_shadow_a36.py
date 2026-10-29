@@ -179,6 +179,32 @@ class A36Research(unittest.TestCase):
             f.evaluate_ticks(ticks(), max_age_ms=2000)
         with self.assertRaisesRegex(f.FlowBlocked, "BAD_SPREAD_POLICY"):
             f.evaluate_ticks(ticks(), max_spread_pct=5)
+    def test_ticks_outside_spread_is_unknown_not_sell(self):
+        d = ticks()
+        d["trades"][0]["price"] = 99.0
+        r = f.evaluate_ticks(d)
+        self.assertEqual(r["unknown_reasons"]["PRICE_OUTSIDE_QUOTED_SPREAD"], 1)
+        self.assertEqual(r["inferred_sell_trades"], 1)
+        self.assertEqual(r["inferred_buy_trades"], 0)
+
+    def test_ticks_premarket_is_blocked(self):
+        d = ticks()
+        d["window_start_utc"] = "2026-10-28T12:00:00Z"
+        d["window_end_utc"] = "2026-10-28T12:00:05Z"
+        d["cutoff_utc"] = "2026-10-28T12:00:06Z"
+        with self.assertRaisesRegex(f.FlowBlocked, "OUTSIDE_XNAS_RTH"):
+            f.evaluate_ticks(d)
+
+    def test_ticks_holiday_is_blocked(self):
+        d = ticks()
+        for row in d["trades"] + d["quotes"]:
+            row["timestamp"] = row["timestamp"].replace("2026-10-28", "2026-10-25")
+        d["window_start_utc"] = "2026-10-25T14:00:00Z"
+        d["window_end_utc"] = "2026-10-25T14:00:05Z"
+        d["cutoff_utc"] = "2026-10-25T14:00:06Z"
+        with self.assertRaisesRegex(f.FlowBlocked, "NOT_XNAS_RTH"):
+            f.evaluate_ticks(d)
+
     def test_ticks_sample_not_complete_even_if_caller_claims(self):
         d=ticks()
         d["pagination_complete"]=True
