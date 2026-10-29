@@ -56,6 +56,46 @@ class CaptureA36(unittest.TestCase):
         self.assertNotIn("FAKE",str(r))
         self.assertNotIn("synthetic-secret",str(r))
 
+    def test_unsupported_correction_never_counts_as_buy(self):
+        def corrected(url, headers):
+            if urlsplit(url).path.endswith("/trades"):
+                t = trade()
+                t["u"] = "canceled"
+                return {"trades":[t], "next_page_token":None}
+            return provider(url, headers)
+        r = run(request_json=corrected)
+        self.assertEqual(r["aggregate_counts"]["qualified_trade_count"],0)
+        self.assertEqual(r["aggregate_unknown_reasons"]["CANCELLED_OR_CORRECTED_TRADE"],1)
+        self.assertEqual(r["classification_ratio"],0)
+
+    def test_zero_prints_is_unknown_not_no_signal(self):
+        def no_print(url, headers):
+            if urlsplit(url).path.endswith("/trades"):
+                return {"trades":[], "next_page_token":None}
+            return provider(url, headers)
+        r=run(request_json=no_print)
+        self.assertEqual(r["pilot_outcome"],"NO_TRADES_OBSERVED_IN_BOUNDED_SAMPLE_UNKNOWN")
+        self.assertEqual(r["aggregate_counts"]["observed_trade_count"],0)
+        self.assertIsNone(r["classification_ratio"])
+
+    def test_one_empty_symbol_flags_partial_coverage(self):
+        def missing_one(url, headers):
+            if "/MISSING/" in url and urlsplit(url).path.endswith("/trades"):
+                return {"trades":[], "next_page_token":None}
+            return provider(url,headers)
+        r=run(symbols=["FAKE","MISSING"],request_json=missing_one)
+        self.assertEqual(r["pilot_outcome"],"PARTIAL_SYMBOL_COVERAGE_UNKNOWN")
+        self.assertEqual(r["aggregate_counts"]["zero_trade_symbol_count"],1)
+
+    def test_provider_returned_other_symbol_fails_closed(self):
+        def mismatch(url, headers):
+            data=provider(url,headers)
+            if urlsplit(url).path.endswith("/trades"):
+                data["symbol"]="OTHER"
+            return data
+        with self.assertRaisesRegex(FlowBlocked,"PROVIDER_SYMBOL_MISMATCH"):
+            run(request_json=mismatch)
+
     def test_pagination_two_pages_complete(self):
         def paging(url, headers):
             x=urlsplit(url)
