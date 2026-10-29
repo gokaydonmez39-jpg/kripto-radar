@@ -8,6 +8,7 @@ on:
       - personal-swing/research_lab/flow_capture_a36.py
       - personal-swing/research_lab/test_flow_capture_a36.py
       - personal-swing/research_lab/WHALE_FLOW_A36_RESEARCH.md
+      - personal-swing/research_lab/A36_SCIENTIFIC_EVIDENCE_20261029.md
       - .github/workflows/xray-nasdaq-a36-flow-shadow.yml
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - personal-swing/research_lab/flow_capture_a36.py
       - personal-swing/research_lab/test_flow_capture_a36.py
       - personal-swing/research_lab/WHALE_FLOW_A36_RESEARCH.md
+      - personal-swing/research_lab/A36_SCIENTIFIC_EVIDENCE_20261029.md
       - .github/workflows/xray-nasdaq-a36-flow-shadow.yml
 permissions:
   contents: read
