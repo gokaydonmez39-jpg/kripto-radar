@@ -82,6 +82,17 @@ class TestA37(unittest.TestCase):
     def test_premature_bar(self):
         self.runbad(lambda x: x["bars"][SYMBOLS[0]][0].update(known_at_utc=SESSIONS[0]+"T12:00:00Z"), "PREMATURE_FINAL_BAR")
 
+    def test_known_split_evidence_matches_code(self):
+        from market_strength_a37 import KNOWN_SPLIT_EX_DATES
+        p = Path(__file__).with_name("a37_connected_iex_20261028_receipt.json")
+        evidence = json.loads(p.read_text(encoding="utf-8"))
+        events = evidence["known_split_events"]
+        expected = {v["symbol"]: v["ex_date"] for v in events}
+        self.assertEqual(KNOWN_SPLIT_EX_DATES, expected)
+        self.assertEqual(len(events), 2)
+        self.assertTrue(all(v["old_rate"] == 1 and v["new_rate"] == 2 for v in events))
+        self.assertFalse(evidence["ca_cleared_aggregate_metrics"])
+
     def test_raw_split_unadjusted_rejected(self):
         x = copy.deepcopy(self.good)
         x["basis"] = "raw"
