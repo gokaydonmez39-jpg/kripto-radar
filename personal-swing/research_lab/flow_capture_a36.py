@@ -62,6 +62,8 @@ def fetch_pages(symbol, kind, feed, start, end, headers, *, request_json=None):
                            request_json=request_json)
         need(type(payload) is dict and type(payload.get(kind)) is list,
              "BAD_PROVIDER_PAGE")
+        # Single-symbol API: a mismatched returned identity invalidates the page.
+        need(payload.get("symbol", symbol) == symbol, "PROVIDER_SYMBOL_MISMATCH")
         batch = payload[kind]
         need(len(batch) <= PAGE_LIMIT and all(type(x) is dict for x in batch),
              "INVALID_OR_OVERSIZED_PAGE")
@@ -86,6 +88,7 @@ def normalized_trades(rows):
         results.append({
             "timestamp": r["t"], "exchange": r["x"], "price": r["p"],
             "size": r["s"], "id": r["i"], "conditions": r["c"],
+            "update": r.get("u"),
         })
     return results
 
@@ -121,6 +124,7 @@ def pilot(*, symbols, feed, start_utc, end_utc, key, secret,
                "Accept": "application/json",
                "User-Agent": "xray-nasdaq-a36-readonly-pilot"}
     counts = {"qualified_trade_count": 0, "unknown_trade_count": 0,
+              "observed_trade_count": 0, "zero_trade_symbol_count": 0,
               "inferred_buy_trade_count": 0, "inferred_sell_trade_count": 0,
               "trade_pages": 0, "quote_pages": 0}
     unknown_reasons = {}
@@ -136,6 +140,8 @@ def pilot(*, symbols, feed, start_utc, end_utc, key, secret,
                     "trades": normalized_trades(trades),
                     "quotes": normalized_quotes(quotes)}
         result = evaluate_ticks(document)
+        counts["observed_trade_count"] += result["trade_count_sampled"]
+        counts["zero_trade_symbol_count"] += int(result["trade_count_sampled"] == 0)
         counts["qualified_trade_count"] += result["classified_count"]
         counts["unknown_trade_count"] += result["unclassified_count"]
         counts["inferred_buy_trade_count"] += result["inferred_buy_trades"]
@@ -152,7 +158,21 @@ def pilot(*, symbols, feed, start_utc, end_utc, key, secret,
         "full_market_venue_and_correction_coverage_attested": False,
         "provider_entitlement_and_license_independently_verified": False,
         "institutional_identity_verified": False,
-        "pilot_outcome": "SAMPLE_ONLY_NOT_AN_AL_OR_WHALE_EVENT",
+        "pilot_outcome": (
+            "NO_TRADES_OBSERVED_IN_BOUNDED_SAMPLE_UNKNOWN"
+            if counts["observed_trade_count"] == 0 else
+            "PARTIAL_SYMBOL_COVERAGE_UNKNOWN"
+            if counts["zero_trade_symbol_count"] else
+            "LOW_CLASSIFICATION_COVERAGE_UNKNOWN"
+            if counts["unknown_trade_count"] else
+            "BOUNDED_DESCRIPTIVE_SAMPLE_ONLY"
+        ),
+        "classification_ratio": (
+            round(counts["qualified_trade_count"] / counts["observed_trade_count"], 6)
+            if counts["observed_trade_count"] else None
+        ),
+        "thresholds_validated": False,
+        "full_day_collection_proven": False,
         "aggregate_counts": counts, "aggregate_unknown_reasons": unknown_reasons,
         "raw_trade_or_quote_data_retained": False, "may_change_al": False,
         "may_write_sheets": False, "may_emit_alert": False, "orders": False,
