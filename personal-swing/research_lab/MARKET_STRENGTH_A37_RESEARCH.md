@@ -27,3 +27,11 @@ python -O -m unittest -q test_market_strength_a37
 - No future production integration without explicit authorization and verified source/license rights.
 
 Output permission booleans all FALSE: may_generate_al, may_change_stops, may_write_sheets, may_emit_alert, may_trade. No automatic Market Strength website calls.
+
+## Connected-source 477+QQQ pilot — 29 October 2026 (research only)
+* Official 64 XNAS sessions: 2026-07-30 through 2026-10-28, excluding the unfinished 29 October candle.
+* Connected authorized Alpaca daily IEX read-only tool was queried in 48 batches (47 × 10 stocks + 1 × 7 stocks), with QQQ separately. All 477 + QQQ contained all 64 official dates; no missing official dates or nonpositive/nonfinite CLOSE observed in these queries. The source also returned historical windows beyond the required 64 sessions.
+* Observed universe breadth on the fixed contemporary watchlist: close > SMA20 = **282/477 = 59.119497%**; close > SMA50 = **219/477 = 45.91195%**; 63-session stock/QQQ relative-return > 0 = **165/477 = 34.591195%**. QQQ 63-session return approximately **6.14248%**. These three categories overlap; do not add their counts.
+* An aggregate-only structured evidence receipt lives at `a37_connected_iex_20261028_receipt.json`. Audited by `a37_source_receipt.py` and 20 metadata falsification tests. It does NOT contain private raw bars and cannot cryptographically attest vendor correctness, historical point-in-time availability, corporate actions, or licensing rights. See its explicit FALSE fields.
+* This closes the **data-access and date-completeness** question only. Historical pricing/benchmark quality, authorized long-history collection, older universe membership and >=500-session OOS backtest are still not validated. The read-only source is single-exchange IEX and does not represent entire market volume.
+* The evidence receipt is a snapshot, not a replacement for a reproducible licensed vendor collector. Keep PR a draft and do not merge it into production decision-making.
