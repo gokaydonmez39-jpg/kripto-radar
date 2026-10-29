@@ -8,6 +8,16 @@ Independent scientific analysis under personal-swing/research_lab only. Not a li
 2. Tick-level research: up to five minutes of externally provided trades and quotes; match latest quote with timestamp no later than trade. Quotes older than one second, invalid/crossed/wide bid/ask greater than 1 percent, odd-lot or unrecognized trade conditions, midpoint ties and missing quotes give UNKNOWN. Quote-mid trade aggressor is merely inferred. Completeness/page-token evidence is explicitly NOT_ATTESTED, even when caller says it is. It never claims true whale identity.
 3. Offline cohort: exact 477 distinct source symbols with ordered scope SHA256, one full valid 52-session IEX EOD sample each, common ASOF. Source rights and live collection remain NOT_ATTESTED even on offline PASS.
 
+## Controlled data collection pilot (not scheduled)
+A bounded historical Alpaca REST data-only collector is available as flow_capture_a36.py. It GETs only 1–5 exact symbols from https://data.alpaca.markets/v2/stocks/{symbol}/trades or /quotes for a maximum of 60 seconds per sample, at least 20 minutes after the sample ends. It verifies every response page token, rejects duplicates/missing fields and imposes a 30-page/30,000-record cap per endpoint. It never persists raw ticks; it prints only aggregated quality numbers, never symbols, quotes, credentials, private journal or whale claims. No GitHub runner credentials, cron, automatic full 477 capture or phone message are added. Source response pagination completion does not prove consolidated trade/quote tape completeness.
+
+Local authorized data-only credentials: XRAY_ALPACA_DATA_KEY_ID and XRAY_ALPACA_DATA_SECRET_KEY. DO NOT put their values on the command line or in repository files.
+
+Manual historical IEX example:
+python personal-swing/research_lab/flow_capture_a36.py --symbols ADI --feed IEX --start-utc 2026-10-28T14:00:00Z --end-utc 2026-10-28T14:01:00Z
+
+All source rights, time-in-force conditions, corrections, quota, billing, long-term private storage and 477-symbol feasibility still require separate verification. Success is a BOUNDED_SAMPLE_ONLY status, not full automated flow data collection.
+
 ## Input / run commands
 Run only against private local JSON files, never public CI log data.
 
