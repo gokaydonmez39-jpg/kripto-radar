@@ -3,11 +3,14 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
+      "ATYR",
+      "AXG",
       "EFTY",
       "HCHL",
       "LAWR",
       "MAGH",
       "MCTA",
+      "OMEX",
       "OST",
       "PC",
       "SVA",
@@ -52,6 +55,8 @@
     ],
     "veto_symbols": [
       "ARBEW",
+      "ATYR",
+      "AXG",
       "BBBYW",
       "BLFS",
       "COLA",
@@ -73,6 +78,7 @@
       "NSTS",
       "NVNI",
       "NVNIW",
+      "OMEX",
       "OST",
       "PC",
       "PSKY",
@@ -95,7 +101,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-28T21:19:59.413459+00:00",
+  "generated_at_utc": "2026-10-29T00:12:17.223582+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -778,13 +784,16 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 15,
       "active_halt_symbols": [
+        "ATYR",
+        "AXG",
         "EFTY",
         "HCHL",
         "LAWR",
         "MAGH",
         "MCTA",
+        "OMEX",
         "OST",
         "PC",
         "SVA",
@@ -794,8 +803,53 @@
         "ZONE"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 47,
+      "item_count": 50,
       "items": [
+        {
+          "HaltDate": "10/28/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "aTyr Pharma, Inc.",
+          "IssueSymbol": "ATYR",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">ATYR</td><td valign=\"top\">aTyr Pharma, Inc. </td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 28 Oct 2026 04:00:00 GMT",
+          "title": "ATYR"
+        },
+        {
+          "HaltDate": "10/28/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Odyssey Marine Exploriation",
+          "IssueSymbol": "OMEX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">OMEX</td><td valign=\"top\">Odyssey Marine Exploriation</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 28 Oct 2026 04:00:00 GMT",
+          "title": "OMEX"
+        },
+        {
+          "HaltDate": "10/28/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Solowin Hldgs OS A",
+          "IssueSymbol": "AXG",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">10/28/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">AXG</td><td valign=\"top\">Solowin Hldgs OS A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 28 Oct 2026 04:00:00 GMT",
+          "title": "AXG"
+        },
         {
           "HaltDate": "10/28/2026",
           "HaltTime": "15:55:01.816",
