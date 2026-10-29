@@ -10,7 +10,7 @@ NOT established by this synthetic/offline research contract.
 from __future__ import annotations
 
 import argparse
-from bisect import bisect_right
+from bisect import bisect_left
 from datetime import datetime, timedelta, timezone
 import json
 import math
@@ -56,6 +56,23 @@ def utc_stamp(value):
         raise FlowBlocked("BAD_TIMESTAMP") from None
     need(d.tzinfo is not None and d.utcoffset() == timedelta(0), "UTC_REQUIRED")
     return d.astimezone(timezone.utc)
+
+
+def utc_ns(value):
+    """Exact RFC3339 UTC nanoseconds. Python datetime loses 7–9th digits."""
+    need(type(value) is str, "BAD_TIMESTAMP")
+    m = re.fullmatch(
+        r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?(Z|\+00:00)",
+        value,
+    )
+    need(m is not None, "UTC_NANOSECOND_TIMESTAMP_REQUIRED")
+    try:
+        whole = datetime.fromisoformat(m.group(1) + "+00:00")
+        return int(whole.timestamp()) * 1_000_000_000 + int(
+            (m.group(2) or "").ljust(9, "0") or "0"
+        )
+    except (ValueError, OverflowError):
+        raise FlowBlocked("BAD_TIMESTAMP") from None
 
 
 def common(doc, schema):
@@ -174,12 +191,13 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
     # Hard stop on excessive offline input and unknown / unverified data shape.
     need(len(trades) <= 100000 and len(quotes) <= 100000,
          "SAMPLE_LIMIT_EXCEEDED")
+    window_start_ns, window_end_ns = utc_ns(doc["window_start_utc"]), utc_ns(doc["window_end_utc"])
     qtimes = []
     qdata = []
     for quote in quotes:
         need(type(quote) is dict, "BAD_QUOTE")
-        tm = utc_stamp(quote.get("timestamp"))
-        need(start <= tm <= end, "QUOTE_OUT_OF_WINDOW")
+        tm = utc_ns(quote.get("timestamp"))
+        need(window_start_ns <= tm <= window_end_ns, "QUOTE_OUT_OF_WINDOW")
         if qtimes:
             need(tm >= qtimes[-1], "UNSORTED_QUOTES")
         qtimes.append(tm)
@@ -188,13 +206,14 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
     seen = set()
     counts = {"INFERRED_BUY": 0, "INFERRED_SELL": 0, "UNKNOWN": 0}
     reasons = {"NONSTANDARD_CONDITION": 0, "NO_PRIOR_QUOTE": 0,
+               "CANCELLED_OR_CORRECTED_TRADE": 0,
                "STALE_QUOTE": 0, "WIDE_OR_INVALID_SPREAD": 0,
                "PRICE_OUTSIDE_QUOTED_SPREAD": 0, "TRADE_AT_MID": 0}
     buy_size = sell_size = unknown_size = 0.0
     for trade in trades:
         need(type(trade) is dict, "BAD_TRADE")
-        tm = utc_stamp(trade.get("timestamp"))
-        need(start <= tm <= end, "TRADE_OUT_OF_WINDOW")
+        tm = utc_ns(trade.get("timestamp"))
+        need(window_start_ns <= tm <= window_end_ns, "TRADE_OUT_OF_WINDOW")
         if ttimes:
             need(tm >= ttimes[-1], "UNSORTED_TRADES")
         ttimes.append(tm)
@@ -211,16 +230,19 @@ def evaluate_ticks(doc, *, max_age_ms=1000, max_spread_pct=1.0):
         need(type(conditions) is list and
              all(type(c) is str for c in conditions), "BAD_TRADE_CONDITIONS")
         why = None
-        if conditions != ["@"]:
+        if trade.get("update") is not None:
+            why = "CANCELLED_OR_CORRECTED_TRADE"
+        elif conditions != ["@"]:
             why = "NONSTANDARD_CONDITION"
         else:
-            ix = bisect_right(qtimes, tm) - 1
+            # Strict earlier-than, not simultaneous; preserve all nine ns digits.
+            ix = bisect_left(qtimes, tm) - 1
             if ix < 0:
                 why = "NO_PRIOR_QUOTE"
             else:
                 q = qdata[ix]
-                age_ms = (tm - qtimes[ix]).total_seconds() * 1000
-                if age_ms > max_age_ms:
+                age_ns = tm - qtimes[ix]
+                if age_ns > max_age_ms * 1_000_000:
                     why = "STALE_QUOTE"
                 else:
                     bid = q.get("bid_price")
