@@ -67,7 +67,7 @@ class A36Research(unittest.TestCase):
 
     def test_eod_mixed_not_buy_pressure(self):
         d = eod()
-        d["bars"][-1]["close"] = 104.6
+        d["bars"][-1]["close"] = 105.1
         r = f.evaluate_eod(d)
         self.assertEqual(r["research_tag"], "EOD_MIXED_OR_UNINFORMATIVE")
 
@@ -187,6 +187,48 @@ class A36Research(unittest.TestCase):
         self.assertEqual(r["sample_pagination_and_venue_completeness"],
                          "NOT_ATTESTED")
         self.assertFalse(r["whole_market_buy_sell_proven"])
+
+
+    def test_cohort_complete_synthetic_research_only(self):
+        import hashlib
+        names = ["FAKE%03d" % n for n in range(477)]
+        digest = hashlib.sha256(("\n".join(names)+"\n").encode()).hexdigest()
+        d = {"schema": "XRAY_NASDAQ_A36_COHORT_RESEARCH_INPUT_V1",
+             "watchlist": names, "expected_scope_sha256": digest,
+             "snapshots": []}
+        base = eod()
+        for name in names:
+            row = copy.deepcopy(base)
+            row["symbol"] = name
+            d["snapshots"].append(row)
+        x = f.evaluate_cohort(d)
+        self.assertEqual(x["supplied_symbols_validated"], 477)
+        self.assertEqual(x["supplied_sessions_validated"], 52)
+        self.assertFalse(x["live_provider_collection_proven"])
+        self.assertFalse(x["may_change_production_al"])
+        d["snapshots"].pop()
+        with self.assertRaisesRegex(f.FlowBlocked, "COHORT_COVERAGE"):
+            f.evaluate_cohort(d)
+
+    def test_cohort_wrong_scope_or_feed_fails(self):
+        import hashlib
+        names = ["FAKE%03d" % n for n in range(477)]
+        digest = hashlib.sha256(("\n".join(names)+"\n").encode()).hexdigest()
+        base = eod()
+        d = {"schema": "XRAY_NASDAQ_A36_COHORT_RESEARCH_INPUT_V1",
+             "watchlist": names, "expected_scope_sha256": digest,
+             "snapshots": []}
+        for name in names:
+            row = dict(base)
+            row["symbol"] = name
+            d["snapshots"].append(row)
+        d["expected_scope_sha256"] = "f"*64
+        with self.assertRaisesRegex(f.FlowBlocked, "COHORT_SCOPE_SHA"):
+            f.evaluate_cohort(d)
+        d["expected_scope_sha256"] = digest
+        d["snapshots"][0] = dict(d["snapshots"][0], feed="SIP")
+        with self.assertRaisesRegex(f.FlowBlocked, "COHORT_PRODUCTION_SOURCE"):
+            f.evaluate_cohort(d)
 
 if __name__ == "__main__":
     unittest.main()
