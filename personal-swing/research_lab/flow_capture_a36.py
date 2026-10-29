@@ -23,8 +23,10 @@ HOST = "https://data.alpaca.markets"
 MAX_SYMBOLS = 5
 MAX_SECONDS = 60
 PAGE_LIMIT = 1000
-MAX_PAGES = 30
-MAX_RECORDS = 30000
+MAX_PAGES = 10
+MAX_RECORDS = 10000
+# 5 symbols × 2 endpoints × 10 pages <= 100 GETs per pilot.
+# This is a cap, not a guarantee against other account-level API traffic.
 
 
 def get_page(url, headers, *, request_json=None):
