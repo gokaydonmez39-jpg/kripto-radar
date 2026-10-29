@@ -54,6 +54,29 @@ class TestReceipt(unittest.TestCase):
     def test_signal_bogus_promotion(self):
         self.reject(lambda x: x.update(production_al_enabled=True), "ILLEGAL_PROMOTION_production")
 
+    def test_ca_promotion_rejected(self):
+        self.reject(lambda x: x.update(ca_cleared_aggregate_metrics=True),
+                    "UNVERIFIED_CA_AGGREGATES_MUST_BE_BLOCKED")
+
+    def test_unadjusted_rs_claim_rejected(self):
+        self.reject(lambda x: x.update(cross_date_raw_relative_returns_safe=True),
+                    "UNVERIFIED_CA_AGGREGATES_MUST_BE_BLOCKED")
+
+    def test_missing_split_witness(self):
+        self.reject(lambda x: x.update(known_split_events=[]), "CA_EVENT_WITNESS_MISSING")
+
+    def test_changed_split_ratio(self):
+        self.reject(lambda x: x["known_split_events"][0].update(new_rate=3),
+                    "CA_EVENT_WITNESS_CHANGED")
+
+    def test_hidden_split_conflict(self):
+        self.reject(lambda x: x.update(known_unadjusted_split_conflicts=[]),
+                    "CA_SPLIT_CONFLICT_UNDISCLOSED")
+
+    def test_false_adjustment_parameter_claim(self):
+        self.reject(lambda x: x.update(adjustment_parameter_explicitly_set=True),
+                    "UNVERIFIED_ADJUSTMENT_PARAMETER_MUST_NOT_CLAIM_PASS")
+
     def test_wrong_scope(self):
         self.reject(lambda x: x.update(scope_sha256="a"*64), "SCOPE_MISMATCH")
 

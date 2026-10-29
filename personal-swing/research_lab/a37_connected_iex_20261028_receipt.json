@@ -71,5 +71,31 @@
   "performance_lift_verified": false,
   "production_al_enabled": false,
   "new_alerts_emitted": false,
-  "notes": "Aggregate only. Read-only 48 batched connected-app IEX requests for the ordered 477-watchlist, and QQQ separately. Validated exact official XNAS day presence and finite positive closes per symbol. Current-day incomplete 29-Oct bar excluded. No complete OHLCV/CA/PIT evidence persisted; no historical alpha claim. Percentages computed on fixed current 477 scope, not total NASDAQ."
+  "notes": "Aggregate only. Read-only 48 batched connected-app IEX requests for the ordered 477-watchlist, and QQQ separately. Validated exact official XNAS day presence and finite positive closes per symbol. Current-day incomplete 29-Oct bar excluded. No complete OHLCV/CA/PIT evidence persisted; no historical alpha claim. Percentages computed on fixed current 477 scope, not total NASDAQ. Two 2:1 splits were verified in the window; connected daily bars show unadjusted discontinuities. Reported SMA/breadth and RS aggregates are historical raw-data diagnostics, NOT CA-cleared, not approved predictive factors. Adjustment parameter is not explicit in connected tool API.",
+  "adjustment_parameter_explicitly_set": false,
+  "known_unadjusted_split_conflicts": [
+    "IESC",
+    "MNST"
+  ],
+  "known_split_events": [
+    {
+      "symbol": "IESC",
+      "ex_date": "2026-08-24",
+      "type": "forward_split",
+      "old_rate": 1,
+      "new_rate": 2,
+      "alpaca_action_id": "6be13843-233a-469f-91be-b139fe4738f7"
+    },
+    {
+      "symbol": "MNST",
+      "ex_date": "2026-08-11",
+      "type": "forward_split",
+      "old_rate": 1,
+      "new_rate": 2,
+      "alpaca_action_id": "e639b77a-af3f-411a-878b-fe2b40cff68a"
+    }
+  ],
+  "ca_cleared_aggregate_metrics": false,
+  "cross_date_raw_relative_returns_safe": false,
+  "research_release_status": "BLOCKED_UNVERIFIED_CA_ADJUSTMENT_AND_PIT"
 }

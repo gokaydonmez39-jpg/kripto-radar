@@ -19,6 +19,10 @@ ALLOWED_FEEDS = frozenset({"iex", "sip"})
 ALLOWED_BASES = frozenset({"raw", "split"})
 SYM = re.compile(r"^[A-Z][A-Z0-9.]{0,14}$")
 CANONICAL_SCOPE_SHA = "420025dd5b83b59fedd3d9af4332471fee731aedfaacb616ce80ca473bef6745"
+# Positive primary-source corporate-action evidence; never a claim of comprehensive CA coverage.
+# A raw series spanning either ex-date cannot be used for cross-date RS/breadth metrics.
+KNOWN_SPLIT_EX_DATES = {"MNST": "2026-08-11", "IESC": "2026-08-24"}
+
 
 class ShadowBlocked(ValueError):
     pass
@@ -106,6 +110,12 @@ def analyze(*, asof, cutoff_utc, symbols, bars, benchmark, feed="iex", basis="ra
     require(isinstance(benchmark, list), "MISSING_BENCHMARK")
     cutoff = _stamp(cutoff_utc)
     sessions = official_sessions(asof)
+    affected_raw_splits = tuple(sorted(
+        symbol for symbol, ex_date in KNOWN_SPLIT_EX_DATES.items()
+        if symbol in symbols and sessions[0] < ex_date <= asof
+    ))
+    require(not (basis == "raw" and affected_raw_splits),
+            "RAW_SPLIT_UNADJUSTED_RS_INVALID:" + ",".join(affected_raw_splits))
     calendar = ec.get_calendar("XNAS")
     closes_by_date = {day: calendar.session_close(day).to_pydatetime().astimezone(timezone.utc) for day in sessions}
     final_close = closes_by_date[asof]
@@ -131,6 +141,9 @@ def analyze(*, asof, cutoff_utc, symbols, bars, benchmark, feed="iex", basis="ra
             "universe": EXPECTED_UNIVERSE, "covered": EXPECTED_UNIVERSE,
             "scope_sha256": computed_scope_sha256, "canonical_scope_verified": True,
             "raw_source_provenance_independently_verified": False,
+            "complete_corporate_action_audit_verified": False,
+            "historical_point_in_time_universe_verified": False,
+            "known_split_symbols_in_window": list(affected_raw_splits),
             "complete_official_sessions": len(sessions),
             "breadth_above_sma20_count": above20,
             "breadth_above_sma20_pct": round(100 * above20 / EXPECTED_UNIVERSE, 6),

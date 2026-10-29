@@ -17,13 +17,13 @@ TEST_SCOPE_SHA = hashlib.sha256(("\n".join(SYMBOLS)+"\n").encode()).hexdigest()
 def fixture():
     base = datetime(2026, 10, 28, 21, 0, tzinfo=timezone.utc)
     def series(symbol, start, growth=0.001):
-        return [{"session": d, "symbol": symbol, "feed":"iex", "basis":"raw",
+        return [{"session": d, "symbol": symbol, "feed":"iex", "basis":"split",
                  "known_at_utc": (base + timedelta(seconds=20)).isoformat(),
                  "close": start * (1 + growth * i), "volume":10000+i}
                 for i, d in enumerate(SESSIONS)]
     return dict(asof=ASOF, cutoff_utc=CUTOFF, symbols=SYMBOLS[:],
                 bars={s:series(s, 50+ix*.1) for ix,s in enumerate(SYMBOLS)},
-                benchmark=series("QQQ", 400, 0.0005), feed="iex", basis="raw", expected_scope_sha256=TEST_SCOPE_SHA)
+                benchmark=series("QQQ", 400, 0.0005), feed="iex", basis="split", expected_scope_sha256=TEST_SCOPE_SHA)
 
 class TestA37(unittest.TestCase):
     @classmethod
@@ -48,6 +48,9 @@ class TestA37(unittest.TestCase):
         self.assertEqual(r["market_strength_site_calls"],0)
         self.assertTrue(r["canonical_scope_verified"])
         self.assertFalse(r["raw_source_provenance_independently_verified"])
+        self.assertFalse(r["complete_corporate_action_audit_verified"])
+        self.assertFalse(r["historical_point_in_time_universe_verified"])
+        self.assertEqual(r["known_split_symbols_in_window"], ["IESC", "MNST"])
 
     def test_replay_deterministic(self):
         self.assertEqual(analyze(**self.good), analyze(**self.good))
@@ -79,11 +82,30 @@ class TestA37(unittest.TestCase):
     def test_premature_bar(self):
         self.runbad(lambda x: x["bars"][SYMBOLS[0]][0].update(known_at_utc=SESSIONS[0]+"T12:00:00Z"), "PREMATURE_FINAL_BAR")
 
+    def test_raw_split_unadjusted_rejected(self):
+        x = copy.deepcopy(self.good)
+        x["basis"] = "raw"
+        for series in list(x["bars"].values()) + [x["benchmark"]]:
+            for row in series:
+                row["basis"] = "raw"
+        with self.assertRaisesRegex(ShadowBlocked, "RAW_SPLIT_UNADJUSTED_RS_INVALID:IESC,MNST"):
+            analyze(**x)
+
+    def test_raw_split_not_bypassed_by_forged_scope(self):
+        x = copy.deepcopy(self.good)
+        x["basis"] = "raw"
+        for series in list(x["bars"].values()) + [x["benchmark"]]:
+            for row in series:
+                row["basis"] = "raw"
+        x["expected_scope_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ShadowBlocked, "UNAPPROVED_SCOPE_SHA_OVERRIDE"):
+            analyze(**x)
+
     def test_mixed_feed(self):
         self.runbad(lambda x: x["bars"][SYMBOLS[0]][0].update(feed="sip"), "MIXED_FEED_OR_BASIS")
 
     def test_mixed_basis(self):
-        self.runbad(lambda x: x["benchmark"][0].update(basis="split"), "MIXED_FEED_OR_BASIS")
+        self.runbad(lambda x: x["benchmark"][0].update(basis="raw"), "MIXED_FEED_OR_BASIS")
 
     def test_zero_price(self):
         self.runbad(lambda x: x["bars"][SYMBOLS[0]][3].update(close=0), "INVALID_NUMERIC_VALUE")

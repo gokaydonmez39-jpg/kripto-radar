@@ -57,6 +57,30 @@ def validate(receipt):
           "UNSUPPORTED_RAW_EVIDENCE_CLAIM")
     for key in DENIALS:
         _need(receipt.get(key) is False, "ILLEGAL_PROMOTION_" + key)
+    _need(receipt.get("adjustment_parameter_explicitly_set") is False,
+          "UNVERIFIED_ADJUSTMENT_PARAMETER_MUST_NOT_CLAIM_PASS")
+    _need(receipt.get("known_unadjusted_split_conflicts") == ["IESC", "MNST"],
+          "CA_SPLIT_CONFLICT_UNDISCLOSED")
+    observed = receipt.get("known_split_events")
+    _need(isinstance(observed, list) and len(observed) == 2,
+          "CA_EVENT_WITNESS_MISSING")
+    for event, symbol, date, witness_id in zip(observed,
+                ("IESC", "MNST"), ("2026-08-24", "2026-08-11"),
+                ("6be13843-233a-469f-91be-b139fe4738f7",
+                 "e639b77a-af3f-411a-878b-fe2b40cff68a")):
+        _need(isinstance(event, dict)
+              and event.get("symbol") == symbol
+              and event.get("ex_date") == date
+              and event.get("type") == "forward_split"
+              and event.get("old_rate") == 1
+              and event.get("new_rate") == 2
+              and event.get("alpaca_action_id") == witness_id,
+              "CA_EVENT_WITNESS_CHANGED")
+    _need(receipt.get("ca_cleared_aggregate_metrics") is False
+          and receipt.get("cross_date_raw_relative_returns_safe") is False
+          and receipt.get("research_release_status")
+              == "BLOCKED_UNVERIFIED_CA_ADJUSTMENT_AND_PIT",
+          "UNVERIFIED_CA_AGGREGATES_MUST_BE_BLOCKED")
     groups = receipt.get("groups")
     _need(isinstance(groups, list) and len(groups) == 4, "INVALID_GROUP_COUNT")
     next_index = 0
@@ -82,7 +106,7 @@ def validate(receipt):
         _int_exact(total.get(k), sums[k])
     _need(abs(float(receipt.get("benchmark_return_63_pct_approx"))-6.14248) < .000001,
           "BENCHMARK_MISMATCH")
-    return {"status":"AGGREGATE_RECONCILED_NOT_RAW_PIT_ATTESTED",
+    return {"status":"AGGREGATE_RECONCILED_BLOCKED_CA_PIT",
             "covered":477, "series":478, "required_bars":30592,
             "sma20_pct":round(100*sums["above_sma20"]/477, 6),
             "sma50_pct":round(100*sums["above_sma50"]/477, 6),
