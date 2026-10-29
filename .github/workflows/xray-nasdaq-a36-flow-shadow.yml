@@ -1,0 +1,47 @@
+name: XRAY NASDAQ A36 Flow Research Offline Contracts
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - personal-swing/research_lab/flow_shadow_a36.py
+      - personal-swing/research_lab/test_flow_shadow_a36.py
+      - personal-swing/research_lab/flow_capture_a36.py
+      - personal-swing/research_lab/test_flow_capture_a36.py
+      - personal-swing/research_lab/WHALE_FLOW_A36_RESEARCH.md
+      - personal-swing/research_lab/A36_SCIENTIFIC_EVIDENCE_20261029.md
+      - .github/workflows/xray-nasdaq-a36-flow-shadow.yml
+  push:
+    branches: [main]
+    paths:
+      - personal-swing/research_lab/flow_shadow_a36.py
+      - personal-swing/research_lab/test_flow_shadow_a36.py
+      - personal-swing/research_lab/flow_capture_a36.py
+      - personal-swing/research_lab/test_flow_capture_a36.py
+      - personal-swing/research_lab/WHALE_FLOW_A36_RESEARCH.md
+      - personal-swing/research_lab/A36_SCIENTIFIC_EVIDENCE_20261029.md
+      - .github/workflows/xray-nasdaq-a36-flow-shadow.yml
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-a36-offline
+  cancel-in-progress: false
+jobs:
+  research-contract-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install only existing XNAS calendar dependency
+        run: python -m pip install -r personal-swing/requirements.txt
+      - name: A36 synthetic fail-closed tests and full research-lab regressions
+        run: |
+          python -m unittest discover -q -s personal-swing/research_lab -p 'test_*.py'
+          python -O -m unittest discover -q -s personal-swing/research_lab -p 'test_*.py'
+          python -m py_compile personal-swing/research_lab/flow_shadow_a36.py personal-swing/research_lab/flow_capture_a36.py
+          python -O -m py_compile personal-swing/research_lab/flow_shadow_a36.py personal-swing/research_lab/flow_capture_a36.py
+      - name: Confirm no private market data, provider API or alert job
+        run: |
+          echo 'A36_OFFLINE_RESEARCH_ONLY: no API credentials, no market-data capture, no signal writes, no notification, no broker'
