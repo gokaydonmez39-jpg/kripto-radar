@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-10-29T06:11:52.216286+00:00",
+  "last_ingest_at_utc": "2026-10-29T07:40:04.753382+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 268,
+  "snapshot_count": 269,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -126957,6 +126957,74 @@
       },
       "payload_sha256": "c342baa78a516c75a75abca9381f7e1b5303e49b9d335939d96c30c3289c8e65",
       "source": "trade_halts",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-10-29T07:40:03.724951+00:00",
+      "observed_at_utc": "2026-10-29T07:40:04.753344+00:00",
+      "payload": {
+        "row_count": 6,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "BHAV Acquisition Corp II",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "BHAIU"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Mutual Fund Series Trust",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "ELCF"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Mutual Fund Series Trust",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "ETDG"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Franklin Templeton ETF Trust",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "FBEQ"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Franklin Templeton ETF Trust",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "FIBT"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Georgia Banking Company, Inc.",
+            "Effective Date": "10/29/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "GBC"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "a0ad37976313a269dec3c294fd1e0a30657ab59b7a186b65dd2f17be83a310d1",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
