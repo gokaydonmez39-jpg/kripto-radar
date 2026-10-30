@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-10-29",
+  "asof_et": "2026-10-30",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3192
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3192
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1029202621:32|||||||",
+  "official_footer": "File Creation Time: 1030202615:41|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3192
   },
-  "source_queue_hash": "f1b1364b43b9403ed6363a8fd7e743dbefd67acab6c99d8d53566bbaa96869a7",
-  "source_state_hash": "226e80b1d0353bdc369a31b1d22e3fc80feb3c61f3a0e60ab8ccf809a12432fa",
+  "source_queue_hash": "7dd25d3ae7e3ba8a7dc6efe2eede98f2b121ab97b4f5e02590228e676e4ee8bb",
+  "source_state_hash": "1ae47b97212864ad8285c15cd2f4f7621f0c31af7a1454cb96e0e1d5cb928c05",
   "source_unknown_count": 3192,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3192,
@@ -4519,6 +4519,24 @@
       "security_name": "Academy Sports and Outdoors, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "ASPE": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Aspen Neuroscience, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "ASPI": {
       "attempts": 0,
       "discovery": {
@@ -6173,6 +6191,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Barrett Business Services, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "BBTX": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Bambusa Therapeutics, Inc. - Common stock",
       "status": "UNKNOWN_STATIC"
     },
     "BCAL": {
@@ -15859,24 +15895,6 @@
       "security_name": "Dyne Therapeutics, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "DYNC": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Dynamix Corporation - Class A Ordinary Share",
-      "status": "UNKNOWN_STATIC"
-    },
     "DYOR": {
       "attempts": 0,
       "discovery": {
@@ -20897,24 +20915,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "GigaCloud Technology Inc - Class A Ordinary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
-    "GCTK": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "GlucoTrack, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "GDC": {
@@ -30601,24 +30601,6 @@
       "security_name": "Lumexa Imaging Holdings, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "LNAI": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Lunai Bioworks Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "LNKS": {
       "attempts": 0,
       "discovery": {
@@ -36089,6 +36071,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "NOMADAR Corp. - Class A Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "NORD": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Nordicus Partners Corporation - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "NOVT": {

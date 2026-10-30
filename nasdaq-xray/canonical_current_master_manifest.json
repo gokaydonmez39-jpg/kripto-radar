@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-10-29",
+  "asof_et": "2026-10-30",
   "asof_identity_proof": {
-    "blob_sha": "70f9f5e324e3c8cc2627469e75a4571d941fcd81",
+    "blob_sha": "22b858ccdb9230dc246b20dc3b79ea7681ca6a4a",
     "counts": {
       "operating_overrides": 3,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261029.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261030.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -29,21 +29,21 @@
   },
   "counts": {
     "PASS_IDENTITY": 3192,
-    "UNKNOWN_IDENTITY": 15
+    "UNKNOWN_IDENTITY": 16
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2414,
-  "explicit_excluded_hash": "9f592943288cf579dd39fb48342a72f0603675bcc9d41dc1708fc470182215c3",
+  "explicit_excluded_count": 2408,
+  "explicit_excluded_hash": "9244d8a77b897f82c602c0e177564d9d03483e3fe530c26d87fd3e691a67ffb6",
   "explicit_excluded_reason_counts": {
     "DEBT": 58,
     "ETF": 1283,
     "FUND": 32,
-    "PREFERRED": 102,
-    "RIGHT": 105,
-    "SPAC_BLANK_CHECK": 198,
+    "PREFERRED": 103,
+    "RIGHT": 104,
+    "SPAC_BLANK_CHECK": 196,
     "TEST_ISSUE": 8,
-    "UNIT": 259,
-    "WARRANT": 367,
+    "UNIT": 257,
+    "WARRANT": 365,
     "WHEN_ISSUED": 2
   },
   "history_price_state_diagnostic_only": {
@@ -57,9 +57,9 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1029202621:32|||||||",
+  "official_footer": "File Creation Time: 1030202615:41|||||||",
   "pass_count": 3192,
-  "pass_hash": "f1b1364b43b9403ed6363a8fd7e743dbefd67acab6c99d8d53566bbaa96869a7",
+  "pass_hash": "7dd25d3ae7e3ba8a7dc6efe2eede98f2b121ab97b4f5e02590228e676e4ee8bb",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -311,6 +311,7 @@
     "ASML",
     "ASND",
     "ASO",
+    "ASPE",
     "ASPI",
     "ASPS",
     "ASRV",
@@ -403,6 +404,7 @@
     "BBNX",
     "BBOT",
     "BBSI",
+    "BBTX",
     "BCAL",
     "BCAX",
     "BCBP",
@@ -941,7 +943,6 @@
     "DXST",
     "DYAI",
     "DYN",
-    "DYNC",
     "DYOR",
     "EBAY",
     "EBC",
@@ -1221,7 +1222,6 @@
     "GCL",
     "GCMG",
     "GCT",
-    "GCTK",
     "GDC",
     "GDEV",
     "GDHG",
@@ -1760,7 +1760,6 @@
     "LMB",
     "LMNR",
     "LMRI",
-    "LNAI",
     "LNKS",
     "LNSR",
     "LNT",
@@ -2065,6 +2064,7 @@
     "NODK",
     "NOEM",
     "NOMA",
+    "NORD",
     "NOVT",
     "NPCE",
     "NPT",
@@ -3256,25 +3256,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "f1b1364b43b9403ed6363a8fd7e743dbefd67acab6c99d8d53566bbaa96869a7",
+  "queue_hash": "7dd25d3ae7e3ba8a7dc6efe2eede98f2b121ab97b4f5e02590228e676e4ee8bb",
   "queue_total": 3192,
   "queue_unique": 3192,
-  "raw_identity_total": 3207,
+  "raw_identity_total": 3208,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "a9bd930430729ba8ffd12b6bfcb49e70e48251fe",
-    "count": 568,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261029.json",
-    "symbol_hash": "0478fe2992b2579265c95ddfd3f880475b717e1be2a9637dd128b5673975d5b9"
+    "blob_sha": "d0366914ab3b4ab6593281169bd8fc834d4f15bf",
+    "count": 564,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261030.json",
+    "symbol_hash": "4bbe44cdda09289d259523f5673b3ad648e832ceaedf553897b8bd95fa5e1f5a"
   },
-  "source_state_blob_sha": "4086634eb691812396d791043c2afeb26215e19f",
-  "source_state_hash": "226e80b1d0353bdc369a31b1d22e3fc80feb3c61f3a0e60ab8ccf809a12432fa",
+  "source_state_blob_sha": "99d8d7ccd2463f514747d9224c223d6d2ca59bb5",
+  "source_state_hash": "1ae47b97212864ad8285c15cd2f4f7621f0c31af7a1454cb96e0e1d5cb928c05",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 15,
+  "unknown_count": 16,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3318,6 +3318,15 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Digital Asset Acquisition Corp. - Class A Ordinary shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "DBCA": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "D. Boral Acquisition I Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3419,6 +3428,7 @@
     "BSAA",
     "CCXI",
     "DAAQ",
+    "DBCA",
     "DTSQ",
     "FACT",
     "FVN",
