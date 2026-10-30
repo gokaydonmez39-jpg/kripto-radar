@@ -3,13 +3,13 @@
   "asof_et": "2026-10-29",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-29",
-    "attempted_count": 475,
+    "attempted_count": 477,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 477,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 473,
+    "evaluated_count": 475,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,12 +18,10 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 15,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 4,
+    "pending_count": 2,
     "pending_symbols": [
       "FISV",
-      "CCC",
-      "NSIT",
-      "RLAY"
+      "CCC"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -2216,6 +2214,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "NSIT": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "NTAP": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2734,6 +2738,12 @@
         "terminal_scan": true
       },
       "RKLB": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "RLAY": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3677,8 +3687,8 @@
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "a79e551aed1e8033df46bae1cbfbaf05d1ecda52bd2b57b86f09e96c29ac4185",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 97,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 361,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 98,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 362,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 14,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
@@ -3739,7 +3749,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 214,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-30T03:00:22.653200+00:00",
+  "updated_at_utc": "2026-10-30T06:34:05.499441+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
