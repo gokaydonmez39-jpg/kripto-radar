@@ -28,6 +28,7 @@ EXPECTED={
  "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
  "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
  "xray-personal-477-eod.yml":("15 23 * * 1-5",),
+ "xray-nasdaq-a34-preopen.yml":("17 10 * * 1-5",),
  # Exact already deployed personal EOD failover, never a second signal producer.
  "xray-personal-477-schedule-fallback.yml":("25 0 * * 2-6",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
@@ -61,6 +62,7 @@ READONLY_PROVIDER_SCHEDULED={
  "xray-personal-full-universe-sip-coverage.yml",
  "xray-personal-free-iex-eod-signals.yml",
  "xray-personal-477-eod.yml",
+ "xray-nasdaq-a34-preopen.yml",
   "xray-personal-full-cohort-early-watch.yml",
  "xray-research-source-lab.yml",
  "xray-massive-grouped-history-resume.yml",
@@ -304,6 +306,8 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
+    assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 10 * * 1-5"]
+    assert "xray-nasdaq-a34-preopen.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["25 0 * * 2-6"]
     assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * *"]
     assert "xray-research-source-lab.yml" in base["extra_readonly_provider_scheduled"]
@@ -357,6 +361,15 @@ def selftest():
         x["xray-alpaca-delayed-sip-research.yml"].replace(
             '"55 13 * * 1-5"', '"55 13,17 * * 1-5"')}),
         "SCHEDULED_CRON_CHANGED")
+    # A34 must remain an exactly reviewed, read-only preopen research audit.
+    bad(lambda x:x.update({"xray-nasdaq-a34-preopen.yml":
+        x["xray-nasdaq-a34-preopen.yml"].replace(
+            "17 10 * * 1-5","18 10 * * 1-5",1)}),
+        "SCHEDULED_CRON_CHANGED")
+    bad(lambda x:x.update({"xray-nasdaq-a34-preopen.yml":
+        x["xray-nasdaq-a34-preopen.yml"].replace(
+            "contents: read","contents: write",1)}),
+        "SCHEDULED_SHADOW_CONTENTS_NOT_READ_ONLY")
     # Reviewed cron contracts are exact; any new cadence or provider writes fail.
     bad(lambda x:x.update({"xray-personal-eod-research-digest.yml":
         x["xray-personal-eod-research-digest.yml"].replace(
@@ -420,7 +433,7 @@ def selftest():
         "steps.source.outputs.ready == 'true'",
         "true",1)}),
         "PERSONAL_SIP_ZERO_QUOTA_PREFLIGHT_DRIFT")
-    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_16_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
+    print("XRAY_ALL_WORKFLOW_TRIGGER_AUDIT_SELFTEST=PASS_18_NEGATIVES_"+str(len(EXPECTED))+"_REVIEWED_CRONS_ZERO_ISSUE_WRITERS")
 
 def main():
     p=argparse.ArgumentParser()
