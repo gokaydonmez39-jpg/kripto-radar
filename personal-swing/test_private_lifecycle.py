@@ -218,5 +218,51 @@ class LifecycleTruthTests(unittest.TestCase):
         self.assertTrue(p['updates'][1]['terminal'])
 
 
+
+class TestLedgerNew52EventCompatibility(unittest.TestCase):
+    """Synthetic-only regression for a real event code in the private ledger."""
+
+    def synthetic_ledger(self):
+        import alert_ledger_contract as contract
+        day = '2026-10-28'
+        event_day = '2026-10-29'
+        symbol = 'SYN'
+        key = contract.event_key(
+            day, symbol, event_day, 'NEW_52_SESSION_HIGH')
+        record = [''] * len(contract.EVENT_HEADER)
+        record[0] = key
+        record[1] = day + '|' + symbol
+        record[2] = day
+        record[3] = symbol
+        record[4] = event_day
+        record[5] = 'NEW_52_SESSION_HIGH'
+        record[6] = 'ÖNEMLİ'
+        record[17] = contract.REQUESTED
+        return contract, key, [list(contract.EVENT_HEADER), record]
+
+    def test_real_new52_event_code_parses_and_stays_unacknowledged(self):
+        contract, key, matrix = self.synthetic_ledger()
+        parsed = contract.parse_ledger(matrix)
+        self.assertEqual(set(parsed), {key})
+        self.assertEqual(parsed[key]['status'], contract.REQUESTED)
+        self.assertEqual(
+            contract.delivery_status(matrix, key),
+            'DELIVERY_UNKNOWN_NO_RESEND')
+
+    def test_new52_replay_is_rejected_when_already_reserved(self):
+        contract, key, matrix = self.synthetic_ledger()
+        with self.assertRaisesRegex(
+                contract.LedgerRefused, 'EVENT_ALREADY_RECORDED_NO_RESEND'):
+            contract.verify_first_reservation(matrix, matrix, [key])
+
+    def test_unknown_event_type_still_fails_closed(self):
+        import alert_ledger_contract as contract
+        with self.assertRaisesRegex(
+                contract.LedgerRefused, 'BAD_EVENT_KIND_OR_EPISODE'):
+            contract.event_key(
+                '2026-10-28', 'SYN', '2026-10-29',
+                'UNRECOGNIZED_EVENT_CODE')
+
+
 if __name__=='__main__':
     unittest.main()
