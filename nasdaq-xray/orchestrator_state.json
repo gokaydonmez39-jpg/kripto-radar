@@ -3,13 +3,13 @@
   "asof_et": "2026-10-29",
   "candidate_technical_funnel": {
     "asof_et": "2026-10-29",
-    "attempted_count": 477,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 477,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 475,
+    "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,10 +18,12 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 15,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 2,
+    "pending_count": 4,
     "pending_symbols": [
       "FISV",
-      "CCC"
+      "CCC",
+      "NSIT",
+      "RLAY"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -2214,12 +2216,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "NSIT": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
-        "terminal_scan": true
-      },
       "NTAP": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2738,12 +2734,6 @@
         "terminal_scan": true
       },
       "RKLB": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "RLAY": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3685,17 +3675,17 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "3c2aaa3036d1be329ca69f4fc8d7ba611887b27eaf4e381d0496b85e9d713d2f",
+    "source_candidates_sha256": "a79e551aed1e8033df46bae1cbfbaf05d1ecda52bd2b57b86f09e96c29ac4185",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 98,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 362,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 97,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 361,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 14,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 1
     },
     "transient_retry_count": 2,
     "unknown_never_pass": true,
-    "watchlist_digest": "4c27332c27790681013ef863c198c16f12bfbefb4b637f6903a4b0548ccf005e"
+    "watchlist_digest": "73c04919e0432629c91b7a2a70d5b3891969527285912502fe4bcce92881777f"
   },
   "cursor": 3192,
   "downstream_invalidation": {
@@ -3749,7 +3739,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 214,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-10-30T02:12:07.077312+00:00",
+  "updated_at_utc": "2026-10-30T03:00:22.653200+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -3767,7 +3757,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "3c2aaa3036d1be329ca69f4fc8d7ba611887b27eaf4e381d0496b85e9d713d2f",
+    "source_candidates_sha256": "a79e551aed1e8033df46bae1cbfbaf05d1ecda52bd2b57b86f09e96c29ac4185",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4055,7 +4045,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 60.74,
-        "dv30_usd_observed": 2893143456.34,
+        "dv30_usd_observed": 2902132247.46,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "CoreWeave, Inc. - Class A Common Stock",
@@ -4069,7 +4059,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 421.66,
-        "dv30_usd_observed": 2804343399.41,
+        "dv30_usd_observed": 2808805194.7,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Applied Materials, Inc. - Common Stock",
@@ -4853,7 +4843,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 56.95,
-        "dv30_usd_observed": 563042097.62,
+        "dv30_usd_observed": 563350026.28,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "PayPal Holdings, Inc. - Common Stock",
@@ -5021,7 +5011,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 105.21,
-        "dv30_usd_observed": 482682273.35,
+        "dv30_usd_observed": 482847716.07,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "United Airlines Holdings, Inc. - Common Stock",
@@ -5119,7 +5109,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 232.3,
-        "dv30_usd_observed": 446537296.97,
+        "dv30_usd_observed": 446830111.12,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Ross Stores, Inc. - Common Stock",
@@ -7723,7 +7713,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 18.13,
-        "dv30_usd_observed": 120449288.28,
+        "dv30_usd_observed": 120564051.19,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Galaxy Digital Inc. - Class A common stock",
@@ -7961,7 +7951,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 100.4,
-        "dv30_usd_observed": 107088985.05,
+        "dv30_usd_observed": 107107659.45,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Kodiak Sciences Inc - Common Stock",
@@ -8801,7 +8791,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 60.53,
-        "dv30_usd_observed": 77547625.45,
+        "dv30_usd_observed": 77611030.62,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Heartflow, Inc. - Common Stock",
@@ -9025,7 +9015,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 54.26,
-        "dv30_usd_observed": 72893042.53,
+        "dv30_usd_observed": 73201510.63,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "CRISPR Therapeutics AG - Common Shares",
@@ -9263,7 +9253,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 34.11,
-        "dv30_usd_observed": 68182067.06,
+        "dv30_usd_observed": 68186433.13,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Pegasystems Inc. - Common Stock",
@@ -9822,6 +9812,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 8.0,
+        "dv30_usd_observed": 58971256.78,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "StoneCo Ltd. - Class A Common Share",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "STNE",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 32.2,
         "dv30_usd_observed": 58964720.98,
         "exact_completed_sessions": 30,
@@ -9831,20 +9835,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "THRM",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 8.0,
-        "dv30_usd_observed": 58963856.78,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "StoneCo Ltd. - Class A Common Share",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "STNE",
         "tracking_state": "PERSISTING"
       },
       {
@@ -10452,6 +10442,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 477,
-    "watchlist_digest": "4c27332c27790681013ef863c198c16f12bfbefb4b637f6903a4b0548ccf005e"
+    "watchlist_digest": "73c04919e0432629c91b7a2a70d5b3891969527285912502fe4bcce92881777f"
   }
 }
