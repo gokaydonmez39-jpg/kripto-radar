@@ -115,7 +115,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-10-30T00:22:31.833680+00:00",
+  "generated_at_utc": "2026-10-30T03:03:05.962525+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -1891,61 +1891,178 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 6,
+      "row_count": 19,
       "rows": [
         {
           "BX Action": "Add",
-          "Company Name": "BHAV Acquisition Corp II",
-          "Effective Date": "10/29/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "BHAIU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Mutual Fund Series Trust",
-          "Effective Date": "10/29/2026",
+          "Company Name": "Tidal Trust IV",
+          "Effective Date": "10/30/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "ELCF"
+          "Symbol": "ACJL"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Mutual Fund Series Trust",
-          "Effective Date": "10/29/2026",
+          "Company Name": "Aspen Neuroscience, Inc.",
+          "Effective Date": "10/30/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "ETDG"
+          "Primary Listing Market": "Q",
+          "Symbol": "ASPE"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Franklin Templeton ETF Trust",
-          "Effective Date": "10/29/2026",
+          "Company Name": "Bambusa Therapeutics, Inc.",
+          "Effective Date": "10/30/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
+          "Primary Listing Market": "Q",
+          "Symbol": "BBTX"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Dynamix Corporation",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "G",
-          "Symbol": "FBEQ"
+          "Symbol": "DYNC"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Dynamix Corporation",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "DYNCU"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Dynamix Corporation",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "DYNCW"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Eagle Point Income Company",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "N",
+          "Symbol": "EICA"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "GlucoTrack, Inc.",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "GCTK"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "GameStop Corporation",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "N",
+          "Symbol": "GME+"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Lunai Bioworks Inc.",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "LNAI"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Sports Entertainment Gaming Global Corporation",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "LTRYW"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Franklin Templeton ETF Trust",
-          "Effective Date": "10/29/2026",
+          "Company Name": "Meta Platforms, Inc.",
+          "Effective Date": "10/30/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "FIBT"
+          "Primary Listing Market": "Q",
+          "Symbol": "METAM"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Georgia Banking Company, Inc.",
-          "Effective Date": "10/29/2026",
+          "Company Name": "Nuveen Municipal High Income Opportunity Fund",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "NMZ^#"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Nordicus Partners Corporation",
+          "Effective Date": "10/30/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "S",
-          "Symbol": "GBC"
+          "Symbol": "NORD"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "OPay Limited",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "OPAY"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Deep Sea Minerals Corp.",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "SEAM"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "YHN Acquisition I Limited",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "YHNA"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "YHN Acquisition I Limited",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "YHNAR"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "YHN Acquisition I Limited",
+          "Effective Date": "10/30/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "YHNAU"
         }
       ],
       "status": "PASS",
