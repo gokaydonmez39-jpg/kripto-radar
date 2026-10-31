@@ -298,7 +298,11 @@ class ManualRawProviderTests(unittest.TestCase):
         self.assertEqual(len(paced),20)
         self.assertEqual(len(parse_qs(urlsplit(op.requests[0].full_url).query)['symbols'][0].split(',')),25)
         self.assertEqual(len(parse_qs(urlsplit(op.requests[-1].full_url).query)['symbols'][0].split(',')),2)
-        self.assertFalse(result['cross_batch_unique_events_proven'])
+        self.assertTrue(result['cross_batch_unique_events_proven'])
+        self.assertEqual(result['unique_event_ids_observed'],0)
+        self.assertEqual(result['cross_batch_duplicate_occurrences'],0)
+        self.assertFalse(result['market_event_absence_proven'])
+        self.assertFalse(result['historical_pit_proven'])
         self.assertFalse(result['may_modify_al'])
         self.assertFalse(result['may_place_order'])
 
