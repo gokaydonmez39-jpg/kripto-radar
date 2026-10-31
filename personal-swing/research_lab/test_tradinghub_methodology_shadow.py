@@ -159,7 +159,13 @@ class TradingHubMethodShadowTests(unittest.TestCase):
 
     def test_no_authority_contract(self):
         self.assertFalse(any(NO_AUTHORITY.values()))
-        self.assertEqual(len(NO_AUTHORITY), 8)
+        self.assertEqual(set(NO_AUTHORITY), {
+            "may_generate_al", "may_change_stops",
+            "may_write_private_sheet", "may_send_notification",
+            "may_place_order", "may_fetch_market_data",
+            "may_use_private_credentials", "alpha_proven",
+            "csharp_binary_parity_verified",
+        })
 
 
 if __name__ == "__main__":
