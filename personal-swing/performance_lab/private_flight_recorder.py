@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER
 from private_lifecycle import ALERT_HEADER, EVENT_PENDING
-from alert_ledger_contract import TYPES as REVIEWED_EVENT_CODES, QUARANTINED
+from alert_ledger_contract import TYPES as REVIEWED_EVENT_CODES, QUARANTINED, SUPPRESSED
 from performance_lab.private_performance_adapter import PrivateSheetReadOnly, _fingerprints
 import daily_job
 
@@ -104,6 +104,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     terminal_expected = set()
     keys = set()
     episodes = {}
+    open_prior_starts = {}
     open_n = closed_n = 0
     for row in candidates:
         key = value(row,0)
@@ -120,6 +121,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             need(re.fullmatch(r'AÇIK • (?:[0-9]|1[0-5])/15 SEANS',status)
                  is not None, 'FLIGHT_BAD_OPEN_STATUS')
             open_n += 1
+            open_prior_starts.setdefault(symbol, []).append(start)
         elif status.startswith('KAPALI • '):
             need(value(row,8) != '' and value(row,9) != '',
                  'FLIGHT_CLOSED_MISSING_EVIDENCE')
@@ -141,6 +143,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     user_attested_status_rows = 0
     explicit_unknown_status_rows = 0
     quarantined_events = 0
+    suppressed_active_al = 0
     for row in alerts:
         need(len(row) >= 18, 'FLIGHT_EVENT_INCOMPLETE')
         eventkey = value(row,0)
@@ -169,6 +172,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         elif status == QUARANTINED and code == 'NEW_52_SESSION_HIGH':
             # No delivery claim or new signal may follow from a disputed row.
             quarantined_events += 1
+        elif status == SUPPRESSED and code == 'AL_NEW_EPISODE':
+            # The same symbol already has a strictly earlier still-open episode.
+            # Keep the second researched episode; forbid a second AL alert.
+            need(event_day == start and
+                 any(d < start for d in open_prior_starts.get(symbol, [])),
+                 'FLIGHT_SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE')
+            suppressed_active_al += 1
         else:
             # Arbitrary DELIVERY claims and unrecognized states are forbidden.
             unknown_delivery += 1
@@ -233,6 +243,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'paired_gap_below_stop_annotations':len(gap_event_owner_days),
         'pending_device_ack':pending,
         'quarantined_events':quarantined_events,
+        'suppressed_active_al':suppressed_active_al,
         'user_attested_status_rows':user_attested_status_rows,
         'explicit_unknown_status_rows':explicit_unknown_status_rows,
         'device_receipts_verified':0,
