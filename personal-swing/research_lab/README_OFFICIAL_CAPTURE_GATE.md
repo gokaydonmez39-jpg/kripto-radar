@@ -37,3 +37,7 @@ Only these values may appear in public CI logs: fixed source label, research-onl
 A green workflow means the diagnostic code ran, **not** that source data passed. Inspect individual source states; HTTP refusal, parse refusal and stale directory remain `UNKNOWN/NOT_CLEAR`. Even a 200/parse success is only a live snapshot format observation, with no comprehensive feed-coverage or PIT proof.
 
 GitHub public standard hosted runner pricing is described in their official Actions billing documentation; account charges for unrelated services have not been audited. This workflow uses `ubuntu-latest` only. A draft PR avoids production changes and rollback requires no historical mutation.
+
+### Existing 477-symbol snapshot cross-check
+
+The one-shot directory probe now compares its validated raw directory snapshot to the existing public `personal-swing/nasdaq_watchlist_477.json` file (exactly 477 unique source symbols). Only aggregate counts of currently matching basic directory flags, missing symbols and flagged rows, plus a scope SHA256, are written in the diagnostic log. No symbol names, historical membership conclusions, user alerts, AL results or private candidate data are published. All 477 flags are historical-PIT **UNPROVEN**. A stale or refused directory cannot produce a 477 snapshot comparison. No new securities are added or removed.
