@@ -67,33 +67,60 @@ def scan_sources(sources: dict[str, str], *, commit_sha: str) -> dict:
         if filename in py:
             tree = ast.parse(body, filename=filename)
             for t in ast.walk(tree):
-                # Resolve literal imports to Git-tracked .py files, including
-                # nested and relative Python syntax. Never infer dynamic imports,
-                # runtime resolution, installed packages, or module attributes.
-                candidates = []
+                # Literal imports only. A nested Python file may import from
+                # the declared personal-swing project root rather than its
+                # immediate directory. Since sys.path is NOT audited, those
+                # new paths are explicitly INFERRED, never runtime-proven.
+                if not isinstance(t, (ast.Import, ast.ImportFrom)):
+                    continue
+                local_dir = Path(filename).parent
+                project_dir = Path("personal-swing")
+                possibilities = {}  # tracked path -> provenance category
+
+                def remember(candidate, provenance):
+                    path = candidate.as_posix()
+                    if path in py:
+                        if path not in possibilities:
+                            possibilities[path] = provenance
+                        elif provenance == "LOCAL_LITERAL":
+                            possibilities[path] = provenance
+
                 if isinstance(t, ast.Import):
                     for alias in t.names:
-                        candidates.append(Path(filename).parent.joinpath(
-                            *alias.name.split(".")).with_suffix(".py"))
-                elif isinstance(t, ast.ImportFrom):
-                    root = Path(filename).parent
-                    # level=1 is current package, level=2 is one parent, etc.
-                    for _ in range(max(0, t.level - 1)):
-                        root = root.parent
-                    if t.module:
-                        candidates.append(root.joinpath(
-                            *t.module.split(".")).with_suffix(".py"))
-                    elif t.level:
+                        for root, tag in ((local_dir, "LOCAL_LITERAL"),
+                                          (project_dir, "PROJECT_ROOT_CANDIDATE")):
+                            remember(root.joinpath(*alias.name.split(".")).with_suffix(".py"), tag)
+                else:
+                    if t.level:
+                        root = local_dir
+                        for _ in range(t.level - 1):
+                            root = root.parent
+                        roots = ((root, "LOCAL_LITERAL"),)
+                    else:
+                        roots = ((local_dir, "LOCAL_LITERAL"),
+                                 (project_dir, "PROJECT_ROOT_CANDIDATE"))
+                    for root, tag in roots:
+                        prefix = root.joinpath(*t.module.split(".")) if t.module else root
+                        if t.module:
+                            remember(prefix.with_suffix(".py"), tag)
+                        # `from package import submodule` also imports the
+                        # tracked package/submodule.py when it exists. It is
+                        # not proven when an __init__ attribute can shadow it.
                         for alias in t.names:
                             if alias.name != "*":
-                                candidates.append(root / (alias.name + ".py"))
-                for target in candidates:
-                    candidate = target.as_posix()
-                    if candidate in py:
-                        edges.append({"from": filename, "to": candidate,
-                                      "relation": "imports", "source_file": filename,
-                                      "line": t.lineno, "confidence": "EXTRACTED"})
-                    # Not present in the bounded corpus = not a proven edge.
+                                remember(prefix / (alias.name + ".py"),
+                                         "PROJECT_ROOT_CANDIDATE" if not t.level else tag)
+                if len(possibilities) > 1:
+                    leads.append({"source_file": filename, "line": t.lineno,
+                                  "code": "AMBIGUOUS_IMPORT_ROOTS",
+                                  "verdict": "needs_validation", "severity": None})
+                    continue
+                for candidate, provenance in possibilities.items():
+                    edges.append({"from": filename, "to": candidate,
+                                  "relation": "imports", "source_file": filename,
+                                  "line": t.lineno,
+                                  "confidence": ("EXTRACTED" if provenance == "LOCAL_LITERAL"
+                                                 else "INFERRED")})
         else:
             for match in CODE_REF.finditer(body):
                 target = match.group(0)

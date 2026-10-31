@@ -52,3 +52,20 @@ A clean source graph and green synthetic tests are **not** a vulnerability clear
 - `graphifyy` v0.9.99 upstream reference is architecture research only. No Graphify code was copied, imported, or executed.
 
 **Acceptance boundary:** This is a useful **A36 coverage repair**, not certification of native Graphify versus A36, no measurement of Graphify CPU/runtime/cost, and no verified new market signal. The original source/line coverage limits, private-data isolation and rollback policy apply.
+
+
+## A39: Trail of Bits property-method inspired source-graph closure (2026-11-01)
+
+Upstream research reference: https://github.com/trailofbits/skills/blob/main/plugins/property-based-testing/skills/property-based-testing/SKILL.md (source read as untrusted documentation). No upstream package, skill prompts or Hypothesis runtime installed. This is a deterministic, standard-library invariant/property-inspired test suite, not randomized Hypothesis certification.
+
+**Predeclared measurable gate:** At least 3/3 correct tracked project-root import relationships for nested Python modules, 0 externally absent targets counted as edges, ambiguous two-root import resolution not promoted to a proven relation, existing A36+A38 tests preserved, 23/23 regular and optimized tests passing. No live data, real-time import execution, market data rights, private files, other projects or broker authority.
+
+**Reproduced defect:** The frozen pre-A39 A36 implementation returned 0/3 tracked edges for three syntactically explicit import forms from `personal-swing/research_lab/` into `personal-swing/performance_lab/`. These are fixture-grounded static *potential dependencies*, not demonstrated runtime execution.
+
+**Minimal repair:** For literal absolute imports, scan both the calling file's parent and the declared `personal-swing/` root. Mark project-root-only edges `confidence: INFERRED` because `sys.path` is not runtime-verified; retain existing local-literal `confidence: EXTRACTED`. For `from pkg import submodule`, candidate `pkg/submodule.py` is recognized only if Git-tracked. Where both roots contain distinct matching files, produce `AMBIGUOUS_IMPORT_ROOTS` with `verdict: needs_validation`, no edge. Externally installed/dynamic names remain unlinked. 50 deterministic source-order permutations check reproducibility and prove no input mutation.
+
+**Measured synthetic result:** 3/3 expected static candidate edges, 0 false positives against the predeclared negative fixture, 23/23 standard and 23/23 Python optimized tests pass locally. Coverage is bounded to this corpus; no security certification, no Graphify-native benchmark, no market alpha or fill claim. Prior source graph logic, trading rules, production dependencies, GitHub scheduled workflows, secrets, Sheets and CRYPTO untouched.
+
+**CI:** Existing A36 PR-only workflow adds the single A39 test module to regular and optimized `unittest` commands; no runner, permission, scheduled or network client additions. A merge re-check on `main` is required before acceptance.
+
+**Rollback:** Revert only A39's source, one new test file, README and workflow changes if the independent GitHub regressions fail. Never disable the other A36/A38 integrity gates to force PASS.

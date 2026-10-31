@@ -7,6 +7,7 @@ on:
       - 'personal-swing/performance_lab/a36_personal_source_audit.py'
       - 'personal-swing/performance_lab/test_a36_personal_source_audit.py'
       - 'personal-swing/performance_lab/test_a38_graph_import_benchmark.py'
+      - 'personal-swing/performance_lab/test_a39_import_resolution_properties.py'
       - 'personal-swing/performance_lab/A36_PERSONAL_SOURCE_SECURITY_README.md'
       - '.github/workflows/nasdaq-personal-a36-source-security-offline.yml'
 
@@ -26,10 +27,10 @@ jobs:
           python-version: '3.12'
       - name: Synthetic positive and adverse tests, ordinary
         working-directory: personal-swing/performance_lab
-        run: python -m unittest -v test_a36_personal_source_audit test_a38_graph_import_benchmark
+        run: python -m unittest -v test_a36_personal_source_audit test_a38_graph_import_benchmark test_a39_import_resolution_properties
       - name: Synthetic positive and adverse tests, optimized
         working-directory: personal-swing/performance_lab
-        run: python -O -m unittest -v test_a36_personal_source_audit test_a38_graph_import_benchmark
+        run: python -O -m unittest -v test_a36_personal_source_audit test_a38_graph_import_benchmark test_a39_import_resolution_properties
       - name: Git-tracked source/line/coverage witness (no raw code exported)
         run: python personal-swing/performance_lab/a36_personal_source_audit.py --audit-repo . --min-edges 20 --min-workflow-edges 2
       - name: Optimized graph witness
