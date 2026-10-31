@@ -33,6 +33,8 @@ def fixture():
         'cross_batch_unique_events_proven': True,
         'historical_pit_proven': False, 'may_clear_risk': False,
         'unique_event_ids_observed': 2,
+        'event_id_set_sha256': hashlib.sha256(
+            ('\n'.join(sorted(ids)) + '\n').encode('ascii')).hexdigest(),
         'observed_query_event_occurrences': 3,
         '_internal_id_index': ids,
         '_internal_symbol_roles': roles,
@@ -60,6 +62,7 @@ class ShadowTests(unittest.TestCase):
         x['_internal_id_index']={}
         x['_internal_symbol_roles']={}
         x['unique_event_ids_observed']=0
+        x['event_id_set_sha256']=hashlib.sha256(b'\n').hexdigest()
         x['observed_query_event_occurrences']=0
         out=s.build_477_shadow(asof_utc=ASOF,alpaca=x)
         self.assertEqual(out['summary']['symbols_unknown_not_clear'],477)
@@ -91,6 +94,11 @@ class ShadowTests(unittest.TestCase):
     def test_missing_roles_fails_closed(self):
         x=fixture();x['_internal_symbol_roles'].pop(UID_A)
         with self.assertRaisesRegex(s.ShadowRefused,'ALPACA_INTERNAL_INDEX_NOT_PROVEN'):
+            s.build_477_shadow(asof_utc=ASOF,alpaca=x)
+
+    def test_internal_id_digest_disagreement_fails_closed(self):
+        x=fixture();x['event_id_set_sha256']='0'*64
+        with self.assertRaisesRegex(s.ShadowRefused,'ALPACA_EVENT_SET_DIGEST_MISMATCH'):
             s.build_477_shadow(asof_utc=ASOF,alpaca=x)
 
     def test_duplicate_roles_refused(self):
