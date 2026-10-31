@@ -47,6 +47,27 @@ class TradingHubMethodShadowTests(unittest.TestCase):
             walk_forward_audit(self.rows)["selected_net_synthetic_units"],
             walk_forward_audit(self.rows)["fixed_baseline_net_synthetic_units"])
 
+    def test_precommitted_noise_null_average_is_not_extreme(self):
+        # Predeclared before running these particular seeds: 2000..2009.
+        # This is a coarse synthetic null sanity check, NOT a proof of calibration.
+        import random
+        values = []
+        for seed in range(2000, 2010):
+            rng = random.Random(seed)
+            noise = [[rng.gauss(0, 1) for _ in range(320)]
+                     for _ in range(8)]
+            values.append(pbo_cscv(noise)["pbo"])
+        mean = sum(values) / len(values)
+        self.assertGreaterEqual(mean, 0.30, values)
+        self.assertLessEqual(mean, 0.70, values)
+
+    def test_identical_zero_pnl_is_conservative_no_edge(self):
+        # ASC rank ties map to worst rank: do not claim alpha from no variation.
+        p = pbo_cscv([[0.0] * 320 for _ in range(8)])
+        self.assertEqual(p["splits"], 252)
+        self.assertEqual(p["pbo"], 1.0)
+        self.assertEqual(p["oos_loss_fraction"], 1.0)
+
     def test_cscv_rejects_underlength_data(self):
         with self.assertRaisesRegex(ValueError, "PBO_BLOCKS_REQUIRE"):
             pbo_cscv([list(range(30)) for _ in range(4)])
