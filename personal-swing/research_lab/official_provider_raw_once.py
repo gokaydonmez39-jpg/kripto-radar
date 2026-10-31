@@ -100,7 +100,8 @@ def reject_nonfinite(_):
     raise Refused('JSON_NONFINITE')
 
 def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pages=8,
-                     symbols=ALPACA_SCOPE, before_request=None):
+                     symbols=ALPACA_SCOPE, before_request=None,
+                     data_quality='all', include_internal_ids=False):
     """Walk all RAW corporate-action response pages for fixed public sample scope.
 
     Exhaustion is a transport-page result, not a proof of data freshness/PIT.
@@ -119,6 +120,9 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             'DATE_INVALID')
     require(type(limit) is int and 1 <= limit <= 1000 and
             type(max_pages) is int and 1 <= max_pages <= 20, 'BUDGET_INVALID')
+    require(data_quality in ('all', 'complete') and type(data_quality) is str,
+            'DATA_QUALITY_INVALID')
+    require(type(include_internal_ids) is bool, 'INTERNAL_CAPTURE_FLAG_INVALID')
     require(type(symbols) in (tuple, list) and
             1 <= len(symbols) <= 25 and len(set(symbols)) == len(symbols) and
             all(type(s) is str and
@@ -132,7 +136,7 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
     sizes = []
     for _ in range(max_pages):
         query = {'symbols': ','.join(symbols), 'start': start,
-                 'end': end, 'data_quality': 'all', 'region': 'us',
+                 'end': end, 'data_quality': data_quality, 'region': 'us',
                  'limit': str(limit), 'sort': 'asc'}
         if page is not None:
             query['page_token'] = page
@@ -197,17 +201,21 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
                         'ALPACA_PROCESS_DATE_INVALID')
                 require(canonical_id not in known_ids,
                         'ALPACA_DUPLICATE_EVENT_ACROSS_PAGES')
-                known_ids[canonical_id] = (group, when)
+                canonical_raw = json.dumps(row, sort_keys=True, ensure_ascii=True,
+                                           separators=(',', ':'), allow_nan=False)
+                known_ids[canonical_id] = (
+                    group, when, hashlib.sha256(canonical_raw.encode('utf-8')).hexdigest()
+                )
         nxt = data['next_page_token']
         require(nxt is None or (type(nxt) is str and
                 0 < len(nxt) <= 512 and '\n' not in nxt),
                 'ALPACA_PAGE_TOKEN_INVALID')
         if nxt is None:
-            return {
+            summary = {
                 'status': 'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
                 'pages': pages, 'event_ids_observed': len(known_ids),
                 'symbols_requested_count': len(symbols),
-                'raw_bytes_per_page': sizes, 'data_quality_requested': 'all',
+                'raw_bytes_per_page': sizes, 'data_quality_requested': data_quality,
                 'page_chain_exhausted': True,
                 'provider_latency_bounded': False, 'first_known_time_proven': False,
                 'historical_pit_proven': False, 'all_corporate_events_proven': False,
@@ -215,6 +223,11 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
                 'may_place_order': False, 'may_notify': False,
                 'may_write_sheet': False,
             }
+            # Event IDs and row digests are internal, ephemeral and must never
+            # appear in a public Actions log or the normal CLI JSON output.
+            if include_internal_ids:
+                summary['_internal_id_index'] = known_ids
+            return summary
         require(nxt not in tokens, 'ALPACA_PAGE_TOKEN_CYCLE')
         tokens.add(nxt)
         page = nxt
@@ -240,7 +253,8 @@ def read_immutable_477_scope():
     return tuple(scope)
 
 def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
-                  before_request=None):
+                  before_request=None, data_quality='all',
+                  include_internal_ids=False):
     """Bounded 20-batch raw REST proof for existing 477 scope; no event detail logs.
 
     Counts are response records PER QUERY; corporate events appearing in more
@@ -256,27 +270,106 @@ def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
         before_request = lambda: time.sleep(1.05)
     requests = 0
     record_occurrences = 0
+    global_ids = {}
+    groups_observed = {}
+    cross_batch_duplicate_occurrences = 0
     for index in range(0, 477, 25):
         batch = symbols[index:index+25]
         sample = alpaca_raw_audit(
             key=key,secret=secret,start=start,end=end,
             opener=opener, symbols=batch,limit=100,max_pages=8,
-            before_request=before_request)
+            before_request=before_request, data_quality=data_quality,
+            include_internal_ids=True)
         require(sample['symbols_requested_count']==len(batch) and
                 sample['page_chain_exhausted'] is True,
                 'ALPACA_BATCH_UNVERIFIED')
         requests += sample['pages']
         record_occurrences += sample['event_ids_observed']
+        for uid, row_summary in sample.pop('_internal_id_index').items():
+            group, processed, row_hash = row_summary
+            groups_observed[group] = groups_observed.get(group, 0) + 1
+            if uid in global_ids:
+                require(global_ids[uid] == row_summary,
+                        'ALPACA_EVENT_CONFLICT_ACROSS_BATCHES')
+                cross_batch_duplicate_occurrences += 1
+            else:
+                global_ids[uid] = row_summary
     require(requests <= 160, 'ALPACA_REQUEST_BUDGET_EXCEEDED')
-    return {
+    # Fixed delimiter canonicalizes the unique set; digest does not certify
+    # source origin, provider freshness or complete historical coverage.
+    unique_digest = hashlib.sha256(
+        ('\n'.join(sorted(global_ids)) + '\n').encode('ascii')
+    ).hexdigest()
+    summary = {
         'status':'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE',
         'requested_symbols':477, 'batches':20, 'http_pages':requests,
         'observed_query_event_occurrences':record_occurrences,
-        'cross_batch_unique_events_proven':False,
+        'unique_event_ids_observed':len(global_ids),
+        'cross_batch_duplicate_occurrences':cross_batch_duplicate_occurrences,
+        'event_id_set_sha256':unique_digest,
+        'event_group_occurrences':dict(sorted(groups_observed.items())),
+        'data_quality_requested':data_quality,
+        'cross_batch_unique_events_proven':True,
         'provider_latency_bounded':False, 'historical_pit_proven':False,
         'market_event_absence_proven':False, 'may_clear_risk':False,
         'may_modify_al':False, 'may_place_order':False,
         'may_notify':False, 'may_write_sheet':False,
+    }
+    if include_internal_ids:
+        summary['_internal_id_index'] = global_ids
+    return summary
+
+def reconcile_all477_quality(*, key, secret, start, end,
+                             scope=None, opener=None, before_request=None):
+    """Compare two provider data-quality selections with no persisted raw events.
+
+    No guarantee of an atomic provider snapshot across the two fetch passes.
+    A drift or inconsistent subset fails closed, rather than claiming data
+    freshness, event absence, or source point-in-time availability.
+    """
+    all_result = audit_all_477(
+        key=key,secret=secret,start=start,end=end,
+        scope=scope,opener=opener,before_request=before_request,
+        data_quality='all',include_internal_ids=True)
+    complete_result = audit_all_477(
+        key=key,secret=secret,start=start,end=end,
+        scope=scope,opener=opener,before_request=before_request,
+        data_quality='complete',include_internal_ids=True)
+    all_by_id = all_result.pop('_internal_id_index')
+    complete_by_id = complete_result.pop('_internal_id_index')
+    require(all_result['http_pages']+complete_result['http_pages'] <= 320,
+            'QUALITY_RECONCILIATION_PAGE_BUDGET_EXCEEDED')
+    require(set(complete_by_id).issubset(all_by_id),
+            'QUALITY_COMPLETE_NOT_SUBSET_OF_ALL')
+    require(all(all_by_id[uid] == row for uid,row in complete_by_id.items()),
+            'QUALITY_SAME_ID_ROW_DISAGREEMENT')
+    all_only = set(all_by_id) - set(complete_by_id)
+    unmatched_types = {}
+    for uid in all_only:
+        group = all_by_id[uid][0]
+        unmatched_types[group] = unmatched_types.get(group,0)+1
+    return {
+        'status':'OBSERVED_PROVIDER_QUALITY_DELTA_NOT_PIT_CLEARANCE',
+        'requested_symbols':477,
+        'data_quality_values':['all','complete'],
+        'all_observed_unique_events':len(all_by_id),
+        'complete_observed_unique_events':len(complete_by_id),
+        'all_observed_occurrences':all_result['observed_query_event_occurrences'],
+        'complete_observed_occurrences':complete_result['observed_query_event_occurrences'],
+        'all_cross_batch_duplicates':all_result['cross_batch_duplicate_occurrences'],
+        'complete_cross_batch_duplicates':complete_result['cross_batch_duplicate_occurrences'],
+        'all_only_event_ids_count':len(all_only),
+        'all_only_event_group_counts':dict(sorted(unmatched_types.items())),
+        'all_id_set_sha256':all_result['event_id_set_sha256'],
+        'complete_id_set_sha256':complete_result['event_id_set_sha256'],
+        'all_http_pages':all_result['http_pages'],
+        'complete_http_pages':complete_result['http_pages'],
+        'total_http_pages':all_result['http_pages']+complete_result['http_pages'],
+        'provider_snapshot_atomic':False,
+        'connector_event_id_reconciled':False,
+        'first_known_time_proven':False,'historical_pit_proven':False,
+        'may_clear_risk':False,'may_modify_al':False,'may_place_order':False,
+        'may_notify':False,'may_write_sheet':False,
     }
 
 def sec_raw_audit(*, declared_agent, opener=None):
@@ -323,9 +416,26 @@ def main():
     key = os.environ.get('XRAY_ALPACA_DATA_KEY_ID', '')
     secret = os.environ.get('XRAY_ALPACA_DATA_SECRET_KEY', '')
     scope_mode = os.environ.get('XRAY_SOURCE_SCOPE','pilot3')
-    if scope_mode not in ('pilot3','all477'):
+    if scope_mode not in ('pilot3','all477','reconcile477'):
         raise Refused('SOURCE_SCOPE_INVALID')
-    if scope_mode == 'all477':
+    if scope_mode == 'reconcile477':
+        # Reconciliation must compare the SAME historical period, not a
+        # rolling window that silently shifts if run after midnight UTC.
+        start = os.environ.get('XRAY_RECONCILE_START','')
+        end = os.environ.get('XRAY_RECONCILE_END','')
+        require(type(start) is str and type(end) is str and
+                re.fullmatch(r'\d{4}-\d{2}-\d{2}',start) is not None and
+                re.fullmatch(r'\d{4}-\d{2}-\d{2}',end) is not None,
+                'RECONCILIATION_DATES_REQUIRED')
+        try:
+            start_date, end_date = date.fromisoformat(start), date.fromisoformat(end)
+        except ValueError:
+            raise Refused('RECONCILIATION_DATES_INVALID') from None
+        require(start_date.isoformat() == start and end_date.isoformat() == end and
+                start_date <= end_date <= today, 'RECONCILIATION_DATES_INVALID')
+        alpaca_fn = lambda: reconcile_all477_quality(
+            key=key,secret=secret,start=start,end=end)
+    elif scope_mode == 'all477':
         alpaca_fn = lambda: audit_all_477(
             key=key,secret=secret,start=start,end=end)
     else:
@@ -350,7 +460,8 @@ def main():
             if source == 'ALPACA_CORPORATE_ACTIONS':
                 require(value.get('status') in (
                     'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
-                    'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE'
+                    'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE',
+                    'OBSERVED_PROVIDER_QUALITY_DELTA_NOT_PIT_CLEARANCE'
                 ) and value.get('may_clear_risk') is False,
                         'ALPACA_ACCEPTANCE_STATUS_INVALID')
             else:
