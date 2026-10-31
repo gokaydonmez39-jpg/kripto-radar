@@ -3,6 +3,15 @@ on:
   # This file must exist on the default branch to be manually triggered.
   # No PR trigger, no schedule, no external push/dispatch trigger.
   workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Alpaca raw audit scope; pilot3 recommended first, all477 explicit'
+        required: true
+        type: choice
+        options:
+          - pilot3
+          - all477
+        default: pilot3
 permissions:
   contents: read
 concurrency:
@@ -30,6 +39,7 @@ jobs:
       - name: One-shot SEC + Alpaca raw HTTPS evidence (public-safe metadata only)
         working-directory: personal-swing/research_lab
         env:
+          XRAY_SOURCE_SCOPE: ${{ inputs.scope }}
           XRAY_SEC_DECLARED_USER_AGENT: ${{ secrets.XRAY_SEC_DECLARED_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
