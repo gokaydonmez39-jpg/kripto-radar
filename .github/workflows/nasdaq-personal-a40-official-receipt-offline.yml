@@ -1,28 +1,38 @@
-name: XRAY NASDAQ A40 Official 477 EOD Receipt Admission Offline
+name: XRAY NASDAQ A40 Official P0 Source and 477 Receipt Admission Offline
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'personal-swing/research_lab/official_eod_shadow_receipt.py'
-      - 'personal-swing/research_lab/test_official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/official_*.py'
+      - 'personal-swing/research_lab/test_official_*.py'
+      - 'personal-swing/research_lab/qlib_pit_readiness_shadow.py'
+      - 'personal-swing/research_lab/test_qlib_pit_readiness_shadow.py'
+      - 'personal-swing/research_lab/a37_anchored_walkforward_shadow.py'
+      - 'personal-swing/research_lab/test_a37_anchored_walkforward_shadow.py'
       - 'personal-swing/research_lab/test_a40_official_receipt_contract.py'
+      - 'personal-swing/research_lab/A40_P0_SOURCE_ADMISSION.md'
       - '.github/workflows/nasdaq-personal-a40-official-receipt-offline.yml'
   push:
     branches: [main]
     paths:
-      - 'personal-swing/research_lab/official_eod_shadow_receipt.py'
-      - 'personal-swing/research_lab/test_official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/official_*.py'
+      - 'personal-swing/research_lab/test_official_*.py'
+      - 'personal-swing/research_lab/qlib_pit_readiness_shadow.py'
+      - 'personal-swing/research_lab/test_qlib_pit_readiness_shadow.py'
+      - 'personal-swing/research_lab/a37_anchored_walkforward_shadow.py'
+      - 'personal-swing/research_lab/test_a37_anchored_walkforward_shadow.py'
       - 'personal-swing/research_lab/test_a40_official_receipt_contract.py'
+      - 'personal-swing/research_lab/A40_P0_SOURCE_ADMISSION.md'
       - '.github/workflows/nasdaq-personal-a40-official-receipt-offline.yml'
 
 permissions:
   contents: read
 
 jobs:
-  offline-a40-eod-receipt-admission:
+  offline-a40-p0-source-admission:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 9
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -30,9 +40,11 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - name: Existing EOD readback plus A40 adversarial negative tests
+      - name: Existing Alpaca SEC Nasdaq 477 receipt and PIT negative regressions
         working-directory: personal-swing/research_lab
-        run: python -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract
-      - name: Repeat in optimized mode to catch assert bypass
+        run: |
+          python -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract test_official_source_evidence_gate test_official_event_risk_shadow test_official_477_shadow test_official_provider_raw_once test_qlib_pit_readiness_shadow test_a37_anchored_walkforward_shadow
+      - name: Repeat full P0-PIT admission with optimized Python
         working-directory: personal-swing/research_lab
-        run: python -O -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract
+        run: |
+          python -O -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract test_official_source_evidence_gate test_official_event_risk_shadow test_official_477_shadow test_official_provider_raw_once test_qlib_pit_readiness_shadow test_a37_anchored_walkforward_shadow
