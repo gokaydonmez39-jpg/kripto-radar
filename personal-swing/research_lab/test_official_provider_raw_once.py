@@ -434,13 +434,48 @@ class ManualRawProviderTests(unittest.TestCase):
             'XRAY_SEC_DECLARED_USER_AGENT':'',
             'XRAY_ALPACA_DATA_KEY_ID':'synthetic-key',
             'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic-secret',
-            'XRAY_SOURCE_SCOPE':'reconcile477'},clear=True):
-            with patch.object(m,'reconcile_all477_quality',return_value=result):
+            'XRAY_SOURCE_SCOPE':'reconcile477',
+            'XRAY_RECONCILE_START':START,
+            'XRAY_RECONCILE_END':END},clear=True):
+            with patch.object(m,'reconcile_all477_quality',return_value=result) as spy:
                 with redirect_stdout(out):
                     rc=m.main()
         self.assertEqual(rc,0)
+        self.assertEqual(spy.call_args.kwargs['start'],START)
+        self.assertEqual(spy.call_args.kwargs['end'],END)
         self.assertIn('OBSERVED_PROVIDER_QUALITY_DELTA_NOT_PIT_CLEARANCE',out.getvalue())
         self.assertNotIn(ID1,out.getvalue())
+
+    def test_reconcile477_no_dates_refused_before_any_provider_call(self):
+        with patch.dict(os.environ,{
+            'XRAY_SOURCE_SCOPE':'reconcile477',
+            'XRAY_RECONCILE_START':'',
+            'XRAY_RECONCILE_END':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'synthetic',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic',
+            'XRAY_SEC_DECLARED_USER_AGENT':''},clear=True):
+            with patch.object(m,'reconcile_all477_quality',
+                              side_effect=AssertionError('MUST_NOT_CALL')):
+                with self.assertRaisesRegex(m.Refused,
+                        'RECONCILIATION_DATES_REQUIRED'):
+                    m.main()
+
+    def test_reconcile477_invalid_calendar_dates_refused(self):
+        for start,end in (('2026-02-30','2026-10-31'),
+                          ('2026-11-01','2026-10-31'),
+                          ('2026-10-01','2099-10-31')):
+            with patch.dict(os.environ,{
+                'XRAY_SOURCE_SCOPE':'reconcile477',
+                'XRAY_RECONCILE_START':start,
+                'XRAY_RECONCILE_END':end,
+                'XRAY_ALPACA_DATA_KEY_ID':'synthetic',
+                'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic',
+                'XRAY_SEC_DECLARED_USER_AGENT':''},clear=True):
+                with patch.object(m,'reconcile_all477_quality',
+                                  side_effect=AssertionError('MUST_NOT_CALL')):
+                    with self.assertRaisesRegex(m.Refused,
+                            'RECONCILIATION_DATES_INVALID'):
+                        m.main()
 
     def test_sec_no_genuine_contact_refused_without_http(self):
         op=Opener(Response(sec_fixture()))
