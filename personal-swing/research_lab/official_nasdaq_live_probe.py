@@ -129,18 +129,27 @@ def compare_current_directory_scope(raw, watchlist):
     matching = 0
     flagged = 0
     missing = 0
-    for s in symbols:
+    flagged_details = []
+    for position, s in enumerate(symbols):
         row = entries.get(s)
         if row is None:
             missing += 1
         elif any(row[positions[k]] != 'N' for k in
                  ('Test Issue', 'Financial Status', 'ETF')):
             flagged += 1
+            flagged_details.append((position, {
+                k: row[positions[k]] for k in ('Test Issue', 'Financial Status', 'ETF')
+                if row[positions[k]] != 'N'
+            }))
         else:
             matching += 1
     if matching + flagged + missing != 477:
         raise ValueError('SCOPE_PARTITION_INVALID')
+    unique_flagged = flagged_details[0] if len(flagged_details) == 1 else None
     return {
+        'flagged_watchlist_index_zero_based': (unique_flagged[0]
+                                               if unique_flagged else None),
+        'flagged_directory_fields': unique_flagged[1] if unique_flagged else None,
         'scope_count': 477, 'directory_basic_flag_match': matching,
         'directory_flagged': flagged, 'directory_missing': missing,
         'scope_sha256': hashlib.sha256(
