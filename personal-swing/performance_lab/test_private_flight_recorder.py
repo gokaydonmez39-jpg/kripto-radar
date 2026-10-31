@@ -257,5 +257,75 @@ class FlightNegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(g.FlightRecorderBlocked,'TOO_LARGE'):
             g.inspect(*b)
 
+    def test_new_52_session_high_event_recognized(self):
+        b = data()
+        row = list(b[2][1])
+        row[0] = KEY+'|'+DAY+'|NEW_52_SESSION_HIGH|1'
+        row[5] = 'NEW_52_SESSION_HIGH'
+        b[2].append(row)
+        self.assertEqual(g.inspect(*b)['event_count'], 2)
+
+    def test_near_stop_one_atr_event_recognized(self):
+        b = data()
+        row = list(b[2][1])
+        row[0] = KEY+'|'+DAY+'|NEAR_STOP_1ATR|1'
+        row[5] = 'NEAR_STOP_1ATR'
+        b[2].append(row)
+        self.assertEqual(g.inspect(*b)['event_count'], 2)
+
+    def test_disputed_event_is_quarantined_not_delivered(self):
+        import alert_ledger_contract as contract
+        b = data()
+        row = list(b[2][1])
+        row[0] = KEY+'|'+DAY+'|NEW_52_SESSION_HIGH|1'
+        row[5] = 'NEW_52_SESSION_HIGH'
+        row[17] = contract.QUARANTINED
+        b[2].append(row)
+        report = g.inspect(*b)
+        self.assertEqual(report['state'], 'HOLD_DISPUTED_EVENT_NON_EMITTING')
+        self.assertEqual(report['quarantined_events'], 1)
+        self.assertEqual(report['device_receipts_verified'], 0)
+        self.assertEqual(contract.delivery_status(b[2], row[0]),
+                         'DATA_DISPUTE_QUARANTINED_NO_DELIVERY')
+        with self.assertRaisesRegex(contract.LedgerRefused, 'EVENT_ALREADY_RECORDED_NO_RESEND'):
+            contract.verify_first_reservation(b[2], b[2], [row[0]])
+
+    def test_missing_al_reservation_remains_higher_priority_than_review_hold(self):
+        import alert_ledger_contract as contract
+        b = data()
+        b[2] = [b[2][0]]
+        row = [EVENT.replace('AL_NEW_EPISODE', 'NEW_52_SESSION_HIGH'), KEY, DAY,
+               'FAKE', DAY, 'NEW_52_SESSION_HIGH', 'REVIEW', '100', '95', '110',
+               '', '', '', '', '', '', '', contract.QUARANTINED, '', '']
+        b[2].append(row)
+        report = g.inspect(*b)
+        self.assertEqual(report['state'], 'PENDING_CURRENT_EOD_OUTBOX_RESERVATION')
+        self.assertEqual(report['unreserved_current_eod_al'], 1)
+        self.assertEqual(report['quarantined_events'], 1)
+
+    def test_fake_quarantine_on_buy_is_rejected(self):
+        import alert_ledger_contract as contract
+        b = data()
+        b[2][1][17] = contract.QUARANTINED
+        with self.assertRaisesRegex(g.FlightRecorderBlocked, 'UNATTESTED_DELIVERY_STATE'):
+            g.inspect(*b)
+        with self.assertRaisesRegex(contract.LedgerRefused, 'QUARANTINE_WRONG_EVENT_TYPE'):
+            contract.parse_ledger(b[2])
+
+    def test_non_terminal_warning_cannot_close_position(self):
+        b = data()
+        b[0][1][7] = 'KAPALI • NEAR_STOP_1ATR • 1/15 SEANS'
+        b[0][1][8] = DAY
+        b[0][1][9] = 'NEAR_STOP_1ATR'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked, 'TERMINAL_EVENT_INVALID'):
+            g.inspect(*b)
+
+    def test_unknown_event_type_still_blocks(self):
+        b = data()
+        b[2][1][0] = KEY+'|'+DAY+'|INVENTED_EVENT|1'
+        b[2][1][5] = 'INVENTED_EVENT'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked, 'EVENT_WRONG_EPISODE_OR_DAY'):
+            g.inspect(*b)
+
 if __name__=='__main__':
     unittest.main()

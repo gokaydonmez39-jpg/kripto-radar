@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER
 from private_lifecycle import ALERT_HEADER, EVENT_PENDING
+from alert_ledger_contract import TYPES as REVIEWED_EVENT_CODES, QUARANTINED
 from performance_lab.private_performance_adapter import PrivateSheetReadOnly, _fingerprints
 import daily_job
 
@@ -23,8 +24,10 @@ CANDIDATE_KEY = re.compile(r'^([0-9]{4}-[0-9]{2}-[0-9]{2})\|([A-Z][A-Z0-9.]{0,15
 PENDING = frozenset((EVENT_PENDING, 'ALERT_REQUESTED_NOT_DEVICE_ACK'))
 UNKNOWN = 'DELIVERY_UNKNOWN_REVIEW_REQUIRED'
 USER_ATTESTED = 'DEVICE_ACK_USER_ATTESTED'
-EVENT_CODES = frozenset((
-    'AL_NEW_EPISODE', 'STOP_TOUCHED', 'TARGET_TOUCHED',
+EVENT_CODES = REVIEWED_EVENT_CODES
+# Warning codes must not be promoted to terminal outcomes.
+TERMINAL_CODES = frozenset((
+    'STOP_TOUCHED', 'TARGET_TOUCHED',
     'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE',
     'GAP_BELOW_STOP'
 ))
@@ -122,8 +125,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
                  'FLIGHT_CLOSED_MISSING_EVIDENCE')
             closed_n += 1
             terminal_day, terminal_kind = value(row,8), value(row,9)
-            need(start <= terminal_day <= cutoff and terminal_kind in EVENT_CODES
-                 and terminal_kind != 'AL_NEW_EPISODE',
+            need(start <= terminal_day <= cutoff and terminal_kind in TERMINAL_CODES,
                  'FLIGHT_TERMINAL_EVENT_INVALID')
             terminal_expected.add(f'{key}|{terminal_day}|{terminal_kind}|1')
         else:
@@ -138,6 +140,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     unknown_delivery = 0
     user_attested_status_rows = 0
     explicit_unknown_status_rows = 0
+    quarantined_events = 0
     for row in alerts:
         need(len(row) >= 18, 'FLIGHT_EVENT_INCOMPLETE')
         eventkey = value(row,0)
@@ -163,6 +166,9 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         elif status == UNKNOWN:
             explicit_unknown_status_rows += 1
             pending += 1
+        elif status == QUARANTINED and code == 'NEW_52_SESSION_HIGH':
+            # No delivery claim or new signal may follow from a disputed row.
+            quarantined_events += 1
         else:
             # Arbitrary DELIVERY claims and unrecognized states are forbidden.
             unknown_delivery += 1
@@ -210,6 +216,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     return {
         'schema':'XRAY_PRIVATE_A22_ZERO_LOSS_SENTINEL_V1',
         'state':('PENDING_CURRENT_EOD_OUTBOX_RESERVATION' if missing_current
+                 else 'HOLD_DISPUTED_EVENT_NON_EMITTING' if quarantined_events
                  else 'PASS_PENDING_DEVICE_ACK' if pending
                  else 'PASS_NO_PENDING_EVENTS'),
         'latest_verified_scan_asof':cutoff,
@@ -225,6 +232,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'matched_terminal_outbox':len(terminal_expected),
         'paired_gap_below_stop_annotations':len(gap_event_owner_days),
         'pending_device_ack':pending,
+        'quarantined_events':quarantined_events,
         'user_attested_status_rows':user_attested_status_rows,
         'explicit_unknown_status_rows':explicit_unknown_status_rows,
         'device_receipts_verified':0,
