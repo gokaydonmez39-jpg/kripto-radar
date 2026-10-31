@@ -142,5 +142,32 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertFalse(x['dispatch_requested'])
 
 
+    def test_hidden_existing_run_on_second_page_fails_closed(self):
+        # Repro: 50 unrelated first-page runs hide a valid current-epoch
+        # main run on the next page. Never emit a duplicate dispatch.
+        calls=[]
+        payload={'workflow_runs':[
+            record(created='2026-10-27T00:24:00Z',
+                   event='pull_request',branch='feature')
+            for _ in range(50)],'total_count':51}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=lambda:payload,
+                      request_dispatch=lambda asof:calls.append(asof) or True)
+        self.assertEqual(calls,[])
+        self.assertEqual(result['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+        self.assertFalse(result['dispatch_requested'])
+
+    def test_missing_or_forged_pagination_total_fails_closed(self):
+        now=utc('2026-10-27T00:25:00Z')
+        for total in (None,False,'0',-1):
+            with self.subTest(total=total):
+                calls=[]
+                out=sf.run(now=now,read_runs=lambda:{
+                    'workflow_runs':[], 'total_count':total},
+                    request_dispatch=lambda asof:calls.append(asof) or True)
+                self.assertEqual(calls,[])
+                self.assertEqual(out['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+
+
 if __name__=='__main__':
     unittest.main()
