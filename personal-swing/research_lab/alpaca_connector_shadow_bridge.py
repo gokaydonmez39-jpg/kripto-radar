@@ -5,7 +5,7 @@ This module NEVER fetches data, sends an alert or changes a trading decision.
 Only the externally supplied connector reply is inspected. No completeness
 or point-in-time first-known evidence is inferred from a sample.
 """
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from uuid import UUID
 import math
 import re
@@ -145,4 +145,65 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
         'may_modify_stop_target': False, 'may_notify': False,
         'may_place_order': False, 'may_write_private_sheets': False,
         'vendor_calls_made_by_bridge': 0
+    }
+
+
+def reconcile_date_partitions(full_payload, partitions, *, symbols, start, end,
+                              observed_at_utc):
+    """Compare independently fetched, contiguous nonoverlapping sample windows.
+
+    Even an exact union match never proves API pagination, data rights,
+    source first-known time, or completeness of provider-published events.
+    Neither input is an authoritative market-event list.
+    """
+    need(type(partitions) is list and 1 <= len(partitions) <= 24,
+         'PARTITION_COUNT_INVALID')
+    begin, finish = canonical_date(start), canonical_date(end)
+    need(begin <= finish, 'PARTITION_SCOPE_INVALID')
+    full = audit_connector_sample(full_payload, symbols=symbols, start=start,
+                                  end=end, observed_at_utc=observed_at_utc)
+    need(full['status'] != 'CAP_REACHED_COVERAGE_UNKNOWN',
+         'FULL_REQUEST_LIMIT_REACHED')
+    expected_begin = begin
+    combined = {}
+    for piece in partitions:
+        need(type(piece) is dict and type(piece.get('request')) is dict,
+             'PARTITION_PAYLOAD_MISSING')
+        query = piece['request']
+        window_start = canonical_date(query.get('start'))
+        window_end = canonical_date(query.get('end'))
+        need(window_start == expected_begin and
+             window_start <= window_end <= finish,
+             'PARTITION_GAP_OVERLAP_OR_ORDER')
+        audited = audit_connector_sample(
+            piece, symbols=symbols,
+            start=window_start.isoformat(), end=window_end.isoformat(),
+            observed_at_utc=observed_at_utc)
+        need(audited['status'] != 'CAP_REACHED_COVERAGE_UNKNOWN',
+             'PARTITION_REQUEST_LIMIT_REACHED')
+        for record in audited['events']:
+            need(record['id'] not in combined, 'PARTITION_DUPLICATE_EVENT')
+            combined[record['id']] = record
+        expected_begin = window_end + timedelta(days=1)
+    need(expected_begin == finish + timedelta(days=1),
+         'PARTITION_NOT_EXHAUSTIVE')
+    by_id = {event['id']:event for event in full['events']}
+    need(len(by_id) == len(full['events']), 'FULL_DUPLICATE_EVENT')
+    need(by_id == combined, 'PARTITION_EVENT_SET_OR_FIELD_MISMATCH')
+    return {
+        'schema': 'XRAY_NASDAQ_ALPACA_PARTITION_RECONCILIATION_V1',
+        'status': 'OBSERVED_EVENT_SET_MATCH_NOT_COMPLETE',
+        'full_sample_count': len(by_id),
+        'partition_sample_count': len(combined),
+        'partition_count': len(partitions),
+        'full_sort_disputed': not full['process_date_order_matches_requested_sort'],
+        'pagination_completeness_proven': False,
+        'first_known_time_proven': False,
+        'unpublished_event_absence_proven': False,
+        'all_event_kinds_proven': False,
+        'may_generate_al': False,
+        'may_modify_stop_target': False,
+        'may_notify': False,
+        'may_write_private_sheets': False,
+        'may_place_order': False,
     }
