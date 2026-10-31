@@ -76,6 +76,8 @@ def read_json_once(url, *, headers, opener=None, size_limit=4_000_000):
         payload = json.loads(raw.decode('utf-8', errors='strict'),
                              object_pairs_hook=unique_object,
                              parse_constant=reject_nonfinite)
+    except Refused:
+        raise
     except (UnicodeError, ValueError, TypeError):
         raise Refused('JSON_UNREADABLE') from None
     return payload, {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
