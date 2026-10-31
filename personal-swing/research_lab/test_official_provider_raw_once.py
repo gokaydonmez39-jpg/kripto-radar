@@ -50,7 +50,19 @@ def item(uid=ID1, day='2026-10-15'):
     return {'id':uid,'process_date':day,'symbol':'GILD'}
 
 def pages(*data):
-    return Opener(*(Response(d) for d in data))
+    # Adapt legacy synthetic row fixtures to the provider's documented RAW
+    # corporate_actions envelope, not the connected-app flattened output.
+    result = []
+    for d in data:
+        if 'corporate_actions' in d:
+            envelope = d
+        else:
+            envelope = {'corporate_actions': {
+                k: v for k, v in d.items() if k != 'next_page_token'}}
+            if 'next_page_token' in d:
+                envelope['next_page_token'] = d['next_page_token']
+        result.append(Response(envelope))
+    return Opener(*result)
 
 def audit(op, *, max_pages=8, limit=100):
     return m.alpaca_raw_audit(key='synthetic-id',secret='synthetic-secret',
@@ -65,6 +77,35 @@ def sec_fixture():
                 'acceptanceDateTime':['2026-10-30T20:00:00Z']}}}
 
 class ManualRawProviderTests(unittest.TestCase):
+    def test_flat_connected_app_response_is_rejected_as_nonraw(self):
+        op=Opener(Response({
+            'cash_dividends':[item()], 'next_page_token':None}))
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_NESTED_GROUPS_MISSING'):
+            audit(op)
+
+    def test_real_nested_envelope_is_read(self):
+        op=Opener(Response({
+            'corporate_actions':{'cash_dividends':[item()]},
+            'next_page_token':None}))
+        result=audit(op)
+        self.assertEqual(result['pages'],1)
+        self.assertEqual(result['event_ids_observed'],1)
+        self.assertFalse(result['may_clear_risk'])
+
+    def test_raw_unexpected_root_metadata_refused(self):
+        op=Opener(Response({
+            'corporate_actions':{},'next_page_token':None,'success':True}))
+        with self.assertRaisesRegex(m.Refused,'ALPACA_ROOT_SCHEMA_DRIFT'):
+            audit(op)
+
+    def test_raw_null_nested_groups_refused(self):
+        op=Opener(Response({
+            'corporate_actions':None,'next_page_token':None}))
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_GROUP_CONTAINER_INVALID'):
+            audit(op)
+
     def test_alpaca_one_page_complete_transport_only(self):
         op=pages({'cash_dividends':[item()], 'next_page_token':None})
         outcome=audit(op)
