@@ -113,7 +113,7 @@ def audit_capture(capture, *, source, ticker, asof_utc, cik=None):
     # and strip only that exact three-byte marker for the XML parser.
     # JSON and Symbol Directory remain strict and refuse it.
     if body.startswith('\ufeff'):
-        demand(source == 'NASDAQ_HALTS' and raw.startswith(b'\\xef\\xbb\\xbf'),
+        demand(source == 'NASDAQ_HALTS' and raw.startswith(b'\xef\xbb\xbf'),
                'UTF8_BOM_UNSUPPORTED')
         body = body[1:]
     if source == 'SEC_EDGAR':
