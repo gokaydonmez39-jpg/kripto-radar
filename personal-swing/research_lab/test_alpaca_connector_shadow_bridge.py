@@ -75,7 +75,7 @@ class ConnectedSampleTests(unittest.TestCase):
         parts[1]['announcements']['cash_dividends'][0]['id']=(
             parts[0]['announcements']['cash_dividends'][0]['id'])
         with self.assertRaisesRegex(SampleRejected,
-                                    'PARTITION_EVENT_SET_OR_FIELD_MISMATCH'):
+                                    'PARTITION_DUPLICATE_EVENT'):
             self.reconcile(parts=parts)
 
     def test_partition_missing_event_rejected(self):
