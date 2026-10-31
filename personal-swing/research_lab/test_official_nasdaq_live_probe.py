@@ -71,6 +71,18 @@ class ProbeTests(unittest.TestCase):
         self.assertIn(result['state'],
                       ('HTTP_AND_FORMAT_OBSERVED_NOT_LIVE_ACCEPTANCE','READER_REJECTED'))
 
+    def test_real_xml_bom_accepted_by_live_diagnostic(self):
+        raw = b'\xef\xbb\xbf' + rss()
+        result = p.evaluate_response(
+            'NASDAQ_HALTS', raw=raw, status=200,
+            response_url=p.expected_url('NASDAQ_HALTS', None),
+            content_type='text/xml', observed_at_utc=NOW)
+        self.assertEqual(result['state'],
+                         'HTTP_AND_FORMAT_OBSERVED_NOT_LIVE_ACCEPTANCE')
+        self.assertEqual(result['body_sha256'],
+                         __import__('hashlib').sha256(raw).hexdigest())
+        self.assertFalse(result['may_clear_risk'])
+
     def test_untrusted_redirect_fails(self):
         result=p.evaluate_response(
             'NASDAQ_HALTS', raw=rss(),status=200,
