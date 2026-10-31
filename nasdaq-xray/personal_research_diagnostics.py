@@ -21,6 +21,22 @@ HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 TICKER = re.compile(r"[A-Z][A-Z0-9.]{0,9}\Z")
 REASON = re.compile(r"[A-Z0-9_]+\Z")
+# Producer-compatible terminal/pending partition; never let unreviewed states pass.
+PENDING_STATES = frozenset((
+    "UNKNOWN_260_OFFICIAL_HISTORY",
+    "UNKNOWN_CORPORATE_ACTION_PIT",
+    "UNKNOWN_52_COMPLETED_WEEKS",
+    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
+))
+TERMINAL_STATES = frozenset((
+    "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+    "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+    "TECHNICAL_GEOMETRY_NOT_APPROVED",
+    "FAIL_OFFICIAL_LISTED_HISTORY_LT260",
+    "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
+    "TECHNICAL_WATCH_NEEDS_PRIMARY",
+    "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN",
+))
 
 
 def check(ok, reason):
@@ -76,7 +92,8 @@ def verify(d):
           and set(pending).issubset(names) and type(state) is dict
           and all(type(n) is int and n >= 0 for n in state.values())
           and sum(state.values()) == len(names)
-          and state.get("UNKNOWN_260_OFFICIAL_HISTORY", 0) == len(pending)
+          and set(state).issubset(PENDING_STATES | TERMINAL_STATES)
+          and sum(state.get(s, 0) for s in PENDING_STATES) == len(pending)
           and type(d.get("technical_evaluated_count")) is int
           and d["technical_evaluated_count"] + len(pending) == len(names),
           "WATCH_PARTITION")
@@ -212,6 +229,54 @@ def selftest():
             except ValueError:
                 continue
             raise AssertionError("MUTATION_FALSE_PASS_" + label)
+    # Valid mixed pending classes from the actual producer MUST pass.
+    # The pre-repair validator failed this fixture with WATCH_PARTITION.
+    mixed = deepcopy(d)
+    mixed["liquidity_watch_symbols"] = ["AAPL", "MSFT", "TSLA"]
+    mixed["watchlist_count"] = 3
+    mixed["technical_pending_symbols"] = ["AAPL", "MSFT"]
+    mixed["technical_evaluated_count"] = 1
+    mixed["technical_state_counts"] = {
+        "UNKNOWN_260_OFFICIAL_HISTORY": 1,
+        "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
+        "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 1,
+    }
+    check(build(mixed, original)["technical_pending_count"] == 2,
+          "MIXED_PENDING_POSITIVE")
+    for label, mutation in (
+        ("UNREVIEWED_PENDING_STATUS", lambda x: x["technical_state_counts"].update(
+            {"UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 0, "UNKNOWN_FABRICATED": 1})),
+        ("MISSING_PENDING_ID", lambda x: x.update(
+            technical_pending_symbols=["AAPL"])),
+        ("FALSE_TERMINAL_PROMOTION", lambda x: x["technical_state_counts"].update(
+            {"UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 0,
+             "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 2})),
+    ):
+        altered = deepcopy(mixed)
+        mutation(altered)
+        try:
+            build(altered, original)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("FALSE_MIXED_PARTITION_PASS_" + label)
+    # End-to-end read-only canonical checked-in source test (no vendor IO).
+    from personal_research_signal_digest import build as build_digest, VALID_RESULT
+    check(VALID_RESULT == PENDING_STATES | TERMINAL_STATES,
+          "PRODUCER_STATUS_CONTRACT_DRIFT")
+    epoch = observed_blobs()
+    actual_digest = build_digest(
+        json.loads((ROOT / "orchestrator_state.json").read_text()),
+        json.loads((ROOT / "canonical_current_master_manifest.json").read_text()),
+        json.loads((ROOT / "canonical_current_price_dv30.json").read_text()),
+        epoch)
+    actual_report = build(actual_digest, epoch)
+    check(actual_report["technical_pending_count"] ==
+          len(actual_digest["technical_pending_symbols"])
+          and actual_report["status"] == "SOURCE_BOUND_RESEARCH_ONLY_NOT_BUY"
+          and actual_report["registered_r92_count"] == 0
+          and actual_report["automated_alert_authority"] is False,
+          "CANONICAL_MIXED_PRODUCER_CONTRACT")
     print("XRAY_PERSONAL_DIAGNOSTICS=PASS_10_BASE_NEGATIVES"
           "_3_TRIGGER_NEGATIVES_STALE_REDACT_NO_R92")
 
