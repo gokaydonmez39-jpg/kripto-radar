@@ -1,11 +1,9 @@
 name: XRAY NASDAQ Official Source One-Shot Diagnostic (NO SIGNALS)
 on:
+  # One-shot must not run on every PR synchronize/commit.
+  # Apply this exact label explicitly to trigger a single diagnostic.
   pull_request:
-    types: [opened, synchronize]
-    paths:
-      - 'personal-swing/research_lab/official_nasdaq_live_probe.py'
-      - 'personal-swing/research_lab/test_official_nasdaq_live_probe.py'
-      - '.github/workflows/xray-nasdaq-official-one-shot.yml'
+    types: [labeled]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,7 +12,11 @@ concurrency:
   cancel-in-progress: false
 jobs:
   research-source-diagnostic:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.action == 'labeled' &&
+       github.event.label.name == 'xray-official-source-once' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
