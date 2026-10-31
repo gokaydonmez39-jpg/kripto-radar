@@ -50,7 +50,19 @@ def item(uid=ID1, day='2026-10-15'):
     return {'id':uid,'process_date':day,'symbol':'GILD'}
 
 def pages(*data):
-    return Opener(*(Response(d) for d in data))
+    # Adapt legacy synthetic row fixtures to the provider's documented RAW
+    # corporate_actions envelope, not the connected-app flattened output.
+    result = []
+    for d in data:
+        if 'corporate_actions' in d:
+            envelope = d
+        else:
+            envelope = {'corporate_actions': {
+                k: v for k, v in d.items() if k != 'next_page_token'}}
+            if 'next_page_token' in d:
+                envelope['next_page_token'] = d['next_page_token']
+        result.append(Response(envelope))
+    return Opener(*result)
 
 def audit(op, *, max_pages=8, limit=100):
     return m.alpaca_raw_audit(key='synthetic-id',secret='synthetic-secret',
@@ -65,6 +77,35 @@ def sec_fixture():
                 'acceptanceDateTime':['2026-10-30T20:00:00Z']}}}
 
 class ManualRawProviderTests(unittest.TestCase):
+    def test_flat_connected_app_response_is_rejected_as_nonraw(self):
+        op=Opener(Response({
+            'cash_dividends':[item()], 'next_page_token':None}))
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_NESTED_GROUPS_MISSING'):
+            audit(op)
+
+    def test_real_nested_envelope_is_read(self):
+        op=Opener(Response({
+            'corporate_actions':{'cash_dividends':[item()]},
+            'next_page_token':None}))
+        result=audit(op)
+        self.assertEqual(result['pages'],1)
+        self.assertEqual(result['event_ids_observed'],1)
+        self.assertFalse(result['may_clear_risk'])
+
+    def test_raw_unexpected_root_metadata_refused(self):
+        op=Opener(Response({
+            'corporate_actions':{},'next_page_token':None,'success':True}))
+        with self.assertRaisesRegex(m.Refused,'ALPACA_ROOT_SCHEMA_DRIFT'):
+            audit(op)
+
+    def test_raw_null_nested_groups_refused(self):
+        op=Opener(Response({
+            'corporate_actions':None,'next_page_token':None}))
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_GROUP_CONTAINER_INVALID'):
+            audit(op)
+
     def test_alpaca_one_page_complete_transport_only(self):
         op=pages({'cash_dividends':[item()], 'next_page_token':None})
         outcome=audit(op)
@@ -131,6 +172,53 @@ class ManualRawProviderTests(unittest.TestCase):
         op=pages({'cash_dividends':[item(day='2026-10-32')],
                   'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_PROCESS_DATE_INVALID'):
+            audit(op)
+
+    def test_realistic_merger_acquirer_in_scope_accepted(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN', 'acquiree_symbol':'BLFS'
+        }], 'next_page_token':None})
+        result=m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+            start=START,end=END,symbols=('RGEN',),
+            opener=op)
+        self.assertEqual(result['event_ids_observed'],1)
+        self.assertFalse(result['may_clear_risk'])
+
+    def test_merger_both_issuers_outside_scope_rejected(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN','acquiree_symbol':'BLFS'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_EVENT_OUTSIDE_REQUEST_SCOPE'):
+            m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+                start=START,end=END,symbols=('SWKS',),opener=op)
+
+    def test_missing_merger_counterparty_fails(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_MERGER_IDENTITY_MISSING'):
+            m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+                start=START,end=END,symbols=('RGEN',),opener=op)
+
+    def test_cash_dividend_requires_its_own_in_scope_symbol(self):
+        op=pages({'cash_dividends':[{
+            'id':ID1,'process_date':'2026-10-15',
+            'acquirer_symbol':'GILD','symbol':'OUT'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_CASH_DIVIDEND_SYMBOL_REQUIRED'):
+            audit(op)
+
+    def test_event_without_any_supported_symbol_is_refused(self):
+        op=pages({'cash_dividends':[{
+            'id':ID1,'process_date':'2026-10-15'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_SYMBOL_INVALID'):
             audit(op)
 
     def test_alpaca_noncanonical_event_date_rejected(self):
@@ -224,7 +312,7 @@ class ManualRawProviderTests(unittest.TestCase):
 
     def test_477_batch_failure_stops_all_remaining_requests(self):
         scope=tuple(f'T{i:04d}' for i in range(477))
-        op=pages({'next_page_token':None}, {'cash_dividends':[item(uid='bad')],
+        op=pages({'next_page_token':None}, {'cash_dividends':[dict(item(uid='bad'),symbol='T0025')],
                         'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_ID_INVALID'):
             m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
