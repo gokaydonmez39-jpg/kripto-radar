@@ -26,3 +26,14 @@ A11 offline CI executes normal and optimized `test_official_source_evidence_gate
 ### Not yet achieved
 
 A rights-compliant live read of original SEC JSON, Nasdaq RSS XML, and current Symbol Directory bytes, independently attested origin and capture timestamp, publication-vs-acceptance PIT analysis, and complete event coverage all remain **NOT PROVEN**. Do not promote a synthetic PASS to production clearance.
+
+
+## PR-only live HTTP probe (no production integration)
+
+`official_nasdaq_live_probe.py` makes exactly **one** HTTPS GET to the current Nasdaq Halt RSS and **one** GET to the Nasdaq-listed directory per invocation, after a 65-second CI pacing delay. The separate `xray-nasdaq-official-one-shot.yml` job runs only on selected PR updates or explicit manual dispatch, not on a schedule. It has read-only repository permissions and no secrets. The existing A11 suite remains strictly offline.
+
+Only these values may appear in public CI logs: fixed source label, research-only status, HTTP status or error type, byte count, SHA256, observation timestamp, parser acceptance status and directory-staleness flag. No raw XML/text, issuer events, private Sheet records, request cookies, provider headers or secrets are printed. SEC is explicitly **SKIPPED**: official fair-access guidance requires an actual declared user agent including a contact; none is invented or requested by the public PR.
+
+A green workflow means the diagnostic code ran, **not** that source data passed. Inspect individual source states; HTTP refusal, parse refusal and stale directory remain `UNKNOWN/NOT_CLEAR`. Even a 200/parse success is only a live snapshot format observation, with no comprehensive feed-coverage or PIT proof.
+
+GitHub public standard hosted runner pricing is described in their official Actions billing documentation; account charges for unrelated services have not been audited. This workflow uses `ubuntu-latest` only. A draft PR avoids production changes and rollback requires no historical mutation.
