@@ -419,6 +419,20 @@ def main():
     if scope_mode not in ('pilot3','all477','reconcile477'):
         raise Refused('SOURCE_SCOPE_INVALID')
     if scope_mode == 'reconcile477':
+        # Reconciliation must compare the SAME historical period, not a
+        # rolling window that silently shifts if run after midnight UTC.
+        start = os.environ.get('XRAY_RECONCILE_START','')
+        end = os.environ.get('XRAY_RECONCILE_END','')
+        require(type(start) is str and type(end) is str and
+                re.fullmatch(r'\d{4}-\d{2}-\d{2}',start) is not None and
+                re.fullmatch(r'\d{4}-\d{2}-\d{2}',end) is not None,
+                'RECONCILIATION_DATES_REQUIRED')
+        try:
+            start_date, end_date = date.fromisoformat(start), date.fromisoformat(end)
+        except ValueError:
+            raise Refused('RECONCILIATION_DATES_INVALID') from None
+        require(start_date.isoformat() == start and end_date.isoformat() == end and
+                start_date <= end_date <= today, 'RECONCILIATION_DATES_INVALID')
         alpaca_fn = lambda: reconcile_all477_quality(
             key=key,secret=secret,start=start,end=end)
     elif scope_mode == 'all477':
