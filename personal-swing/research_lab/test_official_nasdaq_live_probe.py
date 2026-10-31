@@ -136,9 +136,26 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(result['directory_basic_flag_match'],475)
         self.assertEqual(result['directory_flagged'],1)
         self.assertEqual(result['directory_missing'],1)
+        self.assertEqual(result['flagged_watchlist_index_zero_based'], 475)
+        self.assertEqual(result['flagged_directory_fields'], {'Financial Status': 'D'})
         self.assertFalse(result['historical_membership_proven'])
         self.assertFalse(result['may_clear_risk'])
         self.assertNotIn(symbols[-1],json.dumps(result))
+
+    def test_two_flagged_do_not_disclose_index(self):
+        symbols = [f'T{i:04d}' for i in range(477)]
+        header = 'Symbol|Security Name|Market Category|Test Issue|Financial Status|ETF'
+        rows = [f'{s}|Synthetic|Q|N|N|N' for s in symbols]
+        rows[4] = f'{symbols[4]}|Synthetic|Q|Y|N|N'
+        rows[7] = f'{symbols[7]}|Synthetic|Q|N|E|N'
+        body = (header + '\n' + '\n'.join(rows) +
+                '\nFile Creation Time: 103020261200||||||\n').encode()
+        result = p.compare_current_directory_scope(body, {
+            'liquidity_watch_symbols': symbols, 'source_count': 477})
+        self.assertEqual(result['directory_flagged'],2)
+        self.assertIsNone(result['flagged_watchlist_index_zero_based'])
+        self.assertIsNone(result['flagged_directory_fields'])
+        self.assertFalse(result['may_clear_risk'])
 
     def test_bad_watchlist_size_refused(self):
         with self.assertRaisesRegex(ValueError,'SCOPE_477_COUNT_MISMATCH'):
