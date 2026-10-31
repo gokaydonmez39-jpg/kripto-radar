@@ -80,7 +80,7 @@ def build_477_shadow(*, asof_utc, alpaca, sec=None, halt=None, directory=None,
     # Independently bind private event-index identity to the already-audited
     # 477-batch SHA. A valid count alone is not sufficient evidence of a join.
     id_digest = hashlib.sha256(
-        ('\\n'.join(sorted(identities)) + '\\n').encode('ascii')
+        ('\n'.join(sorted(identities)) + '\n').encode('ascii')
     ).hexdigest()
     need(alpaca.get('event_id_set_sha256') == id_digest,
          'ALPACA_EVENT_SET_DIGEST_MISMATCH')
