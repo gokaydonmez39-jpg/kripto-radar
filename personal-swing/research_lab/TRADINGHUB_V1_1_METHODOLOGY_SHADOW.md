@@ -23,7 +23,7 @@ Success contract, fixed *before* interpreting results:
 
 1. Python normal and `-O` GitHub PR CI must both pass.
 2. Synthetic PBO using 10 groups must yield **252** combinatorial splits.
-3. CPCV using 8 groups must yield **28** test-group pairs and **7** test
+2a. Exploratory null sanity gate, **declared before executing the seeds**:\n    10 independent PRNG seeds 2000..2009, eight noise-only candidates,\n    320 synthetic days each; average PBO must be in [0.30, 0.70].\n    Perfectly tied zero-PnL strategies must conservatively report PBO=1\n    and OOS loss fraction=1. This is deliberately coarse; even a PASS\n    does not independently validate real-market probability calibration.\n3. CPCV using 8 groups must yield **28** test-group pairs and **7** test
    appearances per group; **15-session label horizon** and **15-session
    embargo** must exclude overlapping training labels and after-test samples.
 4. Rolling-origin split must keep training strictly before every test block,
