@@ -123,6 +123,9 @@ def live_entrypoint():
     need(first == read_all(), 'CONCURRENT_PRIVATE_SHEET_CHANGE')
     summary['next_xnas_session'] = str(next_session.date())
     summary['open_episodes'] = flight['open_count']
+    summary['quarantined_research_events'] = flight['quarantined_events']
+    if flight['quarantined_events']:
+        summary['state'] = 'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'
     summary['pending_device_ack_events'] = flight['pending_device_ack']
     return summary
 
