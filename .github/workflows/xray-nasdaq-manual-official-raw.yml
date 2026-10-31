@@ -13,6 +13,14 @@ on:
           - all477
           - reconcile477
         default: pilot3
+      period_start:
+        description: 'Required for reconcile477 only; example 2026-10-01'
+        required: false
+        type: string
+      period_end:
+        description: 'Required for reconcile477 only; example 2026-10-31'
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -41,6 +49,8 @@ jobs:
         working-directory: personal-swing/research_lab
         env:
           XRAY_SOURCE_SCOPE: ${{ inputs.scope }}
+          XRAY_RECONCILE_START: ${{ inputs.period_start }}
+          XRAY_RECONCILE_END: ${{ inputs.period_end }}
           XRAY_SEC_DECLARED_USER_AGENT: ${{ secrets.XRAY_SEC_DECLARED_USER_AGENT }}
           XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
           XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
