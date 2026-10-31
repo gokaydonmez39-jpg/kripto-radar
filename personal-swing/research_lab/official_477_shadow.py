@@ -77,6 +77,13 @@ def build_477_shadow(*, asof_utc, alpaca, sec=None, halt=None, directory=None,
          len(identities) == alpaca.get('unique_event_ids_observed') and
          len(identities) <= alpaca.get('observed_query_event_occurrences', -1),
          'ALPACA_INTERNAL_INDEX_NOT_PROVEN')
+    # Independently bind private event-index identity to the already-audited
+    # 477-batch SHA. A valid count alone is not sufficient evidence of a join.
+    id_digest = hashlib.sha256(
+        ('\\n'.join(sorted(identities)) + '\\n').encode('ascii')
+    ).hexdigest()
+    need(alpaca.get('event_id_set_sha256') == id_digest,
+         'ALPACA_EVENT_SET_DIGEST_MISMATCH')
     scope_set = set(scope)
     per_symbol = {s: {'symbol': s, 'alpaca_event_count': 0,
                       'alpaca_event_groups': {}, 'risk_status': 'UNKNOWN_NOT_CLEAR',
@@ -85,7 +92,9 @@ def build_477_shadow(*, asof_utc, alpaca, sec=None, halt=None, directory=None,
                   for s in scope}
     associations = 0
     for uid, fields in identities.items():
-        need(type(uid) is str and type(fields) is tuple and len(fields) == 3,
+        need(type(uid) is str and re.fullmatch(
+             r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', uid
+             ) is not None and type(fields) is tuple and len(fields) == 3,
              'EVENT_IDENTITY_INVALID')
         group, processed, rowhash = fields
         need(group in GROUPS and type(processed) is str and
