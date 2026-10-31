@@ -6,6 +6,7 @@ All exceptions are redacted in public CI logs. Device ACK is always unknown.
 """
 import datetime as dt
 import json
+import math
 import os
 import re
 
@@ -82,6 +83,84 @@ def validate_iex_result(symbols, asof, count, rows):
             'orders': False, 'source': 'ALPACA_IEX_RAW_1DAY'}
 
 
+def validate_al_identity(candidate_table, asof, count, results):
+    """Reject same-count but different-symbol AL sets.
+
+    This pure, private-only check has no I/O and never emits ticker details.
+    The existing flight recorder checks the full Sheet header and event ledger;
+    we independently verify identities and compare the exact current AL set.
+    """
+    need(type(candidate_table) is list and bool(candidate_table)
+         and type(candidate_table[0]) is list
+         and tuple(candidate_table[0][:3]) ==
+         ('ALARM KİMLİĞİ', 'ASOF ET', 'SEMBOL'),
+         'CANDIDATE_HEADER_DRIFT')
+    need(type(asof) is str and type(count) is int and count >= 0
+         and type(results) is dict, 'AL_IDENTITY_INPUT_INVALID')
+    seen_keys = set()
+    recorded_current = set()
+    for row in candidate_table[1:]:
+        if not row or all(value in ('', None) for value in row):
+            continue
+        need(type(row) is list and len(row) >= 3 and
+             all(type(v) is str for v in row[:3]),
+             'CANDIDATE_IDENTITY_INVALID')
+        key, start, symbol = row[:3]
+        need(bool(re.fullmatch(r'\d{4}-\d{2}-\d{2}', start)) and
+             bool(SYMBOL.fullmatch(symbol)) and key == start + '|' + symbol,
+             'CANDIDATE_IDENTITY_INVALID')
+        need(key not in seen_keys, 'CANDIDATE_KEY_DUPLICATE')
+        seen_keys.add(key)
+        if start == asof:
+            recorded_current.add(symbol)
+    need(len(recorded_current) == count,
+         'CURRENT_CANDIDATE_COUNT_MISMATCH')
+    need(all(type(v) is dict for v in results.values()),
+         'AL_IDENTITY_RECOMPUTE_INVALID')
+    computed_current = {symbol for symbol, value in results.items()
+                        if value.get('decision') == 'AL'}
+    need(recorded_current == computed_current, 'AL_IDENTITY_MISMATCH')
+    return 'EXACT_AL_IDENTITY_PASS'
+
+
+def validate_al_levels(candidate_table, asof, results):
+    """Independently compare source IEX AL levels to private Sheet rows.
+
+    Current-ASOF only, read-only, never exposes price/symbol in exceptions.
+    Call only after validate_iex_result and validate_al_identity PASS.
+    """
+    need(type(candidate_table) is list and candidate_table
+         and type(results) is dict and type(asof) is str,
+         'AL_LEVEL_INPUT_INVALID')
+    columns = ((4, 'close'), (5, 'indicative_stop'),
+               (6, 'indicative_target_2r'))
+    for row in candidate_table[1:]:
+        if not row or all(value in ('', None) for value in row):
+            continue
+        need(type(row) is list and len(row) >= 3,
+             'AL_LEVEL_INVALID')
+        if row[1] != asof:
+            continue
+        need(len(row) >= 7 and type(row[2]) is str,
+             'AL_LEVEL_INVALID')
+        entry = results.get(row[2])
+        need(type(entry) is dict and entry.get('decision') == 'AL',
+             'AL_LEVEL_SOURCE_MISMATCH')
+        for i, key in columns:
+            raw = row[i]
+            need(type(raw) is str and
+                 bool(re.fullmatch(r'(?:0|[1-9][0-9]*)(?:[.,][0-9]{1,3})?',
+                                   raw.strip())), 'AL_LEVEL_INVALID')
+            level = float(raw.strip().replace(',', '.'))
+            actual = entry.get(key)
+            need(type(actual) in (float, int) and
+                 math.isfinite(actual) and actual > 0 and level > 0,
+                 'AL_LEVEL_INVALID')
+            need(abs(level - actual) <= 0.0005,
+                 'AL_LEVEL_SOURCE_MISMATCH')
+    return 'EXACT_AL_LEVELS_PASS'
+
+
 def live_entrypoint():
     # Import production modules only on the authorized GitHub runner; no
     # third-party vendor or broker SDK is imported/executed by this preflight.
@@ -120,6 +199,9 @@ def live_entrypoint():
     results = {sym: engine.analyze(sym, bars.get(sym, []), asof)
                for sym in symbols}
     summary = validate_iex_result(symbols, asof, expected, results)
+    summary['al_identity_check'] = validate_al_identity(
+        first[0], asof, expected, results)
+    summary['al_level_check'] = validate_al_levels(first[0], asof, results)
     need(first == read_all(), 'CONCURRENT_PRIVATE_SHEET_CHANGE')
     summary['next_xnas_session'] = str(next_session.date())
     summary['open_episodes'] = flight['open_count']
