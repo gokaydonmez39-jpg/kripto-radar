@@ -59,6 +59,29 @@ class OfficialSourceTests(unittest.TestCase):
         d=sec()
         for col in d['filings']['recent'].values():col.append(col[0])
         with self.assertRaisesRegex(r.SourceRefused,'ACCESSION_DUPLICATE'):self._sec(d)
+    def test_sec_1001_recent_rows_are_contract_valid_research_only(self):
+        d=sec()
+        recent=d['filings']['recent']
+        for key in recent:
+            recent[key]=[recent[key][0]]*1001
+        recent['accessionNumber']=[
+            '0000320193-26-%06d' % (i+1) for i in range(1001)]
+        d['filings']['files']=[{'name':'CIK0000320193-submissions-001.json'}]
+        v=self._sec(d)
+        self.assertEqual(v['recent_filing_rows_observed'],1001)
+        self.assertEqual(v['supplemental_history_files_declared'],1)
+        self.assertFalse(v['filing_history_exhaustiveness_proven'])
+        self.assertFalse(v['acceptance_utc_independently_crosschecked'])
+        self.assertFalse(v['may_issue_al'])
+
+    def test_sec_20001_rows_defensive_limit_rejected(self):
+        d=sec()
+        recent=d['filings']['recent']
+        for key in recent:
+            recent[key]=[recent[key][0]]*20001
+        with self.assertRaisesRegex(r.SourceRefused,'SEC_COLUMN_LENGTH_DRIFT'):
+            self._sec(d)
+
     def test_sec_corrupt_column_lengths_rejected(self):
         d=sec();d['filings']['recent']['form'].append('10-K')
         with self.assertRaisesRegex(r.SourceRefused,'COLUMN_LENGTH_DRIFT'):self._sec(d)
