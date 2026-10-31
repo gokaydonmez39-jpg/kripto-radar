@@ -1,0 +1,35 @@
+name: XRAY NASDAQ A36 Personal Source and Security Offline Witness
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'personal-swing/performance_lab/a36_personal_source_audit.py'
+      - 'personal-swing/performance_lab/test_a36_personal_source_audit.py'
+      - 'personal-swing/performance_lab/A36_PERSONAL_SOURCE_SECURITY_README.md'
+      - '.github/workflows/nasdaq-personal-a36-source-security-offline.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  a36-offline-source-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # verified immutable SHA
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # verified immutable SHA
+        with:
+          python-version: '3.12'
+      - name: Synthetic positive and adverse tests, ordinary
+        working-directory: personal-swing/performance_lab
+        run: python -m unittest -v test_a36_personal_source_audit
+      - name: Synthetic positive and adverse tests, optimized
+        working-directory: personal-swing/performance_lab
+        run: python -O -m unittest -v test_a36_personal_source_audit
+      - name: Git-tracked source/line/coverage witness (no raw code exported)
+        run: python personal-swing/performance_lab/a36_personal_source_audit.py --audit-repo . --min-edges 20 --min-workflow-edges 2
+      - name: Optimized graph witness
+        run: python -O personal-swing/performance_lab/a36_personal_source_audit.py --audit-repo . --min-edges 20 --min-workflow-edges 2
