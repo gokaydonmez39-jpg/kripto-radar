@@ -367,6 +367,35 @@ class ManualRawProviderTests(unittest.TestCase):
                 start=START,end=END,opener=op,data_quality='initial')
         self.assertEqual(len(op.requests),0)
 
+    def test_shadow_477_symbol_links_dedup_two_merger_roles(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        merger={'id':ID1,'process_date':'2026-10-07',
+                'acquirer_symbol':scope[0],'acquiree_symbol':scope[25]}
+        fixtures=[{'next_page_token':None} for _ in range(20)]
+        fixtures[0]['stock_and_cash_mergers']=[dict(merger)]
+        fixtures[1]['stock_and_cash_mergers']=[dict(merger)]
+        result=m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+            start=START,end=END,scope=scope,opener=pages(*fixtures),
+            before_request=lambda:None,include_internal_symbol_links=True)
+        self.assertEqual(result['unique_event_ids_observed'],1)
+        self.assertEqual(result['cross_batch_duplicate_occurrences'],1)
+        self.assertEqual(result['_internal_symbol_links'][scope[0]],
+            ((ID1,'stock_and_cash_mergers','2026-10-07'),))
+        self.assertEqual(result['_internal_symbol_links'][scope[25]],
+            ((ID1,'stock_and_cash_mergers','2026-10-07'),))
+        self.assertEqual(len(result['_internal_symbol_links']),477)
+        self.assertNotIn(ID1,json.dumps({k:v for k,v in result.items()
+                                       if not k.startswith('_internal_')}))
+        self.assertFalse(result['may_modify_al'])
+
+    def test_shadow_disabled_by_default_private_index_not_returned(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        result=m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+            start=START,end=END,scope=scope,
+            opener=pages(*({'next_page_token':None} for _ in range(20))),
+            before_request=lambda:None)
+        self.assertNotIn('_internal_symbol_links',result)
+
     def test_quality_all_only_one_event_proves_filter_delta_not_pit(self):
         scope=tuple(f'T{i:04d}' for i in range(477))
         first=[{'next_page_token':None} for _ in range(20)]
