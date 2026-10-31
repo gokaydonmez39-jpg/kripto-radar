@@ -19,7 +19,8 @@ REQUESTED='ALERT_REQUESTED_NOT_DEVICE_ACK'
 UNKNOWN='DELIVERY_UNKNOWN_REVIEW_REQUIRED'
 ACKED='DEVICE_ACK_USER_ATTESTED'
 QUARANTINED='DATA_DISPUTE_REVIEW_REQUIRED'
-ALLOWED_STATES=frozenset((CONFIRMED_PENDING,REQUESTED,UNKNOWN,ACKED,QUARANTINED))
+SUPPRESSED='DUPLICATE_ACTIVE_EPISODE_NO_NEW_ALERT'
+ALLOWED_STATES=frozenset((CONFIRMED_PENDING,REQUESTED,UNKNOWN,ACKED,QUARANTINED,SUPPRESSED))
 TYPES=frozenset((
     'AL_NEW_EPISODE','STOP_TOUCHED','GAP_BELOW_STOP',
     'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS','TARGET_TOUCHED',
@@ -77,6 +78,8 @@ def parse_ledger(matrix):
             raise LedgerRefused('UNKNOWN_DELIVERY_STATE')
         if status == QUARANTINED and row[5] != 'NEW_52_SESSION_HIGH':
             raise LedgerRefused('QUARANTINE_WRONG_EVENT_TYPE')
+        if status == SUPPRESSED and row[5] != 'AL_NEW_EPISODE':
+            raise LedgerRefused('SUPPRESSION_ONLY_FOR_NEW_AL_EPISODE')
         found[identity]={'row_index':index,'status':status,'row':tuple(row)}
     return found
 
@@ -112,4 +115,6 @@ def delivery_status(ledger_matrix,event_id):
         return 'USER_ATTESTED_DEVICE_ACK'
     if entry['status']==QUARANTINED:
         return 'DATA_DISPUTE_QUARANTINED_NO_DELIVERY'
+    if entry['status']==SUPPRESSED:
+        return 'SUPPRESSED_ACTIVE_EPISODE_NO_DELIVERY'
     return 'DELIVERY_UNKNOWN_NO_RESEND'
