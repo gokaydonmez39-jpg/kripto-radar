@@ -331,23 +331,43 @@ def main():
     else:
         alpaca_fn = lambda: alpaca_raw_audit(
             key=key,secret=secret,start=start,end=end)
+    # CLI result must represent evidence acceptance, not simply script completion.
+    # Alpaca is mandatory for manual pilot3/all477; SEC is explicitly optional
+    # until an authentic declared contact is provisioned.
+    exit_code = 0
     for source, enabled, fn in (
         ('SEC_EDGAR', bool(sec_agent), lambda: sec_raw_audit(declared_agent=sec_agent)),
         ('ALPACA_CORPORATE_ACTIONS', bool(key and secret), alpaca_fn),
     ):
         if not enabled:
             print(json.dumps({'source': source, 'status': 'SKIPPED_NO_AUTHORIZED_INPUT',
-                              'may_clear_risk': False}))
+                              'may_clear_risk': False}, sort_keys=True))
+            if source == 'ALPACA_CORPORATE_ACTIONS':
+                exit_code = 3
             continue
         try:
             value = fn()
+            if source == 'ALPACA_CORPORATE_ACTIONS':
+                require(value.get('status') in (
+                    'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
+                    'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE'
+                ) and value.get('may_clear_risk') is False,
+                        'ALPACA_ACCEPTANCE_STATUS_INVALID')
+            else:
+                require(value.get('status') == 'SEC_RAW_FORMAT_OBSERVED_NOT_PIT_CLEARANCE'
+                        and value.get('may_clear_risk') is False,
+                        'SEC_ACCEPTANCE_STATUS_INVALID')
         except (Refused, ValueError) as exc:
-            # All expected errors are constant refusal codes. No exception text
-            # from HTTP libraries, external JSON, emails, secrets or URLs.
+            # Only fixed refusal codes may be logged, never secrets, response
+            # payloads, provider error bodies, or contact addresses.
             code = str(exc) if isinstance(exc, Refused) else 'INPUT_INVALID'
             value = {'status': 'SOURCE_REFUSED', 'reason_code': code,
                      'may_clear_risk': False}
+            exit_code = 4
         print(json.dumps({'source': source, **value}, sort_keys=True))
+    # Nonzero makes the manually triggered GitHub job RED when source evidence
+    # was missing/refused. SEC absence is visible SKIPPED and is NOT SEC PASS.
+    return exit_code
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
