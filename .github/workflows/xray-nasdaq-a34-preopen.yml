@@ -12,6 +12,10 @@ on:
       - personal-swing/test_preopen_a34.py
       - .github/workflows/xray-nasdaq-a34-preopen.yml
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - XRAY Personal 477 EOD Daily Health (Research Only)
+    types: [completed]
   schedule:
     # 13:17 in Turkey, before XNAS opens even when US DST changes.
     # GitHub cron is not a guaranteed scheduler. No user delivery claimed.
@@ -40,7 +44,14 @@ jobs:
           python -O -m py_compile preopen_a34.py
   private-preopen:
     needs: [offline-guard]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.event != 'pull_request' &&
+        github.event.workflow_run.repository.full_name == github.repository))
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
