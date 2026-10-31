@@ -70,7 +70,7 @@ def audit(op, *, max_pages=8, limit=100):
                               max_pages=max_pages,limit=limit)
 
 def sec_fixture():
-    return {'cik':1718227,'tickers':['ROAD'],
+    return {'cik':'0001718227','tickers':['ROAD'],
             'filings':{'recent':{
                 'accessionNumber':['0001718227-26-000001'],
                 'form':['8-K'], 'filingDate':['2026-10-30'],
@@ -494,6 +494,25 @@ class ManualRawProviderTests(unittest.TestCase):
         self.assertEqual(op.requests[0].headers['User-agent'],declared)
         self.assertNotIn(declared,json.dumps(outcome))
         self.assertEqual(len(op.requests),1)
+
+    def test_sec_real_submissions_cik_string_passes_full_raw_gate(self):
+        op=Opener(Response(sec_fixture()))
+        result=m.sec_raw_audit(
+            declared_agent='Synthetic Research synthetic-contact@audit.invalid',
+            opener=op)
+        self.assertEqual(result['status'],'SEC_RAW_FORMAT_OBSERVED_NOT_PIT_CLEARANCE')
+        self.assertTrue(result['declared_contact_present'])
+        self.assertFalse(result['first_public_availability_proven'])
+        self.assertFalse(result['may_modify_al'])
+        self.assertEqual(len(op.requests),1)
+
+    def test_sec_mismatched_text_cik_fails_full_raw_gate(self):
+        f=sec_fixture();f['cik']='0001718228'
+        op=Opener(Response(f))
+        with self.assertRaisesRegex(m.Refused,'SEC_FORMAT_REQUIRES_REVIEW'):
+            m.sec_raw_audit(
+                declared_agent='Synthetic Research synthetic-contact@audit.invalid',
+                opener=op)
 
     def test_sec_wrong_cik_rejected(self):
         f=sec_fixture()

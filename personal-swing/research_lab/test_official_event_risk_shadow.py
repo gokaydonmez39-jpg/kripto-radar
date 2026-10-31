@@ -46,6 +46,33 @@ class OfficialSourceTests(unittest.TestCase):
         self.assertTrue(v['acceptance_not_publication_timestamp'])
         self.assertFalse(v['pit_available_proven'])
         self.assertFalse(v['may_issue_al'])
+    def test_sec_real_api_zero_padded_text_cik_is_review_not_clear(self):
+        # The real SEC submissions API uses a decimal-string CIK.
+        d=sec();d['cik']='0000320193'
+        d['filings']['recent']['acceptanceDateTime']=['2026-10-30T20:00:00.000Z']
+        v=self._sec(d)
+        self.assertEqual(v['status'],'SEC_EVENTS_REVIEW')
+        self.assertEqual(v['event_count'],1)
+        self.assertFalse(v['pit_available_proven'])
+        self.assertFalse(v['may_issue_al'])
+
+    def test_sec_unpadded_text_cik_is_valid_issuer_identity(self):
+        d=sec();d['cik']='320193'
+        self.assertEqual(self._sec(d)['event_count'],1)
+
+    def test_sec_text_cik_mismatch_rejected_not_laundered(self):
+        d=sec();d['cik']='0000320194'
+        with self.assertRaisesRegex(r.SourceRefused,'SEC_ISSUER_CIK_MISMATCH'):
+            self._sec(d)
+
+    def test_sec_invalid_cik_types_and_encodings_refused(self):
+        for val in (True, 320193.0, '3.20193e5', '+320193',
+                    ' 320193', '0000000320193', '', None):
+            with self.subTest(value=val):
+                d=sec();d['cik']=val
+                with self.assertRaisesRegex(r.SourceRefused,'SEC_ISSUER_CIK_MISMATCH'):
+                    self._sec(d)
+
     def test_sec_wrong_cik_rejected(self):
         d=sec();d['cik']=123
         with self.assertRaisesRegex(r.SourceRefused,'CIK_MISMATCH'):self._sec(d)

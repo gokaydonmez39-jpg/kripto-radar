@@ -66,8 +66,18 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
                 observed_at_utc: str):
     out=base('SEC_EDGAR_SUBMISSIONS',ticker,asof_utc=asof_utc,observed_at_utc=observed_at_utc)
     require(type(cik) is str and re.fullmatch(r'\d{10}',cik), 'CIK_INVALID')
-    require(type(submissions) is dict and type(submissions.get('cik')) is int
-            and submissions['cik']==int(cik), 'SEC_ISSUER_CIK_MISMATCH')
+    # SEC EDGAR submissions JSON serializes 'cik' as decimal TEXT (for example,
+    # "0001718227"), although some older synthetic fixtures used an integer.
+    # Never accept bool, float, whitespace, scientific notation or a mismatched
+    # CIK merely because the JSON has the expected ROAD ticker.
+    declared_cik = submissions.get('cik') if type(submissions) is dict else None
+    cik_matches = (
+        (type(declared_cik) is int and declared_cik == int(cik)) or
+        (type(declared_cik) is str and
+         re.fullmatch(r'[0-9]{1,10}', declared_cik) is not None and
+         int(declared_cik) == int(cik))
+    )
+    require(cik_matches, 'SEC_ISSUER_CIK_MISMATCH')
     tickers=submissions.get('tickers')
     require(type(tickers) is list and ticker in tickers and
             all(type(x) is str for x in tickers), 'SEC_CURRENT_TICKER_MISMATCH')
