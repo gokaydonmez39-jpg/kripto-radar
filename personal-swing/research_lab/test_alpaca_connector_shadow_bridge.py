@@ -1,6 +1,6 @@
 """Deterministic connector tests; ALL EVENT FIXTURES ARE SYNTHETIC."""
 import unittest
-from alpaca_connector_shadow_bridge import audit_connector_sample, SampleRejected
+from alpaca_connector_shadow_bridge import audit_connector_sample, reconcile_date_partitions, SampleRejected
 
 OBS = '2026-10-31T12:00:00Z'
 START, END = '2026-08-01', '2026-10-31'
@@ -22,11 +22,89 @@ def fixture():
          'record_date':'2026-07-31','payable_date':'2026-08-17'}
     ]}}
 
+def monthly_fixtures():
+    original=fixture()
+    all_events=original['announcements']['cash_dividends']
+    result=[]
+    for s,e in [('2026-08-01','2026-08-31'),
+                ('2026-09-01','2026-09-30'),
+                ('2026-10-01','2026-10-31')]:
+        p=fixture()
+        p['request']['start']=s
+        p['request']['end']=e
+        p['announcements']['cash_dividends']=[
+            dict(row) for row in all_events if s<=row['process_date']<=e]
+        result.append(p)
+    return result
+
 class ConnectedSampleTests(unittest.TestCase):
     def run_check(self, payload=None, **overrides):
         opts=dict(symbols=SYMBOLS,start=START,end=END,observed_at_utc=OBS)
         opts.update(overrides)
         return audit_connector_sample(fixture() if payload is None else payload, **opts)
+
+    def reconcile(self, full=None, parts=None):
+        return reconcile_date_partitions(
+            fixture() if full is None else full,
+            monthly_fixtures() if parts is None else parts,
+            symbols=SYMBOLS,start=START,end=END,observed_at_utc=OBS)
+
+    def test_partition_sets_match_without_completeness_promotion(self):
+        r=self.reconcile()
+        self.assertEqual(r['full_sample_count'],2)
+        self.assertEqual(r['partition_sample_count'],2)
+        self.assertEqual(r['partition_count'],3)
+        self.assertTrue(r['full_sort_disputed'])
+        self.assertFalse(r['pagination_completeness_proven'])
+        self.assertFalse(r['unpublished_event_absence_proven'])
+        self.assertFalse(r['may_notify'])
+
+    def test_partition_gap_rejected(self):
+        parts=monthly_fixtures()
+        with self.assertRaisesRegex(SampleRejected,
+                                    'PARTITION_GAP_OVERLAP_OR_ORDER'):
+            self.reconcile(parts=[parts[0],parts[2]])
+
+    def test_partition_missing_last_month_rejected(self):
+        parts=monthly_fixtures()
+        with self.assertRaisesRegex(SampleRejected,'PARTITION_NOT_EXHAUSTIVE'):
+            self.reconcile(parts=parts[:2])
+
+    def test_partition_duplicate_event_rejected(self):
+        parts=monthly_fixtures()
+        parts[1]['announcements']['cash_dividends'][0]['id']=(
+            parts[0]['announcements']['cash_dividends'][0]['id'])
+        with self.assertRaisesRegex(SampleRejected,
+                                    'PARTITION_EVENT_SET_OR_FIELD_MISMATCH'):
+            self.reconcile(parts=parts)
+
+    def test_partition_missing_event_rejected(self):
+        parts=monthly_fixtures()
+        parts[1]['announcements']['cash_dividends'].clear()
+        with self.assertRaisesRegex(SampleRejected,
+                                    'PARTITION_EVENT_SET_OR_FIELD_MISMATCH'):
+            self.reconcile(parts=parts)
+
+    def test_partition_field_mutation_rejected(self):
+        parts=monthly_fixtures()
+        parts[1]['announcements']['cash_dividends'][0]['rate']=999
+        with self.assertRaisesRegex(SampleRejected,
+                                    'PARTITION_EVENT_SET_OR_FIELD_MISMATCH'):
+            self.reconcile(parts=parts)
+
+    def test_full_limit_blocks_reconciliation(self):
+        full=fixture()
+        full['request']['limit']=2
+        with self.assertRaisesRegex(SampleRejected,
+                                    'FULL_REQUEST_LIMIT_REACHED'):
+            self.reconcile(full=full)
+
+    def test_partition_limit_blocks_reconciliation(self):
+        parts=monthly_fixtures()
+        parts[0]['request']['limit']=1
+        with self.assertRaisesRegex(SampleRejected,
+                                    'PARTITION_REQUEST_LIMIT_REACHED'):
+            self.reconcile(parts=parts)
 
     def test_positive_is_review_only(self):
         r=self.run_check()
