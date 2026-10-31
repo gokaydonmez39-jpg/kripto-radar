@@ -50,6 +50,18 @@ class A36(unittest.TestCase):
         self.assertTrue(all(x["verdict"] == "needs_validation" for x in r["findings"]))
         self.assertTrue(all(x["severity"] is None for x in r["findings"]))
 
+    def test_unpinned_reusable_workflow_job_is_detected(self):
+        files = corpus()
+        files[WF] += "  reusable:\n    uses: owner/repository/.github/workflows/child.yml@main\n"
+        r = scan_sources(files, commit_sha=SHA)
+        self.assertIn("ACTION_NOT_SHA_PINNED", [x["code"] for x in r["findings"]])
+
+    def test_pinned_reusable_workflow_job_is_accepted(self):
+        files = corpus()
+        files[WF] += "  reusable:\n    uses: owner/repository/.github/workflows/child.yml@" + "b"*40 + "\n"
+        r = scan_sources(files, commit_sha=SHA)
+        self.assertFalse(any(x["code"] == "ACTION_NOT_SHA_PINNED" for x in r["findings"]))
+
     def test_pr_target_is_needs_validation_not_vulnerability(self):
         files = corpus()
         files[WF] += "  pull_request_target:\n"

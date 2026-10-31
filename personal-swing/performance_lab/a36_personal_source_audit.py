@@ -17,9 +17,9 @@ from pathlib import Path
 
 SCHEMA = "XRAY_NASDAQ_PERSONAL_A36_SOURCE_WITNESS_V1"
 ALLOWED = ("personal-swing/", ".github/workflows/")
-ACTION = re.compile(r"^\s*-\s*uses:\s*([^\s#]+)", re.MULTILINE)
+ACTION = re.compile(r"^\s*(?:-\s*)?uses:\s*([^\s#]+)", re.MULTILINE)
 CODE_REF = re.compile(r"personal-swing/(?:[A-Za-z_][A-Za-z_0-9]*/)*[A-Za-z_][A-Za-z_0-9]*\.py")
-PIN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[a-f0-9]{40}$")
+PIN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_./-]+)?@[a-f0-9]{40}$")
 WEAK_REF = re.compile(r"\b(pull_request_target|id-token:\s*write|actions:\s*write|contents:\s*write)\b")
 PERSONAL_WORKFLOW = re.compile(r"(?i)(personal|nasdaq-backtesting-challenger)")
 
