@@ -134,6 +134,18 @@ class GuardianSyntheticFalsifiers(unittest.TestCase):
             with self.subTest(k=k),self.assertRaises(g.GuardianBlocked):
                 g.guardian(x)
 
+    def test_non_xnas_weekend_is_rejected_even_with_claimed_52(self):
+        x=scenario();x["asof_et"]="2026-10-31"
+        with self.assertRaisesRegex(g.GuardianBlocked,
+                                    "ASOF_NOT_OFFICIAL_XNAS_SESSION"):
+            g.guardian(x)
+
+    def test_xnas_holiday_is_rejected(self):
+        x=scenario();x["asof_et"]="2026-11-26"
+        with self.assertRaisesRegex(g.GuardianBlocked,
+                                    "ASOF_NOT_OFFICIAL_XNAS_SESSION"):
+            g.guardian(x)
+
     def test_missing_or_extra_field_blocked(self):
         x=scenario();x.pop("spread_bps")
         with self.assertRaisesRegex(g.GuardianBlocked,"MISSING_OR_EXTRA_FIELDS"):
