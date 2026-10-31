@@ -219,6 +219,16 @@ def selftest(root, master, price, blobs):
         and result["automated_alert_authority"] is False
         and result["no_raw_ohlcv_or_levels_exported"] is True,
         "POSITIVE")
+    # Producer-pending rows must stay non-buy, and every rejected research
+    # trigger must expose at least one diagnostic blocker for downstream QA.
+    require(sorted(result["technical_pending_symbols"]) ==
+            sorted(root["candidate_technical_funnel"]["pending_symbols"]),
+            "TEST_ORIGINAL_PENDING_SET_NOT_PRESERVED")
+    require(all(row["status"] != "TRIGGER_OBSERVED_NOT_APPROVED"
+                or bool(row["unresolved_or_rejected"])
+                for row in result["recent_technical_triggers"]),
+            "TEST_UNEXPLAINED_REJECTED_TRIGGER")
+
     for label, change in (
         ("ASOF", lambda a,b,c:a.update(asof_et="2026-09-01")),
         ("NO_AL", lambda a,b,c:a["watch_radar"].update(registered_r92_count=1)),
