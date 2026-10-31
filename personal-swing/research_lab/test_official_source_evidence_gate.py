@@ -135,6 +135,28 @@ class EvidenceGateTests(unittest.TestCase):
         self.reject(envelope('NASDAQ_HALTS','<rss>'),
             'RSS_READER_REFUSED','NASDAQ_HALTS')
 
+    def test_nasdaq_xml_utf8_bom_keeps_original_sha(self):
+        original = b'\xef\xbb\xbf' + (
+            b'<rss><channel><item><Symbol>AAPL</Symbol>'
+            b'<HaltDate>10/30/2026</HaltDate><HaltTime>14:30:00</HaltTime>'
+            b'<ReasonCode>T1</ReasonCode></item></channel></rss>')
+        c = envelope('NASDAQ_HALTS', original)
+        result = self.audit(c, 'NASDAQ_HALTS')
+        self.assertEqual(result['parser_status'], 'NASDAQ_HALT_REVIEW')
+        self.assertEqual(result['content_sha256'], hashlib.sha256(original).hexdigest())
+        self.assertFalse(result['may_send_alert'])
+
+    def test_sec_json_bom_rejected(self):
+        payload = b'\xef\xbb\xbf' + json.dumps(sec_payload()).encode('utf-8')
+        self.reject(envelope('SEC_EDGAR', payload), 'UTF8_BOM_UNSUPPORTED')
+
+    def test_directory_bom_rejected(self):
+        token = b'\xef\xbb\xbf' + (
+            b'Symbol|Security Name|Market Category|Test Issue|Financial Status|ETF\n'
+            b'AAPL|Apple|Q|N|N|N\nFile Creation Time: 103020261200||||||\n')
+        self.reject(envelope('NASDAQ_DIRECTORY', token),
+                    'UTF8_BOM_UNSUPPORTED', 'NASDAQ_DIRECTORY')
+
     def test_xml_doctype_refused(self):
         self.reject(envelope('NASDAQ_HALTS','<!DOCTYPE foo><rss/>'),
             'RSS_READER_REFUSED','NASDAQ_HALTS')
