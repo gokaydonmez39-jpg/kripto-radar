@@ -82,3 +82,18 @@ A new **protected-default-branch, workflow_dispatch ONLY** job is staged at `.gi
 ## 477 option verification / release distinction
 
 The production watchlist file is read-only and must contain 477 unique symbols, otherwise the probe refuses **before any provider request**. A synthetic full-scope test independently asserts 20 batches, 25 symbols in the first query, 2 symbols in the final query, exactly 20 paced calls in the one-page-per-batch case, no order/alert/Sheets rights, and fail-fast when a later batch is malformed. Actual live raw all-477 coverage is **NOT YET RUN**; GitHub's current source PR has no default-branch workflow_dispatch and no secure SEC identity.
+
+
+## 2026-10-31: real raw `all477` result and unresolved 51-versus-50
+
+On 31 Oct 2026 `workflow_dispatch` run [41202555257](https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/41202555257) on `main` reported `requested_symbols=477`, `batches=20`, `http_pages=20`, `observed_query_event_occurrences=51` and `SEC_EDGAR=SKIPPED_NO_AUTHORIZED_INPUT`. The 51 value was **batch-row occurrences**, not unique IDs across the entire watchlist. Independently queried connected Alpaca app returned 50 distinct records (48 cash dividends, 2 stock+cash mergers), but hides both `data_quality` and `next_page_token`. **No conclusion that the 51st was an extra unpublished event is justified**.
+
+Official Alpaca data REST documentation (https://docs.alpaca.markets/us/reference/corporateactions-1) explicitly says `complete` is the default, that `all` includes early/incomplete records, that total pagination uses `next_page_token`, and that creation/publication latency is **not guaranteed**. Three competing hypotheses must be distinguished:
+
+1. The same event ID appeared in two symbol batches (cross-batch duplicate): `unique_event_ids_observed` less than `observed_query_event_occurrences`.
+2. An early/incomplete event exists under `all` but not `complete` (true provider quality difference): `all_only_event_ids_count=1`, with strict observed subset and identical row checks; the connector may still differ for other reasons.
+3. A non-atomic provider update or connector transformation changed the captured data: `complete` not subset of `all` or same-ID content drift. This results in a hard refusal, not market clearance.
+
+New manual-only workflow input `reconcile477`, when **separately approved for merge** and run by the owner, executes 20 batches under `all` and 20 under `complete` using the same 477 unchanged watchlist and observed rolling 30-day window. Each batch retains the 8-page/100-item cap and 1.05-second pace; total maximum 320 HTTP pages across both passes (40 pages for the 1-page-per-batch case), bounded within the existing six-minute manual job. It computes an **ephemeral per-ID index in memory only** and outputs aggregated counts, quality differences by type and SHA256 of sorted ID sets, never secrets, raw event rows or event IDs in Actions logs. Cross-batch same-ID rows with inconsistent fields fail closed, and `complete` must be a subset of `all`. These are **observed provider sets, not an atomic snapshot** and do not independently attest first-public-availability, provider coverage, PIT, rights, or trading outcomes.
+
+There is no new cron, broker, Sheets or AL/stop/target/notification production integration. The absence of a real declared SEC User-Agent continues to produce `SKIPPED` and cannot be represented as SEC acceptance. Until a real independently captured EDGAR response is available, `SEC_LIVE_ACCEPTANCE=NO_GO`.
