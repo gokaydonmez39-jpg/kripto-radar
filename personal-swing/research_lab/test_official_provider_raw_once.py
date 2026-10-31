@@ -196,6 +196,47 @@ class ManualRawProviderTests(unittest.TestCase):
         with self.assertRaisesRegex(m.Refused,'JSON_BOM_REFUSED'):
             audit(op)
 
+    def test_477_scoped_exact_20_batches_without_market_clearance(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        op=pages(*({'next_page_token':None} for _ in range(20)))
+        paced=[]
+        result=m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+            start=START,end=END,scope=scope,opener=op,
+            before_request=lambda: paced.append(1))
+        self.assertEqual(result['requested_symbols'],477)
+        self.assertEqual(result['batches'],20)
+        self.assertEqual(result['http_pages'],20)
+        self.assertEqual(len(op.requests),20)
+        self.assertEqual(len(paced),20)
+        self.assertEqual(len(parse_qs(urlsplit(op.requests[0].full_url).query)['symbols'][0].split(',')),25)
+        self.assertEqual(len(parse_qs(urlsplit(op.requests[-1].full_url).query)['symbols'][0].split(',')),2)
+        self.assertFalse(result['cross_batch_unique_events_proven'])
+        self.assertFalse(result['may_modify_al'])
+        self.assertFalse(result['may_place_order'])
+
+    def test_wrong_477_scope_rejected_without_http(self):
+        op=pages(*({'next_page_token':None} for _ in range(20)))
+        with self.assertRaisesRegex(m.Refused,'WATCHLIST_NOT_477_UNIQUE'):
+            m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+                start=START,end=END,scope=['GILD']*477,opener=op,
+                before_request=lambda:None)
+        self.assertEqual(len(op.requests),0)
+
+    def test_477_batch_failure_stops_all_remaining_requests(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        op=pages({'next_page_token':None}, {'cash_dividends':[item(uid='bad')],
+                        'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_ID_INVALID'):
+            m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+                start=START,end=END,scope=scope,opener=op,
+                before_request=lambda:None)
+        self.assertEqual(len(op.requests),2)
+
+    def test_477_real_watchlist_shape_is_unchanged(self):
+        scope=m.read_immutable_477_scope()
+        self.assertEqual(len(scope),477)
+        self.assertEqual(len(set(scope)),477)
+
     def test_sec_no_genuine_contact_refused_without_http(self):
         op=Opener(Response(sec_fixture()))
         with self.assertRaisesRegex(m.Refused,
