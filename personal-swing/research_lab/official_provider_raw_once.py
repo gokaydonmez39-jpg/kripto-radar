@@ -11,8 +11,10 @@ from datetime import date, datetime, timezone, timedelta
 import hashlib
 import json
 import os
+from pathlib import Path
 import re
 import ssl
+import time
 from uuid import UUID
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -94,7 +96,8 @@ def unique_object(items):
 def reject_nonfinite(_):
     raise Refused('JSON_NONFINITE')
 
-def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pages=8):
+def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pages=8,
+                     symbols=ALPACA_SCOPE, before_request=None):
     """Walk all RAW corporate-action response pages for fixed public sample scope.
 
     Exhaustion is a transport-page result, not a proof of data freshness/PIT.
@@ -113,17 +116,26 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             'DATE_INVALID')
     require(type(limit) is int and 1 <= limit <= 1000 and
             type(max_pages) is int and 1 <= max_pages <= 20, 'BUDGET_INVALID')
+    require(type(symbols) in (tuple, list) and
+            1 <= len(symbols) <= 25 and len(set(symbols)) == len(symbols) and
+            all(type(s) is str and
+                re.fullmatch(r'[A-Z][A-Z0-9.]{0,14}', s) is not None
+                for s in symbols), 'ALPACA_SYMBOL_BATCH_INVALID')
+    require(before_request is None or callable(before_request),
+            'PACE_CALLBACK_INVALID')
     headers = {'APCA-API-KEY-ID': key, 'APCA-API-SECRET-KEY': secret}
     known_ids, tokens = {}, set()
     pages, page = 0, None
     sizes = []
     for _ in range(max_pages):
-        query = {'symbols': ','.join(ALPACA_SCOPE), 'start': start,
+        query = {'symbols': ','.join(symbols), 'start': start,
                  'end': end, 'data_quality': 'all', 'region': 'us',
                  'limit': str(limit), 'sort': 'asc'}
         if page is not None:
             query['page_token'] = page
         url = ALPACA_URL + '?' + urlencode(query)
+        if before_request is not None:
+            before_request()
         data, receipt = read_json_once(url, headers=headers, opener=opener)
         require(type(data) is dict, 'ALPACA_ROOT_INVALID')
         pages += 1
@@ -168,6 +180,7 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             return {
                 'status': 'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
                 'pages': pages, 'event_ids_observed': len(known_ids),
+                'symbols_requested_count': len(symbols),
                 'raw_bytes_per_page': sizes, 'data_quality_requested': 'all',
                 'page_chain_exhausted': True,
                 'provider_latency_bounded': False, 'first_known_time_proven': False,
@@ -180,6 +193,65 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
         tokens.add(nxt)
         page = nxt
     raise Refused('ALPACA_PAGE_BUDGET_EXCEEDED')
+
+def read_immutable_477_scope():
+    """Existing production watchlist read only, never updated or reprioritized."""
+    path = Path(__file__).resolve().parents[1] / 'nasdaq_watchlist_477.json'
+    try:
+        document = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, UnicodeError, ValueError):
+        raise Refused('WATCHLIST_UNREADABLE') from None
+    require(type(document) is dict and
+            type(document.get('source_count')) is int and
+            document['source_count'] == 477,
+            'WATCHLIST_COUNT_INVALID')
+    scope = document.get('liquidity_watch_symbols')
+    require(type(scope) is list and len(scope) == 477 and
+            all(type(s) is str and
+                re.fullmatch(r'[A-Z][A-Z0-9.]{0,14}', s) is not None
+                for s in scope) and len(set(scope)) == 477,
+            'WATCHLIST_NOT_477_UNIQUE')
+    return tuple(scope)
+
+def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
+                  before_request=None):
+    """Bounded 20-batch raw REST proof for existing 477 scope; no event detail logs.
+
+    Counts are response records PER QUERY; corporate events appearing in more
+    than one symbol batch are not proven independent events. Never deduce no risk.
+    """
+    symbols = read_immutable_477_scope() if scope is None else scope
+    require(type(symbols) in (list,tuple) and len(symbols) == 477 and
+            len(set(symbols)) == 477 and all(
+                type(s) is str and
+                re.fullmatch(r'[A-Z][A-Z0-9.]{0,14}',s) is not None
+                for s in symbols), 'WATCHLIST_NOT_477_UNIQUE')
+    if before_request is None:
+        before_request = lambda: time.sleep(1.05)
+    requests = 0
+    record_occurrences = 0
+    for index in range(0, 477, 25):
+        batch = symbols[index:index+25]
+        sample = alpaca_raw_audit(
+            key=key,secret=secret,start=start,end=end,
+            opener=opener, symbols=batch,limit=100,max_pages=8,
+            before_request=before_request)
+        require(sample['symbols_requested_count']==len(batch) and
+                sample['page_chain_exhausted'] is True,
+                'ALPACA_BATCH_UNVERIFIED')
+        requests += sample['pages']
+        record_occurrences += sample['event_ids_observed']
+    require(requests <= 160, 'ALPACA_REQUEST_BUDGET_EXCEEDED')
+    return {
+        'status':'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE',
+        'requested_symbols':477, 'batches':20, 'http_pages':requests,
+        'observed_query_event_occurrences':record_occurrences,
+        'cross_batch_unique_events_proven':False,
+        'provider_latency_bounded':False, 'historical_pit_proven':False,
+        'market_event_absence_proven':False, 'may_clear_risk':False,
+        'may_modify_al':False, 'may_place_order':False,
+        'may_notify':False, 'may_write_sheet':False,
+    }
 
 def sec_raw_audit(*, declared_agent, opener=None):
     """Require real separately provisioned declared organization and contact email."""
@@ -224,10 +296,16 @@ def main():
     sec_agent = os.environ.get('XRAY_SEC_DECLARED_USER_AGENT', '')
     key = os.environ.get('XRAY_ALPACA_DATA_KEY_ID', '')
     secret = os.environ.get('XRAY_ALPACA_DATA_SECRET_KEY', '')
+    scope_mode = os.environ.get('XRAY_SOURCE_SCOPE','pilot3')
+    if scope_mode not in ('pilot3','all477'):
+        raise Refused('SOURCE_SCOPE_INVALID')
+    alpaca_fn = (lambda: audit_all_477(
+        key=key,secret=secret,start=start,end=end)
+        if scope_mode == 'all477' else lambda: alpaca_raw_audit(
+        key=key, secret=secret, start=start, end=end))
     for source, enabled, fn in (
         ('SEC_EDGAR', bool(sec_agent), lambda: sec_raw_audit(declared_agent=sec_agent)),
-        ('ALPACA_CORPORATE_ACTIONS', bool(key and secret),
-         lambda: alpaca_raw_audit(key=key, secret=secret, start=start, end=end)),
+        ('ALPACA_CORPORATE_ACTIONS', bool(key and secret), alpaca_fn),
     ):
         if not enabled:
             print(json.dumps({'source': source, 'status': 'SKIPPED_NO_AUTHORIZED_INPUT',
