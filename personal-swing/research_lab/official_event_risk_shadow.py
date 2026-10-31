@@ -77,7 +77,10 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
     fields=('accessionNumber','form','filingDate','acceptanceDateTime')
     columns=[recent.get(k) for k in fields]
     require(all(type(x) is list for x in columns),'SEC_RECENT_MISSING_COLUMNS')
-    n=len(columns[0]);require(n<=1000 and all(len(x)==n for x in columns),
+    # SEC's "at least one year or 1000, whichever is MORE" contract permits
+    # legitimate submissions above 1000 rows. Limit memory defensively,
+    # never confuse a safety bound with official completeness.
+    n=len(columns[0]);require(n<=20000 and all(len(x)==n for x in columns),
                         'SEC_COLUMN_LENGTH_DRIFT')
     seen_ids=set();events=[];seen=instant(observed_at_utc);cutoff=instant(asof_utc)
     for acc,form,filing,accepted in zip(*columns):
@@ -94,9 +97,15 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
             events.append({'event_id':cik+'|'+acc, 'form':form,
                            'filing_date':filing, 'accepted_utc':a.isoformat(),
                            'classification':'OFFICIAL_FILING_REVIEW_ONLY'})
+    supplemental=submissions.get('filings',{}).get('files')
+    supplemental_count = len(supplemental) if type(supplemental) is list else None
     return {**out,'status':'SEC_EVENTS_REVIEW' if events else 'SEC_NO_EVENT_NOT_CLEAR',
             'current_ticker_identity_only':True,
             'acceptance_not_publication_timestamp':True,
+            'acceptance_utc_independently_crosschecked':False,
+            'recent_filing_rows_observed':n,
+            'supplemental_history_files_declared':supplemental_count,
+            'filing_history_exhaustiveness_proven':False,
             'events':events,'event_count':len(events)}
 
 def _local(tag):
