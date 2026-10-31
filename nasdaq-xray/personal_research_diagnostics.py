@@ -21,6 +21,22 @@ HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 TICKER = re.compile(r"[A-Z][A-Z0-9.]{0,9}\Z")
 REASON = re.compile(r"[A-Z0-9_]+\Z")
+# Producer-compatible terminal/pending partition; never let unreviewed states pass.
+PENDING_STATES = frozenset((
+    "UNKNOWN_260_OFFICIAL_HISTORY",
+    "UNKNOWN_CORPORATE_ACTION_PIT",
+    "UNKNOWN_52_COMPLETED_WEEKS",
+    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
+))
+TERMINAL_STATES = frozenset((
+    "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+    "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+    "TECHNICAL_GEOMETRY_NOT_APPROVED",
+    "FAIL_OFFICIAL_LISTED_HISTORY_LT260",
+    "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
+    "TECHNICAL_WATCH_NEEDS_PRIMARY",
+    "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN",
+))
 
 
 def check(ok, reason):
@@ -76,7 +92,8 @@ def verify(d):
           and set(pending).issubset(names) and type(state) is dict
           and all(type(n) is int and n >= 0 for n in state.values())
           and sum(state.values()) == len(names)
-          and state.get("UNKNOWN_260_OFFICIAL_HISTORY", 0) == len(pending)
+          and set(state).issubset(PENDING_STATES | TERMINAL_STATES)
+          and sum(state.get(s, 0) for s in PENDING_STATES) == len(pending)
           and type(d.get("technical_evaluated_count")) is int
           and d["technical_evaluated_count"] + len(pending) == len(names),
           "WATCH_PARTITION")
@@ -97,7 +114,10 @@ def verify(d):
         check(type(sym) is str and TICKER.fullmatch(sym) and sym in names
               and sym not in seen and type(fam) is list and fam
               and fam == sorted(set(fam)) and set(fam).issubset(set("ABCD"))
-              and row.get("math_formula_audited") is True
+              and type(row.get("math_formula_audited")) is bool
+              and (row["math_formula_audited"] is True
+                   or (row.get("status") == "TRIGGER_OBSERVED_NOT_APPROVED"
+                       and bool(bad)))
               and row.get("not_a_trade_or_R92") is True
               and row.get("technical_source_confidence") == "LIMITED_SECONDARY_EOD"
               and type(bad) is list and bad == sorted(set(bad))
@@ -105,7 +125,8 @@ def verify(d):
               "TRIGGER_PROVENANCE")
         seen.add(sym)
         if row.get("status") == "RESEARCH_SETUP_CANDIDATE":
-            check(not bad, "CANDIDATE_REJECTED")
+            check(row["math_formula_audited"] is True and not bad,
+                  "CANDIDATE_MUST_HAVE_AUDIT_NO_BLOCKERS")
             derived.append(sym)
         else:
             check(row.get("status") == "TRIGGER_OBSERVED_NOT_APPROVED"
@@ -202,7 +223,7 @@ def selftest():
         raise AssertionError("MUTATION_FALSE_PASS_" + label)
     if d["recent_technical_triggers"]:
         for label, field, value in (
-            ("FAKE_MATH", "math_formula_audited", False),
+            ("FAKE_MATH_TYPE", "math_formula_audited", "FALSE_NOT_BOOL"),
             ("HIDDEN_REJECTION", "unresolved_or_rejected", []),
             ("FAKE_BUY", "not_a_trade_or_R92", False)):
             x = deepcopy(d)
@@ -212,6 +233,75 @@ def selftest():
             except ValueError:
                 continue
             raise AssertionError("MUTATION_FALSE_PASS_" + label)
+    # Valid mixed pending classes from the actual producer MUST pass.
+    # The pre-repair validator failed this fixture with WATCH_PARTITION.
+    mixed = deepcopy(d)
+    mixed["liquidity_watch_symbols"] = ["AAPL", "MSFT", "TSLA"]
+    mixed["watchlist_count"] = 3
+    mixed["technical_pending_symbols"] = ["AAPL", "MSFT"]
+    mixed["technical_evaluated_count"] = 1
+    mixed["technical_state_counts"] = {
+        "UNKNOWN_260_OFFICIAL_HISTORY": 1,
+        "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
+        "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 1,
+    }
+    mixed["recent_technical_triggers"] = [{
+        "symbol": "AAPL", "families": ["D"],
+        "math_formula_audited": False,
+        "status": "TRIGGER_OBSERVED_NOT_APPROVED",
+        "technical_source_confidence": "LIMITED_SECONDARY_EOD",
+        "unresolved_or_rejected": ["UNRESOLVED_OR_UNAPPROVED_TECHNICAL_EVIDENCE"],
+        "not_a_trade_or_R92": True,
+    }]
+    mixed["recent_technical_trigger_count"] = 1
+    check(build(mixed, original)["technical_pending_count"] == 2,
+          "MIXED_PENDING_POSITIVE")
+    fake_approval = deepcopy(mixed)
+    fake_approval["recent_technical_triggers"][0]["status"] = "RESEARCH_SETUP_CANDIDATE"
+    fake_approval["recent_technical_triggers"][0]["unresolved_or_rejected"] = []
+    fake_approval["research_setup_candidate_symbols"] = ["AAPL"]
+    fake_approval["research_setup_candidate_count"] = 1
+    fake_approval["status"] = "PERSONAL_RESEARCH_SETUP_CANDIDATES_AVAILABLE"
+    try:
+        build(fake_approval, original)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("UNAUDITED_FALSE_SETUP_PROMOTION")
+    for label, mutation in (
+        ("UNREVIEWED_PENDING_STATUS", lambda x: x["technical_state_counts"].update(
+            {"UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 0, "UNKNOWN_FABRICATED": 1})),
+        ("MISSING_PENDING_ID", lambda x: x.update(
+            technical_pending_symbols=["AAPL"])),
+        ("FALSE_TERMINAL_PROMOTION", lambda x: x["technical_state_counts"].update(
+            {"UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 0,
+             "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 2})),
+    ):
+        altered = deepcopy(mixed)
+        mutation(altered)
+        try:
+            build(altered, original)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("FALSE_MIXED_PARTITION_PASS_" + label)
+    # End-to-end read-only canonical checked-in source test (no vendor IO).
+    from personal_research_signal_digest import build as build_digest, VALID_RESULT
+    check(VALID_RESULT == PENDING_STATES | TERMINAL_STATES,
+          "PRODUCER_STATUS_CONTRACT_DRIFT")
+    epoch = observed_blobs()
+    actual_digest = build_digest(
+        json.loads((ROOT / "orchestrator_state.json").read_text()),
+        json.loads((ROOT / "canonical_current_master_manifest.json").read_text()),
+        json.loads((ROOT / "canonical_current_price_dv30.json").read_text()),
+        epoch)
+    actual_report = build(actual_digest, epoch)
+    check(actual_report["technical_pending_count"] ==
+          len(actual_digest["technical_pending_symbols"])
+          and actual_report["status"] == "SOURCE_BOUND_RESEARCH_ONLY_NOT_BUY"
+          and actual_report["registered_r92_count"] == 0
+          and actual_report["automated_alert_authority"] is False,
+          "CANONICAL_MIXED_PRODUCER_CONTRACT")
     print("XRAY_PERSONAL_DIAGNOSTICS=PASS_10_BASE_NEGATIVES"
           "_3_TRIGGER_NEGATIVES_STALE_REDACT_NO_R92")
 
