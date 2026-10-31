@@ -59,12 +59,75 @@ class OfficialSourceTests(unittest.TestCase):
         d=sec()
         for col in d['filings']['recent'].values():col.append(col[0])
         with self.assertRaisesRegex(r.SourceRefused,'ACCESSION_DUPLICATE'):self._sec(d)
+    def test_sec_1001_recent_rows_are_contract_valid_research_only(self):
+        d=sec()
+        recent=d['filings']['recent']
+        for key in recent:
+            recent[key]=[recent[key][0]]*1001
+        recent['accessionNumber']=[
+            '0000320193-26-%06d' % (i+1) for i in range(1001)]
+        d['filings']['files']=[{'name':'CIK0000320193-submissions-001.json'}]
+        v=self._sec(d)
+        self.assertEqual(v['recent_filing_rows_observed'],1001)
+        self.assertEqual(v['supplemental_history_files_declared'],1)
+        self.assertFalse(v['filing_history_exhaustiveness_proven'])
+        self.assertFalse(v['acceptance_utc_independently_crosschecked'])
+        self.assertFalse(v['may_issue_al'])
+
+    def test_sec_20001_rows_defensive_limit_rejected(self):
+        d=sec()
+        recent=d['filings']['recent']
+        for key in recent:
+            recent[key]=[recent[key][0]]*20001
+        with self.assertRaisesRegex(r.SourceRefused,'SEC_COLUMN_LENGTH_DRIFT'):
+            self._sec(d)
+
     def test_sec_corrupt_column_lengths_rejected(self):
         d=sec();d['filings']['recent']['form'].append('10-K')
         with self.assertRaisesRegex(r.SourceRefused,'COLUMN_LENGTH_DRIFT'):self._sec(d)
     def test_sec_future_filing_is_not_visible(self):
         d=sec();d['filings']['recent']['acceptanceDateTime']=['2026-11-02T20:00:00Z']
-        self.assertEqual(self._sec(d)['event_count'],0)
+        v=self._sec(d)
+        self.assertEqual(v['event_count'],0)
+        self.assertEqual(v['timestamp_dispute_count'],1)
+        self.assertEqual(v['status'],'SEC_TIMESTAMP_DISPUTE_REVIEW_REQUIRED')
+        self.assertFalse(v['may_issue_al'])
+    def test_sec_synthetic_four_hour_skew_is_quarantined_not_lost(self):
+        d=sec()
+        d['filings']['recent']['acceptanceDateTime']=['2026-10-31T05:00:00Z']
+        v=self._sec(d)
+        self.assertEqual(v['event_count'],0)
+        self.assertEqual(v['timestamp_dispute_count'],1)
+        self.assertEqual(v['timestamp_dispute_events'][0]['form'],'8-K')
+        self.assertFalse(v['timestamp_dispute_may_prove_late_publication'])
+        self.assertFalse(v['pit_available_proven'])
+        self.assertFalse(v['may_send_alert'])
+
+    def test_sec_nonrisk_future_filing_no_false_risk_claim(self):
+        d=sec()
+        d['filings']['recent']['form']=['SC 13G']
+        d['filings']['recent']['acceptanceDateTime']=['2026-11-02T20:00:00Z']
+        v=self._sec(d)
+        self.assertEqual(v['timestamp_dispute_count'],0)
+        self.assertEqual(v['status'],'SEC_NO_EVENT_NOT_CLEAR')
+        self.assertFalse(v['history_complete_proven'])
+
+    def test_sec_mixed_risk_events_keep_valid_and_disputed_separate(self):
+        d=sec()
+        recent=d['filings']['recent']
+        for k in recent:
+            recent[k].append(recent[k][0])
+        recent['accessionNumber'][1]='0000320193-26-000002'
+        recent['form'][1]='10-Q'
+        recent['acceptanceDateTime'][1]='2026-10-31T06:00:00Z'
+        v=self._sec(d)
+        self.assertEqual(v['event_count'],1)
+        self.assertEqual(v['timestamp_dispute_count'],1)
+        self.assertEqual(v['status'],'SEC_TIMESTAMP_DISPUTE_REVIEW_REQUIRED')
+        self.assertNotEqual(v['events'][0]['event_id'],
+                            v['timestamp_dispute_events'][0]['event_id'])
+        self.assertFalse(v['may_issue_al'])
+
     def test_sec_unrelated_form_is_not_8k(self):
         d=sec();d['filings']['recent']['form']=['SC 13G']
         self.assertEqual(self._sec(d)['event_count'],0)

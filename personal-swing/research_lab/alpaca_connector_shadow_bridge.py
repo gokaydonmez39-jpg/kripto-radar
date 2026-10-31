@@ -5,7 +5,7 @@ This module NEVER fetches data, sends an alert or changes a trading decision.
 Only the externally supplied connector reply is inspected. No completeness
 or point-in-time first-known evidence is inferred from a sample.
 """
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from uuid import UUID
 import math
 import re
@@ -66,6 +66,17 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
     need(request.get('sort') in ('asc', 'desc'), 'SORT_UNKNOWN')
     need(request.get('cusips') is None and request.get('ids') is None,
          'ADDITIONAL_QUERY_FILTER_NOT_REVIEWED')
+    # A grouped connected-app sample is not the raw provider HTTP envelope.
+    # Treat an explicit next-page token as INCOMPLETE and an omitted token
+    # as UNATTESTED, never fabricate provider pagination proof.
+    page_token = payload.get('next_page_token')
+    need(page_token is None or type(page_token) is str,
+         'PAGINATION_TOKEN_INVALID')
+    need(not page_token, 'PAGINATION_INCOMPLETE')
+    need(request.get('data_quality') in (None, 'all', 'complete'),
+         'DATA_QUALITY_INVALID')
+    need(request.get('region') in (None, 'us', 'non_us', 'all'),
+         'REGION_INVALID')
     kinds = request.get('ca_types')
     need(kinds is None or kinds == ['cash_dividend'],
          'UNVERIFIED_CORPORATE_ACTION_FILTER')
@@ -105,18 +116,94 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
                 'conclusion': 'HISTORICAL_DIVIDEND_REVIEW_ONLY'
             })
     need(len(events) <= limit, 'RESPONSE_EXCEEDS_REQUESTED_LIMIT')
+    # The connector's sort convention is not proven to be process_date;
+    # exposing a monotonicity observation is not evidence of completeness.
+    dates = [e['process_date'] for e in events]
+    sorted_by_process_date = all(
+        dates[i-1] <= dates[i] for i in range(1, len(dates))) if (
+        request['sort']=='asc') else all(
+        dates[i-1] >= dates[i] for i in range(1, len(dates)))
     return {
         'schema': SCHEMA,
         'status': 'CAP_REACHED_COVERAGE_UNKNOWN' if len(events) == limit
+                  else 'CONNECTOR_ORDER_DISPUTE_REVIEW_REQUIRED' if (
+                      events and not sorted_by_process_date)
                   else 'SAMPLE_FOR_REVIEW' if events else 'NO_EVENTS_SAMPLED_NOT_CLEAR',
         'source': 'ALPACA_CONNECTED_APP_GROUPED_CORPORATE_ACTIONS',
         'requested_symbols': symbols.copy(), 'request_start': start, 'request_end': end,
         'observed_at_utc': timestamp.isoformat().replace('+00:00', 'Z'),
         'event_count': len(events), 'events': events,
+        'process_date_order_matches_requested_sort': sorted_by_process_date,
+        'process_date_order_semantics_verified': False,
+        'connector_exposed_next_page_token': 'next_page_token' in payload,
+        'connector_exposed_data_quality': request.get('data_quality') is not None,
+        'default_complete_can_exclude_early_incomplete_events': True,
+        'all_early_provider_events_proven': False,
         'pagination_complete_proven': False, 'provider_known_at_proven': False,
         'market_event_absence_proven': False, 'source_data_rights_proven': False,
         'historical_pit_proven': False, 'may_generate_al': False,
         'may_modify_stop_target': False, 'may_notify': False,
         'may_place_order': False, 'may_write_private_sheets': False,
         'vendor_calls_made_by_bridge': 0
+    }
+
+
+def reconcile_date_partitions(full_payload, partitions, *, symbols, start, end,
+                              observed_at_utc):
+    """Compare independently fetched, contiguous nonoverlapping sample windows.
+
+    Even an exact union match never proves API pagination, data rights,
+    source first-known time, or completeness of provider-published events.
+    Neither input is an authoritative market-event list.
+    """
+    need(type(partitions) is list and 1 <= len(partitions) <= 24,
+         'PARTITION_COUNT_INVALID')
+    begin, finish = canonical_date(start), canonical_date(end)
+    need(begin <= finish, 'PARTITION_SCOPE_INVALID')
+    full = audit_connector_sample(full_payload, symbols=symbols, start=start,
+                                  end=end, observed_at_utc=observed_at_utc)
+    need(full['status'] != 'CAP_REACHED_COVERAGE_UNKNOWN',
+         'FULL_REQUEST_LIMIT_REACHED')
+    expected_begin = begin
+    combined = {}
+    for piece in partitions:
+        need(type(piece) is dict and type(piece.get('request')) is dict,
+             'PARTITION_PAYLOAD_MISSING')
+        query = piece['request']
+        window_start = canonical_date(query.get('start'))
+        window_end = canonical_date(query.get('end'))
+        need(window_start == expected_begin and
+             window_start <= window_end <= finish,
+             'PARTITION_GAP_OVERLAP_OR_ORDER')
+        audited = audit_connector_sample(
+            piece, symbols=symbols,
+            start=window_start.isoformat(), end=window_end.isoformat(),
+            observed_at_utc=observed_at_utc)
+        need(audited['status'] != 'CAP_REACHED_COVERAGE_UNKNOWN',
+             'PARTITION_REQUEST_LIMIT_REACHED')
+        for record in audited['events']:
+            need(record['id'] not in combined, 'PARTITION_DUPLICATE_EVENT')
+            combined[record['id']] = record
+        expected_begin = window_end + timedelta(days=1)
+    need(expected_begin == finish + timedelta(days=1),
+         'PARTITION_NOT_EXHAUSTIVE')
+    by_id = {event['id']:event for event in full['events']}
+    need(len(by_id) == len(full['events']), 'FULL_DUPLICATE_EVENT')
+    need(by_id == combined, 'PARTITION_EVENT_SET_OR_FIELD_MISMATCH')
+    return {
+        'schema': 'XRAY_NASDAQ_ALPACA_PARTITION_RECONCILIATION_V1',
+        'status': 'OBSERVED_EVENT_SET_MATCH_NOT_COMPLETE',
+        'full_sample_count': len(by_id),
+        'partition_sample_count': len(combined),
+        'partition_count': len(partitions),
+        'full_sort_disputed': not full['process_date_order_matches_requested_sort'],
+        'pagination_completeness_proven': False,
+        'first_known_time_proven': False,
+        'unpublished_event_absence_proven': False,
+        'all_event_kinds_proven': False,
+        'may_generate_al': False,
+        'may_modify_stop_target': False,
+        'may_notify': False,
+        'may_write_private_sheets': False,
+        'may_place_order': False,
     }

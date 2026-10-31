@@ -1,0 +1,49 @@
+name: XRAY NASDAQ Manual Official Raw Source Acceptance (NO SIGNALS)
+on:
+  # This file must exist on the default branch to be manually triggered.
+  # No PR trigger, no schedule, no external push/dispatch trigger.
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Alpaca raw audit scope; pilot3 recommended first, all477 explicit'
+        required: true
+        type: choice
+        options:
+          - pilot3
+          - all477
+        default: pilot3
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-manual-private-source-evidence
+  cancel-in-progress: false
+jobs:
+  isolated-read-only-acceptance:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout protected default branch, without persistent git token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Use Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Run negative tests before any provider request
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_official_provider_raw_once
+          python -O -m unittest -q test_official_provider_raw_once
+      - name: One-shot SEC + Alpaca raw HTTPS evidence (public-safe metadata only)
+        working-directory: personal-swing/research_lab
+        env:
+          XRAY_SOURCE_SCOPE: ${{ inputs.scope }}
+          XRAY_SEC_DECLARED_USER_AGENT: ${{ secrets.XRAY_SEC_DECLARED_USER_AGENT }}
+          XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+          XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+        run: |
+          python official_provider_raw_once.py
+      - name: Explicitly prohibit source result promotion
+        run: echo 'OFFICIAL_RAW=REVIEW_ONLY; NO_ORDERS; NO_BROKER; NO_SHEETS; NO_PUSH; NO_AL_CHANGE; NO_CRON; NO_PIT_CLEARANCE'
