@@ -670,6 +670,45 @@ class InternalRoleEvidenceTests(unittest.TestCase):
         self.assertEqual(x['_internal_id_index'],{})
         self.assertFalse(x['historical_pit_proven'])
 
+    def test_multi_issuer_cross_batch_duplicate_is_globally_one_id(self):
+        symbols=m.read_immutable_477_scope()
+        event={'id':ID1,'process_date':'2026-10-15',
+               'acquirer_symbol':symbols[0],
+               'acquiree_symbol':symbols[25]}
+        responses=[]
+        for i in range(20):
+            events=[event] if i in (0,1) else []
+            responses.append({'stock_and_cash_mergers':events,
+                              'next_page_token':None})
+        out=m.audit_all_477(key='synthetic',secret='synthetic',
+            start=START,end=END,scope=symbols,
+            include_internal_ids=True,include_internal_roles=True,
+            before_request=lambda:None,opener=pages(*responses))
+        self.assertEqual(out['observed_query_event_occurrences'],2)
+        self.assertEqual(out['unique_event_ids_observed'],1)
+        self.assertEqual(out['cross_batch_duplicate_occurrences'],1)
+        self.assertEqual(out['_internal_symbol_roles'][ID1],
+                         tuple(sorted((symbols[0],symbols[25]))))
+        self.assertFalse(out['may_clear_risk'])
+
+    def test_non_atomic_same_event_row_drift_fails_closed(self):
+        symbols=m.read_immutable_477_scope()
+        e={'id':ID1,'process_date':'2026-10-15',
+           'acquirer_symbol':symbols[0],
+           'acquiree_symbol':symbols[25]}
+        responses=[]
+        for i in range(20):
+            events=[dict(e, process_date='2026-10-16' if i==1 else
+                         '2026-10-15')] if i in (0,1) else []
+            responses.append({'stock_and_cash_mergers':events,
+                              'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_EVENT_CONFLICT_ACROSS_BATCHES'):
+            m.audit_all_477(key='synthetic',secret='synthetic',
+                start=START,end=END,scope=symbols,
+                include_internal_ids=True,include_internal_roles=True,
+                before_request=lambda:None,opener=pages(*responses))
+
     def test_public_all477_output_never_exposes_roles(self):
         symbols=m.read_immutable_477_scope()
         out=m.audit_all_477(key='synthetic',secret='synthetic',
