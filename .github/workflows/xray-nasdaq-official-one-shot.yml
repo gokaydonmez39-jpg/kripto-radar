@@ -1,0 +1,41 @@
+name: XRAY NASDAQ Official Source One-Shot Diagnostic (NO SIGNALS)
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'personal-swing/research_lab/official_nasdaq_live_probe.py'
+      - 'personal-swing/research_lab/test_official_nasdaq_live_probe.py'
+      - '.github/workflows/xray-nasdaq-official-one-shot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: xray-nasdaq-official-one-shot
+  cancel-in-progress: false
+jobs:
+  research-source-diagnostic:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout PR code without persisted token
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Use Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Negative tests - no HTTP to providers
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_official_nasdaq_live_probe
+          python -O -m unittest -q test_official_nasdaq_live_probe
+          python -m py_compile official_nasdaq_live_probe.py
+      - name: Respect Nasdaq RSS minimum one-minute refresh interval
+        run: sleep 65
+      - name: Run once - public Nasdaq RSS and listing directory - metadata only
+        working-directory: personal-swing/research_lab
+        run: python official_nasdaq_live_probe.py
+      - name: Enforce no production integration
+        run: echo 'XRAY_NASDAQ_ONE_SHOT=DIAGNOSTIC_ONLY; SEC_SKIPPED_NO_DECLARED_UA; NO_ORDERS; NO_SHEETS; NO_PUSH; NO_CRON; NO_AL_CHANGE; NO_MARKET_CLEARANCE'
