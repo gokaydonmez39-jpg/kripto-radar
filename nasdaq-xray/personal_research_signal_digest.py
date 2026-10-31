@@ -21,11 +21,19 @@ ROOT = Path(__file__).resolve().parent
 SCHEMA = "XRAY_PERSONAL_EOD_RESEARCH_DIGEST_V1"
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 S256 = re.compile(r"[0-9a-f]{64}\Z")
+# Exact producer statuses from candidate_local_full_technical_funnel_v1.py.
+# Unknown sources/geometry must remain pending, NEVER silently promoted.
 VALID_RESULT = frozenset((
     "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
     "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
     "TECHNICAL_GEOMETRY_NOT_APPROVED",
+    "FAIL_OFFICIAL_LISTED_HISTORY_LT260",
     "UNKNOWN_260_OFFICIAL_HISTORY",
+    "UNKNOWN_CORPORATE_ACTION_PIT",
+    "UNKNOWN_52_COMPLETED_WEEKS",
+    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
+    "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
+    "TECHNICAL_WATCH_NEEDS_PRIMARY",
     "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN",
 ))
 NO_BUY = {"execution": "NONE", "real_money": "NO-GO",
@@ -95,13 +103,21 @@ def build(root, master, price, blob_ids):
                 and row.get("setup_confirmation") == "NOT_EVALUATED_HERE"
                 for row in wrows), "WATCH_NEVER_BUY")
     statuses = Counter(row.get("status") for row in trows.values())
+    # The original funnel counts pending from terminal_scan=False, not solely
+    # UNKNOWN_260_OFFICIAL_HISTORY. Missing geometry and corporate-action
+    # evidence are equally pending, even when an A/B/D trigger was observed.
+    pending = sorted(s for s in names
+                     if trows[s].get("terminal_scan") is False)
     require(set(statuses).issubset(VALID_RESULT)
             and sum(statuses.values()) == len(names)
-            and statuses.get("UNKNOWN_260_OFFICIAL_HISTORY", 0)
-                == tech.get("pending_count")
-            and sorted(tech.get("pending_symbols", [])) ==
-                sorted(s for s in names
-                       if trows[s].get("status") == "UNKNOWN_260_OFFICIAL_HISTORY"),
+            and all(type(trows[s]) is dict and
+                    type(trows[s].get("terminal_scan")) is bool and
+                    (trows[s]["terminal_scan"] is
+                     (not trows[s]["status"].startswith("UNKNOWN")))
+                    for s in names)
+            and len(pending) == tech.get("pending_count")
+            and len(names) - len(pending) == tech.get("evaluated_count")
+            and sorted(tech.get("pending_symbols", [])) == pending,
             "TECHNICAL_PARTITION_EXACT")
     trigger = tech.get("recent_a_b_d_trigger_symbols", [])
     require(isinstance(trigger, list)
@@ -115,6 +131,9 @@ def build(root, master, price, blob_ids):
         fr = item.get("family_results") or {}
         require(item.get("status") in (
                     "TECHNICAL_GEOMETRY_NOT_APPROVED",
+                    "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY",
+                    "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS",
+                    "TECHNICAL_WATCH_NEEDS_PRIMARY",
                     "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN")
                 and isinstance(families, list) and families
                 and set(families) == set(fr)
@@ -136,6 +155,10 @@ def build(root, master, price, blob_ids):
                     "TECHNICAL_FAMILY_RESEARCH_ONLY_RELEASE_GATES_OPEN"
                     and item.get("technical_observation_ready") is True
                     and audited and not blockers)
+        # An unresolved trigger with no family-level blocker is still HOLD.
+        # Never expose an unexplained rejected trigger or turn it into BUY.
+        if not eligible and not blockers:
+            blockers.add("UNRESOLVED_OR_UNAPPROVED_TECHNICAL_EVIDENCE")
         out = {
             "symbol": sym,
             "families": sorted(families),
@@ -219,6 +242,16 @@ def selftest(root, master, price, blobs):
         and result["automated_alert_authority"] is False
         and result["no_raw_ohlcv_or_levels_exported"] is True,
         "POSITIVE")
+    # Producer-pending rows must stay non-buy, and every rejected research
+    # trigger must expose at least one diagnostic blocker for downstream QA.
+    require(sorted(result["technical_pending_symbols"]) ==
+            sorted(root["candidate_technical_funnel"]["pending_symbols"]),
+            "TEST_ORIGINAL_PENDING_SET_NOT_PRESERVED")
+    require(all(row["status"] != "TRIGGER_OBSERVED_NOT_APPROVED"
+                or bool(row["unresolved_or_rejected"])
+                for row in result["recent_technical_triggers"]),
+            "TEST_UNEXPLAINED_REJECTED_TRIGGER")
+
     for label, change in (
         ("ASOF", lambda a,b,c:a.update(asof_et="2026-09-01")),
         ("NO_AL", lambda a,b,c:a["watch_radar"].update(registered_r92_count=1)),
