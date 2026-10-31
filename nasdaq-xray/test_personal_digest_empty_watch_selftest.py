@@ -4,7 +4,9 @@
 No vendor IO, no execution, no real R92, no output artifact or broker.
 """
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
 
 root_dir = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location(
@@ -115,6 +117,42 @@ def producer_mixed_status_adversarial():
         raise AssertionError("FALSE_BLOCKED_WATCH_PROMOTION")
 
 
+def current_public_source_contract_smoke():
+    """Prove real checked-out canonical public source is internally coherent.
+
+    This never reads Sheets, user credentials, live vendor bars, or alerts;
+    NEVER publishes the resulting report.
+    """
+    paths = {
+        "root": root_dir / "orchestrator_state.json",
+        "master": root_dir / "canonical_current_master_manifest.json",
+        "price": root_dir / "canonical_current_price_dv30.json",
+    }
+    source = {k: json.loads(path.read_text(encoding="utf-8"))
+              for k, path in paths.items()}
+    blobs = {k: subprocess.check_output(
+        ["git", "hash-object", str(path)], text=True,
+        cwd=root_dir.parent).strip() for k, path in paths.items()}
+    report = module.build(source["root"], source["master"],
+                          source["price"], blobs)
+    if not (report["asof_et"] == source["root"]["asof_et"]
+            and report["technical_pending_symbols"] ==
+                sorted(source["root"]["candidate_technical_funnel"]["pending_symbols"])
+            and report["registered_r92_count"] == 0
+            and report["research_setup_candidate_count"] == 0
+            and report["automated_alert_authority"] is False
+            and report["no_raw_ohlcv_or_levels_exported"] is True
+            and report["execution"] == "NONE"
+            and report["orders"] == []):
+        raise AssertionError("CANONICAL_PUBLIC_RESEARCH_UNSAFE_OR_DRIFTED")
+    if any(not row["unresolved_or_rejected"]
+           for row in report["recent_technical_triggers"]
+           if row["status"] == "TRIGGER_OBSERVED_NOT_APPROVED"):
+        raise AssertionError("CANONICAL_REJECTED_TRIGGER_NO_REASON")
+    module.selftest(source["root"], source["master"],
+                    source["price"], blobs)
+
+
 def main():
     for n in (0, 1, 2):
         root, master, price, blobs = fixture(n)
@@ -125,6 +163,7 @@ def main():
             raise AssertionError("INVALID_FIXTURE_OR_FALSE_ALERT:" + str(n))
         module.selftest(root, master, price, blobs)
     producer_mixed_status_adversarial()
+    current_public_source_contract_smoke()
     print("XRAY_DIGEST_EMPTY_SINGLE_DOUBLE_WATCH_SELFTEST=PASS_3_SIZES"
           "_10_NEGATIVES_EACH_NO_FALSE_BUY")
 
