@@ -13,6 +13,8 @@ import hashlib
 import json
 import re
 
+import exchange_calendars as ec
+
 SCHEMA = "XRAY_NASDAQ_GUARDIAN_PAPER_V1"
 SOURCE = "ALPACA_IEX_RAW_1D"
 SHA = re.compile(r"^[a-f0-9]{64}$")
@@ -84,6 +86,7 @@ def guardian(candidate):
     symbol = candidate["symbol"]
     need(type(symbol) is str and SYMBOL.fullmatch(symbol), "INVALID_SYMBOL")
     asof = _canonical_date(candidate["asof_et"])
+    need(ec.get_calendar("XNAS").is_session(asof), "ASOF_NOT_OFFICIAL_XNAS_SESSION")
     need(all(type(candidate[k]) is str and SHA.fullmatch(candidate[k])
              for k in ("scope_sha256", "algorithm_sha256")),
          "SOURCE_POLICY_HASH_NOT_ATTESTED")
