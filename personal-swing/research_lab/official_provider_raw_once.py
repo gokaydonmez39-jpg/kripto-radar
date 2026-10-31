@@ -299,10 +299,12 @@ def main():
     scope_mode = os.environ.get('XRAY_SOURCE_SCOPE','pilot3')
     if scope_mode not in ('pilot3','all477'):
         raise Refused('SOURCE_SCOPE_INVALID')
-    alpaca_fn = (lambda: audit_all_477(
-        key=key,secret=secret,start=start,end=end)
-        if scope_mode == 'all477' else lambda: alpaca_raw_audit(
-        key=key, secret=secret, start=start, end=end))
+    if scope_mode == 'all477':
+        alpaca_fn = lambda: audit_all_477(
+            key=key,secret=secret,start=start,end=end)
+    else:
+        alpaca_fn = lambda: alpaca_raw_audit(
+            key=key,secret=secret,start=start,end=end)
     for source, enabled, fn in (
         ('SEC_EDGAR', bool(sec_agent), lambda: sec_raw_audit(declared_agent=sec_agent)),
         ('ALPACA_CORPORATE_ACTIONS', bool(key and secret), alpaca_fn),
