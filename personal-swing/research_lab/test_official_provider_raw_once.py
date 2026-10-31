@@ -271,7 +271,7 @@ class ManualRawProviderTests(unittest.TestCase):
 
     def test_477_batch_failure_stops_all_remaining_requests(self):
         scope=tuple(f'T{i:04d}' for i in range(477))
-        op=pages({'next_page_token':None}, {'cash_dividends':[item(uid='bad')],
+        op=pages({'next_page_token':None}, {'cash_dividends':[dict(item(uid='bad'),symbol='T0025')],
                         'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_ID_INVALID'):
             m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
