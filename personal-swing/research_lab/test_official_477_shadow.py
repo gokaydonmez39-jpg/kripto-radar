@@ -16,7 +16,8 @@ ASOF = '2026-10-31T14:05:56Z'
 
 def fixture():
     symbols = raw.read_immutable_477_scope()
-    assert len(symbols) == 477
+    if len(symbols) != 477:
+        raise ValueError('TEST_SCOPE_NOT_477')
     ids = {
         UID_A: ('cash_dividends', '2026-10-15', HASH),
         UID_B: ('stock_and_cash_mergers', '2026-10-30', HASH)
@@ -26,8 +27,7 @@ def fixture():
         UID_B: tuple(sorted((symbols[0], symbols[1])))
     }
     return {
-        'status': raw.__dict__['audit_all_477'].__doc__ and
-                  'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE',
+        'status': 'ALL_477_BATCH_CHAINS_EXHAUSTED_NOT_MARKET_CLEARANCE',
         'requested_symbols': 477, 'batches': 20, 'http_pages': 20,
         'data_quality_requested': 'all',
         'cross_batch_unique_events_proven': True,
