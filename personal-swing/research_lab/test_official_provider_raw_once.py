@@ -133,6 +133,53 @@ class ManualRawProviderTests(unittest.TestCase):
         with self.assertRaisesRegex(m.Refused,'ALPACA_PROCESS_DATE_INVALID'):
             audit(op)
 
+    def test_realistic_merger_acquirer_in_scope_accepted(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN', 'acquiree_symbol':'BLFS'
+        }], 'next_page_token':None})
+        result=m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+            start=START,end=END,symbols=('RGEN',),
+            opener=op)
+        self.assertEqual(result['event_ids_observed'],1)
+        self.assertFalse(result['may_clear_risk'])
+
+    def test_merger_both_issuers_outside_scope_rejected(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN','acquiree_symbol':'BLFS'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_EVENT_OUTSIDE_REQUEST_SCOPE'):
+            m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+                start=START,end=END,symbols=('SWKS',),opener=op)
+
+    def test_missing_merger_counterparty_fails(self):
+        op=pages({'stock_and_cash_mergers':[{
+            'id':ID1, 'process_date':'2026-10-07',
+            'acquirer_symbol':'RGEN'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_MERGER_IDENTITY_MISSING'):
+            m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+                start=START,end=END,symbols=('RGEN',),opener=op)
+
+    def test_cash_dividend_requires_its_own_in_scope_symbol(self):
+        op=pages({'cash_dividends':[{
+            'id':ID1,'process_date':'2026-10-15',
+            'acquirer_symbol':'GILD','symbol':'OUT'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_CASH_DIVIDEND_SYMBOL_REQUIRED'):
+            audit(op)
+
+    def test_event_without_any_supported_symbol_is_refused(self):
+        op=pages({'cash_dividends':[{
+            'id':ID1,'process_date':'2026-10-15'
+        }], 'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_SYMBOL_INVALID'):
+            audit(op)
+
     def test_alpaca_noncanonical_event_date_rejected(self):
         op=pages({'cash_dividends':[item(day='2026-11-01')], 'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_PROCESS_DATE_INVALID'):
