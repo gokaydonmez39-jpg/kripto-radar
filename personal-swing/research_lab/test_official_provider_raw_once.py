@@ -359,6 +359,93 @@ class ManualRawProviderTests(unittest.TestCase):
                 'Synthetic Research synthetic-contact@audit.invalid',
                             opener=op)
 
+    def test_cli_missing_alpaca_keys_is_red_not_false_green(self):
+        from contextlib import redirect_stdout
+        out=io.StringIO()
+        with patch.dict(os.environ, {
+            'XRAY_SEC_DECLARED_USER_AGENT':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'',
+            'XRAY_SOURCE_SCOPE':'pilot3'}, clear=True):
+            with patch.object(m,'default_opener',
+                              side_effect=AssertionError('UNAUTHORIZED_HTTP')):
+                with redirect_stdout(out):
+                    code=m.main()
+        self.assertEqual(code,3)
+        self.assertEqual(out.getvalue().count('SKIPPED_NO_AUTHORIZED_INPUT'),2)
+
+    def test_cli_alpaca_refusal_is_red_without_secret_leak(self):
+        from contextlib import redirect_stdout
+        out=io.StringIO()
+        with patch.dict(os.environ,{
+            'XRAY_SEC_DECLARED_USER_AGENT':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'key-private-synthetic',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'secret-private-synthetic',
+            'XRAY_SOURCE_SCOPE':'pilot3'},clear=True):
+            with patch.object(m,'alpaca_raw_audit',
+                              side_effect=m.Refused('HTTP_429')):
+                with redirect_stdout(out):
+                    code=m.main()
+        self.assertEqual(code,4)
+        self.assertIn('SOURCE_REFUSED',out.getvalue())
+        self.assertIn('HTTP_429',out.getvalue())
+        self.assertNotIn('private-synthetic',out.getvalue())
+
+    def test_cli_valid_alpaca_and_unconfigured_sec_is_only_alpaca_pass(self):
+        from contextlib import redirect_stdout
+        out=io.StringIO()
+        accepted={'status':'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
+                  'may_clear_risk':False,'pages':1,'event_ids_observed':1}
+        with patch.dict(os.environ,{
+            'XRAY_SEC_DECLARED_USER_AGENT':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'synthetic-key',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic-secret',
+            'XRAY_SOURCE_SCOPE':'pilot3'},clear=True):
+            with patch.object(m,'alpaca_raw_audit',return_value=accepted):
+                with redirect_stdout(out):
+                    code=m.main()
+        self.assertEqual(code,0)
+        rows=[json.loads(x) for x in out.getvalue().splitlines()]
+        self.assertEqual(rows[0]['status'],'SKIPPED_NO_AUTHORIZED_INPUT')
+        self.assertEqual(rows[1]['status'],'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE')
+        self.assertFalse(rows[1]['may_clear_risk'])
+
+    def test_cli_configured_sec_refused_red_even_if_alpaca_passes(self):
+        from contextlib import redirect_stdout
+        out=io.StringIO()
+        accepted={'status':'RAW_PAGE_CHAIN_EXHAUSTED_NOT_MARKET_CLEARANCE',
+                  'may_clear_risk':False,'pages':1}
+        with patch.dict(os.environ,{
+            'XRAY_SEC_DECLARED_USER_AGENT':
+                'Synthetic Research synthetic-contact@audit.invalid',
+            'XRAY_ALPACA_DATA_KEY_ID':'synthetic-key',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic-secret',
+            'XRAY_SOURCE_SCOPE':'pilot3'},clear=True):
+            with patch.object(m,'sec_raw_audit',
+                              side_effect=m.Refused('SEC_FORMAT_REQUIRES_REVIEW')):
+                with patch.object(m,'alpaca_raw_audit',return_value=accepted):
+                    with redirect_stdout(out):
+                        code=m.main()
+        self.assertEqual(code,4)
+        self.assertIn('SEC_FORMAT_REQUIRES_REVIEW',out.getvalue())
+        self.assertNotIn('synthetic-contact@audit.invalid',out.getvalue())
+
+    def test_cli_incorrect_alpaca_status_never_success(self):
+        from contextlib import redirect_stdout
+        out=io.StringIO()
+        with patch.dict(os.environ,{
+            'XRAY_SEC_DECLARED_USER_AGENT':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'synthetic-key',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic-secret',
+            'XRAY_SOURCE_SCOPE':'pilot3'},clear=True):
+            with patch.object(m,'alpaca_raw_audit',
+                              return_value={'status':'SAMPLE_FOR_REVIEW',
+                                            'may_clear_risk':False}):
+                with redirect_stdout(out):
+                    code=m.main()
+        self.assertEqual(code,4)
+        self.assertIn('ALPACA_ACCEPTANCE_STATUS_INVALID',out.getvalue())
+
     def test_no_env_never_touches_network_or_secrets(self):
         with patch.dict(os.environ,{'XRAY_SEC_DECLARED_USER_AGENT':'',
             'XRAY_ALPACA_DATA_KEY_ID':'','XRAY_ALPACA_DATA_SECRET_KEY':''}):
