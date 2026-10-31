@@ -16,6 +16,7 @@ import os
 import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
 WORKFLOW='xray-personal-477-eod.yml'
@@ -74,6 +75,23 @@ def decision(now, runs, *, calendar=None):
     return 'DISPATCH_ONE_MISSING_SCHEDULE',candidate_date
 
 
+
+def windowed_runs_url(workflow_base, now):
+    """Limit run search to the entire possible 10h fallback epoch.
+
+    GitHub supports the 'created' query for workflow-specific run listing.
+    The five-minute cushion is outside the full MAX_FALLBACK_AGE window;
+    even a run right at the eligible cutoff is included. No pagination
+    is silently trusted: the caller rejects total_count != returned rows.
+    """
+    if now.tzinfo is None:
+        raise ValueError('AWARE_UTC_NOW_REQUIRED')
+    oldest=(now.astimezone(timezone.utc)-MAX_FALLBACK_AGE-
+            timedelta(minutes=5)).replace(microsecond=0)
+    created='>='+oldest.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return workflow_base+'/runs?'+urlencode({'per_page':100,'created':created})
+
+
 def api_json(url,token,method='GET',body=None):
     headers={'Accept':'application/vnd.github+json',
              'Authorization':'Bearer '+token,
@@ -105,8 +123,11 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
     payload=read_runs()
     if not isinstance(payload,dict) or not isinstance(payload.get('workflow_runs'),list):
         return {'status':'BLOCKED_INVALID_GITHUB_RUN_RESPONSE','dispatch_requested':False}
-    if payload.get('total_count',0)>len(payload['workflow_runs']) and len(payload['workflow_runs'])<50:
-        # Pagination inconsistency, not proof that no matching run exists.
+    count=payload.get('total_count')
+    if type(count) is not int or count<0 or count!=len(payload['workflow_runs']):
+        # Exactly 50/100 results with MORE pages also means UNKNOWN.
+        # Do not dispatch when the original EOD run may be hidden on page 2,
+        # or when GitHub omits / falsifies the total count.
         return {'status':'BLOCKED_UNTRUSTED_RUN_PAGINATION','dispatch_requested':False}
     verdict,session=decision(now,payload['workflow_runs'])
     if verdict!='DISPATCH_ONE_MISSING_SCHEDULE':
@@ -131,15 +152,16 @@ def main(argv=None):
         print(json.dumps({'status':'BLOCKED_MISSING_GITHUB_REPO_OR_TOKEN','no_execution':True}))
         return 2
     base='https://api.github.com/repos/'+repo+'/actions/workflows/'+WORKFLOW
+    captured_now=datetime.now(timezone.utc)
     def get_runs():
-        return api_json(base+'/runs?per_page=50',token)
+        return api_json(windowed_runs_url(base,captured_now),token)
     def dispatch(session):
         if args.dry_run:
             return True
         return api_json(base+'/dispatches',token,method='POST',
                         body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
-        result=run(read_runs=get_runs,request_dispatch=dispatch)
+        result=run(now=captured_now,read_runs=get_runs,request_dispatch=dispatch)
         if args.dry_run and result.get('dispatch_requested'):
             result['status']='DRY_RUN_WOULD_DISPATCH'
             result['dispatch_requested']=False
