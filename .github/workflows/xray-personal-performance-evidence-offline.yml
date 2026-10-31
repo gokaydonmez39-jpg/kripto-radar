@@ -5,6 +5,8 @@ on:
       - 'personal-swing/performance_lab/**'
       - 'personal-swing/research_lab/official_event_risk_shadow.py'
       - 'personal-swing/research_lab/test_official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/alpaca_connector_shadow_bridge.py'
+      - 'personal-swing/research_lab/test_alpaca_connector_shadow_bridge.py'
       - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   push:
@@ -13,6 +15,8 @@ on:
       - 'personal-swing/performance_lab/**'
       - 'personal-swing/research_lab/official_event_risk_shadow.py'
       - 'personal-swing/research_lab/test_official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/alpaca_connector_shadow_bridge.py'
+      - 'personal-swing/research_lab/test_alpaca_connector_shadow_bridge.py'
       - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   workflow_dispatch:
@@ -46,5 +50,11 @@ jobs:
           python -O -m unittest -q test_official_event_risk_shadow
           python -m py_compile official_event_risk_shadow.py
           python official_event_risk_shadow.py
+      - name: Alpaca connected-app grouped-CA strict offline bridge tests
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_alpaca_connector_shadow_bridge
+          python -O -m unittest -q test_alpaca_connector_shadow_bridge
+          python -m py_compile alpaca_connector_shadow_bridge.py
       - name: Explicit research-only termination
         run: echo 'A11=SHADOW_SYNTHETIC_ONLY; NO_ORDERS; NO_MARKET_DATA; NO_GOOGLE_SHEETS; NO_PUSH; NO_NEW_AUTOMATION; NO_PRODUCTION_RULE_CHANGE'
