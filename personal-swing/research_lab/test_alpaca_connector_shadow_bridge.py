@@ -31,10 +31,26 @@ class ConnectedSampleTests(unittest.TestCase):
     def test_positive_is_review_only(self):
         r=self.run_check()
         self.assertEqual(r['event_count'],2)
-        self.assertEqual(r['status'],'SAMPLE_FOR_REVIEW')
+        self.assertEqual(r['status'],'CONNECTOR_ORDER_DISPUTE_REVIEW_REQUIRED')
         self.assertFalse(r['pagination_complete_proven'])
         self.assertFalse(r['market_event_absence_proven'])
         self.assertFalse(r['may_generate_al'])
+
+    def test_sorted_process_dates_can_be_research_sample(self):
+        p=fixture()
+        p['announcements']['cash_dividends'].reverse()
+        r=self.run_check(p)
+        self.assertTrue(r['process_date_order_matches_requested_sort'])
+        self.assertEqual(r['status'],'SAMPLE_FOR_REVIEW')
+        self.assertFalse(r['pagination_complete_proven'])
+        self.assertFalse(r['may_generate_al'])
+
+    def test_provider_order_dispute_never_clears_risk(self):
+        r=self.run_check()
+        self.assertEqual(r['status'],'CONNECTOR_ORDER_DISPUTE_REVIEW_REQUIRED')
+        self.assertFalse(r['process_date_order_matches_requested_sort'])
+        self.assertFalse(r['market_event_absence_proven'])
+        self.assertFalse(r['may_modify_stop_target'])
 
     def test_empty_is_never_clearance(self):
         p=fixture();p['announcements']={}
