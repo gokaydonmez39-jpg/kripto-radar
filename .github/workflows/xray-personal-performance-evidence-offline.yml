@@ -10,6 +10,8 @@ on:
       - 'personal-swing/research_lab/official_source_evidence_gate.py'
       - 'personal-swing/research_lab/test_official_source_evidence_gate.py'
       - 'personal-swing/research_lab/README_OFFICIAL_CAPTURE_GATE.md'
+      - 'personal-swing/research_lab/official_provider_raw_once.py'
+      - 'personal-swing/research_lab/test_official_provider_raw_once.py'
       - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   push:
@@ -23,6 +25,8 @@ on:
       - 'personal-swing/research_lab/official_source_evidence_gate.py'
       - 'personal-swing/research_lab/test_official_source_evidence_gate.py'
       - 'personal-swing/research_lab/README_OFFICIAL_CAPTURE_GATE.md'
+      - 'personal-swing/research_lab/official_provider_raw_once.py'
+      - 'personal-swing/research_lab/test_official_provider_raw_once.py'
       - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   workflow_dispatch:
@@ -68,5 +72,11 @@ jobs:
           python -m unittest -q test_official_source_evidence_gate
           python -O -m unittest -q test_official_source_evidence_gate
           python -m py_compile official_source_evidence_gate.py
+      - name: Protected manual raw SEC and Alpaca zero-network adverse tests
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_official_provider_raw_once
+          python -O -m unittest -q test_official_provider_raw_once
+          python -m py_compile official_provider_raw_once.py
       - name: Explicit research-only termination
         run: echo 'A11=SHADOW_SYNTHETIC_ONLY; NO_ORDERS; NO_MARKET_DATA; NO_GOOGLE_SHEETS; NO_PUSH; NO_NEW_AUTOMATION; NO_PRODUCTION_RULE_CHANGE'
