@@ -123,6 +123,39 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(result['state'],'READER_REJECTED')
         self.assertEqual(result['refusal_code'],'RSS_READER_REFUSED')
 
+    def test_477_scope_partition_current_only(self):
+        symbols = [f'T{i:04d}' for i in range(477)]
+        header = 'Symbol|Security Name|Market Category|Test Issue|Financial Status|ETF'
+        rows = [f'{s}|Synthetic|Q|N|N|N' for s in symbols[:-2]]
+        rows += [f'{symbols[-2]}|Synthetic|Q|N|D|N']
+        body = (header + '\n' + '\n'.join(rows) +
+                '\nFile Creation Time: 103020261200||||||\n').encode()
+        result = p.compare_current_directory_scope(body, {
+            'liquidity_watch_symbols': symbols, 'source_count': 477})
+        self.assertEqual(result['scope_count'],477)
+        self.assertEqual(result['directory_basic_flag_match'],475)
+        self.assertEqual(result['directory_flagged'],1)
+        self.assertEqual(result['directory_missing'],1)
+        self.assertFalse(result['historical_membership_proven'])
+        self.assertFalse(result['may_clear_risk'])
+        self.assertNotIn(symbols[-1],json.dumps(result))
+
+    def test_bad_watchlist_size_refused(self):
+        with self.assertRaisesRegex(ValueError,'SCOPE_477_COUNT_MISMATCH'):
+            p.compare_current_directory_scope(directory(), {
+                'liquidity_watch_symbols':['AAPL'],'source_count':477})
+
+    def test_scope_duplicate_refused(self):
+        with self.assertRaisesRegex(ValueError,'SCOPE_SYMBOL_INVALID_OR_DUPLICATE'):
+            p.compare_current_directory_scope(directory(), {
+                'liquidity_watch_symbols':['AAPL']*477,'source_count':477})
+
+    def test_real_477_scope_file_exists_and_is_exact(self):
+        data=p.local_watchlist()
+        self.assertEqual(len(data['liquidity_watch_symbols']),477)
+        self.assertEqual(len(set(data['liquidity_watch_symbols'])),477)
+        self.assertEqual(data['source_count'],477)
+
     def test_outside_allowlist_no_request(self):
         fake=FakeOpener(None)
         with self.assertRaisesRegex(ValueError,'SOURCE_NOT_ALLOWED'):
