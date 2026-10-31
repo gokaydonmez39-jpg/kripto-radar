@@ -110,6 +110,29 @@ class ManualRawProviderTests(unittest.TestCase):
         with self.assertRaisesRegex(m.Refused,'ALPACA_NEW_SCHEMA_REVIEW_REQUIRED'):
             audit(op)
 
+    def test_missing_page_metadata_must_not_claim_exhaustive(self):
+        op=pages({'cash_dividends':[item()]})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_PAGE_METADATA_MISSING'):
+            audit(op)
+
+    def test_exact_per_page_count_must_not_exceed_limit(self):
+        op=pages({'cash_dividends':[item(), item(ID2)],
+                  'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_PAGE_EXCEEDS_LIMIT'):
+            audit(op,limit=1)
+
+    def test_malformed_uuid_refused(self):
+        op=pages({'cash_dividends':[item(uid='-'*36)],
+                  'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_EVENT_ID_INVALID'):
+            audit(op)
+
+    def test_invalid_calendar_day_refused(self):
+        op=pages({'cash_dividends':[item(day='2026-10-32')],
+                  'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'ALPACA_PROCESS_DATE_INVALID'):
+            audit(op)
+
     def test_alpaca_noncanonical_event_date_rejected(self):
         op=pages({'cash_dividends':[item(day='2026-11-01')], 'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_PROCESS_DATE_INVALID'):
@@ -119,6 +142,13 @@ class ManualRawProviderTests(unittest.TestCase):
         op=pages({'next_page_token':None})
         with self.assertRaisesRegex(m.Refused,'ALPACA_KEYS_MISSING'):
             m.alpaca_raw_audit(key='',secret='x',start=START,end=END,opener=op)
+        self.assertEqual(len(op.requests),0)
+
+    def test_invalid_input_calendar_date_refused_before_http(self):
+        op=pages({'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'DATE_INVALID'):
+            m.alpaca_raw_audit(key='synthetic-key',secret='synthetic-secret',
+                start='2026-02-30',end='2026-10-31',opener=op)
         self.assertEqual(len(op.requests),0)
 
     def test_alpaca_invalid_date_refused_before_request(self):
