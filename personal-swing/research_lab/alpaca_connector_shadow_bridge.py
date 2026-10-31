@@ -126,6 +126,8 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
     return {
         'schema': SCHEMA,
         'status': 'CAP_REACHED_COVERAGE_UNKNOWN' if len(events) == limit
+                  else 'CONNECTOR_ORDER_DISPUTE_REVIEW_REQUIRED' if (
+                      events and not sorted_by_process_date)
                   else 'SAMPLE_FOR_REVIEW' if events else 'NO_EVENTS_SAMPLED_NOT_CLEAR',
         'source': 'ALPACA_CONNECTED_APP_GROUPED_CORPORATE_ACTIONS',
         'requested_symbols': symbols.copy(), 'request_start': start, 'request_end': end,
