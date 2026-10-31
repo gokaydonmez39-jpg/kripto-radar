@@ -114,6 +114,8 @@ def audit_capture(capture, *, source, ticker, asof_utc, cik=None):
         try:
             doc = json.loads(body, object_pairs_hook=no_duplicate_keys,
                              parse_constant=reject_nonfinite)
+        except EvidenceRejected:
+            raise
         except (ValueError, TypeError) as exc:
             raise EvidenceRejected('JSON_INVALID') from exc
         try:
