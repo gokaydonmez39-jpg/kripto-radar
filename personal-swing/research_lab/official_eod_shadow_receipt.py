@@ -8,7 +8,7 @@ Neither outcome is a market clearance or historical PIT certification.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -17,6 +17,8 @@ import re
 SCHEMA = "XRAY_NASDAQ_477_OFFICIAL_SHADOW_V1"
 STATUS = "RESEARCH_SHADOW_ONLY_NO_AUTHORITY"
 HEX_SHA = re.compile(r"[0-9a-f]{64}\Z")
+SYMBOL = re.compile(r"[A-Z][A-Z0-9.]{0,14}\Z")
+ISO_DAY = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
 ROW_FLAGS = ("market_cleared", "may_change_al", "may_change_stop_or_target",
              "may_notify", "may_place_order", "may_write_sheet")
 TOP_FLAGS = ("market_clearance_proven", "historical_pit_proven",
@@ -88,13 +90,19 @@ def verify(snapshot, receipt, guard):
             "SHADOW_ROWS_INVALID")
     names = [item.get("symbol") for item in rows]
     source_names = [item.get("symbol") for item in source_rows]
-    require(all(type(s) is str and s.isascii() and s.isupper()
-                and 1 <= len(s) <= 15 for s in names)
+    require(all(type(s) is str and SYMBOL.fullmatch(s) is not None
+                for s in names)
             and len(set(names)) == 477 and names == source_names,
             "SHADOW_SYMBOL_ORDER_OR_SCOPE_DRIFT")
-    require(receipt.get("asof_et") == snapshot.get("asof_et")
-            and type(receipt.get("asof_et")) is str,
+    asof = receipt.get("asof_et")
+    require(asof == snapshot.get("asof_et") and type(asof) is str,
             "SHADOW_EOD_DATE_MISMATCH")
+    require(ISO_DAY.fullmatch(asof) is not None, "SHADOW_EOD_DATE_INVALID")
+    try:
+        parsed_day = date.fromisoformat(asof)
+    except ValueError as exc:
+        raise ReceiptRefused("SHADOW_EOD_DATE_INVALID") from exc
+    require(parsed_day.isoformat() == asof, "SHADOW_EOD_DATE_INVALID")
     require(all(type(snapshot.get(k)) is str
                 and HEX_SHA.fullmatch(snapshot[k]) for k in
                 ("scope_sha256", "analysis_fingerprint_sha256")),
