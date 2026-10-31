@@ -101,7 +101,8 @@ def reject_nonfinite(_):
 
 def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pages=8,
                      symbols=ALPACA_SCOPE, before_request=None,
-                     data_quality='all', include_internal_ids=False):
+                     data_quality='all', include_internal_ids=False,
+                      include_internal_roles=False):
     """Walk all RAW corporate-action response pages for fixed public sample scope.
 
     Exhaustion is a transport-page result, not a proof of data freshness/PIT.
@@ -122,7 +123,9 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             type(max_pages) is int and 1 <= max_pages <= 20, 'BUDGET_INVALID')
     require(data_quality in ('all', 'complete') and type(data_quality) is str,
             'DATA_QUALITY_INVALID')
-    require(type(include_internal_ids) is bool, 'INTERNAL_CAPTURE_FLAG_INVALID')
+    require(type(include_internal_ids) is bool and type(include_internal_roles) is bool
+            and (not include_internal_roles or include_internal_ids),
+            'INTERNAL_CAPTURE_FLAG_INVALID')
     require(type(symbols) in (tuple, list) and
             1 <= len(symbols) <= 25 and len(set(symbols)) == len(symbols) and
             all(type(s) is str and
@@ -131,7 +134,7 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
     require(before_request is None or callable(before_request),
             'PACE_CALLBACK_INVALID')
     headers = {'APCA-API-KEY-ID': key, 'APCA-API-SECRET-KEY': secret}
-    known_ids, tokens = {}, set()
+    known_ids, known_roles, tokens = {}, {}, set()
     pages, page = 0, None
     sizes = []
     for _ in range(max_pages):
@@ -206,6 +209,8 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
                 known_ids[canonical_id] = (
                     group, when, hashlib.sha256(canonical_raw.encode('utf-8')).hexdigest()
                 )
+                if include_internal_roles:
+                    known_roles[canonical_id] = tuple(sorted(set(present_symbols)))
         nxt = data['next_page_token']
         require(nxt is None or (type(nxt) is str and
                 0 < len(nxt) <= 512 and '\n' not in nxt),
@@ -227,6 +232,8 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             # appear in a public Actions log or the normal CLI JSON output.
             if include_internal_ids:
                 summary['_internal_id_index'] = known_ids
+            if include_internal_roles:
+                summary['_internal_symbol_roles'] = known_roles
             return summary
         require(nxt not in tokens, 'ALPACA_PAGE_TOKEN_CYCLE')
         tokens.add(nxt)
@@ -254,7 +261,7 @@ def read_immutable_477_scope():
 
 def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
                   before_request=None, data_quality='all',
-                  include_internal_ids=False):
+                  include_internal_ids=False, include_internal_roles=False):
     """Bounded 20-batch raw REST proof for existing 477 scope; no event detail logs.
 
     Counts are response records PER QUERY; corporate events appearing in more
@@ -271,6 +278,7 @@ def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
     requests = 0
     record_occurrences = 0
     global_ids = {}
+    global_roles = {}
     groups_observed = {}
     cross_batch_duplicate_occurrences = 0
     for index in range(0, 477, 25):
@@ -279,12 +287,14 @@ def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
             key=key,secret=secret,start=start,end=end,
             opener=opener, symbols=batch,limit=100,max_pages=8,
             before_request=before_request, data_quality=data_quality,
-            include_internal_ids=True)
+            include_internal_ids=True,
+            include_internal_roles=include_internal_roles)
         require(sample['symbols_requested_count']==len(batch) and
                 sample['page_chain_exhausted'] is True,
                 'ALPACA_BATCH_UNVERIFIED')
         requests += sample['pages']
         record_occurrences += sample['event_ids_observed']
+        batch_roles = sample.pop('_internal_symbol_roles', {})
         for uid, row_summary in sample.pop('_internal_id_index').items():
             group, processed, row_hash = row_summary
             groups_observed[group] = groups_observed.get(group, 0) + 1
@@ -294,6 +304,13 @@ def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
                 cross_batch_duplicate_occurrences += 1
             else:
                 global_ids[uid] = row_summary
+            if include_internal_roles:
+                roles = batch_roles[uid]
+                if uid in global_roles:
+                    require(global_roles[uid] == roles,
+                            'ALPACA_EVENT_ROLES_CONFLICT_ACROSS_BATCHES')
+                else:
+                    global_roles[uid] = roles
     require(requests <= 160, 'ALPACA_REQUEST_BUDGET_EXCEEDED')
     # Fixed delimiter canonicalizes the unique set; digest does not certify
     # source origin, provider freshness or complete historical coverage.
@@ -317,6 +334,8 @@ def audit_all_477(*, key, secret, start, end, scope=None, opener=None,
     }
     if include_internal_ids:
         summary['_internal_id_index'] = global_ids
+    if include_internal_roles:
+        summary['_internal_symbol_roles'] = global_roles
     return summary
 
 def reconcile_all477_quality(*, key, secret, start, end,
