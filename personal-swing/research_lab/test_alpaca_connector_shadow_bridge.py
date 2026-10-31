@@ -88,6 +88,40 @@ class ConnectedSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(SampleRejected,'EVENT_SYMBOL_OUTSIDE_SCOPE'):
             self.run_check(p)
 
+    def test_connector_pagination_token_blocks_processing(self):
+        p=fixture();p['next_page_token']='more-results'
+        with self.assertRaisesRegex(SampleRejected,'PAGINATION_INCOMPLETE'):
+            self.run_check(p)
+
+    def test_broken_pagination_token_rejected(self):
+        p=fixture();p['next_page_token']=42
+        with self.assertRaisesRegex(SampleRejected,'PAGINATION_TOKEN_INVALID'):
+            self.run_check(p)
+
+    def test_missing_pagination_metadata_never_proves_complete(self):
+        r=self.run_check()
+        self.assertFalse(r['connector_exposed_next_page_token'])
+        self.assertFalse(r['pagination_complete_proven'])
+        self.assertFalse(r['all_early_provider_events_proven'])
+        self.assertTrue(r['default_complete_can_exclude_early_incomplete_events'])
+
+    def test_data_quality_unknown_refused(self):
+        p=fixture();p['request']['data_quality']='premium_magic'
+        with self.assertRaisesRegex(SampleRejected,'DATA_QUALITY_INVALID'):
+            self.run_check(p)
+
+    def test_sort_not_by_process_date_never_claims_order(self):
+        r=self.run_check()
+        self.assertFalse(r['process_date_order_matches_requested_sort'])
+        self.assertFalse(r['process_date_order_semantics_verified'])
+        self.assertFalse(r['may_generate_al'])
+
+    def test_explicit_null_token_does_not_prove_full_vendor_coverage(self):
+        p=fixture();p['next_page_token']=None
+        r=self.run_check(p)
+        self.assertTrue(r['connector_exposed_next_page_token'])
+        self.assertFalse(r['pagination_complete_proven'])
+
     def test_wrong_query_order_refused(self):
         p=fixture();p['request']['symbols']=['MSFT','AAPL']
         with self.assertRaisesRegex(SampleRejected,'REQUEST_SYMBOL_SCOPE_MISMATCH'):
