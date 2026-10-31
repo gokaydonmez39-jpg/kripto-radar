@@ -327,5 +327,80 @@ class FlightNegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(g.FlightRecorderBlocked, 'EVENT_WRONG_EPISODE_OR_DAY'):
             g.inspect(*b)
 
+    def _overlap_fixture(self, with_prior=True):
+        import alert_ledger_contract as contract
+        b = data()
+        day2 = '2026-10-28'
+        new_key = day2+'|FAKE'
+        b[1].append([day2,'fixture','477','477','477','0',
+                     'TRUE','1','private',b[1][1][9]])
+        previous = b[0][1]
+        previous[7] = 'AÇIK • 1/15 SEANS' if with_prior else 'KAPALI • STOP_TOUCHED • 1/15 SEANS'
+        if not with_prior:
+            previous[8] = DAY
+            previous[9] = 'STOP_TOUCHED'
+            closed = list(b[2][1])
+            closed[0] = KEY+'|'+DAY+'|STOP_TOUCHED|1'
+            closed[5] = 'STOP_TOUCHED'
+            b[2].append(closed)
+        successor = list(previous)
+        successor[0], successor[1], successor[7] = new_key, day2, 'AÇIK • 0/15 SEANS'
+        successor[8], successor[9], successor[10] = '', '', ''
+        b[0].append(successor)
+        ev = list(b[2][1])
+        ev[0], ev[1], ev[2], ev[4], ev[17] = (
+            new_key+'|'+day2+'|AL_NEW_EPISODE|1',new_key,day2,day2,contract.SUPPRESSED)
+        b[2].append(ev)
+        b[3][0][1] = day2
+        return b, ev[0]
+
+    def test_active_prior_suppression_is_logged_without_delivery(self):
+        import alert_ledger_contract as contract
+        b,key = self._overlap_fixture()
+        result = g.inspect(*b)
+        self.assertEqual(result['suppressed_active_al'],1)
+        self.assertEqual(result['unreserved_current_eod_al'],0)
+        self.assertEqual(result['matched_new_al_outbox'],2)
+        self.assertEqual(contract.delivery_status(b[2],key),
+                         'SUPPRESSED_ACTIVE_EPISODE_NO_DELIVERY')
+        self.assertEqual(result['device_receipts_verified'],0)
+        with self.assertRaisesRegex(contract.LedgerRefused,'EVENT_ALREADY_RECORDED_NO_RESEND'):
+            contract.verify_first_reservation(b[2],b[2],[key])
+
+    def test_suppression_without_prior_open_fails_closed(self):
+        b,key = self._overlap_fixture(with_prior=False)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE'):
+            g.inspect(*b)
+
+    def test_suppressed_stop_is_not_a_valid_delivery_state(self):
+        import alert_ledger_contract as contract
+        b = data()
+        b[2][1][0] = KEY+'|'+DAY+'|STOP_TOUCHED|1'
+        b[2][1][5] = 'STOP_TOUCHED'
+        b[2][1][17] = contract.SUPPRESSED
+        with self.assertRaisesRegex(contract.LedgerRefused,
+                                    'SUPPRESSION_ONLY_FOR_NEW_AL_EPISODE'):
+            contract.parse_ledger(b[2])
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'UNATTESTED_DELIVERY_STATE'):
+            g.inspect(*b)
+
+    def test_unreserved_no_prior_open_remains_fail_closed(self):
+        b = data()
+        b[2] = [b[2][0]]
+        result = g.inspect(*b)
+        self.assertEqual(result['unreserved_current_eod_al'],1)
+        self.assertEqual(result['suppressed_active_al'],0)
+
+    def test_suppressed_event_duplicate_key_is_rejected(self):
+        import alert_ledger_contract as contract
+        b,key = self._overlap_fixture()
+        b[2].append(list(b[2][-1]))
+        with self.assertRaisesRegex(contract.LedgerRefused,'DUPLICATE_EVENT_KEY'):
+            contract.parse_ledger(b[2])
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'DUPLICATE_EVENT'):
+            g.inspect(*b)
+
 if __name__=='__main__':
     unittest.main()
