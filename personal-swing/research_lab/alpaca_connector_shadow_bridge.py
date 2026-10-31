@@ -66,6 +66,17 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
     need(request.get('sort') in ('asc', 'desc'), 'SORT_UNKNOWN')
     need(request.get('cusips') is None and request.get('ids') is None,
          'ADDITIONAL_QUERY_FILTER_NOT_REVIEWED')
+    # A grouped connected-app sample is not the raw provider HTTP envelope.
+    # Treat an explicit next-page token as INCOMPLETE and an omitted token
+    # as UNATTESTED, never fabricate provider pagination proof.
+    page_token = payload.get('next_page_token')
+    need(page_token is None or type(page_token) is str,
+         'PAGINATION_TOKEN_INVALID')
+    need(not page_token, 'PAGINATION_INCOMPLETE')
+    need(request.get('data_quality') in (None, 'all', 'complete'),
+         'DATA_QUALITY_INVALID')
+    need(request.get('region') in (None, 'us', 'non_us', 'all'),
+         'REGION_INVALID')
     kinds = request.get('ca_types')
     need(kinds is None or kinds == ['cash_dividend'],
          'UNVERIFIED_CORPORATE_ACTION_FILTER')
@@ -105,6 +116,13 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
                 'conclusion': 'HISTORICAL_DIVIDEND_REVIEW_ONLY'
             })
     need(len(events) <= limit, 'RESPONSE_EXCEEDS_REQUESTED_LIMIT')
+    # The connector's sort convention is not proven to be process_date;
+    # exposing a monotonicity observation is not evidence of completeness.
+    dates = [e['process_date'] for e in events]
+    sorted_by_process_date = all(
+        dates[i-1] <= dates[i] for i in range(1, len(dates))) if (
+        request['sort']=='asc') else all(
+        dates[i-1] >= dates[i] for i in range(1, len(dates)))
     return {
         'schema': SCHEMA,
         'status': 'CAP_REACHED_COVERAGE_UNKNOWN' if len(events) == limit
@@ -113,6 +131,12 @@ def audit_connector_sample(payload, *, symbols, start, end, observed_at_utc):
         'requested_symbols': symbols.copy(), 'request_start': start, 'request_end': end,
         'observed_at_utc': timestamp.isoformat().replace('+00:00', 'Z'),
         'event_count': len(events), 'events': events,
+        'process_date_order_matches_requested_sort': sorted_by_process_date,
+        'process_date_order_semantics_verified': False,
+        'connector_exposed_next_page_token': 'next_page_token' in payload,
+        'connector_exposed_data_quality': request.get('data_quality') is not None,
+        'default_complete_can_exclude_early_incomplete_events': True,
+        'all_early_provider_events_proven': False,
         'pagination_complete_proven': False, 'provider_known_at_proven': False,
         'market_event_absence_proven': False, 'source_data_rights_proven': False,
         'historical_pit_proven': False, 'may_generate_al': False,
