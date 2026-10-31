@@ -3,11 +3,17 @@ on:
   pull_request:
     paths:
       - 'personal-swing/performance_lab/**'
+      - 'personal-swing/research_lab/official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/test_official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   push:
     branches: [main]
     paths:
       - 'personal-swing/performance_lab/**'
+      - 'personal-swing/research_lab/official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/test_official_event_risk_shadow.py'
+      - 'personal-swing/research_lab/README_OFFICIAL_EVENT_SHADOW.md'
       - '.github/workflows/xray-personal-performance-evidence-offline.yml'
   workflow_dispatch:
 permissions:
@@ -33,5 +39,12 @@ jobs:
           python -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
           python -O -m unittest discover -v -p 'test_nasdaq_performance_guard.py'
           python -m py_compile nasdaq_performance_guard.py
+      - name: SEC Nasdaq Alpaca Symbol Directory strict offline tests
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_official_event_risk_shadow
+          python -O -m unittest -q test_official_event_risk_shadow
+          python -m py_compile official_event_risk_shadow.py
+          python official_event_risk_shadow.py
       - name: Explicit research-only termination
         run: echo 'A11=SHADOW_SYNTHETIC_ONLY; NO_ORDERS; NO_MARKET_DATA; NO_GOOGLE_SHEETS; NO_PUSH; NO_NEW_AUTOMATION; NO_PRODUCTION_RULE_CHANGE'
