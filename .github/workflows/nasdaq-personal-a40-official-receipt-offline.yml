@@ -1,0 +1,38 @@
+name: XRAY NASDAQ A40 Official 477 EOD Receipt Admission Offline
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'personal-swing/research_lab/official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/test_official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/test_a40_official_receipt_contract.py'
+      - '.github/workflows/nasdaq-personal-a40-official-receipt-offline.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'personal-swing/research_lab/official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/test_official_eod_shadow_receipt.py'
+      - 'personal-swing/research_lab/test_a40_official_receipt_contract.py'
+      - '.github/workflows/nasdaq-personal-a40-official-receipt-offline.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-a40-eod-receipt-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Existing EOD readback plus A40 adversarial negative tests
+        working-directory: personal-swing/research_lab
+        run: python -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract
+      - name: Repeat in optimized mode to catch assert bypass
+        working-directory: personal-swing/research_lab
+        run: python -O -m unittest -v test_official_eod_shadow_receipt test_a40_official_receipt_contract
