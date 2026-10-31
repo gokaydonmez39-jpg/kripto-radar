@@ -67,22 +67,33 @@ def scan_sources(sources: dict[str, str], *, commit_sha: str) -> dict:
         if filename in py:
             tree = ast.parse(body, filename=filename)
             for t in ast.walk(tree):
-                names = []
+                # Resolve literal imports to Git-tracked .py files, including
+                # nested and relative Python syntax. Never infer dynamic imports,
+                # runtime resolution, installed packages, or module attributes.
+                candidates = []
                 if isinstance(t, ast.Import):
-                    names = [a.name for a in t.names]
-                elif isinstance(t, ast.ImportFrom) and t.module and t.level == 0:
-                    names = [t.module]
-                for imp in names:
-                    # Only a resolvable SAME-PACKAGE Python import is authoritative.
-                    root = imp.split(".")[0]
-                    candidate = str(Path(filename).parent / (root + ".py"))
+                    for alias in t.names:
+                        candidates.append(Path(filename).parent.joinpath(
+                            *alias.name.split(".")).with_suffix(".py"))
+                elif isinstance(t, ast.ImportFrom):
+                    root = Path(filename).parent
+                    # level=1 is current package, level=2 is one parent, etc.
+                    for _ in range(max(0, t.level - 1)):
+                        root = root.parent
+                    if t.module:
+                        candidates.append(root.joinpath(
+                            *t.module.split(".")).with_suffix(".py"))
+                    elif t.level:
+                        for alias in t.names:
+                            if alias.name != "*":
+                                candidates.append(root / (alias.name + ".py"))
+                for target in candidates:
+                    candidate = target.as_posix()
                     if candidate in py:
                         edges.append({"from": filename, "to": candidate,
                                       "relation": "imports", "source_file": filename,
                                       "line": t.lineno, "confidence": "EXTRACTED"})
-                    else:
-                        # No inference about runtime reachability / stdlib / dynamic imports.
-                        continue
+                    # Not present in the bounded corpus = not a proven edge.
         else:
             for match in CODE_REF.finditer(body):
                 target = match.group(0)

@@ -16,7 +16,7 @@ No new persistent task, schedule, production secret, provider API, Sheet read/wr
 
 - Input is **only Git-tracked** Python files under `personal-swing/` and relevant YAML files under `.github/workflows/` matching `personal|nasdaq-backtesting-challenger`.
 - Fail closed on symlink escape, unexpected path, too many files/bytes, broken Python AST, invalid SHA, missing coverage, changed source hash, or graph edge without an existing target and exact source line.
-- Edges are **static import statements** to same-directory modules and literal workflow references to tracked Python files. A workflow reference is **not** claimed to execute. Dynamic imports, shell interpolation, untracked code, undocumented workflows and vendor behavior are out of scope.
+- Edges are **static literal import statements** to same-directory or nested/relative Git-tracked `.py` modules (as of A38), and literal workflow references to tracked Python files. A workflow reference is **not** claimed to execute. Dynamic imports, shell interpolation, untracked code, undocumented workflows and vendor behavior are out of scope.
 - Security leads such as unpinned action refs, `pull_request_target`, or unresolved literal script paths produce only `needs_validation` with `severity: null`. They are **not confirmed exploits** or production release blockers by themselves.
 - Public GitHub CI prints **counts, HEAD SHA and a salted-free deterministic coverage hash**, not code contents, candidate stock symbols, price bars, Sheet records or credentials.
 
@@ -40,3 +40,15 @@ Before main promotion, keep a draft PR. To reject the change close the PR and de
 ## Scientific/production state
 
 A clean source graph and green synthetic tests are **not** a vulnerability clearance, not a successful 2 November EOD scan, not mobile delivery ACK and not investment performance validation. All broader FINAL gates remain unchanged.
+
+## A38 Graphify-inspired structural benchmark (2026-11-01)
+
+**No native Graphify execution.** External GitHub connectivity is unavailable in the execution sandbox, and `graphifyy` is not installed. The upstream benchmark required by the wider recommendation remains **NOT EXECUTED**; do not represent this as Graphify-native coverage or Graphify beating A36. Instead, A38 implements a bounded, source-level fix to the already merged A36 witness using Python's standard-library AST with *pre-registered synthetic ground truth*. This repair is useful independently of any upstream package.
+
+- Baseline A36 missed four **unique** known relationships in the synthetic fixture (nested dotted imports, `from . import source`, `from .source import source`, and `from .. import source`). The original A36 prior to the patch produced **0 of 4 unique expected edges** on this fixture; this is a reproducible negative test, not a statement about real NASDAQ missing imports.
+- A38 patched extractor detects **4/4 unique expected edges** without falsely linking untracked/stdlib imports; does not claim execution. Note: the fixture intentionally contains two import statements that refer to the same from/to module pair, so unique-pair recall is 4/4, not five.
+- The new benchmark suite adds four fixture-based tests, including non-existent relative target, source/provenance, deterministic scan. The preexisting 13 A36 tests continue unchanged.
+- The workflow now runs both test files in ordinary Python and `-O`, followed by the existing bounded tracked-repo witness. No additional dependencies, login, Graphify Cloud, storage, secrets, new scheduler, or production/symbol logic.
+- `graphifyy` v0.9.99 upstream reference is architecture research only. No Graphify code was copied, imported, or executed.
+
+**Acceptance boundary:** This is a useful **A36 coverage repair**, not certification of native Graphify versus A36, no measurement of Graphify CPU/runtime/cost, and no verified new market signal. The original source/line coverage limits, private-data isolation and rollback policy apply.
