@@ -32,6 +32,9 @@ ALLOWED_GROUPS = frozenset((
     'reorganizations', 'capital_gains_distributions'
 ))
 ALPACA_SCOPE = ('GILD', 'LNT', 'BTSG')
+EVENT_SYMBOL_KEYS = ('symbol', 'source_symbol', 'old_symbol', 'new_symbol',
+                     'acquirer_symbol', 'acquiree_symbol')
+
 SEC_AGENT = re.compile(r'^[A-Za-z0-9][A-Za-z0-9 ._\-]{2,100} [^\s@]+@[A-Za-z0-9._\-]+\.[A-Za-z]{2,24}$')
 
 class Refused(ValueError):
@@ -152,6 +155,21 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             require(item_count <= limit, 'ALPACA_PAGE_EXCEEDS_LIMIT')
             for row in rows:
                 require(type(row) is dict, 'ALPACA_ROW_INVALID')
+                present_symbols = [row[k] for k in EVENT_SYMBOL_KEYS if k in row]
+                require(bool(present_symbols) and all(
+                    type(s) is str and
+                    re.fullmatch(r'[A-Z][A-Z0-9.]{0,14}', s) is not None
+                    for s in present_symbols), 'ALPACA_EVENT_SYMBOL_INVALID')
+                require(any(s in symbols for s in present_symbols),
+                        'ALPACA_EVENT_OUTSIDE_REQUEST_SCOPE')
+                if group == 'cash_dividends':
+                    require(type(row.get('symbol')) is str and
+                            row['symbol'] in symbols,
+                            'ALPACA_CASH_DIVIDEND_SYMBOL_REQUIRED')
+                if group == 'stock_and_cash_mergers':
+                    require('acquirer_symbol' in row and
+                            'acquiree_symbol' in row,
+                            'ALPACA_MERGER_IDENTITY_MISSING')
                 rid = row.get('id')
                 when = row.get('process_date')
                 require(type(rid) is str, 'ALPACA_EVENT_ID_INVALID')
