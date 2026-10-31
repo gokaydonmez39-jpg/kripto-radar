@@ -143,13 +143,21 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
         require(type(data) is dict, 'ALPACA_ROOT_INVALID')
         pages += 1
         sizes.append(receipt['bytes'])
-        unknown = set(data) - ALLOWED_GROUPS - {'next_page_token'}
-        require(not unknown, 'ALPACA_NEW_SCHEMA_REVIEW_REQUIRED')
+        # Official Alpaca v1 response is:
+        # {"corporate_actions": {"cash_dividends": [...]},
+        #  "next_page_token": null | "opaque"}.
+        # The formatted connected-app output is NOT this raw schema.
+        require('corporate_actions' in data,
+                'ALPACA_NESTED_GROUPS_MISSING')
+        require(not (set(data) - {'corporate_actions', 'next_page_token'}),
+                'ALPACA_ROOT_SCHEMA_DRIFT')
         require('next_page_token' in data, 'ALPACA_PAGE_METADATA_MISSING')
+        groups = data['corporate_actions']
+        require(type(groups) is dict, 'ALPACA_GROUP_CONTAINER_INVALID')
+        require(not (set(groups) - ALLOWED_GROUPS),
+                'ALPACA_NEW_SCHEMA_REVIEW_REQUIRED')
         item_count = 0
-        for group, rows in data.items():
-            if group == 'next_page_token':
-                continue
+        for group, rows in groups.items():
             require(type(rows) is list, 'ALPACA_GROUP_INVALID')
             item_count += len(rows)
             require(item_count <= limit, 'ALPACA_PAGE_EXCEEDS_LIMIT')
