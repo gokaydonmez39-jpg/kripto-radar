@@ -109,7 +109,13 @@ def audit_capture(capture, *, source, ticker, asof_utc, cik=None):
         body = raw.decode('utf-8', errors='strict')
     except UnicodeDecodeError as exc:
         raise EvidenceRejected('BODY_NOT_UTF8') from exc
-    demand(not body.startswith('\ufeff'), 'UTF8_BOM_UNSUPPORTED')
+    # XML 1.0 permits a UTF-8 BOM; preserve the ORIGINAL raw-byte SHA
+    # and strip only that exact three-byte marker for the XML parser.
+    # JSON and Symbol Directory remain strict and refuse it.
+    if body.startswith('\ufeff'):
+        demand(source == 'NASDAQ_HALTS' and raw.startswith(b'\\xef\\xbb\\xbf'),
+               'UTF8_BOM_UNSUPPORTED')
+        body = body[1:]
     if source == 'SEC_EDGAR':
         try:
             doc = json.loads(body, object_pairs_hook=no_duplicate_keys,
