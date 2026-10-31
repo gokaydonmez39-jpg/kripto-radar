@@ -628,5 +628,57 @@ class ManualRawProviderTests(unittest.TestCase):
         self.assertEqual(out.getvalue().count('SKIPPED_NO_AUTHORIZED_INPUT'),2)
         self.assertNotIn('synthetic-secret',out.getvalue())
 
+class InternalRoleEvidenceTests(unittest.TestCase):
+    def test_default_audit_never_exposes_private_symbol_roles(self):
+        out = m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+            start=START,end=END,symbols=('GILD',),
+            opener=pages({'cash_dividends':[item()], 'next_page_token':None}))
+        self.assertNotIn('_internal_symbol_roles',out)
+        self.assertNotIn('_internal_id_index',out)
+
+    def test_protected_internal_role_index_follows_uuid(self):
+        out = m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+            start=START,end=END,symbols=('RGEN',),
+            include_internal_ids=True,include_internal_roles=True,
+            opener=pages({'stock_and_cash_mergers':[{
+                'id':ID1,'process_date':'2026-10-07',
+                'acquirer_symbol':'RGEN','acquiree_symbol':'BLFS'
+            }], 'next_page_token':None}))
+        self.assertEqual(out['_internal_symbol_roles'][ID1],('BLFS','RGEN'))
+        self.assertEqual(out['_internal_id_index'][ID1][0],
+                         'stock_and_cash_mergers')
+
+    def test_role_request_requires_private_id_capture(self):
+        with self.assertRaisesRegex(m.Refused,'INTERNAL_CAPTURE_FLAG_INVALID'):
+            m.alpaca_raw_audit(key='synthetic',secret='synthetic',
+                start=START,end=END,symbols=('GILD',),
+                include_internal_roles=True,
+                opener=pages({'cash_dividends':[],'next_page_token':None}))
+
+    def test_all477_empty_batches_have_role_index_and_no_leak(self):
+        symbols = m.read_immutable_477_scope()
+        x = m.audit_all_477(
+            key='synthetic',secret='synthetic',start=START,end=END,
+            scope=symbols,
+            include_internal_ids=True,include_internal_roles=True,
+            before_request=lambda:None,
+            opener=pages(*([
+                {'cash_dividends':[],'next_page_token':None}
+                for _ in range(20)])))
+        self.assertEqual(x['batches'],20)
+        self.assertEqual(x['_internal_symbol_roles'],{})
+        self.assertEqual(x['_internal_id_index'],{})
+        self.assertFalse(x['historical_pit_proven'])
+
+    def test_public_all477_output_never_exposes_roles(self):
+        symbols=m.read_immutable_477_scope()
+        out=m.audit_all_477(key='synthetic',secret='synthetic',
+            start=START,end=END,scope=symbols,
+            before_request=lambda:None,
+            opener=pages(*([{'cash_dividends':[],'next_page_token':None}
+                            for _ in range(20)])))
+        self.assertNotIn('_internal_symbol_roles',out)
+        self.assertNotIn('_internal_id_index',out)
+
 if __name__=='__main__':
     unittest.main()
