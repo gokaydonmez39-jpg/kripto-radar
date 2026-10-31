@@ -152,23 +152,36 @@ jobs:
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
       - name: Optional official 477 PIT-aware shadow ledger (NO AL, no source HTTP, no Sheet)
-        # This sidecar runs after normal private Sheet readback. Its failure
-        # cannot suppress/alter the original AL decisions or reclassify risk.
+        # This sidecar is strictly after normal private Sheet readback.
+        # No completed EOD => explicit SKIP, never a false 477-shadow PASS.
+        # Its failure cannot suppress or alter the original AL decisions.
         continue-on-error: true
         working-directory: personal-swing
         shell: bash
         run: |
           set -euo pipefail
+          snapshot="$RUNNER_TEMP/xray-private-data/latest.json"
+          receipt="$RUNNER_TEMP/xray-private-data/official_shadow_477.json"
+          if [[ ! -f "$snapshot" ]]; then
+            echo 'OFFICIAL_SHADOW=SKIPPED_NO_COMPLETED_SCAN; ROWS=0; PIT=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           if ! python research_lab/official_shadow_477.py \
-            --snapshot "$RUNNER_TEMP/xray-private-data/latest.json" \
+            --snapshot "$snapshot" \
             --watchlist nasdaq_watchlist_477.json \
             --guard ../nasdaq-xray/canonical_official_source_guard.json \
-            --out "$RUNNER_TEMP/xray-private-data/official_shadow_477.json"; then
+            --out "$receipt"; then
             echo 'OFFICIAL_SHADOW=FAILED_INDEPENDENT_NOT_MARKET_CLEARANCE' >> "$GITHUB_STEP_SUMMARY"
             exit 4
           fi
-          echo 'OFFICIAL_SHADOW=RESEARCH_ONLY_NO_MARKET_CLEARANCE; ZERO_AL_CHANGES; NO_ORDERS; NO_SHEETS; NO_NEW_PROVIDER_REQUESTS' >> "$GITHUB_STEP_SUMMARY"
-
+          if ! python research_lab/official_eod_shadow_receipt.py \
+            --snapshot "$snapshot" \
+            --receipt "$receipt" \
+            --guard ../nasdaq-xray/canonical_official_source_guard.json; then
+            echo 'OFFICIAL_SHADOW=FAILED_INDEPENDENT_NOT_MARKET_CLEARANCE' >> "$GITHUB_STEP_SUMMARY"
+            exit 4
+          fi
+          echo 'OFFICIAL_SHADOW=RECEIPT_VERIFIED_RESEARCH_ONLY; ROWS=477; PIT=UNKNOWN; NO_AL_CHANGES; NO_ORDERS; NO_SHEETS; NO_PROVIDER_REQUESTS' >> "$GITHUB_STEP_SUMMARY"
 
   private-sheets-auth-preflight:
     needs: offline-guard
