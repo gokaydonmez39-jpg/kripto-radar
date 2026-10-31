@@ -13,6 +13,7 @@ import json
 import os
 import re
 import ssl
+from uuid import UUID
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, HTTPSHandler, HTTPRedirectHandler, build_opener
@@ -129,23 +130,37 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
         sizes.append(receipt['bytes'])
         unknown = set(data) - ALLOWED_GROUPS - {'next_page_token'}
         require(not unknown, 'ALPACA_NEW_SCHEMA_REVIEW_REQUIRED')
+        require('next_page_token' in data, 'ALPACA_PAGE_METADATA_MISSING')
+        item_count = 0
         for group, rows in data.items():
             if group == 'next_page_token':
                 continue
             require(type(rows) is list, 'ALPACA_GROUP_INVALID')
+            item_count += len(rows)
+            require(item_count <= limit, 'ALPACA_PAGE_EXCEEDS_LIMIT')
             for row in rows:
                 require(type(row) is dict, 'ALPACA_ROW_INVALID')
                 rid = row.get('id')
                 when = row.get('process_date')
-                require(type(rid) is str and
-                        re.fullmatch(r'[0-9a-fA-F\-]{36}', rid) is not None,
-                        'ALPACA_EVENT_ID_INVALID')
+                require(type(rid) is str, 'ALPACA_EVENT_ID_INVALID')
+                try:
+                    canonical_id = str(UUID(rid))
+                except (ValueError, TypeError, AttributeError):
+                    raise Refused('ALPACA_EVENT_ID_INVALID') from None
+                require(canonical_id == rid.lower(), 'ALPACA_EVENT_ID_INVALID')
                 require(type(when) is str and
-                        re.fullmatch(r'\d{4}-\d{2}-\d{2}', when) is not None and
-                        start <= when <= end, 'ALPACA_PROCESS_DATE_INVALID')
-                require(rid not in known_ids, 'ALPACA_DUPLICATE_EVENT_ACROSS_PAGES')
-                known_ids[rid] = (group, when)
-        nxt = data.get('next_page_token')
+                        re.fullmatch(r'\d{4}-\d{2}-\d{2}', when) is not None,
+                        'ALPACA_PROCESS_DATE_INVALID')
+                try:
+                    when_date = date.fromisoformat(when)
+                except ValueError:
+                    raise Refused('ALPACA_PROCESS_DATE_INVALID') from None
+                require(when_date.isoformat() == when and start <= when <= end,
+                        'ALPACA_PROCESS_DATE_INVALID')
+                require(canonical_id not in known_ids,
+                        'ALPACA_DUPLICATE_EVENT_ACROSS_PAGES')
+                known_ids[canonical_id] = (group, when)
+        nxt = data['next_page_token']
         require(nxt is None or (type(nxt) is str and
                 0 < len(nxt) <= 512 and '\n' not in nxt),
                 'ALPACA_PAGE_TOKEN_INVALID')
