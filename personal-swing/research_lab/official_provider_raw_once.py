@@ -102,8 +102,14 @@ def alpaca_raw_audit(*, key, secret, start, end, opener=None, limit=100, max_pag
             type(secret) is str and bool(secret.strip()), 'ALPACA_KEYS_MISSING')
     require(type(start) is str and type(end) is str and
             re.fullmatch(r'\d{4}-\d{2}-\d{2}', start) is not None and
-            re.fullmatch(r'\d{4}-\d{2}-\d{2}', end) is not None and
-            date.fromisoformat(start) <= date.fromisoformat(end), 'DATE_INVALID')
+            re.fullmatch(r'\d{4}-\d{2}-\d{2}', end) is not None,
+            'DATE_INVALID')
+    try:
+        begin, finish = date.fromisoformat(start), date.fromisoformat(end)
+    except ValueError:
+        raise Refused('DATE_INVALID') from None
+    require(begin <= finish <= datetime.now(timezone.utc).date(),
+            'DATE_INVALID')
     require(type(limit) is int and 1 <= limit <= 1000 and
             type(max_pages) is int and 1 <= max_pages <= 20, 'BUDGET_INVALID')
     headers = {'APCA-API-KEY-ID': key, 'APCA-API-SECRET-KEY': secret}
