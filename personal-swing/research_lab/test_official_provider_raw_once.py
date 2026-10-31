@@ -325,6 +325,119 @@ class ManualRawProviderTests(unittest.TestCase):
         self.assertEqual(len(scope),477)
         self.assertEqual(len(set(scope)),477)
 
+    def test_all477_cross_batch_duplicate_is_one_unique_event(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        merger={'id':ID1,'process_date':'2026-10-07',
+                'acquirer_symbol':scope[0],'acquiree_symbol':scope[25]}
+        fixtures=[{'next_page_token':None} for _ in range(20)]
+        for index in (0,1):
+            fixtures[index]['stock_and_cash_mergers']=[dict(merger)]
+        result=m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+            start=START,end=END,scope=scope,opener=pages(*fixtures),
+            before_request=lambda:None)
+        self.assertEqual(result['observed_query_event_occurrences'],2)
+        self.assertEqual(result['unique_event_ids_observed'],1)
+        self.assertEqual(result['cross_batch_duplicate_occurrences'],1)
+        self.assertTrue(result['cross_batch_unique_events_proven'])
+        self.assertNotIn(ID1,json.dumps(result))
+        self.assertFalse(result['may_clear_risk'])
+
+    def test_cross_batch_same_id_different_record_is_refused(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        original={'id':ID1,'process_date':'2026-10-07',
+                  'acquirer_symbol':scope[0],'acquiree_symbol':scope[25]}
+        changed=dict(original,cash_rate=42.0)
+        fixtures=[{'next_page_token':None} for _ in range(20)]
+        fixtures[0]['stock_and_cash_mergers']=[original]
+        fixtures[1]['stock_and_cash_mergers']=[changed]
+        with self.assertRaisesRegex(m.Refused,
+                                    'ALPACA_EVENT_CONFLICT_ACROSS_BATCHES'):
+            m.audit_all_477(key='synthetic-key',secret='synthetic-secret',
+                start=START,end=END,scope=scope,opener=pages(*fixtures),
+                before_request=lambda:None)
+
+    def test_raw_quality_requires_documented_enum_no_http(self):
+        op=pages({'next_page_token':None})
+        with self.assertRaisesRegex(m.Refused,'DATA_QUALITY_INVALID'):
+            m.alpaca_raw_audit(key='synthetic-key',secret='synthetic-secret',
+                start=START,end=END,opener=op,data_quality='initial')
+        self.assertEqual(len(op.requests),0)
+
+    def test_quality_all_only_one_event_proves_filter_delta_not_pit(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        first=[{'next_page_token':None} for _ in range(20)]
+        first[0]['cash_dividends']=[dict(item(),symbol=scope[0])]
+        second=[{'next_page_token':None} for _ in range(20)]
+        op=pages(*(first+second))
+        r=m.reconcile_all477_quality(key='synthetic-key',
+            secret='synthetic-secret',start=START,end=END,scope=scope,
+            opener=op,before_request=lambda:None)
+        self.assertEqual(r['all_observed_unique_events'],1)
+        self.assertEqual(r['complete_observed_unique_events'],0)
+        self.assertEqual(r['all_only_event_ids_count'],1)
+        self.assertEqual(r['all_only_event_group_counts'],{'cash_dividends':1})
+        self.assertEqual(r['total_http_pages'],40)
+        self.assertEqual(len(op.requests),40)
+        query1=parse_qs(urlsplit(op.requests[0].full_url).query)
+        query2=parse_qs(urlsplit(op.requests[20].full_url).query)
+        self.assertEqual(query1['data_quality'],['all'])
+        self.assertEqual(query2['data_quality'],['complete'])
+        self.assertNotIn(ID1,json.dumps(r))
+        self.assertFalse(r['connector_event_id_reconciled'])
+        self.assertFalse(r['provider_snapshot_atomic'])
+        self.assertFalse(r['may_clear_risk'])
+
+    def test_quality_complete_not_subset_of_all_is_refused(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        first=[{'next_page_token':None} for _ in range(20)]
+        second=[{'next_page_token':None} for _ in range(20)]
+        second[0]['cash_dividends']=[dict(item(),symbol=scope[0])]
+        with self.assertRaisesRegex(m.Refused,'QUALITY_COMPLETE_NOT_SUBSET_OF_ALL'):
+            m.reconcile_all477_quality(key='synthetic-key',
+                secret='synthetic-secret',start=START,end=END,scope=scope,
+                opener=pages(*(first+second)),before_request=lambda:None)
+
+    def test_quality_id_field_change_refused_not_false_match(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        first=[{'next_page_token':None} for _ in range(20)]
+        second=[{'next_page_token':None} for _ in range(20)]
+        first[0]['cash_dividends']=[dict(item(),symbol=scope[0])]
+        second[0]['cash_dividends']=[dict(item(),symbol=scope[0],rate=0.9)]
+        with self.assertRaisesRegex(m.Refused,'QUALITY_SAME_ID_ROW_DISAGREEMENT'):
+            m.reconcile_all477_quality(key='synthetic-key',
+                secret='synthetic-secret',start=START,end=END,scope=scope,
+                opener=pages(*(first+second)),before_request=lambda:None)
+
+    def test_quality_identical_batches_no_fake_extra_event(self):
+        scope=tuple(f'T{i:04d}' for i in range(477))
+        first=[{'next_page_token':None} for _ in range(20)]
+        first[0]['cash_dividends']=[dict(item(),symbol=scope[0])]
+        second=[dict(x) for x in first]
+        r=m.reconcile_all477_quality(key='synthetic-key',
+            secret='synthetic-secret',start=START,end=END,scope=scope,
+            opener=pages(*(first+second)),before_request=lambda:None)
+        self.assertEqual(r['all_only_event_ids_count'],0)
+        self.assertEqual(r['all_observed_unique_events'],1)
+        self.assertEqual(r['complete_observed_unique_events'],1)
+        self.assertEqual(r['all_id_set_sha256'],r['complete_id_set_sha256'])
+
+    def test_cli_reconcile_mode_status_excludes_event_ids(self):
+        from contextlib import redirect_stdout
+        result={'status':'OBSERVED_PROVIDER_QUALITY_DELTA_NOT_PIT_CLEARANCE',
+                'all_only_event_ids_count':1,'may_clear_risk':False}
+        out=io.StringIO()
+        with patch.dict(os.environ,{
+            'XRAY_SEC_DECLARED_USER_AGENT':'',
+            'XRAY_ALPACA_DATA_KEY_ID':'synthetic-key',
+            'XRAY_ALPACA_DATA_SECRET_KEY':'synthetic-secret',
+            'XRAY_SOURCE_SCOPE':'reconcile477'},clear=True):
+            with patch.object(m,'reconcile_all477_quality',return_value=result):
+                with redirect_stdout(out):
+                    rc=m.main()
+        self.assertEqual(rc,0)
+        self.assertIn('OBSERVED_PROVIDER_QUALITY_DELTA_NOT_PIT_CLEARANCE',out.getvalue())
+        self.assertNotIn(ID1,out.getvalue())
+
     def test_sec_no_genuine_contact_refused_without_http(self):
         op=Opener(Response(sec_fixture()))
         with self.assertRaisesRegex(m.Refused,
