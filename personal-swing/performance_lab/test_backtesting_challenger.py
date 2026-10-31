@@ -5,6 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 import exchange_calendars as ec
 
@@ -104,6 +105,24 @@ class Contract(unittest.TestCase):
 
 
 class WithBacktesting(unittest.TestCase):
+    def test_corrupted_exit_price_fails_closed(self):
+        w = fixture([bar(1, 100, 112, 99, 111)], cutoff=day(1))
+        bad = [{'entry_date': day(1), 'exit_date': day(1),
+                'entry': 100.0, 'exit': 109.0, 'return_pct': 9.0}]
+        with patch('backtesting_challenger._engine', return_value=(bad, False)):
+            result = compare_episode(w)
+        self.assertEqual(result['status'], 'HOLD_EXECUTION_MODEL_DIVERGENCE')
+        self.assertFalse(result['exit_matches'])
+
+    def test_wrong_exit_session_fails_closed(self):
+        w = fixture([bar(1, 100, 112, 99, 111)], cutoff=day(1))
+        bad = [{'entry_date': day(1), 'exit_date': day(2),
+                'entry': 100.0, 'exit': 110.0, 'return_pct': 10.0}]
+        with patch('backtesting_challenger._engine', return_value=(bad, False)):
+            result = compare_episode(w)
+        self.assertEqual(result['status'], 'HOLD_EXECUTION_MODEL_DIVERGENCE')
+        self.assertFalse(result['dates_match'])
+
     def test_next_open_target_reconciles(self):
         w = fixture([bar(1, 100, 112, 99, 111)], cutoff=day(1))
         self.assertEqual(compare_episode(w)['status'], PASS)
