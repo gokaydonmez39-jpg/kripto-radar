@@ -5,12 +5,13 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: 'Alpaca raw audit scope; pilot3 recommended first, all477 explicit'
+        description: 'Read-only scope; reconcile477 compares all vs complete 477 ID sets'
         required: true
         type: choice
         options:
           - pilot3
           - all477
+          - reconcile477
         default: pilot3
 permissions:
   contents: read
