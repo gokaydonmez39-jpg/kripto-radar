@@ -142,5 +142,58 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertFalse(x['dispatch_requested'])
 
 
+    def test_hidden_existing_run_on_second_page_fails_closed(self):
+        # Repro: 50 unrelated first-page runs hide a valid current-epoch
+        # main run on the next page. Never emit a duplicate dispatch.
+        calls=[]
+        payload={'workflow_runs':[
+            record(created='2026-10-27T00:24:00Z',
+                   event='pull_request',branch='feature')
+            for _ in range(50)],'total_count':51}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=lambda:payload,
+                      request_dispatch=lambda asof:calls.append(asof) or True)
+        self.assertEqual(calls,[])
+        self.assertEqual(result['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+        self.assertFalse(result['dispatch_requested'])
+
+    def test_missing_or_forged_pagination_total_fails_closed(self):
+        now=utc('2026-10-27T00:25:00Z')
+        for total in (None,False,'0',-1):
+            with self.subTest(total=total):
+                calls=[]
+                out=sf.run(now=now,read_runs=lambda:{
+                    'workflow_runs':[], 'total_count':total},
+                    request_dispatch=lambda asof:calls.append(asof) or True)
+                self.assertEqual(calls,[])
+                self.assertEqual(out['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+
+
+    def test_created_window_filters_only_complete_safe_fallback_epoch(self):
+        from urllib.parse import parse_qs,urlparse
+        base='https://api.github.com/repos/owner/repo/actions/workflows/eod.yml'
+        url=sf.windowed_runs_url(base,utc('2026-11-03T00:25:00Z'))
+        parsed=urlparse(url)
+        query=parse_qs(parsed.query)
+        self.assertEqual(parsed.path,'/repos/owner/repo/actions/workflows/eod.yml/runs')
+        self.assertEqual(query['per_page'],['100'])
+        # 10h maximum from completed XNAS cutoff, plus a 5m margin.
+        self.assertEqual(query['created'],['>=2026-11-02T14:20:00Z'])
+        with self.assertRaisesRegex(ValueError,'AWARE_UTC_NOW_REQUIRED'):
+            sf.windowed_runs_url(base,datetime(2026,11,3,0,25))
+
+    def test_overfull_one_hundred_page_also_fails_closed(self):
+        calls=[]
+        payload={'workflow_runs':[
+            record(created='2026-10-27T00:24:00Z',
+                   event='pull_request',branch='feature')
+            for _ in range(100)],'total_count':101}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=lambda:payload,
+                      request_dispatch=lambda asof:calls.append(asof) or True)
+        self.assertEqual(calls,[])
+        self.assertEqual(result['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+
+
 if __name__=='__main__':
     unittest.main()
