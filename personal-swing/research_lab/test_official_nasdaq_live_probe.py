@@ -59,7 +59,8 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(result['state'],'HTTP_AND_FORMAT_OBSERVED_NOT_LIVE_ACCEPTANCE')
         self.assertFalse(result['may_send_alert'])
         self.assertNotIn('AAPL',json.dumps(result))
-        self.assertNotIn('T1',json.dumps(result))
+        self.assertNotIn('reason_code',json.dumps(result))
+        self.assertNotIn('HaltDate',json.dumps(result))
 
     def test_directory_one_request_is_review_only(self):
         url=p.expected_url('NASDAQ_DIRECTORY',None)
