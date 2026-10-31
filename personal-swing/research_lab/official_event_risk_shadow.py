@@ -82,7 +82,7 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
     # never confuse a safety bound with official completeness.
     n=len(columns[0]);require(n<=20000 and all(len(x)==n for x in columns),
                         'SEC_COLUMN_LENGTH_DRIFT')
-    seen_ids=set();events=[];seen=instant(observed_at_utc);cutoff=instant(asof_utc)
+    seen_ids=set();events=[];disputed=[];seen=instant(observed_at_utc);cutoff=instant(asof_utc)
     for acc,form,filing,accepted in zip(*columns):
         require(type(acc) is str and ACCESSION.fullmatch(acc) and acc not in seen_ids,
                 'SEC_ACCESSION_DUPLICATE_OR_INVALID')
@@ -90,8 +90,14 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
         day(filing)
         require(type(form) is str and form, 'SEC_FORM_INVALID')
         a=instant(accepted)
-        # An accepted filing may be newer than our persisted read or as-of.
+        # This uncorroborated submissions timestamp MUST NOT silently erase
+        # a relevant filing. Quarantine it without asserting PIT availability.
         if a > seen or a > cutoff:
+            if form in RISKS:
+                disputed.append({'event_id':cik+'|'+acc, 'form':form,
+                                 'filing_date':filing,
+                                 'reported_acceptance_utc':a.isoformat(),
+                                 'classification':'TIMESTAMP_DISPUTE_REVIEW_ONLY'})
             continue
         if form in RISKS:
             events.append({'event_id':cik+'|'+acc, 'form':form,
@@ -99,13 +105,18 @@ def inspect_sec(submissions: dict, cik: str, ticker: str, *, asof_utc: str,
                            'classification':'OFFICIAL_FILING_REVIEW_ONLY'})
     supplemental=submissions.get('filings',{}).get('files')
     supplemental_count = len(supplemental) if type(supplemental) is list else None
-    return {**out,'status':'SEC_EVENTS_REVIEW' if events else 'SEC_NO_EVENT_NOT_CLEAR',
+    return {**out,'status':('SEC_TIMESTAMP_DISPUTE_REVIEW_REQUIRED' if disputed
+                            else 'SEC_EVENTS_REVIEW' if events
+                            else 'SEC_NO_EVENT_NOT_CLEAR'),
             'current_ticker_identity_only':True,
             'acceptance_not_publication_timestamp':True,
             'acceptance_utc_independently_crosschecked':False,
             'recent_filing_rows_observed':n,
             'supplemental_history_files_declared':supplemental_count,
             'filing_history_exhaustiveness_proven':False,
+            'timestamp_dispute_count':len(disputed),
+            'timestamp_dispute_events':disputed,
+            'timestamp_dispute_may_prove_late_publication':False,
             'events':events,'event_count':len(events)}
 
 def _local(tag):
