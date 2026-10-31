@@ -139,7 +139,8 @@ def current_public_source_contract_smoke():
             and report["technical_pending_symbols"] ==
                 sorted(source["root"]["candidate_technical_funnel"]["pending_symbols"])
             and report["registered_r92_count"] == 0
-            and report["research_setup_candidate_count"] == 0
+            and report["research_setup_candidate_count"] ==
+                len(report["research_setup_candidate_symbols"])
             and report["automated_alert_authority"] is False
             and report["no_raw_ohlcv_or_levels_exported"] is True
             and report["execution"] == "NONE"
