@@ -23,7 +23,8 @@ scientific outcome witness solve *different* problems; they are not replaced.
    a real dataset was fetched, checked or legally licensed.
 2. Require the original source **ALPACA_IEX_RAW_1D**, a declared 477/477 full
    technical scope, exactly 52 consecutive XNAS sessions, canonical date,
-   source/policy fingerprints, and exact original reference/stop/2R geometry.
+   source/policy fingerprints, an actual XNAS session date (no weekends/holidays),
+   and exact original reference/stop/2R geometry.
    These are **synthetic contract assertions**, not externally authenticated
    source attestations. Any missing, different or malformed field blocks.
 3. Refuse a second new-AL paper episode if the same symbol has an earlier open
