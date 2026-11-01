@@ -1,0 +1,63 @@
+name: XRAY NASDAQ A42 Candidate Intake Autopilot (No Promotion)
+
+on:
+  pull_request:
+    paths:
+      - 'nasdaq-candidate-autopilot/**'
+      - '.github/workflows/nasdaq-a42-candidate-autopilot.yml'
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'XRAY Personal 477 EOD Daily Health (Research Only)'
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-nasdaq-a42-intake-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidate-static-gate:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'schedule' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Registry contract and negative tests
+        working-directory: nasdaq-candidate-autopilot
+        run: |
+          python -m unittest -q test_autopilot
+          python -O -m unittest -q test_autopilot
+          python -m py_compile autopilot.py test_autopilot.py
+      - name: Static 284 source admission and next cohort receipt
+        env:
+          PROBE_PUBLIC_GITHUB: ${{ github.event_name == 'workflow_run' && 'yes' || 'no' }}
+          SOURCE_RUN_CREATED: ${{ github.event.workflow_run.created_at }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$PROBE_PUBLIC_GITHUB" == "yes" ]]; then
+            SESSION_DATE="$(python -c 'import datetime,os,zoneinfo; print(datetime.datetime.fromisoformat(os.environ["SOURCE_RUN_CREATED"].replace("Z","+00:00")).astimezone(zoneinfo.ZoneInfo("America/New_York")).date().isoformat())')"
+            python nasdaq-candidate-autopilot/autopilot.py --date "$SESSION_DATE" --network --output "$RUNNER_TEMP/a42-receipt.json"
+          else
+            python nasdaq-candidate-autopilot/autopilot.py --date 2026-11-02 --output "$RUNNER_TEMP/a42-receipt.json"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: xray-a42-readonly-candidate-receipt
+          path: ${{ runner.temp }}/a42-receipt.json
+          retention-days: 30
+          if-no-files-found: error
