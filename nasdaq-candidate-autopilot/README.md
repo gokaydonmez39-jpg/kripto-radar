@@ -45,15 +45,15 @@ After A43 admits the parent EOD, A44 checks at most **seven** candidate sources.
 
 Failure or timeouts never silently promote a candidate. `assessment.py` uses capped HTTPS response size, no redirects, strict URL/hostname rules and only GitHub API GET. No paid API, new cron, account secrets or candidate-controlled shell commands.
 
-## A45 — Persistent independent issue-only evidence ledger
+## A45 — Read-only rolling artifact ledger (security contract preserved)
 
-One `[XRAY NASDAQ] A45 evidence-only source ledger YYYY-MM` GitHub Issue per active month is created when and only when a completed genuine scheduled EOD successfully passes A43 + A44. A separate job uses `issues:write` only for this ledger. The PR/testing job never has issue-write permission. One bounded comment per accepted upstream EOD identifies up to seven sources, their source version where verified, registry hash, receipt SHA256, EOD run SHA and source log digest; no private Google Sheet values, trading signals, credentials, or broker information.
+**Critical fail-first (2026-11-01):** The first A45 version requested \`issues:write\` and caused the repository's independent preopen source audit to fail with \`UNAUTHORIZED_ISSUE_WRITE_PRIVILEGE:nasdaq-a42-candidate-autopilot.yml\`. The pre-existing user policy explicitly disallows any new GitHub Issues, issue writers or issue-driven user notifications. The guard is correct and is NOT weakened. A45 is now replaced with a read-only rolling artifact ledger; no GitHub Issue is created.
 
-Replaying the same source run with the same digest is idempotent. A replay with inconsistent evidence fails. A closed ledger issue, duplicate ledger issues, mismatched/absent session evidence, missing source registry SHA, unapproved candidate status, external probe failure, or unavailable GitHub API block the write. GitHub Issue comments are durable platform records but are **not** cryptographically immutable or an independent market-data witness.
+After the A42/A43/A44 job confirms the genuine scheduled EOD and uploads bounded candidate receipts, a separate \`contents:read, actions:read\` job downloads the current run's **own** A42/A43/A44 artifact and the latest available previously published \`xray-a45-rolling-state\` artifact. \`ledger.py\` independently checks exact 477-EOD, Sheet, lifecycle, PANEL, ASOF, registry and source-receipt SHA evidence and either admits one new source-run epoch or idempotently ignores the same digest. A conflicting replay is blocked. One encrypted-in-transit but **public repository workflow artifact** is emitted; it contains only 284-candidate public metadata, SHA digests, status and source epoch, never private Sheets contents or signal details. No candidate source is installed or promoted.
 
-Two-job execution:
-1. A42/A43/A44 candidate admission (`contents:read, actions:read`), on PR/dispatch run synthetic/offline and no ledger writes. On admitted scheduled EOD, real bounded metadata preflight and artifact.
-2. A45 issue-only writer (`issues:write`) runs on verified successful scheduled main EOD only, with a dependency on stage 1 and a second exact receipt integrity gate. It reads only the artifact of the same workflow run.
+**Retention limitation:** GitHub Actions artifact retention is set to **30 days**, and the rolling snapshot is renewed by each admitted EOD. If no successful run occurs for longer than the retention period, the previous snapshot may be lost: bootstrap explicitly declares \`history_continuity=UNATTESTED_FIRST_OR_EXPIRED_ARTIFACT\`. This is renewable operational continuity, **not immutable, indefinite archival**. The separate 284-entry Git-tracked registry remains versioned. To achieve indefinite archival later, add a separately authorized non-Issue persistence mechanism and its independent readback.
+
+The \`all_workflow_schedule_audit.py --selftest\` is now included in candidate CI; any new \`issues:write\` scope or unreviewed cron must fail before merge. This is a security regression and automated self-diagnosis guard, not automatic loosening of a policy.
 
 ### Limits still open
 
