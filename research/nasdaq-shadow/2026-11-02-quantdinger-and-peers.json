@@ -1,0 +1,132 @@
+{
+  "schema": "XRAY_NASDAQ_EXTERNAL_RESEARCH_SHADOW_CANDIDATES_V1",
+  "created_date_trt": "2026-11-02",
+  "base_main_sha": "fb0a9195bb832bbffb7045847c7a6981f5728109",
+  "reference_registry_path": "nasdaq-candidate-autopilot/registry.json",
+  "reference_registry_blob_sha": "8b81b8e5ef32a5676f1cd0fea9b3609dd043079c",
+  "reference_registry_entries": 284,
+  "scope": "NASDAQ_RESEARCH_ONLY_NO_CRYPTO",
+  "admission": "NOT_IN_A42_PRODUCTION_REGISTRY",
+  "status": "UNREVIEWED_SHADOW_PROPOSALS",
+  "automatic_promotion": false,
+  "source_execution": "NONE",
+  "network_probing": "NONE",
+  "broker_orders": false,
+  "private_sheet_writes": false,
+  "chatgpt_task_changes": false,
+  "trading_alpha_authority": false,
+  "notification_authority": false,
+  "production_readers": "NONE; no workflow or engine modifications",
+  "workflow_acceptance": "HOLD_UNTIL_INDEPENDENT_CI_LICENSE_REVIEW_AND_LIVE_EOD_APPROVAL",
+  "evidence": "GITHUB_REPOSITORY_METADATA_AND_README_READ; NOT_INSTALLED_NOT_BACKTESTED",
+  "note": "Pinned public repositories are research leads. Repo stars, benchmarks, and claimed features are not evidence of improved XRAY Nasdaq signal performance. This manifest is inert until separately and explicitly wired through reviewed code.",
+  "proposals": [
+    {
+      "key": "XRAY-SHADOW-001",
+      "name": "QuantDinger",
+      "url": "https://github.com/OpenByteInc/QuantDinger",
+      "head_sha": "e75f0cfa9cd47de9259844fefbf20c2fa1464d45",
+      "declared_license": "Apache-2.0-backend; frontend/mobile separate licenses",
+      "tier": "P1-ENGINEERING-TEST",
+      "research_use": [
+        "walk_forward_and_blind_holdout",
+        "deflated_sharpe_pbo_bootstrap",
+        "transaction_cost_stress",
+        "signal_only_virtual_account_lifecycle",
+        "audit_log_design"
+      ],
+      "principal_risks": [
+        "live_broker_execution_capability",
+        "historical_security_advisories",
+        "multi_market_codebase",
+        "frontend_license_separate"
+      ],
+      "integration_status": "NOT_INTEGRATED"
+    },
+    {
+      "key": "XRAY-SHADOW-002",
+      "name": "NautilusTrader",
+      "url": "https://github.com/nautechsystems/nautilus_trader",
+      "head_sha": "6562d46877d8b16ccde69ecec65ce03098674183",
+      "declared_license": "LGPL-3.0",
+      "tier": "P1-ENGINEERING-TEST",
+      "research_use": [
+        "deterministic_event_replay",
+        "stop_target_gap_lifecycle",
+        "event_ordering_and_reconciliation"
+      ],
+      "principal_risks": [
+        "live_execution_capability",
+        "large_engine_dependency",
+        "license_review_required"
+      ],
+      "integration_status": "NOT_INTEGRATED"
+    },
+    {
+      "key": "XRAY-SHADOW-003",
+      "name": "Microsoft RD-Agent",
+      "url": "https://github.com/microsoft/RD-Agent",
+      "head_sha": "484776c211e4fbbeef03e0ec00d6bbee7362a4f4",
+      "declared_license": "MIT",
+      "tier": "P2-RESEARCH-SHADOW",
+      "research_use": [
+        "factor_model_experiment_design",
+        "independent_evaluation_protocols",
+        "hypothesis_tracking"
+      ],
+      "principal_risks": [
+        "automatic_code_execution",
+        "docker_and_llm_api_cost",
+        "overfitting_and_research_contamination"
+      ],
+      "integration_status": "NOT_INTEGRATED"
+    },
+    {
+      "key": "XRAY-SHADOW-004",
+      "name": "Everything Claude Trading",
+      "url": "https://github.com/brainbytes-dev/everything-claude-trading",
+      "head_sha": "9a8fcfcaacd7620afc24dc8c5e79d922135f3e11",
+      "declared_license": "MIT",
+      "tier": "P2-RESEARCH-SHADOW",
+      "research_use": [
+        "risk_test_checklists",
+        "data_quality_controls",
+        "backtest_review_harness"
+      ],
+      "principal_risks": [
+        "untrusted_agent_instructions",
+        "no_observed_independent_runtime_validation",
+        "not_a_verified_profit_engine"
+      ],
+      "integration_status": "NOT_INTEGRATED"
+    }
+  ],
+  "existing_registry_already_present": [
+    {
+      "registry_id": 86,
+      "name": "OpenBB / OpenBQ V5",
+      "url": "https://github.com/openbq-org/OpenBB",
+      "tier": "P1-VALIDATE"
+    },
+    {
+      "registry_id": 107,
+      "name": "vectorbt",
+      "url": "https://github.com/polakowo/vectorbt",
+      "tier": "P1-VALIDATE",
+      "license_note": "Apache-2.0 with Commons Clause, manual commercial review"
+    }
+  ],
+  "excluded": [
+    {
+      "name": "CCXT",
+      "url": "https://github.com/ccxt/ccxt",
+      "reason": "CRYPTO_EXCHANGE_API_NOT_NASDAQ"
+    }
+  ],
+  "unresolved": [
+    {
+      "input": "github.com/AI4Finance-Fou… (twice)",
+      "reason": "TRUNCATED_REPOSITORY_IDENTITY; DO_NOT_AUTO_ADMIT"
+    }
+  ]
+}
