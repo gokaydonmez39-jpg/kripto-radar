@@ -134,6 +134,7 @@ jobs:
             --a42 "$RUNNER_TEMP/xray-a45/a42-receipt.json" \
             --a43 "$RUNNER_TEMP/xray-a45/a43-eod-admission.json" \
             --a44 "$RUNNER_TEMP/xray-a45/a44-assessment.json" \
+            --a46 "$RUNNER_TEMP/xray-a45/a46-queue.json" \
             "${prior[@]}" \
             --output "$RUNNER_TEMP/a45-state.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
