@@ -129,19 +129,19 @@ def evidence(raw: bytes, on: dt.date, network: bool = False,
     records = parse_registry(raw)
     p = plan(records, on)
     if queue is not None:
-        need(type(queue) is dict and queue.get("schema") ==
+        require(type(queue) is dict and queue.get("schema") ==
              "XRAY_NASDAQ_A46_LEDGER_QUEUE_V1" and
              queue.get("asof_et") == on.isoformat() and
              queue.get("registry_sha256") == registry_hash(raw) and
              queue.get("automatic_promotion") is False and
              queue.get("execution") == "NONE", "QUEUE_RECEIPT_OR_SCOPE_MISMATCH")
         selected_ids = queue.get("selected_ids")
-        need(type(selected_ids) is list and 1 <= len(selected_ids) <= BATCH and
+        require(type(selected_ids) is list and 1 <= len(selected_ids) <= BATCH and
              all(type(i) is int and 1 <= i <= 284 for i in selected_ids) and
              len(set(selected_ids)) == len(selected_ids), "QUEUE_ID_COUNT_INVALID")
         eligible = {r["registry_id"]: r for r in records
                     if r["recomputed_tier"] in ORDER}
-        need(all(i in eligible for i in selected_ids), "QUEUE_HOLD_OR_UNKNOWN_ID")
+        require(all(i in eligible for i in selected_ids), "QUEUE_HOLD_OR_UNKNOWN_ID")
         p["selected"] = [{"registry_id": i, "name": eligible[i]["name"],
                           "tier": eligible[i]["recomputed_tier"],
                           "url": eligible[i].get("url") or ""}
