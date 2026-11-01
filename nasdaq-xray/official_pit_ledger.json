@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-11-01T02:25:55.893308+00:00",
+  "last_ingest_at_utc": "2026-11-01T06:53:10.619766+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 296,
+  "snapshot_count": 297,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -138186,6 +138186,653 @@
       },
       "payload_sha256": "2d03405a7f8079b4b7643f69bb9462e97f2ec5afa4eb1344e274913d2f4da56f",
       "source": "trade_halts",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-01T06:53:09.943376+00:00",
+      "observed_at_utc": "2026-11-01T06:53:10.619545+00:00",
+      "payload": {
+        "historical_event_rows_considered": 122,
+        "query_end": "2026-11-01",
+        "query_start": "2026-10-07",
+        "row_count": 50,
+        "rows": [
+          {
+            "CompanyName": "ATA Creativity Global American Depositary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "AACG"
+          },
+          {
+            "CompanyName": "AfterNext Acquisition I Corp. Unit",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "AFNXU"
+          },
+          {
+            "CompanyName": "Arbe Robotics Ltd. Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ARBEW"
+          },
+          {
+            "CompanyName": "Neighborhood Intelligence, Inc. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BBBYW"
+          },
+          {
+            "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BBCI"
+          },
+          {
+            "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BBCI"
+          },
+          {
+            "CompanyName": "Bradbury Capital Inc. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BBCIW"
+          },
+          {
+            "CompanyName": "Bradbury Capital Inc. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BBCIW"
+          },
+          {
+            "CompanyName": "Beasley Broadcast Group, Inc. Class A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "BBGI"
+          },
+          {
+            "CompanyName": "BioLife Solutions, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BLFS"
+          },
+          {
+            "CompanyName": "Triller Group Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ILLR"
+          },
+          {
+            "CompanyName": "Triller Group Inc. Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "ILLRW"
+          },
+          {
+            "CompanyName": "Outdoor Holding Company Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "POWW"
+          },
+          {
+            "CompanyName": "Outdoor Holding Company 8.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "POWWP"
+          },
+          {
+            "CompanyName": "Real Messenger Corporation Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "RMSGW"
+          },
+          {
+            "CompanyName": "Simulations Plus, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SLP"
+          },
+          {
+            "CompanyName": "Solesence, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "SLSN"
+          },
+          {
+            "CompanyName": "Spark I Acquisition Corp. Class A Ordinary Share",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SPKL"
+          },
+          {
+            "CompanyName": "Spark I Acquisition Corp. Unit",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SPKLU"
+          },
+          {
+            "CompanyName": "Spark I Acquisition Corp. Warrant",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SPKLW"
+          },
+          {
+            "CompanyName": "SU Group Holdings Limited Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SUGP"
+          },
+          {
+            "CompanyName": "Warner Bros. Discovery, Inc. Series A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WBD"
+          },
+          {
+            "CompanyName": "SCWorx Corp. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WORX"
+          },
+          {
+            "CompanyName": "SCWorx Corp. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "WORX"
+          },
+          {
+            "CompanyName": "Xcel Brands, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-07",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "XELB"
+          },
+          {
+            "CompanyName": "Avalanche Treasury Corporation Class A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "N-Normal",
+            "OldFinancialStatus": "D-Deficient",
+            "Symbol": "AVAT"
+          },
+          {
+            "CompanyName": "Global Engine Group Holding Limited Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "GLE"
+          },
+          {
+            "CompanyName": "Netcapital Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "E-Delinquent",
+            "OldFinancialStatus": "H-Deficient and Delinquent",
+            "Symbol": "NCPL"
+          },
+          {
+            "CompanyName": "Palladyne AI Corp Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "PDYNW"
+          },
+          {
+            "CompanyName": "Purple Innovation, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "PRPL"
+          },
+          {
+            "CompanyName": "BRC Group Holdings, Inc. 6.50% Senior Notes Due 2026",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Issue Deletions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "RILYN"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCAT"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCAT"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCATR"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCATR"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCATW"
+          },
+          {
+            "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "SCATW"
+          },
+          {
+            "CompanyName": "SKYX Platforms Corp. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "SKYX"
+          },
+          {
+            "CompanyName": "Texas Capital Bancshares, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "TCBI"
+          },
+          {
+            "CompanyName": "Texas Capital Bancshares, Inc. Depositary Shares 5.75% Fixed Rate Non-Cumulative Perpetual Preferred Stock Series B",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "TCBIO"
+          },
+          {
+            "CompanyName": "Virtuix Holdings Inc. Class A Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-08",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "VTIX"
+          },
+          {
+            "CompanyName": "AI OKTO CORP. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Anticipated Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "AIOK"
+          },
+          {
+            "CompanyName": "AI OKTO CORP. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Security Additions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "AIOK"
+          },
+          {
+            "CompanyName": "Biddance AI Systems, Inc. Class A Ordinary Share",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "BDAI"
+          },
+          {
+            "CompanyName": "Nexpu Ltd. Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Name/Symbol Changes",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "DPU"
+          },
+          {
+            "CompanyName": "Gauzy Ltd. Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "E-Delinquent",
+            "OldFinancialStatus": "H-Deficient and Delinquent",
+            "Symbol": "GAUZ"
+          },
+          {
+            "CompanyName": "Healthcare Triangle, Inc. Common Stock",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Financial Status Changes",
+            "NewFinancialStatus": "D-Deficient",
+            "OldFinancialStatus": "N-Normal",
+            "Symbol": "HCTI"
+          },
+          {
+            "CompanyName": "MaxsMaking Inc. Class A Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "MAMK"
+          },
+          {
+            "CompanyName": "Nvni Group Limited Ordinary Shares",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "NVNI"
+          },
+          {
+            "CompanyName": "Nvni Group Limited Warrants",
+            "DowngradeReason": "",
+            "EffectiveDate": "2026-10-09",
+            "IssueEvent": "Issue Suspensions",
+            "NewFinancialStatus": "",
+            "OldFinancialStatus": "",
+            "Symbol": "NVNIW"
+          }
+        ],
+        "status": "PASS",
+        "suspension_state_evidence": {
+          "ARBEW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "BBBYW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "BLFS": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAR": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "COLAU": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "DRCT": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "FSEA": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "GFAIW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "ILLR": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "ILLRW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "LESL": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "MAMK": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-09",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NHPBP": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NSTS": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NVNI": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-09",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "NVNIW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-09",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "PSKY": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "QRVO": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-06",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "SLP": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "SPKL": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "SPKLU": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "SPKLW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "TCBI": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-08",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "TCBIO": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-08",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "THRMV": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-02",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALD": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WALDW": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-05",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          },
+          "WBD": {
+            "latest_addition": null,
+            "latest_suspension": "2026-10-07",
+            "rule": "SUSPENSION_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS"
+          }
+        },
+        "suspension_state_rule": "EVENT_SOURCED_STICKY_UNTIL_STRICTLY_LATER_SECURITY_ADDITIONS",
+        "suspension_symbols": [
+          "ARBEW",
+          "BBBYW",
+          "BLFS",
+          "COLA",
+          "COLAR",
+          "COLAU",
+          "DRCT",
+          "FSEA",
+          "GFAIW",
+          "ILLR",
+          "ILLRW",
+          "LESL",
+          "MAMK",
+          "NHPBP",
+          "NSTS",
+          "NVNI",
+          "NVNIW",
+          "PSKY",
+          "QRVO",
+          "SLP",
+          "SPKL",
+          "SPKLU",
+          "SPKLW",
+          "TCBI",
+          "TCBIO",
+          "THRMV",
+          "WALD",
+          "WALDW",
+          "WBD"
+        ],
+        "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
+        "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=11/01/2026"
+      },
+      "payload_sha256": "a966792d0c84230a775917c5517297d0ec636f63df7268245be9af376d0a1d3a",
+      "source": "security_status",
       "source_status": "PASS"
     }
   ],
