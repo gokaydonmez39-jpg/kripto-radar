@@ -45,7 +45,7 @@ def digest(obj):
     return hashlib.sha256(canonical(obj)).hexdigest()
 
 
-def receive(a42, a43, a44):
+def receive(a42, a43, a44, queue=None):
     need(type(a42) is dict and a42.get("schema") ==
          "XRAY_NASDAQ_CANDIDATE_AUTOPILOT_RECEIPT_V1", "A42_SCHEMA")
     need(a42.get("source") == SCOPE and a42.get("automatic_promotion") is False and
@@ -87,6 +87,17 @@ def receive(a42, a43, a44):
              row.get("run_upstream_code") is False and row.get("broker") is False and
              row.get("license_approved") is False, "PREMATURE_SOURCE_PROMOTION")
     need(len(ids) == len(set(ids)), "REPEATED_SOURCE_IN_ONE_COHORT")
+    a42_ids = [r.get("registry_id") for r in a42.get("findings", [])]
+    need(a42_ids == ids, "A42_A44_CANDIDATE_ID_DRIFT")
+    if queue is not None:
+        need(type(queue) is dict and queue.get("schema") ==
+             "XRAY_NASDAQ_A46_LEDGER_QUEUE_V1" and
+             queue.get("registry_sha256") == a42["registry_sha256"] and
+             queue.get("asof_et") == a43["asof_et"] and
+             queue.get("source_run_id") == a43["run_id"] and
+             queue.get("automatic_promotion") is False and
+             queue.get("execution") == "NONE" and
+             queue.get("selected_ids") == ids, "A46_SOURCE_SELECTION_MISMATCH")
     return {
         "run_id": str(a43["run_id"]), "asof_et": a43["asof_et"],
         "run_sha": a43["run_sha"], "source_log_sha256": a43["log_sha256"],
@@ -156,6 +167,7 @@ def main():
     p.add_argument("--a42", required=True)
     p.add_argument("--a43", required=True)
     p.add_argument("--a44", required=True)
+    p.add_argument("--a46", required=True)
     p.add_argument("--previous")
     p.add_argument("--output", required=True)
     args = p.parse_args()
@@ -166,7 +178,8 @@ def main():
     raw = Path(args.a42).read_bytes()
     need(hashlib.sha256(raw).hexdigest() == a44.get("candidate_receipt_sha256"),
          "A42_RECEIPT_TAMPERED")
-    current = receive(a42, a43, a44)
+    queue = json.loads(Path(args.a46).read_text(encoding="utf-8"))
+    current = receive(a42, a43, a44, queue)
     previous = json.loads(Path(args.previous).read_text(encoding="utf-8")) if args.previous else None
     state, status = reconcile(previous, current)
     dest = Path(args.output)

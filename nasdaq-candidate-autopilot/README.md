@@ -58,3 +58,17 @@ The \`all_workflow_schedule_audit.py --selftest\` is now included in candidate C
 ### Limits still open
 
 **No autonomous runtime functional test of third-party code**, no automatic dependence installation, no market-source vendor onboarding, no claimed production integration or alpha/return evidence. No integration PR auto-merge, secrets, public raw bars, new NASDAQ/CRYPTO workflows or orders. The separate A41 GitHub main-branch ruleset still lacks required PR/CI controls; this must be resolved without breaking existing research witness bots before any system-wide promotion authority can be granted.
+
+
+## A46 — Ledger-driven adaptive candidate progression
+
+A42's historical weekday-index cohort rotation could silently skip a page on official XNAS holidays or a failed producer run. A46 replaces **the live workflow_run selection** with \`candidate_queue.py\` reading the most recent A45 rolling artifact and the exact 284-item registry hash. Workload is **seven candidates per successful evidenced source EOD**, not per calendar weekday; **249 eligible IDs can therefore be observed in 36 successful distinct source epochs** (the last cohort has four new IDs). The original 12 A42 date-rotation tests remain for isolated offline replay compatibility, but the real scheduled path uses the A46 ledger queue.
+
+- First: P1 engineering (7), then P0 existing-core verification, P1 validation, P2 shadow and P2 backlog, exact registry-ID tie-break. 35 HOLD/HOLD-SEPARATE records never selected.
+- Next: inspect the first unseen IDs, regardless of missing exchange sessions or GitHub scheduler delays.
+- Then: bounded rechecks for \`SOURCE_PROBE_UNKNOWN\` and \`SOURCE_PROVENANCE_UNKNOWN\` with fewer than three observations, followed by oldest-record periodic provenance rechecks; no upgrade on merely repeated successful URL/provenance probes.
+- Fail closed if the source-run ID is already in A45's accepted epochs, the prior ledger belongs to another registry SHA, any prior source is marked integrated, or dates are stale/unstable.
+- A42 receipt validates the A46 queue SHA, selection IDs and asof; A45 independently requires exact A42/A44/A46 source ID parity and A43 matching source epoch.
+- The 30-day artifact expiry caveat remains: if the prior state is lost, a first-cohort recovery restarts with an **unattested** history label; the system cannot claim proof of uninterrupted progress.
+
+GitHub Actions has no extra cron, no Issue writer, no candidate code install/execute, no auto-merge, and no changes in \`personal-swing/\`, Google Sheets or XRAY CRYPTO. The A46 workflow_run path needs actual GitHub Actions read access to find and download the previous A45 artifact; this network dependency has **not** been verified in a live EOD until the next eligible source run.
