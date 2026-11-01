@@ -26,3 +26,14 @@ python nasdaq-candidate-autopilot/autopilot.py --date 2026-11-02 --output /tmp/a
 ```
 
 The initial HEAD-probe mode uses `--network` for seven allowlisted public GitHub candidate URLs; all other URLs remain `SKIPPED_EXTERNAL_OR_UNSAFE_HOST`.
+
+
+## A43 additional fail-closed source EOD admission
+
+In production `workflow_run` mode A42 must not mistake a successful but **empty/skip-only** EOD workflow for a verified 477-personal EOD scan. A43 now calls `eod_admission.py` **before** any URL probe, via GitHub CLI `gh run view RUN_ID --log` and scoped `actions:read` only.
+
+The gate independently demands: exact repository/workflow/main/scheduled-success identity; a timestamped 477/477/0-final-ready raw EOD source witness with SHA-256 fingerprints; completed IEX-to-Sheet handoff; exact matching as-of date across private Sheet, lifecycle and PANEL readback markers; authenticated Sheet preflight; and NY-local session-date parity. A non-compliant run fails closed without ever invoking the candidate probe. A successful result writes a separate **sanitized** A43 artifact containing proof SHA, no source logs and no private candidate data.
+
+GitHub log receipts are supporting evidence, **not cryptographic proof of the upstream external Sheet**. Full live readback still requires independent Google Sheets inspection. If the default-branch source workflow changes its log format or a GitHub runner cannot access logs, A43 deliberately blocks intake; it never resumes automatically by weakening the check. This is an availability-vs-integrity tradeoff.
+
+All A43 changes remain inside the A42 research-only directory and its one workflow. GitHub PR CI exercises normal/optimized synthetic positive and adversarial tests. No live source verification has occurred until a future scheduled 477 EOD triggers the actual `workflow_run` path.

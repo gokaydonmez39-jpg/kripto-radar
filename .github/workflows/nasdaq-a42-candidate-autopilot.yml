@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: xray-nasdaq-a42-intake-${{ github.ref }}
@@ -39,18 +40,28 @@ jobs:
       - name: Registry contract and negative tests
         working-directory: nasdaq-candidate-autopilot
         run: |
-          python -m unittest -q test_autopilot
-          python -O -m unittest -q test_autopilot
-          python -m py_compile autopilot.py test_autopilot.py
+          python -m unittest -q test_autopilot test_eod_admission
+          python -O -m unittest -q test_autopilot test_eod_admission
+          python -m py_compile autopilot.py test_autopilot.py eod_admission.py test_eod_admission.py
       - name: Static 284 source admission and next cohort receipt
         env:
           PROBE_PUBLIC_GITHUB: ${{ github.event_name == 'workflow_run' && 'yes' || 'no' }}
-          SOURCE_RUN_CREATED: ${{ github.event.workflow_run.created_at }}
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_NAME: ${{ github.event.workflow_run.name }}
+          SOURCE_RUN_REPOSITORY: ${{ github.event.workflow_run.repository.full_name }}
+          SOURCE_RUN_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SOURCE_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_EVENT: ${{ github.event.workflow_run.event }}
+          SOURCE_RUN_STATUS: ${{ github.event.workflow_run.status }}
+          SOURCE_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          SOURCE_RUN_CREATED_AT: ${{ github.event.workflow_run.created_at }}
         shell: bash
         run: |
           set -euo pipefail
           if [[ "$PROBE_PUBLIC_GITHUB" == "yes" ]]; then
-            SESSION_DATE="$(python -c 'import datetime,os,zoneinfo; print(datetime.datetime.fromisoformat(os.environ["SOURCE_RUN_CREATED"].replace("Z","+00:00")).astimezone(zoneinfo.ZoneInfo("America/New_York")).date().isoformat())')"
+            python nasdaq-candidate-autopilot/eod_admission.py --output "$RUNNER_TEMP/a43-eod-admission.json"
+            SESSION_DATE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))["asof_et"])' "$RUNNER_TEMP/a43-eod-admission.json")"
             python nasdaq-candidate-autopilot/autopilot.py --date "$SESSION_DATE" --network --output "$RUNNER_TEMP/a42-receipt.json"
           else
             python nasdaq-candidate-autopilot/autopilot.py --date 2026-11-02 --output "$RUNNER_TEMP/a42-receipt.json"
@@ -58,6 +69,8 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: xray-a42-readonly-candidate-receipt
-          path: ${{ runner.temp }}/a42-receipt.json
+          path: |
+            ${{ runner.temp }}/a42-receipt.json
+            ${{ runner.temp }}/a43-eod-admission.json
           retention-days: 30
           if-no-files-found: error
