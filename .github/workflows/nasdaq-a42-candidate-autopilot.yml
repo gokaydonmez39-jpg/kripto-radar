@@ -44,9 +44,9 @@ jobs:
       - name: Registry contract and negative tests
         working-directory: nasdaq-candidate-autopilot
         run: |
-          python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger
-          python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger
-          python -m py_compile autopilot.py test_autopilot.py eod_admission.py test_eod_admission.py assessment.py test_assessment.py ledger.py test_ledger.py
+          python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+          python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+          python -m py_compile autopilot.py test_autopilot.py eod_admission.py test_eod_admission.py assessment.py test_assessment.py ledger.py test_ledger.py candidate_queue.py test_queue.py
       - name: Static 284 source admission and next cohort receipt
         env:
           PROBE_PUBLIC_GITHUB: ${{ github.event_name == 'workflow_run' && 'yes' || 'no' }}
@@ -66,7 +66,17 @@ jobs:
           if [[ "$PROBE_PUBLIC_GITHUB" == "yes" ]]; then
             python nasdaq-candidate-autopilot/eod_admission.py --output "$RUNNER_TEMP/a43-eod-admission.json"
             SESSION_DATE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))["asof_et"])' "$RUNNER_TEMP/a43-eod-admission.json")"
-            python nasdaq-candidate-autopilot/autopilot.py --date "$SESSION_DATE" --network --output "$RUNNER_TEMP/a42-receipt.json"
+            mkdir -p "$RUNNER_TEMP/xray-a46"
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=xray-a45-rolling-state&per_page=100" > "$RUNNER_TEMP/xray-a46/prior-index.json"
+            PREV_RUN_ID="$(python -c 'import json,sys; a=json.load(open(sys.argv[1])); run=int(sys.argv[2]); xs=[x for x in a.get("artifacts",[]) if not x.get("expired",True) and isinstance(x.get("workflow_run"),dict) and x["workflow_run"].get("id") != run]; print(xs[0]["workflow_run"]["id"] if xs else "")' "$RUNNER_TEMP/xray-a46/prior-index.json" "$GITHUB_RUN_ID")"
+            prior=()
+            if [[ -n "$PREV_RUN_ID" ]]; then
+              mkdir -p "$RUNNER_TEMP/xray-a46/previous"
+              gh run download "$PREV_RUN_ID" --repo "$GITHUB_REPOSITORY" --name xray-a45-rolling-state --dir "$RUNNER_TEMP/xray-a46/previous"
+              prior=(--previous "$RUNNER_TEMP/xray-a46/previous/a45-state.json")
+            fi
+            python nasdaq-candidate-autopilot/candidate_queue.py --registry nasdaq-candidate-autopilot/registry.json --asof "$SESSION_DATE" --source-run-id "$SOURCE_RUN_ID" "${prior[@]}" --output "$RUNNER_TEMP/a46-queue.json"
+            python nasdaq-candidate-autopilot/autopilot.py --date "$SESSION_DATE" --queue-receipt "$RUNNER_TEMP/a46-queue.json" --network --output "$RUNNER_TEMP/a42-receipt.json"
             python nasdaq-candidate-autopilot/assessment.py --receipt "$RUNNER_TEMP/a42-receipt.json" --network --output "$RUNNER_TEMP/a44-assessment.json"
           else
             python nasdaq-candidate-autopilot/autopilot.py --date 2026-11-02 --output "$RUNNER_TEMP/a42-receipt.json"
@@ -79,6 +89,7 @@ jobs:
             ${{ runner.temp }}/a42-receipt.json
             ${{ runner.temp }}/a43-eod-admission.json
             ${{ runner.temp }}/a44-assessment.json
+            ${{ runner.temp }}/a46-queue.json
           retention-days: 30
           if-no-files-found: error
 
