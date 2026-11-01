@@ -124,9 +124,31 @@ def plan(records: list[dict], on: dt.date, batch: int = BATCH) -> dict:
                          for r in selected]}
 
 
-def evidence(raw: bytes, on: dt.date, network: bool = False) -> dict:
+def evidence(raw: bytes, on: dt.date, network: bool = False,
+             queue: dict | None = None) -> dict:
     records = parse_registry(raw)
     p = plan(records, on)
+    if queue is not None:
+        need(type(queue) is dict and queue.get("schema") ==
+             "XRAY_NASDAQ_A46_LEDGER_QUEUE_V1" and
+             queue.get("asof_et") == on.isoformat() and
+             queue.get("registry_sha256") == registry_hash(raw) and
+             queue.get("automatic_promotion") is False and
+             queue.get("execution") == "NONE", "QUEUE_RECEIPT_OR_SCOPE_MISMATCH")
+        selected_ids = queue.get("selected_ids")
+        need(type(selected_ids) is list and 1 <= len(selected_ids) <= BATCH and
+             all(type(i) is int and 1 <= i <= 284 for i in selected_ids) and
+             len(set(selected_ids)) == len(selected_ids), "QUEUE_ID_COUNT_INVALID")
+        eligible = {r["registry_id"]: r for r in records
+                    if r["recomputed_tier"] in ORDER}
+        need(all(i in eligible for i in selected_ids), "QUEUE_HOLD_OR_UNKNOWN_ID")
+        p["selected"] = [{"registry_id": i, "name": eligible[i]["name"],
+                          "tier": eligible[i]["recomputed_tier"],
+                          "url": eligible[i].get("url") or ""}
+                         for i in selected_ids]
+        p["cohort_page"] = "LEDGER_DRIVEN"
+        p["selection_mode"] = queue.get("mode")
+        p["remaining_unseen_before"] = queue.get("remaining_unseen_before")
     findings = []
     for candidate in p["selected"]:
         url = candidate["url"]
@@ -150,8 +172,10 @@ def main() -> None:
     ap.add_argument("--date", default=dt.datetime.now(dt.timezone.utc).date().isoformat())
     ap.add_argument("--output", required=True)
     ap.add_argument("--network", action="store_true", help="bounded public GitHub HEAD only")
+    ap.add_argument("--queue-receipt", help="A46 SHA-bound, read-only ledger-driven IDs")
     args = ap.parse_args()
-    result = evidence(Path(args.registry).read_bytes(), dt.date.fromisoformat(args.date), args.network)
+    queue = json.loads(Path(args.queue_receipt).read_text(encoding="utf-8")) if args.queue_receipt else None
+    result = evidence(Path(args.registry).read_bytes(), dt.date.fromisoformat(args.date), args.network, queue)
     dest = Path(args.output)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
