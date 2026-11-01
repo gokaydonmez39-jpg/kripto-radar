@@ -37,3 +37,24 @@ The gate independently demands: exact repository/workflow/main/scheduled-success
 GitHub log receipts are supporting evidence, **not cryptographic proof of the upstream external Sheet**. Full live readback still requires independent Google Sheets inspection. If the default-branch source workflow changes its log format or a GitHub runner cannot access logs, A43 deliberately blocks intake; it never resumes automatically by weakening the check. This is an availability-vs-integrity tradeoff.
 
 All A43 changes remain inside the A42 research-only directory and its one workflow. GitHub PR CI exercises normal/optimized synthetic positive and adversarial tests. No live source verification has occurred until a future scheduled 477 EOD triggers the actual `workflow_run` path.
+
+
+## A44 — Bounded source provenance and license triage
+
+After A43 admits the parent EOD, A44 checks at most **seven** candidate sources. It resolves HTTPS `github.com/owner/repo` candidates through the official GitHub REST API, independently checks public repository identity, archived/fork/disabled flags, machine-readable license identifier, and a 40-character exact source commit SHA. No upstream code is fetched, installed or executed. Recognized permissive license **tags are not license approvals**, and provenance pass means only `PROVENANCE_RECORDED_TEST_REQUIRED`. Unknown, AGPL/GPL, archived, fork, stale identity and unsupported non-GitHub URLs are held or marked for manual provenance. External authority URLs remain in the complete 284 registry; do not substitute GitHub URLs.
+
+Failure or timeouts never silently promote a candidate. `assessment.py` uses capped HTTPS response size, no redirects, strict URL/hostname rules and only GitHub API GET. No paid API, new cron, account secrets or candidate-controlled shell commands.
+
+## A45 — Persistent independent issue-only evidence ledger
+
+One `[XRAY NASDAQ] A45 evidence-only source ledger YYYY-MM` GitHub Issue per active month is created when and only when a completed genuine scheduled EOD successfully passes A43 + A44. A separate job uses `issues:write` only for this ledger. The PR/testing job never has issue-write permission. One bounded comment per accepted upstream EOD identifies up to seven sources, their source version where verified, registry hash, receipt SHA256, EOD run SHA and source log digest; no private Google Sheet values, trading signals, credentials, or broker information.
+
+Replaying the same source run with the same digest is idempotent. A replay with inconsistent evidence fails. A closed ledger issue, duplicate ledger issues, mismatched/absent session evidence, missing source registry SHA, unapproved candidate status, external probe failure, or unavailable GitHub API block the write. GitHub Issue comments are durable platform records but are **not** cryptographically immutable or an independent market-data witness.
+
+Two-job execution:
+1. A42/A43/A44 candidate admission (`contents:read, actions:read`), on PR/dispatch run synthetic/offline and no ledger writes. On admitted scheduled EOD, real bounded metadata preflight and artifact.
+2. A45 issue-only writer (`issues:write`) runs on verified successful scheduled main EOD only, with a dependency on stage 1 and a second exact receipt integrity gate. It reads only the artifact of the same workflow run.
+
+### Limits still open
+
+**No autonomous runtime functional test of third-party code**, no automatic dependence installation, no market-source vendor onboarding, no claimed production integration or alpha/return evidence. No integration PR auto-merge, secrets, public raw bars, new NASDAQ/CRYPTO workflows or orders. The separate A41 GitHub main-branch ruleset still lacks required PR/CI controls; this must be resolved without breaking existing research witness bots before any system-wide promotion authority can be granted.
