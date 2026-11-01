@@ -359,7 +359,21 @@ jobs:
 
       - name: Healthy no-op while canonical pointer is stale
         if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready != 'true'
-        run: echo "XRAY_RESILIENCE=BLOCKED_UPSTREAM_PENDING reason=${{ steps.pointer_preflight.outputs.reason }}"
+        shell: bash
+        env:
+          XRAY_UPSTREAM_HOLD_REASON: ${{ steps.pointer_preflight.outputs.reason }}
+          XRAY_UPSTREAM_STALE_KEYS: ${{ steps.pointer_preflight.outputs.stale_keys }}
+        run: |
+          set -euo pipefail
+          echo "XRAY_RESILIENCE=BLOCKED_UPSTREAM_PENDING reason=${XRAY_UPSTREAM_HOLD_REASON}"
+          {
+            echo '### XRAY NASDAQ Resilience — upstream HOLD'
+            echo ''
+            echo 'NOT_PRODUCTION_READY: job success means the stale pointer was safely rejected, NOT full research readiness, AL authorization or device ACK.'
+            echo "Reason: ${XRAY_UPSTREAM_HOLD_REASON}"
+            echo "Stale evidence keys: ${XRAY_UPSTREAM_STALE_KEYS}"
+            echo 'No broker orders, Sheet mutations, task changes or notification requests.'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Canonical pointer transition guard
         if: steps.supersession.outputs.superseded != 'true' && steps.pointer_preflight.outputs.ready == 'true'
