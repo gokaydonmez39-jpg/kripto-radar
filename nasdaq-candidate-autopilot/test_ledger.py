@@ -9,7 +9,8 @@ A42 = {"schema": "XRAY_NASDAQ_CANDIDATE_AUTOPILOT_RECEIPT_V1",
        "source": "NASDAQ_RESEARCH_ONLY_NO_CRYPTO",
        "automatic_promotion": False, "orders": False,
        "private_sheet_writes": False, "registry_sha256": "a"*64,
-       "asof": "2026-11-02"}
+       "asof": "2026-11-02",
+       "findings": [{"registry_id": 2, "integration_status": "NOT_INTEGRATED"}]}
 RAW = (json.dumps(A42)+"\n").encode()
 A43 = {"schema": "XRAY_NASDAQ_A43_EOD_ADMISSION_V1",
        "registry_admission": "PASS_FOR_READONLY_CANDIDATE_INTAKE",
@@ -84,6 +85,22 @@ class A45RollingLedgerTests(unittest.TestCase):
         previous["registry_sha256"]="e"*64
         with self.assertRaises(Blocked):
             reconcile(previous,self.fresh())
+
+    def test_a46_ids_must_match_a42_and_a44(self):
+        queue={"schema":"XRAY_NASDAQ_A46_LEDGER_QUEUE_V1",
+               "registry_sha256":"a"*64,"asof_et":"2026-11-02",
+               "source_run_id":123,"automatic_promotion":False,
+               "execution":"NONE","selected_ids":[2]}
+        self.assertEqual(receive(A42,A43,A44,queue)["run_id"],"123")
+        bad=dict(queue, selected_ids=[11])
+        with self.assertRaises(Blocked):
+            receive(A42,A43,A44,bad)
+
+    def test_a42_source_identity_mismatch_blocks(self):
+        bad=copy.deepcopy(A42)
+        bad["findings"][0]["registry_id"]=11
+        with self.assertRaises(Blocked):
+            receive(bad,A43,A44)
 
     def test_missing_477_blocks(self):
         a43=dict(A43,scan_477=False)
