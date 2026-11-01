@@ -1,197 +1,182 @@
 #!/usr/bin/env python3
-"""A45 limited, append-only GitHub Issue audit ledger for NASDAQ research.
+"""A45 zero-write-permission rolling research artifact ledger.
 
-Runs ONLY in a separate workflow_run-only issues:write job after A43 evidence.
-Does not edit repository files, run candidate packages, or publish signals.
+Reconciles authenticated read-only A42/A43/A44 receipts with previous artifact.
+No Issues API, repo writes, Sheets, orders or third-party source execution.
+Retention remains limited by GitHub Actions artifact retention (30 days).
 """
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
-import os
 import re
-import ssl
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
-from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
-REPO = "gokaydonmez39-jpg/kripto-radar"
-API = "https://api.github.com/repos/" + REPO
-ISSUE_PREFIX = "[XRAY NASDAQ] A45 evidence-only source ledger "
-MARKER = "XRAY-NASDAQ-A45-RECEIPT-V1"
-SHA256 = re.compile(r"^[a-f0-9]{64}$")
-MAX_RESPONSE = 1024 * 1024
+SCHEMA = "XRAY_NASDAQ_A45_ROLLING_ARTIFACT_LEDGER_V1"
+SCOPE = "NASDAQ_RESEARCH_ONLY_NO_CRYPTO"
+HEX = re.compile(r"^[a-f0-9]{64}$")
+VALID = frozenset({
+    "SOURCE_PROVENANCE_UNKNOWN",
+    "NON_GITHUB_OR_MISSING_URL_MANUAL_PROVENANCE",
+    "HOLD_ARCHIVED_DISABLED_OR_UNVERIFIED",
+    "HOLD_FORK_PARENT_NOT_VERIFIED",
+    "HOLD_LICENSE_REVIEW",
+    "SOURCE_PROBE_UNKNOWN",
+    "PROVENANCE_RECORDED_TEST_REQUIRED",
+})
 
 
-class LedgerError(ValueError):
+class Blocked(ValueError):
     pass
 
 
-def need(ok, reason):
+def need(ok, why):
     if not ok:
-        raise LedgerError(reason)
+        raise Blocked(why)
 
 
-def sha(raw: bytes) -> str:
-    return hashlib.sha256(raw).hexdigest()
+def canonical(obj):
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
-def validate_source(assessment: dict, upstream: dict, a42_bytes: bytes) -> dict:
-    need(type(assessment) is dict and assessment.get("schema") ==
-         "XRAY_NASDAQ_A44_SOURCE_EVIDENCE_V1", "A44_SCHEMA")
-    need(assessment.get("scope") == "NASDAQ_RESEARCH_ONLY_NO_CRYPTO" and
-         assessment.get("automatic_promotion") is False and
-         assessment.get("network_enabled") is True, "A44_SCOPE_OR_OFFLINE_RECEIPT")
-    need(assessment.get("candidate_receipt_sha256") == sha(a42_bytes), "A42_SHA_MISMATCH")
-    a42 = json.loads(a42_bytes)
-    need(a42.get("registry_sha256") == assessment.get("registry_sha256") and
-         a42.get("asof") == assessment.get("asof_et"), "REGISTRY_OR_ASOF_DRIFT")
-    need(upstream.get("schema") == "XRAY_NASDAQ_A43_EOD_ADMISSION_V1" and
-         upstream.get("registry_admission") == "PASS_FOR_READONLY_CANDIDATE_INTAKE" and
-         upstream.get("production_promotion") is False and
-         upstream.get("asof_et") == assessment.get("asof_et"), "A43_WITNESS_INVALID")
-    run_id = upstream.get("run_id")
-    need(type(run_id) is int and run_id > 0 and
-         isinstance(upstream.get("run_sha"), str) and
-         SHA256.fullmatch(upstream["run_sha"]) and
-         isinstance(upstream.get("log_sha256"), str) and
-         SHA256.fullmatch(upstream["log_sha256"]), "A43_RUN_ID_OR_SHA")
-    rows = assessment.get("results")
-    need(isinstance(rows, list) and 1 <= len(rows) <= 7, "ROW_COUNT")
-    ids = [r.get("registry_id") for r in rows]
-    need(len(ids) == len(set(ids)) and all(type(i) is int and 1 <= i <= 284 for i in ids),
-         "CANDIDATE_IDS")
-    statuses = frozenset({"SOURCE_PROVENANCE_UNKNOWN",
-                           "NON_GITHUB_OR_MISSING_URL_MANUAL_PROVENANCE",
-                           "HOLD_ARCHIVED_DISABLED_OR_UNVERIFIED",
-                           "HOLD_FORK_PARENT_NOT_VERIFIED",
-                           "HOLD_LICENSE_REVIEW",
-                           "SOURCE_PROBE_UNKNOWN",
-                           "PROVENANCE_RECORDED_TEST_REQUIRED"})
+def digest(obj):
+    return hashlib.sha256(canonical(obj)).hexdigest()
+
+
+def receive(a42, a43, a44):
+    need(type(a42) is dict and a42.get("schema") ==
+         "XRAY_NASDAQ_CANDIDATE_AUTOPILOT_RECEIPT_V1", "A42_SCHEMA")
+    need(a42.get("source") == SCOPE and a42.get("automatic_promotion") is False and
+         a42.get("orders") is False and a42.get("private_sheet_writes") is False,
+         "A42_SCOPE_OR_SIDE_EFFECT")
+    need(type(a43) is dict and a43.get("schema") ==
+         "XRAY_NASDAQ_A43_EOD_ADMISSION_V1" and
+         a43.get("registry_admission") == "PASS_FOR_READONLY_CANDIDATE_INTAKE" and
+         a43.get("production_promotion") is False and
+         a43.get("scan_477") is True and a43.get("sheet_readback") is True and
+         a43.get("lifecycle_readback") is True and a43.get("panel_readback") is True,
+         "A43_MISSING_REAL_EOD_PROOF")
+    need(type(a44) is dict and a44.get("schema") ==
+         "XRAY_NASDAQ_A44_SOURCE_EVIDENCE_V1" and
+         a44.get("scope") == SCOPE and a44.get("automatic_promotion") is False and
+         a44.get("network_enabled") is True, "A44_WRONG_SCOPE_OR_OFFLINE")
+    need(a42.get("asof") == a43.get("asof_et") == a44.get("asof_et") and
+         isinstance(a43.get("asof_et"), str) and
+         re.fullmatch(r"\d{4}-\d{2}-\d{2}", a43["asof_et"]),
+         "SESSION_ASOF_CONFLICT")
+    need(a42.get("registry_sha256") == a44.get("registry_sha256") and
+         isinstance(a42.get("registry_sha256"), str) and
+         HEX.fullmatch(a42["registry_sha256"]), "REGISTRY_SHA_CONFLICT")
+    need(isinstance(a44.get("candidate_receipt_sha256"), str) and
+         HEX.fullmatch(a44["candidate_receipt_sha256"]), "A42_RECEIPT_SHA_UNKNOWN")
+    need(type(a43.get("run_id")) is int and a43["run_id"] > 0 and
+         isinstance(a43.get("log_sha256"), str) and HEX.fullmatch(a43["log_sha256"]) and
+         isinstance(a43.get("run_sha"), str) and HEX.fullmatch(a43["run_sha"]),
+         "SOURCE_EOD_RUN_IDENTITY")
+    rows = a44.get("results")
+    need(isinstance(rows, list) and 1 <= len(rows) <= 7, "CANDIDATE_BATCH_BOUND")
+    ids = []
     for row in rows:
-        need(row.get("status") in statuses and
+        need(type(row) is dict and type(row.get("registry_id")) is int and
+             1 <= row["registry_id"] <= 284, "SOURCE_ID_INVALID")
+        ids.append(row["registry_id"])
+        need(row.get("status") in VALID and
              row.get("promotion") == "BLOCKED_PENDING_INDEPENDENT_FUNCTIONAL_AND_PIT_TEST" and
              row.get("run_upstream_code") is False and row.get("broker") is False and
-             row.get("license_approved") is False, "PREMATURE_PROMOTION_OR_INVALID_ROW")
-    date = upstream["asof_et"]
-    need(isinstance(date, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", date),
-         "INVALID_ASOF")
+             row.get("license_approved") is False, "PREMATURE_SOURCE_PROMOTION")
+    need(len(ids) == len(set(ids)), "REPEATED_SOURCE_IN_ONE_COHORT")
     return {
-        "schema": MARKER, "source_run_id": run_id,
-        "asof_et": date, "source_run_sha": upstream["run_sha"],
-        "source_log_sha256": upstream["log_sha256"],
-        "registry_sha256": assessment["registry_sha256"],
-        "a42_receipt_sha256": sha(a42_bytes),
-        "a44_receipt_sha256": sha(json.dumps(assessment, sort_keys=True,
-                                           separators=(",", ":")).encode("utf-8")),
-        "rows": [{"id": r["registry_id"], "status": r["status"],
-                  "upstream_sha": r.get("source_head_sha", "")} for r in rows],
-        "action": "RESEARCH_ONLY_DO_NOT_INSTALL_OR_TRADE",
+        "run_id": str(a43["run_id"]), "asof_et": a43["asof_et"],
+        "run_sha": a43["run_sha"], "source_log_sha256": a43["log_sha256"],
+        "registry_sha256": a42["registry_sha256"],
+        "a42_receipt_sha256": a44["candidate_receipt_sha256"],
+        "a44_receipt_sha256": digest(a44),
+        "results": [{"id": r["registry_id"], "status": r["status"],
+                     "upstream_sha": r.get("source_head_sha", "")} for r in rows],
     }
 
 
-class NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, request, fp, code, msg, headers, newurl):
-        return None
-
-
-def github_request(method: str, endpoint: str, body: dict | None = None):
-    need(method in ("GET", "POST"), "BAD_GITHUB_METHOD")
-    need(isinstance(endpoint, str) and re.fullmatch(
-        r"/(?:issues(?:\?state=all&per_page=100&page=\d{1,2}|/\d+/comments"
-        r"(?:\?per_page=100&page=\d{1,2})?)?)", endpoint), "BAD_GITHUB_API_PATH")
-    token = os.getenv("GH_TOKEN", "")
-    need(isinstance(token, str) and len(token) >= 12, "ISSUE_WRITE_TOKEN_MISSING")
-    headers = {"Accept": "application/vnd.github+json",
-               "User-Agent": "xray-nasdaq-a45-ledger/1.0",
-               "Authorization": "Bearer " + token}
-    payload = None
-    if body is not None:
-        need(method == "POST" and isinstance(body, dict), "BAD_BODY")
-        payload = json.dumps(body, separators=(",", ":")).encode("utf-8")
-        need(len(payload) <= 16384, "OVERSIZE_ISSUE_BODY")
-        headers["Content-Type"] = "application/json"
-    req = Request(API + endpoint, data=payload, method=method, headers=headers)
-    opener = build_opener(NoRedirect, HTTPSHandler(context=ssl.create_default_context()))
-    try:
-        with opener.open(req, timeout=12) as res:
-            need(res.status in (200, 201), "GITHUB_ISSUE_STATUS")
-            data = res.read(MAX_RESPONSE + 1)
-            need(len(data) <= MAX_RESPONSE, "GITHUB_RESPONSE_OVERSIZE")
-            return json.loads(data)
-    except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
-        raise LedgerError("GITHUB_ISSUES_UNAVAILABLE_" + type(exc).__name__) from None
-
-
-def find_or_create_issue(month: str, api=github_request) -> int:
-    need(re.fullmatch(r"\d{4}-\d{2}", month) is not None, "INVALID_MONTH")
-    title = ISSUE_PREFIX + month
-    for page in range(1, 11):
-        items = api("GET", f"/issues?state=all&per_page=100&page={page}")
-        need(isinstance(items, list), "ISSUE_LIST_INVALID")
-        matching = [r for r in items if r.get("title") == title and not r.get("pull_request")]
-        need(len(matching) <= 1, "DUPLICATE_LEDGER_ISSUES")
-        if matching:
-            need(matching[0].get("state") == "open", "LEDGER_ISSUE_CLOSED")
-            return matching[0]["number"]
-        if len(items) < 100:
-            break
+def reconcile(previous, current):
+    need(type(current) is dict and isinstance(current.get("run_id"), str) and
+         current["run_id"].isdigit(), "CURRENT_RUN_INVALID")
+    if previous is None:
+        state = {"schema": SCHEMA, "scope": SCOPE,
+                 "registry_sha256": current["registry_sha256"],
+                 "last_asof_et": "", "total_accepted_epochs": 0,
+                 "history_continuity": "UNATTESTED_FIRST_OR_EXPIRED_ARTIFACT",
+                 "episodes": {}, "candidate_states": {}}
     else:
-        raise LedgerError("ISSUE_HISTORY_EXCEEDS_BOUNDED_WINDOW")
-    created = api("POST", "/issues",
-                  {"title": title, "body":
-                   "XRAY NASDAQ only. Append-only research evidence; not a trading "
-                   "signal, approval or financial-performance report. No private "
-                   "sheets, alerts, tokens or broker data. One cohort receipt "
-                   "per completed source EOD run. See nasdaq-candidate-autopilot/README.md."})
-    need(type(created) is dict and type(created.get("number")) is int and
-         created.get("title") == title, "CREATED_ISSUE_INVALID")
-    return created["number"]
+        need(type(previous) is dict and previous.get("schema") == SCHEMA and
+             previous.get("scope") == SCOPE and
+             previous.get("registry_sha256") == current["registry_sha256"],
+             "PREVIOUS_ARTIFACT_INVALID_OR_REGISTRY_CHANGED")
+        need(type(previous.get("episodes")) is dict and
+             type(previous.get("candidate_states")) is dict and
+             type(previous.get("total_accepted_epochs")) is int,
+             "PREVIOUS_ARTIFACT_MALFORMED")
+        need(previous.get("history_continuity") in
+             ("UNATTESTED_FIRST_OR_EXPIRED_ARTIFACT", "VERIFIED_ROLLING_FROM_FIRST"),
+             "PREVIOUS_CONTINUITY_INVALID")
+        state = copy.deepcopy(previous)
+    key = current["run_id"]
+    summary = {"asof_et": current["asof_et"],
+               "sha256": digest(current)}
+    if key in state["episodes"]:
+        need(state["episodes"][key] == summary,
+             "SOURCE_EPOCH_REPLAY_CONFLICT")
+        return state, "IDEMPOTENT_REPLAY"
+    need(not state["last_asof_et"] or
+         current["asof_et"] >= state["last_asof_et"], "STALE_OR_NONMONOTONIC_EOD")
+    for record in current["results"]:
+        src_id = str(record["id"])
+        prev = state["candidate_states"].get(src_id)
+        attempts = 0 if not isinstance(prev, dict) else prev.get("observations", 0)
+        need(type(attempts) is int and 0 <= attempts < 1000000,
+             "CANDIDATE_HISTORY_MALFORMED")
+        verified = record["upstream_sha"] if re.fullmatch(
+            r"[0-9a-f]{40}", record["upstream_sha"] or "") else (
+                prev.get("last_verified_sha", "") if isinstance(prev, dict) else "")
+        state["candidate_states"][src_id] = {
+            "latest_status": record["status"], "last_asof_et": current["asof_et"],
+            "last_verified_sha": verified, "observations": attempts + 1,
+            "production_integrated": False,
+        }
+    state["episodes"][key] = summary
+    state["total_accepted_epochs"] += 1
+    state["last_asof_et"] = current["asof_et"]
+    # Previous rolling snapshots may be lost after a >30-day service outage.
+    # The first epoch is honestly marked unverified; never assert full history.
+    return state, "NEW_SOURCE_EPOCH_ADMITTED"
 
 
-def record_receipt(issue: int, evidence: dict, api=github_request) -> str:
-    need(type(issue) is int and issue > 0, "INVALID_ISSUE_ID")
-    key = f"{MARKER}:{evidence['source_run_id']}"
-    compact = json.dumps(evidence, sort_keys=True, separators=(",", ":"))
-    digest = sha(compact.encode("utf-8"))
-    marker = f"<!-- {key}:{digest} -->"
-    for page in range(1, 11):
-        comments = api("GET", f"/issues/{issue}/comments?per_page=100&page={page}")
-        need(isinstance(comments, list), "COMMENT_LIST_INVALID")
-        matching = [c.get("body", "") for c in comments
-                    if f"<!-- {key}:" in c.get("body", "")]
-        need(len(matching) <= 1, "DUPLICATE_SOURCE_RUN_IN_LEDGER")
-        if matching:
-            need(matching[0].startswith(marker), "EVIDENCE_CONFLICT_FOR_SOURCE_RUN")
-            return "IDEMPOTENT_ALREADY_RECORDED"
-        if len(comments) < 100:
-            break
-    else:
-        raise LedgerError("COMMENT_HISTORY_EXCEEDS_BOUNDED_WINDOW")
-    msg = marker + "\n\n" + "Research-only admission receipt, no auto-promotion.\n\n" + (
-        "\x60\x60\x60json\n" + json.dumps(evidence, indent=2, sort_keys=True) +
-        "\n\x60\x60\x60")
-    outcome = api("POST", f"/issues/{issue}/comments", {"body": msg})
-    need(type(outcome) is dict and type(outcome.get("id")) is int, "ISSUE_COMMENT_NOT_CONFIRMED")
-    return "RECORDED"
-
-
-def main() -> None:
-    cli = argparse.ArgumentParser()
-    cli.add_argument("--a42", required=True)
-    cli.add_argument("--a43", required=True)
-    cli.add_argument("--a44", required=True)
-    args = cli.parse_args()
-    raw_a42 = Path(args.a42).read_bytes()
-    assessment = json.loads(Path(args.a44).read_text(encoding="utf-8"))
-    upstream = json.loads(Path(args.a43).read_text(encoding="utf-8"))
-    evidence = validate_source(assessment, upstream, raw_a42)
-    issue = find_or_create_issue(upstream["asof_et"][:7])
-    status = record_receipt(issue, evidence)
-    print("XRAY_A45_LEDGER=" + status + ";ISSUE=" + str(issue) +
-          ";SOURCES=" + str(len(evidence["rows"])) + ";AUTOPROMOTE=FALSE")
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--a42", required=True)
+    p.add_argument("--a43", required=True)
+    p.add_argument("--a44", required=True)
+    p.add_argument("--previous")
+    p.add_argument("--output", required=True)
+    args = p.parse_args()
+    a42 = json.loads(Path(args.a42).read_text(encoding="utf-8"))
+    a43 = json.loads(Path(args.a43).read_text(encoding="utf-8"))
+    a44 = json.loads(Path(args.a44).read_text(encoding="utf-8"))
+    # A44 SHA is of the original A42 receipt file bytes, not canonical JSON.
+    raw = Path(args.a42).read_bytes()
+    need(hashlib.sha256(raw).hexdigest() == a44.get("candidate_receipt_sha256"),
+         "A42_RECEIPT_TAMPERED")
+    current = receive(a42, a43, a44)
+    previous = json.loads(Path(args.previous).read_text(encoding="utf-8")) if args.previous else None
+    state, status = reconcile(previous, current)
+    dest = Path(args.output)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8")
+    print("XRAY_A45_ROLLING_ARTIFACT=" + status +
+          ";SOURCES=" + str(len(state["candidate_states"])) +
+          ";ACCEPTED_EPOCHS=" + str(state["total_accepted_epochs"]) +
+          ";AUTOPROMOTE=FALSE;ISSUE_WRITES=0")
 
 
 if __name__ == "__main__":
