@@ -6,7 +6,7 @@ from pathlib import Path
 import unittest
 
 from autopilot import GateError, evidence, parse_registry
-from queue import QUEUE_SCHEMA, select_queue
+from candidate_queue import QUEUE_SCHEMA, select_queue
 
 RAW = (Path(__file__).parent / "registry.json").read_bytes()
 REGISTRY = json.loads(RAW)
