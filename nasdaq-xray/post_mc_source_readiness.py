@@ -79,8 +79,8 @@ def upstream_price_blocker(resolver: dict, expected_unknown: int) -> dict:
     }
     if (not isinstance(symbols, list) or type(expected_unknown) is not int
             or expected_unknown < 0 or len(symbols) != expected_unknown
-            or len(set(symbols)) != expected_unknown
-            or not all(isinstance(s, str) and s for s in symbols)):
+            or not all(isinstance(s, str) and s for s in symbols)
+            or len(set(symbols)) != expected_unknown):
         return incomplete
     if expected_unknown == 0:
         return {
@@ -322,8 +322,10 @@ def selftest() -> None:
     assert both["automated_use_rights_proven"] is False
     assert git_blob_sha(b"hello") == "b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0"
 
-    # Diagnostic witness: 552 current PRICE unknowns must not be misread
-    # as an MC-only failure or promoted by a fabricated/missing SIP reason.
+    # Root-cause witness: reject every false positive even under python -O.
+    def require(condition, name):
+        if not condition:
+            raise AssertionError("ROOT_CAUSE_DIAGNOSTIC_" + name)
     sip = "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
     def u(reason):
         return {"price_result": {"status": "UNKNOWN", "info": {"reason": reason}}}
@@ -331,30 +333,33 @@ def selftest() -> None:
         "price_unknown_symbols": ["A", "B"],
         "price_unknown_detail": {"A": u(sip), "B": u(sip)},
     }
-    assert upstream_price_blocker(verified, 2) == {
+    require(upstream_price_blocker(verified, 2) == {
         "status": "ALL_PRICE_UNKNOWNS_REQUIRE_AUTHENTICATED_SIP",
         "unknown_count": 2,
         "authenticated_sip_required_count": 2,
         "other_or_unverified_count": 0,
-    }
+    }, "TRUE_ALL_SIP")
     unknown_reason = {
         "price_unknown_symbols": ["A"],
         "price_unknown_detail": {"A": u("OTHER")},
     }
-    assert upstream_price_blocker(unknown_reason, 1)["status"] == (
+    require(upstream_price_blocker(unknown_reason, 1)["status"] == (
         "MIXED_OR_UNVERIFIED_PRICE_UNKNOWNS"
-    )
-    assert upstream_price_blocker(
+    ), "MIXED_NOT_ALL_SIP")
+    require(upstream_price_blocker(
         {"price_unknown_symbols": ["A"], "price_unknown_detail": {}}, 1
-    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE"
-    assert upstream_price_blocker({"price_unknown_symbols": []}, 0)[
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "ABSENT_DETAIL")
+    require(upstream_price_blocker({"price_unknown_symbols": []}, 0)[
         "status"
-    ] == "NO_PRICE_UNKNOWNS"
-    assert upstream_price_blocker(
+    ] == "NO_PRICE_UNKNOWNS", "ZERO_UNKNOWN")
+    require(upstream_price_blocker(
         {"price_unknown_symbols": ["A", "A"]}, 2
-    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE"
-    assert not base["current_mc_primary_measured_proven"]
-    assert not base["alpha_authority"]
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "DUPLICATE_SYMBOL")
+    require(upstream_price_blocker(
+        {"price_unknown_symbols": [{"bad": "unhashable"}]}, 1
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "MALFORMED_SYMBOL")
+    require(not base["current_mc_primary_measured_proven"], "NO_PRIMARY")
+    require(not base["alpha_authority"], "NO_ALPHA")
     print("XRAY_POST_MC_SOURCE_READINESS_SELFTEST=PASS_POSITIVE_NEGATIVE_NO_PRIMARY")
 
 
