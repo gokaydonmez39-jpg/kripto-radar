@@ -131,7 +131,7 @@ class SemanticStallTests(TestCase):
             self.assertEqual(method,"GET")
             if path.startswith("/actions/runs/"):
                 import re
-                matched=re.search(r"/actions/runs/(\\d+)/jobs",path)
+                matched=re.search(r"/actions/runs/([0-9]+)/jobs",path)
                 self.assertIsNotNone(matched)
                 value=by_id[int(matched.group(1))]
                 return {"jobs":[{"name":"dataplane","steps":[
