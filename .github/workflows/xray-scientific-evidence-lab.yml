@@ -4,12 +4,14 @@ on:
     paths:
       - 'research/scientific_methodology_lab.py'
       - 'research/test_scientific_methodology_lab.py'
+      - 'nasdaq-xray/post_mc_source_readiness.py'
       - '.github/workflows/xray-scientific-evidence-lab.yml'
   push:
     branches: [main]
     paths:
       - 'research/scientific_methodology_lab.py'
       - 'research/test_scientific_methodology_lab.py'
+      - 'nasdaq-xray/post_mc_source_readiness.py'
       - '.github/workflows/xray-scientific-evidence-lab.yml'
   workflow_dispatch:
 permissions:
@@ -31,5 +33,10 @@ jobs:
         run: |
           python -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
           python -O -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
+      - name: Nasdaq SIP upstream evidence diagnostic (normal + optimized, offline)
+        run: |
+          python -m py_compile nasdaq-xray/post_mc_source_readiness.py
+          python nasdaq-xray/post_mc_source_readiness.py --selftest
+          python -O nasdaq-xray/post_mc_source_readiness.py --selftest
       - name: No production mutation or delivery
         run: echo 'RESEARCH_ONLY; NO_AL; NO_BROKER; NO_SHEETS_WRITE; NO_NOTIFICATIONS'
