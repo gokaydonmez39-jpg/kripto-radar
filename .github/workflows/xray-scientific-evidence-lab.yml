@@ -4,12 +4,14 @@ on:
     paths:
       - 'research/scientific_methodology_lab.py'
       - 'research/test_scientific_methodology_lab.py'
+      - 'nasdaq-xray/post_mc_source_readiness.py'
       - '.github/workflows/xray-scientific-evidence-lab.yml'
   push:
     branches: [main]
     paths:
       - 'research/scientific_methodology_lab.py'
       - 'research/test_scientific_methodology_lab.py'
+      - 'nasdaq-xray/post_mc_source_readiness.py'
       - '.github/workflows/xray-scientific-evidence-lab.yml'
   workflow_dispatch:
 permissions:
@@ -31,5 +33,84 @@ jobs:
         run: |
           python -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
           python -O -m unittest discover -s research -p 'test_scientific_methodology_lab.py' -v
+      - name: Nasdaq SIP upstream evidence diagnostic (normal + optimized, offline)
+        run: |
+          python -m py_compile nasdaq-xray/post_mc_source_readiness.py
+          python nasdaq-xray/post_mc_source_readiness.py --selftest
+          python -O nasdaq-xray/post_mc_source_readiness.py --selftest
+      - name: Bind diagnostic to actual tracked PRICE evidence (read-only)
+        run: |
+          python nasdaq-xray/post_mc_source_readiness.py --out "$RUNNER_TEMP/xray_post_mc_source_readiness.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ["RUNNER_TEMP"]) / "xray_post_mc_source_readiness.json").read_text())
+          b = r["upstream_price_blocker"]
+          assert b["unknown_count"] == r["price_symbol_local_unknown"]
+          assert b["authenticated_sip_required_count"] + b["other_or_unverified_count"] == b["unknown_count"]
+          assert r["alpha_authority"] is False
+          assert r["current_mc_primary_measured_proven"] is False
+          assert r["execution"] == "NONE" and r["real_money"] == "NO-GO"
+          assert r["unknown_never_pass"] is True
+          print("XRAY_POST_MC_LIVE_TRACKED_PRICE_EVIDENCE=PASS_DIAGNOSTIC_ONLY")
+          print("XRAY_POST_MC_LIVE_SIP_BLOCKER_STATUS=" + b["status"])
+          print("XRAY_POST_MC_LIVE_SIP_REQUIRED_COUNT=" + str(b["authenticated_sip_required_count"]))
+          PY
+      - name: Prevent duplicate root incidents and false GO claims (normal + optimized)
+        run: |
+          cat > "$RUNNER_TEMP/xray_nasdaq_incident_guard.py" <<'PY'
+          import copy, json, re
+          from pathlib import Path
+          
+          source = Path("nasdaq-xray/incident_dedup_registry.json")
+          def validate(d):
+              if d.get("scope") != "NASDAQ_ONLY_NO_CRYPTO":
+                  raise ValueError("SCOPE_NOT_ISOLATED")
+              issues = d.get("incidents")
+              if not isinstance(issues, list) or not issues:
+                  raise ValueError("NO_INCIDENTS")
+              ids = []
+              for item in issues:
+                  sid = item.get("id")
+                  if not isinstance(sid, str) or not re.fullmatch(r"XRAY-NQ-[A-Z0-9-]+", sid):
+                      raise ValueError("INVALID_INCIDENT_ID")
+                  if item.get("scope") not in ("CANONICAL", "GITHUB_GOVERNANCE", "PERSONAL_477_NOTIFICATION", "PERSONAL_477_SCHEDULER", "PERSONAL_477_LEDGER"):
+                      raise ValueError("INVALID_INCIDENT_SCOPE")
+                  if str(item.get("status", "")).upper() in ("PASS", "GO", "READY", "COMPLETED"):
+                      raise ValueError("UNATTESTED_SUCCESS_STATUS")
+                  if not item.get("evidence") or not item.get("root_cause") or not item.get("required_to_close") or not item.get("rollback"):
+                      raise ValueError("INCOMPLETE_INCIDENT")
+                  if item.get("kind") == "DOWNSTREAM_SYMPTOM" and not item.get("parent_ids"):
+                      raise ValueError("UNBOUND_DOWNSTREAM_SYMPTOM")
+                  ids.append(sid)
+              if len(set(ids)) != len(ids):
+                  raise ValueError("DUPLICATE_ROOT_CAUSE_ID")
+              for item in issues:
+                  if any(p not in ids or p == item["id"] for p in item.get("parent_ids", [])):
+                      raise ValueError("INVALID_PARENT")
+              return len(ids)
+          
+          original = json.loads(source.read_text(encoding="utf-8"))
+          count = validate(original)
+          cases = [
+              lambda x: x["incidents"].append(copy.deepcopy(x["incidents"][0])),
+              lambda x: x["incidents"][2].update(parent_ids=["NOT-A-ROOT"]),
+              lambda x: x["incidents"][0].update(status="PASS"),
+              lambda x: x.update(scope="NASDAQ_AND_CRYPTO"),
+              lambda x: x["incidents"][0].update(evidence=[]),
+          ]
+          for index, mutate in enumerate(cases, 1):
+              bad = copy.deepcopy(original)
+              mutate(bad)
+              try:
+                  validate(bad)
+              except ValueError:
+                  continue
+              raise RuntimeError(f"NEGATIVE_{index}_FALSE_PASS")
+          print(f"XRAY_NASDAQ_INCIDENT_DEDUP=PASS_COUNT_{count}_NEGATIVE_5_NO_CRYPTO_NO_GO")
+          
+          PY
+          python "$RUNNER_TEMP/xray_nasdaq_incident_guard.py"
+          python -O "$RUNNER_TEMP/xray_nasdaq_incident_guard.py"
       - name: No production mutation or delivery
         run: echo 'RESEARCH_ONLY; NO_AL; NO_BROKER; NO_SHEETS_WRITE; NO_NOTIFICATIONS'

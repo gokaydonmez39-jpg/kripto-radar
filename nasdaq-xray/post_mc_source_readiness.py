@@ -64,6 +64,56 @@ def private_credential_classification(env: dict) -> dict:
     }
 
 
+def upstream_price_blocker(resolver: dict, expected_unknown: int) -> dict:
+    """Aggregate verified PRICE UNKNOWN reasons without exporting symbol details.
+
+    This is diagnosis only: it cannot establish SIP entitlement, MC source
+    authority, alpha eligibility, or production readiness.
+    """
+    symbols = resolver.get("price_unknown_symbols")
+    incomplete = {
+        "status": "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE",
+        "unknown_count": expected_unknown,
+        "authenticated_sip_required_count": 0,
+        "other_or_unverified_count": expected_unknown,
+    }
+    if (not isinstance(symbols, list) or type(expected_unknown) is not int
+            or expected_unknown < 0 or len(symbols) != expected_unknown
+            or not all(isinstance(s, str) and s for s in symbols)
+            or len(set(symbols)) != expected_unknown):
+        return incomplete
+    if expected_unknown == 0:
+        return {
+            "status": "NO_PRICE_UNKNOWNS",
+            "unknown_count": 0,
+            "authenticated_sip_required_count": 0,
+            "other_or_unverified_count": 0,
+        }
+    details = resolver.get("price_unknown_detail")
+    if not isinstance(details, dict) or set(details) != set(symbols):
+        return incomplete
+    sip_required = 0
+    for symbol in symbols:
+        row = details.get(symbol)
+        result = row.get("price_result") if isinstance(row, dict) else None
+        if not isinstance(result, dict) or result.get("status") != "UNKNOWN":
+            continue
+        info = result.get("info")
+        if (isinstance(info, dict)
+                and info.get("reason") == "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"):
+            sip_required += 1
+    return {
+        "status": (
+            "ALL_PRICE_UNKNOWNS_REQUIRE_AUTHENTICATED_SIP"
+            if sip_required == expected_unknown
+            else "MIXED_OR_UNVERIFIED_PRICE_UNKNOWNS"
+        ),
+        "unknown_count": expected_unknown,
+        "authenticated_sip_required_count": sip_required,
+        "other_or_unverified_count": expected_unknown - sip_required,
+    }
+
+
 def summarize(objects: dict, blobs: dict, filenames: list[str], env: dict) -> dict:
     root = objects.get("root") or {}
     master = objects.get("master") or {}
@@ -173,6 +223,7 @@ def summarize(objects: dict, blobs: dict, filenames: list[str], env: dict) -> di
         "price_pass_count": price_count,
         "price_symbol_local_blocked": blocked,
         "price_symbol_local_unknown": unknown,
+        "upstream_price_blocker": upstream_price_blocker(resolver, unknown),
         "master_unknown_count": master_unknown,
         "credentials": private_credential_classification(env),
         "historical_sip_shadow_is_primary": False,
@@ -270,6 +321,45 @@ def selftest() -> None:
     assert both["alpaca_history"] == "CREDENTIAL_PAIR_PRESENT_RIGHTS_UNVERIFIED"
     assert both["automated_use_rights_proven"] is False
     assert git_blob_sha(b"hello") == "b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0"
+
+    # Root-cause witness: reject every false positive even under python -O.
+    def require(condition, name):
+        if not condition:
+            raise AssertionError("ROOT_CAUSE_DIAGNOSTIC_" + name)
+    sip = "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+    def u(reason):
+        return {"price_result": {"status": "UNKNOWN", "info": {"reason": reason}}}
+    verified = {
+        "price_unknown_symbols": ["A", "B"],
+        "price_unknown_detail": {"A": u(sip), "B": u(sip)},
+    }
+    require(upstream_price_blocker(verified, 2) == {
+        "status": "ALL_PRICE_UNKNOWNS_REQUIRE_AUTHENTICATED_SIP",
+        "unknown_count": 2,
+        "authenticated_sip_required_count": 2,
+        "other_or_unverified_count": 0,
+    }, "TRUE_ALL_SIP")
+    unknown_reason = {
+        "price_unknown_symbols": ["A"],
+        "price_unknown_detail": {"A": u("OTHER")},
+    }
+    require(upstream_price_blocker(unknown_reason, 1)["status"] == (
+        "MIXED_OR_UNVERIFIED_PRICE_UNKNOWNS"
+    ), "MIXED_NOT_ALL_SIP")
+    require(upstream_price_blocker(
+        {"price_unknown_symbols": ["A"], "price_unknown_detail": {}}, 1
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "ABSENT_DETAIL")
+    require(upstream_price_blocker({"price_unknown_symbols": []}, 0)[
+        "status"
+    ] == "NO_PRICE_UNKNOWNS", "ZERO_UNKNOWN")
+    require(upstream_price_blocker(
+        {"price_unknown_symbols": ["A", "A"]}, 2
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "DUPLICATE_SYMBOL")
+    require(upstream_price_blocker(
+        {"price_unknown_symbols": [{"bad": "unhashable"}]}, 1
+    )["status"] == "PRICE_UNKNOWN_EVIDENCE_INCOMPLETE", "MALFORMED_SYMBOL")
+    require(not base["current_mc_primary_measured_proven"], "NO_PRIMARY")
+    require(not base["alpha_authority"], "NO_ALPHA")
     print("XRAY_POST_MC_SOURCE_READINESS_SELFTEST=PASS_POSITIVE_NEGATIVE_NO_PRIMARY")
 
 
@@ -308,6 +398,8 @@ def main() -> None:
     dest.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print("XRAY_POST_MC_SOURCE_READINESS=" + report["source_status"])
     print("XRAY_POST_MC_CREDENTIAL_CLASS=" + report["credentials"]["alpaca_history"])
+    print("XRAY_POST_MC_PRICE_UPSTREAM_BLOCKER=" + report["upstream_price_blocker"]["status"])
+    print("XRAY_POST_MC_PRICE_SIP_REQUIRED_COUNT=" + str(report["upstream_price_blocker"]["authenticated_sip_required_count"]))
     print("XRAY_POST_MC_MEASURED_PRIMARY_PROVEN=false")
     if report["source_status"] == "SOURCE_LINEAGE_OR_POLICY_NOT_EXACT":
         raise SystemExit("SOURCE_LINEAGE_OR_POLICY_NOT_EXACT_FAIL_CLOSED")

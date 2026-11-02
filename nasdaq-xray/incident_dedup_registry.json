@@ -1,0 +1,229 @@
+{
+  "schema": "XRAY_NASDAQ_ROOT_CAUSE_DEDUP_REGISTRY_V1",
+  "scope": "NASDAQ_ONLY_NO_CRYPTO",
+  "evidence_cutoff_utc": "2026-11-02T15:31:23Z",
+  "authority": "DIAGNOSTIC_ONLY_NO_AL_NO_BROKER",
+  "merge_status": "DRAFT_ONLY",
+  "rules": {
+    "stable_id_unique": true,
+    "no_new_id_for_recurrence": true,
+    "append_evidence_to_existing_id": true,
+    "downstream_symptom_parent_id_required": true,
+    "never_mark_external_blocker_pass_without_primary_proof": true,
+    "all_production_changes_require_approval": true
+  },
+  "pending_acceptance": [
+    {
+      "id": "XRAY-NQ-20261102-PERSONAL-EOD",
+      "scope": "PERSONAL_477",
+      "status": "WAITING_COMPLETED_XNAS_SESSION_AND_EOD",
+      "criteria": [
+        "477/477",
+        "IEX_ASOF_EPOCH",
+        "SHA",
+        "SHEETS_READBACK",
+        "LIFECYCLE",
+        "NO_DUPLICATE_ALERT"
+      ]
+    },
+    {
+      "id": "XRAY-NQ-20261103-1257-FINAL",
+      "scope": "CONTROL_TOWER",
+      "status": "PENDING_FUTURE_SCHEDULE"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "XRAY-NQ-PRICE-AUTHENTICATED-SIP",
+      "severity": "P1",
+      "scope": "CANONICAL",
+      "kind": "EXTERNAL_SOURCE_AUTHORITY",
+      "status": "BLOCKED_EXTERNAL",
+      "root_cause": "Current canonical 2026-10-30 PRICE: 552 unknown symbols, all require AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED; zero PRICE PASS. Neither credentials nor automated-use rights proven.",
+      "counts": {
+        "price_unknown": 552,
+        "authenticated_sip_required": 552,
+        "price_pass": 0
+      },
+      "evidence": [
+        {
+          "path": "nasdaq-xray/canonical_current_resolver_request.json",
+          "blob_sha": "b67d291c02cdb85b0cb571796640b422f2383f22"
+        },
+        {
+          "run_id": 41472331117,
+          "assertion": "TRACKED_PRICE_SIP_REQUIRED_COUNT_552; NO_ALPHA"
+        }
+      ],
+      "required_to_close": "Independent authorized source and automated-use rights proof; exact-ASOF snapshot, symbol coverage, SHA binding; reproducible positive and negative CI",
+      "rollback": "Maintain zero PASS, no source promotions, no replay"
+    },
+    {
+      "id": "XRAY-NQ-HISTORY-INDEPENDENT-EVIDENCE",
+      "severity": "P1",
+      "scope": "CANONICAL",
+      "kind": "SOURCE_COVERAGE",
+      "status": "BLOCKED_UPSTREAM",
+      "root_cause": "215 historical UNKNOWN with no retryable history work: 140 short-history independent proof, 40 missing ASOF bar, 30 static unknown, 5 incomplete exact30.",
+      "counts": {
+        "history_unknown": 215,
+        "requires_independent_short_history": 140,
+        "asof_bar_missing": 40,
+        "static_unknown": 30,
+        "exact30_incomplete": 5
+      },
+      "evidence": [
+        {
+          "path": "nasdaq-xray/orchestrator_state.json",
+          "blob_sha": "366a08f17f271d522f82301c11d04a2c31f558bb"
+        }
+      ],
+      "required_to_close": "Independent exchange/official evidence and legal same-ASOF historical coverage; keep unprovable symbols UNKNOWN",
+      "rollback": "Retain history UNKNOWN and downstream HOLD"
+    },
+    {
+      "id": "XRAY-NQ-MC-AUTHORITY-MISSING",
+      "severity": "P1",
+      "scope": "CANONICAL",
+      "kind": "DOWNSTREAM_SYMPTOM",
+      "parent_ids": [
+        "XRAY-NQ-PRICE-AUTHENTICATED-SIP"
+      ],
+      "status": "BLOCKED_UPSTREAM",
+      "root_cause": "No current measured MC authority artifact; PRICE 552 UNKNOWN and settlement not proven. Not a separate root-source failure.",
+      "evidence": [
+        {
+          "run_id": 41456722725,
+          "assertion": "CURRENT_MC_BRIDGE_ABSENT; BLOCKED_CURRENT_MC_AUTHORITY_REQUIRED"
+        }
+      ],
+      "required_to_close": "Current exact PRICE and settlement evidence first, then valid immutable MC bridge and rights checks",
+      "rollback": "No MC, R92 or AL promotion"
+    },
+    {
+      "id": "XRAY-NQ-TERMINAL-EPOCH-LAG",
+      "severity": "P1",
+      "scope": "CANONICAL",
+      "kind": "DOWNSTREAM_SYMPTOM",
+      "parent_ids": [
+        "XRAY-NQ-PRICE-AUTHENTICATED-SIP",
+        "XRAY-NQ-HISTORY-INDEPENDENT-EVIDENCE",
+        "XRAY-NQ-MC-AUTHORITY-MISSING"
+      ],
+      "status": "BLOCKED_UPSTREAM",
+      "root_cause": "Terminal remains 2026-10-07 PARTIAL_UNKNOWN; live master/full_state/price blob drift; no exact current terminal.",
+      "evidence": [
+        {
+          "run_id": 41456806813,
+          "assertion": "BLOCKED_UPSTREAM_NO_NEW_TERMINAL_NO_R92"
+        },
+        {
+          "path": "nasdaq-xray/canonical_current_terminal.json",
+          "blob_sha": "ea9c41cd1e5971e78d85bf3f620d7f8c4e01034f"
+        }
+      ],
+      "required_to_close": "Current same-ASOF exact MC, history, legal, events, G9 and account gates with SHA-backed full E2E",
+      "rollback": "Keep terminal PARTIAL_UNKNOWN and suppress release"
+    },
+    {
+      "id": "XRAY-NQ-G9-ENTITLEMENT",
+      "severity": "P1",
+      "scope": "CANONICAL",
+      "kind": "EXTERNAL_SOURCE_RIGHTS",
+      "status": "BLOCKED_EXTERNAL",
+      "root_cause": "No qualifying data entitlement authority currently proven; provider=NONE_CURRENTLY_QUALIFYING.",
+      "evidence": [
+        {
+          "path": "nasdaq-xray/g9_entitlement_authority.json",
+          "blob_sha": "b26aa17cc13b4e8b7038079d0bc9034f46a8454b"
+        }
+      ],
+      "required_to_close": "Prove real provider and non-display/automation rights plus same-run G9 runtime witness",
+      "rollback": "Keep strict G9=false"
+    },
+    {
+      "id": "XRAY-NQ-A41-MAIN-WRITER-SECURITY",
+      "severity": "P1",
+      "scope": "GITHUB_GOVERNANCE",
+      "kind": "CODE_AND_REPOSITORY_ADMIN",
+      "status": "HOLD_REVIEW",
+      "root_cause": "42 main writer workflows still require migration; active ruleset lacks required PR/CI, has only deletion and non_fast_forward.",
+      "counts": {
+        "direct_main_writer_workflows": 42
+      },
+      "evidence": [
+        {
+          "run_id": 41331209190,
+          "assertion": "A41 inventory tests PASS; inventory counts only"
+        },
+        {
+          "ruleset_id": 26024575
+        },
+        {
+          "pull_request": 349
+        }
+      ],
+      "required_to_close": "Migrate writers with per-workflow acceptance tests and implement required PR/CI ruleset after admin review",
+      "rollback": "Do not enable restrictive PR rules until all production writers are migrated"
+    },
+    {
+      "id": "XRAY-NQ-DELIVERY-DEVICE-ACK",
+      "severity": "P1",
+      "scope": "PERSONAL_477_NOTIFICATION",
+      "kind": "UNATTESTED_DELIVERY",
+      "status": "UNKNOWN",
+      "root_cause": "Private ledger has 15 ALERT_REQUESTED_NOT_DEVICE_ACK events; provider receipt and iPhone device receipt not independently verified.",
+      "counts": {
+        "requested_not_device_ack": 15
+      },
+      "evidence": [
+        {
+          "sheet": "UYARI_OLAYLARI",
+          "spreadsheet_id": "1TT5MtHOAEew09mQTanQ6uIpgWNS_fzf4KrlkcpI-jrI"
+        }
+      ],
+      "required_to_close": "Matched exact event ID and independent device/platform delivery receipt; never replay old AL for testing",
+      "rollback": "Retain requested-not-device-ack labels"
+    },
+    {
+      "id": "XRAY-NQ-GITHUB-SCHEDULE-LAG",
+      "severity": "P1",
+      "scope": "PERSONAL_477_SCHEDULER",
+      "kind": "HOST_SCHEDULER_RELIABILITY",
+      "status": "HOLD_MONITOR",
+      "root_cause": "GitHub scheduled EOD on 2026-10-30 ran 03:07:40 late and fallback 05:32:34 late; host root cause not proven.",
+      "counts": {
+        "eod_delay_seconds": 11260,
+        "fallback_delay_seconds": 19954
+      },
+      "evidence": [
+        {
+          "run_id": 41159725169,
+          "assertion": "Scheduled 2026-10-30T23:15Z; created 2026-10-31T02:22:40Z"
+        },
+        {
+          "run_id": 41174617831,
+          "assertion": "Scheduled 2026-10-31T00:25Z; created 2026-10-31T05:57:34Z"
+        }
+      ],
+      "required_to_close": "Measure planned-versus-actual across future XNAS sessions and demonstrate existing single fallback catches missing epoch without duplicate alert",
+      "rollback": "Do not create duplicate cron or dispatch historical EOD"
+    },
+    {
+      "id": "XRAY-NQ-GILD-52HIGH-EVENT-CONFLICT",
+      "severity": "P2",
+      "scope": "PERSONAL_477_LEDGER",
+      "kind": "DATA_SEMANTIC_DISPUTE",
+      "status": "HOLD_QUARANTINED",
+      "root_cause": "GILD 2026-10-29 first-breakout semantic evidence conflicts between candidate history and alert note; one ledger event quarantined.",
+      "evidence": [
+        {
+          "sheet": "UYARI_OLAYLARI",
+          "event_key": "2026-10-29|GILD|2026-10-30|NEW_52_SESSION_HIGH|1"
+        }
+      ],
+      "required_to_close": "Reconcile immutable first-high semantics against independently verified 52 XNAS session history; do not overwrite original episode",
+      "rollback": "Keep dispute review and suppression"
+    }
+  ]
+}
