@@ -206,17 +206,27 @@ def audit(doc: dict, sha: dict, official_asof: str | None,
     add("HISTORY_INDEPENDENT_PROOF", checks["independent_history_complete"],
         ("MC", "TERMINAL"))
     add("SETTLEMENT", checks["same_asof_settlement_proven"], ("MC",))
-    add("MC_AUTHORITY", checks["measured_mc_history_chain_exact"],
-        ("TERMINAL",))
+    downstream = []
+    upstream = {row["id"] for row in groups}
+    if not checks["measured_mc_history_chain_exact"]:
+        if upstream.intersection({"PRICE_SIP", "HISTORY_INDEPENDENT_PROOF", "SETTLEMENT"}):
+            downstream.append("MC_AUTHORITY_DEPENDS_ON_UPSTREAM")
+        else:
+            add("MC_AUTHORITY", False, ("TERMINAL",))
     add("G9_ENTITLEMENT", checks["strict_g9_authority"], ("TERMINAL",))
     add("ACCOUNT_AUTHORITY", checks["account_same_run_attested"], ("TERMINAL",))
-    add("TERMINAL_RELEASE", checks["terminal_research_pass"])
+    if not checks["terminal_research_pass"]:
+        if groups:
+            downstream.append("TERMINAL_RELEASE_DEPENDS_ON_UPSTREAM")
+        else:
+            add("TERMINAL_RELEASE", False)
     canonical = "PASS" if all(checks.values()) else "HOLD"
     personal = "HOLD"  # No private Sheets or independent device receipts in this job.
     return {
         "schema": SCHEMA, "asof_official_last_complete": official_asof,
         "canonical": {"status": canonical, "checks": checks,
                       "root_groups": groups,
+                      "dependent_gates": downstream,
                       "price_unknown": unknown,
                       "price_sip_requirement_count": sip_count,
                       "price_unknown_detail_count": len(details),
