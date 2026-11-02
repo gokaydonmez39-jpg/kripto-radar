@@ -1,0 +1,52 @@
+name: XRAY Nasdaq Final Proof Engine CI (NO AL)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "nasdaq-xray/nasdaq_final_proof_engine.py"
+      - "nasdaq-xray/test_nasdaq_final_proof_engine.py"
+      - ".github/workflows/xray-nasdaq-final-proof-engine-ci.yml"
+      - ".github/workflows/xray-final-gate-overlay-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  proof-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Exact XNAS holiday/DST calendar only
+        run: python -m pip install -r personal-swing/requirements.txt
+      - name: Compile + normal and optimized falsification suites
+        run: |
+          python -m py_compile nasdaq-xray/nasdaq_final_proof_engine.py nasdaq-xray/test_nasdaq_final_proof_engine.py
+          python -m unittest -v nasdaq-xray/test_nasdaq_final_proof_engine.py
+          python -O -m unittest -v nasdaq-xray/test_nasdaq_final_proof_engine.py
+      - name: Evaluate real tracked repo evidence, fail closed
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python nasdaq-xray/nasdaq_final_proof_engine.py --out "$RUNNER_TEMP/xray-independent-final.json" --at-utc "2026-11-02T18:00:00+00:00"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data=json.loads((Path(os.environ["RUNNER_TEMP"])/"xray-independent-final.json").read_text())
+          assert data["security"]["execution"]=="NONE"
+          assert data["security"]["alpha_authority"] is False
+          assert data["full_system_final"]=="HOLD"
+          assert data["personal_477"]["device_delivery_status"]=="UNKNOWN_NOT_DEVICE_ACK"
+          assert data["canonical"]["price_unknown_detail_count"] >= 0
+          print("XRAY_INDEPENDENT_FINAL_CI=VALID_DECISION_NOT_LIVE_GO")
+          PY
+      - name: Read-only, no deployment, no notifications
+        run: echo 'PR_ONLY; NO_DISPATCH; NO_MAIN_PUSH; NO_SHEETS; NO_PROVIDER_TOKENS; NO_BROKER; NO_CRYPTO'
