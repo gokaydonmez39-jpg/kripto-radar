@@ -15,6 +15,10 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/github_native_root_watchdog.py"
+      - "nasdaq-xray/root_semantic_stall_circuit.py"
+      - "nasdaq-xray/root_compute_run_provenance.py"
+      - "nasdaq-xray/test_root_compute_run_provenance.py"
+      - "nasdaq-xray/test_root_semantic_stall_circuit.py"
       - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/github_native_chain_health.py"
       - "nasdaq-xray/retired_09oct_watch_topology_selftest.py"
@@ -45,6 +49,15 @@ jobs:
         run: |
           python -m py_compile nasdaq-xray/github_native_root_watchdog.py
           python nasdaq-xray/github_native_root_watchdog.py --selftest
+      - name: Prove bounded source-stall circuit (offline, no dispatch)
+        run: |
+          python -m py_compile nasdaq-xray/root_semantic_stall_circuit.py
+          python nasdaq-xray/root_semantic_stall_circuit.py
+          python nasdaq-xray/root_compute_run_provenance.py
+          python -m unittest discover -s nasdaq-xray -p 'test_root_compute_run_provenance.py' -q
+          python -O -m unittest discover -s nasdaq-xray -p 'test_root_compute_run_provenance.py' -q
+          python -m unittest discover -s nasdaq-xray -p 'test_root_semantic_stall_circuit.py' -q
+          python -O -m unittest discover -s nasdaq-xray -p 'test_root_semantic_stall_circuit.py' -q
       - name: Double-read and dispatch existing root only if stale
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
