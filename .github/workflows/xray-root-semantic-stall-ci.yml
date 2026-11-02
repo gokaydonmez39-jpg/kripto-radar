@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install deterministic official XNAS session calendar
-        run: python -m pip install pandas_market_calendars==5.4.0
+        run: python -m pip install pandas==2.2.3 pandas_market_calendars==5.4.0
       - name: Compile and bounded positive and negative circuit selftests
         run: |
           python -m py_compile nasdaq-xray/root_compute_run_provenance.py nasdaq-xray/test_root_compute_run_provenance.py nasdaq-xray/root_semantic_stall_circuit.py nasdaq-xray/github_native_root_watchdog.py nasdaq-xray/test_root_semantic_stall_circuit.py nasdaq-xray/root_schedule_stall_preflight.py nasdaq-xray/test_root_schedule_stall_preflight.py
