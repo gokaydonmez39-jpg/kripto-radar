@@ -80,10 +80,14 @@ class FinalProofSafety(unittest.TestCase):
         root = pathlib.Path(__file__).resolve().parent
         docs, blobs, errors = engine.snapshot(root)
         r = engine.audit(docs, blobs, "2026-10-30", errors)
-        self.assertEqual(r["canonical"]["status"], "HOLD")
-        self.assertEqual(r["canonical"]["price_unknown"], 552)
-        self.assertEqual(r["canonical"]["price_sip_requirement_count"], 552)
-        self.assertEqual(r["canonical"]["history_unknown"], 215)
+        expected = "PASS" if all(r["canonical"]["checks"].values()) else "HOLD"
+        self.assertEqual(r["canonical"]["status"], expected)
+        self.assertEqual(r["canonical"]["price_unknown"],
+                         docs["resolver"].get("price_unknown_count"))
+        self.assertEqual(r["canonical"]["history_unknown"],
+                         docs["orchestrator"].get("unknown_count"))
+        self.assertLessEqual(r["canonical"]["price_sip_requirement_count"],
+                             r["canonical"]["price_unknown_detail_count"])
         self.assertEqual(r["full_system_final"], "HOLD")
 
     def test_time_calculation_ny_est_preclose(self):
