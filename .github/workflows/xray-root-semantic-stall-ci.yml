@@ -5,6 +5,9 @@ on:
     paths:
       - "nasdaq-xray/root_semantic_stall_circuit.py"
       - "nasdaq-xray/test_root_semantic_stall_circuit.py"
+      - "nasdaq-xray/root_schedule_stall_preflight.py"
+      - "nasdaq-xray/test_root_schedule_stall_preflight.py"
+      - ".github/workflows/nasdaq-xray-daily.yml"
       - "nasdaq-xray/github_native_root_watchdog.py"
       - ".github/workflows/xray-github-native-root-watchdog.yml"
       - ".github/workflows/xray-root-semantic-stall-ci.yml"
@@ -29,7 +32,7 @@ jobs:
         run: python -m pip install pandas_market_calendars==5.4.0
       - name: Compile and bounded positive and negative circuit selftests
         run: |
-          python -m py_compile nasdaq-xray/root_semantic_stall_circuit.py nasdaq-xray/github_native_root_watchdog.py nasdaq-xray/test_root_semantic_stall_circuit.py
+          python -m py_compile nasdaq-xray/root_semantic_stall_circuit.py nasdaq-xray/github_native_root_watchdog.py nasdaq-xray/test_root_semantic_stall_circuit.py nasdaq-xray/root_schedule_stall_preflight.py nasdaq-xray/test_root_schedule_stall_preflight.py
           python nasdaq-xray/root_semantic_stall_circuit.py
           python nasdaq-xray/github_native_root_watchdog.py --selftest
       - name: Independent falsification normal and optimized
@@ -37,5 +40,7 @@ jobs:
         run: |
           python -m unittest -v test_root_semantic_stall_circuit
           python -O -m unittest -v test_root_semantic_stall_circuit
+          python -m unittest -v test_root_schedule_stall_preflight
+          python -O -m unittest -v test_root_schedule_stall_preflight
       - name: No dispatch, broker, private Sheet or new cron
         run: echo "XRAY_STALLED_ROOT_CIRCUIT_CI=OFFLINE_NO_DISPATCH_NO_MUTATION_NO_CRYPTO"
