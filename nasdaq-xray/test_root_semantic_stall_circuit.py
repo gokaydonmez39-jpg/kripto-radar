@@ -96,6 +96,9 @@ class SemanticStallTests(TestCase):
             urls.append(path)
             if path.startswith("/contents/"):
                 return source
+            if path.startswith("/actions/runs/12/jobs"):
+                return {"jobs":[{"name":"dataplane","steps":[
+                    {"name":"Run autonomous XRAY data plane","conclusion":"success"}]}]}
             if path.startswith("/compare/"):
                 return q["comparison"]
             self.fail("UNEXPECTED_NETWORK_ROUTE")
@@ -106,7 +109,8 @@ class SemanticStallTests(TestCase):
             r=watchdog.root_productivity_gate("test",q["now"],first,
                         [q["last_success"]],q["current_main_sha"])
         self.assertTrue(r["suppress"])
-        self.assertEqual(len(urls),2)
+        self.assertEqual(len(urls),3)
+        self.assertTrue(any("/actions/runs/12/jobs" in path for path in urls))
 
     def test_new_source_unblocks_even_when_old_history_still_unknown(self):
         q=fixture()
@@ -114,6 +118,57 @@ class SemanticStallTests(TestCase):
         r=circuit.evaluate(**q)
         self.assertFalse(r["suppress"])
         self.assertEqual(r["reason"],"NEW_TRACKED_SOURCE_OR_CODE_EVIDENCE")
+
+    def test_newer_green_no_compute_does_not_reset_real_compute_quota(self):
+        q=fixture()
+        real=q["last_success"]
+        noop=dict(real,id=13,created_at="2026-11-02T17:30:00Z")
+        refs=[noop,real]
+        by_id={
+            13: "skipped", 12: "success",
+        }
+        def api(method,path,token,payload=None):
+            self.assertEqual(method,"GET")
+            if path.startswith("/actions/runs/"):
+                import re
+                matched=re.search(r"/actions/runs/(\\d+)/jobs",path)
+                self.assertIsNotNone(matched)
+                value=by_id[int(matched.group(1))]
+                return {"jobs":[{"name":"dataplane","steps":[
+                    {"name":"Run autonomous XRAY data plane","conclusion":value}]}]}
+            if path.startswith("/contents/"):
+                raw=json.dumps(q["state"]).encode()
+                return {"sha":"f"*40, "encoding":"base64",
+                        "content":base64.b64encode(raw).decode()}
+            if path.startswith("/compare/"):
+                return q["comparison"]
+            self.fail("UNEXPECTED_API")
+        first={"dispatch_allowed":True,"latest_root_id":13,"last_success_id":13}
+        with patch.object(watchdog,"github",side_effect=api), patch.object(
+            watchdog,"last_complete_session",return_value="2026-10-30"):
+            out=watchdog.root_productivity_gate("token",q["now"],first,
+                                                refs,q["current_main_sha"])
+        self.assertTrue(out["suppress"])
+        self.assertEqual(out["last_success_age_seconds"],5400)
+
+    def test_control_only_success_older_than_four_hours_frees_recovery(self):
+        q=fixture()
+        old=dict(q["last_success"],created_at="2026-11-02T13:30:00Z")
+        green=dict(q["last_success"],id=13,created_at="2026-11-02T17:30:00Z")
+        touched=[]
+        def api(method,path,token,payload=None):
+            touched.append(path)
+            if "/actions/runs/13/jobs" in path:
+                return {"jobs":[{"steps":[{
+                    "name":"Run autonomous XRAY data plane","conclusion":"skipped"}]}]}
+            self.fail("API_CALLED_AFTER_COMPUTE_WINDOW_EXPIRED")
+        first={"dispatch_allowed":True,"latest_root_id":13,"last_success_id":13}
+        with patch.object(watchdog,"github",side_effect=api):
+            out=watchdog.root_productivity_gate("token",q["now"],first,
+                                                [green,old],q["current_main_sha"])
+        self.assertFalse(out["suppress"])
+        self.assertIn("NO_RECENT_COMPUTE",out["reason"])
+        self.assertEqual(len(touched),1)
 
     def test_newest_failed_root_is_not_suppressed(self):
         q=fixture()
