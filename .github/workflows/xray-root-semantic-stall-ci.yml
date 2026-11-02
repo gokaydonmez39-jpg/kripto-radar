@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/root_semantic_stall_circuit.py"
+      - "nasdaq-xray/root_compute_run_provenance.py"
+      - "nasdaq-xray/test_root_compute_run_provenance.py"
       - "nasdaq-xray/test_root_semantic_stall_circuit.py"
       - "nasdaq-xray/root_schedule_stall_preflight.py"
       - "nasdaq-xray/test_root_schedule_stall_preflight.py"
@@ -32,8 +34,9 @@ jobs:
         run: python -m pip install pandas_market_calendars==5.4.0
       - name: Compile and bounded positive and negative circuit selftests
         run: |
-          python -m py_compile nasdaq-xray/root_semantic_stall_circuit.py nasdaq-xray/github_native_root_watchdog.py nasdaq-xray/test_root_semantic_stall_circuit.py nasdaq-xray/root_schedule_stall_preflight.py nasdaq-xray/test_root_schedule_stall_preflight.py
+          python -m py_compile nasdaq-xray/root_compute_run_provenance.py nasdaq-xray/test_root_compute_run_provenance.py nasdaq-xray/root_semantic_stall_circuit.py nasdaq-xray/github_native_root_watchdog.py nasdaq-xray/test_root_semantic_stall_circuit.py nasdaq-xray/root_schedule_stall_preflight.py nasdaq-xray/test_root_schedule_stall_preflight.py
           python nasdaq-xray/root_semantic_stall_circuit.py
+          python nasdaq-xray/root_compute_run_provenance.py
           python nasdaq-xray/github_native_root_watchdog.py --selftest
           python nasdaq-xray/root_weekend_quota_guard.py --selftest
           python nasdaq-xray/root_checkpoint_semantic_noop.py --selftest
@@ -42,7 +45,9 @@ jobs:
         working-directory: nasdaq-xray
         run: |
           python -m unittest -v test_root_semantic_stall_circuit
+          python -m unittest -v test_root_compute_run_provenance
           python -O -m unittest -v test_root_semantic_stall_circuit
+          python -O -m unittest -v test_root_compute_run_provenance
           python -m unittest -v test_root_schedule_stall_preflight
           python -O -m unittest -v test_root_schedule_stall_preflight
       - name: No dispatch, broker, private Sheet or new cron
