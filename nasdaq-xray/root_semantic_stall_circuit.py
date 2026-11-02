@@ -45,8 +45,12 @@ def evaluate(*, now: dt.datetime, last_complete_asof: str | None,
         return allow("LAST_ROOT_SHA_UNKNOWN")
     if comparison.get("status") not in ("ahead", "identical") or comparison.get("behind_by") != 0:
         return allow("NO_LINEAR_GIT_PROVENANCE")
-    if comparison.get("base_commit", {}).get("sha") != old_sha:
+    base = comparison.get("base_commit")
+    last = comparison.get("head_commit")
+    if type(base) is not dict or base.get("sha") != old_sha:
         return allow("WRONG_COMPARE_BASE_SHA")
+    if type(last) is not dict or last.get("sha") != current_main_sha:
+        return allow("WRONG_COMPARE_HEAD_SHA")
     files = comparison.get("files")
     if not isinstance(files, list) or len(files) > 299:
         return allow("CHANGED_FILE_PROVENANCE_INCOMPLETE")
@@ -96,7 +100,7 @@ def selftest() -> None:
     run = {"head_sha": old, "status": "completed", "conclusion": "success",
            "created_at": "2026-11-02T16:30:00Z"}
     comparison = {"status": "ahead", "behind_by": 0,
-                  "base_commit": {"sha": old},
+                  "base_commit": {"sha": old}, "head_commit": {"sha": current},
                   "files": [{"filename": "nasdaq-xray/canonical_current_final_gate_overlay.json"}]}
     arguments = {"now": now, "last_complete_asof": "2026-10-30",
                  "state": state, "last_success": run,
@@ -119,6 +123,7 @@ def selftest() -> None:
         ("NO_COMPARE", lambda x: x.update(comparison=None)),
         ("DIVERGED", lambda x: x["comparison"].update(status="diverged")),
         ("NO_BASE_MATCH", lambda x: x["comparison"]["base_commit"].update(sha="e"*40)),
+        ("NO_HEAD_MATCH", lambda x: x["comparison"]["head_commit"].update(sha="e"*40)),
         ("NONZERO_BEHIND", lambda x: x["comparison"].update(behind_by=1)),
         ("BAD_MAIN", lambda x: x.update(current_main_sha="invalid")),
         ("MISSING_UNKNOWN", lambda x: x["state"].pop("unknown_count")),
@@ -144,7 +149,7 @@ def selftest() -> None:
             raise AssertionError("FALSE_STALL_SUPPRESSION_" + label)
     assert evaluate(**dict(arguments, comparison=dict(comparison,
         status="identical", files=[])))["suppress"] is True
-    print("XRAY_WATCHDOG_STALLED_SOURCE_CIRCUIT=PASS_POSITIVE_2_NEGATIVE_24_BOUNDED_4H")
+    print("XRAY_WATCHDOG_STALLED_SOURCE_CIRCUIT=PASS_POSITIVE_2_NEGATIVE_25_BOUNDED_4H")
 
 
 if __name__ == "__main__":
