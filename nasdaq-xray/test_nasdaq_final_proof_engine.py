@@ -131,6 +131,37 @@ class FinalProofSafety(unittest.TestCase):
                 self.assertEqual(r["canonical"]["status"], "HOLD")
                 self.assertEqual(r["full_system_final"], "HOLD")
 
+    def test_downstream_mc_and_terminal_do_not_duplicate_upstream(self):
+        d, s = good()
+        d["resolver"].update(price_unknown_count=1,
+            price_unknown_symbols=["AAA"],
+            price_unknown_detail={
+                "AAA": {"price_result": {"info": {"reason": engine.SIP}}}})
+        d["overlay"]["current_research_chain"]["exact"] = False
+        d["overlay"]["true_full_go"]["status"] = "BLOCKED"
+        result = self.result(d, s)
+        roots = {x["id"] for x in result["canonical"]["root_groups"]}
+        dependent = result["canonical"]["dependent_gates"]
+        self.assertIn("PRICE_SIP", roots)
+        self.assertNotIn("MC_AUTHORITY", roots)
+        self.assertNotIn("TERMINAL_RELEASE", roots)
+        self.assertIn("MC_AUTHORITY_DEPENDS_ON_UPSTREAM", dependent)
+        self.assertIn("TERMINAL_RELEASE_DEPENDS_ON_UPSTREAM", dependent)
+
+    def test_workflow_observer_has_no_new_schedule_or_write_authority(self):
+        source = (pathlib.Path(__file__).resolve().parent.parent /
+                  ".github/workflows/xray-final-gate-overlay-v2.yml").read_text()
+        self.assertEqual(source.count("  proof-only:\n"), 1)
+        self.assertEqual(source.count("  schedule:\n"), 1)
+        observer = source.split("  proof-only:\n", 1)[1]
+        self.assertIn("needs: overlay", observer)
+        self.assertIn("contents: read", observer)
+        self.assertIn("nasdaq_final_proof_engine.py", observer)
+        self.assertIn("xray-independent-final.json", observer)
+        for forbidden in ("git push", "workflow_dispatch", "gh api", "secrets.",
+                          "XRAY_ALPACA_DATA_SECRET_KEY", "gh workflow run"):
+            self.assertNotIn(forbidden, observer)
+
     def test_malformed_or_missing_sources_hold(self):
         d, s = good()
         self.assertEqual(self.result(d, s, errors=["price:ValueError"])["canonical"]["status"], "HOLD")
