@@ -1,59 +1,58 @@
 {
-  "asof_et": "2026-10-30",
+  "asof_et": "2026-11-02",
   "chunk_count": 6,
   "chunk_size": 100,
   "chunks": [
     {
-      "blob_sha": "2b8fc1e06d51c442e4158e93a802d504d86e7690",
+      "blob_sha": "f2ef7d082d4a32836095ef5e4dfaa7083e7b8b1d",
       "chunk_index": 1,
-      "chunk_symbol_hash": "6f6d99888777ce2dbf609ebd2ac81de5978d9a687b6446f8878d9b17a5e0dd71",
+      "chunk_symbol_hash": "e37f40e80c05c236a0757d9f7eaceca960402d009fc1ac1d3cfe5e39e70eeb5c",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0001.json",
       "symbol_count": 100
     },
     {
-      "blob_sha": "03338f894a641c2c35b0db3df85d1bc15e5af1d7",
+      "blob_sha": "49659a34fd4fd4cc47cd0a1d1b5cc32e07b76263",
       "chunk_index": 2,
-      "chunk_symbol_hash": "ca46fed40fd07c467b68b8fb5bb9f2e6163cca8ca46065745d88a895bcd7043b",
+      "chunk_symbol_hash": "c23d44e5d456665ad6aa13fffdc5bd5f311b1453848e43158445ce1372fc16bd",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0002.json",
       "symbol_count": 100
     },
     {
-      "blob_sha": "58ce8e1e30edab912be959fc15ff7235814d75f2",
+      "blob_sha": "1273329f389c4ed46e6fd842f5ffc4d15493611f",
       "chunk_index": 3,
-      "chunk_symbol_hash": "dc68bfada9cac4744032d03337580096e597ae5cb015c98198cc67709f5992fd",
+      "chunk_symbol_hash": "45d0df2847e6e17044d19651e16a00118fd1c745ee737002340d69ca6db10aa0",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0003.json",
       "symbol_count": 100
     },
     {
-      "blob_sha": "68a749c7d11197b7f14794bcc3bc761ace3351b4",
+      "blob_sha": "6c54fbc1ae74207fb6b6011d5677f127f291319a",
       "chunk_index": 4,
-      "chunk_symbol_hash": "c0a78ecbd6617bee27424dd0bfcf86e219e14aeb5db198be462417d0c3aae2f3",
+      "chunk_symbol_hash": "5ff61d9f5947ca64b1acedb842d1ecef9e6dfa8598437ccbb69ce94cc4fe4d50",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0004.json",
       "symbol_count": 100
     },
     {
-      "blob_sha": "d5aab72c2a110d5721a973a518b4ebd0e216c849",
+      "blob_sha": "dbf3d7877dcc16a4eb1965d79d8ca6facec78506",
       "chunk_index": 5,
-      "chunk_symbol_hash": "9880cf98f62284b3075ace4679f276426b56bf22a7cce2d21bf62b9d99f628fa",
+      "chunk_symbol_hash": "83980017d85cde71f7291a3cd135ef412d5500e565aeebaa3758de7964f78eb7",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0005.json",
       "symbol_count": 100
     },
     {
-      "blob_sha": "12818630d747b71b7f7f5b730b307f09e9059607",
+      "blob_sha": "30077302f13beb8cb91d09e98f7df0c669e18b50",
       "chunk_index": 6,
-      "chunk_symbol_hash": "92f184b26cc3c889d193a019f3ac5479d67ae594dc370fa666285e4ddd53e377",
+      "chunk_symbol_hash": "356919621e865bfbfd6a2b4781fe42f5426920018f8832fe854e319b1b7a41c7",
       "path": "nasdaq-xray/canonical_current_resolver_chunk_0006.json",
-      "symbol_count": 52
+      "symbol_count": 54
     }
   ],
   "compact_authority": {
-    "asof_et": "2026-10-30",
+    "asof_et": "2026-11-02",
     "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
     "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
     "compiled_policy_version": "C4.17",
     "execution": "NONE",
     "expected30": [
-      "2026-09-21",
       "2026-09-22",
       "2026-09-23",
       "2026-09-24",
@@ -82,7 +81,8 @@
       "2026-10-27",
       "2026-10-28",
       "2026-10-29",
-      "2026-10-30"
+      "2026-10-30",
+      "2026-11-02"
     ],
     "global_asof_sentinel_fast_fail": false,
     "master_unknown_count": 16,
@@ -97,13 +97,13 @@
       "dv30": ">=50000000 exact30 median",
       "price": ">=5"
     },
-    "price_unknown_count": 552,
-    "price_unknown_hash": "27d0c1fe5a8c15b9bab15d0a0b78a20629f1d265f22555172ba0f691ba6ce07e",
+    "price_unknown_count": 554,
+    "price_unknown_hash": "039e4fef900b48915f6e71701313f03df77af026e061c2942efd4c72319432de",
     "real_money": "NO-GO",
-    "request_blob_sha": "b67d291c02cdb85b0cb571796640b422f2383f22",
+    "request_blob_sha": "5efd414ac7492c86a18da752e144dc562bdbbd8e",
     "request_path": "nasdaq-xray/canonical_current_resolver_request.json",
-    "resolver_symbol_count": 552,
-    "resolver_symbol_hash": "27d0c1fe5a8c15b9bab15d0a0b78a20629f1d265f22555172ba0f691ba6ce07e",
+    "resolver_symbol_count": 554,
+    "resolver_symbol_hash": "039e4fef900b48915f6e71701313f03df77af026e061c2942efd4c72319432de",
     "schema": "XRAY_RESOLVER_COMPACT_INPUT_AUTHORITY_V1",
     "settlement_required": true,
     "settlement_symbols": [
@@ -111,15 +111,15 @@
       "NVDA",
       "MSFT"
     ],
-    "source_master_blob_sha": "439c0b1bdd2c31321c3abff8e8a0c7480273bd15",
+    "source_master_blob_sha": "f223c8eb591dd1687eddaf9391c0ecd455b74ee1",
     "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-    "source_price_blob_sha": "fef9795bbe6fed95b96f4fe4f4b9404f03939c80",
+    "source_price_blob_sha": "62caf0dd29c7a4d6f65cb67dc239059a217eea9f",
     "source_price_counts": {
-      "FAIL_DV30": 1269,
+      "FAIL_DV30": 1263,
       "FAIL_DV30_INSUFFICIENT_SESSIONS": 1,
-      "FAIL_PRICE": 1360,
-      "FAIL_PRICE_NO_ASOF_BAR": 10,
-      "UNKNOWN": 552
+      "FAIL_PRICE": 1364,
+      "FAIL_PRICE_NO_ASOF_BAR": 11,
+      "UNKNOWN": 554
     },
     "source_price_pass_count": 0,
     "source_price_pass_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -132,13 +132,13 @@
   "compiled_policy_version": "C4.17",
   "coverage_complete": true,
   "execution": "NONE",
-  "queue_hash": "7dd25d3ae7e3ba8a7dc6efe2eede98f2b121ab97b4f5e02590228e676e4ee8bb",
+  "queue_hash": "3e8db2fc900df8e9dc4de31ba0750810e8c6662ffb4dd235d2c086b97a5fc0e6",
   "real_money": "NO-GO",
-  "request_blob_sha": "b67d291c02cdb85b0cb571796640b422f2383f22",
+  "request_blob_sha": "5efd414ac7492c86a18da752e144dc562bdbbd8e",
   "request_path": "nasdaq-xray/canonical_current_resolver_request.json",
   "schema": "XRAY_RESOLVER_REQUEST_CHUNK_MANIFEST_V1",
-  "symbol_count": 552,
-  "symbol_hash": "27d0c1fe5a8c15b9bab15d0a0b78a20629f1d265f22555172ba0f691ba6ce07e",
+  "symbol_count": 554,
+  "symbol_hash": "039e4fef900b48915f6e71701313f03df77af026e061c2942efd4c72319432de",
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_never_pass": true
 }
