@@ -47,6 +47,23 @@ jobs:
           python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -m py_compile autopilot.py test_autopilot.py eod_admission.py test_eod_admission.py assessment.py test_assessment.py ledger.py test_ledger.py candidate_queue.py test_queue.py
+      - name: A41 read-only full-workflow writer inventory (advisory HOLD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s nasdaq-xray -p 'test_a41_writer_inventory.py' -q
+          python -O -m unittest discover -s nasdaq-xray -p 'test_a41_writer_inventory.py' -q
+          status=0
+          python nasdaq-xray/a41_writer_inventory.py --root . --output "$RUNNER_TEMP/a41-inventory.json" || status=$?
+          if [[ "$status" -ne 0 && "$status" -ne 3 ]]; then
+            echo 'A41_INVENTORY_BLOCKED' >&2
+            exit "$status"
+          fi
+          if [[ "$status" -eq 3 ]]; then
+            echo 'A41_BRANCH_PROTECTION_HOLD_EXISTING_WRITERS'
+          else
+            echo 'A41_STATIC_WRITER_SCREEN_PASS_RULESET_STILL_SEPARATE'
+          fi
       - name: Static 284 source admission and next cohort receipt
         env:
           PROBE_PUBLIC_GITHUB: ${{ github.event_name == 'workflow_run' && 'yes' || 'no' }}
@@ -86,6 +103,7 @@ jobs:
         with:
           name: xray-a42-readonly-candidate-receipt
           path: |
+            ${{ runner.temp }}/a41-inventory.json
             ${{ runner.temp }}/a42-receipt.json
             ${{ runner.temp }}/a43-eod-admission.json
             ${{ runner.temp }}/a44-assessment.json
