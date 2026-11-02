@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 from root_weekend_quota_guard import permit_compute
 from source_epoch_freshness_guard import last_complete_session
 from root_semantic_stall_circuit import evaluate as evaluate_stall_circuit
+from root_compute_run_provenance import last_real_compute
 
 REPO = "gokaydonmez39-jpg/kripto-radar"
 WORKFLOW = "nasdaq-xray-daily.yml"
@@ -327,9 +328,16 @@ def root_productivity_gate(token, now, first, runs, live_main):
     success_id=first.get("last_success_id")
     if not success_id or latest_id!=success_id:
         return {"suppress":False,"reason":"RECOVERY_OR_FIRST_ROOT_REQUIRED"}
-    latest=next((x for x in runs if x.get("id")==success_id),None)
-    if not isinstance(latest,dict):
-        return {"suppress":False,"reason":"ROOT_SUCCESS_RECORD_MISSING"}
+    witness=last_real_compute(
+        now=now, runs=runs, get_jobs=lambda run_id: github(
+            "GET", "/actions/runs/"+str(run_id)+"/jobs?per_page=100", token))
+    if witness["status"]!="SUCCESS_COMPUTE":
+        # Critically, skipped green jobs do NOT restart the four-hour window.
+        # Failed actual compute, unknown job metadata and exhausted cooldown
+        # must all permit recovery through pre-existing independent fences.
+        return {"suppress":False,"reason":"REAL_COMPUTE_"+witness["status"]+
+                "_"+witness["reason"]}
+    latest=witness["run"]
     head=latest.get("head_sha")
     if (not isinstance(head,str) or len(head)!=40 or
         any(c not in "0123456789abcdef" for c in head)):
