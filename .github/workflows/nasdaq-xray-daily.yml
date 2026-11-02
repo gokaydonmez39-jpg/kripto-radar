@@ -13,6 +13,8 @@ on:
       - "nasdaq-xray/scheduler_failover_selftest.py"
       - "nasdaq-xray/root_weekend_quota_guard.py"
       - "nasdaq-xray/root_semantic_stall_circuit.py"
+      - "nasdaq-xray/root_compute_run_provenance.py"
+      - "nasdaq-xray/test_root_compute_run_provenance.py"
       - "nasdaq-xray/root_schedule_stall_preflight.py"
       - "nasdaq-xray/test_root_semantic_stall_circuit.py"
       - "nasdaq-xray/test_root_schedule_stall_preflight.py"
