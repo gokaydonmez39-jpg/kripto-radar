@@ -13,6 +13,8 @@ import subprocess
 import urllib.request
 from zoneinfo import ZoneInfo
 from root_weekend_quota_guard import permit_compute
+from source_epoch_freshness_guard import last_complete_session
+from root_semantic_stall_circuit import evaluate as evaluate_stall_circuit
 
 REPO = "gokaydonmez39-jpg/kripto-radar"
 WORKFLOW = "nasdaq-xray-daily.yml"
@@ -312,6 +314,54 @@ def selftest():
     assert 402 in after_holiday["weekend_noop_root_ids_ignored_for_weekday_success"]
     print("XRAY_GITHUB_NATIVE_ROOT_WATCHDOG_SELFTEST=PASS ZERO_ALPHA")
 
+def root_productivity_gate(token, now, first, runs, live_main):
+    """Read only. Suppress *only* redundant healthy auto-dispatch, never recovery.
+
+    Any uncertainty about source or Git ancestry returns an unsuppressed
+    decision; the existing two-read, Health lease and SHA fences still apply.
+    """
+    if not first.get("dispatch_allowed"):
+        return {"suppress":False,"reason":"ROOT_ALREADY_NOT_ELIGIBLE"}
+    # A failed or zombie root newer than the last success must be recoverable.
+    latest_id=first.get("latest_root_id")
+    success_id=first.get("last_success_id")
+    if not success_id or latest_id!=success_id:
+        return {"suppress":False,"reason":"RECOVERY_OR_FIRST_ROOT_REQUIRED"}
+    latest=next((x for x in runs if x.get("id")==success_id),None)
+    if not isinstance(latest,dict):
+        return {"suppress":False,"reason":"ROOT_SUCCESS_RECORD_MISSING"}
+    head=latest.get("head_sha")
+    if (not isinstance(head,str) or len(head)!=40 or
+        any(c not in "0123456789abcdef" for c in head)):
+        return {"suppress":False,"reason":"ROOT_SUCCESS_SHA_UNVERIFIED"}
+    # GitHub GET is bounded by its 2 MB response guard. Never publish rows.
+    source=github("GET","/contents/nasdaq-xray/orchestrator_state.json?ref=main",token)
+    if (not isinstance(source,dict) or
+        not isinstance(source.get("sha"),str) or len(source["sha"])!=40 or
+        source.get("encoding")!="base64"):
+        return {"suppress":False,"reason":"ROOT_SOURCE_BLOB_UNVERIFIED"}
+    try:
+        state=json.loads(base64.b64decode(source["content"],validate=False))
+        if not isinstance(state,dict):
+            raise ValueError("ROOT_SOURCE_NOT_OBJECT")
+    except (ValueError,TypeError,KeyError) as exc:
+        return {"suppress":False,"reason":"ROOT_SOURCE_UNREADABLE_"+type(exc).__name__}
+    compare=github("GET","/compare/"+head+"..."+live_main,token)
+    if not isinstance(compare,dict):
+        return {"suppress":False,"reason":"SOURCE_COMPARISON_UNAVAILABLE"}
+    try:
+        official_asof=last_complete_session(now)
+    except Exception:
+        # The pre-existing root calendar and two-snapshot SHA fences remain;
+        # this optimization must never invent an official ASOF.
+        return {"suppress":False,"reason":"OFFICIAL_ASOF_NOT_AVAILABLE"}
+    result=evaluate_stall_circuit(
+        now=now,last_complete_asof=official_asof,
+        state=state,last_success=latest,
+        current_main_sha=live_main,comparison=compare)
+    return result
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--selftest",action="store_true")
@@ -345,28 +395,38 @@ def main():
     }
     try:
         if first["dispatch_allowed"]:
-            # The Health automation can independently CAS the same root kick.
-            # Inspect its durable lease on BOTH sides of the Actions snapshots
-            # before a second native dispatch; never infer full atomic locking.
-            kick_before=get_health_kick(token)
-            after=get_runs(token)
-            after_head=head_sha(token)
-            kick_after=get_health_kick(token)
-            accepted,reason=two_read_authorized(
-                before,after,before_head,after_head,dt.datetime.now(UTC))
-            lease_ok,lease_reason=health_lease_authorizes(
-                dt.datetime.now(UTC),kick_before,kick_after)
-            output["second_snapshot"]=reason
-            output["health_kick_lease_check"]=lease_reason
-            checkout_ok=checkout_head_authorized(local_head,before_head,after_head)
-            output["checkout_live_main_exact_at_second_read"]=checkout_ok
-            if accepted and lease_ok and checkout_ok:
-                response=github("POST","/actions/workflows/"+WORKFLOW+
-                                "/dispatches",token,{"ref":"main"})
-                output["action"]="ROOT_DISPATCH_ACCEPTED_NOT_RECOVERY"
-                output["dispatch_http_status"]=response["http_status"]
+            try:
+                circuit=root_productivity_gate(
+                    token,dt.datetime.now(UTC),first,before,before_head)
+            except Exception as exc:
+                # Missing remote evidence: no new quota burn; scheduler will
+                # re-evaluate. No code or production-source alteration.
+                circuit={"suppress":True,"reason":"ROOT_CIRCUIT_READ_FAILED_"+
+                         type(exc).__name__}
+            output["root_productivity_gate"]=circuit
+            if circuit["suppress"]:
+                output["action"]="NO_ACTION_STALLED_SOURCE_OR_UNVERIFIED_EVIDENCE"
             else:
-                output["action"]="NO_ACTION_LIVE_SNAPSHOT_OR_HEALTH_LEASE"
+                # Preserve existing double-read and independent Health CAS.
+                kick_before=get_health_kick(token)
+                after=get_runs(token)
+                after_head=head_sha(token)
+                kick_after=get_health_kick(token)
+                accepted,reason=two_read_authorized(
+                    before,after,before_head,after_head,dt.datetime.now(UTC))
+                lease_ok,lease_reason=health_lease_authorizes(
+                    dt.datetime.now(UTC),kick_before,kick_after)
+                output["second_snapshot"]=reason
+                output["health_kick_lease_check"]=lease_reason
+                checkout_ok=checkout_head_authorized(local_head,before_head,after_head)
+                output["checkout_live_main_exact_at_second_read"]=checkout_ok
+                if accepted and lease_ok and checkout_ok:
+                    response=github("POST","/actions/workflows/"+WORKFLOW+
+                                    "/dispatches",token,{"ref":"main"})
+                    output["action"]="ROOT_DISPATCH_ACCEPTED_NOT_RECOVERY"
+                    output["dispatch_http_status"]=response["http_status"]
+                else:
+                    output["action"]="NO_ACTION_LIVE_SNAPSHOT_OR_HEALTH_LEASE"
     finally:
         target=pathlib.Path(args.out)
         target.parent.mkdir(parents=True,exist_ok=True)
