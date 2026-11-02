@@ -396,4 +396,50 @@ class PrivateSheetEventOutboxContract(unittest.TestCase):
                 [header, pending], [header, pending], [pending[0]]
             )
 
+
+class ResilienceUpstreamHoldVisibility(unittest.TestCase):
+    """Offline static fail-closed guard for a successful GitHub no-op on stale canonical evidence."""
+
+    @staticmethod
+    def hold_block(text):
+        start=text.find('      - name: Healthy no-op while canonical pointer is stale')
+        end=text.find('      - name: Canonical pointer transition guard',start)
+        return '' if start<0 or end<=start else text[start:end]
+
+    @staticmethod
+    def safe(block):
+        required=(
+            "steps.pointer_preflight.outputs.ready != 'true'",
+            "steps.supersession.outputs.superseded != 'true'",
+            'XRAY_RESILIENCE=BLOCKED_UPSTREAM_PENDING',
+            'NOT_PRODUCTION_READY',
+            'XRAY_UPSTREAM_STALE_KEYS',
+            'GITHUB_STEP_SUMMARY',
+            'No broker orders, Sheet mutations, task changes or notification requests.',
+        )
+        forbidden=('XRAY_RESILIENCE=PASS','DEVICE_ACK_PASS','production_promotion: true',
+                   'workflow_dispatch', 'gh api -X POST', 'git push')
+        return bool(block) and all(x in block for x in required) and not any(x in block for x in forbidden)
+
+    def test_stale_success_is_explicitly_hold_and_not_full_pass(self):
+        workflow=Path(__file__).resolve().parent.parent/'.github'/'workflows'/'xray-resilience-observability.yml'
+        block=self.hold_block(workflow.read_text(encoding='utf-8'))
+        self.assertTrue(self.safe(block),'STALE_GITHUB_GREEN_MUST_DECLARE_UPSTREAM_HOLD')
+
+    def test_false_green_and_missing_guard_mutations_are_rejected(self):
+        workflow=Path(__file__).resolve().parent.parent/'.github'/'workflows'/'xray-resilience-observability.yml'
+        valid=self.hold_block(workflow.read_text(encoding='utf-8'))
+        self.assertTrue(self.safe(valid))
+        corrupted=(
+            valid.replace('NOT_PRODUCTION_READY','PRODUCTION_READY'),
+            valid.replace("steps.pointer_preflight.outputs.ready != 'true'",
+                          "steps.pointer_preflight.outputs.ready == 'true'"),
+            valid.replace('XRAY_RESILIENCE=BLOCKED_UPSTREAM_PENDING','XRAY_RESILIENCE=PASS'),
+            valid.replace('GITHUB_STEP_SUMMARY','SILENT_SUCCESS'),
+            valid + '\\n          git push origin main',
+        )
+        for block in corrupted:
+            with self.subTest(corruption=block[:76]):
+                self.assertFalse(self.safe(block))
+
 if __name__=='__main__':unittest.main()
