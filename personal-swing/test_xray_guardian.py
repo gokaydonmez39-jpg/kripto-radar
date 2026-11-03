@@ -88,6 +88,18 @@ class GuardianTests(unittest.TestCase):
         with self.assertRaisesRegex(guardian.GuardianHold, "SCOPE_OR_COVERAGE_DRIFT"):
             guardian.run(a, a.asof)
 
+    def test_well_formed_but_untrusted_source_sha_holds(self):
+        a = Fixture()
+        original = a.scans[1][9]
+        self.assertIn("scopeSHA=", original)
+        a.scans[1][9] = original.replace(
+            "scopeSHA=", "scopeSHA=" + ("0" if original.split("scopeSHA=")[1][0] != "0" else "1"),
+            1)[0:len(original)]
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    "SOURCE_SCOPE_OR_POLICY_SHA_DRIFT"):
+            guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 0)
+
     def test_bad_asof_holds(self):
         a = Fixture()
         with self.assertRaisesRegex(guardian.GuardianHold, "LATEST_SCAN_ASOF_NOT_ACCEPTED"):
