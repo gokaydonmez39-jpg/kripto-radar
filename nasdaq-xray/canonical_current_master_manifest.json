@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-11-02",
+  "asof_et": "2026-11-03",
   "asof_identity_proof": {
-    "blob_sha": "e3c4d8b38daab69f8e36854100e5d7d51de1d382",
+    "blob_sha": "c9befd8cf0ff33c4fa350635d327318ba4b67835",
     "counts": {
-      "operating_overrides": 3,
+      "operating_overrides": 2,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261102.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261103.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,14 +28,14 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3193,
+    "PASS_IDENTITY": 3190,
     "UNKNOWN_IDENTITY": 16
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2405,
-  "explicit_excluded_hash": "b72862bc4c8544dff3d56998e0faa3114c752321fbe1279ef0205c2aaae6a22a",
+  "explicit_excluded_count": 2402,
+  "explicit_excluded_hash": "3653837d51d76cf27e0e0a4d456980bbd767973ffe5dee70bb6d16f77f3e3364",
   "explicit_excluded_reason_counts": {
-    "DEBT": 58,
+    "DEBT": 57,
     "ETF": 1281,
     "FUND": 32,
     "PREFERRED": 103,
@@ -43,23 +43,23 @@
     "SPAC_BLANK_CHECK": 196,
     "TEST_ISSUE": 8,
     "UNIT": 257,
-    "WARRANT": 364,
+    "WARRANT": 362,
     "WHEN_ISSUED": 2
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3193
+      "UNKNOWN_STATIC": 3190
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3193
+    "source_unknown_count": 3190
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1102202621:31|||||||",
-  "pass_count": 3193,
-  "pass_hash": "3e8db2fc900df8e9dc4de31ba0750810e8c6662ffb4dd235d2c086b97a5fc0e6",
+  "official_footer": "File Creation Time: 1103202618:01|||||||",
+  "pass_count": 3190,
+  "pass_hash": "4b776d75ce2a72c7be92b96128eba5e2556a620a2cb644ed90f72de7824816ec",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -1386,7 +1386,6 @@
     "HNRG",
     "HNST",
     "HNVR",
-    "HODO",
     "HOFT",
     "HOLO",
     "HON",
@@ -1506,7 +1505,6 @@
     "INDB",
     "INDI",
     "INDP",
-    "INDV",
     "INEO",
     "INGN",
     "INHD",
@@ -1900,7 +1898,6 @@
     "MLAB",
     "MLCI",
     "MLCO",
-    "MLEC",
     "MLGO",
     "MLKN",
     "MLTX",
@@ -3257,20 +3254,20 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "3e8db2fc900df8e9dc4de31ba0750810e8c6662ffb4dd235d2c086b97a5fc0e6",
-  "queue_total": 3193,
-  "queue_unique": 3193,
-  "raw_identity_total": 3209,
+  "queue_hash": "4b776d75ce2a72c7be92b96128eba5e2556a620a2cb644ed90f72de7824816ec",
+  "queue_total": 3190,
+  "queue_unique": 3190,
+  "raw_identity_total": 3206,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "86eb54ef633bdd030421a1c1f695f383ceb0deaf",
+    "blob_sha": "4737eedc50179018f1d3dcc4a67aaafd8b21e368",
     "count": 564,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261102.json",
+    "path": "nasdaq-xray/master_sec_spac_proof_20261103.json",
     "symbol_hash": "4bbe44cdda09289d259523f5673b3ad648e832ceaedf553897b8bd95fa5e1f5a"
   },
-  "source_state_blob_sha": "4c2c3f6b04aa7ab35c3beb0fe8184431173fe165",
-  "source_state_hash": "25fcfacba9f1ce5e480d812ece900419aed47925106a02d22a8dd01796e78ae9",
+  "source_state_blob_sha": "d512feef309624d495ca0880dff2906cce514a86",
+  "source_state_hash": "9ca363bb59017fafd9dec6fa13d6826606190dff7ed985d8a3433a575587bff2",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
