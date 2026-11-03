@@ -327,7 +327,7 @@ class PrivateSheetEventOutboxContract(unittest.TestCase):
 
     def test_new_event_after_readback_can_request_once_only(self):
         import alert_ledger_contract as lc
-        header=list(lc.EVENT_HEADER);row=self.make_event()
+        header=list(lc.EVENT_HEADER);row=self.make_event(status=lc.CONFIRMED_PENDING)
         good=lc.verify_first_reservation([header],[header,row],[row[0]])
         self.assertTrue(good['request_allowed_after_readback'])
         self.assertFalse(good['device_delivery_attested'])
@@ -361,7 +361,7 @@ class PrivateSheetEventOutboxContract(unittest.TestCase):
     def test_other_event_is_preserved_when_new_event_is_reserved(self):
         import alert_ledger_contract as lc
         header=list(lc.EVENT_HEADER);old=self.make_event('TARGET_TOUCHED')
-        new=self.make_event('STOP_TOUCHED')
+        new=self.make_event('STOP_TOUCHED',status=lc.CONFIRMED_PENDING)
         existing=[header,old]
         self.assertTrue(lc.verify_first_reservation(existing,[header,old,new],[new[0]])['request_allowed_after_readback'])
         mutated=old.copy();mutated[17]=lc.UNKNOWN
