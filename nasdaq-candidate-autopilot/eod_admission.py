@@ -21,6 +21,7 @@ EXPECTED_REPO = "gokaydonmez39-jpg/kripto-radar"
 EXPECTED_HANDOFF = "XRAY_PERSONAL_GITHUB_HANDOFF=PASS_477_477_SOURCE_POLICY_SHA_BOUND_PRIVATE"
 UTC_STAMP = re.compile(r"\b20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z\s+(.*)$")
 SHA256 = re.compile(r"^[a-f0-9]{64}$")
+GIT_SHA1 = re.compile(r"^[a-f0-9]{40}$")
 MAX_LOG_BYTES = 5 * 1024 * 1024
 
 
@@ -73,7 +74,7 @@ def validate_event(event: dict, log: str) -> dict:
          "UPSTREAM_NOT_SUCCESS")
     need(type(event.get("run_id")) is int and event["run_id"] > 0, "BAD_RUN_ID")
     head_sha = event.get("head_sha")
-    need(isinstance(head_sha, str) and SHA256.fullmatch(head_sha), "BAD_HEAD_SHA")
+    need(isinstance(head_sha, str) and GIT_SHA1.fullmatch(head_sha), "BAD_HEAD_SHA")
     created = event.get("created_at")
     need(isinstance(created, str), "RUN_DATE_MISSING")
     try:
