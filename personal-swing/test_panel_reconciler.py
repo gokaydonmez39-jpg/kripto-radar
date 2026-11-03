@@ -81,6 +81,12 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertIn('1 gözlem: 1 açık, 0 kapalı',api.panel[10][1])
         self.assertIn(DAY,api.panel[12][2])
         self.assertIn(DAY,api.panel[13][2])
+        self.assertEqual(api.panel[12][1],
+                         'KİŞİSEL ARAŞTIRMA START AKTİF · PUSH HOLD')
+        self.assertEqual(api.panel[13][1],
+                         'KİŞİSEL IEX EOD PASS · CANONICAL NO-GO')
+        self.assertIn('ACK UNKNOWN',api.panel[12][2])
+        self.assertIn('ayrı kabul',api.panel[13][2])
         self.assertEqual(api.panel[15][1],'1 TEKNİK KAYIT')
         self.assertEqual(api.candidates,original_candidates)
         self.assertEqual(api.scans,original_scans)

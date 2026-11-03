@@ -87,12 +87,13 @@ def plan(panel, candidate_table, scan_table):
              ' gözlem: '+str(open_count)+' açık, '+str(closed_count)+
              ' kapalı; '+str(matches)+' yeni AL.',
              'Tek borsa IEX · teorik risk · gerçek fill ve iPhone cihaz ACK yok'],
-        12: ['BAŞARILI',
-             day+' · IEX 477/477 geçerli · 0 eksik · 52 ardışık XNAS '
-             've özgün scope/policy SHA kaydı'],
-        13: ['BAŞARILI',
+        12: ['KİŞİSEL ARAŞTIRMA START AKTİF · PUSH HOLD',
+             day+' · IEX 477/477 geçerli · 0 eksik · 52 ardışık XNAS; '
+             'teknik araştırma aktif, tam otomatik push ACK UNKNOWN'],
+        13: ['KİŞİSEL IEX EOD PASS · CANONICAL NO-GO',
              day+' · FINAL READY · '+str(matches)+
-             ' yeni teknik AL · source readback PASS · otomatik emir yok'],
+             ' yeni teknik AL · source readback PASS; canonical kaynak '
+             've iPhone cihaz ACK ayrı kabul, otomatik emir yok'],
         15: [str(len(candidates))+' TEKNİK KAYIT',
              'ASOF|SEMBOL ayrı gözlem; orijinal stop ve hedef değişmez; '
              'son doğrulanmış EOD '+day],
