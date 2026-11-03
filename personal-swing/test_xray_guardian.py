@@ -134,5 +134,61 @@ class GuardianTests(unittest.TestCase):
             guardian.run(b, b.asof)
 
 
+    def test_legacy_two_decimal_rr_deviation_is_accepted_only_in_tolerance(self):
+        a = Fixture()
+        # Exactly 1 cent of display residual; still immutable matching event.
+        a.candidates[1][4], a.candidates[1][5], a.candidates[1][6] = (
+            "167,73", "156,29", "190,62")
+        a.alerts[1][7], a.alerts[1][8], a.alerts[1][9] = (
+            "167,73", "156,29", "190,62")
+        result = a.evaluate()
+        self.assertEqual(result["personal_research_start"], "PASS")
+        a.candidates[1][6] = "190,64"
+        with self.assertRaisesRegex(guardian.GuardianHold, "IMMUTABLE_RR_NOT_2R"):
+            a.evaluate()
+
+    def test_readonly_transport_retry_once(self):
+        import private_sheet_writer as writer
+        a = Fixture()
+        original = a.read
+        reads = [0]
+        def glitch(name, last):
+            if reads[0] == 0:
+                reads[0] += 1
+                raise writer.HandoffBlocked("READ_TRANSIENT")
+            return original(name, last)
+        a.read = glitch
+        data = guardian.run(a, a.asof, panel_repair=False)
+        self.assertEqual(data["personal_research_start"], "PASS")
+        self.assertEqual(reads[0], 1)
+        self.assertEqual(a.writes, 0)
+
+    def test_readonly_double_failure_must_not_write(self):
+        import private_sheet_writer as writer
+        a = Fixture()
+        def transport_down(name, last):
+            raise writer.HandoffBlocked("READ_TRANSPORT_FAIL")
+        a.read = transport_down
+        with self.assertRaises(writer.HandoffBlocked):
+            guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 0)
+
+    def test_redacted_receipt_hides_extra_source_fields(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "safe.json"
+            receipt = guardian._emit({
+                "status": "PERSONAL_EOD_AND_AL_LEDGER_VERIFIED",
+                "asof_et": "2026-11-02",
+                "new_technical_al": 2,
+                "source_private_value": "SYNTHETIC_PRIVATE_MARKER",
+            }, path)
+            self.assertNotIn("SYNTHETIC_PRIVATE_MARKER", path.read_text())
+            self.assertNotIn("source_private_value", path.read_text())
+            self.assertEqual(receipt["iphone_device_ack"], "UNKNOWN")
+            self.assertEqual(receipt["full_autonomous_start"], "HOLD")
+
+
 if __name__ == "__main__":
     unittest.main()
