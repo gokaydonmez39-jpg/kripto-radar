@@ -92,9 +92,10 @@ class GuardianTests(unittest.TestCase):
         a = Fixture()
         original = a.scans[1][9]
         self.assertIn("scopeSHA=", original)
+        old_sha = original.split("scopeSHA=")[1][:64]
+        replacement = ("0" if old_sha[0] != "0" else "1") + old_sha[1:]
         a.scans[1][9] = original.replace(
-            "scopeSHA=", "scopeSHA=" + ("0" if original.split("scopeSHA=")[1][0] != "0" else "1"),
-            1)[0:len(original)]
+            "scopeSHA=" + old_sha, "scopeSHA=" + replacement, 1)
         with self.assertRaisesRegex(guardian.GuardianHold,
                                     "SOURCE_SCOPE_OR_POLICY_SHA_DRIFT"):
             guardian.run(a, a.asof)
