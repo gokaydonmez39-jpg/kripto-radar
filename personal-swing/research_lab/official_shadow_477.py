@@ -101,6 +101,11 @@ def make_shadow(snapshot, watchlist, guard):
             policy_sha=runner.analysis_fingerprint())
     except (ValueError, TypeError, KeyError, ArithmeticError) as exc:
         raise ShadowRejected("EOD_HANDOFF_REFUSED_"+type(exc).__name__) from None
+    # engine.assemble sorts completed EOD rows by decision/RVOL, not watchlist.
+    # A receipt must preserve the validated exact EOD snapshot order.
+    source_order = [row["symbol"] for row in snapshot["rows"]]
+    demand(len(source_order) == 477 and set(source_order) == set(symbols),
+           "EOD_SOURCE_ORDER_INVALID")
     cutoff = cutoff_for_session(snapshot["asof_et"])
     veto = validate_safety_witness(guard)
     seen = strict_instant(guard.get("generated_at_utc"))
@@ -113,7 +118,7 @@ def make_shadow(snapshot, watchlist, guard):
 
     rows = []
     observed = 0
-    for symbol in symbols:
+    for symbol in source_order:
         in_veto = symbol in veto and feed_state.startswith("OBSERVED_")
         observed += int(in_veto)
         rows.append({
