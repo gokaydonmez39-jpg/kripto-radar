@@ -269,13 +269,13 @@ class TestPendingToRequestedContract(unittest.TestCase):
 
     def ledger(self, status, *, timestamp='', note='source confirmed'):
         import alert_ledger_contract as contract
-        key = contract.event_key('2026-11-02', 'PYPL', '2026-11-02',
+        key = contract.event_key('2026-11-02', 'SYN', '2026-11-02',
                                  'AL_NEW_EPISODE')
         row = [''] * len(contract.EVENT_HEADER)
         row[0] = key
-        row[1] = '2026-11-02|PYPL'
-        row[2:6] = ['2026-11-02', 'PYPL', '2026-11-02', 'AL_NEW_EPISODE']
-        row[7:10] = ['58.800', '56.011', '64.377']
+        row[1] = '2026-11-02|SYN'
+        row[2:6] = ['2026-11-02', 'SYN', '2026-11-02', 'AL_NEW_EPISODE']
+        row[7:10] = ['100.000', '95.000', '110.000']
         row[16] = 'https://github.com/example/research'
         row[17], row[18], row[19] = status, timestamp, note
         return contract, key, [list(contract.EVENT_HEADER), row]
@@ -316,8 +316,8 @@ class TestPendingToRequestedContract(unittest.TestCase):
             c.verify_pending_request_transition(before, after, [key])
         after[1][18] = '2026-11-03 12:17 TRT'
         extra = list(after[1])
-        extra[0] = extra[0].replace('PYPL', 'COST')
-        extra[1] = extra[1].replace('PYPL', 'COST')
+        extra[0] = extra[0].replace('SYN', 'COST')
+        extra[1] = extra[1].replace('SYN', 'COST')
         extra[3] = 'COST'
         after.append(extra)
         with self.assertRaisesRegex(c.LedgerRefused, 'UNEXPECTED_EVENT_CHANGE'):
@@ -327,7 +327,7 @@ class TestPendingToRequestedContract(unittest.TestCase):
         c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
         other = list(before[1])
         for cell in (0, 1, 3):
-            other[cell] = other[cell].replace('PYPL', 'COST')
+            other[cell] = other[cell].replace('SYN', 'COST')
         other[17] = c.SUPPRESSED
         before.append(other)
         import copy
