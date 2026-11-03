@@ -212,11 +212,23 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         workflow=Path(__file__).resolve().parent.parent/'.github/workflows/xray-personal-477-eod.yml'
         source=workflow.read_text(encoding='utf-8')
         start=source.index('      - name: Private Google Sheets writer')
-        end=source.index('      - name: No public delivery',start)
+        end=source.index('      - name: Reserve verified new AL events PENDING',start)
         writer=source[start:end]
         self.assertIn('BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS',writer)
         self.assertIn('exit 3',writer)
         self.assertNotIn('exit 0',writer.split('BLOCKED_NO_AUTH_OR_PRIVATE_ID_NOT_A_DELIVERY_PASS')[1])
+
+    def test_outbox_auth_failure_is_never_counted_as_delivery(self):
+        workflow=Path(__file__).resolve().parent.parent/'.github/workflows/xray-personal-477-eod.yml'
+        source=workflow.read_text(encoding='utf-8')
+        start=source.index('      - name: Reserve verified new AL events PENDING')
+        end=source.index('      - name: No public delivery',start)
+        step=source[start:end]
+        self.assertIn('AL_OUTBOX=BLOCKED_NO_PRIVATE_AUTH',step)
+        self.assertIn('exit 3',step)
+        self.assertNotIn('exit 0',step.split('AL_OUTBOX=BLOCKED_NO_PRIVATE_AUTH')[1])
+        self.assertIn('python alert_outbox_producer.py --snapshot',step)
+        self.assertNotIn('continue-on-error: true',step)
 
     def test_private_auth_preflight_is_read_only_and_exposes_no_secrets(self):
         workflow=Path(__file__).resolve().parent.parent/'.github/workflows/xray-personal-477-eod.yml'
