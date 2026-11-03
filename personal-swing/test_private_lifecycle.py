@@ -280,6 +280,45 @@ class TestPendingToRequestedContract(unittest.TestCase):
         row[17], row[18], row[19] = status, timestamp, note
         return contract, key, [list(contract.EVENT_HEADER), row]
 
+    def test_first_reservation_must_be_pending_not_requested(self):
+        c, key, pending = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        before = [list(c.EVENT_HEADER)]
+        result = c.verify_first_reservation(before, pending, [key])
+        self.assertTrue(result['request_allowed_after_readback'])
+        self.assertFalse(result['device_delivery_attested'])
+        self.assertEqual(result['new_event_count'], 1)
+
+    def test_direct_requested_first_reservation_must_be_refused(self):
+        c, key, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                    timestamp='2026-11-03 12:17 TRT')
+        before = [list(c.EVENT_HEADER)]
+        with self.assertRaisesRegex(c.LedgerRefused,
+                                    'EVENT_NOT_PENDING_ON_FIRST_RESERVATION'):
+            c.verify_first_reservation(before, after, [key])
+
+    def test_first_reservation_replay_fails_closed(self):
+        c, key, after = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        with self.assertRaisesRegex(c.LedgerRefused,
+                                    'EVENT_ALREADY_RECORDED_NO_RESEND'):
+            c.verify_first_reservation(after, after, [key])
+
+    def test_first_reservation_preserves_other_event_rows(self):
+        c, key, after = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        before = [list(c.EVENT_HEADER)]
+        other = list(after[1])
+        for col in (0, 1, 3):
+            other[col] = other[col].replace('SYN', 'ZZZ')
+        other[17] = c.SUPPRESSED
+        before.append(other)
+        import copy
+        after.append(copy.deepcopy(other))
+        result = c.verify_first_reservation(before, after, [key])
+        self.assertEqual(result['new_event_count'], 1)
+        after[2][19] = 'tampered'
+        with self.assertRaisesRegex(c.LedgerRefused,
+                                    'EXISTING_EVENT_CHANGED_DURING_RESERVATION'):
+            c.verify_first_reservation(before, after, [key])
+
     def test_transition_proves_only_ledger_update(self):
         c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
         _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
