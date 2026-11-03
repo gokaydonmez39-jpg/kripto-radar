@@ -228,4 +228,36 @@ class A34ExactAlLevelsTest(unittest.TestCase):
         self.assertIn("summary['al_level_check'] = validate_al_levels(",
                       inspect.getsource(w.live_entrypoint))
 
+
+class A34ScheduleResilienceTest(unittest.TestCase):
+    """8h GitHub schedule delay must not turn a normal preopen into postopen."""
+
+    def test_eod_safe_preopen_schedule_with_delayed_dispatch(self):
+        import re
+        from datetime import datetime, timedelta, timezone
+        from pathlib import Path
+
+        workflow = (Path(__file__).resolve().parent.parent /
+                    '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text(
+                        encoding='utf-8')
+        matches = re.findall(
+            r"^\s+- cron: '(\d+) (\d+) \* \* 1-5'\s*$",
+            workflow, flags=re.MULTILINE)
+        self.assertEqual(len(matches), 1)
+        minute, hour = map(int, matches[0])
+        self.assertGreaterEqual(hour * 60 + minute, 180,
+                                'A34 must leave 3h after the prior EOD cron')
+        self.assertLess(hour * 60 + minute, 360,
+                        'A34 must have dispatch-delay headroom')
+        # Both US daylight and standard time: the earlier opening is 13:30Z.
+        # Actual GitHub delay on 2026-11-03 exceeded 7h; test 8h.
+        for market_open in (
+            datetime(2026, 7, 1, 13, 30, tzinfo=timezone.utc),
+            datetime(2026, 11, 4, 14, 30, tzinfo=timezone.utc),
+        ):
+            scheduled = market_open.replace(hour=hour, minute=minute)
+            self.assertLess(scheduled + timedelta(hours=8), market_open,
+                            'Observed GitHub cron delay must remain preopen')
+
+
 if __name__=='__main__':unittest.main()
