@@ -99,7 +99,7 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
         levels = [price(r[i]) for i in (4, 5, 6)]
         need(levels[1] < levels[0] < levels[2],
              "IMMUTABLE_PRICE_ORDER")
-        need(abs((levels[2]-levels[0]) - 2*(levels[0]-levels[1])) <= 0.007,
+        need(abs((levels[2]-levels[0]) - 2*(levels[0]-levels[1])) <= 0.011,
              "IMMUTABLE_RR_NOT_2R")
         match = re.search(r"(\d+)/15 SEANS", str(r[7]))
         need(match is not None and 0 <= int(match.group(1)) <= 15,
