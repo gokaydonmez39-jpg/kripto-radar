@@ -57,8 +57,8 @@ jobs:
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian
-          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
           python -m py_compile engine.py runner.py daily_job.py tracker.py
@@ -66,6 +66,7 @@ jobs:
           python -m py_compile private_lifecycle.py
           python -m py_compile alert_outbox_producer.py test_al_outbox_producer.py
           python -m py_compile xray_guardian.py test_xray_guardian.py
+          python -m py_compile test_provider_read_retry.py
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'

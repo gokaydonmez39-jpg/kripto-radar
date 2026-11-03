@@ -10,6 +10,7 @@ import argparse
 import json
 import math
 import os
+import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
@@ -240,12 +241,27 @@ class SheetApi:
         req=Request(url, data=raw, method=method,
                     headers={'Authorization':'Bearer '+self.token,
                              'Content-Type':'application/json; charset=utf-8'})
-        try:
-            with urlopen(req,timeout=30) as response:
-                return json.load(response)
-        except (HTTPError, URLError, TimeoutError) as exc:
-            # Do not include response body, candidate rows, token or URL in logs.
-            raise HandoffBlocked('GOOGLE_SHEETS_TRANSPORT_'+type(exc).__name__) from None
+        # Only GET is safe to repeat. A failed batchUpdate/POST may already
+        # have committed; never retry it, or events could be duplicated.
+        read_attempts = 2 if method == 'GET' else 1
+        for attempt in range(read_attempts):
+            try:
+                with urlopen(req, timeout=30) as response:
+                    return json.load(response)
+            except HTTPError as exc:
+                retriable = exc.code in (429, 500, 502, 503, 504)
+                if method == 'GET' and attempt == 0 and retriable:
+                    time.sleep(0.15)
+                    continue
+                raise HandoffBlocked('GOOGLE_SHEETS_TRANSPORT_HTTPError') from None
+            except (URLError, TimeoutError) as exc:
+                if method == 'GET' and attempt == 0:
+                    time.sleep(0.15)
+                    continue
+                # Never include response body, URL, token or candidate values.
+                raise HandoffBlocked(
+                    'GOOGLE_SHEETS_TRANSPORT_' + type(exc).__name__) from None
+        raise HandoffBlocked('GOOGLE_SHEETS_READ_RETRY_EXHAUSTED')
 
     def check_metadata(self):
         data=self.request('?fields=properties(timeZone),sheets.properties(sheetId,title)')
