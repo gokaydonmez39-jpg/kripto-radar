@@ -61,16 +61,22 @@ def stable_key(d):
         need(isinstance(row,dict) and TOKEN.fullmatch(row.get("symbol",""))
              and row.get("not_a_trade_or_R92") is True
              and row.get("technical_source_confidence")=="LIMITED_SECONDARY_EOD"
-             and row.get("math_formula_audited") is True
+             and type(row.get("math_formula_audited")) is bool
              and isinstance(row.get("unresolved_or_rejected"),list),
              "TRIGGER_PROVENANCE")
         if row.get("status")=="RESEARCH_SETUP_CANDIDATE":
+            need(row["math_formula_audited"] is True,
+                 "CANDIDATE_MATH_REQUIRED")
             need(not row["unresolved_or_rejected"],"CANDIDATE_WITH_BLOCKERS")
             derived.append(row["symbol"])
         else:
             need(row.get("status")=="TRIGGER_OBSERVED_NOT_APPROVED"
                  and bool(row["unresolved_or_rejected"]),
                  "REJECTED_TRIGGER_UNLABELED")
+            if row["math_formula_audited"] is False:
+                need("UNRESOLVED_OR_UNAPPROVED_TECHNICAL_EVIDENCE"
+                     in row["unresolved_or_rejected"],
+                     "UNAUDITED_TRIGGER_NOT_FLAGGED")
     need(sorted(derived)==candidates, "CANDIDATE_TRIGGER_MISMATCH")
     if not candidates:
         return None
