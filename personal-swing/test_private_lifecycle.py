@@ -264,5 +264,81 @@ class TestLedgerNew52EventCompatibility(unittest.TestCase):
                 'UNRECOGNIZED_EVENT_CODE')
 
 
+class TestPendingToRequestedContract(unittest.TestCase):
+    """Synthetic-only: record-first transition never proves push delivery."""
+
+    def ledger(self, status, *, timestamp='', note='source confirmed'):
+        import alert_ledger_contract as contract
+        key = contract.event_key('2026-11-02', 'PYPL', '2026-11-02',
+                                 'AL_NEW_EPISODE')
+        row = [''] * len(contract.EVENT_HEADER)
+        row[0] = key
+        row[1] = '2026-11-02|PYPL'
+        row[2:6] = ['2026-11-02', 'PYPL', '2026-11-02', 'AL_NEW_EPISODE']
+        row[7:10] = ['58.800', '56.011', '64.377']
+        row[16] = 'https://github.com/example/research'
+        row[17], row[18], row[19] = status, timestamp, note
+        return contract, key, [list(contract.EVENT_HEADER), row]
+
+    def test_transition_proves_only_ledger_update(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                  timestamp='2026-11-03 12:17 TRT')
+        outcome = c.verify_pending_request_transition(before, after, [key])
+        self.assertEqual(outcome['recorded_intents'], 1)
+        self.assertFalse(outcome['chatgpt_message_proven'])
+        self.assertFalse(outcome['device_delivery_attested'])
+
+    def test_replay_must_be_refused(self):
+        c, key, before = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                     timestamp='2026-11-03 12:17 TRT')
+        with self.assertRaisesRegex(c.LedgerRefused, 'EVENT_NOT_PENDING_NO_RESEND'):
+            c.verify_pending_request_transition(before, before, [key])
+
+    def test_changed_price_and_note_must_be_refused(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                  timestamp='2026-11-03 12:17 TRT')
+        after[1][8] = '0.01'
+        with self.assertRaisesRegex(c.LedgerRefused, 'EVENT_FIELDS_CHANGED'):
+            c.verify_pending_request_transition(before, after, [key])
+        after[1][8] = before[1][8]
+        after[1][19] = 'not the original note'
+        with self.assertRaisesRegex(c.LedgerRefused, 'EVENT_FIELDS_CHANGED'):
+            c.verify_pending_request_transition(before, after, [key])
+
+    def test_malformed_timestamp_and_unknown_extra_event_refused(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                  timestamp='2026-11-03 12:17 TRT')
+        after[1][18] = ''
+        with self.assertRaisesRegex(c.LedgerRefused, 'REQUEST_TIMESTAMP_INVALID'):
+            c.verify_pending_request_transition(before, after, [key])
+        after[1][18] = '2026-11-03 12:17 TRT'
+        extra = list(after[1])
+        extra[0] = extra[0].replace('PYPL', 'COST')
+        extra[1] = extra[1].replace('PYPL', 'COST')
+        extra[3] = 'COST'
+        after.append(extra)
+        with self.assertRaisesRegex(c.LedgerRefused, 'UNEXPECTED_EVENT_CHANGE'):
+            c.verify_pending_request_transition(before, after, [key])
+
+    def test_concurrent_existing_row_mutation_refused(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        other = list(before[1])
+        for cell in (0, 1, 3):
+            other[cell] = other[cell].replace('PYPL', 'COST')
+        other[17] = c.SUPPRESSED
+        before.append(other)
+        import copy
+        after = copy.deepcopy(before)
+        after[1][17] = c.REQUESTED
+        after[1][18] = '2026-11-03 12:17 TRT'
+        after[2][19] = 'mutated concurrent event'
+        with self.assertRaisesRegex(c.LedgerRefused, 'UNEXPECTED_EVENT_CHANGE'):
+            c.verify_pending_request_transition(before, after, [key])
+
+
+
 if __name__=='__main__':
     unittest.main()
