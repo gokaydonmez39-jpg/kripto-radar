@@ -156,13 +156,21 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
 
 
 def snapshot(api):
-    api.check_metadata()
-    return (
-        api.read("ADAY_GECMISI", "M"),
-        api.read("TARAMA_KAYITLARI", "J"),
-        api.read("UYARI_OLAYLARI", "T"),
-        api.read("PANEL", "C"),
-    )
+    # Self-heal bounded READ-ONLY transient Google errors. Do not retry any
+    # ambiguous append/update, and never re-send an event on a timeout.
+    for attempt in range(2):
+        try:
+            api.check_metadata()
+            return (
+                api.read("ADAY_GECMISI", "M"),
+                api.read("TARAMA_KAYITLARI", "J"),
+                api.read("UYARI_OLAYLARI", "T"),
+                api.read("PANEL", "C"),
+            )
+        except sheets.HandoffBlocked:
+            if attempt:
+                raise
+    raise GuardianHold("PROVIDER_READ_RETRY_EXHAUSTED")
 
 
 def run(api, expected_asof, *, expected_run_id=None, panel_repair=True):
