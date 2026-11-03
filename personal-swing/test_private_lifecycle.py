@@ -311,10 +311,10 @@ class TestPendingToRequestedContract(unittest.TestCase):
         other[17] = c.SUPPRESSED
         before.append(other)
         import copy
-        after.append(copy.deepcopy(other))
+        after = [list(c.EVENT_HEADER), copy.deepcopy(other), after[1]]
         result = c.verify_first_reservation(before, after, [key])
         self.assertEqual(result['new_event_count'], 1)
-        after[2][19] = 'tampered'
+        after[1][19] = 'tampered'
         with self.assertRaisesRegex(c.LedgerRefused,
                                     'EXISTING_EVENT_CHANGED_DURING_RESERVATION'):
             c.verify_first_reservation(before, after, [key])
