@@ -9,6 +9,7 @@ on:
       - "nasdaq-xray/test_xray_epoch_preflight_v25.py"
       - "nasdaq-xray/personal_research_diagnostics.py"
       - "nasdaq-xray/personal_research_advisory_ledger_guard.py"
+      - "nasdaq-xray/test_personal_advisory_rejected_math_guard.py"
       - "nasdaq-xray/personal_research_advisory_ledger.json"
       - ".github/workflows/xray-personal-eod-research-digest.yml"
   push:
@@ -20,6 +21,7 @@ on:
       - "nasdaq-xray/test_xray_epoch_preflight_v25.py"
       - "nasdaq-xray/personal_research_diagnostics.py"
       - "nasdaq-xray/personal_research_advisory_ledger_guard.py"
+      - "nasdaq-xray/test_personal_advisory_rejected_math_guard.py"
       - "nasdaq-xray/personal_research_advisory_ledger.json"
       - ".github/workflows/xray-personal-eod-research-digest.yml"
   workflow_run:
@@ -69,6 +71,8 @@ jobs:
           python nasdaq-xray/test_xray_epoch_preflight_v25.py
           python -O nasdaq-xray/test_xray_epoch_preflight_v25.py
           python -m py_compile nasdaq-xray/personal_research_advisory_ledger_guard.py
+          python nasdaq-xray/test_personal_advisory_rejected_math_guard.py
+          python -O nasdaq-xray/test_personal_advisory_rejected_math_guard.py
           python nasdaq-xray/personal_research_advisory_ledger_guard.py
           python -O nasdaq-xray/personal_research_advisory_ledger_guard.py
           python -m py_compile nasdaq-xray/personal_research_diagnostics.py
