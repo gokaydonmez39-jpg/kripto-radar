@@ -108,11 +108,9 @@ def verify_first_reservation(before,after,requested_keys):
 
 
 def verify_pending_request_transition(before, after, requested_keys):
-    """Verify a *ledger-only* intent transition without claiming a push.
+    """Verify recorded request intent only, NOT ChatGPT message or device push.
 
-    This is a pure readback guard for a single-writer Sheet edit.  It is NOT
-    a distributed transaction with ChatGPT, an iPhone push, or a device ACK.
-    Reserved/REQUESTED rows never become new delivery rights on retry.
+    Pure single-writer Google Sheet readback guard; no network or writes.
     """
     from datetime import datetime
 
@@ -123,27 +121,14 @@ def verify_pending_request_transition(before, after, requested_keys):
     new = parse_ledger(after)
     if set(new) != set(old):
         raise LedgerRefused('UNEXPECTED_EVENT_CHANGE')
-    stamp_format = re.compile(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2} TRT
-    """Never infer an iOS device acknowledgment from a sent/requested row."""
-    entry=parse_ledger(ledger_matrix).get(event_id)
-    if entry is None:
-        return 'NOT_RECORDED'
-    if entry['status']==ACKED:
-        return 'USER_ATTESTED_DEVICE_ACK'
-    if entry['status']==QUARANTINED:
-        return 'DATA_DISPUTE_QUARANTINED_NO_DELIVERY'
-    if entry['status']==SUPPRESSED:
-        return 'SUPPRESSED_ACTIVE_EPISODE_NO_DELIVERY'
-    return 'DELIVERY_UNKNOWN_NO_RESEND'
-)
+    stamp_format = re.compile(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2} TRT$')
     for key in keys:
         if key not in old or old[key]['status'] != CONFIRMED_PENDING:
             raise LedgerRefused('EVENT_NOT_PENDING_NO_RESEND')
         if new[key]['status'] != REQUESTED:
             raise LedgerRefused('REQUEST_READBACK_MISSING')
-        prev = old[key]['row']
-        now = new[key]['row']
-        if prev[18] not in ('', None):
+        prev, now = old[key]['row'], new[key]['row']
+        if (prev[18] if len(prev)>18 else '') not in ('', None):
             raise LedgerRefused('EVENT_ALREADY_TIMESTAMPED')
         stamp = now[18] if len(now) > 18 else ''
         if not isinstance(stamp, str) or not stamp_format.fullmatch(stamp):
@@ -162,9 +147,7 @@ def verify_pending_request_transition(before, after, requested_keys):
             if a != b:
                 raise LedgerRefused('EVENT_FIELDS_CHANGED')
     for key, previous in old.items():
-        if key in keys:
-            continue
-        if previous != new[key]:
+        if key not in keys and previous != new[key]:
             raise LedgerRefused('UNEXPECTED_EVENT_CHANGE')
     return {
         'recorded_intents': len(keys),
@@ -172,6 +155,7 @@ def verify_pending_request_transition(before, after, requested_keys):
         'device_delivery_attested': False,
         'resend_allowed': False,
     }
+
 
 
 def delivery_status(ledger_matrix,event_id):
