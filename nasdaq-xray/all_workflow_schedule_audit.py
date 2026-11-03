@@ -28,7 +28,7 @@ EXPECTED={
  "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
  "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
  "xray-personal-477-eod.yml":("15 23 * * 1-5",),
- "xray-nasdaq-a34-preopen.yml":("17 10 * * 1-5",),
+ "xray-nasdaq-a34-preopen.yml":("17 3 * * 1-5",),
  # Exact already deployed personal EOD failover, never a second signal producer.
  "xray-personal-477-schedule-fallback.yml":("25 0 * * 2-6",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
@@ -306,7 +306,7 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
-    assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 10 * * 1-5"]
+    assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 3 * * 1-5"]
     assert "xray-nasdaq-a34-preopen.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["25 0 * * 2-6"]
     assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * *"]
@@ -364,7 +364,7 @@ def selftest():
     # A34 must remain an exactly reviewed, read-only preopen research audit.
     bad(lambda x:x.update({"xray-nasdaq-a34-preopen.yml":
         x["xray-nasdaq-a34-preopen.yml"].replace(
-            "17 10 * * 1-5","18 10 * * 1-5",1)}),
+            "17 3 * * 1-5","18 3 * * 1-5",1)}),
         "SCHEDULED_CRON_CHANGED")
     bad(lambda x:x.update({"xray-nasdaq-a34-preopen.yml":
         x["xray-nasdaq-a34-preopen.yml"].replace(
