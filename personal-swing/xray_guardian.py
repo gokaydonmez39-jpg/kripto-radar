@@ -22,6 +22,7 @@ import sys
 import alert_ledger_contract as lc
 import panel_reconciler as panel
 import private_sheet_writer as sheets
+import runner
 from daily_job import current_completed_session
 
 SCHEMA = "XRAY_PERSONAL_GUARDIAN_V1"
@@ -81,7 +82,13 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
     need(sheets.numeric(s[7]).is_integer()
          and 0 <= sheets.numeric(s[7]) <= 477, "AL_COUNT_INVALID")
     need(EVENT_RUN.fullmatch(str(s[8])) is not None, "UNTRUSTED_RUN_PROOF")
-    sheets.scan_source_proof(s[9])
+    proof = sheets.scan_source_proof(s[9])
+    universe = runner.get_scope(
+        watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")))
+    need(len(universe) == 477 and
+         proof["scopeSHA"] == runner.sha_symbols(universe) and
+         proof["algorithmSHA"] == runner.analysis_fingerprint(),
+         "SOURCE_SCOPE_OR_POLICY_SHA_DRIFT")
     need(len({r[0] for r in rows}) == len(rows),
          "CANDIDATE_KEY_DUPLICATE")
 
@@ -250,6 +257,7 @@ def main(argv=None):
         code = code if code in {
             "EXPECTED_ASOF_INVALID", "SCAN_MISSING_OR_DUPLICATE",
             "SCAN_ORDER_DRIFT", "LATEST_SCAN_ASOF_NOT_ACCEPTED",
+            "SOURCE_SCOPE_OR_POLICY_SHA_DRIFT",
             "SCOPE_OR_COVERAGE_DRIFT", "FINAL_READY_FALSE",
             "AL_COUNT_INVALID", "UNTRUSTED_RUN_PROOF",
             "CANDIDATE_KEY_DUPLICATE", "AL_COUNT_VS_CANDIDATE_ROWS",
