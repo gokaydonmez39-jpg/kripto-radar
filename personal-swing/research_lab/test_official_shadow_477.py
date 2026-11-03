@@ -78,6 +78,14 @@ class Shadow477Tests(unittest.TestCase):
         self.assertEqual(result["sec_unknown"],477)
         self.assertEqual(result["corporate_actions_unknown"],477)
 
+    def test_shadow_exactly_follows_production_sorted_snapshot_order(self):
+        s = snapshot()
+        s["rows"] = list(reversed(s["rows"]))
+        source_order = [entry["symbol"] for entry in s["rows"]]
+        result = m.make_shadow(s, WATCH, guard())
+        self.assertEqual([entry["symbol"] for entry in result["rows"]], source_order)
+        self.assertEqual(result["private_eod_snapshot_sha256"], m.sha(s))
+
     def test_future_source_must_not_backfill_old_al_decision(self):
         result=m.make_shadow(snapshot(),WATCH,guard("2026-10-31T13:07:05Z"))
         self.assertEqual(result["nasdaq_source_state"],"UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
