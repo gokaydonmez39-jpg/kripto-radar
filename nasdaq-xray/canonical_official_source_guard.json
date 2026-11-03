@@ -3,6 +3,7 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
+      "BJDX",
       "EFTY",
       "GCDT",
       "HCHL",
@@ -15,7 +16,8 @@
       "SVA",
       "TJGC",
       "UCFI",
-      "UCFIW"
+      "UCFIW",
+      "UFG"
     ],
     "halt_guard_status": "PASS",
     "rule": "REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED",
@@ -54,6 +56,7 @@
     "veto_symbols": [
       "ARBEW",
       "BBBYW",
+      "BJDX",
       "BLFS",
       "COLA",
       "COLAR",
@@ -91,13 +94,14 @@
       "TJGC",
       "UCFI",
       "UCFIW",
+      "UFG",
       "WALD",
       "WALDW",
       "WBD"
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-03T00:02:28.357220+00:00",
+  "generated_at_utc": "2026-11-03T01:57:30.642486+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -800,8 +804,9 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 13,
+      "active_halt_count": 15,
       "active_halt_symbols": [
+        "BJDX",
         "EFTY",
         "GCDT",
         "HCHL",
@@ -814,11 +819,42 @@
         "SVA",
         "TJGC",
         "UCFI",
-        "UCFIW"
+        "UCFIW",
+        "UFG"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 69,
+      "item_count": 71,
       "items": [
+        {
+          "HaltDate": "11/02/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Uni-Fuels Hldgs Ord A",
+          "IssueSymbol": "UFG",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/02/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">UFG</td><td valign=\"top\">Uni-Fuels Hldgs Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 02 Nov 2026 05:00:00 GMT",
+          "title": "UFG"
+        },
+        {
+          "HaltDate": "11/02/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Bluejay Diagnostics, Inc. CM",
+          "IssueSymbol": "BJDX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/02/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">BJDX</td><td valign=\"top\">Bluejay Diagnostics, Inc. CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 02 Nov 2026 05:00:00 GMT",
+          "title": "BJDX"
+        },
         {
           "HaltDate": "11/02/2026",
           "HaltTime": "15:45:39.206",
