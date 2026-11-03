@@ -106,6 +106,58 @@ def verify_first_reservation(before,after,requested_keys):
             'device_delivery_attested':False,'new_event_count':len(keys)}
 
 
+
+def verify_pending_request_transition(before, after, requested_keys):
+    """Verify recorded request intent only, NOT ChatGPT message or device push.
+
+    Pure single-writer Google Sheet readback guard; no network or writes.
+    """
+    from datetime import datetime
+
+    keys = list(requested_keys)
+    if not keys or len(keys) != len(set(keys)):
+        raise LedgerRefused('EMPTY_OR_DUPLICATE_REQUEST_BATCH')
+    old = parse_ledger(before)
+    new = parse_ledger(after)
+    if set(new) != set(old):
+        raise LedgerRefused('UNEXPECTED_EVENT_CHANGE')
+    stamp_format = re.compile(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2} TRT$')
+    for key in keys:
+        if key not in old or old[key]['status'] != CONFIRMED_PENDING:
+            raise LedgerRefused('EVENT_NOT_PENDING_NO_RESEND')
+        if new[key]['status'] != REQUESTED:
+            raise LedgerRefused('REQUEST_READBACK_MISSING')
+        prev, now = old[key]['row'], new[key]['row']
+        if (prev[18] if len(prev)>18 else '') not in ('', None):
+            raise LedgerRefused('EVENT_ALREADY_TIMESTAMPED')
+        stamp = now[18] if len(now) > 18 else ''
+        if not isinstance(stamp, str) or not stamp_format.fullmatch(stamp):
+            raise LedgerRefused('REQUEST_TIMESTAMP_INVALID')
+        try:
+            datetime.strptime(stamp, '%Y-%m-%d %H:%M TRT')
+        except ValueError as exc:
+            raise LedgerRefused('REQUEST_TIMESTAMP_INVALID') from exc
+        if old[key]['row_index'] != new[key]['row_index']:
+            raise LedgerRefused('UNEXPECTED_EVENT_CHANGE')
+        for col in range(len(EVENT_HEADER)):
+            if col in (17, 18):
+                continue
+            a = prev[col] if col < len(prev) else ''
+            b = now[col] if col < len(now) else ''
+            if a != b:
+                raise LedgerRefused('EVENT_FIELDS_CHANGED')
+    for key, previous in old.items():
+        if key not in keys and previous != new[key]:
+            raise LedgerRefused('UNEXPECTED_EVENT_CHANGE')
+    return {
+        'recorded_intents': len(keys),
+        'chatgpt_message_proven': False,
+        'device_delivery_attested': False,
+        'resend_allowed': False,
+    }
+
+
+
 def delivery_status(ledger_matrix,event_id):
     """Never infer an iOS device acknowledgment from a sent/requested row."""
     entry=parse_ledger(ledger_matrix).get(event_id)
