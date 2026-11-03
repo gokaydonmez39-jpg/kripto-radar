@@ -203,5 +203,32 @@ class GuardianTests(unittest.TestCase):
             self.assertEqual(receipt["full_autonomous_start"], "HOLD")
 
 
+    def test_workflow_guardian_requires_authorized_private_preflight(self):
+        from pathlib import Path
+        src = (Path(__file__).resolve().parent.parent /
+               ".github/workflows/xray-personal-477-eod.yml").read_text()
+        self.assertIn(
+            "needs: [offline-guard, daily-private-scan, "
+            "private-sheets-auth-preflight, private-episode-followups]",
+            src)
+        guardian_job = src[src.index("  guardian-acceptance:"):]
+        self.assertIn(
+            "needs.private-sheets-auth-preflight.result == 'success'",
+            guardian_job)
+        self.assertIn("needs.private-episode-followups.result == 'success'",
+                      guardian_job)
+
+    def test_lifecycle_notice_identifies_github_outbox_writer(self):
+        from pathlib import Path
+        src = (Path(__file__).resolve().parent.parent /
+               ".github/workflows/xray-personal-477-eod.yml").read_text()
+        self.assertIn(
+            "GitHub verified EOD outbox producer owns AL event reservation",
+            src)
+        self.assertNotIn(
+            "ChatGPT task remains responsible for outbox reservation",
+            src)
+
+
 if __name__ == "__main__":
     unittest.main()

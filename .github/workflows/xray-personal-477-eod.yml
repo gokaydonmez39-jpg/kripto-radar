@@ -290,13 +290,13 @@ jobs:
           set -euo pipefail
           python panel_reconciler.py
       - name: Private follow-up does not claim device delivery
-        run: echo 'GitHub followup only updates proven dated theoretical status; existing ChatGPT task remains responsible for outbox reservation and iPhone delivery.'
+        run: echo 'GitHub followup only updates proven dated theoretical status; GitHub verified EOD outbox producer owns AL event reservation; ChatGPT task alone may produce Premium user-facing notifications, and no iPhone/device ACK is claimed.'
 
   guardian-acceptance:
     # Second independent private readback after EOD/episode/PANEL writers.
     # No new cron, no extra ChatGPT task and no phone delivery claim.
-    needs: [offline-guard, daily-private-scan, private-episode-followups]
-    if: ${{ always() && github.event_name != 'pull_request' && needs.daily-private-scan.result == 'success' && needs.private-episode-followups.result == 'success' }}
+    needs: [offline-guard, daily-private-scan, private-sheets-auth-preflight, private-episode-followups]
+    if: ${{ always() && github.event_name != 'pull_request' && needs.daily-private-scan.result == 'success' && needs.private-sheets-auth-preflight.result == 'success' && needs.private-episode-followups.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
