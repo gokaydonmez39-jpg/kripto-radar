@@ -57,13 +57,14 @@ jobs:
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler
-          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
           python -m py_compile engine.py runner.py daily_job.py tracker.py
           python -m py_compile private_sheet_writer.py
           python -m py_compile private_lifecycle.py
+          python -m py_compile alert_outbox_producer.py test_al_outbox_producer.py
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'
@@ -149,6 +150,24 @@ jobs:
           fi
           python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
           python private_sheet_writer.py --snapshot "$path"
+      - name: Reserve verified new AL events PENDING in private outbox (NO PUSH)
+        working-directory: personal-swing
+        shell: bash
+        env:
+          XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+          XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+        run: |
+          set -euo pipefail
+          path="$RUNNER_TEMP/xray-private-data/latest.json"
+          if [[ ! -f "$path" ]]; then
+            echo 'AL_OUTBOX=SKIPPED_NO_COMPLETED_SESSION'
+            exit 0
+          fi
+          if [[ -z "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" || -z "$XRAY_PRIVATE_SPREADSHEET_ID" ]]; then
+            echo 'AL_OUTBOX=BLOCKED_NO_PRIVATE_AUTH; NO_DEVICE_ACK'
+            exit 3
+          fi
+          python alert_outbox_producer.py --snapshot "$path"
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
       - name: Optional official 477 PIT-aware shadow ledger (NO AL, no source HTTP, no Sheet)
