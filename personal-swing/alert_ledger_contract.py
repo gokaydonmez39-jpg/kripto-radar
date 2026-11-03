@@ -96,13 +96,17 @@ def verify_first_reservation(before,after,requested_keys):
     new=parse_ledger(after)
     if any(k in old for k in keys):
         raise LedgerRefused('EVENT_ALREADY_RECORDED_NO_RESEND')
-    if any(k not in new or new[k]['status']!=REQUESTED for k in keys):
-        raise LedgerRefused('REQUEST_RESERVATION_READBACK_MISSING')
+    if any(k not in new for k in keys):
+        raise LedgerRefused('FIRST_RESERVATION_READBACK_MISSING')
+    if any(new[k]['status'] != CONFIRMED_PENDING for k in keys):
+        raise LedgerRefused('EVENT_NOT_PENDING_ON_FIRST_RESERVATION')
     if any(k not in new or new[k]!=v for k,v in old.items()):
         raise LedgerRefused('EXISTING_EVENT_CHANGED_DURING_RESERVATION')
     if set(new)!=set(old)|set(keys):
         raise LedgerRefused('UNEXPECTED_CONCURRENT_EVENT')
     return {'request_allowed_after_readback':True,
+            'delivery_intent_recorded':False,
+            'chatgpt_message_proven':False,
             'device_delivery_attested':False,'new_event_count':len(keys)}
 
 
