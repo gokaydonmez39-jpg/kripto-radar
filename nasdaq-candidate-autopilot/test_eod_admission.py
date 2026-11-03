@@ -6,6 +6,7 @@ import unittest
 from eod_admission import Blocked, record_lines, json_receipts, validate_event
 
 ET = "2026-10-30"
+GIT_SHA = "a" * 40
 SHA = "a" * 64
 SCOPE = "b" * 64
 EVENT = {
@@ -13,7 +14,7 @@ EVENT = {
     "repository": "gokaydonmez39-jpg/kripto-radar",
     "workflow_name": "XRAY Personal 477 EOD Daily Health (Research Only)",
     "head_branch": "main",
-    "head_sha": SHA,
+    "head_sha": GIT_SHA,
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
@@ -64,6 +65,16 @@ class RealEODAdmissionTests(unittest.TestCase):
         self.assertTrue(x["sheet_readback"] and x["panel_readback"])
         self.assertEqual(x["asof_et"], ET)
         self.assertFalse(x["production_promotion"])
+
+    def test_git_commit_sha_is_exactly_40_hex(self):
+        self.assertEqual(self.admitted()["run_sha"], GIT_SHA)
+
+    def test_sha256_length_is_not_a_git_commit_id(self):
+        self.blocked(event=dict(EVENT, head_sha=SHA))
+
+    def test_malformed_git_commit_sha_fails_closed(self):
+        self.blocked(event=dict(EVENT, head_sha="g" * 40))
+        self.blocked(event=dict(EVENT, head_sha="a" * 39))
 
     def test_repeated_deterministic_receipt(self):
         self.assertEqual(self.admitted(), self.admitted())
