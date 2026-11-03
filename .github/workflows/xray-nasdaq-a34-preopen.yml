@@ -17,9 +17,11 @@ on:
       - XRAY Personal 477 EOD Daily Health (Research Only)
     types: [completed]
   schedule:
-    # 13:17 in Turkey, before XNAS opens even when US DST changes.
-    # GitHub cron is not a guaranteed scheduler. No user delivery claimed.
-    - cron: '17 10 * * 1-5'
+    # 06:17 Turkey (03:17 UTC), at least 4h after the prior EOD cron.
+    # Keeps an 8h GitHub dispatch-delay margin before US summer XNAS open.
+    # Cron is never guaranteed; the independent EOD workflow_run remains.
+    # No user delivery claimed.
+    - cron: '17 3 * * 1-5'
 permissions:
   contents: read
 concurrency:
