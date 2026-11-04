@@ -482,5 +482,18 @@
   "source_path": "nasdaq-xray/personal_research_signal_digest.json",
   "source_blob_sha": "05b863c10a49e89be2a18823b3abd1fb55522e6c",
   "asof_source": "2026-10-22",
-  "source_count": 477
+  "source_count": 477,
+  "point_in_time_symbol_changes": [
+    {
+      "effective_asof_et": "2026-11-03",
+      "old_symbol": "INDV",
+      "new_symbol": "SUPN",
+      "reason": "NASDAQ_OFFICIAL_RENAME_MERGER_NOT_A_NEW_SECURITY",
+      "nasdaq_corporate_action": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-742",
+      "nasdaq_history_policy": "https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-25",
+      "historical_identity": "NEW_SUPN_2026_11_03_ONWARD_INHERITS_INDV_HISTORY",
+      "legacy_supn_history": "DO_NOT_JOIN_SEPARATE_LEGACY_SUPN_ISSUER",
+      "status": "REVIEWED_POINT_IN_TIME_IDENTITY_ONLY_NO_AUTO_AL_RELEASE"
+    }
+  ]
 }
