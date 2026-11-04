@@ -218,7 +218,7 @@ def main(argv=None):
     a=p.parse_args(argv)
     asof=a.asof or engine.trading_asof().isoformat()
     engine.validate_asof(asof)
-    syms=get_scope(a.symbols,a.repo_watchlist,a.watchlist_file)
+    syms=get_scope(a.symbols,a.repo_watchlist,a.watchlist_file,asof=asof)
     result=scan(asof,syms,a.dir,batch_size=a.batch_size,max_batches=a.max_batches,pause=a.pause)
     print(json.dumps({'asof_et':asof,'requested':len(syms),
           'processed':result['processed_symbols'],'complete':result['coverage_complete'],
