@@ -79,7 +79,7 @@ def scan_source_proof(note):
     return proof
 
 
-def plan(snapshot, candidates, scans, run_url, run_event=None):
+def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
     """Pure deterministic idempotent append plan; never changes prior cells.
 
     Google Sheets has no per-key CAS. Single GitHub workflow concurrency,
@@ -304,7 +304,7 @@ class SheetApi:
             self.request(':batchUpdate',method='POST',body=data)
 
 
-def synchronize(snapshot, run_url, api, run_event=None):
+def synchronize(snapshot, run_url, api, run_event='schedule'):
     api.check_metadata()
     before_candidates=api.read('ADAY_GECMISI','M')
     before_scans=api.read('TARAMA_KAYITLARI','J')
