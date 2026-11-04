@@ -25,13 +25,17 @@ GH_MUTATION = re.compile(
     r"pr\s+(?:create|edit|merge|close|reopen)|"
     r"release\s+(?:create|edit|delete|upload)|"
     r"issue\s+(?:create|edit|close|reopen|delete)|"
-    r"api\b.*(?:-X\s*|--method[=\s]*)(?:POST|PUT|PATCH|DELETE))", re.I)
-# Any explicitly mutating curl operation is an unreviewed write, even when
+    r"api\b.*(?:(?:-X\s*|--method[=\s]*)(?:POST|PUT|PATCH|DELETE)\b|"
+    r"\s-[fF](?:\s|=|\S)|\s--(?:raw-)?field(?:\s|=)|"
+    r"\s--input(?:\s|=)))", re.I)
+# Any explicit or implicit curl upload/write is an unreviewed mutation, even when
 # the URL is assembled from environment variables or a token outside GITHUB_TOKEN.
 CURL_MUTATION = re.compile(
     r"\bcurl\b.*(?:\s-X\s*['\"]?(?:POST|PUT|PATCH|DELETE)\b|"
     r"--request[=\s]*['\"]?(?:POST|PUT|PATCH|DELETE)\b|"
-    r"\s--data(?:-[\w-]+)?(?:\s|=)|\s-d(?:\s|=)|\s--json(?:\s|=))",
+    r"\s--data(?:-[\w-]+)?(?:\s|=)|\s-d(?:\s|=)|\s--json(?:\s|=)|"
+    r"\s--upload-file(?:\s|=)|\s-T(?:\s|\S)|"
+    r"\s--form(?:-string)?(?:\s|=)|\s-F(?:\s|\S))",
     re.I)
 API_MUTATION = re.compile(r"\b(?:requests|httpx)\.(?:post|put|patch|delete)\s*\(|\bgithub\.rest\.[\w.]+\.(?:create|update|delete|merge)\s*\(", re.I)
 PR_ACTION = re.compile(r"peter-evans/create-pull-request|gh\s+pr\s+create", re.I)
