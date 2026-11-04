@@ -1,0 +1,60 @@
+name: XRAY NASDAQ A41 Isolated Static Audit CI (Read Only)
+
+on:
+  pull_request:
+    paths:
+      - 'nasdaq-xray/a41_writer_inventory.py'
+      - 'nasdaq-xray/test_a41_writer_inventory.py'
+      - '.github/workflows/xray-nasdaq-a41-isolated-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-nasdaq-a41-isolated-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  a41-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR (read only)
+        uses: actions/checkout@v4
+
+      - name: Python offline test runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install YAML parser (no market data)
+        run: python -m pip install 'PyYAML==6.0.2'
+
+      - name: Full A41 static-unit suite
+        run: |
+          python -m unittest discover -s nasdaq-xray -p 'test_a41_writer_inventory.py' -q
+          python -O -m unittest discover -s nasdaq-xray -p 'test_a41_writer_inventory.py' -q
+          python -m py_compile nasdaq-xray/a41_writer_inventory.py nasdaq-xray/test_a41_writer_inventory.py
+
+      - name: Confirm production writers still HOLD (never promote)
+        shell: bash
+        run: |
+          set +e
+          python nasdaq-xray/a41_writer_inventory.py --root . --output "$RUNNER_TEMP/a41-inventory.json"
+          result=$?
+          set -e
+          if [[ "$result" -ne 3 ]]; then
+            echo 'A41_EXPECTED_HOLD_NOT_OBSERVED'
+            exit 1
+          fi
+          python - "$RUNNER_TEMP/a41-inventory.json" <<'PY'
+          import json
+          import sys
+          d = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert d["status"] == "HOLD_DIRECT_MAIN_WRITERS"
+          assert d["direct_main_writer_count"] >= 42
+          assert d["direct_main_push_sites"] >= 44
+          assert d["ruleset_changed"] is False
+          assert d["auto_fix"] is False
+          print("A41_OFFLINE_ONLY=PASS_WITH_PRODUCTION_HOLD;DIRECT_MAIN_WRITERS=" + str(d["direct_main_writer_count"]))
+          PY
