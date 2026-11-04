@@ -111,7 +111,19 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             need('scopeSHA=' not in note and 'algorithmSHA=' not in note,
                  'FLIGHT_PARTIAL_SHA_PROVENANCE')
             continue
-        need(fp == latest_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+        # Before the reviewed Nasdaq PIT cutover, provenance must match
+        # the exact pre-cutover receipt; afterwards it must match the
+        # currently verified post-cutover receipt. No arbitrary historical
+        # SHA drift is permitted, even after a new code deployment.
+        approved_transition = (
+            cutoff >= PIT_CUTOVER
+            and latest_fp == PIT_POST_CUTOVER_SHA
+        )
+        permitted_fp = (
+            PIT_PRE_CUTOVER_SHA if day < PIT_CUTOVER
+            else PIT_POST_CUTOVER_SHA
+        ) if approved_transition else latest_fp
+        need(fp == permitted_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
         verified_days.add(day)
     verified_episode_keys = {day: [] for day in verified_days}
     terminal_expected = set()
