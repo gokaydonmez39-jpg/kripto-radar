@@ -1,6 +1,7 @@
 """Synthetic-only regression tests for the personal XRAY Guardian."""
 import copy
 import unittest
+from unittest.mock import patch
 
 import alert_ledger_contract as lc
 import alert_outbox_producer as out
