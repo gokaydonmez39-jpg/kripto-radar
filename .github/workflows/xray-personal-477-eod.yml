@@ -1,4 +1,5 @@
 name: XRAY Personal 477 EOD Daily Health (Research Only)
+# XRAY_RECOVERY_20261105: controlled one-shot 2026-11-04 XNAS EOD re-entry through EXISTING main push trigger; NO NEW CRON/NO_ORDERS; provenance=push, not schedule.
 # XRAY A31 completed-28-Oct EOD idempotency check (existing workflow push):
 # replay MUST keep ASOF|SYMBOL key counts constant, preserve immutable stops,
 # pass Google Sheet write/readback, lifecycle and full PANEL reconciliation.
