@@ -91,12 +91,6 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                 self.assertFalse(any('private auto handoff' in r[12]
                                      for r in p['candidate_rows']))
 
-    def test_event_must_be_explicit_even_in_reusable_helper(self):
-        api = FakeApi()
-        with self.assertRaisesRegex(w.HandoffBlocked, 'UNTRUSTED_GITHUB_EVENT'):
-            w.synchronize(snapshot(), RUN, api)
-        self.assertEqual(api.apply_count, 0)
-
     def test_untrusted_or_missing_event_fails_before_sheet_write(self):
         for event in ('', 'pull_request', 'workflow_run', 'bogus', None):
             with self.subTest(event=event):
