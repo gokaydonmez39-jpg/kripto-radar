@@ -22,6 +22,30 @@ def data():
     return [c,s,e,p]
 
 class FlightNegativeTests(unittest.TestCase):
+    def test_approved_2026_11_03_pit_provenance_switch(self):
+        b=data()
+        b[1][1][9]=('scopeSHA=420025dd5b83b59fedd3d9af4332471fee731aedfaacb616ce80ca473bef6745'
+                   ';algorithmSHA=d7d119c2125d75981f86850c2283973b2a70b5a2aa6aa638600a60f5039969c8')
+        b[1].append(['2026-11-03','GitHub','477','477','477','0',
+                     'TRUE','0','private',
+                     'scopeSHA=4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20'
+                     ';algorithmSHA=c8fc8877aa0a9e55a8e1b9707886c17210e3859fc91f896af90a26b4a98c134e'])
+        result=g.inspect(*b,expected_asof='2026-11-03')
+        self.assertEqual(result['source_verified_issuance_days'],2)
+        self.assertEqual(result['matched_new_al_outbox'],1)
+        self.assertEqual(result['device_receipts_verified'],0)
+
+    def test_pit_migration_wrong_legacy_fingerprint_is_rejected(self):
+        b=data()
+        b[1][1][9]=('scopeSHA=420025dd5b83b59fedd3d9af4332471fee731aedfaacb616ce80ca473bef6745'
+                   ';algorithmSHA='+'f'*64)
+        b[1].append(['2026-11-03','GitHub','477','477','477','0','TRUE','0',
+                     'private',
+                     'scopeSHA=4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20'
+                     ';algorithmSHA=c8fc8877aa0a9e55a8e1b9707886c17210e3859fc91f896af90a26b4a98c134e'])
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,'HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b,expected_asof='2026-11-03')
+
     def test_valid_pending_never_device_proven(self):
         x=g.inspect(*data())
         self.assertEqual(x['state'],'PASS_PENDING_DEVICE_ACK')
