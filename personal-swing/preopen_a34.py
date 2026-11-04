@@ -176,7 +176,7 @@ def live_entrypoint():
     next_session = cal.next_session(asof)
     need(now < cal.session_open(next_session).to_pydatetime(),
          'NOT_BEFORE_NEXT_XNAS_OPEN')
-    symbols = runner.get_scope(watchlist_file='nasdaq_watchlist_477.json')
+    symbols = runner.get_scope(watchlist_file='nasdaq_watchlist_477.json',asof=asof)
     secret = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON', '')
     private_id = os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID', '')
     need(bool(secret) and bool(private_id), 'PRIVATE_SHEET_CREDENTIALS_MISSING')
