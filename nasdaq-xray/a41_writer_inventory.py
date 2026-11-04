@@ -20,7 +20,19 @@ SCHEMA = "XRAY_NASDAQ_A41_WORKFLOW_WRITER_INVENTORY_V1"
 PUSH = re.compile(r"\bgit\s+(?:-[cC]\s+\S+\s+)*push\b", re.I)
 MAIN = re.compile(r"\bHEAD:(?:refs/heads/)?main\b|\brefs/heads/main\b|\borigin\s+main\b", re.I)
 GIT_COMMIT = re.compile(r"\bgit\s+(?:-[cC]\s+\S+\s+)*commit\b", re.I)
-GH_MUTATION = re.compile(r"\bgh\s+(?:workflow\s+run|pr\s+create|api\b.*(?:-X\s*|--method[=\s]*)(?:POST|PUT|PATCH|DELETE))", re.I)
+GH_MUTATION = re.compile(
+    r"\bgh\s+(?:workflow\s+run|"
+    r"pr\s+(?:create|edit|merge|close|reopen)|"
+    r"release\s+(?:create|edit|delete|upload)|"
+    r"issue\s+(?:create|edit|close|reopen|delete)|"
+    r"api\b.*(?:-X\s*|--method[=\s]*)(?:POST|PUT|PATCH|DELETE))", re.I)
+# Any explicitly mutating curl operation is an unreviewed write, even when
+# the URL is assembled from environment variables or a token outside GITHUB_TOKEN.
+CURL_MUTATION = re.compile(
+    r"\bcurl\b.*(?:\s-X\s*['\"]?(?:POST|PUT|PATCH|DELETE)\b|"
+    r"--request[=\s]*['\"]?(?:POST|PUT|PATCH|DELETE)\b|"
+    r"\s--data(?:-[\w-]+)?(?:\s|=)|\s-d(?:\s|=)|\s--json(?:\s|=))",
+    re.I)
 API_MUTATION = re.compile(r"\b(?:requests|httpx)\.(?:post|put|patch|delete)\s*\(|\bgithub\.rest\.[\w.]+\.(?:create|update|delete|merge)\s*\(", re.I)
 PR_ACTION = re.compile(r"peter-evans/create-pull-request|gh\s+pr\s+create", re.I)
 
@@ -37,6 +49,28 @@ def grants(value):
     if not isinstance(value, dict):
         raise AuditError("PERMISSIONS_INVALID")
     return sorted(str(k) for k, v in value.items() if v == "write")
+
+
+def logical_shell_lines(script):
+    """Join explicit shell backslash continuations, retaining start line.
+
+    Without this, `git push origin \\\nHEAD:main` is incorrectly counted as
+    an unknown push instead of a confirmed direct-main writer.
+    """
+    pending = []
+    first_line = None
+    for number, line in enumerate(script.splitlines(), 1):
+        trimmed = line.rstrip()
+        if first_line is None:
+            first_line = number
+        if trimmed.endswith("\\"):
+            pending.append(trimmed[:-1])
+            continue
+        pending.append(line)
+        yield first_line, " ".join(pending)
+        first_line, pending = None, []
+    if pending:
+        yield first_line, " ".join(pending)
 
 
 def analyze(path):
@@ -69,14 +103,15 @@ def analyze(path):
             if not isinstance(run, str):
                 raise AuditError("SCRIPT_INVALID")
             uses = str(step.get("uses", ""))
-            for line_number, line in enumerate(run.splitlines(), 1):
+            for line_number, line in logical_shell_lines(run):
                 site = {"job": str(job_name), "step": number, "script_line": line_number}
                 if PUSH.search(line):
                     if MAIN.search(line):
                         direct.append(site)
                     else:
                         unknown.append({**site, "reason": "PUSH_TARGET_UNKNOWN"})
-                if GH_MUTATION.search(line) or API_MUTATION.search(line):
+                if (GH_MUTATION.search(line) or API_MUTATION.search(line) or
+                        CURL_MUTATION.search(line)):
                     unknown.append({**site, "reason": "API_MUTATION_REVIEW"})
             if PR_ACTION.search(uses + "\n" + run):
                 unknown.append({"job": str(job_name), "step": number,
