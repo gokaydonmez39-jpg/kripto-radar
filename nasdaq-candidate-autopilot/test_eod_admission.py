@@ -76,6 +76,40 @@ class RealEODAdmissionTests(unittest.TestCase):
         self.blocked(event=dict(EVENT, head_sha="g" * 40))
         self.blocked(event=dict(EVENT, head_sha="a" * 39))
 
+    def test_scheduled_run_delayed_past_ny_midnight_admitted(self):
+        # Oct 30 16:00 NY completed session; Github queued a late job
+        # at Oct 31 00:40 NY, still the same official production EOD.
+        late = dict(EVENT, created_at="2026-10-31T04:40:00Z")
+        evidence = self.admitted(data=late)
+        self.assertEqual(evidence["asof_et"], ET)
+        self.assertEqual(evidence["source"], "PERSONAL_477_IEX_EOD_SCHEDULE")
+
+    def test_overnight_acceptance_is_strictly_bounded(self):
+        # 02:00 NY boundary must not admit unrelated stale schedules.
+        for stamp in ("2026-10-31T06:01:00Z", "2026-11-01T04:40:00Z",
+                      "2026-10-29T23:55:00Z"):
+            with self.subTest(created_at=stamp):
+                self.blocked(event=dict(EVENT, created_at=stamp))
+
+    def test_scheduled_run_created_before_utc_cron_must_be_blocked(self):
+        # Official personal EOD has a fixed 23:15 UTC scheduled trigger.
+        # A created_at earlier than cron is not an eligible producer.
+        for stamp in ("2026-10-30T18:15:00Z",
+                      "2026-10-30T23:14:59Z"):
+            with self.subTest(created_at=stamp):
+                self.blocked(event=dict(EVENT, created_at=stamp))
+        self.assertEqual(
+            self.admitted(data=dict(EVENT, created_at="2026-10-30T23:15:00Z"))["asof_et"],
+            ET,
+        )
+
+    def test_dst_november_standard_time_overnight_acceptance(self):
+        # 2026-11-03 16:00 EST is 21:00Z; late task queued Nov4 00:40 EST.
+        ev = dict(EVENT, created_at="2026-11-04T05:40:00Z")
+        scan = dict(SCAN, asof_et="2026-11-03")
+        got = self.admitted(data=ev, log=fixture(scan=scan, sheet=dict(SHEET, asof_et="2026-11-03"), life=dict(LIFE, asof_et="2026-11-03"), panel=dict(PANEL, asof_et="2026-11-03")))
+        self.assertEqual(got["asof_et"], "2026-11-03")
+
     def test_repeated_deterministic_receipt(self):
         self.assertEqual(self.admitted(), self.admitted())
 
