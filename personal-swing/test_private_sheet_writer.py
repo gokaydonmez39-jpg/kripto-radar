@@ -74,6 +74,40 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         self.assertEqual(len(api.candidates),3)
         self.assertEqual(len(api.scans),2)
 
+    def test_new_eod_source_provenance_matches_real_github_trigger(self):
+        expected = {
+            'schedule': 'GitHub schedule VERIFIED IEX EOD',
+            'workflow_dispatch': 'GitHub workflow_dispatch VERIFIED IEX EOD',
+            'push': 'GitHub push VERIFIED IEX EOD',
+        }
+        for event, label in expected.items():
+            with self.subTest(event=event):
+                p = w.plan(snapshot(), [list(w.CANDIDATE_HEADER)],
+                           [list(w.SCAN_HEADER)], RUN, run_event=event)
+                self.assertEqual(p['scan_rows'][0][1], label)
+                self.assertIn('source_event=' + event, p['scan_rows'][0][9])
+                self.assertTrue(all('source_event=' + event in r[12]
+                                    for r in p['candidate_rows']))
+                self.assertFalse(any('private auto handoff' in r[12]
+                                     for r in p['candidate_rows']))
+
+    def test_untrusted_or_missing_event_fails_before_sheet_write(self):
+        for event in ('', 'pull_request', 'workflow_run', 'bogus', None):
+            with self.subTest(event=event):
+                api = FakeApi()
+                with self.assertRaisesRegex(w.HandoffBlocked,
+                                            'UNTRUSTED_GITHUB_EVENT'):
+                    w.synchronize(snapshot(), RUN, api, run_event=event)
+                self.assertEqual(api.apply_count, 0)
+
+    def test_legacy_scan_replay_never_changes_historical_provenance(self):
+        api = FakeApi()
+        w.synchronize(snapshot(), RUN, api, run_event='workflow_dispatch')
+        original = copy.deepcopy(api.scans[1])
+        w.synchronize(snapshot(), RUN, api, run_event='schedule')
+        self.assertEqual(api.scans[1], original)
+        self.assertEqual(len(api.scans), 2)
+
     def test_idempotent_replay_no_duplicate(self):
         api=FakeApi()
         w.synchronize(snapshot(),RUN,api)
