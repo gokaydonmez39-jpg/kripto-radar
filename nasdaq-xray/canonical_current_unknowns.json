@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-11-03",
+  "asof_et": "2026-11-04",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3190
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3190
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1103202621:31|||||||",
+  "official_footer": "File Creation Time: 1104202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3190
   },
-  "source_queue_hash": "4b776d75ce2a72c7be92b96128eba5e2556a620a2cb644ed90f72de7824816ec",
-  "source_state_hash": "df2b699f1a1dee2407c58c546965757aee2fcec199d5873fe88cb0e2dc215e5e",
+  "source_queue_hash": "e9fd0235fd91d0d01f0058adcd741561a9cc319395859281f2d852393edd6a5e",
+  "source_state_hash": "b555d2b75c6246320ee1881ce32fb2274633ecb01b49be1efa2993b8dd9deac9",
   "source_unknown_count": 3190,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3190,
@@ -21979,24 +21979,6 @@
       "security_name": "Genasys Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "GNTA": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Genenta Science S.p.A. - American Depositary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
     "GNTX": {
       "attempts": 0,
       "discovery": {
@@ -29374,7 +29356,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Laser Photonics Corporation - Common Stock",
+      "security_name": "LASE Corp. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "LASR": {
@@ -45107,6 +45089,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "SAB Biotherapeutics, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "SAEN": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Genenta Science S.p.A. - American Depositary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "SAFT": {
