@@ -31,6 +31,13 @@ class Fixture(panels.FakeApi):
 
 
 class GuardianTests(unittest.TestCase):
+    def test_guardian_scope_bound_to_expected_asof(self):
+        a=Fixture()
+        with patch.object(guardian.runner,'get_scope',
+                          wraps=guardian.runner.get_scope) as scope_spy:
+            a.evaluate()
+        self.assertEqual(scope_spy.call_args.kwargs.get('asof'),a.asof)
+
     def test_verified_eod_without_device_claim(self):
         a = Fixture()
         result = a.evaluate()
