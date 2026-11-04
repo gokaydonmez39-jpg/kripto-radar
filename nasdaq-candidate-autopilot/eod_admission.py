@@ -80,7 +80,8 @@ def validate_event(event: dict, log: str) -> dict:
     try:
         stamp = dt.datetime.fromisoformat(created.replace("Z", "+00:00"))
         need(stamp.tzinfo is not None, "RUN_DATE_NAIVE")
-        ny_date = stamp.astimezone(ZoneInfo("America/New_York")).date()
+        ny_local = stamp.astimezone(ZoneInfo("America/New_York"))
+        ny_date = ny_local.date()
     except (ValueError, OverflowError):
         raise Blocked("RUN_DATE_INVALID") from None
     need(isinstance(log, str) and 0 < len(log.encode("utf-8")) <= MAX_LOG_BYTES,
@@ -107,7 +108,17 @@ def validate_event(event: dict, log: str) -> dict:
         session = dt.date.fromisoformat(asof)
     except ValueError:
         raise Blocked("INVALID_ASOF_ET") from None
-    need(ny_date == session and session.weekday() < 5, "RUN_SESSION_DAY_MISMATCH")
+    # The verified 477/477 *scheduled* EOD may be created after midnight
+    # New York time when GitHub schedules are delayed. Admit the same day
+    # or the immediately following NY calendar day strictly before 02:00 ET.
+    # This bounds the overnight handoff to roughly 10h after standard close
+    # without accepting arbitrary stale runs, manual dispatches, or older EODs.
+    overnight = (
+        ny_date == session + dt.timedelta(days=1)
+        and 0 <= ny_local.hour < 2
+    )
+    need((ny_date == session or overnight) and session.weekday() < 5,
+         "RUN_SESSION_DAY_MISMATCH")
     statuses = ("PRIVATE_SHEET_READBACK_PASS", "LIFECYCLE_READBACK_PASS",
                 "PANEL_READBACK_PASS")
     for status in statuses:
