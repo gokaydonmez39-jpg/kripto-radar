@@ -26,6 +26,13 @@ SCAN_HEADER = ('ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ',
                'EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI')
 BATCH_ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
 MAX_ROWS = 1000
+# Honest source labels: a verified 477 IEX result is not necessarily an
+# automatically scheduled GitHub run. Never infer the event from its status.
+RUN_EVENT_LABELS = {
+    'schedule': 'GitHub schedule VERIFIED IEX EOD',
+    'workflow_dispatch': 'GitHub workflow_dispatch VERIFIED IEX EOD',
+    'push': 'GitHub push VERIFIED IEX EOD',
+}
 
 
 class HandoffBlocked(ValueError):
@@ -72,7 +79,7 @@ def scan_source_proof(note):
     return proof
 
 
-def plan(snapshot, candidates, scans, run_url):
+def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
     """Pure deterministic idempotent append plan; never changes prior cells.
 
     Google Sheets has no per-key CAS. Single GitHub workflow concurrency,
@@ -86,6 +93,8 @@ def plan(snapshot, candidates, scans, run_url):
     require(isinstance(run_url, str) and
             run_url.startswith('https://github.com/') and '/actions/runs/' in run_url,
             'UNVERIFIED_RUN_ID')
+    require(type(run_event) is str and run_event in RUN_EVENT_LABELS,
+            'UNTRUSTED_GITHUB_EVENT')
     old_candidates = rows_only(candidates, CANDIDATE_HEADER)
     old_scans = rows_only(scans, SCAN_HEADER)
     candidate_keys = [row[0] for row in old_candidates]
@@ -122,8 +131,8 @@ def plan(snapshot, candidates, scans, run_url):
             money(row['close']), money(row['indicative_stop']),
             money(row['indicative_target_2r']), 'AÇIK • 0/15 SEANS',
             '', '', '', 'KAYDEDİLDİ_BİLDİRİM_AYRI',
-            'GitHub private auto handoff; IEX single exchange; RSI14={} RVOL={}; '.format(
-                row['rsi14'], row['relative_iex_volume']) +
+            'GitHub private handoff; source_event={}; IEX single exchange; RSI14={} RVOL={}; '.format(
+                run_event, row['rsi14'], row['relative_iex_volume']) +
             'run=' + run_url + '; NO_BROKER_NO_ORDERS'])
 
     matching_scans = [r for r in old_scans if r[0] == asof]
@@ -144,10 +153,11 @@ def plan(snapshot, candidates, scans, run_url):
                 'EXISTING_SCAN_SOURCE_SHA_CONFLICT')
     else:
         appended_scans = [[
-            asof, 'GitHub auto VERIFIED IEX EOD', '477', '477', '477', '0',
+            asof, RUN_EVENT_LABELS[run_event], '477', '477', '477', '0',
             'TRUE', str(len(all_al)), run_url,
             'scopeSHA=' + snapshot['scope_sha256'] +
             ';algorithmSHA=' + snapshot['analysis_fingerprint_sha256'] +
+            ';source_event=' + run_event +
             ';NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']]
     require(len(old_candidates) + len(appended_candidates) < MAX_ROWS and
             len(old_scans) + len(appended_scans) < MAX_ROWS,
@@ -294,11 +304,11 @@ class SheetApi:
             self.request(':batchUpdate',method='POST',body=data)
 
 
-def synchronize(snapshot, run_url, api):
+def synchronize(snapshot, run_url, api, run_event='schedule'):
     api.check_metadata()
     before_candidates=api.read('ADAY_GECMISI','M')
     before_scans=api.read('TARAMA_KAYITLARI','J')
-    p=plan(snapshot,before_candidates,before_scans,run_url)
+    p=plan(snapshot,before_candidates,before_scans,run_url,run_event=run_event)
     # Second read minimizes accidental stale writes. This is not an atomic
     # compare-and-swap; distinct external writers must be serialized.
     require(api.read('ADAY_GECMISI','M')==before_candidates and
@@ -318,11 +328,13 @@ def main(argv=None):
         require(bool(credential),'GOOGLE_SERVICE_ACCOUNT_NOT_CONFIGURED')
         run_id=os.environ.get('GITHUB_RUN_ID','')
         require(run_id.isdigit(),'GITHUB_RUN_ID_MISSING')
+        run_event=os.environ.get('GITHUB_EVENT_NAME','')
+        require(run_event in RUN_EVENT_LABELS,'UNTRUSTED_GITHUB_EVENT')
         snapshot=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
         api=SheetApi(credential)
         out=synchronize(snapshot,
             'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/'+run_id,
-            api)
+            api,run_event=run_event)
         # Public log contains aggregate count only, never symbol or signal rows.
         print(json.dumps(out,sort_keys=True))
         return 0

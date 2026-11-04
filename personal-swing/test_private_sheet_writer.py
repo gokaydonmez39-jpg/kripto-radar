@@ -66,7 +66,7 @@ class FakeApi:
 class PrivateSheetHandoffTests(unittest.TestCase):
     def test_atomic_two_sheet_append_and_independent_readback(self):
         api=FakeApi()
-        result=w.synchronize(snapshot(),RUN,api)
+        result=w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
         self.assertEqual(result['candidates'],2)
         self.assertFalse(result['device_ack'])
@@ -74,52 +74,86 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         self.assertEqual(len(api.candidates),3)
         self.assertEqual(len(api.scans),2)
 
+    def test_new_eod_source_provenance_matches_real_github_trigger(self):
+        expected = {
+            'schedule': 'GitHub schedule VERIFIED IEX EOD',
+            'workflow_dispatch': 'GitHub workflow_dispatch VERIFIED IEX EOD',
+            'push': 'GitHub push VERIFIED IEX EOD',
+        }
+        for event, label in expected.items():
+            with self.subTest(event=event):
+                p = w.plan(snapshot(), [list(w.CANDIDATE_HEADER)],
+                           [list(w.SCAN_HEADER)], RUN, run_event=event)
+                self.assertEqual(p['scan_rows'][0][1], label)
+                self.assertIn('source_event=' + event, p['scan_rows'][0][9])
+                self.assertTrue(all('source_event=' + event in r[12]
+                                    for r in p['candidate_rows']))
+                self.assertFalse(any('private auto handoff' in r[12]
+                                     for r in p['candidate_rows']))
+
+    def test_untrusted_or_missing_event_fails_before_sheet_write(self):
+        for event in ('', 'pull_request', 'workflow_run', 'bogus', None):
+            with self.subTest(event=event):
+                api = FakeApi()
+                with self.assertRaisesRegex(w.HandoffBlocked,
+                                            'UNTRUSTED_GITHUB_EVENT'):
+                    w.synchronize(snapshot(), RUN, api, run_event=event)
+                self.assertEqual(api.apply_count, 0)
+
+    def test_legacy_scan_replay_never_changes_historical_provenance(self):
+        api = FakeApi()
+        w.synchronize(snapshot(), RUN, api, run_event='workflow_dispatch')
+        original = copy.deepcopy(api.scans[1])
+        w.synchronize(snapshot(), RUN, api, run_event='schedule')
+        self.assertEqual(api.scans[1], original)
+        self.assertEqual(len(api.scans), 2)
+
     def test_idempotent_replay_no_duplicate(self):
         api=FakeApi()
-        w.synchronize(snapshot(),RUN,api)
-        w.synchronize(snapshot(),RUN,api)
+        w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,2)
         self.assertEqual(len(api.candidates),3)
         self.assertEqual(len(api.scans),2)
         self.assertEqual(w.payload_from_plan(
-            w.plan(snapshot(),api.candidates,api.scans,RUN))['requests'],[])
+            w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule'))['requests'],[])
 
     def test_header_drift_blocks(self):
         api=FakeApi()
         api.candidates[0][0]='WRONG HEADER'
         with self.assertRaisesRegex(w.HandoffBlocked,'SHEET_HEADER_DRIFT'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
     def test_existing_duplicate_episode_blocks(self):
         api=FakeApi()
-        p=w.plan(snapshot(),api.candidates,api.scans,RUN)
+        p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
         api.candidates.extend([p['candidate_rows'][0]]*2)
         with self.assertRaisesRegex(w.HandoffBlocked,'DUPLICATE_CANDIDATE_KEYS'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
 
     def test_immutable_original_stop_blocks_conflict(self):
         api=FakeApi()
-        p=w.plan(snapshot(),api.candidates,api.scans,RUN)
+        p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
         row=copy.deepcopy(p['candidate_rows'][0])
         row[5]='100'
         api.candidates.append(row)
         with self.assertRaisesRegex(w.HandoffBlocked,'CANDIDATE_ORIGINAL_LEVEL_CONFLICT'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
     def test_same_asof_different_counts_blocks(self):
         api=FakeApi()
-        p=w.plan(snapshot(),api.candidates,api.scans,RUN)
+        p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
         row=copy.deepcopy(p['scan_rows'][0])
         row[7]='0'
         api.scans.append(row)
         with self.assertRaisesRegex(w.HandoffBlocked,'EXISTING_SCAN_EPOCH_CONFLICT'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
 
     def test_same_asof_source_proof_mutations_block_before_write(self):
         api = FakeApi()
-        w.synchronize(snapshot(), RUN, api)
+        w.synchronize(snapshot(), RUN, api, run_event='schedule')
         original = api.scans[1][9]
         data = snapshot()
         cases = [
@@ -138,10 +172,10 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                 with self.assertRaisesRegex(
                         w.HandoffBlocked,
                         'EXISTING_SCAN_SOURCE_(SHA_CONFLICT|PROOF_MISSING_OR_MALFORMED)'):
-                    w.synchronize(data, RUN, api)
+                    w.synchronize(data, RUN, api, run_event='schedule')
                 self.assertEqual(api.apply_count, 1)
         api.scans[1][9] = original
-        w.synchronize(data, RUN, api)
+        w.synchronize(data, RUN, api, run_event='schedule')
         self.assertEqual(len(api.scans), 2)
         self.assertEqual(len(api.candidates), 3)
 
@@ -149,14 +183,14 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         api=FakeApi()
         api.change_on_second_read=True
         with self.assertRaisesRegex(w.HandoffBlocked,'CONCURRENT_SHEET_EDIT_BLOCKED'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
     def test_missing_readback_blocks_false_delivery(self):
         api=FakeApi()
         api.break_readback=True
         with self.assertRaisesRegex(w.HandoffBlocked,'CANDIDATE_READBACK_MISSING'):
-            w.synchronize(snapshot(),RUN,api)
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
 
     def test_bad_scope_and_partial_data_never_append(self):
         for field,value in [('valid_data_symbols',476),('scope_sha256','f'*64),
@@ -166,12 +200,12 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                 data=snapshot()
                 data[field]=value
                 with self.assertRaises(Exception):
-                    w.synchronize(data,RUN,api)
+                    w.synchronize(data,RUN,api,run_event='schedule')
                 self.assertEqual(api.apply_count,0)
 
     def test_readback_rejects_corrupted_new_stop(self):
         p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
-                 [list(w.SCAN_HEADER)],RUN)
+                 [list(w.SCAN_HEADER)],RUN,run_event='schedule')
         candidates=[list(w.CANDIDATE_HEADER)]+copy.deepcopy(p['candidate_rows'])
         scans=[list(w.SCAN_HEADER)]+copy.deepcopy(p['scan_rows'])
         candidates[1][5]='1,00'
@@ -180,7 +214,7 @@ class PrivateSheetHandoffTests(unittest.TestCase):
 
     def test_readback_rejects_corrupted_new_scan_provenance(self):
         p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
-                 [list(w.SCAN_HEADER)],RUN)
+                 [list(w.SCAN_HEADER)],RUN,run_event='schedule')
         candidates=[list(w.CANDIDATE_HEADER)]+copy.deepcopy(p['candidate_rows'])
         scans=[list(w.SCAN_HEADER)]+copy.deepcopy(p['scan_rows'])
         scans[1][8]='https://github.com/unrelated/actions/runs/123'
@@ -189,12 +223,12 @@ class PrivateSheetHandoffTests(unittest.TestCase):
 
     def test_existing_price_one_cent_conflict_is_not_rounding(self):
         p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
-                 [list(w.SCAN_HEADER)],RUN)
+                 [list(w.SCAN_HEADER)],RUN,run_event='schedule')
         old=copy.deepcopy(p['candidate_rows'][0])
         old[4]='100,01'
         with self.assertRaisesRegex(w.HandoffBlocked,'CANDIDATE_ORIGINAL_LEVEL_CONFLICT'):
             w.plan(snapshot(),[list(w.CANDIDATE_HEADER),old],
-                   [list(w.SCAN_HEADER)],RUN)
+                   [list(w.SCAN_HEADER)],RUN,run_event='schedule')
 
     def test_wrong_workbook_timezone_and_missing_panel_are_rejected(self):
         api=w.SheetApi.__new__(w.SheetApi)
@@ -256,7 +290,7 @@ class PrivateSheetHandoffTests(unittest.TestCase):
 
     def test_candidate_rows_never_include_broker_or_orders(self):
         p=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
-                 [list(w.SCAN_HEADER)],RUN)
+                 [list(w.SCAN_HEADER)],RUN,run_event='schedule')
         self.assertEqual(len(p['candidate_rows']),2)
         self.assertEqual(len(p['scan_rows']),1)
         self.assertTrue(all('NO_BROKER_NO_ORDERS' in r[-1] for r in p['candidate_rows']))
