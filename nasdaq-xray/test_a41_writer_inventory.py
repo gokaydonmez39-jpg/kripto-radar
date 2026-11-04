@@ -95,6 +95,103 @@ jobs:
 """)
         self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
 
+    def test_multiline_continued_main_push_is_a_direct_writer(self):
+        self.add("split-push.yml", """jobs:
+  writer:
+    steps:
+      - run: |
+          git push origin \\
+            HEAD:main
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_DIRECT_MAIN_WRITERS")
+        self.assertEqual(audit["direct_main_writer_count"], 1)
+        self.assertEqual(audit["direct_main_push_sites"], 1)
+
+    def test_curl_post_with_implicit_token_needs_mutation_review(self):
+        self.add("curl-writer.yml", """jobs:
+  publish:
+    steps:
+      - run: curl -X POST https://api.github.com/repos/acme/project/dispatches
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+        self.assertEqual(audit["manual_review_count"], 1)
+
+    def test_github_release_creation_needs_mutation_review(self):
+        self.add("gh-release.yml", """jobs:
+  publish:
+    steps:
+      - run: gh release create v1.0.0 artifact.zip
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+        self.assertEqual(audit["manual_review_count"], 1)
+
+    def test_gh_api_implicit_post_fails_closed(self):
+        self.add("gh-fields.yml", """jobs:
+  publisher:
+    steps:
+      - run: gh api repos/acme/project/dispatches -f event_type=checkpoint
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_gh_api_typed_field_post_fails_closed(self):
+        self.add("gh-fields-typed.yml", """jobs:
+  publisher:
+    steps:
+      - run: gh api repos/acme/project/dispatches -F event_id=1
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_gh_api_input_payload_requires_review(self):
+        self.add("gh-input.yml", """jobs:
+  publisher:
+    steps:
+      - run: gh api repos/acme/project/dispatches --input event.json
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_curl_upload_short_put_fails_closed(self):
+        self.add("curl-short-upload.yml", """jobs:
+  publisher:
+    steps:
+      - run: curl -T payload.json https://api.example.invalid/v1/upload
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_curl_upload_long_put_fails_closed(self):
+        self.add("curl-long-upload.yml", """jobs:
+  publisher:
+    steps:
+      - run: curl --upload-file payload.json https://api.example.invalid/v1/upload
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_curl_form_post_fails_closed(self):
+        self.add("curl-form.yml", """jobs:
+  publisher:
+    steps:
+      - run: curl -F evidence=@payload.json https://api.example.invalid/upload
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+
+    def test_known_gh_api_read_only_get_remains_static_pass(self):
+        self.add("gh-get.yml", """jobs:
+  inspect:
+    steps:
+      - run: gh api repos/acme/project/commits
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "PASS_STATIC_NO_WRITERS")
+
+    def test_known_curl_head_remains_static_pass(self):
+        self.add("curl-head.yml", """jobs:
+  inspect:
+    steps:
+      - run: curl -I https://api.example.invalid/status
+""")
+        self.assertEqual(a.inventory(self.root)["status"], "PASS_STATIC_NO_WRITERS")
+
     def test_invalid_yaml_fails_closed(self):
         self.add("invalid.yml", "jobs: [\n")
         result = a.inventory(self.root)
