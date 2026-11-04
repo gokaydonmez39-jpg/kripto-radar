@@ -40,6 +40,58 @@ class OfflineCIPipeline(unittest.TestCase):
         syms=runner.get_scope(watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')))
         self.assertEqual(len(syms),477)
         self.assertEqual(len(set(syms)),477)
+
+    def test_indv_supn_pit_rename_only_after_official_effective_date(self):
+        watchlist=str(Path(__file__).with_name('nasdaq_watchlist_477.json'))
+        original=runner.get_scope(watchlist_file=watchlist)
+        old=runner.get_scope(watchlist_file=watchlist,asof='2026-11-02')
+        new=runner.get_scope(watchlist_file=watchlist,asof='2026-11-03')
+        after=runner.get_scope(watchlist_file=watchlist,asof='2026-11-04')
+        self.assertEqual(old,original)
+        self.assertIn('INDV',old)
+        self.assertNotIn('SUPN',old)
+        self.assertNotIn('INDV',new)
+        self.assertEqual(new.count('SUPN'),1)
+        self.assertEqual(new,after)
+        self.assertEqual(len(new),len(set(new)))
+        self.assertEqual(len(new),477)
+        positions=[i for i,(a,b) in enumerate(zip(old,new)) if a!=b]
+        self.assertEqual(len(positions),1)
+        self.assertEqual((old[positions[0]],new[positions[0]]),('INDV','SUPN'))
+        self.assertNotEqual(runner.sha_symbols(old),runner.sha_symbols(new))
+
+    def test_pit_change_unreviewed_alias_or_duplicate_blocks(self):
+        watchlist=Path(__file__).with_name('nasdaq_watchlist_477.json')
+        j=json.loads(watchlist.read_text(encoding='utf-8'))
+        with tempfile.TemporaryDirectory() as out:
+            p=Path(out)/'scope.json'
+            for change,expected in (
+                ({'new_symbol':'AAPL'},'UNREVIEWED_PIT_SYMBOL_CHANGE'),
+                ({'effective_asof_et':'2026-11-02'},'UNREVIEWED_PIT_SYMBOL_CHANGE'),
+                ({'nasdaq_history_policy':'https://example.invalid'},'UNREVIEWED_PIT_SYMBOL_CHANGE'),
+            ):
+                z=json.loads(json.dumps(j))
+                z['point_in_time_symbol_changes'][0].update(change)
+                p.write_text(json.dumps(z),encoding='utf-8')
+                with self.assertRaisesRegex(ValueError,expected):
+                    runner.get_scope(watchlist_file=str(p),asof='2026-11-03')
+            z=json.loads(json.dumps(j))
+            z['liquidity_watch_symbols'][-1]='SUPN'
+            p.write_text(json.dumps(z),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'PIT_SYMBOL_IDENTITY_COLLISION'):
+                runner.get_scope(watchlist_file=str(p),asof='2026-11-03')
+        with self.assertRaisesRegex(ValueError,'INVALID_PIT_ASOF'):
+            runner.get_scope(watchlist_file=str(watchlist),asof='2026-11-03XXX')
+
+    def test_new_supn_identity_has_no_synthetic_history_requirement(self):
+        # Offline input only; production must retrieve all 52 actual IEX bars.
+        watchlist=str(Path(__file__).with_name('nasdaq_watchlist_477.json'))
+        universe=runner.get_scope(watchlist_file=watchlist,asof='2026-11-03')
+        self.assertIn('SUPN',universe)
+        result=engine.analyze('SUPN',synthetic_bars('2026-11-03',('SUPN',))['SUPN'],
+                              '2026-11-03')
+        self.assertIn(result['decision'],('AL','IZLE','ELE'))
+        self.assertEqual(result['asof_et'],'2026-11-03')
     def test_partial_resume_completes_and_preserves_previous_work(self):
         with tempfile.TemporaryDirectory() as out:
             symbols=['CVLT','AAPL','AMD']
