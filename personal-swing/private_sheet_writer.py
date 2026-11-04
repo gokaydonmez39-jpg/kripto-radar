@@ -79,7 +79,7 @@ def plan(snapshot, candidates, scans, run_url):
     two preflight reads and post-write readback reduce, but do NOT eliminate,
     races with another writer. No exactly-once delivery claim is made.
     """
-    symbols = runner.get_scope(watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')))
+    symbols = runner.get_scope(watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),asof=snapshot.get('asof_et'))
     handoff_guard.validate_snapshot(
         snapshot, symbols, scope_sha=runner.sha_symbols(symbols),
         policy_sha=runner.analysis_fingerprint())

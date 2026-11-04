@@ -5,7 +5,7 @@ Private, local output only. No raw provider OHLCV is stored in public GitHub.
 Checkpoints are hash-scoped to the exact symbol universe and completed session.
 """
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import os
@@ -50,10 +50,41 @@ def analysis_fingerprint():
     return digest.hexdigest()
 
 
-def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None):
+def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None, *, asof=None):
+    """Exact PIT symbols: preserve 2 Nov INDV, switch ONLY on/after 3 Nov.
+
+    This transforms identifier identity, never price bars or candidate history.
+    A future, unreviewed corporate action must fail closed until approved.
+    """
     if watchlist_file:
         j=json.loads(Path(watchlist_file).read_text(encoding='utf-8'))
         values=j if isinstance(j,list) else j.get('liquidity_watch_symbols',[])
+        if asof is not None:
+            if type(asof) is not str or len(asof)!=10:
+                raise ValueError('INVALID_PIT_ASOF')
+            try:
+                if date.fromisoformat(asof).isoformat()!=asof:
+                    raise ValueError('INVALID_PIT_ASOF')
+            except ValueError as exc:
+                raise ValueError('INVALID_PIT_ASOF') from exc
+            if type(j) is not dict or type(values) is not list:
+                raise ValueError('PIT_WATCHLIST_METADATA_REQUIRED')
+            changes=j.get('point_in_time_symbol_changes',[])
+            if type(changes) is not list or len(changes)>1:
+                raise ValueError('UNREVIEWED_PIT_CHANGE_REGISTRY')
+            for change in changes:
+                if (type(change) is not dict or
+                    (change.get('effective_asof_et'),change.get('old_symbol'),
+                     change.get('new_symbol'))!=('2026-11-03','INDV','SUPN') or
+                    change.get('nasdaq_history_policy') !=
+                        'https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-25' or
+                    change.get('nasdaq_corporate_action') !=
+                        'https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-742'):
+                    raise ValueError('UNREVIEWED_PIT_SYMBOL_CHANGE')
+                if asof >= change['effective_asof_et']:
+                    if values.count('INDV')!=1 or 'SUPN' in values:
+                        raise ValueError('PIT_SYMBOL_IDENTITY_COLLISION')
+                    values=['SUPN' if s=='INDV' else s for s in values]
     elif symbols:
         values=[s.strip() for s in symbols.split(',')]
     elif repo_watchlist:
@@ -187,7 +218,7 @@ def main(argv=None):
     a=p.parse_args(argv)
     asof=a.asof or engine.trading_asof().isoformat()
     engine.validate_asof(asof)
-    syms=get_scope(a.symbols,a.repo_watchlist,a.watchlist_file)
+    syms=get_scope(a.symbols,a.repo_watchlist,a.watchlist_file,asof=asof)
     result=scan(asof,syms,a.dir,batch_size=a.batch_size,max_batches=a.max_batches,pause=a.pause)
     print(json.dumps({'asof_et':asof,'requested':len(syms),
           'processed':result['processed_symbols'],'complete':result['coverage_complete'],

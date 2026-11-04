@@ -126,7 +126,7 @@ jobs:
           snap=json.loads(path.read_text(encoding='utf-8'))
           if requested and snap.get('asof_et')!=requested:
               raise RuntimeError('WORKFLOW_DISPATCH_ASOF_MISMATCH')
-          symbols=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json')
+          symbols=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json',asof=snap.get('asof_et'))
           # Explicit exceptions, never Python assert (disabled under -O).
           handoff_guard.validate_snapshot(snap,symbols,
               scope_sha=runner.sha_symbols(symbols),
