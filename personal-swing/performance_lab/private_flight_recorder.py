@@ -32,6 +32,19 @@ TERMINAL_CODES = frozenset((
     'GAP_BELOW_STOP'
 ))
 MAX_ROWS = 1000
+# Explicitly reviewed, immutable PIT handoff receipts. The official Nasdaq
+# INDV→SUPN change takes effect 2026-11-03; no data, prior AL levels or
+# historical row is modified. Do not grant generic permission for new SHA
+# changes: they require a separate reviewed migration.
+PIT_CUTOVER = '2026-11-03'
+PIT_PRE_CUTOVER_SHA = (
+    '420025dd5b83b59fedd3d9af4332471fee731aedfaacb616ce80ca473bef6745',
+    'd7d119c2125d75981f86850c2283973b2a70b5a2aa6aa638600a60f5039969c8',
+)
+PIT_POST_CUTOVER_SHA = (
+    '4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20',
+    'c8fc8877aa0a9e55a8e1b9707886c17210e3859fc91f896af90a26b4a98c134e',
+)
 
 
 class FlightRecorderBlocked(ValueError):
@@ -98,7 +111,19 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             need('scopeSHA=' not in note and 'algorithmSHA=' not in note,
                  'FLIGHT_PARTIAL_SHA_PROVENANCE')
             continue
-        need(fp == latest_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+        # Before the reviewed Nasdaq PIT cutover, provenance must match
+        # the exact pre-cutover receipt; afterwards it must match the
+        # currently verified post-cutover receipt. No arbitrary historical
+        # SHA drift is permitted, even after a new code deployment.
+        approved_transition = (
+            cutoff >= PIT_CUTOVER
+            and latest_fp == PIT_POST_CUTOVER_SHA
+        )
+        permitted_fp = (
+            PIT_PRE_CUTOVER_SHA if day < PIT_CUTOVER
+            else PIT_POST_CUTOVER_SHA
+        ) if approved_transition else latest_fp
+        need(fp == permitted_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
         verified_days.add(day)
     verified_episode_keys = {day: [] for day in verified_days}
     terminal_expected = set()

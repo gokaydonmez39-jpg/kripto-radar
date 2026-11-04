@@ -84,7 +84,8 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
     need(EVENT_RUN.fullmatch(str(s[8])) is not None, "UNTRUSTED_RUN_PROOF")
     proof = sheets.scan_source_proof(s[9])
     universe = runner.get_scope(
-        watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")))
+        watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
+        asof=expected_asof)
     need(len(universe) == 477 and
          proof["scopeSHA"] == runner.sha_symbols(universe) and
          proof["algorithmSHA"] == runner.analysis_fingerprint(),
