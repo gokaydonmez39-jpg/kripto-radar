@@ -95,6 +95,39 @@ jobs:
 """)
         self.assertEqual(a.inventory(self.root)["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
 
+    def test_multiline_continued_main_push_is_a_direct_writer(self):
+        self.add("split-push.yml", """jobs:
+  writer:
+    steps:
+      - run: |
+          git push origin \\
+            HEAD:main
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_DIRECT_MAIN_WRITERS")
+        self.assertEqual(audit["direct_main_writer_count"], 1)
+        self.assertEqual(audit["direct_main_push_sites"], 1)
+
+    def test_curl_post_with_implicit_token_needs_mutation_review(self):
+        self.add("curl-writer.yml", """jobs:
+  publish:
+    steps:
+      - run: curl -X POST https://api.github.com/repos/acme/project/dispatches
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+        self.assertEqual(audit["manual_review_count"], 1)
+
+    def test_github_release_creation_needs_mutation_review(self):
+        self.add("gh-release.yml", """jobs:
+  publish:
+    steps:
+      - run: gh release create v1.0.0 artifact.zip
+""")
+        audit = a.inventory(self.root)
+        self.assertEqual(audit["status"], "HOLD_WRITABLE_OR_UNREVIEWED")
+        self.assertEqual(audit["manual_review_count"], 1)
+
     def test_invalid_yaml_fails_closed(self):
         self.add("invalid.yml", "jobs: [\n")
         result = a.inventory(self.root)
