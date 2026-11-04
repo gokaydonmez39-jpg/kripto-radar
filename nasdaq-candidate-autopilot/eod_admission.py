@@ -108,6 +108,12 @@ def validate_event(event: dict, log: str) -> dict:
         session = dt.date.fromisoformat(asof)
     except ValueError:
         raise Blocked("INVALID_ASOF_ET") from None
+    # Producer workflow has one approved schedule at 23:15 UTC. Do not
+    # trust an event labelled 'schedule' if created before its fixed cron,
+    # even when the ASOF/day and data readbacks otherwise appear valid.
+    cron_start = dt.datetime.combine(
+        session, dt.time(hour=23, minute=15), tzinfo=dt.timezone.utc)
+    need(stamp >= cron_start, "RUN_PRECEDES_SCHEDULE")
     # The verified 477/477 *scheduled* EOD may be created after midnight
     # New York time when GitHub schedules are delayed. Admit the same day
     # or the immediately following NY calendar day strictly before 02:00 ET.
