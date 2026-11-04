@@ -81,19 +81,20 @@ def plan(panel, candidate_table, scan_table):
             'Alpaca IEX EOD · 477/477 geçerli · 0 eksik · FINAL READY · '
             +str(matches)+' yeni teknik AL; XNAS '+day],
         9: [str(s[8]),
-            'GitHub EOD kaynak kanıtı · private Sheet readback ayrı · '
-            'iPhone cihaz ACK bilinmiyor'],
+            'GitHub EOD kaynak kanıtı · özel Sheet readback ayrı · '
+            'planlı ChatGPT teslimi ayrı kabul'],
         10: ['Son FINAL '+day+'; toplam '+str(len(candidates))+
              ' gözlem: '+str(open_count)+' açık, '+str(closed_count)+
              ' kapalı; '+str(matches)+' yeni AL.',
-             'Tek borsa IEX · teorik risk · gerçek fill ve iPhone cihaz ACK yok'],
-        12: ['KİŞİSEL ARAŞTIRMA START AKTİF · PUSH HOLD',
+             'Tek borsa IEX · teorik risk · gerçek fill yok · '
+             'ChatGPT teslim makbuzu ayrıca doğrulanır'],
+        12: ['KİŞİSEL ARAŞTIRMA START AKTİF · CHATGPT TESLİMİ AYRI',
              day+' · IEX 477/477 geçerli · 0 eksik · 52 ardışık XNAS; '
-             'teknik araştırma aktif, tam otomatik push ACK UNKNOWN'],
+             'teknik araştırma aktif; planlı ChatGPT mesaj teslimi ayrı kabul'],
         13: ['KİŞİSEL IEX EOD PASS · CANONICAL NO-GO',
              day+' · FINAL READY · '+str(matches)+
              ' yeni teknik AL · source readback PASS; canonical kaynak '
-             've iPhone cihaz ACK ayrı kabul, otomatik emir yok'],
+             've planlı ChatGPT teslimi ayrı kabul; otomatik emir yok'],
         15: [str(len(candidates))+' TEKNİK KAYIT',
              'ASOF|SEMBOL ayrı gözlem; orijinal stop ve hedef değişmez; '
              'son doğrulanmış EOD '+day],

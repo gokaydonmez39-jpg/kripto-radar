@@ -82,16 +82,27 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertIn(DAY,api.panel[12][2])
         self.assertIn(DAY,api.panel[13][2])
         self.assertEqual(api.panel[12][1],
-                         'KİŞİSEL ARAŞTIRMA START AKTİF · PUSH HOLD')
+                         'KİŞİSEL ARAŞTIRMA START AKTİF · CHATGPT TESLİMİ AYRI')
         self.assertEqual(api.panel[13][1],
                          'KİŞİSEL IEX EOD PASS · CANONICAL NO-GO')
-        self.assertIn('ACK UNKNOWN',api.panel[12][2])
+        self.assertIn('ChatGPT',api.panel[12][2])
         self.assertIn('ayrı kabul',api.panel[13][2])
         self.assertEqual(api.panel[15][1],'1 TEKNİK KAYIT')
         self.assertEqual(api.candidates,original_candidates)
         self.assertEqual(api.scans,original_scans)
         self.assertFalse(got['device_ack'])
 
+    def test_chatgpt_only_acceptance_omits_obsolete_device_ack_gate(self):
+        api=FakeApi()
+        plan=p.plan(api.panel,api.candidates,api.scans)
+        texts=' | '.join(' '.join(plan['values'][r])
+                         for r in (9,10,12,13))
+        self.assertIn('ChatGPT',texts)
+        self.assertNotIn('iPhone',texts)
+        self.assertNotIn('PUSH',texts)
+        self.assertNotIn('ACK UNKNOWN',texts)
+        self.assertNotIn('cihaz ACK',texts)
+        self.assertIn('ayrı kabul',texts)
     def test_idempotent_replay_has_no_second_write(self):
         api=FakeApi()
         p.synchronize(api)
