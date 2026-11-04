@@ -91,6 +91,18 @@ class RealEODAdmissionTests(unittest.TestCase):
             with self.subTest(created_at=stamp):
                 self.blocked(event=dict(EVENT, created_at=stamp))
 
+    def test_scheduled_run_created_before_utc_cron_must_be_blocked(self):
+        # Official personal EOD has a fixed 23:15 UTC scheduled trigger.
+        # A created_at earlier than cron is not an eligible producer.
+        for stamp in ("2026-10-30T18:15:00Z",
+                      "2026-10-30T23:14:59Z"):
+            with self.subTest(created_at=stamp):
+                self.blocked(event=dict(EVENT, created_at=stamp))
+        self.assertEqual(
+            self.admitted(data=dict(EVENT, created_at="2026-10-30T23:15:00Z"))["asof_et"],
+            ET,
+        )
+
     def test_dst_november_standard_time_overnight_acceptance(self):
         # 2026-11-03 16:00 EST is 21:00Z; late task queued Nov4 00:40 EST.
         ev = dict(EVENT, created_at="2026-11-04T05:40:00Z")
