@@ -104,7 +104,7 @@ def main(argv=None):
         print(json.dumps({'status':'SKIPPED_NO_COMPLETED_CURRENT_ET_SESSION',
                           'execution':'NONE','market_data_called':False},sort_keys=True))
         return 0
-    symbols=runner.get_scope(watchlist_file=a.watchlist_file)
+    symbols=runner.get_scope(watchlist_file=a.watchlist_file,asof=asof)
     try:
         summary=run_once(asof=asof,symbols=symbols,directory=a.dir,
                          batch_size=a.batch_size,max_batches=a.max_batches,
