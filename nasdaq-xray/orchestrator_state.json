@@ -4480,7 +4480,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 210,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-04T06:59:36.039551+00:00",
+  "updated_at_utc": "2026-11-04T09:06:09.767577+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -4490,9 +4490,7 @@
     "candidate_local_special_review": null,
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
-    "new_watchlist_symbols": [
-      "PAGP"
-    ],
+    "new_watchlist_symbols": [],
     "no_longer_in_top_watchlist": [],
     "orders": [],
     "price_liquidity_screened_count": 473,
@@ -11068,7 +11066,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PAGP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
