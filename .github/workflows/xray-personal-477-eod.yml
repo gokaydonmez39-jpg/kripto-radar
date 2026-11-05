@@ -62,6 +62,9 @@ jobs:
           python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
           python -m unittest -q test_swing_score_daily
           python -O -m unittest -q test_swing_score_daily
+          python -m unittest -q test_delivery_evidence_audit
+          python -O -m unittest -q test_delivery_evidence_audit
+          python -m py_compile delivery_evidence_audit.py
           python -m py_compile swing_score_daily.py
           python -m py_compile alert_ledger_contract.py
           python -O -m py_compile alert_ledger_contract.py
@@ -342,6 +345,17 @@ jobs:
             args+=(--expected-asof "$REQUESTED_ASOF")
           fi
           python xray_guardian.py "${args[@]}"
+      - name: Advisory delivery/score audit (read-only; cannot claim ChatGPT ACK)
+        continue-on-error: true
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ -n "$REQUESTED_ASOF" ]]; then
+            args+=(--expected-asof "$REQUESTED_ASOF")
+          fi
+          python delivery_evidence_audit.py "${args[@]}"
       - name: Publish only redacted aggregate Guardian receipt (no identities)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
