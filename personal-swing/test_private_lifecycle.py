@@ -328,6 +328,24 @@ class TestPendingToRequestedContract(unittest.TestCase):
         self.assertFalse(outcome['chatgpt_message_proven'])
         self.assertFalse(outcome['device_delivery_attested'])
 
+    def test_actual_trt_iso_requested_timestamp_is_accepted_without_delivery_claim(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
+                                  timestamp='2026-11-05T11:00:26+03:00')
+        receipt = c.verify_pending_request_transition(before, after, [key])
+        self.assertEqual(receipt['recorded_intents'], 1)
+        self.assertFalse(receipt['chatgpt_message_proven'])
+        self.assertFalse(receipt['device_delivery_attested'])
+
+    def test_iso_transition_must_reject_wrong_offset_clock_and_untrusted_format(self):
+        c, key, before = self.ledger('EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        for bad in ('2026-11-05T11:00:26Z', '2026-11-05T11:00:26+00:00',
+                    '2026-11-05T11:00:26+04:00', '2026-11-05T25:00:26+03:00',
+                    '2026-02-30T11:00:26+03:00', '2026-11-05T11:00:26+03:00 extra'):
+            with self.subTest(bad=bad):
+                _, _, after = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK', timestamp=bad)
+                with self.assertRaisesRegex(c.LedgerRefused, 'REQUEST_TIMESTAMP_INVALID'):
+                    c.verify_pending_request_transition(before, after, [key])
     def test_replay_must_be_refused(self):
         c, key, before = self.ledger('ALERT_REQUESTED_NOT_DEVICE_ACK',
                                      timestamp='2026-11-03 12:17 TRT')
