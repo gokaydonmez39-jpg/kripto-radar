@@ -74,6 +74,35 @@ def plan(rows=None, histories=None, **kwargs):
 
 
 class PrivateBridge(unittest.TestCase):
+    def test_live_pit_scope_uses_completed_asof(self):
+        """A14 must pass the same ASOF to the reviewed INDV->SUPN registry."""
+        from contextlib import redirect_stdout
+        class FakeApi:
+            def verify_metadata(self):
+                return None
+            def read(self, tab, last_column):
+                return sheet() if tab == 'ADAY_GECMISI' else scans()
+        def pit_scope(*, watchlist_file, asof):
+            self.assertEqual(asof, '2026-11-04')
+            self.assertTrue(watchlist_file.endswith('nasdaq_watchlist_477.json'))
+            return UNIVERSE
+        with patch.object(a, 'accepted_private_asof', return_value='2026-11-04'), \
+             patch.dict(a.os.environ, {'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'synthetic',
+                                    'XRAY_PRIVATE_SPREADSHEET_ID':'synthetic'}), \
+             patch.object(a, 'PrivateSheetReadOnly', return_value=FakeApi()), \
+             patch.object(a.runner, 'get_scope', side_effect=pit_scope) as scope, \
+             patch.object(a.runner, 'sha_symbols', return_value=SRC), \
+             patch.object(a.runner, 'analysis_fingerprint', return_value=POL), \
+             patch.object(a, 'source_plan', return_value={'verified':[]}) as planner, \
+             patch.object(a, 'audit_plan', return_value={'status':'HOLD_NO_PROVEN_ISSUANCE',
+                                                        'verified_episodes':0,
+                                                        'excluded_issuance':0,
+                                                        'n_complete':0}):
+            with redirect_stdout(io.StringIO()):
+                result = a.live_entrypoint()
+        self.assertEqual(result, 0)
+        scope.assert_called_once()
+        self.assertEqual(planner.call_args.args[2], '2026-11-04')
     def test_historical_issuer_note_sha_parser_preserves_exact_hashes(self):
         narrative=f'Historical 477 verified, scopeSHA={SRC}, algorithmSHA={POL}. GitHub run confirmed'
         canonical=f'scopeSHA={SRC};algorithmSHA={POL};NO_ORDERS'
