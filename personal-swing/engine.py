@@ -223,8 +223,13 @@ def live_read(symbols,asof):
         token=None
         seen_tokens=set()
         for page in range(50):
+            # Bind provider symbol history to the actual XNAS research ASOF.
+            # Nasdaq 2026-11-03 INDV -> new SUPN reused a prior issuer ticker;
+            # Alpaca's documented asof entity mapping prevents future default-
+            # date semantics from corrupting historical EOD replay.
             args={'symbols':','.join(group),'timeframe':'1Day','start':start_et,
-                  'end':stop_et,'adjustment':'raw','feed':'iex','sort':'asc','limit':10000}
+                  'end':stop_et,'adjustment':'raw','feed':'iex','sort':'asc',
+                  'asof':asof,'limit':10000}
             if token:args['page_token']=token
             endpoint='https://data.alpaca.markets/v2/stocks/bars?'+urllib.parse.urlencode(args)
             d=get_json(endpoint,headers=headers)
