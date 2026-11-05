@@ -33,6 +33,9 @@ jobs:
         run: |
           python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
           python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
+          python -m unittest -q test_swing_score_daily
+          python -O -m unittest -q test_swing_score_daily
+          python -m py_compile swing_score_daily.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
