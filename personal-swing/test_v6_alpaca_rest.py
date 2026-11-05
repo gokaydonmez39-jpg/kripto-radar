@@ -84,4 +84,39 @@ class RestAdapterTests(unittest.TestCase):
         d=self.call(lambda *a,**k:{'bars':{'CVLT':[raw_row()]}},('CVLT','AAPL'))
         self.assertEqual(d['AAPL'],[])
 
+    def test_point_in_time_symbol_rename_pins_alpaca_asof(self):
+        # Nasdaq ECA2026-742 / DTN2026-25: INDV -> new SUPN 2026-11-03.
+        # Without asof, a replay of 2026-11-02 INDV on 2026-11-06
+        # resolves against today's symbol identity and returns no rows.
+        for symbol,day in (('INDV','2026-11-02'),('SUPN','2026-11-05')):
+            with self.subTest(symbol=symbol,asof=day):
+                urls=[]
+                def fetch(url,headers):
+                    urls.append(url)
+                    return {'bars':{symbol:[raw_row(day)]}}
+                with patch.dict(os.environ,{'XRAY_ALPACA_DATA_KEY_ID':'test',
+                                            'XRAY_ALPACA_DATA_SECRET_KEY':'test'},clear=True):
+                    with patch.object(engine,'get_json',side_effect=fetch):
+                        data=engine.live_read([symbol],day)
+                self.assertEqual(len(data[symbol]),1)
+                self.assertEqual(len(urls),1)
+                qs=parse_qs(urlparse(urls[0]).query)
+                self.assertEqual(qs['asof'],[day])
+                self.assertEqual(qs['feed'],['iex'])
+                self.assertEqual(qs['adjustment'],['raw'])
+
+    def test_asof_is_on_every_page_not_just_initial_request(self):
+        urls=[]
+        def fetch(url,headers):
+            qs=parse_qs(urlparse(url).query)
+            urls.append(qs)
+            return {'bars':{'SUPN':[raw_row('2026-11-05')]},
+                    'next_page_token':'NEXT' if len(urls)==1 else None}
+        with patch.dict(os.environ,{'XRAY_ALPACA_DATA_KEY_ID':'test',
+                                    'XRAY_ALPACA_DATA_SECRET_KEY':'test'},clear=True):
+            with patch.object(engine,'get_json',side_effect=fetch):
+                engine.live_read(['SUPN'],'2026-11-05')
+        self.assertEqual([q['asof'] for q in urls],[['2026-11-05'],['2026-11-05']])
+        self.assertEqual(urls[1]['page_token'],['NEXT'])
+
 if __name__=='__main__':unittest.main()
