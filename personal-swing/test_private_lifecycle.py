@@ -1,13 +1,16 @@
 """Offline XNAS lifecycle regression. Synthetic only: no vendor, secrets, orders."""
 import copy
 import unittest
+from pathlib import Path
 
 import private_lifecycle as life
+import runner
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER, HandoffBlocked
 
 
 SOURCE_RUN='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/123456'
-SOURCE_PROOF='scopeSHA='+('a'*64)+';algorithmSHA='+('b'*64)+';source_event=schedule;NO_ORDERS'
+SOURCE_SCOPE=runner.get_scope(watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),asof='2026-10-26')
+SOURCE_PROOF='scopeSHA='+runner.sha_symbols(SOURCE_SCOPE)+';algorithmSHA='+runner.analysis_fingerprint()+';source_event=schedule;NO_ORDERS'
 
 def row(day, ref, stop, target, held, *,symbol='AAA'):
     return [day+'|'+symbol,day,symbol,'TEKNİK AL ADAYI',
@@ -188,6 +191,35 @@ class LifecycleTruthTests(unittest.TestCase):
                 elif mutation=="wrong_url":api.scans[1][8]="https://example.com/not-a-gh-run"
                 elif mutation=="not_final":api.scans[1][4]="476"
                 with self.assertRaises((HandoffBlocked,ValueError)):
+                    life.synchronize(api,'2026-10-26',fetch)
+                self.assertEqual(api.writes,0)
+
+    def test_source_scan_cannot_change_between_preflight_and_write(self):
+        api=FakeApi()
+        original=api.read
+        reads=[0]
+        def racing_read(title, lastcol):
+            values=original(title,lastcol)
+            if title=='TARAMA_KAYITLARI':
+                reads[0]+=1
+                if reads[0]>1:
+                    values[1][8]='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/777777'
+            return values
+        api.read=racing_read
+        with self.assertRaises(HandoffBlocked):
+            life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(api.writes,0)
+
+    def test_source_scan_header_and_duplicate_asof_refused(self):
+        for kind in ('bad_header','duplicate_asof','bad_policy'):
+            with self.subTest(kind=kind):
+                api=FakeApi()
+                if kind=='bad_header':api.scans[0][0]='NOT_ASOF_ET'
+                if kind=='duplicate_asof':api.scans.append(copy.deepcopy(api.scans[1]))
+                if kind=='bad_policy':
+                    api.scans[1][9]=api.scans[1][9].replace(
+                        runner.analysis_fingerprint(),'f'*64)
+                with self.assertRaises(HandoffBlocked):
                     life.synchronize(api,'2026-10-26',fetch)
                 self.assertEqual(api.writes,0)
 
