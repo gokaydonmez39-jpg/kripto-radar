@@ -391,6 +391,51 @@ class FlightNegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(contract.LedgerRefused,'EVENT_ALREADY_RECORDED_NO_RESEND'):
             contract.verify_first_reservation(b[2],b[2],[key])
 
+    def _suppressed_successor_closes_after_prior_was_live_at_issuance(self):
+        """Prior is closed *now* but was open on successor's AL day."""
+        b,_ = self._overlap_fixture(with_prior=True)
+        day3 = '2026-10-29'
+        b[1].append([day3,'fixture','477','477','477','0',
+                     'TRUE','0','private',b[1][1][9]])
+        earlier=b[0][1]
+        later=b[0][2]
+        for candidate in (earlier,later):
+            candidate[7]='KAPALI • STOP_TOUCHED • 2/15 SEANS'
+            candidate[8]=day3
+            candidate[9]='STOP_TOUCHED'
+        terminal=list(b[2][1])
+        terminal[0]=KEY+'|'+day3+'|STOP_TOUCHED|1'
+        terminal[4]=day3
+        terminal[5]='STOP_TOUCHED'
+        terminal[17]=g.EVENT_PENDING
+        b[2].append(terminal)
+        b[3][0][1]=day3
+        return b
+
+    def test_suppressed_early_al_later_closed_never_demands_second_stop(self):
+        b=self._suppressed_successor_closes_after_prior_was_live_at_issuance()
+        result=g.inspect(*b,expected_asof='2026-10-29')
+        self.assertEqual(result['matched_terminal_outbox'],1)
+        self.assertEqual(result['suppressed_active_al'],1)
+        self.assertEqual(result['suppressed_terminal_not_duplicated'],1)
+        self.assertEqual(result['device_receipts_verified'],0)
+
+    def test_suppressed_successor_without_prior_terminal_still_blocks(self):
+        b=self._suppressed_successor_closes_after_prior_was_live_at_issuance()
+        b[2].pop()
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'MISSING_TERMINAL_EVENT'):
+            g.inspect(*b,expected_asof='2026-10-29')
+
+    def test_prior_close_on_successor_day_does_not_prove_overlap(self):
+        b=self._suppressed_successor_closes_after_prior_was_live_at_issuance()
+        b[0][1][8]='2026-10-28'
+        b[2][-1][0]=KEY+'|2026-10-28|STOP_TOUCHED|1'
+        b[2][-1][4]='2026-10-28'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE'):
+            g.inspect(*b,expected_asof='2026-10-29')
+
     def test_suppression_without_prior_open_fails_closed(self):
         b,key = self._overlap_fixture(with_prior=False)
         with self.assertRaisesRegex(g.FlightRecorderBlocked,
