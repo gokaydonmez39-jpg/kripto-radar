@@ -461,7 +461,14 @@ def selftest():
         )=="BLOCKED_HTTP_VENDOR_AUTH_OR_PLAN"
     cp=fresh(ss);assert exact(cp,ss)
     d=ss["dates"][-1]
-    t=int(datetime.fromisoformat(d+"T20:00:00+00:00").timestamp()*1000)
+    # Synthetic grouped bar must use the SAME official exchange calendar clock
+    # as read_day; 16:00 NY is 20:00 UTC in EDT and 21:00 UTC in EST.
+    # A hard-coded 20:00 UTC caused WRONG_EPOCH_TIMESTAMP after Nov DST rollover.
+    assert official_grouped_close_ms("2026-10-30") == int(
+        datetime.fromisoformat("2026-10-30T20:00:00+00:00").timestamp()*1000)
+    assert official_grouped_close_ms("2026-11-04") == int(
+        datetime.fromisoformat("2026-11-04T21:00:00+00:00").timestamp()*1000)
+    t=official_grouped_close_ms(d)
     symbols=["QQQ",ss["symbols"][0],ss["symbols"][1]]
     bars={"status":"OK","adjusted":False,"resultsCount":3,
           "results":[{"T":z,"o":10,"h":11,"l":9,"c":10,"v":123.125,"t":t}
