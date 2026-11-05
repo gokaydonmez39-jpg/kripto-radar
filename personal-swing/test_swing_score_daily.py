@@ -63,8 +63,8 @@ class FakeAPI:
                                              "sheetId":self.tabid}}]}
         if path.startswith("/values/"):
             rows=copy.deepcopy(self.scored)
-            return {"values":[list(reversed(list(__import__("itertools").dropwhile(
-                lambda value: value == "", reversed(row)))) for row in rows]}
+            return {"values":[row[:max([i+1 for i,v in enumerate(row)
+                                          if v != ""] or [0])] for row in rows]}
         if path==":batchUpdate":
             assert method=="POST" and self.writes==0
             self.writes+=1
