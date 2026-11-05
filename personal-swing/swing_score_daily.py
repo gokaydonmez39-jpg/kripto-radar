@@ -13,6 +13,7 @@ import os
 import re
 from datetime import date
 from pathlib import Path
+from urllib.parse import quote
 
 import daily_job
 import engine
@@ -38,7 +39,7 @@ writer.require(len(HEADER) == 35, "SWING_SCORE_SCHEMA_INVALID")
 READY = "READY_FOR_CHATGPT_DAILY_DIGEST"
 REQUESTED = "REQUESTED_NOT_DEVICE_ACK"
 MAX_OPEN = 4770
-MAX_ROWS = 100000
+MAX_ROWS = 50000
 SLUG = "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/"
 
 def clamp(x, lo, hi):
@@ -229,6 +230,14 @@ def build(candidate_values, scan_values, alert_values, asof, read_batch):
     writer.require(len(result) == len(episodes) + 1, "SWING_SCORE_LOST_EPISODE")
     return result
 
+def score_read(api):
+    # A daily cohort ledger can exceed the 1000-row candidate table cap.
+    address = quote("'" + TAB + "'!A1:AI" + str(MAX_ROWS), safe="")
+    return api.request("/values/" + address + "?valueRenderOption=FORMATTED_VALUE").get("values", [])
+
+def normalize_rows(matrix):
+    return [list(r) + [""] * (len(HEADER) - len(r)) for r in matrix]
+
 def synchronize(api, asof, read_batch):
     api.check_metadata()
     metadata = api.request("?fields=properties(timeZone),sheets.properties(sheetId,title)")
@@ -239,7 +248,7 @@ def synchronize(api, asof, read_batch):
     writer.require(len(matches) == 1 and type(matches[0]) is int,
                    "SWING_SCORE_TAB_MISSING_OR_DUPLICATE")
     tabid = matches[0]
-    before = api.read(TAB, "AI")
+    before = score_read(api)
     writer.require(before and tuple(before[0]) == HEADER,
                    "SWING_SCORE_HEADER_DRIFT")
     candidates = api.read("ADAY_GECMISI", "M")
@@ -247,7 +256,7 @@ def synchronize(api, asof, read_batch):
     alerts = api.read("UYARI_OLAYLARI", "T")
     rows = build(candidates, scans, alerts, asof, read_batch)
     existing = [r for r in before[1:] if r and r[0]]
-    writer.require(len(existing) < MAX_ROWS and
+    writer.require(len(existing) + len(rows) < MAX_ROWS and
                    len({r[0] for r in existing}) == len(existing),
                    "SWING_SCORE_EXISTING_KEY_DUPLICATE")
     current = [r for r in existing if len(r) > 1 and r[1] == asof]
@@ -268,16 +277,16 @@ def synchronize(api, asof, read_batch):
                 "new_rows":0,"execution":"NONE"}
     writer.require(not existing or max(r[1] for r in existing) < asof,
                    "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED")
-    writer.require(api.read(TAB,"AI")==before and
+    writer.require(score_read(api)==before and
                    api.read("ADAY_GECMISI","M")==candidates and
                    api.read("TARAMA_KAYITLARI","J")==scans and
                    api.read("UYARI_OLAYLARI","T")==alerts,
                    "SWING_SCORE_CONCURRENT_MODIFICATION")
     api.request(":batchUpdate",method="POST",
                 body={"requests":[writer.as_cells(rows,tabid)]})
-    after = api.read(TAB,"AI")
+    after = score_read(api)
     writer.require(after[:len(before)] == before and
-                   after[len(before):] == rows,
+                   normalize_rows(after[len(before):]) == rows,
                    "SWING_SCORE_READBACK_MISMATCH")
     return {"status":"SWING_SCORE_PRIVATE_READBACK_PASS","asof_et":asof,
             "active_episodes":len(rows)-1,"scoreable":int(rows[0][6]),
