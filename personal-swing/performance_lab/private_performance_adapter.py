@@ -422,7 +422,7 @@ def live_entrypoint(*, asof_override=None):
         stage = 'SHEET_SOURCE_READ'
         values = api.read('ADAY_GECMISI','M')
         scans = api.read('TARAMA_KAYITLARI','J')
-        universe = runner.get_scope(watchlist_file=str(ROOT/'nasdaq_watchlist_477.json'))
+        universe = runner.get_scope(watchlist_file=str(ROOT/'nasdaq_watchlist_477.json'), asof=asof)
         stage = 'SOURCE_PLAN'
         plan = source_plan(values,scans,asof,universe,
                            runner.sha_symbols(universe),runner.analysis_fingerprint())
