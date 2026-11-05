@@ -64,6 +64,8 @@ jobs:
           python -O -m unittest -q test_swing_score_daily
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
+          python -m unittest -q test_private_ledger_capacity
+          python -O -m unittest -q test_private_ledger_capacity
           python -m py_compile delivery_evidence_audit.py
           python -m py_compile swing_score_daily.py
           python -m py_compile alert_ledger_contract.py
