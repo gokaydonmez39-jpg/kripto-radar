@@ -16,8 +16,11 @@ import re
 import exchange_calendars as ec
 import daily_job
 import engine
+import runner
 import tracker
-from private_sheet_writer import SheetApi, HandoffBlocked, numeric, require, CANDIDATE_HEADER, as_cells
+from private_sheet_writer import (SheetApi, HandoffBlocked, numeric, require,
+                                  CANDIDATE_HEADER, SCAN_HEADER, as_cells,
+                                  scan_source_proof, RUN_EVENT_LABELS)
 
 ALERT_HEADER = (
     'OLAY_ANAHTARI','ADAY_ANAHTARI','AL_ASOF_ET','SEMBOL',
@@ -30,6 +33,41 @@ EVENT_PENDING = 'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST'
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
 MAX_EPISODES = 4770
 CALENDAR = 'XNAS'
+
+VERIFIED_RUN_URL = re.compile(
+    r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*$')
+
+def verified_terminal_eod_run(scans, asof):
+    """Verify unique current EOD source provenance before reserving terminal events."""
+    require(isinstance(scans,list) and scans and tuple(scans[0])==SCAN_HEADER,
+            'LIFECYCLE_SCAN_HEADER_DRIFT')
+    rows=[r for r in scans[1:] if r and r[0]]
+    require(bool(rows),'LIFECYCLE_EOD_SCAN_MISSING')
+    dates=[r[0] for r in rows]
+    require(len(dates)==len(set(dates)),'LIFECYCLE_SCAN_ASOF_DUPLICATE')
+    latest=[r for r in rows if r[0]==asof]
+    require(len(latest)==1 and dates[-1]==asof,
+            'LIFECYCLE_CURRENT_FINAL_SCAN_MISSING')
+    row=latest[0]
+    require(len(row)>=10 and row[2:7]==['477','477','477','0','TRUE'],
+            'LIFECYCLE_EOD_NOT_FINAL_477')
+    url=row[8]
+    require(isinstance(url,str) and VERIFIED_RUN_URL.fullmatch(url) is not None,
+            'LIFECYCLE_INVALID_EOD_RUN_URL')
+    proof=scan_source_proof(row[9])
+    scope=runner.get_scope(
+        watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),
+        asof=asof)
+    require(len(scope)==477 and
+            proof['scopeSHA']==runner.sha_symbols(scope) and
+            proof['algorithmSHA']==runner.analysis_fingerprint(),
+            'LIFECYCLE_SOURCE_SHA_MISMATCH')
+    src=[v[len('source_event='):] for v in str(row[9]).split(';')
+         if v.startswith('source_event=')]
+    require(len(src)==1 and src[0] in RUN_EVENT_LABELS and
+            row[1]==RUN_EVENT_LABELS[src[0]],
+            'LIFECYCLE_SOURCE_EVENT_DRIFT')
+    return url
 
 
 def decode_open_episodes(values, asof):
@@ -149,7 +187,7 @@ def build_updates(values, asof, read_batch):
             'asof_et':asof}
 
 
-def plan_outbox_events(plan, alert_values):
+def plan_outbox_events(plan, alert_values, verified_run_url):
     require(isinstance(alert_values,list) and alert_values and
             tuple(alert_values[0])==ALERT_HEADER,'LIFECYCLE_ALERT_HEADER_DRIFT')
     existing={}
@@ -182,7 +220,7 @@ def plan_outbox_events(plan, alert_values):
         row=[event['event_key'],event['episode_id'],event['original_asof'],
              event['symbol'],event['event_day'],kind,priority,
              str(event['iex_close']),str(event['stop']),str(event['target']),
-             '','','','','',str(event['days_held'])+'/15','',
+             '','','','','',str(event['days_held'])+'/15',verified_run_url,
              EVENT_PENDING,'',
              'Verified historical Alpaca IEX daily bar; theoretical contact only; '
              'gap_below_stop='+str(event['gap'])+'; never executable fill']
@@ -249,9 +287,12 @@ def synchronize(api, asof, read_batch):
     before=api.read('ADAY_GECMISI','M')
     plan=build_updates(before,asof,read_batch)
     alert_before=api.read('UYARI_OLAYLARI','T')
-    outbox=plan_outbox_events(plan,alert_before)
+    scans=api.read('TARAMA_KAYITLARI','J')
+    source_url=verified_terminal_eod_run(scans,asof)
+    outbox=plan_outbox_events(plan,alert_before,source_url)
     require(api.read('ADAY_GECMISI','M')==before and
-            api.read('UYARI_OLAYLARI','T')==alert_before,
+            api.read('UYARI_OLAYLARI','T')==alert_before and
+            api.read('TARAMA_KAYITLARI','J')==scans,
             'LIFECYCLE_CONCURRENT_MODIFICATION')
     if plan['updates']:
         require(isinstance(api.sheet_ids,dict) and
