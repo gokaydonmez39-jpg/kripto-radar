@@ -165,6 +165,17 @@ def plan_outbox_events(plan, alert_values):
         event=update['event']
         if event is None:
             continue
+        # A later independently tracked observation must not send a STOP/2R
+        # alert if its opening AL alert was deliberately suppressed.
+        # Preserve any terminal event already in the historical ledger.
+        opening_key=(event['original_asof']+'|'+event['symbol']+'|'+
+                     event['original_asof']+'|AL_NEW_EPISODE|1')
+        opening=existing.get(opening_key)
+        if opening is not None and opening[17]=='DUPLICATE_ACTIVE_EPISODE_NO_NEW_ALERT':
+            require(opening[1]==event['episode_id'],
+                    'LIFECYCLE_SUPPRESSED_OPENING_IDENTITY_CONFLICT')
+            if event['event_key'] not in existing:
+                continue
         kind=event['event_code']
         priority=('KRITIK' if kind in ('STOP_TOUCHED','BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
                   else 'HEDEF' if kind=='TARGET_TOUCHED' else 'SURE_SONU')

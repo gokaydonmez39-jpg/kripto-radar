@@ -169,6 +169,22 @@ class LifecycleTruthTests(unittest.TestCase):
         self.assertEqual(api.alert_rows[1][17],
                          'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
 
+    def test_suppressed_observation_closes_without_new_terminal_user_alert(self):
+        """An AL never notified cannot later create an orphan STOP notification."""
+        api=FakeApi()
+        old=['']*len(life.ALERT_HEADER)
+        old[0]='2026-10-23|AAA|2026-10-23|AL_NEW_EPISODE|1'
+        old[1]='2026-10-23|AAA'
+        old[2:6]=['2026-10-23','AAA','2026-10-23','AL_NEW_EPISODE']
+        old[7:10]=['102','97','112']
+        old[17]='DUPLICATE_ACTIVE_EPISODE_NO_NEW_ALERT'
+        api.alert_rows.append(old)
+        result=life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(result['terminal_updates'],1)
+        self.assertEqual(result['terminal_events_reserved'],0)
+        self.assertIn('KAPALI',api.rows[2][7])
+        self.assertEqual(len(api.alert_rows),2)
+        self.assertEqual(api.alert_rows[1][17],old[17])
     def test_duplicate_terminal_event_key_blocks_before_any_update(self):
         api=FakeApi()
         plan=life.build_updates(api.rows,'2026-10-26',fetch)
