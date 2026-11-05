@@ -13,6 +13,33 @@ DATA = json.loads(RAW)
 
 
 class CandidateAutopilotTests(unittest.TestCase):
+    def test_ledger_driven_receipt_main_is_type_safe_and_nonpromotional(self):
+        """Regression: cohort_page='LEDGER_DRIVEN' must not use numeric %d."""
+        import contextlib
+        import io
+        import sys
+        import tempfile
+        from unittest.mock import patch
+        import autopilot
+        from candidate_queue import select_queue
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)
+            queue=select_queue(RAW,asof=dt.date(2026,11,4),upstream_run_id=42)
+            queue_path=folder/'queue.json'
+            receipt_path=folder/'receipt.json'
+            queue_path.write_text(json.dumps(queue),encoding='utf-8')
+            args=['autopilot.py','--registry',str(HERE/'registry.json'),
+                  '--date','2026-11-04','--output',str(receipt_path),
+                  '--queue-receipt',str(queue_path)]
+            stdout=io.StringIO()
+            with patch.object(sys,'argv',args),contextlib.redirect_stdout(stdout):
+                autopilot.main()
+            receipt=json.loads(receipt_path.read_text(encoding='utf-8'))
+        self.assertEqual(receipt['selection']['cohort_page'],'LEDGER_DRIVEN')
+        self.assertEqual(len(receipt['findings']),7)
+        self.assertIn('COHORT=LEDGER_DRIVEN/',stdout.getvalue())
+        self.assertFalse(receipt['automatic_promotion'])
+        self.assertFalse(receipt['orders'])
     def test_284_real_inventory_admitted(self):
         self.assertEqual(len(parse_registry(RAW)), 284)
 
