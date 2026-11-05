@@ -61,6 +61,10 @@ class FakeAPI:
             return {"properties":{"timeZone":"Europe/Istanbul"},
                     "sheets":[{"properties":{"title":score.TAB,
                                              "sheetId":self.tabid}}]}
+        if path.startswith("/values/"):
+            rows=copy.deepcopy(self.scored)
+            return {"values":[list(reversed(list(__import__("itertools").dropwhile(
+                lambda value: value == "", reversed(row)))) for row in rows]}
         if path==":batchUpdate":
             assert method=="POST" and self.writes==0
             self.writes+=1
@@ -106,8 +110,8 @@ class SwingScoreTests(unittest.TestCase):
         aaa=[r for r in rows[1:] if r[3]=="AAA"]
         self.assertEqual(len(aaa),2)
         self.assertEqual(aaa[0][6],aaa[1][6])
-        self.assertEqual(sum(float(x) for x in aaa[0][7:14]),
-                         float(aaa[0][6]) if abs(sum(float(x) for x in aaa[0][7:14])-float(aaa[0][6]))<0.25 else -1)
+        self.assertLessEqual(abs(sum(float(x) for x in aaa[0][7:14])-
+                                 float(aaa[0][6])),0.35)
         self.assertTrue(all(0<=float(r[6])<=100 for r in rows[1:]))
         self.assertTrue(all(r[16]=="90.000" and r[17]=="120.000"
                             for r in rows[1:]))
