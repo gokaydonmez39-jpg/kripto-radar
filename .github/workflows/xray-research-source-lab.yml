@@ -34,6 +34,7 @@ jobs:
           python -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
           python -O -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
           python personal-swing/research_lab/research_runner.py --mode catalogue
+          python personal-swing/research_lab/source_inventory_reconcile.py --registry personal-swing/research_lab/unified_research_88.json
   github-source-freshness:
     needs: offline-contracts
     if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')

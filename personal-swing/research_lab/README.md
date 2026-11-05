@@ -45,3 +45,15 @@ python personal-swing/research_lab/research_runner.py --mode pair --input /PRIVA
 Research-only pair-input schema: XRAY_RESEARCH_BAR_PAIR_V1, ticker, asof_et, cutoff_utc, left/right each with provider, ticker, scope, basis, attested_data_rights, bars[]. Each bar requires session, open, high, low, close, volume, known_at_utc. A matched final session is required; no future bars or future-known values. IEX vs consolidated and adjusted vs raw results are labeled NOT INTERCHANGEABLE. Every report returns may_generate_al=false, may_change_stops=false, may_emit_alert=false.
 
 Safety: no third-party auto-install, portfolio accounts, wallet/payment, order endpoints, public private-Sheets access, price ingestion without authorization, or unattended scraping. GitHub scheduled monitor is public GitHub metadata only, not full candidate or provider production validation.
+
+## Private RT research archive reconciliation (read-only)
+
+The public `unified_research_88.json` registry and the separate private RoundtableSpace RT archive are **different source populations**, not additive counts. Their distinct-union total is **UNKNOWN** until identifiers, licences, aliases and provenance are independently resolved. Exact canonical URL matches are a conservative floor, not evidence that all other rows are unique.
+
+CI runs `python personal-swing/research_lab/source_inventory_reconcile.py` against the public 88-source registry. It explicitly returns `archive_status=NOT_SUPPLIED_UNKNOWN` without access to a private CSV; it never silently certifies archival reconciliation. A local authorised, manual-only audit can be run with:
+
+```sh
+python personal-swing/research_lab/source_inventory_reconcile.py --archive "/PRIVATE/RoundtableSpace_local.csv" --require-archive
+```
+
+This validates contiguous RT IDs, uniqueness, source URLs, priority/status fields, production-denial flags, exact URL intersections and a local SHA-256. No raw archive rows, tokens, prices, client identifiers or third-party vendor payloads are emitted or committed. A `SCHEMA_PASS_RESEARCH_ONLY` result **never** certifies source licence, direct X-post provenance, fresh vendor data, point-in-time correctness, valid corporate actions, OOS alpha, or production rights. No new cron/API access, orders, Sheet writes or notifications are permitted by this addition.
