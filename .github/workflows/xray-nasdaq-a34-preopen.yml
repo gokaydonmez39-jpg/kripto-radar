@@ -29,6 +29,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   offline-guard:
+    # An upstream EOD pull_request is test-only. Skip its A34 workflow_run
+    # entirely rather than reporting success when private-preopen was SKIPPED.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
