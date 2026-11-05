@@ -170,5 +170,45 @@ class SwingScoreTests(unittest.TestCase):
         with self.assertRaises((ValueError,writer.HandoffBlocked)):
             score.build(*inputs(),ASOF,bad)
 
+    def test_score_read_uses_open_ended_range_to_avoid_hidden_old_asof(self):
+        from urllib.parse import unquote
+        seen=[]
+        original=self.api.request
+        def proxy(path, **kw):
+            seen.append(path)
+            return original(path, **kw)
+        with patch.object(self.api, "request", side_effect=proxy):
+            self.assertEqual(len(score.score_read(self.api)),1)
+        paths=[unquote(p) for p in seen if p.startswith("/values/")]
+        self.assertEqual(len(paths),1)
+        self.assertIn("'SWING_SKOR_GUNLUK'!A1:AI", paths[0])
+        self.assertNotIn("AI50000", paths[0])
+
+    def test_score_read_at_exact_limit_passes_and_above_limit_blocks(self):
+        score.synchronize(self.api,ASOF,self.read_batch)
+        with patch.object(score, "MAX_ROWS", len(self.api.scored)):
+            self.assertEqual(len(score.score_read(self.api)),len(self.api.scored))
+        with patch.object(score, "MAX_ROWS", len(self.api.scored)-1):
+            with self.assertRaisesRegex(writer.HandoffBlocked,
+                                        "SWING_SCORE_READ_CAPACITY_REACHED"):
+                score.score_read(self.api)
+
+    def test_same_day_idempotent_replay_allowed_when_no_new_append_headroom(self):
+        score.synchronize(self.api,ASOF,self.read_batch)
+        self.assertEqual(self.api.writes,1)
+        with patch.object(score, "MAX_ROWS", 6):
+            # Four existing rows, four re-created rows would exceed six if
+            # the new-ASOF capacity gate ran before immutable replay check.
+            result=score.synchronize(self.api,ASOF,self.read_batch)
+        self.assertEqual(result["status"],"SWING_SCORE_IDEMPOTENT_READBACK_PASS")
+        self.assertEqual(self.api.writes,1)
+
+    def test_new_asof_append_over_capacity_blocks_before_write(self):
+        with patch.object(score, "MAX_ROWS", 4):
+            with self.assertRaisesRegex(writer.HandoffBlocked,
+                                        "SWING_SCORE_CAPACITY_REACHED"):
+                score.synchronize(self.api,ASOF,self.read_batch)
+        self.assertEqual(self.api.writes,0)
+
 if __name__=="__main__":
     unittest.main()

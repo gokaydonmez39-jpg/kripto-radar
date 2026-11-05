@@ -231,9 +231,15 @@ def build(candidate_values, scan_values, alert_values, asof, read_batch):
     return result
 
 def score_read(api):
-    # A daily cohort ledger can exceed the 1000-row candidate table cap.
-    address = quote("'" + TAB + "'!A1:AI" + str(MAX_ROWS), safe="")
-    return api.request("/values/" + address + "?valueRenderOption=FORMATTED_VALUE").get("values", [])
+    # Read every occupied row, not merely the first 50,000. Google Sheets
+    # appendCells extends the grid; truncated old ASOF keys would falsely
+    # appear missing. Reject oversized ledgers instead of silently replaying.
+    address = quote("'" + TAB + "'!A1:AI", safe="")
+    matrix = api.request("/values/" + address +
+                         "?valueRenderOption=FORMATTED_VALUE").get("values", [])
+    writer.require(isinstance(matrix, list) and len(matrix) <= MAX_ROWS,
+                   "SWING_SCORE_READ_CAPACITY_REACHED")
+    return matrix
 
 def normalize_rows(matrix):
     return [list(r) + [""] * (len(HEADER) - len(r)) for r in matrix]
@@ -256,8 +262,7 @@ def synchronize(api, asof, read_batch):
     alerts = api.read("UYARI_OLAYLARI", "T")
     rows = build(candidates, scans, alerts, asof, read_batch)
     existing = [r for r in before[1:] if r and r[0]]
-    writer.require(len(existing) + len(rows) < MAX_ROWS and
-                   len({r[0] for r in existing}) == len(existing),
+    writer.require(len({r[0] for r in existing}) == len(existing),
                    "SWING_SCORE_EXISTING_KEY_DUPLICATE")
     current = [r for r in existing if len(r) > 1 and r[1] == asof]
     if current:
@@ -275,6 +280,10 @@ def synchronize(api, asof, read_batch):
         return {"status":"SWING_SCORE_IDEMPOTENT_READBACK_PASS","asof_et":asof,
                 "active_episodes":len(rows)-1,"scoreable":int(rows[0][6]),
                 "new_rows":0,"execution":"NONE"}
+    # Pure, immutable idempotent replay is allowed even when the ledger
+    # has no remaining append headroom. Only NEW ASOF rows need that room.
+    writer.require(len(existing) + len(rows) < MAX_ROWS,
+                   "SWING_SCORE_CAPACITY_REACHED")
     writer.require(not existing or max(r[1] for r in existing) < asof,
                    "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED")
     writer.require(score_read(api)==before and
