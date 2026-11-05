@@ -4,12 +4,16 @@ on:
     paths:
       - personal-swing/preopen_a34.py
       - personal-swing/test_preopen_a34.py
+      - personal-swing/performance_lab/private_flight_recorder.py
+      - personal-swing/performance_lab/test_private_flight_recorder.py
       - .github/workflows/xray-nasdaq-a34-preopen.yml
   push:
     branches: [main]
     paths:
       - personal-swing/preopen_a34.py
       - personal-swing/test_preopen_a34.py
+      - personal-swing/performance_lab/private_flight_recorder.py
+      - personal-swing/performance_lab/test_private_flight_recorder.py
       - .github/workflows/xray-nasdaq-a34-preopen.yml
   workflow_dispatch:
   workflow_run:
@@ -47,6 +51,12 @@ jobs:
           python -O -m unittest -q test_preopen_a34
           python -m py_compile preopen_a34.py
           python -O -m py_compile preopen_a34.py
+      - name: A34 source and closed-duplicate flight-recorder contracts
+        working-directory: personal-swing/performance_lab
+        run: |
+          python -m unittest -q test_private_flight_recorder
+          python -O -m unittest -q test_private_flight_recorder
+          python -m py_compile private_flight_recorder.py
   private-preopen:
     needs: [offline-guard]
     if: >-
