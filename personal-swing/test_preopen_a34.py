@@ -232,6 +232,19 @@ class A34ExactAlLevelsTest(unittest.TestCase):
 class A34ScheduleResilienceTest(unittest.TestCase):
     """8h GitHub schedule delay must not turn a normal preopen into postopen."""
 
+    def test_upstream_eod_pr_cannot_produce_false_a34_success(self):
+        from pathlib import Path
+        workflow = (Path(__file__).resolve().parent.parent /
+                    '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text(
+                        encoding='utf-8')
+        self.assertIn(
+            "github.event_name != 'workflow_run' || "
+            "github.event.workflow_run.event != 'pull_request'",
+            workflow)
+        # The real private job must remain tied to actual EOD main source.
+        self.assertIn("github.event.workflow_run.head_branch == 'main'",workflow)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'",workflow)
+
     def test_eod_safe_preopen_schedule_with_delayed_dispatch(self):
         import re
         from datetime import datetime, timedelta, timezone
