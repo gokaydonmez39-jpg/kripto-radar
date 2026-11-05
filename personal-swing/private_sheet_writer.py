@@ -25,7 +25,11 @@ CANDIDATE_HEADER = ('ALARM KİMLİĞİ','ASOF ET','SEMBOL','SINIF',
 SCAN_HEADER = ('ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ',
                'EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI')
 BATCH_ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
-MAX_ROWS = 1000
+# Bound loaded private ledger entries, not the initial 1,000-row grid.
+# The Sheets API appendCells extends the grid; a capped read silently misses
+# older events and can cause duplicate AL/STOP or replay. Read all occupied
+# rows and explicitly HOLD on excessive size instead of truncating.
+MAX_ROWS = 20000
 # Honest source labels: a verified 477 IEX result is not necessarily an
 # automatically scheduled GitHub run. Never infer the event from its status.
 RUN_EVENT_LABELS = {
@@ -294,8 +298,13 @@ class SheetApi:
                         'alerts':sheets['UYARI_OLAYLARI']}
 
     def read(self, title, last_column):
-        address=quote("'{0}'!A1:{1}{2}".format(title,last_column,MAX_ROWS),safe='')
-        return self.request('/values/'+address+'?valueRenderOption=FORMATTED_VALUE').get('values',[])
+        # Open-ended A1 is deliberate: never silently truncate identities at
+        # row 1,000 or at the software maximum; fail closed on oversize instead.
+        address=quote("'{0}'!A1:{1}".format(title,last_column),safe='')
+        values=self.request('/values/'+address+'?valueRenderOption=FORMATTED_VALUE').get('values',[])
+        require(isinstance(values,list) and len(values)<=MAX_ROWS,
+                'SHEET_READ_CAPACITY_REACHED')
+        return values
 
     def apply(self,p):
         require(isinstance(self.sheet_ids,dict),'MISSING_AUTHENTICATED_SHEET_METADATA')
