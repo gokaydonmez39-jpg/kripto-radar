@@ -3,8 +3,11 @@ import copy
 import unittest
 
 import private_lifecycle as life
-from private_sheet_writer import CANDIDATE_HEADER, HandoffBlocked
+from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER, HandoffBlocked
 
+
+SOURCE_RUN='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/123456'
+SOURCE_PROOF='scopeSHA='+('a'*64)+';algorithmSHA='+('b'*64)+';source_event=schedule;NO_ORDERS'
 
 def row(day, ref, stop, target, held, *,symbol='AAA'):
     return [day+'|'+symbol,day,symbol,'TEKNİK AL ADAYI',
@@ -33,6 +36,9 @@ class FakeApi:
         self.rows=sheet()
         self.sheet_ids={'candidate':432,'alerts':433}
         self.alert_rows=[list(life.ALERT_HEADER)]
+        self.scans=[list(SCAN_HEADER),
+                    ['2026-10-26','GitHub schedule VERIFIED IEX EOD',
+                     '477','477','477','0','TRUE','0',SOURCE_RUN,SOURCE_PROOF]]
         self.writes=0
         self.corrupt=False
 
@@ -43,6 +49,8 @@ class FakeApi:
             return copy.deepcopy(self.rows)
         if title=='UYARI_OLAYLARI' and last_column=='T':
             return copy.deepcopy(self.alert_rows)
+        if title=='TARAMA_KAYITLARI' and last_column=='J':
+            return copy.deepcopy(self.scans)
         raise AssertionError('unknown private table')
 
     def request(self,path,*,method='GET',body=None):
@@ -168,6 +176,30 @@ class LifecycleTruthTests(unittest.TestCase):
         self.assertIn('BOTH_TOUCHED',api.rows[2][7])
         self.assertEqual(api.alert_rows[1][17],
                          'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST')
+        self.assertEqual(api.alert_rows[1][16], SOURCE_RUN)
+
+    def test_terminal_evidence_requires_valid_current_scan_source(self):
+        for mutation in ("missing","wrong_asof","broken_scope","wrong_url","not_final"):
+            with self.subTest(mutation=mutation):
+                api=FakeApi()
+                if mutation=="missing":api.scans=[list(SCAN_HEADER)]
+                elif mutation=="wrong_asof":api.scans[1][0]="2026-10-23"
+                elif mutation=="broken_scope":api.scans[1][9]="scopeSHA=BAD;algorithmSHA=BAD"
+                elif mutation=="wrong_url":api.scans[1][8]="https://example.com/not-a-gh-run"
+                elif mutation=="not_final":api.scans[1][4]="476"
+                with self.assertRaises((HandoffBlocked,ValueError)):
+                    life.synchronize(api,'2026-10-26',fetch)
+                self.assertEqual(api.writes,0)
+
+    def test_source_proof_independent_readback_and_replay_immutability(self):
+        api=FakeApi()
+        life.synchronize(api,'2026-10-26',fetch)
+        original=copy.deepcopy(api.alert_rows[1])
+        self.assertEqual(original[16],SOURCE_RUN)
+        life.synchronize(api,'2026-10-26',
+            lambda s,d: (_ for _ in ()).throw(AssertionError('NO_PROVIDER_REPLAY')))
+        self.assertEqual(api.alert_rows[1],original)
+        self.assertEqual(api.writes,1)
 
     def test_suppressed_observation_closes_without_new_terminal_user_alert(self):
         """An AL never notified cannot later create an orphan STOP notification."""
@@ -208,6 +240,8 @@ class LifecycleTruthTests(unittest.TestCase):
         def corrupted_read(title,last_col):
             if title=='ADAY_GECMISI':
                 return copy.deepcopy(api.rows)
+            if title=='TARAMA_KAYITLARI':
+                return copy.deepcopy(api.scans)
             values=copy.deepcopy(api.alert_rows)
             if len(values)>1:
                 values[1][8]='CORRUPTED_STOP'
