@@ -179,7 +179,7 @@ def main() -> None:
     dest = Path(args.output)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("XRAY_CANDIDATE_RECEIPT=PASS;COUNT=%d;COHORT=%d/%d;AUTOPROMOTE=FALSE" %
+    print("XRAY_CANDIDATE_RECEIPT=PASS;COUNT=%d;COHORT=%s/%s;AUTOPROMOTE=FALSE" %
           (len(result["findings"]), result["selection"]["cohort_page"],
            result["selection"]["cohort_pages"]))
 
