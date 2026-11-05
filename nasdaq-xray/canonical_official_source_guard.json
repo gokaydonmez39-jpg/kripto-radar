@@ -4,7 +4,9 @@
   "candidate_safety": {
     "active_halt_symbols": [
       "EFTY",
+      "EZGO",
       "HCHL",
+      "INM",
       "LAWR",
       "MAGH",
       "MCTA",
@@ -13,7 +15,8 @@
       "SVA",
       "TJGC",
       "UCFI",
-      "UCFIW"
+      "UCFIW",
+      "XXII"
     ],
     "halt_guard_status": "PASS",
     "rule": "REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED",
@@ -58,11 +61,13 @@
       "COLAU",
       "DRCT",
       "EFTY",
+      "EZGO",
       "FSEA",
       "GFAIW",
       "HCHL",
       "ILLR",
       "ILLRW",
+      "INM",
       "LAWR",
       "LESL",
       "MAGH",
@@ -89,11 +94,12 @@
       "UCFIW",
       "WALD",
       "WALDW",
-      "WBD"
+      "WBD",
+      "XXII"
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-04T22:14:28.224303+00:00",
+  "generated_at_utc": "2026-11-05T02:46:58.684032+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -776,10 +782,12 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 11,
+      "active_halt_count": 14,
       "active_halt_symbols": [
         "EFTY",
+        "EZGO",
         "HCHL",
+        "INM",
         "LAWR",
         "MAGH",
         "MCTA",
@@ -788,11 +796,57 @@
         "SVA",
         "TJGC",
         "UCFI",
-        "UCFIW"
+        "UCFIW",
+        "XXII"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 72,
+      "item_count": 75,
       "items": [
+        {
+          "HaltDate": "11/04/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "EZGO Technologies Ltd. Or Sh",
+          "IssueSymbol": "EZGO",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/04/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">EZGO</td><td valign=\"top\">EZGO Technologies Ltd. Or Sh</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 04 Nov 2026 05:00:00 GMT",
+          "title": "EZGO"
+        },
+        {
+          "HaltDate": "11/04/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "InMed Pharmaceuticals Cm Sh",
+          "IssueSymbol": "INM",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/04/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">INM</td><td valign=\"top\">InMed Pharmaceuticals Cm Sh</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 04 Nov 2026 05:00:00 GMT",
+          "title": "INM"
+        },
+        {
+          "HaltDate": "11/04/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "22nd Century Grp Inc Cmn",
+          "IssueSymbol": "XXII",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/04/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">XXII</td><td valign=\"top\">22nd Century Grp Inc Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 04 Nov 2026 05:00:00 GMT",
+          "title": "XXII"
+        },
         {
           "HaltDate": "11/04/2026",
           "HaltTime": "15:57:37.713",
@@ -1878,79 +1932,115 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 8,
+      "row_count": 12,
       "rows": [
         {
-          "BX Action": "Delete",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/4/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
+          "BX Action": "Add",
+          "Company Name": "First Trust Exchange-Traded Fund IV",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "AFRU"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/4/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Z",
-          "Symbol": "ASUP"
+          "Symbol": ""
         },
         {
           "BX Action": "Add",
-          "Company Name": "AB Active ETFs, Inc.",
-          "Effective Date": "11/4/2026",
+          "Company Name": "American Century ETF Trust",
+          "Effective Date": "11/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "G",
-          "Symbol": "INK"
+          "Symbol": "ACEM"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Columbia ETF Trust I",
-          "Effective Date": "11/4/2026",
+          "Company Name": "BondBloxx ETF Trust",
+          "Effective Date": "11/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "RECD"
+          "Symbol": "BBLX"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Columbia ETF Trust I",
-          "Effective Date": "11/4/2026",
+          "Company Name": "Bread Financial Holdings, Inc.",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "BFH-C"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Churchill Capital Corp XI",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "CCXIU"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Cadeler A/S",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "N",
+          "Symbol": "CDLR"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Advisors Series Trust",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "DFIT"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Spinnaker ETF Series",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "DLAY"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "FMI Funds, Inc.",
+          "Effective Date": "11/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "RECM"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/4/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Z",
-          "Symbol": "SBTU"
+          "Symbol": "FMIG"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Global X Funds",
-          "Effective Date": "11/4/2026",
+          "Company Name": "Hilton Worldwide Holdings Inc.",
+          "Effective Date": "11/5/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "SIX"
+          "Primary Listing Market": "Q",
+          "Symbol": "HLT"
         },
         {
-          "BX Action": "Delete",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/4/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Z",
-          "Symbol": "TEUP"
+          "BX Action": "Add",
+          "Company Name": "Canary Staked INJ ETF",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "INJC"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Deep Sea Minerals Corp.",
+          "Effective Date": "11/5/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "SEAM"
         }
       ],
       "status": "PASS",
