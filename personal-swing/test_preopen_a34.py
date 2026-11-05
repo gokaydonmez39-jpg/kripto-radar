@@ -245,6 +245,16 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         self.assertIn("github.event.workflow_run.head_branch == 'main'",workflow)
         self.assertIn("github.event.workflow_run.conclusion == 'success'",workflow)
 
+    def test_main_code_push_does_not_run_private_preopen(self):
+        from pathlib import Path
+        wf = (Path(__file__).resolve().parent.parent /
+              '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text(
+                  encoding='utf-8')
+        private_if = wf.split('  private-preopen:',1)[1].split('    runs-on:',1)[0]
+        self.assertIn("github.event_name != 'push' &&",private_if)
+        self.assertIn("github.event_name != 'pull_request' &&",private_if)
+        self.assertIn("github.event.workflow_run.head_branch == 'main'",private_if)
+
     def test_eod_safe_preopen_schedule_with_delayed_dispatch(self):
         import re
         from datetime import datetime, timedelta, timezone
