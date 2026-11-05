@@ -127,9 +127,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         verified_days.add(day)
     verified_episode_keys = {day: [] for day in verified_days}
     terminal_expected = set()
+    closed_terminal_by_owner = {}
+    suppressed_terminal_by_owner = set()
     keys = set()
     episodes = {}
-    open_prior_starts = {}
+    # Historical (start, end): a prior episode may be closed NOW but must
+    # have been active when a later AL was suppressed. None=end still open.
+    episode_windows = {}
     open_n = closed_n = 0
     for row in candidates:
         key = value(row,0)
@@ -146,7 +150,6 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             need(re.fullmatch(r'AÇIK • (?:[0-9]|1[0-5])/15 SEANS',status)
                  is not None, 'FLIGHT_BAD_OPEN_STATUS')
             open_n += 1
-            open_prior_starts.setdefault(symbol, []).append(start)
         elif status.startswith('KAPALI • '):
             need(value(row,8) != '' and value(row,9) != '',
                  'FLIGHT_CLOSED_MISSING_EVIDENCE')
@@ -154,11 +157,15 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             terminal_day, terminal_kind = value(row,8), value(row,9)
             need(start <= terminal_day <= cutoff and terminal_kind in TERMINAL_CODES,
                  'FLIGHT_TERMINAL_EVENT_INVALID')
-            terminal_expected.add(f'{key}|{terminal_day}|{terminal_kind}|1')
+            terminal_id=f'{key}|{terminal_day}|{terminal_kind}|1'
+            terminal_expected.add(terminal_id)
+            closed_terminal_by_owner[key] = terminal_id
         else:
             raise FlightRecorderBlocked('FLIGHT_UNKNOWN_EPISODE_STATUS')
         keys.add(key)
         episodes[key] = (start,symbol,stop,target)
+        episode_windows.setdefault(symbol, []).append(
+            (start, terminal_day if key in closed_terminal_by_owner else None))
         if start in verified_days:
             verified_episode_keys[start].append(key)
     event_keys = set()
@@ -198,12 +205,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             # No delivery claim or new signal may follow from a disputed row.
             quarantined_events += 1
         elif status == SUPPRESSED and code == 'AL_NEW_EPISODE':
-            # The same symbol already has a strictly earlier still-open episode.
-            # Keep the second researched episode; forbid a second AL alert.
-            need(event_day == start and
-                 any(d < start for d in open_prior_starts.get(symbol, [])),
-                 'FLIGHT_SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE')
+            # An older episode can have closed AFTER this AL, yet still was
+            # live at the decision date. Do not demand a second STOP alert
+            # for an AL suppressed on that historical overlapping episode.
+            # Same-day closing is ambiguous, never a sufficient witness.
+            need(event_day == start and any(
+                old_start < start and (end is None or end > start)
+                for old_start,end in episode_windows.get(symbol, [])),
+                'FLIGHT_SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE')
             suppressed_active_al += 1
+            if owner in closed_terminal_by_owner:
+                suppressed_terminal_by_owner.add(closed_terminal_by_owner[owner])
         else:
             # Arbitrary DELIVERY claims and unrecognized states are forbidden.
             unknown_delivery += 1
@@ -225,7 +237,8 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
              'FLIGHT_NEW_AL_COUNT_NONINTEGER')
         need(len(verified_episode_keys[day]) == int(new_count),
              'FLIGHT_SCAN_AL_CANDIDATE_COUNT_MISMATCH')
-    need(terminal_expected <= event_keys, 'FLIGHT_MISSING_TERMINAL_EVENT')
+    required_terminal = terminal_expected - suppressed_terminal_by_owner
+    need(required_terminal <= event_keys, 'FLIGHT_MISSING_TERMINAL_EVENT')
     missing_current = 0
     missing_prior = 0
     confirmed_al = 0
@@ -264,7 +277,8 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'matched_new_al_outbox':confirmed_al,
         'unreserved_current_eod_al':missing_current,
         'unreserved_prior_eod_al':missing_prior,
-        'matched_terminal_outbox':len(terminal_expected),
+        'matched_terminal_outbox':len(required_terminal),
+        'suppressed_terminal_not_duplicated':len(suppressed_terminal_by_owner),
         'paired_gap_below_stop_annotations':len(gap_event_owner_days),
         'pending_device_ack':pending,
         'quarantined_events':quarantined_events,
