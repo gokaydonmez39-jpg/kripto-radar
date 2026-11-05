@@ -93,7 +93,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-05T18:17:04.193102+00:00",
+  "generated_at_utc": "2026-11-05T18:54:46.129470+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -791,8 +791,53 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 111,
+      "item_count": 114,
       "items": [
+        {
+          "HaltDate": "11/05/2026",
+          "HaltTime": "13:41:36.123",
+          "IssueName": "Ohmyhome Ltd Ords A",
+          "IssueSymbol": "OMH",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/05/2026",
+          "ResumptionQuoteTime": "13:41:36",
+          "ResumptionTradeTime": "13:46:36",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:41:36.123</td><td valign=\"top\">OMH</td><td valign=\"top\">Ohmyhome Ltd Ords A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:41:36                      </td><td valign=\"top\">13:46:36                      </td></tr></table>",
+          "pubDate": "Thu, 05 Nov 2026 05:00:00 GMT",
+          "title": "OMH"
+        },
+        {
+          "HaltDate": "11/05/2026",
+          "HaltTime": "13:25:52.510",
+          "IssueName": "Ohmyhome Ltd Ords A",
+          "IssueSymbol": "OMH",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/05/2026",
+          "ResumptionQuoteTime": "13:25:52",
+          "ResumptionTradeTime": "13:35:52",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:25:52.510</td><td valign=\"top\">OMH</td><td valign=\"top\">Ohmyhome Ltd Ords A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:25:52                      </td><td valign=\"top\">13:35:52                      </td></tr></table>",
+          "pubDate": "Thu, 05 Nov 2026 05:00:00 GMT",
+          "title": "OMH"
+        },
+        {
+          "HaltDate": "11/05/2026",
+          "HaltTime": "13:23:26.156",
+          "IssueName": "Phaos Technology Holdings (Cayman) Limited Class A Ordinary Shares",
+          "IssueSymbol": "POAS",
+          "Market": "AMEX",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/05/2026",
+          "ResumptionQuoteTime": "13:28:26",
+          "ResumptionTradeTime": "13:28:26",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:23:26.156</td><td valign=\"top\">POAS</td><td valign=\"top\">Phaos Technology Holdings (Cayman) Limited Class A Ordinary Shares</td><td valign=\"top\">AMEX</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/05/2026                    </td><td valign=\"top\">13:28:26                      </td><td valign=\"top\">13:28:26                      </td></tr></table>",
+          "pubDate": "Thu, 05 Nov 2026 05:00:00 GMT",
+          "title": "POAS"
+        },
         {
           "HaltDate": "11/05/2026",
           "HaltTime": "13:09:35.323",
