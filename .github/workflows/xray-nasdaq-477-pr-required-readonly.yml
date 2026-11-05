@@ -1,0 +1,48 @@
+name: XRAY NASDAQ 477 Required Read-Only PR CI
+
+# Stable status name for eventual main ruleset enforcement.
+# Intentionally NO path filter: GitHub required checks cannot remain Pending
+# when a PR changes only another part of the shared public repository.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  xray-477-required-ci:
+    name: xray-477-required-ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - name: Checkout without credential persistence
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Offline Python runtime
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Existing offline regression dependencies only
+        run: |
+          python -m pip install -r personal-swing/requirements.txt
+          python -m pip install 'PyYAML==6.0.2' 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+      - name: Personal 477 normal and optimized regression
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
+          python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
+          python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
+      - name: Independent A14 PIT regression normal and optimized
+        working-directory: personal-swing/performance_lab
+        run: |
+          python -m unittest discover -q -p 'test_private_performance_adapter.py'
+          python -O -m unittest discover -q -p 'test_private_performance_adapter.py'
+      - name: A42 candidate queue contract normal and optimized
+        working-directory: nasdaq-candidate-autopilot
+        run: |
+          python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+          python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+      - name: Explicit no-trade and no-private-access scope
+        run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
