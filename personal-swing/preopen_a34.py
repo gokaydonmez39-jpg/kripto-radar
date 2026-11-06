@@ -9,6 +9,7 @@ import json
 import math
 import os
 import re
+from urllib.error import HTTPError, URLError
 
 EXPECTED_UNIVERSE = 477
 HEX = re.compile(r'^[0-9a-f]{64}$')
@@ -18,6 +19,70 @@ CATEGORIES = {'AL', 'IZLE', 'ELE'}
 
 class PreopenBlocked(ValueError):
     pass
+
+
+# Public A34 logs may contain ONLY fixed, source-reviewed failure identifiers.
+# Never serialize tokens, private rows, symbols, vendor errors, HTTP URLs,
+# response bodies or untrusted exception strings.
+_SAFE_PREOPEN_CODES = frozenset({
+    'SOURCE_PROOF_ABSENT',
+    'SOURCE_PROOF_MISSING_DUPLICATE_OR_MALFORMED',
+    'EXACT_477_SCOPE_MISMATCH',
+    'SCANS_MISSING',
+    'SCAN_DUPLICATE_OR_NONMONOTONIC',
+    'LATEST_COMPLETED_SCAN_NOT_READY',
+    'SCAN_NOT_FINAL_477',
+    'SCAN_NEW_AL_COUNT_INVALID',
+    'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT',
+    'IEX_PROVIDER_SCOPE_MISMATCH',
+    'IEX_INCOMPLETE_OR_STALE_SESSION',
+    'IEX_LIVE_AL_COUNT_VS_PRIVATE_SCAN_CONFLICT',
+    'CANDIDATE_HEADER_DRIFT',
+    'AL_IDENTITY_INPUT_INVALID',
+    'CANDIDATE_IDENTITY_INVALID',
+    'CANDIDATE_KEY_DUPLICATE',
+    'CURRENT_CANDIDATE_COUNT_MISMATCH',
+    'AL_IDENTITY_RECOMPUTE_INVALID',
+    'AL_IDENTITY_MISMATCH',
+    'AL_LEVEL_INPUT_INVALID',
+    'AL_LEVEL_INVALID',
+    'AL_LEVEL_SOURCE_MISMATCH',
+    'NOT_BEFORE_NEXT_XNAS_OPEN',
+    'PRIVATE_SHEET_CREDENTIALS_MISSING',
+    'OUTBOX_OR_PANEL_NOT_READY',
+    'CONCURRENT_PRIVATE_SHEET_CHANGE',
+})
+_SAFE_STAGES = frozenset({
+    'START',
+    'MARKET_CALENDAR',
+    'SOURCE_SCOPE',
+    'PRIVATE_AUTH_AND_METADATA',
+    'SHEET_SOURCE_READ',
+    'PRIVATE_FLIGHT_RECORDER',
+    'SOURCE_SHA_SCOPE',
+    'IEX_RECOMPUTE',
+    'AL_IDENTITY',
+    'AL_LEVELS',
+    'READBACK',
+    'SUMMARY',
+})
+
+
+def public_preopen_failure_code(exc):
+    """No user-controlled details can become a public diagnostic identifier."""
+    if type(exc) is PreopenBlocked and str(exc) in _SAFE_PREOPEN_CODES:
+        return str(exc)
+    if isinstance(exc, HTTPError):
+        if exc.code == 429:
+            return 'A34_HTTP_429'
+        if exc.code in (401, 403, 404):
+            return 'A34_HTTP_' + str(exc.code)
+        if exc.code in (500, 502, 503, 504):
+            return 'A34_HTTP_5XX'
+        return 'A34_HTTP_OTHER'
+    if isinstance(exc, (URLError, TimeoutError)):
+        return 'A34_TRANSPORT_ERROR'
+    return 'UNCLASSIFIED'
 
 
 def need(ok, reason):
@@ -161,7 +226,7 @@ def validate_al_levels(candidate_table, asof, results):
     return 'EXACT_AL_LEVELS_PASS'
 
 
-def live_entrypoint():
+def live_entrypoint(stage=None):
     # Import production modules only on the authorized GitHub runner; no
     # third-party vendor or broker SDK is imported/executed by this preflight.
     import exchange_calendars as ec
@@ -170,13 +235,17 @@ def live_entrypoint():
     from performance_lab.private_performance_adapter import PrivateSheetReadOnly
     from performance_lab.private_flight_recorder import inspect
 
+    stage = {} if stage is None else stage
+    stage['current'] = 'MARKET_CALENDAR'
     now = dt.datetime.now(dt.timezone.utc)
     asof = engine.trading_asof(now).isoformat()
     cal = ec.get_calendar('XNAS')
     next_session = cal.next_session(asof)
     need(now < cal.session_open(next_session).to_pydatetime(),
          'NOT_BEFORE_NEXT_XNAS_OPEN')
+    stage['current'] = 'SOURCE_SCOPE'
     symbols = runner.get_scope(watchlist_file='nasdaq_watchlist_477.json',asof=asof)
+    stage['current'] = 'PRIVATE_AUTH_AND_METADATA'
     secret = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON', '')
     private_id = os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID', '')
     need(bool(secret) and bool(private_id), 'PRIVATE_SHEET_CREDENTIALS_MISSING')
@@ -185,23 +254,30 @@ def live_entrypoint():
     def read_all():
         return [api.read('ADAY_GECMISI','M'), api.read('TARAMA_KAYITLARI','J'),
                 api.read('UYARI_OLAYLARI','T'), api.read('PANEL','B')]
+    stage['current'] = 'SHEET_SOURCE_READ'
     first = read_all()
+    stage['current'] = 'PRIVATE_FLIGHT_RECORDER'
     flight = inspect(*first, expected_asof=asof)
     need(flight['unreserved_current_eod_al'] == 0
          and flight['unreserved_prior_eod_al'] == 0
          and not flight['panel_non_authoritative_stale']
          and not flight['panel_missing_asof'],
          'OUTBOX_OR_PANEL_NOT_READY')
+    stage['current'] = 'SOURCE_SHA_SCOPE'
     expected = validate_scope_and_scan(symbols, first[1], asof,
                                        runner.sha_symbols(symbols),
                                        runner.analysis_fingerprint())
+    stage['current'] = 'IEX_RECOMPUTE'
     bars = engine.live_read(symbols, asof)
     results = {sym: engine.analyze(sym, bars.get(sym, []), asof)
                for sym in symbols}
     summary = validate_iex_result(symbols, asof, expected, results)
+    stage['current'] = 'AL_IDENTITY'
     summary['al_identity_check'] = validate_al_identity(
         first[0], asof, expected, results)
+    stage['current'] = 'AL_LEVELS'
     summary['al_level_check'] = validate_al_levels(first[0], asof, results)
+    stage['current'] = 'READBACK'
     need(first == read_all(), 'CONCURRENT_PRIVATE_SHEET_CHANGE')
     summary['next_xnas_session'] = str(next_session.date())
     summary['open_episodes'] = flight['open_count']
@@ -209,18 +285,30 @@ def live_entrypoint():
     if flight['quarantined_events']:
         summary['state'] = 'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'
     summary['pending_device_ack_events'] = flight['pending_device_ack']
+    stage['current'] = 'SUMMARY'
     return summary
 
 
 def main():
+    stage = {'current': 'START'}
     try:
-        result = live_entrypoint()
+        result = live_entrypoint(stage=stage)
         print(json.dumps(result, sort_keys=True))
         return 0
-    except Exception:
-        # Never leak Google tokens, API keys, private candidate rows, HTTP
-        # errors, symbol levels, exceptions or vendor payloads to public logs.
+    except Exception as exc:
+        # Keep existing fail-closed sentinel for upstream consumers, and add
+        # one static categorical diagnostic. No private data is exposed.
         print('XRAY_NASDAQ_A34_PREOPEN=BLOCKED_NO_DATA_PUBLISHED_NO_WRITES')
+        current = stage.get('current')
+        print(json.dumps({
+            'schema': 'XRAY_NASDAQ_A34_SAFE_DIAGNOSTIC_V1',
+            'status': 'A34_PREOPEN_BLOCKED',
+            'stage': current if current in _SAFE_STAGES else 'UNKNOWN',
+            'reason_code': public_preopen_failure_code(exc),
+            'writes': False, 'orders': False,
+            'private_data_published': False, 'device_ack': 'UNKNOWN',
+            'execution': 'NONE',
+        }, sort_keys=True))
         return 3
 
 
