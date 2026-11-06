@@ -345,6 +345,37 @@ class A34LiveFailureDiagnosticsRegression(unittest.TestCase):
 
 
 
+class A34FlightFailureDiagnosticTests(unittest.TestCase):
+    def test_flight_recorder_static_code_is_reported_without_any_private_rows(self):
+        from performance_lab.private_flight_recorder import FlightRecorderBlocked
+        def fail(*, stage):
+            stage['current'] = 'PRIVATE_FLIGHT_RECORDER'
+            raise FlightRecorderBlocked('FLIGHT_SCAN_NOT_FULL_FINAL')
+        with patch.object(w, 'live_entrypoint', side_effect=fail):
+            with patch('builtins.print') as output:
+                self.assertEqual(w.main(), 3)
+        receipt = json.loads(output.call_args_list[-1].args[0])
+        self.assertEqual(receipt['reason_code'], 'FLIGHT_SCAN_NOT_FULL_FINAL')
+        self.assertEqual(receipt['stage'], 'PRIVATE_FLIGHT_RECORDER')
+        self.assertFalse(receipt['private_data_published'])
+
+    def test_a14_known_private_read_only_failure_is_a_safe_constant(self):
+        from performance_lab.nasdaq_performance_guard import EvidenceBlocked
+        self.assertEqual(
+            w.public_preopen_failure_code(EvidenceBlocked('SHEET_TIMEZONE_CHANGED')),
+            'SHEET_TIMEZONE_CHANGED')
+        self.assertEqual(
+            w.public_preopen_failure_code(EvidenceBlocked('PRIVATE_UNTRUSTED_TICKER_123')),
+            'UNCLASSIFIED')
+
+    def test_flight_recorder_rogue_value_is_redacted(self):
+        from performance_lab.private_flight_recorder import FlightRecorderBlocked
+        self.assertEqual(
+            w.public_preopen_failure_code(
+                FlightRecorderBlocked('PRIVATE_SYMBOL_AND_TOKEN')),
+            'UNCLASSIFIED')
+
+
 class A34MandatoryCiCoverage(unittest.TestCase):
     def test_required_pr_ci_includes_a34_in_normal_and_optimized_mode(self):
         from pathlib import Path
