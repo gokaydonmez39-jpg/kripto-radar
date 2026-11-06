@@ -48,13 +48,15 @@ class ReadOnlyRetryTests(unittest.TestCase):
                 client().request(":batchUpdate", method="POST", body={"requests": []})
         self.assertEqual(req.call_count, 1)
 
-    def test_get_two_failures_stop_and_do_not_leak_response(self):
-        with patch.object(mod, "urlopen", side_effect=[URLError("private-row-payload"),
-                   URLError("private-row-payload")]) as req:
-            with patch.object(mod, "time", create=True):
+    def test_get_four_failures_stop_and_do_not_leak_response(self):
+        # Exhaust all four bounded GET attempts; never log the private body.
+        with patch.object(mod, "urlopen",
+                          side_effect=[URLError("private-row-payload")] * 4) as req:
+            with patch.object(mod, "time", create=True) as timer:
                 with self.assertRaises(mod.HandoffBlocked) as caught:
                     client().request("/values/synthetic")
-        self.assertEqual(req.call_count, 2)
+        self.assertEqual(req.call_count, 4)
+        self.assertEqual(timer.sleep.call_count, 3)
         self.assertNotIn("private-row-payload", str(caught.exception))
 
     def test_post_http_503_still_never_retry(self):
