@@ -210,5 +210,67 @@ class SwingScoreTests(unittest.TestCase):
                 score.synchronize(self.api,ASOF,self.read_batch)
         self.assertEqual(self.api.writes,0)
 
+
+class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
+    """Pure offline proof: score failure cannot masquerade as a passing EOD."""
+    @staticmethod
+    def workflow():
+        from pathlib import Path
+        return (Path(__file__).resolve().parent.parent /
+                ".github/workflows/xray-personal-477-eod.yml").read_text(
+                    encoding="utf-8")
+
+    @staticmethod
+    def job(text, name):
+        import re
+        marker = re.search(r"(?m)^  " + re.escape(name) + r":\s*$", text)
+        if marker is None:
+            raise AssertionError("Missing mandatory score acceptance job " + name)
+        rest = text[marker.end():]
+        end = re.search(r"(?m)^  [A-Za-z][A-Za-z0-9_-]*:\s*$", rest)
+        return rest[:end.start()] if end else rest
+
+    def test_producer_exports_real_outcome_before_continue_on_error(self):
+        followups = self.job(self.workflow(), "private-episode-followups")
+        self.assertIn("swing_score_outcome:", followups)
+        self.assertIn("steps.daily_swing_score.outcome", followups)
+        self.assertNotIn("steps.daily_swing_score.conclusion", followups)
+        self.assertIn("id: daily_swing_score", followups)
+        self.assertIn("continue-on-error: true", followups)
+        self.assertIn("python swing_score_daily.py", followups)
+
+    def test_guardian_independent_score_receipt_gate_is_mandatory(self):
+        gate = self.job(self.workflow(), "daily-private-score-acceptance")
+        self.assertIn("needs: [guardian-acceptance, private-episode-followups]",gate)
+        self.assertIn("needs.guardian-acceptance.result == 'success'", gate)
+        self.assertIn("github.event_name != 'pull_request'", gate)
+        self.assertIn("needs.private-episode-followups.outputs.swing_score_outcome",gate)
+        self.assertIn('[[ "$SCORE_OUTCOME" == "success" ]]',gate)
+        self.assertIn("exit 3",gate)
+        self.assertNotIn("continue-on-error",gate)
+        self.assertNotIn("method: POST",gate)
+
+    def test_no_second_provider_score_run_or_new_schedule(self):
+        content = self.workflow()
+        self.assertEqual(content.count("python swing_score_daily.py"), 1)
+        self.assertEqual(content.count("cron:"), 1)
+        self.assertIn("python -m unittest -q test_swing_score_daily", content)
+        self.assertIn("python -O -m unittest -q test_swing_score_daily", content)
+        self.assertIn("guardian-acceptance:", content)
+
+    def test_receipt_predicate_rejects_failure_skipped_and_unknown(self):
+        # The exact accepted outcome is 'success', not a falsy fallback or
+        # continue-on-error post-processed conclusion.
+        import os
+        import subprocess
+        statement='[[ "$SCORE_OUTCOME" == "success" ]]'
+        for value, valid in (("success", True),("failure", False),
+                             ("skipped", False),("", False)):
+            env = dict(os.environ, SCORE_OUTCOME=value)
+            result = subprocess.run(["bash","-c",statement], env=env,
+                                    capture_output=True, check=False)
+            self.assertEqual(result.returncode == 0, valid)
+
+
 if __name__=="__main__":
     unittest.main()
