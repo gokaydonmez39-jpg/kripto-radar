@@ -1,6 +1,7 @@
 """Offline XNAS lifecycle regression. Synthetic only: no vendor, secrets, orders."""
 import copy
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 import private_lifecycle as life
@@ -459,6 +460,51 @@ class TestPendingToRequestedContract(unittest.TestCase):
         with self.assertRaisesRegex(c.LedgerRefused, 'UNEXPECTED_EVENT_CHANGE'):
             c.verify_pending_request_transition(before, after, [key])
 
+
+
+
+class LifecyclePublicDiagnosticsTests(unittest.TestCase):
+    """Fail-first regression: redact public lifecycle errors, distinguish causes."""
+
+    def run_synthetic_failure(self, error):
+        with patch.object(life.daily_job, 'current_completed_session',
+                          return_value='2026-11-05'):
+            with patch.dict(life.os.environ,
+                            {'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SYNTHETIC_SECRET'},
+                            clear=True):
+                with patch.object(life, 'SheetApi', return_value=object()):
+                    with patch.object(life, 'synchronize', side_effect=error):
+                        with patch('builtins.print') as output:
+                            exit_code = life.main([])
+        self.assertEqual(output.call_count, 1)
+        return exit_code, output.call_args.args[0]
+
+    def test_lifecycle_known_scan_failure_is_categorical(self):
+        code, message = self.run_synthetic_failure(
+            HandoffBlocked('LIFECYCLE_CURRENT_FINAL_SCAN_MISSING'))
+        receipt = life.json.loads(message)
+        self.assertEqual(code, 3)
+        self.assertEqual(receipt['status'], 'LIFECYCLE_BLOCKED')
+        self.assertEqual(receipt['reason_code'], 'LIFECYCLE_CURRENT_FINAL_SCAN_MISSING')
+        self.assertEqual(receipt['execution'], 'NONE')
+        self.assertFalse(receipt['device_ack'])
+
+    def test_lifecycle_google_429_retains_safe_transport_category(self):
+        code, message = self.run_synthetic_failure(
+            HandoffBlocked('GOOGLE_SHEETS_HTTP_429'))
+        receipt = life.json.loads(message)
+        self.assertEqual(code, 3)
+        self.assertEqual(receipt['reason_code'], 'GOOGLE_SHEETS_HTTP_429')
+        self.assertNotIn('SYNTHETIC_SECRET', message)
+
+    def test_lifecycle_untrusted_exception_is_never_exposed(self):
+        code, message = self.run_synthetic_failure(
+            ValueError('private row/SYNTHETIC_SECRET/token'))
+        receipt = life.json.loads(message)
+        self.assertEqual(code, 3)
+        self.assertEqual(receipt['reason_code'], 'UNCLASSIFIED')
+        self.assertNotIn('SYNTHETIC_SECRET', message)
+        self.assertNotIn('private row', message)
 
 
 if __name__=='__main__':
