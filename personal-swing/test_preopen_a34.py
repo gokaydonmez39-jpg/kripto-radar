@@ -1,6 +1,9 @@
 """A34 pure offline negative tests. Never requires secrets, network or broker."""
 import copy
 import unittest
+import json
+from urllib.error import HTTPError
+from unittest.mock import patch
 import preopen_a34 as w
 
 ASOF = '2026-10-28'
@@ -281,6 +284,107 @@ class A34ScheduleResilienceTest(unittest.TestCase):
             scheduled = market_open.replace(hour=hour, minute=minute)
             self.assertLess(scheduled + timedelta(hours=8), market_open,
                             'Observed GitHub cron delay must remain preopen')
+
+
+
+class A34LiveFailureDiagnosticsRegression(unittest.TestCase):
+    """No private values, URLs, bars, credentials, or ticker names in public stdout."""
+
+    @staticmethod
+    def response():
+        from unittest.mock import call
+        return None
+
+    def test_known_a34_fail_closed_reason_is_categorical(self):
+        with patch.object(w, 'live_entrypoint',
+                          side_effect=w.PreopenBlocked('SCAN_NOT_FINAL_477')):
+            with patch('builtins.print') as out:
+                self.assertEqual(w.main(), 3)
+        self.assertEqual(out.call_count, 2)
+        self.assertIn('BLOCKED_NO_DATA_PUBLISHED_NO_WRITES',
+                      out.call_args_list[0].args[0])
+        receipt = json.loads(out.call_args_list[1].args[0])
+        self.assertEqual(receipt['reason_code'], 'SCAN_NOT_FINAL_477')
+        self.assertEqual(receipt['stage'], 'START')
+        self.assertFalse(receipt['writes'])
+        self.assertFalse(receipt['orders'])
+        self.assertEqual(receipt['device_ack'], 'UNKNOWN')
+
+    def test_http_429_at_source_read_is_categorized_not_leaked(self):
+        def fail(*, stage):
+            stage['current'] = 'SHEET_SOURCE_READ'
+            raise HTTPError('https://private.example/SECRET_SYMBOL',
+                            429, 'SECRET_MARKET_PAYLOAD', {}, None)
+        with patch.object(w, 'live_entrypoint', side_effect=fail):
+            with patch('builtins.print') as out:
+                self.assertEqual(w.main(), 3)
+        receipt = json.loads(out.call_args_list[-1].args[0])
+        self.assertEqual(receipt['reason_code'], 'A34_HTTP_429')
+        self.assertEqual(receipt['stage'], 'SHEET_SOURCE_READ')
+        self.assertNotIn('SECRET_', str(out.call_args_list))
+
+    def test_unknown_error_must_not_publish_private_payload(self):
+        with patch.object(w, 'live_entrypoint',
+                          side_effect=ValueError('SECRET_PRIVATE_ROW_AND_TOKEN')):
+            with patch('builtins.print') as out:
+                self.assertEqual(w.main(), 3)
+        receipt = json.loads(out.call_args_list[-1].args[0])
+        self.assertEqual(receipt['reason_code'], 'UNCLASSIFIED')
+        self.assertEqual(receipt['stage'], 'START')
+        self.assertNotIn('SECRET_PRIVATE_ROW', str(out.call_args_list))
+        self.assertFalse(receipt['private_data_published'])
+
+    def test_unrecognized_preopen_error_not_allowed_in_public_stdout(self):
+        with patch.object(w, 'live_entrypoint',
+                          side_effect=w.PreopenBlocked('PRIVATE_TICKER_123')):
+            with patch('builtins.print') as out:
+                self.assertEqual(w.main(), 3)
+        receipt = json.loads(out.call_args_list[-1].args[0])
+        self.assertEqual(receipt['reason_code'], 'UNCLASSIFIED')
+        self.assertNotIn('PRIVATE_TICKER_123', str(out.call_args_list))
+
+
+
+class A34FlightFailureDiagnosticTests(unittest.TestCase):
+    def test_flight_recorder_static_code_is_reported_without_any_private_rows(self):
+        from performance_lab.private_flight_recorder import FlightRecorderBlocked
+        def fail(*, stage):
+            stage['current'] = 'PRIVATE_FLIGHT_RECORDER'
+            raise FlightRecorderBlocked('FLIGHT_SCAN_NOT_FULL_FINAL')
+        with patch.object(w, 'live_entrypoint', side_effect=fail):
+            with patch('builtins.print') as output:
+                self.assertEqual(w.main(), 3)
+        receipt = json.loads(output.call_args_list[-1].args[0])
+        self.assertEqual(receipt['reason_code'], 'FLIGHT_SCAN_NOT_FULL_FINAL')
+        self.assertEqual(receipt['stage'], 'PRIVATE_FLIGHT_RECORDER')
+        self.assertFalse(receipt['private_data_published'])
+
+    def test_a14_known_private_read_only_failure_is_a_safe_constant(self):
+        from performance_lab.nasdaq_performance_guard import EvidenceBlocked
+        self.assertEqual(
+            w.public_preopen_failure_code(EvidenceBlocked('SHEET_TIMEZONE_CHANGED')),
+            'SHEET_TIMEZONE_CHANGED')
+        self.assertEqual(
+            w.public_preopen_failure_code(EvidenceBlocked('PRIVATE_UNTRUSTED_TICKER_123')),
+            'UNCLASSIFIED')
+
+    def test_flight_recorder_rogue_value_is_redacted(self):
+        from performance_lab.private_flight_recorder import FlightRecorderBlocked
+        self.assertEqual(
+            w.public_preopen_failure_code(
+                FlightRecorderBlocked('PRIVATE_SYMBOL_AND_TOKEN')),
+            'UNCLASSIFIED')
+
+
+class A34MandatoryCiCoverage(unittest.TestCase):
+    def test_required_pr_ci_includes_a34_in_normal_and_optimized_mode(self):
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parent.parent /
+                  '.github/workflows/xray-nasdaq-477-pr-required-readonly.yml'
+                  ).read_text(encoding='utf-8')
+        self.assertIn('python -m unittest -q test_preopen_a34', workflow)
+        self.assertIn('python -O -m unittest -q test_preopen_a34', workflow)
+        self.assertNotIn('continue-on-error: true', workflow)
 
 
 if __name__=='__main__':unittest.main()

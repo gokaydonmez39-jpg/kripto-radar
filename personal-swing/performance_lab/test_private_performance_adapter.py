@@ -341,5 +341,69 @@ class PrivateBridge(unittest.TestCase):
             plan(rows=rr)
 
 
+
+class PrivateReadOnlyQuotaBackoffRegression(unittest.TestCase):
+    """Synthetic transport only; no live Google token or private Sheet request."""
+
+    @staticmethod
+    def client():
+        client=a.PrivateSheetReadOnly.__new__(a.PrivateSheetReadOnly)
+        client._token='FAKE_TEST_TOKEN_DO_NOT_LOG'
+        client._url='https://sheets.googleapis.com/v4/spreadsheets/TEST_ID'
+        return client
+
+    @staticmethod
+    def quota_error(code=429):
+        from urllib.error import HTTPError
+        return HTTPError('https://private.example/SECRET_ROW', code,
+                         'PRIVATE_VENDOR_RESPONSE', {}, None)
+
+    def test_two_quota_429_errors_recover_with_bounded_get_backoff(self):
+        responses=[self.quota_error(), self.quota_error(),
+                   io.BytesIO(b'{"values": []}')]
+        with patch.object(a, 'urlopen', side_effect=responses) as opener:
+            with patch.object(a.time, 'sleep') as sleeps:
+                with patch.object(a.random, 'uniform', return_value=0.0):
+                    data=self.client()._get('/values/TEST')
+        self.assertEqual(data, {'values': []})
+        self.assertEqual(opener.call_count, 3)
+        self.assertEqual([x.args[0] for x in sleeps.call_args_list], [1.0,2.0])
+
+    def test_exhausted_429_never_loops_indefinitely(self):
+        from urllib.error import HTTPError
+        with patch.object(a, 'urlopen', side_effect=[self.quota_error() for _ in range(4)]) as opener:
+            with patch.object(a.time, 'sleep') as sleeps:
+                with patch.object(a.random, 'uniform', return_value=0.0):
+                    with self.assertRaises(HTTPError) as caught:
+                        self.client()._get('/values/TEST')
+        self.assertEqual(caught.exception.code, 429)
+        self.assertEqual(opener.call_count, 4)
+        self.assertEqual([x.args[0] for x in sleeps.call_args_list], [1.0,2.0,4.0])
+
+    def test_503_recovery_never_changes_http_method_from_get(self):
+        requests=[]
+        def provider(req,timeout):
+            requests.append(req.get_method())
+            if len(requests) < 3:
+                raise self.quota_error(503)
+            return io.BytesIO(b'{"values": []}')
+        with patch.object(a, 'urlopen', side_effect=provider):
+            with patch.object(a.time, 'sleep') as sleeps:
+                with patch.object(a.random, 'uniform', return_value=0.0):
+                    response=self.client()._get('/values/TEST')
+        self.assertEqual(response, {'values': []})
+        self.assertEqual(requests, ['GET','GET','GET'])
+        self.assertEqual(sleeps.call_count, 2)
+
+    def test_auth_403_is_not_retried(self):
+        from urllib.error import HTTPError
+        with patch.object(a, 'urlopen', side_effect=self.quota_error(403)) as opener:
+            with patch.object(a.time, 'sleep') as sleeps:
+                with self.assertRaises(HTTPError):
+                    self.client()._get('/values/TEST')
+        self.assertEqual(opener.call_count, 1)
+        sleeps.assert_not_called()
+
+
 if __name__=='__main__':
     unittest.main()

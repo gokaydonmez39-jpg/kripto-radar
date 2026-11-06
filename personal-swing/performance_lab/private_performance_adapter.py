@@ -12,7 +12,10 @@ import json
 import os
 from pathlib import Path
 import re
+import random
 import sys
+import time
+from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
@@ -282,12 +285,28 @@ class PrivateSheetReadOnly:
         self._url = ENDPOINT + spreadsheet_id
 
     def _get(self, path):
+        # Independent A34/A14 credential is READ ONLY. Retried operations
+        # below are exclusively GET; no mutating API is available here.
         req = Request(self._url + path,
                       headers={'Authorization': 'Bearer '+self._token,
                                'Accept': 'application/json'},
                       method='GET')
-        with urlopen(req,timeout=25) as resp:
-            return json.load(resp)
+        for attempt in range(4):
+            try:
+                with urlopen(req,timeout=25) as resp:
+                    return json.load(resp)
+            except HTTPError as exc:
+                # 401/403/404 and non-transient failures stop immediately.
+                if exc.code in (429, 500, 502, 503, 504) and attempt < 3:
+                    time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
+                    continue
+                raise
+            except (URLError, TimeoutError):
+                if attempt < 3:
+                    time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
+                    continue
+                raise
+        raise RuntimeError('READ_ONLY_GET_RETRY_EXHAUSTED')
 
     def read(self, title, last_column):
         need((title,last_column) in
