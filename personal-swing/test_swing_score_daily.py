@@ -361,7 +361,7 @@ class ZeroSessionReceiptFailClosedTests(unittest.TestCase):
             ("schedule","success","SWING_SCORE_PRIVATE_READBACK_PASS","",3,
              "HOLD_INVALID_RECEIPT_ASOF"),
             ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","2026-11-06",3,
-             "HOLD_NO_VALID_READBACK_RECEIPT"),
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
         ]
         for event,outcome,status,asof,code,marker in cases:
             env=dict(os.environ,SCORE_OUTCOME=outcome,SCORE_STATUS=status,
