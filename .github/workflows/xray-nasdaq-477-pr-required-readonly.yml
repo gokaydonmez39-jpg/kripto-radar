@@ -38,7 +38,10 @@ jobs:
           # P0 evidence audit is a fail-closed release gate, not optional.
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
-          python -m py_compile swing_score_daily.py delivery_evidence_audit.py
+          # A34 must fail required CI on a broken read-only preopen guard.
+          python -m unittest -q test_preopen_a34
+          python -O -m unittest -q test_preopen_a34
+          python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
