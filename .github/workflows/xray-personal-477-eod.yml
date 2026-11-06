@@ -272,6 +272,8 @@ jobs:
     # Raw step outcome precedes continue-on-error (unlike conclusion).
     outputs:
       swing_score_outcome: ${{ steps.daily_swing_score.outcome }}
+      swing_score_status: ${{ steps.daily_swing_score.outputs.score_status }}
+      swing_score_asof: ${{ steps.daily_swing_score.outputs.score_asof_et }}
     env:
       XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
@@ -386,10 +388,33 @@ jobs:
         shell: bash
         env:
           SCORE_OUTCOME: ${{ needs.private-episode-followups.outputs.swing_score_outcome }}
+          SCORE_STATUS: ${{ needs.private-episode-followups.outputs.swing_score_status }}
+          SCORE_ASOF: ${{ needs.private-episode-followups.outputs.swing_score_asof }}
+          EVENT_KIND: ${{ github.event_name }}
         run: |
           set -euo pipefail
           [[ "$SCORE_OUTCOME" == "success" ]] || {
-            echo 'XRAY_DAILY_SWING_SCORE=HOLD_NOT_FULLY_ACCEPTED' >&2
+            echo 'XRAY_DAILY_SWING_SCORE=HOLD_STEP_FAILURE' >&2
             exit 3
           }
-          echo 'XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_NOT_CHATGPT_DELIVERY'
+          # A success exit with no completed market session is NOT a verified
+          # EOD score. A pre-session code push can remain a safe no-op, but
+          # cannot claim EOD readback. A scheduled EOD without data is HOLD.
+          if [[ "$SCORE_STATUS" == "SWING_SCORE_NO_COMPLETED_SESSION" ]]; then
+            if [[ "$EVENT_KIND" == "push" && -z "$SCORE_ASOF" ]]; then
+              echo 'XRAY_DAILY_SWING_SCORE=NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE'
+              exit 0
+            fi
+            echo 'XRAY_DAILY_SWING_SCORE=HOLD_NO_ELIGIBLE_SCHEDULE_SESSION' >&2
+            exit 3
+          fi
+          if [[ "$SCORE_STATUS" != "SWING_SCORE_PRIVATE_READBACK_PASS" &&
+                "$SCORE_STATUS" != "SWING_SCORE_IDEMPOTENT_READBACK_PASS" ]]; then
+            echo 'XRAY_DAILY_SWING_SCORE=HOLD_NO_VALID_READBACK_RECEIPT' >&2
+            exit 3
+          fi
+          if [[ ! "$SCORE_ASOF" =~ ^20[0-9]{2}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo 'XRAY_DAILY_SWING_SCORE=HOLD_INVALID_RECEIPT_ASOF' >&2
+            exit 3
+          fi
+          echo "XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_ASOF_${SCORE_ASOF}_NOT_CHATGPT_DELIVERY"

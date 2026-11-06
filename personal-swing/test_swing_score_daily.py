@@ -272,5 +272,106 @@ class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
             self.assertEqual(result.returncode == 0, valid)
 
 
+
+class ZeroSessionReceiptFailClosedTests(unittest.TestCase):
+    """A successful process exit is not proof of any completed ASOF or score."""
+    def test_pre_session_writes_explicit_no_completed_session_not_readback(self):
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            filepath=folder+"/output"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT":filepath}):
+                with patch.object(score.daily_job,"current_completed_session",return_value=None):
+                    self.assertEqual(score.main([]),0)
+            result=open(filepath,encoding="utf-8").read()
+            self.assertIn("score_status=SWING_SCORE_NO_COMPLETED_SESSION",result)
+            self.assertIn("score_asof_et=",result)
+            self.assertNotIn("score_status=SWING_SCORE_PRIVATE_READBACK_PASS",result)
+
+    def test_private_readback_is_attested_with_exact_asof(self):
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            filepath=folder+"/output"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT":filepath}):
+                score.publish_action_receipt(
+                    {"status":"SWING_SCORE_PRIVATE_READBACK_PASS",
+                     "asof_et":"2026-11-06"})
+            result=open(filepath,encoding="utf-8").read()
+            self.assertIn("score_status=SWING_SCORE_PRIVATE_READBACK_PASS",result)
+            self.assertIn("score_asof_et=2026-11-06",result)
+
+    def test_unknown_or_inconsistent_receipt_is_never_accepted(self):
+        import os
+        import tempfile
+        cases=[
+            {"status":"PRIVATE_ROW_AND_TOKEN","asof_et":"2026-11-06"},
+            {"status":"SWING_SCORE_PRIVATE_READBACK_PASS","asof_et":""},
+            {"status":"SWING_SCORE_PRIVATE_READBACK_PASS","asof_et":"2026-11-05\nEVIL=YES"},
+            {"status":"SWING_SCORE_NO_COMPLETED_SESSION","asof_et":"2026-11-06"},
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            filepath=folder+"/output"
+            with patch.dict(os.environ, {"GITHUB_OUTPUT":filepath}):
+                for result in cases:
+                    with self.assertRaises((ValueError,writer.HandoffBlocked)):
+                        score.publish_action_receipt(result)
+            self.assertFalse(os.path.exists(filepath))
+
+    def test_mandatory_gate_checks_actual_receipt_not_just_exit_code(self):
+        from pathlib import Path
+        yaml=(Path(__file__).resolve().parent.parent /
+              ".github/workflows/xray-personal-477-eod.yml").read_text("utf-8")
+        self.assertIn("steps.daily_swing_score.outputs.score_status",yaml)
+        self.assertIn("needs.private-episode-followups.outputs.swing_score_status",yaml)
+        self.assertIn("needs.private-episode-followups.outputs.swing_score_asof",yaml)
+        self.assertIn("SWING_SCORE_NO_COMPLETED_SESSION",yaml)
+        self.assertIn("SWING_SCORE_PRIVATE_READBACK_PASS",yaml)
+        self.assertIn("SWING_SCORE_IDEMPOTENT_READBACK_PASS",yaml)
+        self.assertIn("NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE",yaml)
+
+
+
+    def test_actual_workflow_bash_gate_truth_table(self):
+        import os
+        import subprocess
+        import textwrap
+        from pathlib import Path
+        yaml=(Path(__file__).resolve().parent.parent /
+              ".github/workflows/xray-personal-477-eod.yml").read_text("utf-8")
+        section=DailyScoreWorkflowAcceptanceTests.job(
+            yaml,"daily-private-score-acceptance")
+        self.assertEqual(section.count("        run: |\n"),1)
+        script=textwrap.dedent(section.split("        run: |\n",1)[1])
+        cases=[
+            ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","",0,
+             "NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE"),
+            ("schedule","success","SWING_SCORE_NO_COMPLETED_SESSION","",3,
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
+            ("workflow_dispatch","success","SWING_SCORE_NO_COMPLETED_SESSION","",3,
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
+            ("schedule","success","SWING_SCORE_PRIVATE_READBACK_PASS","2026-11-06",0,
+             "PRIVATE_READBACK_PASS_ASOF_2026-11-06"),
+            ("schedule","success","SWING_SCORE_IDEMPOTENT_READBACK_PASS","2026-11-06",0,
+             "PRIVATE_READBACK_PASS_ASOF_2026-11-06"),
+            ("schedule","failure","SWING_SCORE_PRIVATE_READBACK_PASS","2026-11-06",3,
+             "HOLD_STEP_FAILURE"),
+            ("schedule","success","SYNTHETIC_UNKNOWN_STATUS","2026-11-06",3,
+             "HOLD_NO_VALID_READBACK_RECEIPT"),
+            ("schedule","success","SWING_SCORE_PRIVATE_READBACK_PASS","",3,
+             "HOLD_INVALID_RECEIPT_ASOF"),
+            ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","2026-11-06",3,
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
+        ]
+        for event,outcome,status,asof,code,marker in cases:
+            env=dict(os.environ,SCORE_OUTCOME=outcome,SCORE_STATUS=status,
+                     SCORE_ASOF=asof,EVENT_KIND=event)
+            result=subprocess.run(["bash","-c",script],env=env,text=True,
+                                  capture_output=True,check=False)
+            with self.subTest(event=event,outcome=outcome,status=status,asof=asof):
+                self.assertEqual(result.returncode,code)
+                self.assertIn(marker,result.stdout+result.stderr)
+
+
 if __name__=="__main__":
     unittest.main()

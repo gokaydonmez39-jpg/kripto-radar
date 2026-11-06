@@ -301,6 +301,37 @@ def synchronize(api, asof, read_batch):
             "active_episodes":len(rows)-1,"scoreable":int(rows[0][6]),
             "new_rows":len(rows),"execution":"NONE"}
 
+def publish_action_receipt(result):
+    """Categorical, secret-free GitHub step output; not a delivery receipt.
+
+    A zero-exit pre-session NOOP is fundamentally different from a verified
+    private Google Sheets score readback. Only a fixed status and ISO ASOF
+    can cross from the private scoring step into workflow-level acceptance.
+    """
+    status=result.get("status") if isinstance(result,dict) else None
+    accepted={
+        "SWING_SCORE_NO_COMPLETED_SESSION",
+        "SWING_SCORE_PRIVATE_READBACK_PASS",
+        "SWING_SCORE_IDEMPOTENT_READBACK_PASS",
+    }
+    if status not in accepted:
+        raise ValueError("SWING_SCORE_ACTION_RECEIPT_UNRECOGNIZED_STATUS")
+    asof=result.get("asof_et","")
+    if status == "SWING_SCORE_NO_COMPLETED_SESSION":
+        if asof not in ("",None):
+            raise ValueError("SWING_SCORE_NO_SESSION_WITH_ASOF")
+        asof=""
+    else:
+        if (type(asof) is not str or
+                re.fullmatch(r"20\d{2}-\d{2}-\d{2}",asof) is None or
+                date.fromisoformat(asof).isoformat() != asof):
+            raise ValueError("SWING_SCORE_ACTION_RECEIPT_BAD_ASOF")
+    destination=os.environ.get("GITHUB_OUTPUT")
+    if destination:
+        with open(destination,"a",encoding="utf-8") as stream:
+            stream.write("score_status="+status+"\n")
+            stream.write("score_asof_et="+asof+"\n")
+
 def main(argv=None):
     parser=argparse.ArgumentParser()
     parser.add_argument("--asof",default="")
@@ -308,13 +339,16 @@ def main(argv=None):
     try:
         asof=args.asof or daily_job.current_completed_session()
         if asof is None:
-            print(json.dumps({"status":"SWING_SCORE_NO_COMPLETED_SESSION",
-                              "execution":"NONE"}))
+            result={"status":"SWING_SCORE_NO_COMPLETED_SESSION",
+                    "execution":"NONE"}
+            publish_action_receipt(result)
+            print(json.dumps(result,sort_keys=True))
             return 0
         credential=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         writer.require(bool(credential),"SWING_SCORE_PRIVATE_AUTH_MISSING")
         api=writer.SheetApi(credential)
         result=synchronize(api, asof, engine.live_read)
+        publish_action_receipt(result)
         print(json.dumps(result,sort_keys=True))
         return 0
     except Exception as exc:
