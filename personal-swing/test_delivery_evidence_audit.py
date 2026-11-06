@@ -170,6 +170,15 @@ class AsOfDeliveryReconciliationTests(unittest.TestCase):
         self.assertNotIn("OLD", str(report))
         self.assertNotIn("EXM", str(report))
 
+    def test_future_not_sent_event_blocks_before_any_reconciliation_claim(self):
+        alerts, scores, scans = fixture()
+        event = alerts[1]
+        event[4] = "2026-11-05"
+        event[0] = ledger.event_key(event[2], event[3], event[4], event[5])
+        with self.assertRaisesRegex(
+                audit.EvidenceHold, "^UNSENT_NOTE_EVENT_ASOF_INVALID$"):
+            audit.assess(alerts, scores, scans)
+
     def test_no_note_still_does_not_prove_delivery(self):
         alerts, scores, scans = fixture()
         alerts[1][19] = "NO_EXTERNAL_RECEIPT"
