@@ -45,6 +45,15 @@ PIT_POST_CUTOVER_SHA = (
     '4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20',
     'c8fc8877aa0a9e55a8e1b9707886c17210e3859fc91f896af90a26b4a98c134e',
 )
+# Independently verified 2026-11-05 22:17Z code-only corporate action fix
+# (engine.py Alpaca IEX bars REST asof=asof), and its exact SHA-256
+# over engine.py + runner.py + requirements.txt + immutable feed policy.
+# Historical 3-5 Nov signals keep the older hash; no sheet rewrite allowed.
+PIT_ASOF_PIN_CUTOVER = '2026-11-06'
+PIT_ASOF_PIN_SHA = (
+    '4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20',
+    'c13c5a7ad14c1753d044f2392f37c6fdf7cd5e11f6c2edd3954902aa0716056b',
+)
 
 
 class FlightRecorderBlocked(ValueError):
@@ -115,14 +124,25 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         # the exact pre-cutover receipt; afterwards it must match the
         # currently verified post-cutover receipt. No arbitrary historical
         # SHA drift is permitted, even after a new code deployment.
-        approved_transition = (
-            cutoff >= PIT_CUTOVER
-            and latest_fp == PIT_POST_CUTOVER_SHA
-        )
-        permitted_fp = (
-            PIT_PRE_CUTOVER_SHA if day < PIT_CUTOVER
-            else PIT_POST_CUTOVER_SHA
-        ) if approved_transition else latest_fp
+        # Exactly two reviewed history changes, never an arbitrary SHA.
+        # 1) 3 Nov: official XNAS point-in-time symbol cutover;
+        # 2) 6 Nov: Alpaca raw bars asof pin (same universe, new engine hash).
+        # The latest date and fingerprint MUST attest to the chosen cohort.
+        if cutoff >= PIT_ASOF_PIN_CUTOVER and latest_fp == PIT_ASOF_PIN_SHA:
+            if day < PIT_CUTOVER:
+                permitted_fp = PIT_PRE_CUTOVER_SHA
+            elif day < PIT_ASOF_PIN_CUTOVER:
+                permitted_fp = PIT_POST_CUTOVER_SHA
+            else:
+                permitted_fp = PIT_ASOF_PIN_SHA
+        elif cutoff >= PIT_CUTOVER and latest_fp == PIT_POST_CUTOVER_SHA:
+            permitted_fp = (
+                PIT_PRE_CUTOVER_SHA if day < PIT_CUTOVER
+                else PIT_POST_CUTOVER_SHA
+            )
+        else:
+            # Unknown, backdated or unreviewed cutover is never autoaccepted.
+            permitted_fp = latest_fp
         need(fp == permitted_fp, 'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
         verified_days.add(day)
     verified_episode_keys = {day: [] for day in verified_days}
