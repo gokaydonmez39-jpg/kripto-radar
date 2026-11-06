@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-06T15:17:23.330803+00:00",
+  "generated_at_utc": "2026-11-06T15:23:09.787519+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -776,11 +776,11 @@
         "WZRD"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 43,
+      "item_count": 44,
       "items": [
         {
           "HaltDate": "11/06/2026",
-          "HaltTime": "10:08:19.450",
+          "HaltTime": "10:19:01.013",
           "IssueName": "Opportunistic Trader ETF",
           "IssueSymbol": "WZRD",
           "Market": "Non NASDAQ",
@@ -789,7 +789,22 @@
           "ResumptionDate": "",
           "ResumptionQuoteTime": "",
           "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/06/2026                    </td><td valign=\"top\">10:08:19.450</td><td valign=\"top\">WZRD</td><td valign=\"top\">Opportunistic Trader ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/06/2026                    </td><td valign=\"top\">10:19:01.013</td><td valign=\"top\">WZRD</td><td valign=\"top\">Opportunistic Trader ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Fri, 06 Nov 2026 05:00:00 GMT",
+          "title": "WZRD"
+        },
+        {
+          "HaltDate": "11/06/2026",
+          "HaltTime": "10:08:19.450",
+          "IssueName": "Opportunistic Trader ETF",
+          "IssueSymbol": "WZRD",
+          "Market": "Non NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/06/2026",
+          "ResumptionQuoteTime": "10:18:24",
+          "ResumptionTradeTime": "10:18:24",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/06/2026                    </td><td valign=\"top\">10:08:19.450</td><td valign=\"top\">WZRD</td><td valign=\"top\">Opportunistic Trader ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/06/2026                    </td><td valign=\"top\">10:18:24                      </td><td valign=\"top\">10:18:24                      </td></tr></table>",
           "pubDate": "Fri, 06 Nov 2026 05:00:00 GMT",
           "title": "WZRD"
         },
