@@ -380,6 +380,21 @@ class PrivateReadOnlyQuotaBackoffRegression(unittest.TestCase):
         self.assertEqual(opener.call_count, 4)
         self.assertEqual([x.args[0] for x in sleeps.call_args_list], [1.0,2.0,4.0])
 
+    def test_503_recovery_never_changes_http_method_from_get(self):
+        requests=[]
+        def provider(req,timeout):
+            requests.append(req.get_method())
+            if len(requests) < 3:
+                raise self.quota_error(503)
+            return io.BytesIO(b'{"values": []}')
+        with patch.object(a, 'urlopen', side_effect=provider):
+            with patch.object(a.time, 'sleep') as sleeps:
+                with patch.object(a.random, 'uniform', return_value=0.0):
+                    response=self.client()._get('/values/TEST')
+        self.assertEqual(response, {'values': []})
+        self.assertEqual(requests, ['GET','GET','GET'])
+        self.assertEqual(sleeps.call_count, 2)
+
     def test_auth_403_is_not_retried(self):
         from urllib.error import HTTPError
         with patch.object(a, 'urlopen', side_effect=self.quota_error(403)) as opener:
