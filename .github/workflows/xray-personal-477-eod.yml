@@ -269,6 +269,9 @@ jobs:
     if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 16
+    # Raw step outcome precedes continue-on-error (unlike conclusion).
+    outputs:
+      swing_score_outcome: ${{ steps.daily_swing_score.outcome }}
     env:
       XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
@@ -299,6 +302,7 @@ jobs:
           set -euo pipefail
           python panel_reconciler.py
       - name: Private EOD swing ranking V1 (advisory; never blocks AL or Guardian)
+        id: daily_swing_score
         continue-on-error: true
         working-directory: personal-swing
         run: |
@@ -366,3 +370,26 @@ jobs:
           path: ${{ runner.temp }}/xray-personal-guardian.json
           if-no-files-found: warn
           retention-days: 14
+
+  daily-private-score-acceptance:
+    # Guardian remains independently successful even if advisory score fails.
+    # An incomplete daily score can never turn the entire EOD green.
+    # No IEX, Google Sheet API, secrets, extra cron, orders or delivery here.
+    needs: [guardian-acceptance, private-episode-followups]
+    if: ${{ always() && github.event_name != 'pull_request' && needs.guardian-acceptance.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - name: Gate raw score outcome after Guardian (fail closed)
+        shell: bash
+        env:
+          SCORE_OUTCOME: ${{ needs.private-episode-followups.outputs.swing_score_outcome }}
+        run: |
+          set -euo pipefail
+          [[ "$SCORE_OUTCOME" == "success" ]] || {
+            echo 'XRAY_DAILY_SWING_SCORE=HOLD_NOT_FULLY_ACCEPTED' >&2
+            exit 3
+          }
+          echo 'XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_NOT_CHATGPT_DELIVERY'
