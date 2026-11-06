@@ -471,5 +471,84 @@ class FlightNegativeTests(unittest.TestCase):
         with self.assertRaisesRegex(g.FlightRecorderBlocked,'DUPLICATE_EVENT'):
             g.inspect(*b)
 
+
+class ExplicitSecondPolicyCutover20261106Tests(unittest.TestCase):
+    """No historical rewrite: approve only the reviewed corporate-action asof pin."""
+    NEW_ASOF_POLICY = (
+        '4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20',
+        'c13c5a7ad14c1753d044f2392f37c6fdf7cd5e11f6c2edd3954902aa0716056b',
+    )
+
+    @staticmethod
+    def _scan(day, pair, count=0):
+        return [day, 'GitHub verified private', '477','477','477','0',
+                'TRUE',str(count),'private',
+                'scopeSHA='+pair[0]+';algorithmSHA='+pair[1]]
+
+    def fixture(self):
+        b = data()
+        b[1][1] = self._scan(DAY, g.PIT_PRE_CUTOVER_SHA, count=1)
+        b[1].append(self._scan('2026-11-03',g.PIT_POST_CUTOVER_SHA))
+        b[1].append(self._scan('2026-11-05',g.PIT_POST_CUTOVER_SHA))
+        b[1].append(self._scan('2026-11-06',self.NEW_ASOF_POLICY))
+        b[3][0][1] = '2026-11-06'
+        b[0][1][7] = 'AÇIK • 8/15 SEANS'
+        return b
+
+    def test_approved_three_epoch_policy_corpus_passes_without_changing_rows(self):
+        b = self.fixture()
+        before=deepcopy(b)
+        result=g.inspect(*b,expected_asof='2026-11-06')
+        self.assertEqual(result['source_verified_issuance_days'],4)
+        self.assertEqual(result['latest_verified_scan_asof'],'2026-11-06')
+        self.assertEqual(result['unreserved_prior_eod_al'],0)
+        self.assertEqual(result['device_receipts_verified'],0)
+        self.assertFalse(result['writes'])
+        self.assertEqual(b,before)
+
+    def test_wrong_legacy_pre_cutover_fingerprint_blocks(self):
+        b=self.fixture()
+        b[1][1]=self._scan(DAY,(g.PIT_PRE_CUTOVER_SHA[0],'f'*64),count=1)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b,expected_asof='2026-11-06')
+
+    def test_wrong_middle_policy_fingerprint_blocks(self):
+        b=self.fixture()
+        b[1][3]=self._scan('2026-11-05',(g.PIT_POST_CUTOVER_SHA[0],'e'*64))
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b,expected_asof='2026-11-06')
+
+    def test_new_asof_policy_may_not_be_backdated_to_5_nov(self):
+        b=self.fixture()
+        b[1].pop()
+        b[1][-1]=self._scan('2026-11-05',self.NEW_ASOF_POLICY)
+        b[3][0][1]='2026-11-05'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b,expected_asof='2026-11-05')
+
+    def test_unreviewed_latest_policy_sha_fails_closed(self):
+        b=self.fixture()
+        b[1][-1]=self._scan('2026-11-06',(self.NEW_ASOF_POLICY[0],'f'*64))
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT'):
+            g.inspect(*b,expected_asof='2026-11-06')
+
+
+
+class FlightRecorderMandatoryReleaseGateTests(unittest.TestCase):
+    def test_mandatory_ci_includes_second_sha_cutover_tests_in_both_modes(self):
+        from pathlib import Path
+        ci = (Path(__file__).resolve().parents[2] /
+              '.github/workflows/xray-nasdaq-477-pr-required-readonly.yml'
+              ).read_text(encoding='utf-8')
+        self.assertIn('python -m unittest -q test_private_flight_recorder',ci)
+        self.assertIn('python -O -m unittest -q test_private_flight_recorder',ci)
+        self.assertIn('  xray-477-required-ci:', ci)
+        self.assertNotIn('continue-on-error: true',ci)
+
+
 if __name__=='__main__':
     unittest.main()
