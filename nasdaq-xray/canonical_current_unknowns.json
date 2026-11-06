@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-04",
+  "asof_et": "2026-11-05",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3190
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3193
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3190
+    "UNKNOWN_STATIC": 3193
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1104202621:31|||||||",
+  "official_footer": "File Creation Time: 1105202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3190
+    "UNKNOWN_STATIC": 3193
   },
-  "source_queue_hash": "e9fd0235fd91d0d01f0058adcd741561a9cc319395859281f2d852393edd6a5e",
-  "source_state_hash": "15fca929b6300d87b2f513a83cdd1927fe567b96dac7f0828e154f37905c7461",
-  "source_unknown_count": 3190,
+  "source_queue_hash": "9eb4b3327a71297437894fae31cce3219f5ec6e3713185a0b1b0c08198db8d88",
+  "source_state_hash": "30d0a8a740a12d3868f30a7ad264e02ff96934c9c79b51448d98663de90faffb",
+  "source_unknown_count": 3193,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3190,
+  "unknown_count": 3193,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -1547,6 +1547,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Agios Pharmaceuticals, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "AGLT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Agility Robotics, Inc. - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "AGMB": {
@@ -17584,7 +17602,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Euda Health Holdings Limited - Ordinary Shares",
+      "security_name": "Euda Health Holdings Limited - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "EVAX": {
@@ -23741,6 +23759,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Hongli Group Inc. - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "HLT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Hilton Worldwide Holdings Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "HMH": {
@@ -56447,6 +56483,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Xerox Holdings Corporation - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "XTER": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Xterax Corporation II - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "XTIA": {
