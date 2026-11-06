@@ -91,12 +91,31 @@ def assess(alerts, scores, scans, expected_asof=None):
         historical_valid += 1
 
     counts = Counter(v["status"] for v in events.values())
-    explicit_not_sent = sum(
-        v["status"] == ledger.REQUESTED and
+    # Split the historical exception cohort from the latest verified ASOF.
+    # Counts are read-only aggregates, never proof of ChatGPT message receipt.
+    # No event identity, ticker, note or raw row is printed or returned.
+    with_unsent_note = [
+        v for v in events.values()
+        if v["status"] == ledger.REQUESTED and
         NOT_SENT in str(v["row"][19] if len(v["row"]) > 19 else "")
-        for v in events.values()
-    )
-    need(explicit_not_sent <= counts.get(ledger.REQUESTED, 0),
+    ]
+    explicit_not_sent = len(with_unsent_note)
+    not_sent_latest = 0
+    not_sent_prior = 0
+    for v in with_unsent_note:
+        event_day = str(v["row"][4] if len(v["row"]) > 4 else "")
+        try:
+            parsed_day = date.fromisoformat(event_day).isoformat()
+        except (ValueError, TypeError) as exc:
+            raise EvidenceHold("UNSENT_NOTE_EVENT_ASOF_INVALID") from exc
+        need(parsed_day == event_day and event_day <= current,
+             "UNSENT_NOTE_EVENT_ASOF_INVALID")
+        if event_day == current:
+            not_sent_latest += 1
+        else:
+            not_sent_prior += 1
+    need(explicit_not_sent == not_sent_prior + not_sent_latest and
+         explicit_not_sent <= counts.get(ledger.REQUESTED, 0),
          "UNRECONCILED_COUNT_INVALID")
     requested_count = counts.get(ledger.REQUESTED, 0)
     pending = counts.get(ledger.CONFIRMED_PENDING, 0)
@@ -118,6 +137,8 @@ def assess(alerts, scores, scans, expected_asof=None):
         "alarm_request_intents": requested_count,
         "alarm_pending_intents": pending,
         "unreconciled_explicit_not_sent_notes": explicit_not_sent,
+        "not_sent_prior_verified_asof": not_sent_prior,
+        "not_sent_latest_verified_asof": not_sent_latest,
         "suppressed": counts.get(ledger.SUPPRESSED, 0),
         "quarantined": counts.get(ledger.QUARANTINED, 0),
         "delivery_evidence": delivery_state,
