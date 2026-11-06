@@ -182,5 +182,20 @@ class AsOfDeliveryReconciliationTests(unittest.TestCase):
         self.assertFalse(report["retry_or_replay_permitted"])
 
 
+
+class RequiredCiEvidenceGateTests(unittest.TestCase):
+    """The mandatory PR check must test this P0 evidence contract."""
+
+    def test_required_pr_ci_runs_evidence_audit_normal_and_optimized(self):
+        from pathlib import Path
+        workflow = (Path(__file__).resolve().parent.parent /
+                    ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml"
+                    ).read_text(encoding="utf-8")
+        self.assertIn("python -m unittest -q test_delivery_evidence_audit", workflow)
+        self.assertIn("python -O -m unittest -q test_delivery_evidence_audit", workflow)
+        self.assertIn("  xray-477-required-ci:", workflow)
+        self.assertNotIn("continue-on-error: true", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
