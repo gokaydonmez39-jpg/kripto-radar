@@ -52,6 +52,50 @@ _SAFE_PREOPEN_CODES = frozenset({
     'OUTBOX_OR_PANEL_NOT_READY',
     'CONCURRENT_PRIVATE_SHEET_CHANGE',
 })
+_SAFE_FLIGHT_CODES = frozenset({
+    'FLIGHT_BAD_OPEN_STATUS',
+    'FLIGHT_BAD_OR_DUPLICATE_EPISODE',
+    'FLIGHT_CLOSED_MISSING_EVIDENCE',
+    'FLIGHT_CURRENT_SCAN_SHA_MISSING',
+    'FLIGHT_DUPLICATE_EVENT',
+    'FLIGHT_EPISODE_INCOMPLETE',
+    'FLIGHT_EPISODE_LEVEL_GEOMETRY',
+    'FLIGHT_EPISODE_NOT_LINKED_TO_SCAN',
+    'FLIGHT_EVENT_DEDUP_KEY_INVALID',
+    'FLIGHT_EVENT_INCOMPLETE',
+    'FLIGHT_EVENT_WRONG_EPISODE_OR_DAY',
+    'FLIGHT_EXPECTED_COMPLETED_EOD_MISSING',
+    'FLIGHT_HEADER_DRIFT',
+    'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT',
+    'FLIGHT_LEVEL_NOT_VALID',
+    'FLIGHT_MISSING_TERMINAL_EVENT',
+    'FLIGHT_NEW_AL_COUNT_NONINTEGER',
+    'FLIGHT_NO_SCAN',
+    'FLIGHT_ORIGINAL_LEVELS_CHANGED',
+    'FLIGHT_ORPHAN_EVENT',
+    'FLIGHT_PARTIAL_SHA_PROVENANCE',
+    'FLIGHT_PRIVATE_CREDENTIALS_MISSING',
+    'FLIGHT_SCAN_AL_CANDIDATE_COUNT_MISMATCH',
+    'FLIGHT_SCAN_DATE_ORDER_OR_DUPLICATE',
+    'FLIGHT_SCAN_NOT_FULL_FINAL',
+    'FLIGHT_SILENT_MISSING_PRIOR_AL_EVENT',
+    'FLIGHT_SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE',
+    'FLIGHT_TABLE_MISSING_OR_TOO_LARGE',
+    'FLIGHT_TERMINAL_EVENT_INVALID',
+    'FLIGHT_TORN_PRIVATE_READ',
+    'FLIGHT_UNATTESTED_DELIVERY_STATE',
+    'FLIGHT_UNKNOWN_EPISODE_STATUS',
+    'FLIGHT_UNPAIRED_GAP_STOP_EVENT',
+})
+_SAFE_READONLY_EVIDENCE_CODES = frozenset({
+    'EXPECTED_PRIVATE_SHEET_MISSING',
+    'PRIVATE_SHEETS_SERVICE_ACCOUNT_REQUIRED',
+    'PRIVATE_SPREADSHEET_ID_INVALID',
+    'READ_ONLY_GOOGLE_TOKEN_MISSING',
+    'READ_ONLY_SHEET_WHITELIST',
+    'SHEET_TIMEZONE_CHANGED',
+})
+
 _SAFE_STAGES = frozenset({
     'START',
     'MARKET_CALENDAR',
@@ -71,6 +115,12 @@ _SAFE_STAGES = frozenset({
 def public_preopen_failure_code(exc):
     """No user-controlled details can become a public diagnostic identifier."""
     if type(exc) is PreopenBlocked and str(exc) in _SAFE_PREOPEN_CODES:
+        return str(exc)
+    # External read-only modules raise their own classes. Match only class
+    # name plus explicit allowlisted constant; no vendor messages escape.
+    if type(exc).__name__ == 'FlightRecorderBlocked' and str(exc) in _SAFE_FLIGHT_CODES:
+        return str(exc)
+    if type(exc).__name__ == 'EvidenceBlocked' and str(exc) in _SAFE_READONLY_EVIDENCE_CODES:
         return str(exc)
     if isinstance(exc, HTTPError):
         if exc.code == 429:
