@@ -20,7 +20,8 @@ import runner
 import tracker
 from private_sheet_writer import (SheetApi, HandoffBlocked, numeric, require,
                                   CANDIDATE_HEADER, SCAN_HEADER, as_cells,
-                                  scan_source_proof, RUN_EVENT_LABELS)
+                                  scan_source_proof, RUN_EVENT_LABELS,
+                                  public_failure_code)
 
 ALERT_HEADER = (
     'OLAY_ANAHTARI','ADAY_ANAHTARI','AL_ASOF_ET','SEMBOL',
@@ -29,6 +30,67 @@ ALERT_HEADER = (
     'DESTEK_20','DIRENC_20','TEPE_52','TAKIP_SEANSI',
     'BIRINCIL_KANIT_URL','BILDIRIM_DURUMU','BILDIRIM_ZAMANI_TR','NOT')
 EVENT_PENDING = 'EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST'
+
+# Only source-defined, constant lifecycle failure identifiers may appear in
+# public GitHub logs. Unknown exception messages are never echoed.
+_PUBLIC_LIFECYCLE_CODES = frozenset({
+    'LIFECYCLE_ALERT_DUPLICATE_OR_INVALID',
+    'LIFECYCLE_ALERT_HEADER_DRIFT',
+    'LIFECYCLE_ALERT_READBACK_DUPLICATE',
+    'LIFECYCLE_ALERT_READBACK_HEADER',
+    'LIFECYCLE_ALERT_READBACK_MISSING_OR_CHANGED',
+    'LIFECYCLE_ASOF_NOT_SESSION',
+    'LIFECYCLE_ASOF_REQUIRED',
+    'LIFECYCLE_BAD_SYMBOL',
+    'LIFECYCLE_CONCURRENT_MODIFICATION',
+    'LIFECYCLE_CURRENT_FINAL_SCAN_MISSING',
+    'LIFECYCLE_DISPATCH_ASOF_OUTSIDE_SAFE_WINDOW',
+    'LIFECYCLE_DUPLICATE_ID',
+    'LIFECYCLE_EOD_NOT_FINAL_477',
+    'LIFECYCLE_EOD_SCAN_MISSING',
+    'LIFECYCLE_EVENT_CONFLICT',
+    'LIFECYCLE_FUTURE_OR_UNVERIFIED_COUNT',
+    'LIFECYCLE_GOOGLE_AUTH_NOT_CONFIGURED',
+    'LIFECYCLE_HEADER_DRIFT',
+    'LIFECYCLE_IDENTITY_CONFLICT',
+    'LIFECYCLE_INCOMPLETE_ROW',
+    'LIFECYCLE_INVALID_EOD_RUN_URL',
+    'LIFECYCLE_INVALID_PRICE_GEOMETRY',
+    'LIFECYCLE_INVALID_START_DATE',
+    'LIFECYCLE_INVALID_START_SESSION',
+    'LIFECYCLE_MISSING_LEVELS',
+    'LIFECYCLE_MISSING_SYMBOL_BARS',
+    'LIFECYCLE_NON_2R_OR_TAMPERED_LEVEL',
+    'LIFECYCLE_OPEN_COUNT_OUTSIDE_RANGE',
+    'LIFECYCLE_PROVIDER_RESPONSE_INVALID',
+    'LIFECYCLE_READBACK_DUPLICATE_ID',
+    'LIFECYCLE_READBACK_EMPTY',
+    'LIFECYCLE_READBACK_FIELDS_CHANGED',
+    'LIFECYCLE_READBACK_HEADER_CHANGED',
+    'LIFECYCLE_READBACK_NOTIFICATION_CHANGED',
+    'LIFECYCLE_READBACK_ORIGINAL_MODIFIED',
+    'LIFECYCLE_READBACK_ROW_MISSING',
+    'LIFECYCLE_SCAN_ASOF_DUPLICATE',
+    'LIFECYCLE_SCAN_HEADER_DRIFT',
+    'LIFECYCLE_SHEET_ID_NOT_VERIFIED',
+    'LIFECYCLE_SOURCE_EVENT_DRIFT',
+    'LIFECYCLE_SOURCE_SHA_MISMATCH',
+    'LIFECYCLE_SUPPRESSED_OPENING_IDENTITY_CONFLICT',
+    'LIFECYCLE_TERMINAL_BAR_NOT_UNIQUE',
+    'LIFECYCLE_TERMINAL_INCONSISTENT',
+    'LIFECYCLE_TOO_MANY_EPISODES',
+    'LIFECYCLE_UNKNOWN_STATUS',
+})
+
+
+def lifecycle_public_failure_code(exc):
+    """Map an exception to an allowlisted code without leaking private data."""
+    shared_code = public_failure_code(exc)
+    if shared_code != 'UNCLASSIFIED':
+        return shared_code
+    if isinstance(exc, HandoffBlocked) and str(exc) in _PUBLIC_LIFECYCLE_CODES:
+        return str(exc)
+    return 'UNCLASSIFIED'
 
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
 MAX_EPISODES = 4770
@@ -340,6 +402,7 @@ def main(argv=None):
     except Exception as exc:
         print(json.dumps({'status':'LIFECYCLE_BLOCKED',
                           'reason_type':type(exc).__name__,
+                          'reason_code':lifecycle_public_failure_code(exc),
                           'device_ack':False,'execution':'NONE'},sort_keys=True))
         return 3
 
