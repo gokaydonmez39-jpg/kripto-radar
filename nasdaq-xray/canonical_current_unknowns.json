@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-05",
+  "asof_et": "2026-11-06",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3193
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3192
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3193
+    "UNKNOWN_STATIC": 3192
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1105202618:01|||||||",
+  "official_footer": "File Creation Time: 1106202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3193
+    "UNKNOWN_STATIC": 3192
   },
-  "source_queue_hash": "9eb4b3327a71297437894fae31cce3219f5ec6e3713185a0b1b0c08198db8d88",
-  "source_state_hash": "3dadbf7c880e4c2e5deeceb7f3a48a56594296ddbe9069575024aba42970a9aa",
-  "source_unknown_count": 3193,
+  "source_queue_hash": "74a68cf8ac0423f01b054878b1fd228420385f95e217f3bef2858d3410ecbeea",
+  "source_state_hash": "9efc0d6cc79585ab0e24b2383a8757ddcc52f3cad8d07e63b4a74ecab70daf64",
+  "source_unknown_count": 3192,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3193,
+  "unknown_count": 3192,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -2285,24 +2285,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Alico, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "ALDF": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Aldel Financial II Inc. - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "ALDX": {
