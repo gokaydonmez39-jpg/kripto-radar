@@ -134,5 +134,77 @@ class AuditTests(unittest.TestCase):
         self.assertFalse(r["chatgpt_visible_message_proven"])
 
 
+
+class AsOfDeliveryReconciliationTests(unittest.TestCase):
+    """Aggregate receipt contradictions by latest ASOF, never replay events."""
+
+    def test_current_day_note_is_not_misreported_as_historical(self):
+        report = audit.assess(*fixture())
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 1)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 1)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 0)
+        self.assertFalse(report["chatgpt_visible_message_proven"])
+        self.assertFalse(report["retry_or_replay_permitted"])
+
+    def test_historical_and_current_notes_partition_exactly(self):
+        alerts, scores, scans = fixture()
+        old = copy.deepcopy(alerts[1])
+        old[0] = ledger.event_key("2026-11-03", "OLD", "2026-11-03",
+                                  "AL_NEW_EPISODE")
+        old[1], old[2], old[3], old[4] = (
+            "2026-11-03|OLD", "2026-11-03", "OLD", "2026-11-03")
+        alerts.append(old)
+        scans.insert(1, ["2026-11-03", "GitHub schedule VERIFIED IEX EOD",
+                         "477", "477", "477", "0", "TRUE", "1",
+                         "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/122",
+                         "NO_ORDER"])
+        original = copy.deepcopy((alerts, scores, scans))
+        report = audit.assess(alerts, scores, scans)
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 2)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 1)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 1)
+        self.assertEqual((alerts, scores, scans), original)
+        self.assertEqual(report["delivery_evidence"], "RECONCILIATION_REQUIRED")
+        self.assertEqual(report["sheet_writes"], 0)
+        self.assertEqual(report["messages_sent"], 0)
+        self.assertNotIn("OLD", str(report))
+        self.assertNotIn("EXM", str(report))
+
+    def test_future_not_sent_event_blocks_before_any_reconciliation_claim(self):
+        alerts, scores, scans = fixture()
+        event = alerts[1]
+        event[4] = "2026-11-05"
+        event[0] = ledger.event_key(event[2], event[3], event[4], event[5])
+        with self.assertRaisesRegex(
+                audit.EvidenceHold, "^UNSENT_NOTE_EVENT_ASOF_INVALID$"):
+            audit.assess(alerts, scores, scans)
+
+    def test_no_note_still_does_not_prove_delivery(self):
+        alerts, scores, scans = fixture()
+        alerts[1][19] = "NO_EXTERNAL_RECEIPT"
+        report = audit.assess(alerts, scores, scans)
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 0)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 0)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 0)
+        self.assertFalse(report["chatgpt_visible_message_proven"])
+        self.assertEqual(report["platform_ack"], "UNKNOWN")
+        self.assertFalse(report["retry_or_replay_permitted"])
+
+
+
+class RequiredCiEvidenceGateTests(unittest.TestCase):
+    """The mandatory PR check must test this P0 evidence contract."""
+
+    def test_required_pr_ci_runs_evidence_audit_normal_and_optimized(self):
+        from pathlib import Path
+        workflow = (Path(__file__).resolve().parent.parent /
+                    ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml"
+                    ).read_text(encoding="utf-8")
+        self.assertIn("python -m unittest -q test_delivery_evidence_audit", workflow)
+        self.assertIn("python -O -m unittest -q test_delivery_evidence_audit", workflow)
+        self.assertIn("  xray-477-required-ci:", workflow)
+        self.assertNotIn("continue-on-error: true", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
