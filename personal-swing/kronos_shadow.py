@@ -210,7 +210,7 @@ def current_authority(api, asof: str):
             'KRONOS_SWING_SCORE_HEADER_DRIFT')
     summary = [r for r in scores[1:] if r and r[0] == asof + '|SUMMARY']
     require(len(summary) == 1 and str(summary[0][27]) in
-            ('', 'READY', 'VERIFIED', 'SENT') and summary[0][30] == scope_sha and summary[0][31] == policy_sha,
+            ('READY_FOR_CHATGPT_DAILY_DIGEST', 'REQUESTED_NOT_DEVICE_ACK') and summary[0][30] == scope_sha and summary[0][31] == policy_sha,
             'KRONOS_SCORE_SUMMARY_MISSING_OR_SCOPE_DRIFT')
     candidates = api.read('ADAY_GECMISI', 'M')
     episodes = life.decode_open_episodes(candidates, asof)
