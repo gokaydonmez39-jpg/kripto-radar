@@ -344,4 +344,16 @@ class A34LiveFailureDiagnosticsRegression(unittest.TestCase):
         self.assertNotIn('PRIVATE_TICKER_123', str(out.call_args_list))
 
 
+
+class A34MandatoryCiCoverage(unittest.TestCase):
+    def test_required_pr_ci_includes_a34_in_normal_and_optimized_mode(self):
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parent.parent /
+                  '.github/workflows/xray-nasdaq-477-pr-required-readonly.yml'
+                  ).read_text(encoding='utf-8')
+        self.assertIn('python -m unittest -q test_preopen_a34', workflow)
+        self.assertIn('python -O -m unittest -q test_preopen_a34', workflow)
+        self.assertNotIn('continue-on-error: true', workflow)
+
+
 if __name__=='__main__':unittest.main()
