@@ -331,5 +331,47 @@ class ZeroSessionReceiptFailClosedTests(unittest.TestCase):
         self.assertIn("NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE",yaml)
 
 
+
+    def test_actual_workflow_bash_gate_truth_table(self):
+        import os
+        import subprocess
+        import textwrap
+        from pathlib import Path
+        yaml=(Path(__file__).resolve().parent.parent /
+              ".github/workflows/xray-personal-477-eod.yml").read_text("utf-8")
+        section=DailyScoreWorkflowAcceptanceTests.job(
+            yaml,"daily-private-score-acceptance")
+        self.assertEqual(section.count("        run: |\n"),1)
+        script=textwrap.dedent(section.split("        run: |\n",1)[1])
+        cases=[
+            ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","",0,
+             "NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE"),
+            ("schedule","success","SWING_SCORE_NO_COMPLETED_SESSION","",3,
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
+            ("workflow_dispatch","success","SWING_SCORE_NO_COMPLETED_SESSION","",3,
+             "HOLD_NO_ELIGIBLE_SCHEDULE_SESSION"),
+            ("schedule","success","SWING_SCORE_PRIVATE_READBACK_PASS","2026-11-06",0,
+             "PRIVATE_READBACK_PASS_ASOF_2026-11-06"),
+            ("schedule","success","SWING_SCORE_IDEMPOTENT_READBACK_PASS","2026-11-06",0,
+             "PRIVATE_READBACK_PASS_ASOF_2026-11-06"),
+            ("schedule","failure","SWING_SCORE_PRIVATE_READBACK_PASS","2026-11-06",3,
+             "HOLD_STEP_FAILURE"),
+            ("schedule","success","SYNTHETIC_UNKNOWN_STATUS","2026-11-06",3,
+             "HOLD_NO_VALID_READBACK_RECEIPT"),
+            ("schedule","success","SWING_SCORE_PRIVATE_READBACK_PASS","",3,
+             "HOLD_INVALID_RECEIPT_ASOF"),
+            ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","2026-11-06",3,
+             "HOLD_NO_VALID_READBACK_RECEIPT"),
+        ]
+        for event,outcome,status,asof,code,marker in cases:
+            env=dict(os.environ,SCORE_OUTCOME=outcome,SCORE_STATUS=status,
+                     SCORE_ASOF=asof,EVENT_KIND=event)
+            result=subprocess.run(["bash","-c",script],env=env,text=True,
+                                  capture_output=True,check=False)
+            with self.subTest(event=event,outcome=outcome,status=status,asof=asof):
+                self.assertEqual(result.returncode,code)
+                self.assertIn(marker,result.stdout+result.stderr)
+
+
 if __name__=="__main__":
     unittest.main()
