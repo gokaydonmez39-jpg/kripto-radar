@@ -134,5 +134,53 @@ class AuditTests(unittest.TestCase):
         self.assertFalse(r["chatgpt_visible_message_proven"])
 
 
+
+class AsOfDeliveryReconciliationTests(unittest.TestCase):
+    """Aggregate receipt contradictions by latest ASOF, never replay events."""
+
+    def test_current_day_note_is_not_misreported_as_historical(self):
+        report = audit.assess(*fixture())
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 1)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 1)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 0)
+        self.assertFalse(report["chatgpt_visible_message_proven"])
+        self.assertFalse(report["retry_or_replay_permitted"])
+
+    def test_historical_and_current_notes_partition_exactly(self):
+        alerts, scores, scans = fixture()
+        old = copy.deepcopy(alerts[1])
+        old[0] = ledger.event_key("2026-11-03", "OLD", "2026-11-03",
+                                  "AL_NEW_EPISODE")
+        old[1], old[2], old[3], old[4] = (
+            "2026-11-03|OLD", "2026-11-03", "OLD", "2026-11-03")
+        alerts.append(old)
+        scans.insert(1, ["2026-11-03", "GitHub schedule VERIFIED IEX EOD",
+                         "477", "477", "477", "0", "TRUE", "1",
+                         "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/122",
+                         "NO_ORDER"])
+        original = copy.deepcopy((alerts, scores, scans))
+        report = audit.assess(alerts, scores, scans)
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 2)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 1)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 1)
+        self.assertEqual((alerts, scores, scans), original)
+        self.assertEqual(report["delivery_evidence"], "RECONCILIATION_REQUIRED")
+        self.assertEqual(report["sheet_writes"], 0)
+        self.assertEqual(report["messages_sent"], 0)
+        self.assertNotIn("OLD", str(report))
+        self.assertNotIn("EXM", str(report))
+
+    def test_no_note_still_does_not_prove_delivery(self):
+        alerts, scores, scans = fixture()
+        alerts[1][19] = "NO_EXTERNAL_RECEIPT"
+        report = audit.assess(alerts, scores, scans)
+        self.assertEqual(report["unreconciled_explicit_not_sent_notes"], 0)
+        self.assertEqual(report["not_sent_prior_verified_asof"], 0)
+        self.assertEqual(report["not_sent_latest_verified_asof"], 0)
+        self.assertFalse(report["chatgpt_visible_message_proven"])
+        self.assertEqual(report["platform_ack"], "UNKNOWN")
+        self.assertFalse(report["retry_or_replay_permitted"])
+
+
 if __name__ == "__main__":
     unittest.main()
