@@ -297,5 +297,91 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         self.assertFalse(any('AL_NEW_EPISODE' in str(r) for r in p['candidate_rows']))
 
 
+
+class SheetsTransportRegressionTests(unittest.TestCase):
+    """Fail-first: quota, read retry, public diagnostics, and no POST replay."""
+
+    def _api(self):
+        api = w.SheetApi.__new__(w.SheetApi)
+        api.base = 'https://sheets.googleapis.com/v4/spreadsheets/TEST_ONLY'
+        api.token = 'PRIVATE_TEST_TOKEN_MUST_NOT_APPEAR'
+        return api
+
+    def _rate_limited(self):
+        from urllib.error import HTTPError
+        return HTTPError('https://sheets.googleapis.com/v4/spreadsheets/TEST_ONLY',
+                         429, 'synthetic quota', {}, None)
+
+    @patch.object(w.time, 'sleep')
+    @patch.object(w, 'urlopen')
+    def test_get_quota_exhaustion_has_four_bounded_backoffs_and_safe_code(self, opener, sleep):
+        opener.side_effect = self._rate_limited()
+        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429$'):
+            self._api().request('/values/TEST_ONLY')
+        self.assertEqual(opener.call_count, 4)
+        self.assertEqual(sleep.call_count, 3)
+        for n, call in enumerate(sleep.call_args_list):
+            interval = call.args[0]
+            self.assertGreaterEqual(interval, 2 ** n)
+            self.assertLessEqual(interval, 2 ** n + 0.26)
+
+    @patch.object(w.time, 'sleep')
+    @patch.object(w, 'urlopen')
+    def test_get_recovers_from_two_429_errors_without_post(self, opener, sleep):
+        import io
+        opener.side_effect = [self._rate_limited(), self._rate_limited(),
+                              io.BytesIO(b'{"values": []}')]
+        self.assertEqual(self._api().request('/values/TEST_ONLY'), {'values': []})
+        self.assertEqual(opener.call_count, 3)
+        self.assertEqual(sleep.call_count, 2)
+
+    @patch.object(w.time, 'sleep')
+    @patch.object(w, 'urlopen')
+    def test_batch_post_429_is_never_retried(self, opener, sleep):
+        opener.side_effect = self._rate_limited()
+        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429$'):
+            self._api().request(':batchUpdate', method='POST',
+                                body={'requests': [{'updateCells': {}}]})
+        self.assertEqual(opener.call_count, 1)
+        sleep.assert_not_called()
+
+    def test_public_report_contains_categorical_code_not_private_error(self):
+        with tempfile.TemporaryDirectory() as root:
+            file = Path(root) / 'synthetic.json'
+            file.write_text('{}', encoding='utf-8')
+            env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'PRIVATE_TEST_TOKEN_MUST_NOT_APPEAR'}
+            with patch.dict(w.os.environ, env, clear=True):
+                with patch.object(w, 'SheetApi', return_value=object()):
+                    with patch.object(w, 'synchronize',
+                                      side_effect=w.HandoffBlocked('GOOGLE_SHEETS_HTTP_429')):
+                        with patch('builtins.print') as output:
+                            self.assertEqual(w.main(['--snapshot', str(file)]), 3)
+            text = output.call_args.args[0]
+            receipt = w.json.loads(text)
+            self.assertEqual(receipt['reason_code'], 'GOOGLE_SHEETS_HTTP_429')
+            self.assertEqual(receipt['status'], 'PRIVATE_SHEET_SYNC_BLOCKED')
+            self.assertNotIn('PRIVATE_TEST_TOKEN', text)
+            self.assertFalse(receipt['device_ack'])
+
+    def test_untrusted_exception_details_never_enter_public_report(self):
+        with tempfile.TemporaryDirectory() as root:
+            file = Path(root) / 'synthetic.json'
+            file.write_text('{}', encoding='utf-8')
+            env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SENSITIVE_UNIT_TEST'}
+            with patch.dict(w.os.environ, env, clear=True):
+                with patch.object(w, 'SheetApi', return_value=object()):
+                    with patch.object(w, 'synchronize',
+                                      side_effect=ValueError('SENSITIVE_UNIT_TEST-private-url')):
+                        with patch('builtins.print') as output:
+                            self.assertEqual(w.main(['--snapshot', str(file)]), 3)
+            text = output.call_args.args[0]
+            receipt = w.json.loads(text)
+            self.assertEqual(receipt['reason_code'], 'UNCLASSIFIED')
+            self.assertNotIn('SENSITIVE_UNIT_TEST', text)
+
+
+
 if __name__=='__main__':
     unittest.main()

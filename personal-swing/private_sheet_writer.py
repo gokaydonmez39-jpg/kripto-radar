@@ -10,6 +10,7 @@ import argparse
 import json
 import math
 import os
+import random
 import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -41,6 +42,64 @@ RUN_EVENT_LABELS = {
 
 class HandoffBlocked(ValueError):
     pass
+
+
+# Only author-controlled symbolic error identifiers may enter PUBLIC GitHub
+# logs; never emit private Sheet cells, Google response bodies, URLs, tokens,
+# secrets, exception values or tracebacks.
+_PUBLIC_BLOCK_CODES = frozenset({
+    'GOOGLE_SHEETS_HTTP_429',
+    'GOOGLE_SHEETS_HTTP_401',
+    'GOOGLE_SHEETS_HTTP_403',
+    'GOOGLE_SHEETS_HTTP_404',
+    'GOOGLE_SHEETS_HTTP_5XX',
+    'GOOGLE_SHEETS_HTTP_OTHER',
+    'GOOGLE_SHEETS_TRANSPORT_URLError',
+    'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
+    'GOOGLE_SHEETS_READ_RETRY_EXHAUSTED',
+    'GOOGLE_AUTH_CONFIGURATION_INVALID',
+    'GOOGLE_TOKEN_NOT_AVAILABLE',
+    'GOOGLE_SERVICE_ACCOUNT_NOT_CONFIGURED',
+    'PRIVATE_SHEET_ID_NOT_CONFIGURED',
+    'INVALID_GOOGLE_AUTH_TYPE',
+    'SHEET_TIMEZONE_DRIFT',
+    'SHEET_TAB_OR_ID_DRIFT',
+    'SHEET_PANEL_IDENTITY_MISMATCH',
+    'SHEET_HEADER_DRIFT',
+    'SHEET_MISSING',
+    'SHEET_READ_CAPACITY_REACHED',
+    'SHEET_CAPACITY_REACHED',
+    'CANDIDATE_IDENTITY_CONFLICT',
+    'CANDIDATE_ORIGINAL_LEVEL_CONFLICT',
+    'CANDIDATE_READBACK_DUPLICATE_KEY',
+    'CANDIDATE_READBACK_LEVELS_OR_VALUES_CHANGED',
+    'CANDIDATE_READBACK_MISSING_OR_DUPLICATE',
+    'CONCURRENT_SHEET_EDIT_BLOCKED',
+    'DUPLICATE_CANDIDATE_KEYS',
+    'DUPLICATE_SCAN_ASOF',
+    'EXISTING_SCAN_EPOCH_CONFLICT',
+    'EXISTING_SCAN_INCOMPLETE',
+    'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED',
+    'EXISTING_SCAN_SOURCE_SHA_CONFLICT',
+    'SCAN_COUNT_READBACK_MISMATCH',
+    'SCAN_EPOCH_COLLISION',
+    'SCAN_READBACK_DUPLICATE_ASOF',
+    'SCAN_READBACK_MISSING_OR_DUPLICATE',
+    'SCAN_READBACK_PROVENANCE_OR_VALUES_CHANGED',
+    'GITHUB_RUN_ID_MISSING',
+    'UNTRUSTED_GITHUB_EVENT',
+    'UNVERIFIED_RUN_ID',
+    'MISSING_AUTHENTICATED_SHEET_METADATA',
+    'INVALID_EXISTING_LEVEL',
+    'BAD_NUMERIC_LEVEL',
+})
+
+
+def public_failure_code(exc):
+    """Return ONLY an audited constant; never log arbitrary error text."""
+    if isinstance(exc, HandoffBlocked) and str(exc) in _PUBLIC_BLOCK_CODES:
+        return str(exc)
+    return 'UNCLASSIFIED'
 
 
 def require(condition, code):
@@ -255,24 +314,31 @@ class SheetApi:
         req=Request(url, data=raw, method=method,
                     headers={'Authorization':'Bearer '+self.token,
                              'Content-Type':'application/json; charset=utf-8'})
-        # Only GET is safe to repeat. A failed batchUpdate/POST may already
-        # have committed; never retry it, or events could be duplicated.
-        read_attempts = 2 if method == 'GET' else 1
+        # GET is idempotent; bounded exponential backoff with jitter for
+        # transient quota/provider faults. A failed POST may have committed,
+        # so POST is NEVER retried automatically.
+        read_attempts = 4 if method == 'GET' else 1
         for attempt in range(read_attempts):
             try:
                 with urlopen(req, timeout=30) as response:
                     return json.load(response)
             except HTTPError as exc:
                 retriable = exc.code in (429, 500, 502, 503, 504)
-                if method == 'GET' and attempt == 0 and retriable:
-                    time.sleep(0.15)
+                if method == 'GET' and retriable and attempt + 1 < read_attempts:
+                    time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
                     continue
-                raise HandoffBlocked('GOOGLE_SHEETS_TRANSPORT_HTTPError') from None
+                # Status only: no provider reason/body/URL/header in public logs.
+                if exc.code in (401, 403, 404, 429):
+                    category = 'GOOGLE_SHEETS_HTTP_' + str(exc.code)
+                elif 500 <= exc.code <= 599:
+                    category = 'GOOGLE_SHEETS_HTTP_5XX'
+                else:
+                    category = 'GOOGLE_SHEETS_HTTP_OTHER'
+                raise HandoffBlocked(category) from None
             except (URLError, TimeoutError) as exc:
-                if method == 'GET' and attempt == 0:
-                    time.sleep(0.15)
+                if method == 'GET' and attempt + 1 < read_attempts:
+                    time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
                     continue
-                # Never include response body, URL, token or candidate values.
                 raise HandoffBlocked(
                     'GOOGLE_SHEETS_TRANSPORT_' + type(exc).__name__) from None
         raise HandoffBlocked('GOOGLE_SHEETS_READ_RETRY_EXHAUSTED')
@@ -352,6 +418,7 @@ def main(argv=None):
         # may appear in a public workflow log, even for unexpected failures.
         print(json.dumps({'status':'PRIVATE_SHEET_SYNC_BLOCKED',
                           'reason_type':type(exc).__name__,
+                          'reason_code':public_failure_code(exc),
                           'execution':'NONE','device_ack':False},sort_keys=True))
         return 3
 
