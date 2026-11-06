@@ -316,9 +316,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
     @patch.object(w, 'urlopen')
     def test_get_quota_exhaustion_has_four_bounded_backoffs_and_safe_code(self, opener, sleep):
         opener.side_effect = self._rate_limited()
-        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429
-    unittest.main()
-):
+        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429$'):
             self._api().request('/values/TEST_ONLY')
         self.assertEqual(opener.call_count, 4)
         self.assertEqual(sleep.call_count, 3)
@@ -341,9 +339,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
     @patch.object(w, 'urlopen')
     def test_batch_post_429_is_never_retried(self, opener, sleep):
         opener.side_effect = self._rate_limited()
-        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429
-    unittest.main()
-):
+        with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429$'):
             self._api().request(':batchUpdate', method='POST',
                                 body={'requests': [{'updateCells': {}}]})
         self.assertEqual(opener.call_count, 1)
