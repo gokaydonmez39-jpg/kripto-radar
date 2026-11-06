@@ -537,5 +537,18 @@ class ExplicitSecondPolicyCutover20261106Tests(unittest.TestCase):
             g.inspect(*b,expected_asof='2026-11-06')
 
 
+
+class FlightRecorderMandatoryReleaseGateTests(unittest.TestCase):
+    def test_mandatory_ci_includes_second_sha_cutover_tests_in_both_modes(self):
+        from pathlib import Path
+        ci = (Path(__file__).resolve().parents[2] /
+              '.github/workflows/xray-nasdaq-477-pr-required-readonly.yml'
+              ).read_text(encoding='utf-8')
+        self.assertIn('python -m unittest -q test_private_flight_recorder',ci)
+        self.assertIn('python -O -m unittest -q test_private_flight_recorder',ci)
+        self.assertIn('  xray-477-required-ci:', ci)
+        self.assertNotIn('continue-on-error: true',ci)
+
+
 if __name__=='__main__':
     unittest.main()
