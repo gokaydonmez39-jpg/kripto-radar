@@ -289,12 +289,24 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     at=len(current)
     while at<len(rows):
         chunk=rows[at:at+WRITE_BATCH_ROWS]
-        api.request(":batchUpdate",method="POST",
-                    body={"requests":[writer.as_cells(chunk,sid)]})
+        expected_prefix=previous+rows[:at+len(chunk)]
+        try:
+            api.request(":batchUpdate",method="POST",
+                        body={"requests":[writer.as_cells(chunk,sid)]})
+        except Exception:
+            # A lost HTTP receipt cannot distinguish a committed POST from
+            # a rejected POST. GET is safe; NEVER send the same chunk twice.
+            try:
+                recovered=read_partition(api,name)
+            except Exception:
+                raise k.ShadowHold(
+                    "KRONOS2_AMBIGUOUS_POST_READBACK_UNAVAILABLE") from None
+            k.require(recovered==expected_prefix,
+                      "KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED")
         at+=len(chunk)
         written+=len(chunk)
         observed=read_partition(api,name)
-        k.require(observed==previous+rows[:at],
+        k.require(observed==expected_prefix,
                   "KRONOS2_CHUNK_READBACK_MISMATCH")
     k.require(len(previous)+len(rows)==len(read_partition(api,name)),
               "KRONOS2_FINAL_READBACK")
