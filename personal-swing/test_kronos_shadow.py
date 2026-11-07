@@ -1,5 +1,5 @@
 """Pure deterministic regression and fail-closed tests for Kronos shadow sidecar."""
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 import sys
 import types
 import unittest
@@ -214,6 +214,32 @@ class TestKronosShadow(unittest.TestCase):
                                   predictor_factory=lambda: self.fail('Must not reload AI'))
             self.assertEqual(again['status'], 'KRONOS_SHADOW_IDEMPOTENT_QC_HOLD')
             self.assertEqual(api.post_count, 1)
+
+
+    def test_research_completed_friday_accepted_saturday_but_not_before_close_or_stale(self):
+        fake_engine = types.ModuleType('engine')
+        fake_engine.trading_asof = lambda instant: date(2026, 11, 6)
+        class Stamp:
+            def to_pydatetime(self):
+                return datetime(2026, 11, 6, 21, 0, tzinfo=timezone.utc)
+        class Cal:
+            def session_close(self, session):
+                self_session = str(session)
+                if self_session != '2026-11-06':
+                    raise AssertionError('unexpected XNAS session')
+                return Stamp()
+        fake_ec = types.ModuleType('exchange_calendars')
+        fake_ec.get_calendar = lambda name: Cal() if name == 'XNAS' else None
+        with patch.dict(sys.modules, {'engine':fake_engine, 'exchange_calendars':fake_ec}):
+            self.assertEqual(k.eligible_shadow_asof(
+                datetime(2026, 11, 7, 10, 0, tzinfo=timezone.utc)),
+                '2026-11-06')
+            self.assertIsNone(k.eligible_shadow_asof(
+                datetime(2026, 11, 6, 20, 50, tzinfo=timezone.utc)))
+            self.assertIsNone(k.eligible_shadow_asof(
+                datetime(2026, 11, 10, 23, 0, tzinfo=timezone.utc)))
+            with self.assertRaisesRegex(k.ShadowHold, 'KRONOS_UNAWARE_NOW'):
+                k.eligible_shadow_asof(datetime(2026, 11, 7, 10, 0))
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ Historical forecast rows are immutable; each ASOF+symbol+horizon is unique.
 from __future__ import annotations
 
 import argparse
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 import hashlib
 import json
 import math
@@ -345,15 +345,34 @@ def synchronize(api, asof: str, read_batch, predictor_factory=load_predictor):
             'rows':len(created), 'execution':'NONE'}
 
 
+
+def eligible_shadow_asof(now=None):
+    """Research-only latest completed XNAS session with bounded weekend allowance.
+
+    The main EOD producer deliberately has a much shorter clock window.
+    A separate downstream consumer may safely revisit Friday's completed
+    session during the weekend, but can never promote an unfinished/old day.
+    The Sheet source ledger remains the exact, independent ASOF authority.
+    """
+    import exchange_calendars as ec
+    import engine
+    instant = now if now is not None else datetime.now(timezone.utc)
+    require(instant.tzinfo is not None, 'KRONOS_UNAWARE_NOW')
+    instant = instant.astimezone(timezone.utc)
+    asof = engine.trading_asof(instant).isoformat()
+    close = ec.get_calendar('XNAS').session_close(asof).to_pydatetime()
+    ready = close.astimezone(timezone.utc) + timedelta(minutes=45)
+    return asof if ready <= instant <= ready + timedelta(hours=72) else None
+
+
 def main(argv=None):
-    import daily_job
     import engine
     import private_sheet_writer as writer
     parser = argparse.ArgumentParser()
     parser.add_argument('--asof', default='')
     args = parser.parse_args(argv)
     try:
-        current = daily_job.current_completed_session()
+        current = eligible_shadow_asof()
         if current is None:
             print(json.dumps({'status':'KRONOS_SHADOW_NO_COMPLETED_SESSION',
                               'execution':'NONE'}))

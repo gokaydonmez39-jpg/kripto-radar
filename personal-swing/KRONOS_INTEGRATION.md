@@ -44,3 +44,10 @@ A protected main merge changing the research workflow itself has a one-shot `pus
 ## Known limitations
 
 As of 7 November 2026, upstream remains subject to open questions on original checkpoint leakage/provenance (issues #265/#307), and open RoPE cross-attention inference repair (#425). This sidecar does not falsely claim that unresolved upstream issues are fixed. It is a research trial, not a verified forecasting edge. It also does not install a production OOS-validation or model-performance claims pipeline; those require independent review and promotion.
+
+
+## Weekend research ASOF acceptance (2026-11-07)
+
+A controlled post-merge recheck on Saturday initially emitted `KRONOS_SHADOW_NO_COMPLETED_SESSION` because the **producer-only** `daily_job.current_completed_session()` rejects scans later than 10 hours after EOD. That short expiry is correct for the main 477 producer and remains **unchanged**.
+
+Kronos (downstream research only) now derives the latest fully completed official XNAS session from the same independent calendar and allows it for at most 72 hours past close+45m, including Saturday. It separately requires the latest unique **authenticated Sheet scan** to match that exact ASOF with 477/477 and SHA, plus zero-HOLD same-ASOF score summary. It cannot use future, unfinished, stale, duplicate or unverified sessions. This is a Kronos-only temporal gate; no EOD, Guardian, original AL/STOP or historical ledger edit.
