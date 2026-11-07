@@ -107,7 +107,7 @@ jobs:
           cp personal-swing/research_lab/strong4_wheelhouse_receipt.py "$RUNNER_TEMP/xray-strong4/checker.py"
           cp personal-swing/research_lab/strong4_wheelhouse_lock.json "$RUNNER_TEMP/xray-strong4/lock.json"
           cat > "$RUNNER_TEMP/xray-strong4/Dockerfile" <<'DOCKER'
-          FROM python:3.12-slim
+          FROM python:3.12-slim@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
           COPY wheels /wheels
           COPY checker.py /checker.py
           COPY lock.json /lock.json
