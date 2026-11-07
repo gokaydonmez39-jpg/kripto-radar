@@ -379,6 +379,14 @@ def main(argv=None):
             return 0
         asof = args.asof or current
         require(asof == current, 'KRONOS_REQUESTED_ASOF_NOT_CURRENT')
+        # V1 historical close-only cohort is immutable and retired once V2
+        # 477-scope partitioned successor begins on the first NEW EOD.
+        # Never create 21-scope duplicate rows alongside V2 for a new ASOF.
+        if asof >= '2026-11-09':
+            print(json.dumps({'status':'KRONOS_SHADOW_V1_ARCHIVED_NO_NEW_WRITES',
+                              'asof_et':asof,'execution':'NONE','orders':False},
+                             sort_keys=True))
+            return 0
         credential = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON')
         require(bool(credential), 'KRONOS_SHEET_AUTH_MISSING')
         api = writer.SheetApi(credential)

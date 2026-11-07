@@ -242,5 +242,23 @@ class TestKronosShadow(unittest.TestCase):
                 k.eligible_shadow_asof(datetime(2026, 11, 7, 10, 0))
 
 
+    def test_legacy_v1_archived_on_first_new_v2_asof_without_private_write(self):
+        import contextlib
+        import io
+        fake_writer=types.ModuleType("private_sheet_writer")
+        fake_writer.SheetApi=lambda *_: self.fail("V1 must not initialize private writer")
+        fake_engine=types.ModuleType("engine")
+        with patch.dict(sys.modules,{"private_sheet_writer":fake_writer,
+                                    "engine":fake_engine}), \
+             patch.object(k,"eligible_shadow_asof",
+                          return_value="2026-11-09"):
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output):
+                result=k.main(["--asof","2026-11-09"])
+        self.assertEqual(result,0)
+        self.assertIn("KRONOS_SHADOW_V1_ARCHIVED_NO_NEW_WRITES",
+                      output.getvalue())
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -102,5 +102,44 @@ class TestOosAudit(unittest.TestCase):
             o.select_matured(forecast(),'2026-11-05')
 
 
+    def test_v2_close_only_is_forecast_but_not_native_ohlc_pass(self):
+        import kronos_v2 as v2
+        rows=v2.build_v2_rows('MSFT','2026-11-06','a'*64,'b'*64,
+                 '2026-11-06',candles(),[103.0]*12,
+                 v2.MODEL_STATUS_CLOSE,
+                 'RAW_CLOSE_ONLY__NATIVE_OHLC_GEOMETRY_INVALID')
+        checked=o.validate_ledger([list(k.HEADERS)]+rows)
+        self.assertEqual(len(checked),3)
+        self.assertTrue(all(r[17]=='RESEARCH_CLOSE_ONLY' for r in checked))
+        vals={'asof':'2026-11-06','forecast_status':'RESEARCH_CLOSE_ONLY',
+              'model_pct_error':2.0,'baseline_pct_error':2.5,
+              'direction_correct':True}
+        output=o.summarize({1:[vals]},0,0)
+        self.assertEqual(output['horizons']['1']['forecast_quality_counts']
+                         ['RESEARCH_CLOSE_ONLY'],1)
+        self.assertFalse(output['sufficient_for_decision'])
+
+    def test_load_recent_month_partition_preserves_no_future_boundary(self):
+        import kronos_v2 as v2
+        legacy=forecast('AAPL','2026-11-06')
+        source=v2.build_v2_rows('MSFT','2026-11-06','a'*64,'b'*64,
+                 '2026-11-06',candles(),[103.0]*12,
+                 v2.MODEL_STATUS_CLOSE,
+                 'RAW_CLOSE_ONLY__NATIVE_OHLC_GEOMETRY_INVALID')
+        class FakeApi:
+            def read(self,name,col):
+                return [list(k.HEADERS)]+legacy
+            def request(self,path,*,method='GET',body=None):
+                if path.startswith('?'):
+                    return {'sheets':[{'properties':{
+                        'title':'KRONOS2_2026_11'}}]}
+                return {'values':[list(k.HEADERS)]+source}
+        data=o.load_recent_ledgers(FakeApi(),'2026-11-07')
+        result=o.validate_ledger(data)
+        self.assertEqual(len(result),6)
+        self.assertEqual({x[17] for x in result},
+                         {'RESEARCH_ONLY','RESEARCH_CLOSE_ONLY'})
+
+
 if __name__=='__main__':
     unittest.main()
