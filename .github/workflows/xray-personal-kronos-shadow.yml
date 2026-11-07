@@ -14,6 +14,8 @@ on:
     paths:
       - 'personal-swing/kronos_shadow.py'
       - 'personal-swing/test_kronos_shadow.py'
+      - 'personal-swing/kronos_oos_audit.py'
+      - 'personal-swing/test_kronos_oos_audit.py'
       - 'personal-swing/KRONOS_INTEGRATION.md'
       - '.github/workflows/xray-personal-kronos-shadow.yml'
   workflow_run:
@@ -41,7 +43,9 @@ jobs:
           set -euo pipefail
           python -m unittest -q test_kronos_shadow
           python -O -m unittest -q test_kronos_shadow
-          python -m py_compile kronos_shadow.py test_kronos_shadow.py
+          python -m unittest -q test_kronos_oos_audit
+          python -O -m unittest -q test_kronos_oos_audit
+          python -m py_compile kronos_shadow.py test_kronos_shadow.py kronos_oos_audit.py test_kronos_oos_audit.py
   actual-model-smoke:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -161,6 +165,13 @@ jobs:
         run: |
           set -euo pipefail
           python kronos_shadow.py
+      - name: Independent matured-horizon OOS audit (read-only; NEVER alpha PASS)
+        if: always()
+        working-directory: personal-swing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python kronos_oos_audit.py
       - name: Explicit no-order/no-alert boundary
         if: always()
         run: |
