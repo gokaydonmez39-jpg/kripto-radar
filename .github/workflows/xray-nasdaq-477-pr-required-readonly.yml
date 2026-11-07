@@ -43,6 +43,23 @@ jobs:
           python -O -m unittest -q test_preopen_a34
           python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
+      - name: Kronos V2 research contracts normal and optimized (NO model download)
+        working-directory: personal-swing
+        run: |
+          # This status is intended to be the mandatory main-merge check.
+          # Independently fail when any Kronos V2 integrity or OOS HOLD test fails.
+          # Pure offline tests; no broker/market read, GitHub secrets or Sheets writes.
+          python -m unittest -q test_kronos_shadow
+          python -O -m unittest -q test_kronos_shadow
+          python -m unittest -q test_kronos_oos_audit
+          python -O -m unittest -q test_kronos_oos_audit
+          python -m unittest -q test_kronos_capacity_probe
+          python -O -m unittest -q test_kronos_capacity_probe
+          python -m unittest -q test_kronos_real_477_probe
+          python -O -m unittest -q test_kronos_real_477_probe
+          python -m unittest -q test_kronos_v2
+          python -O -m unittest -q test_kronos_v2
+          python -m py_compile kronos_shadow.py kronos_oos_audit.py kronos_capacity_probe.py kronos_real_477_probe.py kronos_v2.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
         run: |
