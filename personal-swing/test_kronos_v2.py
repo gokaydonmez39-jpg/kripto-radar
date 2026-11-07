@@ -176,19 +176,23 @@ class V2Tests(unittest.TestCase):
     def test_drift_holds_even_after_valid_readback(self):
         api=FakeApi()
         api.created=True
-        api.rows=v.build_v2_rows("AAPL",ASOF,SCOPE,POLICY,ASOF,
+        api.rows=v.build_v2_rows("T000",ASOF,SCOPE,POLICY,ASOF,
                   candles(),[101.]*12,v.MODEL_STATUS_FULL,
                   "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        newer=[]
+        for symbol in SYMS:
+            newer.extend(v.build_v2_rows(symbol,ASOF,SCOPE,POLICY,ASOF,
+                        candles(),[102.]*12,v.MODEL_STATUS_FULL,
+                        "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
         with patch.object(v,"private_authority",
-                          return_value=(SYMS,SCOPE,POLICY,ASOF)):
-            with self.assertRaisesRegex(k.ShadowHold,"RESTART_NONDETERMINISTIC"):
-                with patch.object(v,"make_predictions",return_value=(
-                     [v.build_v2_rows(s,ASOF,SCOPE,POLICY,ASOF,candles(),
-                                      [102.]*12,v.MODEL_STATUS_FULL,
-                                      "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
-                      for s in SYMS],{})):
-                    # Flatten nested result in the stub to mimic 1431 entries.
-                    pass
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          return_value=(newer,{"RESEARCH_ONLY":477})):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "RESTART_NONDETERMINISTIC"):
+                v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(len(api.rows),3)
+        self.assertEqual(api.writes,0)
 
     def test_capacity_explicit_fail_closed(self):
         api=FakeApi()
