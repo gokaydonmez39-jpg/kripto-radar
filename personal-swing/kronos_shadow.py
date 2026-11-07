@@ -77,8 +77,12 @@ def assert_existing(rows, asof: str, symbols: list[str], scope_sha: str,
     for r in matching:
         require(r[7:13] == [MODEL_ID, MODEL_REV, TOKENIZER_REV, KRONOS_CODE_REV,
                             scope_sha, policy_sha], 'KRONOS_EXISTING_MODEL_OR_SOURCE_DRIFT')
-        require(r[16] == VERSION and r[17] == 'RESEARCH_ONLY' and
+        require(r[16] == VERSION and
+                (r[17] == 'RESEARCH_ONLY' or r[17].startswith('HOLD_QC_')) and
                 r[19] == canonical_sha(r[:19]), 'KRONOS_EXISTING_ROW_TAMPERED')
+        if r[17].startswith('HOLD_QC_'):
+            require(r[5] == '' and r[6] == '' and r[15] == '',
+                    'KRONOS_EXISTING_QC_ROW_HAS_FORECAST')
     return True
 
 
@@ -105,19 +109,38 @@ def validate_candles(bars: list[dict], asof: str) -> list[dict]:
     return tail
 
 
+FORECAST_QC_CODES = frozenset({
+    'KRONOS_WRONG_PRED_LENGTH',
+    'KRONOS_INVALID_FORECAST_SCHEMA',
+    'KRONOS_INVALID_FORECAST_NONFINITE',
+    'KRONOS_INVALID_FORECAST_PRICE',
+    'KRONOS_INVALID_FORECAST_VOLUME',
+    'KRONOS_INVALID_FORECAST_GEOMETRY',
+})
+
+
 def validate_prediction(df, actual_close: float) -> list[float]:
-    """Never silently clamp generated invalid OHLCV into plausible candles."""
-    require(len(df) == PRED_LEN, 'KRONOS_WRONG_PRED_LENGTH')
+    """Reject unphysical predicted candles; never autocorrect their price/volume.
+
+    Distinct constant classifications permit cohort-safe aggregate diagnostics
+    without disclosing model outputs, private symbols, or provider market data.
+    """
+    require(hasattr(df, 'iterrows') and len(df) == PRED_LEN,
+            'KRONOS_WRONG_PRED_LENGTH')
     closes = []
     for _, row in df.iterrows():
         try:
             o, hi, lo, c, vol = (float(row[k]) for k in
                                   ('open', 'high', 'low', 'close', 'volume'))
         except (KeyError, ValueError, TypeError):
-            raise ShadowHold('KRONOS_INVALID_FORECAST') from None
-        require(all(math.isfinite(x) for x in (o, hi, lo, c, vol)) and
-                lo > 0 and lo <= min(o, c) <= max(o, c) <= hi and vol >= 0,
-                'KRONOS_INVALID_FORECAST')
+            raise ShadowHold('KRONOS_INVALID_FORECAST_SCHEMA') from None
+        require(all(math.isfinite(x) for x in (o, hi, lo, c, vol)),
+                'KRONOS_INVALID_FORECAST_NONFINITE')
+        require(lo > 0 and o > 0 and c > 0 and hi > 0,
+                'KRONOS_INVALID_FORECAST_PRICE')
+        require(vol >= 0, 'KRONOS_INVALID_FORECAST_VOLUME')
+        require(lo <= min(o, c) <= max(o, c) <= hi,
+                'KRONOS_INVALID_FORECAST_GEOMETRY')
         closes.append(c)
     require(actual_close > 0, 'KRONOS_BAD_REFERENCE_CLOSE')
     return closes
@@ -146,6 +169,31 @@ def build_rows(symbol: str, asof: str, scope_sha: str, policy_sha: str,
         ]
         rows.append(row + [canonical_sha(row)])
     return rows
+
+
+
+def build_qc_hold_rows(symbol: str, asof: str, scope_sha: str, policy_sha: str,
+                       scan_id: str, candles: list[dict], code: str) -> list[list[str]]:
+    """Immutable research-only empty forecasts; cannot be mistaken for AL or AI PASS."""
+    require(code in FORECAST_QC_CODES, 'KRONOS_INVALID_QC_REASON')
+    require(re.fullmatch(r'[A-Z0-9.]+', symbol) is not None, 'KRONOS_INVALID_SYMBOL')
+    source = [{k: b[k] for k in ('timestamp', 'open', 'high', 'low', 'close', 'volume')}
+              for b in candles[-LOOKBACK:]]
+    input_sha = canonical_sha(source)
+    last_close = float(candles[-1]['close'])
+    result = []
+    for horizon in HORIZONS:
+        row = [
+            f'{asof}|{symbol}|H{horizon}', asof, symbol, str(horizon),
+            f'{last_close:.6f}', '', '',
+            MODEL_ID, MODEL_REV, TOKENIZER_REV, KRONOS_CODE_REV,
+            scope_sha, policy_sha, scan_id, input_sha, '',
+            VERSION, 'HOLD_QC_' + code.replace('KRONOS_INVALID_FORECAST_', '')
+                                 .replace('KRONOS_WRONG_PRED_LENGTH', 'LENGTH'),
+            'IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY',
+        ]
+        result.append(row + [canonical_sha(row)])
+    return result
 
 
 def future_xnas_days(asof: str) -> list[str]:
@@ -237,9 +285,13 @@ def synchronize(api, asof: str, read_batch, predictor_factory=load_predictor):
     before_matrix = api.read(TAB, 'T')
     before = normalize_existing(before_matrix)
     if assert_existing(before, asof, symbols, scope_sha, policy_sha):
-        return {'status':'KRONOS_SHADOW_IDEMPOTENT_READBACK_PASS',
+        hold_symbols = len({r[2] for r in before if r[1] == asof and
+                            r[17].startswith('HOLD_QC_')})
+        return {'status':('KRONOS_SHADOW_IDEMPOTENT_QC_HOLD'
+                          if hold_symbols else 'KRONOS_SHADOW_IDEMPOTENT_READBACK_PASS'),
                 'asof_et':asof,'scope':'ACTIVE_OPEN_ONLY',
-                'symbols':len(symbols),'rows':0,'execution':'NONE'}
+                'symbols':len(symbols),'qc_hold_symbols':hold_symbols,
+                'rows':0,'execution':'NONE'}
     if not symbols:
         return {'status':'KRONOS_SHADOW_NO_OPEN_EPISODES', 'asof_et':asof,
                 'scope':'ACTIVE_OPEN_ONLY','symbols':0,'rows':0,'execution':'NONE'}
@@ -253,15 +305,25 @@ def synchronize(api, asof: str, read_batch, predictor_factory=load_predictor):
     future = future_xnas_days(asof)
     predictor = predictor_factory()
     created = []
+    qc_counts = {}
     for symbol in symbols:
         candles = validate_candles(bars[symbol], asof)
-        # Our source contract requires exact official XNAS 52-session history.
+        # Actual IEX source drift is fatal; only model-output QC is isolated.
         import engine
         analyzed = engine.analyze(symbol, candles, asof)
         require(analyzed.get('sessions', 0) >= 52 and
                 analyzed.get('decision') in ('AL', 'IZLE', 'ELE'),
                 'KRONOS_SOURCE_NOT_ANALYZABLE')
-        predicted = predict_one(predictor, candles, future)
+        try:
+            predicted = predict_one(predictor, candles, future)
+        except ShadowHold as exc:
+            reason = str(exc)
+            if reason not in FORECAST_QC_CODES:
+                raise
+            created += build_qc_hold_rows(symbol, asof, scope_sha, policy_sha,
+                                          scan_id, candles, reason)
+            qc_counts[reason] = qc_counts.get(reason, 0) + 1
+            continue
         created += build_rows(symbol, asof, scope_sha, policy_sha,
                               scan_id, candles, predicted)
     require(len(created) == len(symbols) * len(HORIZONS) and
@@ -275,8 +337,11 @@ def synchronize(api, asof: str, read_batch, predictor_factory=load_predictor):
     after = normalize_existing(api.read(TAB, 'T'))
     require(after[:len(before)] == before and after[len(before):] == created,
             'KRONOS_READBACK_MISMATCH')
-    return {'status':'KRONOS_SHADOW_PRIVATE_READBACK_PASS','asof_et':asof,
-            'scope':'ACTIVE_OPEN_ONLY', 'symbols':len(symbols),
+    return {'status':('KRONOS_SHADOW_QC_HOLD_READBACK'
+                      if qc_counts else 'KRONOS_SHADOW_PRIVATE_READBACK_PASS'),
+            'asof_et':asof, 'scope':'ACTIVE_OPEN_ONLY', 'symbols':len(symbols),
+            'qc_hold_symbols':sum(qc_counts.values()),
+            'qc_categories':dict(sorted(qc_counts.items())),
             'rows':len(created), 'execution':'NONE'}
 
 
@@ -300,7 +365,8 @@ def main(argv=None):
         api = writer.SheetApi(credential)
         out = synchronize(api, asof, engine.live_read)
         print(json.dumps(out, sort_keys=True))
-        return 0
+        return 3 if out['status'] in ('KRONOS_SHADOW_QC_HOLD_READBACK',
+                                      'KRONOS_SHADOW_IDEMPOTENT_QC_HOLD') else 0
     except Exception as ex:
         code = str(ex) if isinstance(ex, ShadowHold) else 'KRONOS_UNCLASSIFIED'
         # No secrets, symbols, URLs, exceptions, inputs, predictions, or tracebacks.
