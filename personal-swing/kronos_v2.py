@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""XRAY Kronos V2 — bounded 477 real IEX close forecasts, immutable monthly ledger.
+
+Independent post-EOD research consumer. No orders, AL/STOP edits, alert sends,
+device ACK, baseline replacement, upstream model change or historical replay.
+A model's invalid OHLC geometry never becomes a repaired/full candle forecast:
+only independently finite, strictly positive raw CLOSE may be preserved with
+RESEARCH_CLOSE_ONLY; native OHLC quality stays HOLD.
+"""
+from __future__ import annotations
+
+from collections import Counter
+from datetime import date
+import hashlib
+import json
+import math
+import os
+import re
+from urllib.parse import quote
+
+import kronos_shadow as k
+
+VERSION_V2 = "XRAY_KRONOS_CLOSE_ONLY_V2_20261107"
+PARTITION_PREFIX = "KRONOS2_"
+MAX_ROWS_PER_MONTH = 40000
+MAX_GRID_CELLS = 9000000
+WRITE_BATCH_ROWS = 180
+EXPECTED = 477
+MODEL_STATUS_FULL = "RESEARCH_ONLY"
+MODEL_STATUS_CLOSE = "RESEARCH_CLOSE_ONLY"
+QUALITY_PREFIX = "HOLD_QC_"
+
+
+def month_sheet(asof):
+    k.require(re.fullmatch(r'20\d{2}-\d{2}-\d{2}',asof) is not None
+              and date.fromisoformat(asof).isoformat()==asof,"KRONOS2_BAD_ASOF")
+    return PARTITION_PREFIX + asof[:7].replace("-", "_")
+
+
+def choose_sheet_id(name, existing_ids):
+    chosen=100000000 + int(hashlib.sha256(name.encode()).hexdigest()[:7],16)
+    k.require(chosen not in existing_ids,"KRONOS2_SHEET_ID_CONFLICT")
+    return chosen
+
+
+def read_partition(api, name):
+    path=quote(f"'{name}'!A1:T",safe="")
+    d=api.request("/values/"+path+"?valueRenderOption=FORMATTED_VALUE")
+    matrix=d.get("values",[])
+    k.require(isinstance(matrix,list) and 0<len(matrix)<=MAX_ROWS_PER_MONTH,
+              "KRONOS2_PARTITION_READ_LIMIT")
+    k.require(tuple(matrix[0])==k.HEADERS,"KRONOS2_HEADER_DRIFT")
+    rows=[]
+    for r in matrix[1:]:
+        if not r or not r[0]:
+            continue
+        k.require(len(r)<=20,"KRONOS2_ROW_TOO_WIDE")
+        padded=list(r)+[""]*(20-len(r))
+        k.require(padded[19]==k.canonical_sha(padded[:19]) and
+                  padded[16]==VERSION_V2 and
+                  padded[17] in (MODEL_STATUS_FULL,MODEL_STATUS_CLOSE) or False,
+                  "KRONOS2_TAMPERED_OR_WRONG_VERSION") if not padded[17].startswith(QUALITY_PREFIX) else k.require(
+                  padded[19]==k.canonical_sha(padded[:19]) and padded[16]==VERSION_V2
+                  and padded[5]==padded[6]==padded[15]=="",
+                  "KRONOS2_TAMPERED_QC_ROW")
+        rows.append(padded)
+    k.require(len({x[0] for x in rows})==len(rows),
+              "KRONOS2_DUPLICATE_LEDGER_KEYS")
+    k.require([x[0] for x in rows]==sorted([x[0] for x in rows],
+                                         key=lambda s:(s.split("|")[0],s.split("|")[1],
+                                                       int(s.split("H")[-1]))),
+              "KRONOS2_LEDGER_OUT_OF_ORDER")
+    return rows
+
+
+def private_authority(api, asof):
+    """477 IEX + source/policy/swing independent authenticated gate."""
+    import runner
+    import private_sheet_writer as writer
+    import swing_score_daily as score
+    from pathlib import Path
+
+    api.check_metadata()
+    scans=writer.rows_only(api.read("TARAMA_KAYITLARI","J"),writer.SCAN_HEADER)
+    k.require(scans and scans[-1][0]==asof and
+              sum(row[0]==asof for row in scans)==1,
+              "KRONOS2_LAST_SCAN_ASOF")
+    last=scans[-1]
+    k.require([writer.numeric(last[i]) for i in (2,3,4,5)] ==
+              [477,477,477,0] and str(last[6]).upper()=="TRUE",
+              "KRONOS2_SOURCE_NOT_477_PASS")
+    symbols=sorted(runner.get_scope(
+        watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
+        asof=asof))
+    k.require(len(symbols)==EXPECTED and len(set(symbols))==EXPECTED,
+              "KRONOS2_NOT_EXACT_SCOPE")
+    sha=runner.sha_symbols(symbols)
+    policy=runner.analysis_fingerprint()
+    proof=writer.scan_source_proof(last[9])
+    k.require(proof["scopeSHA"]==sha and proof["algorithmSHA"]==policy,
+              "KRONOS2_SOURCE_SHA_CONFLICT")
+    values=score.normalize_rows(score.score_read(api))
+    k.require(values and tuple(values[0])==score.HEADER,
+              "KRONOS2_SCORE_HEADER")
+    summary=[r for r in values[1:] if r and r[0]==asof+"|SUMMARY"]
+    k.require(len(summary)==1 and
+              summary[0][30]==sha and summary[0][31]==policy and
+              summary[0][27] in ("READY_FOR_CHATGPT_DAILY_DIGEST",
+                                  "REQUESTED_NOT_DEVICE_ACK") and
+              int(summary[0][7])==0 and
+              int(summary[0][5])==int(summary[0][6]),
+              "KRONOS2_SCORE_NOT_READY")
+    return symbols,sha,policy,last[0]
+
+
+def forecast_classification(frame):
+    """Raw decoded OHLC are never adjusted. Preserve only raw CLOSE on geometry error."""
+    try:
+        closes=k.validate_prediction(frame,1.0)
+        return closes,MODEL_STATUS_FULL,"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"
+    except k.ShadowHold as exc:
+        code=str(exc)
+        if code!="KRONOS_INVALID_FORECAST_GEOMETRY":
+            return None,QUALITY_PREFIX+code.replace("KRONOS_INVALID_FORECAST_","").replace(
+                "KRONOS_WRONG_PRED_LENGTH","LENGTH"),"MODEL_OUTPUT_UNUSABLE"
+        k.require(len(frame)==k.PRED_LEN,"KRONOS2_CLOSE_ONLY_BAD_LENGTH")
+        try:
+            closes=[float(row["close"]) for _,row in frame.iterrows()]
+        except (ValueError,TypeError,KeyError):
+            return None,"HOLD_QC_CLOSE_SCHEMA","MODEL_OUTPUT_UNUSABLE"
+        if not all(math.isfinite(x) and x>0 for x in closes):
+            return None,"HOLD_QC_CLOSE_INVALID","MODEL_OUTPUT_UNUSABLE"
+        return closes,MODEL_STATUS_CLOSE,"RAW_CLOSE_ONLY__NATIVE_OHLC_GEOMETRY_INVALID"
+
+
+def predict_frame(predictor, candles, future_sessions):
+    import pandas as pd
+    recent=candles[-k.LOOKBACK:]
+    data=pd.DataFrame([{field:float(row[field]) for field in (
+        "open","high","low","close","volume")} for row in recent])
+    data["amount"]=data["volume"]*data[["open","high","low","close"]].mean(axis=1)
+    x_time=pd.Series(pd.to_datetime([str(v["timestamp"])[:10] for v in recent]))
+    y_time=pd.Series(pd.to_datetime(future_sessions))
+    return predictor.predict(df=data,x_timestamp=x_time,y_timestamp=y_time,
+                             pred_len=k.PRED_LEN,T=0.6,top_k=0,top_p=0.90,
+                             sample_count=1,verbose=False)
+
+
+def build_v2_rows(symbol,asof,scope_sha,policy_sha,scan_id,candles,
+                  closes,status,policy):
+    if closes is None:
+        # Existing 1/5/12 hold helper rejects unclassified geometry.
+        k.require(status.startswith(QUALITY_PREFIX),"KRONOS2_BAD_HOLD_STATUS")
+        raw=k.build_qc_hold_rows(symbol,asof,scope_sha,policy_sha,
+                                 scan_id,candles,"KRONOS_INVALID_FORECAST_GEOMETRY")
+    else:
+        raw=k.build_rows(symbol,asof,scope_sha,policy_sha,scan_id,candles,closes)
+    for row in raw:
+        row[16]=VERSION_V2
+        row[17]=status
+        row[18]=policy
+        row[19]=k.canonical_sha(row[:19])
+    return raw
+
+
+def make_predictions(symbols,asof,scope_sha,policy_sha,scan_id,
+                     read_batch,predictor_factory):
+    import engine
+    bars=read_batch(symbols,asof)
+    k.require(isinstance(bars,dict) and set(bars)==set(symbols),
+              "KRONOS2_PROVIDER_SCOPE_DRIFT")
+    future=k.future_xnas_days(asof)
+    predictor=predictor_factory()
+    result=[]
+    counts=Counter()
+    for symbol in symbols:
+        candles=k.validate_candles(bars[symbol],asof)
+        analyzed=engine.analyze(symbol,candles,asof)
+        k.require(analyzed.get("sessions",0)>=52 and
+                  analyzed.get("decision") in ("AL","IZLE","ELE"),
+                  "KRONOS2_SOURCE_NOT_ANALYZABLE")
+        frame=predict_frame(predictor,candles,future)
+        closes,status,policy=forecast_classification(frame)
+        counts[status]+=1
+        result.extend(build_v2_rows(symbol,asof,scope_sha,policy_sha,scan_id,
+                                    candles,closes,status,policy))
+    k.require(len(result)==len(symbols)*3 and
+              len({r[0] for r in result})==len(result),
+              "KRONOS2_INCOMPLETE_PREDICTIONS")
+    return result,counts
+
+
+def metadata_and_sheet(api, asof):
+    name=month_sheet(asof)
+    meta=api.request("?fields=properties(timeZone),sheets.properties(sheetId,title,gridProperties(rowCount,columnCount))")
+    k.require(meta.get("properties",{}).get("timeZone")=="Europe/Istanbul",
+              "KRONOS2_TIMEZONE_DRIFT")
+    sheets=[s["properties"] for s in meta.get("sheets",[]) if "properties" in s]
+    k.require(sum(int(s.get("gridProperties",{}).get("rowCount",0))*
+                  int(s.get("gridProperties",{}).get("columnCount",0)) for s in sheets)
+              + EXPECTED*3*20 < MAX_GRID_CELLS,
+              "KRONOS2_SHEET_GLOBAL_CAPACITY")
+    found=[s for s in sheets if s.get("title")==name]
+    k.require(len(found)<=1,"KRONOS2_DUPLICATE_SHEET")
+    return name,found[0]["sheetId"] if found else None,\
+           {s["sheetId"] for s in sheets if type(s.get("sheetId")) is int}
+
+
+def ensure_month_sheet(api,name,sid,occupied):
+    import private_sheet_writer as writer
+    if sid is not None:
+        return sid
+    new_id=choose_sheet_id(name,occupied)
+    body={"requests":[
+        {"addSheet":{"properties":{"sheetId":new_id,"title":name,
+           "gridProperties":{"rowCount":1,"columnCount":20,"frozenRowCount":1}}}},
+        writer.as_cells([list(k.HEADERS)],new_id),
+    ]}
+    # One POST, never retry an ambiguous write.
+    api.request(":batchUpdate",method="POST",body=body)
+    return new_id
+
+
+def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
+    import private_sheet_writer as writer
+    month=month_sheet(asof)
+    symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof)
+    name,sid,used=metadata_and_sheet(api,asof)
+    assert name==month
+    before=read_partition(api,name) if sid is not None else []
+    k.require(all(row[1]<=asof for row in before),"KRONOS2_FUTURE_LEDGER")
+    previous=[row for row in before if row[1]<asof]
+    current=[row for row in before if row[1]==asof]
+    k.require(before==previous+current,
+              "KRONOS2_NONAPPEND_CURRENT_DATA")
+    expected_ids={f"{asof}|{s}|H{h}" for s in symbols for h in k.HORIZONS}
+    k.require(set(r[0] for r in current).issubset(expected_ids),
+              "KRONOS2_ASOF_SCOPE_MISMATCH")
+    k.require(all(r[11]==scope_sha and r[12]==policy_sha and
+                  r[7]==k.MODEL_ID and r[8]==k.MODEL_REV and
+                  r[9]==k.TOKENIZER_REV and r[10]==k.KRONOS_CODE_REV for r in current),
+              "KRONOS2_ASOF_PROVENANCE_DRIFT")
+    if len(current)==EXPECTED*3:
+        return {"status":"KRONOS2_IDEMPOTENT_READBACK",
+                "asof_et":asof,"scope":EXPECTED,"rows_written":0,
+                "close_only":len({r[2] for r in current if r[17]==MODEL_STATUS_CLOSE}),
+                "qc_hold":len({r[2] for r in current if r[17].startswith(QUALITY_PREFIX)}),
+                "orders":False}
+    rows,counts=make_predictions(symbols,asof,scope_sha,policy_sha,
+                                 scan_id,read_batch,predictor_factory)
+    if current:
+        k.require(rows[:len(current)]==current,"KRONOS2_RESTART_NONDETERMINISTIC")
+    k.require(len(previous)+len(rows)<MAX_ROWS_PER_MONTH,
+              "KRONOS2_MONTH_CAPACITY")
+    # Verify the pre-write ledger did not change during expensive CPU inference.
+    if sid is not None:
+        k.require(read_partition(api,name)==before,
+                  "KRONOS2_CONCURRENT_WRITE_DETECTED")
+    sid=ensure_month_sheet(api,name,sid,used)
+    # All 477 model results are already computed. Append in bounded chunks
+    # and verify each original row exactly; interrupted run is resumable.
+    written=0
+    at=len(current)
+    while at<len(rows):
+        chunk=rows[at:at+WRITE_BATCH_ROWS]
+        api.request(":batchUpdate",method="POST",
+                    body={"requests":[writer.as_cells(chunk,sid)]})
+        at+=len(chunk)
+        written+=len(chunk)
+        observed=read_partition(api,name)
+        k.require(observed==previous+rows[:at],
+                  "KRONOS2_CHUNK_READBACK_MISMATCH")
+    k.require(len(previous)+len(rows)==len(read_partition(api,name)),
+              "KRONOS2_FINAL_READBACK")
+    qc=sum(counts[s] for s in counts if s.startswith(QUALITY_PREFIX))
+    close_only=counts[MODEL_STATUS_CLOSE]
+    status=("KRONOS2_PRIVATE_READBACK_WITH_QC_HOLD" if qc else
+            "KRONOS2_PRIVATE_READBACK_CLOSE_ONLY" if close_only else
+            "KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY")
+    return {"status":status,"asof_et":asof,"scope":EXPECTED,
+            "rows_written":written,"full_geometry":counts[MODEL_STATUS_FULL],
+            "close_only":close_only,"qc_hold":qc,"orders":False,
+            "model_quality_full_pass":not bool(qc or close_only),
+            "decision_influence":"NO_GO"}
+
+
+def main():
+    import engine
+    import private_sheet_writer as writer
+    try:
+        asof=k.eligible_shadow_asof()
+        if asof is None:
+            print(json.dumps({"status":"KRONOS2_NOT_DUE","orders":False}))
+            return 0
+        secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
+        k.require(bool(secret),"KRONOS2_AUTH_MISSING")
+        api=writer.SheetApi(secret)
+        out=synchronize(api,asof,engine.live_read)
+        print(json.dumps(out,sort_keys=True))
+        return 3 if out.get("qc_hold",0) else 0
+    except Exception as exc:
+        reason=str(exc) if isinstance(exc,k.ShadowHold) else "KRONOS2_UNCLASSIFIED"
+        print(json.dumps({"status":"KRONOS2_HOLD","reason_code":reason,
+                          "orders":False},sort_keys=True))
+        return 3
+
+
+if __name__=="__main__":
+    raise SystemExit(main())
