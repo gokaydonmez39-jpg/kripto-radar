@@ -190,16 +190,8 @@ def make_predictions(symbols,asof,scope_sha,policy_sha,scan_id,
         k.require(analyzed.get("sessions",0)>=52 and
                   analyzed.get("decision") in ("AL","IZLE","ELE"),
                   "KRONOS2_SOURCE_NOT_ANALYZABLE")
-        # Model-side errors are isolated to the current symbol. Source-data,
-        # provenance, OOM and other unexpected failures still fail closed.
-        try:
-            frame=predict_frame(predictor,candles,future)
-        except k.ShadowHold:
-            raise
-        except (RuntimeError,ValueError,TypeError,IndexError):
-            closes,status,policy=None,"HOLD_QC_MODEL_RUNTIME","MODEL_OUTPUT_UNUSABLE"
-        else:
-            closes,status,policy=forecast_classification(frame)
+        frame=predict_frame(predictor,candles,future)
+        closes,status,policy=forecast_classification(frame)
         counts[status]+=1
         result.extend(build_v2_rows(symbol,asof,scope_sha,policy_sha,scan_id,
                                     candles,closes,status,policy))
