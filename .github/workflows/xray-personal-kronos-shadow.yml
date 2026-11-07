@@ -18,6 +18,8 @@ on:
       - 'personal-swing/test_kronos_oos_audit.py'
       - 'personal-swing/kronos_capacity_probe.py'
       - 'personal-swing/test_kronos_capacity_probe.py'
+      - 'personal-swing/kronos_real_477_probe.py'
+      - 'personal-swing/test_kronos_real_477_probe.py'
       - 'personal-swing/KRONOS_INTEGRATION.md'
       - '.github/workflows/xray-personal-kronos-shadow.yml'
   workflow_run:
@@ -49,7 +51,9 @@ jobs:
           python -O -m unittest -q test_kronos_oos_audit
           python -m unittest -q test_kronos_capacity_probe
           python -O -m unittest -q test_kronos_capacity_probe
-          python -m py_compile kronos_shadow.py test_kronos_shadow.py kronos_oos_audit.py test_kronos_oos_audit.py kronos_capacity_probe.py test_kronos_capacity_probe.py
+          python -m unittest -q test_kronos_real_477_probe
+          python -O -m unittest -q test_kronos_real_477_probe
+          python -m py_compile kronos_shadow.py test_kronos_shadow.py kronos_oos_audit.py test_kronos_oos_audit.py kronos_capacity_probe.py test_kronos_capacity_probe.py kronos_real_477_probe.py test_kronos_real_477_probe.py
   actual-model-smoke:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -148,6 +152,68 @@ jobs:
         if: always()
         run: |
           echo 'KRONOS_477_CPU_SYNTHETIC_ONLY; NO_LIVE_IEX_477_PASS; NO_PRIVATE_ROWS; NO_PROFIT_CLAIMS' >> "$GITHUB_STEP_SUMMARY"
+
+  live-477-iex-observation-only:
+    # ONE-TIME evidence on explicitly named protected-main merge; NO SHEET WRITE.
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.event.head_commit.message,
+                 'test(personal-477): one-shot live Kronos 477 IEX research probe')
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+      XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify data-only and private Sheet auth without printing credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -n "$XRAY_ALPACA_DATA_KEY_ID" && -n "$XRAY_ALPACA_DATA_SECRET_KEY" &&
+             -n "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" && -n "$XRAY_PRIVATE_SPREADSHEET_ID" ]] || {
+            echo 'KRONOS_REAL_477_NO_DATA_AUTH_HOLD'
+            exit 3
+          }
+      - name: Install CPU-only pinned Kronos data dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' >/dev/null
+          python -m pip install 'numpy==1.26.4' 'pandas==2.2.2' 'einops==0.8.1' 'huggingface_hub==0.33.1' 'safetensors==0.6.2' 'tqdm==4.67.1' 'google-auth>=2.35,<3' 'requests>=2.31,<3' >/dev/null
+          python -m pip install -r personal-swing/requirements.txt >/dev/null
+      - name: Verify exact upstream SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kronos-upstream"
+          cd "$RUNNER_TEMP/kronos-upstream"
+          git init -q
+          git remote add origin https://github.com/shiyu-coder/Kronos.git
+          git fetch -q --depth=1 origin 67b630e67f6a18c9e9be918d9b4337c960db1e9a
+          [[ "$(git rev-parse FETCH_HEAD)" == "67b630e67f6a18c9e9be918d9b4337c960db1e9a" ]] || exit 3
+          git checkout -q --detach FETCH_HEAD
+      - name: One-shot complete real IEX 477 research QC; zero data export or writes
+        working-directory: personal-swing
+        shell: bash
+        env:
+          PYTHONPATH: ${{ runner.temp }}/kronos-upstream
+          HF_HOME: ${{ runner.temp }}/kronos-hf
+          OMP_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          python kronos_real_477_probe.py
+      - name: Confirm no orders, no Sheet writes and no alert events
+        if: always()
+        run: |
+          echo 'ONE_SHOT_REAL_477_KRONOS_CPU_QC_MEASUREMENT_ONLY; NO_SHEET_WRITES; NO_AL_STOP_MODIFICATION; NO_ORDER; NO_PUSH_ACK' >> "$GITHUB_STEP_SUMMARY"
 
   independent-private-inference:
     if: >-
