@@ -60,9 +60,26 @@ def smoke(candidate: str) -> dict:
         require(callable(getattr(qlib, "init", None)), "QLIB_MISSING_INIT")
         scope = "REAL_QLIB_IMPORT_ONLY_NO_PIT_OR_DATA"
     else:
+        # OpenBB 5.0 attempts to write .build.lock inside its installed package.
+        # Keep the image read-only: copy only this package to an isolated /tmp
+        # directory and import the unchanged SDK from there. No provider access.
+        import importlib.util
+        import shutil
+        import sys
+        import tempfile
+        from pathlib import Path
+
+        spec = importlib.util.find_spec("openbb")
+        require(spec is not None and spec.submodule_search_locations,
+                "OPENBB_PACKAGE_SPEC_MISSING")
+        package_root = Path(next(iter(spec.submodule_search_locations)))
+        require(package_root.is_dir(), "OPENBB_PACKAGE_DIR_MISSING")
+        temporary_parent = Path(tempfile.mkdtemp(prefix="xray-openbb-cow-"))
+        shutil.copytree(package_root, temporary_parent / "openbb")
+        sys.path.insert(0, str(temporary_parent))
         from openbb import obb
         require(obb is not None, "OPENBB_IMPORT_MISSING")
-        scope = "REAL_OPENBB_IMPORT_ONLY_NO_PROVIDER"
+        scope = "REAL_OPENBB_IMPORT_TEMP_COW_ONLY_NO_PROVIDER"
 
     return {
         "schema": "XRAY_NASDAQ_REAL_SDK_SMOKE_V1",
