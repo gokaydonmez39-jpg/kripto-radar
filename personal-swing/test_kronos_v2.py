@@ -210,6 +210,36 @@ class V2Tests(unittest.TestCase):
                 v.synchronize(api,ASOF,lambda *_:None)
         self.assertEqual(api.writes,0)
 
+    def test_single_model_runtime_failure_isolated_to_three_qc_hold_rows(self):
+        """An isolated model RuntimeError must retain other valid symbols."""
+        import engine
+        scope=SYMS[:2]
+        seen=[]
+        def model_frame(*args):
+            seen.append(len(seen))
+            if len(seen)==1:
+                raise RuntimeError("synthetic injected model fault")
+            return Frame()
+        with patch.object(engine,"analyze",
+                          return_value={"sessions":52,"decision":"ELE"}), \
+             patch.object(k,"future_xnas_days",return_value=[ASOF]*12), \
+             patch.object(v,"predict_frame",side_effect=model_frame):
+            rows,counts=v.make_predictions(
+                scope,ASOF,SCOPE,POLICY,ASOF,
+                lambda _symbols,_asof:{symbol:candles() for symbol in scope},
+                lambda:object())
+        self.assertEqual(len(rows),6)
+        self.assertEqual(counts["HOLD_QC_MODEL_RUNTIME"],1)
+        self.assertEqual(counts["RESEARCH_ONLY"],1)
+        failed=[r for r in rows if r[2]==scope[0]]
+        good=[r for r in rows if r[2]==scope[1]]
+        self.assertEqual(len(failed),3)
+        self.assertEqual(len(good),3)
+        self.assertTrue(all(r[17]=="HOLD_QC_MODEL_RUNTIME" for r in failed))
+        self.assertTrue(all(r[5]==r[6]==r[15]=="" for r in failed))
+        self.assertTrue(all(r[17]=="RESEARCH_ONLY" for r in good))
+        self.assertTrue(all(r[19]==k.canonical_sha(r[:19]) for r in rows))
+
     def test_capacity_explicit_fail_closed(self):
         api=FakeApi()
         api.created=True
