@@ -32,8 +32,14 @@ QUALITY_PREFIX = "HOLD_QC_"
 
 
 def month_sheet(asof):
-    k.require(re.fullmatch(r'20\d{2}-\d{2}-\d{2}',asof) is not None
-              and date.fromisoformat(asof).isoformat()==asof,"KRONOS2_BAD_ASOF")
+    k.require(isinstance(asof,str) and
+              re.fullmatch(r'20\d{2}-\d{2}-\d{2}',asof) is not None,
+              "KRONOS2_BAD_ASOF")
+    try:
+        valid=date.fromisoformat(asof).isoformat()==asof
+    except ValueError:
+        valid=False
+    k.require(valid,"KRONOS2_BAD_ASOF")
     return PARTITION_PREFIX + asof[:7].replace("-", "_")
 
 
@@ -278,12 +284,12 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     k.require(len(previous)+len(rows)==len(read_partition(api,name)),
               "KRONOS2_FINAL_READBACK")
     qc=sum(counts[s] for s in counts if s.startswith(QUALITY_PREFIX))
-    close_only=counts[MODEL_STATUS_CLOSE]
+    close_only=counts.get(MODEL_STATUS_CLOSE,0)
     status=("KRONOS2_PRIVATE_READBACK_WITH_QC_HOLD" if qc else
             "KRONOS2_PRIVATE_READBACK_CLOSE_ONLY" if close_only else
             "KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY")
     return {"status":status,"asof_et":asof,"scope":EXPECTED,
-            "rows_written":written,"full_geometry":counts[MODEL_STATUS_FULL],
+            "rows_written":written,"full_geometry":counts.get(MODEL_STATUS_FULL,0),
             "close_only":close_only,"qc_hold":qc,"orders":False,
             "model_quality_full_pass":not bool(qc or close_only),
             "decision_influence":"NO_GO"}
