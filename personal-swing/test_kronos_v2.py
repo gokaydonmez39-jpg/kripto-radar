@@ -244,6 +244,19 @@ class V2Tests(unittest.TestCase):
         self.assertEqual(api.writes,10)
         self.assertEqual(len(set(x[0] for x in api.rows)),1431)
 
+    def test_stochastic_resume_rejects_partial_horizon_group_before_fetch(self):
+        """A committed incomplete H1/H5/H12 group has no safe resume boundary."""
+        partial=v.build_v2_rows(
+            "T000",ASOF,SCOPE,POLICY,ASOF,candles(),[101.]*12,
+            v.MODEL_STATUS_FULL,"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")[:1]
+        def cannot_fetch(*args):
+            raise AssertionError("Malformed prefix must hold before IEX call")
+        with self.assertRaisesRegex(
+                k.ShadowHold,"KRONOS2_RESTART_PARTIAL_HORIZONS"):
+            v.make_predictions(
+                SYMS,ASOF,SCOPE,POLICY,ASOF,cannot_fetch,lambda:object(),
+                existing_rows=partial)
+
     def test_stochastic_resume_fails_on_source_sha_drift(self):
         """Prior inference remains immutable if current input bars drift."""
         import engine
@@ -288,7 +301,7 @@ class V2Tests(unittest.TestCase):
              patch.object(v,"make_predictions",
                           return_value=(newer,{"RESEARCH_ONLY":477})):
             with self.assertRaisesRegex(k.ShadowHold,
-                                        "RESTART_NONDETERMINISTIC"):
+                                        "RESTART_IMMUTABLE_PREFIX_DRIFT"):
                 v.synchronize(api,ASOF,lambda *_:None)
         self.assertEqual(len(api.rows),3)
         self.assertEqual(api.writes,0)
