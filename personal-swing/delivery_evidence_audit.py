@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timedelta
 
 import alert_ledger_contract as ledger
 import private_sheet_writer as writer
@@ -34,6 +34,33 @@ def need(ok: bool, code: str) -> None:
 
 def _row_cells(row, size):
     return list(row) + [""] * (size - len(row))
+
+def _request_timestamp_class(raw):
+    """Validate request INTENT only; never infer a message or device receipt.
+
+    Legacy private ledger entries use minute TRT, second TRT, or ISO8601
+    with explicit Istanbul +03:00. Preserve every existing cell verbatim.
+    """
+    need(isinstance(raw, str) and bool(raw),
+         "REQUESTED_TIMESTAMP_MISSING")
+    if raw.endswith(" TRT"):
+        value=raw[:-4]
+        for layout, category in (
+                ("%Y-%m-%d %H:%M", "CANONICAL"),
+                ("%Y-%m-%d %H:%M:%S", "LEGACY_TRT_SECONDS")):
+            try:
+                datetime.strptime(value, layout)
+                return category
+            except ValueError:
+                pass
+        raise EvidenceHold("REQUESTED_TIMESTAMP_INVALID")
+    try:
+        parsed=datetime.fromisoformat(raw)
+    except ValueError:
+        raise EvidenceHold("REQUESTED_TIMESTAMP_INVALID") from None
+    need("T" in raw and parsed.utcoffset()==timedelta(hours=3),
+         "REQUESTED_TIMESTAMP_INVALID")
+    return "LEGACY_ISO_AWARE"
 
 
 def assess(alerts, scores, scans, expected_asof=None):
@@ -91,6 +118,15 @@ def assess(alerts, scores, scans, expected_asof=None):
         historical_valid += 1
 
     counts = Counter(v["status"] for v in events.values())
+    # A REQUESTED state without a valid request timestamp cannot be
+    # counted as an attested intent. Historical format variance is
+    # explicitly classified, never normalized by rewriting the ledger.
+    stamp_formats=Counter(
+        _request_timestamp_class(v["row"][18] if len(v["row"])>18 else "")
+        for v in events.values() if v["status"]==ledger.REQUESTED
+    )
+    need(sum(stamp_formats.values())==counts.get(ledger.REQUESTED,0),
+         "REQUESTED_TIMESTAMP_COUNT_DRIFT")
     # Split the historical exception cohort from the latest verified ASOF.
     # Counts are read-only aggregates, never proof of ChatGPT message receipt.
     # No event identity, ticker, note or raw row is printed or returned.
@@ -135,6 +171,10 @@ def assess(alerts, scores, scans, expected_asof=None):
         "score_hold_count": int(current_score["summary"][0][7]) if current_score else None,
         "alarm_event_count": len(events),
         "alarm_request_intents": requested_count,
+        "request_intent_timestamp_validated": sum(stamp_formats.values()),
+        "request_intent_legacy_timestamp_count": (
+            stamp_formats["LEGACY_TRT_SECONDS"]+
+            stamp_formats["LEGACY_ISO_AWARE"]),
         "alarm_pending_intents": pending,
         "unreconciled_explicit_not_sent_notes": explicit_not_sent,
         "not_sent_prior_verified_asof": not_sent_prior,

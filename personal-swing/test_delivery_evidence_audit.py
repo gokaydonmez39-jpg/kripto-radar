@@ -44,6 +44,35 @@ class AuditTests(unittest.TestCase):
         self.assertFalse(r["retry_or_replay_permitted"])
         self.assertEqual(r["messages_sent"], 0)
 
+    def test_missing_requested_timestamp_is_rejected(self):
+        alerts, scores, scans = fixture()
+        alerts[1][18] = ""
+        with self.assertRaisesRegex(audit.EvidenceHold,
+                                    "REQUESTED_TIMESTAMP_MISSING"):
+            audit.assess(alerts, scores, scans)
+
+    def test_legacy_timestamp_formats_are_validated_not_rewritten(self):
+        for value in ("2026-11-05 10:00:05 TRT",
+                      "2026-11-05T10:00:05+03:00"):
+            alerts, scores, scans = fixture()
+            alerts[1][18] = value
+            before = copy.deepcopy((alerts, scores, scans))
+            result = audit.assess(alerts, scores, scans)
+            self.assertEqual(result["request_intent_timestamp_validated"], 1)
+            self.assertEqual(result["request_intent_legacy_timestamp_count"], 1)
+            self.assertEqual((alerts, scores, scans), before)
+            self.assertFalse(result["chatgpt_visible_message_proven"])
+
+    def test_untrusted_timestamp_timezone_and_date_are_rejected(self):
+        for value in ("2026-11-05T10:00:05Z",
+                      "2026-11-55 10:00 TRT",
+                      "2026-11-05T10:00:05"):
+            alerts, scores, scans = fixture()
+            alerts[1][18] = value
+            with self.assertRaisesRegex(audit.EvidenceHold,
+                                        "REQUESTED_TIMESTAMP_INVALID"):
+                audit.assess(alerts, scores, scans)
+
     def test_no_notes_never_claims_platform_ack(self):
         a, s, c = fixture()
         a[1][19] = "REQUESTED_NOT_DEVICE_ACK"
