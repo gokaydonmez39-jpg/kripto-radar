@@ -191,7 +191,8 @@ class V2Tests(unittest.TestCase):
                           return_value=(SYMS,SCOPE,POLICY,ASOF)), \
              patch.object(v,"make_predictions",
                           return_value=(forecast,{"RESEARCH_ONLY":477})):
-            with self.assertRaisesRegex(k.ShadowHold,"FAKE_POST_INTERRUPTED"):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED"):
                 v.synchronize(api,ASOF,lambda *_:None)
             self.assertEqual(len(api.rows),180)
             api.raise_after=None
