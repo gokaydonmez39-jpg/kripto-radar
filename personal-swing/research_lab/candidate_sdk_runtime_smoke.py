@@ -14,7 +14,7 @@ import os
 CANDIDATES = {
     "pydantic-ai": ("pydantic-ai-slim", "2.66.0"),
     "mcp-use": ("mcp-use", "1.7.1"),
-    "qlib": ("pyqlib", "0.9.8"),
+    "qlib": ("pyqlib", "0.9.7"),
     "openbb-v5": ("openbb", "5.0.0"),
 }
 
