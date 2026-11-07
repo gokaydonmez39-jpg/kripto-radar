@@ -244,6 +244,12 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     current=[row for row in before if row[1]==asof]
     k.require(before==previous+current,
               "KRONOS2_NONAPPEND_CURRENT_DATA")
+    # A prior interrupted ASOF cannot be silently treated as an accepted
+    # history when beginning the next session. Require complete prior months.
+    prior_counts=Counter(row[1] for row in previous)
+    k.require(all(count==EXPECTED*len(k.HORIZONS)
+                  for count in prior_counts.values()),
+              "KRONOS2_PRIOR_ASOF_PARTIAL_HOLD")
     expected_ids={f"{asof}|{s}|H{h}" for s in symbols for h in k.HORIZONS}
     k.require(set(r[0] for r in current).issubset(expected_ids),
               "KRONOS2_ASOF_SCOPE_MISMATCH")
