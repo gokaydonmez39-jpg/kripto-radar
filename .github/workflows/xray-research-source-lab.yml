@@ -69,7 +69,7 @@ jobs:
           - candidate: mcp-use
             distribution: mcp-use==1.7.1
           - candidate: qlib
-            distribution: pyqlib==0.9.8
+            distribution: pyqlib==0.9.7
           - candidate: openbb-v5
             distribution: openbb==5.0.0
     steps:
@@ -121,6 +121,6 @@ jobs:
             --mount "type=bind,source=$GITHUB_WORKSPACE/personal-swing/research_lab,target=/lab,readonly" \
             --workdir /lab \
             -e XRAY_CONTAINER_NO_NETWORK=1 -e XRAY_NO_SECRETS=1 \
-            -e PYTHONDONTWRITEBYTECODE=1 \
+            -e PYTHONDONTWRITEBYTECODE=1 -e HOME=/tmp -e XDG_CACHE_HOME=/tmp/.cache \
             "xray-sdk-${SDK_CANDIDATE}:pr403" \
             python -I /lab/candidate_sdk_runtime_smoke.py --candidate "$SDK_CANDIDATE"
