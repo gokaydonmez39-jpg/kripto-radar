@@ -34,6 +34,13 @@ A model loss improvement, attractive forecast chart or positive return in a cher
 
 Disable or revert `.github/workflows/xray-personal-kronos-shadow.yml`. Because the new workflow is independent and the Sheet tab contains only research rows, the core personal radar remains untouched. Do not delete historical research evidence; stop new writes instead.
 
+
+## QC isolation patch (2026-11-07)
+
+After genuine 2026-11-06 EOD 477/477 PASS, isolated Kronos workflow #42331090998 failed with `KRONOS_INVALID_FORECAST`: at least one generated candle failed OHLC/volume validation. The fix **does not repair, clamp, substitute, or promote invalid market-model outputs**. It classifies nonfinite values, nonpositive prices, negative predicted volume, OHLC geometry and horizon/schema errors into fixed code categories. A failing model-output series yields three immutable `HOLD_QC_*` rows for that symbol with blank prediction fields; valid symbols are processed independently. All 1/5/12 rows are atomically appended once, and the existing Sheet readback check remains mandatory. Any QC hold makes the job's exit code nonzero, so no `KRONOS_SHADOW_PRIVATE_READBACK_PASS` or PREMIUM probability can be claimed.
+
+A protected main merge changing the research workflow itself has a one-shot `push` research-only recheck. It **does not rerun the personal EOD workflow** and **adds no cron**. This is for observing current completed ASOF and cannot write core AL/STOP/Guardian/PANEL data. Once ASOF is recorded, a recheck remains idempotent and does not overwrite QC evidence. Any actual model-quality improvement must be tested and applied to a new future ASOF.
+
 ## Known limitations
 
 As of 7 November 2026, upstream remains subject to open questions on original checkpoint leakage/provenance (issues #265/#307), and open RoPE cross-attention inference repair (#425). This sidecar does not falsely claim that unresolved upstream issues are fixed. It is a research trial, not a verified forecasting edge. It also does not install a production OOS-validation or model-performance claims pipeline; those require independent review and promotion.
