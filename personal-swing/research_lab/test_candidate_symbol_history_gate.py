@@ -64,7 +64,7 @@ class HistoryEligibilityTests(unittest.TestCase):
 
     def test_weekend_rejected(self):
         v = copy.deepcopy(self.rows)
-        v["CRWV"]["sessions"][3] = "2025-04-05"
+        v["CRWV"]["sessions"][6] = "2025-04-05"
         with self.assertRaisesRegex(ValueError, "NON_XNAS_SESSION_IN_HISTORY"):
             assess(self.universe, "2026-11-06", v)
 
