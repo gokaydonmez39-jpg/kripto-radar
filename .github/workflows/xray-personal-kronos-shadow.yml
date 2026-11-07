@@ -2,6 +2,12 @@ name: XRAY Personal Kronos Shadow Research
 # Research-only post-EOD sidecar; no cron, no broker, no alerts or main EOD changes.
 # Runs only after a successful protected main personal 477 EOD workflow.
 on:
+  # A change to this exact workflow on protected main performs one controlled
+  # current-ASOF read-only research recheck, without replaying any core EOD.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xray-personal-kronos-shadow.yml'
   pull_request:
     branches: [main]
     paths:
@@ -92,11 +98,12 @@ jobs:
           PY
   independent-private-inference:
     if: >-
-      github.event_name == 'workflow_run' &&
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.event != 'pull_request'
+      github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
