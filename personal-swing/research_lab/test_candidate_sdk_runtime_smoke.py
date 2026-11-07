@@ -47,5 +47,23 @@ class CandidateSdkSmokeGateTests(unittest.TestCase):
         self.assertIn('"may_place_order": False', source)
 
 
+    def test_valid_mock_qlib_path_reaches_import(self):
+        # Regression: importing importlib.util inside smoke() used to shadow
+        # global importlib.metadata and crash every otherwise valid candidate.
+        import sys
+        import types
+        from unittest.mock import patch
+        fake_qlib = types.ModuleType("qlib")
+        fake_qlib.init = lambda: None
+        with patch.dict(os.environ, {
+            "XRAY_CONTAINER_NO_NETWORK": "1",
+            "XRAY_NO_SECRETS": "1"
+        }, clear=True):
+            with patch("importlib.metadata.version", return_value="0.9.7"):
+                with patch.dict(sys.modules, {"qlib": fake_qlib}):
+                    result = smoke("qlib")
+        self.assertEqual(result["scope"], "REAL_QLIB_IMPORT_ONLY_NO_PIT_OR_DATA")
+        self.assertFalse(result["production_authorized"])
+
 if __name__ == "__main__":
     unittest.main()
