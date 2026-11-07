@@ -114,3 +114,74 @@ fails closed.
 A real 477 probe without a persistent, partitioned per-ASOF research ledger
 is NOT 477 automatic daily production integration. A good real-data QC count
 also does NOT establish model accuracy or incremental trading alpha.
+
+
+## V2 477 real close-only research (added 7 November 2026)
+
+### Why a second model-output mode is necessary
+
+The pinned Kronos decoder independently emits raw predicted OPEN/HIGH/LOW/CLOSE/VOLUME
+without OHLC ordering constraints. In the authenticated 2026-11-06 real IEX
+477 sample it generated 119/477 unphysical OHLC paths. This is a native
+model quality limitation, not an HTTP error. **V2 does not clamp, project,
+sort high/low or claim to repair those invalid paths.** Instead, when
+the raw predicted CLOSE remains finite and positive over all 12 horizons
+and ONLY native OHLC geometry fails, V2 retains those original closes as
+`RESEARCH_CLOSE_ONLY`. It explicitly labels `RAW_CLOSE_ONLY__NATIVE_OHLC_GEOMETRY_INVALID`.
+This is a separate close-only research estimand, never native predicted
+high/low/volume and never a model-quality PASS. Invalid/negative/nonfinite
+closes are kept as blank `HOLD_QC_*` forecasts. Full native-valid paths
+are `RESEARCH_ONLY`.
+
+### Automatic bounded 477 research and long-term identity
+
+The independent `kronos-v2-full-477-research` workflow job starts **only
+after an actual successful protected-main 477 EOD `workflow_run`**, first
+eligible XNAS ASOF **2026-11-09** (no 2026-11-06 replay). It uses the existing
+Alpaca IEX raw 52-session market-data source and authenticated private
+477/477 scan SHA + Swing score 0-HOLD readback, with the existing pinned
+Kronos-small model and fixed sampling configuration. Exactly 477 distinct
+symbols generate 1/5/12-session close forecast research rows: 1431 per ASOF.
+
+Separate date-bound `KRONOS2_YYYY_MM` private Google Sheets monthly
+partitions hold the same exact 20-column schema, model and source SHA,
+single `ASOF|SYMBOL|H{1,5,12}` keys and per-row SHA. The create action uses
+one addSheet+header batch POST. Subsequent appends are **at most 180 rows
+per POST**, each followed by exact readback. Writes have **no blind
+retries**: if interrupted, the next valid same-ASOF execution must
+recompute the full deterministic cohort, verify all earlier entries are
+an exact prefix and only append the missing suffix. Any mismatch is
+a fail-closed HOLD; old history is never replaced or edited.
+
+The software stops before a projected private Sheet **9 million-cell**
+budget or 40,000 occupied rows in one monthly partition. This is a
+bounded, not perpetual, free Sheets solution. Old month data must be
+archived with full custody/restore tests *before* the budget is reached;
+no automatic deletion/overwrite is permitted. Quarterly audits of
+remaining capacity and OOS data retention are required.
+
+The pre-existing 21-open-symbol V1 shadow ledger and its 2026-11-06
+63 entries stay immutable, and the original AL/STOP, 0-100 Swing score,
+Guardian/A34, event ledger, single ChatGPT :57 task and canonical/crypto
+projects remain unchanged. V2 outputs **do not** grant execution or
+change rankings.
+
+### Research progress versus real acceptance
+
+`KRONOS2_PRIVATE_READBACK_CLOSE_ONLY` proves complete 477 data delivery
+with explicitly **unresolved native OHLC quality HOLD**. Only
+`KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY` proves all 477 native
+decoded OHLC paths were geometrically admissible; neither proves predictive
+skill. `KRONOS2_PRIVATE_READBACK_WITH_QC_HOLD` means at least one
+even close-only forecast is unusable, and the job fails.
+
+The model's scientific validity needs forecasts frozen at their original
+timestamps and then realized outcomes from completed XNAS sessions only.
+The OOS audit includes V1 and recent V2 monthly research (30-day
+rolling audit) and reports full-native versus close-only status counts
+separately, never extrapolating to live trading alpha. Validated market
+performance and incremental Alpha stay NO-GO until sufficient
+independent post-cutoff observations, purged walk-forward, explicit
+cost/slippage baselines, risk drawdowns, and reproducible statistical tests.
+
+**NO_ORDER; NO_NEW_CRON; NO_NEW_CHATGPT_TASK; NO_HISTORY_REPLAY.**
