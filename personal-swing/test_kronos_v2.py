@@ -238,6 +238,48 @@ class V2Tests(unittest.TestCase):
                 v.synchronize(api,ASOF,lambda *_:None)
         self.assertEqual(api.writes,0)
 
+    def test_prior_month_partial_partition_blocks_new_month(self):
+        """Do not silently skip a partial October V2 ledger on November run."""
+        from urllib.parse import quote
+        prior_asof="2026-10-30"
+        prior_tab=v.month_sheet(prior_asof)
+        api=FakeApi()
+        old_rows=v.build_v2_rows(
+            "T000",prior_asof,SCOPE,POLICY,prior_asof,candles(),
+            [101.]*12,v.MODEL_STATUS_FULL,
+            "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        original_request=api.request
+        def prior_month_request(path,*,method="GET",body=None):
+            if method=="GET" and path.startswith("?"):
+                meta=original_request(path,method=method,body=body)
+                meta["sheets"].append({"properties":{
+                    "sheetId":9777,"title":prior_tab,
+                    "gridProperties":{"rowCount":4,"columnCount":20}}})
+                return meta
+            if method=="GET" and quote(prior_tab,safe="") in path:
+                return {"values":[list(k.HEADERS)]+old_rows}
+            return original_request(path,method=method,body=body)
+        api.request=prior_month_request
+        with patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          side_effect=AssertionError("No prediction if prior month partial")):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_PREVIOUS_MONTH_PARTIAL_HOLD"):
+                v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(api.writes,0)
+
+    def test_empty_id_but_populated_partition_row_blocks(self):
+        api=FakeApi()
+        api.created=True
+        good=v.build_v2_rows(
+            "T000",ASOF,SCOPE,POLICY,ASOF,candles(),[101.]*12,
+            v.MODEL_STATUS_FULL,"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        api.rows=[["", "2026-11-09", "T000"]] + good
+        with self.assertRaisesRegex(
+                k.ShadowHold,"KRONOS2_PARTITION_ROW_WITHOUT_ID"):
+            v.read_partition(api,api.month)
+
     def test_single_model_runtime_failure_isolated_to_three_qc_hold_rows(self):
         """An isolated model RuntimeError must retain other valid symbols."""
         import engine
