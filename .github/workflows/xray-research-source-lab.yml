@@ -88,6 +88,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/xray-strong4/wheels"
           python -m pip download --disable-pip-version-check --only-binary=:all: \
             --dest "$RUNNER_TEMP/xray-strong4/wheels" "$SDK_PACKAGE"
+      - name: SHA256 observed binary wheelhouse (NOT a pinned supply chain lock)
+        shell: bash
+        env:
+          SDK_NAME: ${{ matrix.sdk }}
+        run: |
+          set -euo pipefail
+          python personal-swing/research_lab/strong4_wheelhouse_receipt.py \
+            --wheel-dir "$RUNNER_TEMP/xray-strong4/wheels" --sdk "$SDK_NAME"
       - name: Build SDK wheelhouse only; Docker build has no network
         shell: bash
         env:

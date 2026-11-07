@@ -54,3 +54,39 @@ python -O -m unittest -v test_strong4_guard test_strong4_real_sdk_smoke
 python strong4_guard.py
 python strong4_guard.py --require-production # expected exit 3
 ```
+
+## V2 independent history and binary supply-chain checks (2026-11-07)
+- `strong4_history_qa.py` consumes **only a private local file** containing
+  explicitly declared Alpaca IEX RAW 1Day OHLCV data. The watchlist source
+  Git blob must remain `786fa9b3a673ef56e9f0384f721d7fa836e9b9cd`
+  (asof source 2026-10-22), preserving its exact personal 477 members.
+- The only locally inspected ASOF in this V2 audit is 2026-11-06;
+  one study used read-only, existing Alpaca connector data for all 477 tickers
+  (40 batches, 258,795 rows). **Only aggregate findings** may be reported;
+  no private raw OHLCV is copied to GitHub or attached to the PR.
+- Observed: 463 have >=500 current calendar-aligned raw-declared IEX bars,
+  13 have <500 (CRWV, TTAN, FIGR, CHYM, NTSK, CAI, GLXY, SAIL, ALM,
+  HTFL, AUGO, FLY, LGN), and INDV is inactive because of the official
+  2026-11-03 INDV->SUPN identity change. This is NOT a 477/477 PIT PASS.
+  The historical SUPN ticker before 2026-11-03 belongs to a **different
+  issuer** and MUST NOT be joined to INDV's earlier history.
+- Official identity evidence:
+  https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-742
+  https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-25
+- V2 dates and bar QA recognizes INDV as
+  `KNOWN_CORPORATE_ACTION_IDENTITY_HOLD`, never as auto-promoted SUPN.
+  Completing issuer identity mapping and first-known timestamps needs
+  separate official evidence, private data and authorization.
+- `strong4_wheelhouse_receipt.py` prints SHA256 for **each actually
+  downloaded binary wheel** and an inventory digest before installation;
+  this is **observed wheel provenance only**, NOT a separately pinned
+  immutable lock, package vulnerability scan, vendor license attestation
+  or real-market OOS.
+- Local tests: 18 positive/negative historical QA plus 7 wheel integrity
+  tests in normal and optimized Python. New tests are automatically discovered
+  by the existing research CI. No new cron or runner permissions.
+- Never claim model alpha from bars-only data. To admit actual OOS one must
+  independently obtain timestamped historical decisions/predictions, issuer
+  lineage, legal rights, source adjustment receipts, fixed 15-session embargo,
+  >=3 chronological held-out folds, cost/slippage, missing-name handling and
+  a buy-and-hold/beta baseline. None are presently independently certified.
