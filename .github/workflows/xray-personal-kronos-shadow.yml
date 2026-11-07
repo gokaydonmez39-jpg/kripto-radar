@@ -1,5 +1,6 @@
 name: XRAY Personal Kronos Shadow Research
 # Research-only post-EOD sidecar; no cron, no broker, no alerts or main EOD changes.
+# XRAY_20261107_KRONOS_WEEKEND_ASOF_QA: one-time protected-main research-only recheck of last verified completed XNAS session.
 # Runs only after a successful protected main personal 477 EOD workflow.
 on:
   # A change to this exact workflow on protected main performs one controlled
