@@ -58,11 +58,16 @@ def read_partition(api, name):
         padded=list(r)+[""]*(20-len(r))
         k.require(padded[19]==k.canonical_sha(padded[:19]) and
                   padded[16]==VERSION_V2 and
-                  padded[17] in (MODEL_STATUS_FULL,MODEL_STATUS_CLOSE) or False,
-                  "KRONOS2_TAMPERED_OR_WRONG_VERSION") if not padded[17].startswith(QUALITY_PREFIX) else k.require(
-                  padded[19]==k.canonical_sha(padded[:19]) and padded[16]==VERSION_V2
-                  and padded[5]==padded[6]==padded[15]=="",
-                  "KRONOS2_TAMPERED_QC_ROW")
+                  padded[17] in (MODEL_STATUS_FULL,MODEL_STATUS_CLOSE)
+                  or (padded[17].startswith(QUALITY_PREFIX) and
+                      padded[16]==VERSION_V2 and
+                      padded[19]==k.canonical_sha(padded[:19]) and
+                      padded[5]==padded[6]==padded[15]==""),
+                  "KRONOS2_TAMPERED_OR_WRONG_VERSION")
+        k.require(padded[1][:7]==name[len(PARTITION_PREFIX):].replace("_","-"),
+                  "KRONOS2_PARTITION_ASOF_DRIFT")
+        k.require(padded[0]==f"{padded[1]}|{padded[2]}|H{padded[3]}",
+                  "KRONOS2_ROW_IDENTITY_DRIFT")
         rows.append(padded)
     k.require(len({x[0] for x in rows})==len(rows),
               "KRONOS2_DUPLICATE_LEDGER_KEYS")
@@ -289,6 +294,12 @@ def main():
     import private_sheet_writer as writer
     try:
         asof=k.eligible_shadow_asof()
+        # First V2 session is a fresh forecast; never replay the old 2026-11-06
+        # V1 shadow observations or manufacture pre-deployment history.
+        if asof is not None and asof < "2026-11-09":
+            print(json.dumps({"status":"KRONOS2_NOT_STARTED_BEFORE_2026_11_09",
+                              "orders":False}))
+            return 0
         if asof is None:
             print(json.dumps({"status":"KRONOS2_NOT_DUE","orders":False}))
             return 0
