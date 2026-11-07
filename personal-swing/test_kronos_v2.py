@@ -39,6 +39,7 @@ class FakeApi:
         self.created=False
         self.writes=0
         self.raise_after=None
+        self.raise_after_apply=None
         self.month=v.month_sheet(ASOF)
         self.sid=123456789
     def request(self,path,*,method="GET",body=None):
@@ -66,6 +67,8 @@ class FakeApi:
                     if parsed==[list(k.HEADERS)]:
                         continue
                     self.rows.extend(parsed)
+            if self.raise_after_apply is not None and self.writes==self.raise_after_apply:
+                raise k.ShadowHold("FAKE_REPLY_LOST_AFTER_COMMIT")
             return dict()
         raise AssertionError("Unexpected private API path")
 
@@ -149,6 +152,30 @@ class V2Tests(unittest.TestCase):
             self.assertEqual(api.writes,9)
             self.assertEqual(mk.call_count,1)
 
+    def test_committed_post_lost_response_uses_exact_readback_no_resend(self):
+        """Remote POST may commit even when the HTTP response is lost."""
+        api=FakeApi()
+        api.raise_after_apply=3  # sheet creation plus second 180-row append
+        fake_writer=types.ModuleType("private_sheet_writer")
+        fake_writer.as_cells=as_cells
+        forecast=[]
+        for sym in SYMS:
+            forecast.extend(v.build_v2_rows(sym,ASOF,SCOPE,POLICY,ASOF,
+                     candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                     "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
+        with patch.dict(sys.modules,{"private_sheet_writer":fake_writer}), \
+             patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          return_value=(forecast,{"RESEARCH_ONLY":477})):
+            out=v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(out["rows_written"],1431)
+        self.assertEqual(out["qc_hold"],0)
+        self.assertEqual(api.writes,9)  # NO retry of ambiguous POST
+        self.assertEqual(len(api.rows),1431)
+        self.assertEqual(len({r[0] for r in api.rows}),1431)
+        self.assertTrue(all(r[19]==k.canonical_sha(r[:19]) for r in api.rows))
+
     def test_interrupted_chunk_resumes_without_history_replay(self):
         api=FakeApi()
         api.raise_after=3
@@ -164,7 +191,8 @@ class V2Tests(unittest.TestCase):
                           return_value=(SYMS,SCOPE,POLICY,ASOF)), \
              patch.object(v,"make_predictions",
                           return_value=(forecast,{"RESEARCH_ONLY":477})):
-            with self.assertRaisesRegex(k.ShadowHold,"FAKE_POST_INTERRUPTED"):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED"):
                 v.synchronize(api,ASOF,lambda *_:None)
             self.assertEqual(len(api.rows),180)
             api.raise_after=None
