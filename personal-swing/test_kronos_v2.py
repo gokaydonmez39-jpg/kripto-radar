@@ -211,7 +211,7 @@ class V2Tests(unittest.TestCase):
         self.assertEqual(api.writes,0)
 
     def test_single_model_runtime_failure_isolated_to_three_qc_hold_rows(self):
-        """An isolated model RuntimeError must not drop 476 other symbols."""
+        """An isolated model RuntimeError must retain other valid symbols."""
         import engine
         scope=SYMS[:2]
         seen=[]
@@ -222,6 +222,7 @@ class V2Tests(unittest.TestCase):
             return Frame()
         with patch.object(engine,"analyze",
                           return_value={"sessions":52,"decision":"ELE"}), \
+             patch.object(k,"future_xnas_days",return_value=[ASOF]*12), \
              patch.object(v,"predict_frame",side_effect=model_frame):
             rows,counts=v.make_predictions(
                 scope,ASOF,SCOPE,POLICY,ASOF,
