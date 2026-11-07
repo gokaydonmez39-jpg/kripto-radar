@@ -185,3 +185,20 @@ independent post-cutoff observations, purged walk-forward, explicit
 cost/slippage baselines, risk drawdowns, and reproducible statistical tests.
 
 **NO_ORDER; NO_NEW_CRON; NO_NEW_CHATGPT_TASK; NO_HISTORY_REPLAY.**
+
+
+### Legacy writer retirement and incident recovery
+
+On ASOF 2026-11-09 and later, the old 21-open-symbol V1 writer explicitly
+returns `KRONOS_SHADOW_V1_ARCHIVED_NO_NEW_WRITES` without initializing a
+Google Sheets writer. The original 63 immutable 2026-11-06 rows stay intact;
+the old workflow still performs a separate **read-only** realized-horizon
+OOS audit, including V2 monthly partitions. This prevents silent double
+inference and two overlapping portfolios of new daily forecasts.
+
+Failure recovery: halt only the V2 independent research job or revert
+this V2 addition; original EOD AL/STOP/Guardian/A34 and old immutable
+research history are not modified. Partial V2 monthly rows may be
+continued only after exact SHA-prefix comparison. Any quality/provenance
+or source ambiguity is HOLD; never delete, replay or overwrite
+historical rows to make a test pass.
