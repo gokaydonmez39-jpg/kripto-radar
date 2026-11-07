@@ -40,11 +40,7 @@ def validate_ledger(matrix):
         require(row[7:11] == [k.MODEL_ID, k.MODEL_REV,
                               k.TOKENIZER_REV, k.KRONOS_CODE_REV] and
                 row[16] == k.VERSION and
-                row[17] in ('RESEARCH_ONLY',) or False,
-                'KRONOS_OOS_INVALID_MODEL_OR_STATUS') if not row[17].startswith('HOLD_QC_') else require(
-                row[7:11] == [k.MODEL_ID, k.MODEL_REV,
-                               k.TOKENIZER_REV, k.KRONOS_CODE_REV] and
-                row[16] == k.VERSION,
+                (row[17] == 'RESEARCH_ONLY' or row[17].startswith('HOLD_QC_')),
                 'KRONOS_OOS_INVALID_MODEL_OR_STATUS')
         require(all(re.fullmatch(r'[0-9a-f]{64}', row[i]) for i in (11,12,14))
                 and bool(row[13]),
