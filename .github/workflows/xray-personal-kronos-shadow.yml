@@ -220,13 +220,13 @@ jobs:
           echo 'ONE_SHOT_REAL_477_KRONOS_CPU_QC_MEASUREMENT_ONLY; NO_SHEET_WRITES; NO_AL_STOP_MODIFICATION; NO_ORDER; NO_PUSH_ACK' >> "$GITHUB_STEP_SUMMARY"
 
   independent-private-inference:
+    # No stale 2026-11-06 replay/failure on every new research workflow merge.
     if: >-
-      github.event_name == 'push' ||
-      (github.event_name == 'workflow_run' &&
+      github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.event != 'pull_request')
+      github.event.workflow_run.event != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
