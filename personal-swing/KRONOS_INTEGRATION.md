@@ -51,3 +51,46 @@ As of 7 November 2026, upstream remains subject to open questions on original ch
 A controlled post-merge recheck on Saturday initially emitted `KRONOS_SHADOW_NO_COMPLETED_SESSION` because the **producer-only** `daily_job.current_completed_session()` rejects scans later than 10 hours after EOD. That short expiry is correct for the main 477 producer and remains **unchanged**.
 
 Kronos (downstream research only) now derives the latest fully completed official XNAS session from the same independent calendar and allows it for at most 72 hours past close+45m, including Saturday. It separately requires the latest unique **authenticated Sheet scan** to match that exact ASOF with 477/477 and SHA, plus zero-HOLD same-ASOF score summary. It cannot use future, unfinished, stale, duplicate or unverified sessions. This is a Kronos-only temporal gate; no EOD, Guardian, original AL/STOP or historical ledger edit.
+
+
+## Automatic OOS audit and 477 CPU evidence (2026-11-07)
+
+The shadow workflow runs `kronos_oos_audit.py` after its model stage (even if the
+quality gate fails). The audit is strictly read-only: it checks the immutable
+20-column ledger, each original `ASOF|SYMBOL|H1/H5/H12`, the stored SHA-256,
+model revisions, QC blank prices, and official future XNAS session deadlines.
+Before the target exchange session completes, **NO** realized price API is
+queried for that forecast. After completion it compares recorded predicted
+close vs actual Alpaca IEX raw 1Day close at that exact future date and vs the
+fixed original IEX close (persistence baseline). Reported measures are MAE
+percent and directional accuracy, grouped separately by 1/5/12 sessions.
+
+All OOS indicators are exploratory. Even after 60 verified pairs and at least
+four distinct ASOF dates per horizon, the status is **SAMPLE_REVIEW_REQUIRED**,
+not alpha PASS. Trade costs, risk-adjusted results, time-series dependency,
+multi-testing, regime robustness, OOS purging, survivorship, and baseline
+comparison with original XRAY scores must still be independently verified.
+Real 2026-11-06 H1/H5/H12 close outcomes are not available on Saturday
+2026-11-07; no claimed outcome exists.
+
+A dedicated PR-only **477 synthetic CPU benchmark** loads the exact pinned
+Kronos-small model and actually runs 477 separate artificial 40-input/12-step
+series on a CPU Actions runner with 29-minute job limit. The benchmark measures
+inference seconds, peak RSS and QC failure count; it does **not** call Alpaca,
+read private symbols, write Google Sheets, or prove financial quality. Budget
+gate: all 477 must finish inference in at most 1300 seconds and peak RSS <=8192 MB;
+otherwise capacity HOLD. Even a successful synthetic performance run is not a
+live 477 source/readback permission.
+
+**Independent 477 storage bottleneck:** current ledger uses THREE rows per
+symbol (H1/H5/H12), so 477 symbols require 1431 new rows per ASOF. At a bound
+of 20000 rows, a ledger can hold only ~13 complete 477-symbol sessions
+(ignoring existing rows). A future 477 research expansion therefore requires a
+separately reviewed partitioned/compacted, immutable, readback-safe ledger
+with idempotent multi-batch writes, asof-bound provenance and an operational
+quota test. Increasing MAX_OPEN_SYMBOLS from 32 or resizing the Sheet alone
+does not satisfy these conditions. Do not do this automatically.
+
+No new cron, no extra ChatGPT automation, no private inference on pull_request,
+no modifications to existing 477 scanner, A34/Guardian, AL/STOP/2R, notification
+event ledger, or canonical/crypto research systems.
