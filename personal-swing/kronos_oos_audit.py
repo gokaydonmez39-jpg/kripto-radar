@@ -8,13 +8,14 @@ Public CI output contains aggregates/status only, never private symbols.
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 import json
 import math
 import os
 import re
 
 import kronos_shadow as k
+import kronos_v2 as v2
 
 MIN_UNIQUE_PAIRS = 60
 MIN_DISTINCT_ASOFS = 4
@@ -25,41 +26,84 @@ def require(ok, reason):
 
 
 def validate_ledger(matrix):
-    rows = k.normalize_existing(matrix)
-    by_pair = defaultdict(list)
-    for row in rows:
-        require(len(row) == 20 and row[19] == k.canonical_sha(row[:19]),
-                'KRONOS_OOS_ROW_TAMPERED')
-        asof, symbol, horizon = row[1], row[2], row[3]
-        require(re.fullmatch(r'20\d{2}-\d{2}-\d{2}', asof) and
-                date.fromisoformat(asof).isoformat() == asof and
-                re.fullmatch(r'[A-Z0-9.]+', symbol) and
-                horizon in ('1', '5', '12') and
-                row[0] == f'{asof}|{symbol}|H{horizon}',
-                'KRONOS_OOS_INVALID_ROW_IDENTITY')
-        require(row[7:11] == [k.MODEL_ID, k.MODEL_REV,
-                              k.TOKENIZER_REV, k.KRONOS_CODE_REV] and
-                row[16] == k.VERSION and
-                (row[17] == 'RESEARCH_ONLY' or row[17].startswith('HOLD_QC_')),
-                'KRONOS_OOS_INVALID_MODEL_OR_STATUS')
-        require(all(re.fullmatch(r'[0-9a-f]{64}', row[i]) for i in (11,12,14))
+    require(isinstance(matrix,list) and bool(matrix) and
+            tuple(matrix[0])==k.HEADERS and len(matrix)<=40000,
+            "KRONOS_OOS_LEDGER_HEADER_OR_CAP")
+    rows=[]
+    for raw in matrix[1:]:
+        if not raw or not raw[0]:
+            continue
+        require(len(raw)<=20,"KRONOS_OOS_ROW_TOO_WIDE")
+        row=list(raw)+[""]*(20-len(raw))
+        require(row[19]==k.canonical_sha(row[:19]),
+                "KRONOS_OOS_ROW_TAMPERED")
+        asof,symbol,horizon=row[1],row[2],row[3]
+        require(re.fullmatch(r'20\d{2}-\d{2}-\d{2}',asof) and
+                date.fromisoformat(asof).isoformat()==asof and
+                re.fullmatch(r'[A-Z0-9.]+',symbol) and
+                horizon in ('1','5','12') and
+                row[0]==f"{asof}|{symbol}|H{horizon}",
+                "KRONOS_OOS_INVALID_ROW_IDENTITY")
+        require(row[7:11]==[k.MODEL_ID,k.MODEL_REV,
+                             k.TOKENIZER_REV,k.KRONOS_CODE_REV] and
+                row[16] in (k.VERSION,v2.VERSION_V2),
+                "KRONOS_OOS_INVALID_MODEL_OR_STATUS")
+        require(all(re.fullmatch(r'[0-9a-f]{64}',row[i]) for i in (11,12,14))
                 and bool(row[13]),
-                'KRONOS_OOS_INVALID_PROVENANCE')
-        if row[17] == 'RESEARCH_ONLY':
-            require(bool(row[15]) and re.fullmatch(r'[0-9a-f]{64}', row[15])
-                    and all(math.isfinite(float(row[i])) for i in (4,5,6))
-                    and float(row[4]) > 0 and float(row[5]) > 0,
-                    'KRONOS_OOS_INVALID_FORECAST_ENTRY')
+                "KRONOS_OOS_INVALID_PROVENANCE")
+        valid_status = (row[17]=="RESEARCH_ONLY" or
+                        row[17]==v2.MODEL_STATUS_CLOSE and
+                        row[16]==v2.VERSION_V2)
+        if valid_status:
+            try:
+                valid=bool(row[15]) and bool(re.fullmatch(r'[0-9a-f]{64}',row[15])) and \
+                    all(math.isfinite(float(row[i])) for i in (4,5,6)) and \
+                    float(row[4])>0 and float(row[5])>0
+            except (ValueError,TypeError):
+                valid=False
+            require(valid,"KRONOS_OOS_INVALID_FORECAST_ENTRY")
+            if row[17]==v2.MODEL_STATUS_CLOSE:
+                require("CLOSE_ONLY" in row[18],
+                        "KRONOS_OOS_CLOSE_ONLY_PROVENANCE_MISSING")
         else:
             require(row[17].startswith('HOLD_QC_') and
-                    row[5] == row[6] == row[15] == '',
-                    'KRONOS_OOS_QC_HOLD_HAS_FORECAST')
-        by_pair[(asof, symbol)].append(row)
-    require(all(len(pair)==3 and {v[3] for v in pair}=={'1','5','12'}
-                and len({v[17] for v in pair})==1 for pair in by_pair.values()),
-            'KRONOS_OOS_PARTIAL_PAIR')
+                    row[5]==row[6]==row[15]=="",
+                    "KRONOS_OOS_QC_HOLD_HAS_FORECAST")
+        rows.append(row)
+    require(len(set(r[0] for r in rows))==len(rows),"KRONOS_OOS_DUPLICATE_ID")
+    by_pair=defaultdict(list)
+    for row in rows:
+        by_pair[(row[1],row[2])].append(row)
+    require(all(len(pair)==3 and {r[3] for r in pair}=={'1','5','12'} and
+                len({r[17] for r in pair})==1 for pair in by_pair.values()),
+            "KRONOS_OOS_PARTIAL_PAIR")
     return rows
 
+
+def load_recent_ledgers(api, completed_asof):
+    """Recent-month partition + immutable legacy. Bound reads to 30 calendar days."""
+    from urllib.parse import quote
+    cutoff=(date.fromisoformat(completed_asof)-timedelta(days=30)).isoformat()
+    legacy=api.read(k.TAB,'T')
+    require(legacy and tuple(legacy[0])==k.HEADERS,
+            "KRONOS_OOS_LEGACY_HEADER")
+    results=[list(k.HEADERS)]
+    results += [r for r in legacy[1:] if r and r[0] and r[1]>=cutoff]
+    metadata=api.request("?fields=sheets.properties(title)")
+    names=sorted({s.get("properties",{}).get("title","")
+                 for s in metadata.get("sheets",[])})
+    for name in names:
+        if not re.fullmatch(r"KRONOS2_20\d\d_\d\d",name):
+            continue
+        period=name[len(v2.PARTITION_PREFIX):].replace("_","-")
+        month_end=(date.fromisoformat(period+"-01")+timedelta(days=32)).replace(
+            day=1)-timedelta(days=1)
+        if month_end.isoformat()<cutoff or period>completed_asof[:7]:
+            continue
+        rows=v2.read_partition(api,name)
+        results += [r for r in rows if r[1]>=cutoff]
+    require(len(results)<=40000,"KRONOS_OOS_RECENT_WINDOW_CAP")
+    return results
 
 def select_matured(rows, completed_asof):
     """No data provider calls unless expected future XNAS session is completed."""
@@ -118,6 +162,7 @@ def score_matured(matured, completed_asof, read_batch):
         predicted_move = predicted-reference
         evidence[h].append({
             'asof': asof,
+            'forecast_status': row[17],
             'model_pct_error':100*abs(predicted-actual)/actual,
             'baseline_pct_error':100*abs(reference-actual)/actual,
             'direction_correct': (predicted_move > 0 and actual_move > 0) or
@@ -144,7 +189,11 @@ def summarize(evidence, pending, qc_holds):
             baseline = sum(x['baseline_pct_error'] for x in rows)/n
             hit = sum(x['direction_correct'] for x in rows)/n
         else: model = baseline = hit = None
+        status_counts = {s:sum(row.get('forecast_status','RESEARCH_ONLY')==s
+                               for row in rows)
+                         for s in ('RESEARCH_ONLY','RESEARCH_CLOSE_ONLY')}
         out['horizons'][str(h)] = {
+            'forecast_quality_counts':status_counts,
             'samples':n,'distinct_asofs':distinct_asofs,
             'model_mape_pct':round(model,5) if model is not None else None,
             'persistence_mape_pct':round(baseline,5) if baseline is not None else None,
@@ -160,7 +209,7 @@ def summarize(evidence, pending, qc_holds):
 
 
 def audit(api, completed_asof, read_batch):
-    rows = validate_ledger(api.read(k.TAB,'T'))
+    rows = validate_ledger(load_recent_ledgers(api,completed_asof))
     mature, pending, holds = select_matured(rows,completed_asof)
     evidence = score_matured(mature,completed_asof,read_batch)
     return summarize(evidence,pending,holds)
@@ -180,7 +229,7 @@ def main():
         api = writer.SheetApi(credential)
         # The latest 477/477 readback and score summary are an independent
         # temporal authority before using completed session IEX data.
-        k.current_authority(api,completed)
+        v2.private_authority(api,completed)
         out = audit(api,completed,engine.live_read)
         print(json.dumps(out,sort_keys=True,allow_nan=False))
         return 0
