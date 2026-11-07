@@ -10,6 +10,38 @@ class WheelTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         return Path(self.tmp.name)
+    @staticmethod
+    def as_lock(target_sdk, observed):
+        from strong4_wheelhouse_receipt import TARGETS
+        payload={"schema":"XRAY_STRONG4_WHEELHOUSE_IMMUTABLE_LOCK_V1","targets":{}}
+        for sdk,version in TARGETS.items():
+            payload["targets"][sdk]={"version":version,"inventory_digest":"unverified", "wheels":[]}
+        payload["targets"][target_sdk]={"version":TARGETS[target_sdk],
+          "inventory_digest":observed["full_wheel_inventory_sha256"],
+          "wheels":observed["observed_packages"]}
+        return payload
+
+    def test_valid_locked_wheelhouse(self):
+        p=self.folder();(p/"pydantic-2.14.3-py3-none-any.whl").write_bytes(b"synthetic fixture bytes")
+        observed=witness(p,"pydantic")
+        got=witness(p,"pydantic",self.as_lock("pydantic",observed))
+        self.assertTrue(got["hash_lock_committed"])
+        self.assertTrue(got["hash_lock_verified"])
+        self.assertFalse(got["production_authorized"])
+
+    def test_tampered_binary_rejected(self):
+        p=self.folder();wheel=p/"pydantic-2.14.3-py3-none-any.whl"
+        wheel.write_bytes(b"original")
+        lock=self.as_lock("pydantic",witness(p,"pydantic"))
+        wheel.write_bytes(b"malicious-altered")
+        with self.assertRaisesRegex(ValueError,"WHEELHOUSE_HASH_LOCK_MISMATCH"):
+            witness(p,"pydantic",lock)
+
+    def test_wrong_lock_schema_rejected(self):
+        p=self.folder();(p/"pydantic-2.14.3-py3-none-any.whl").write_bytes(b"fixture")
+        with self.assertRaisesRegex(ValueError,"LOCK_SCHEMA_INVALID"):
+            witness(p,"pydantic",{"schema":"INVALID"})
+
     def test_records_real_sha_and_closed_claims(self):
         p=self.folder();(p/"pydantic-2.14.3-py3-none-any.whl").write_bytes(b"synthetic fixture bytes")
         r=witness(p,"pydantic")

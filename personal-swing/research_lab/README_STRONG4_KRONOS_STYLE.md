@@ -90,3 +90,21 @@ python strong4_guard.py --require-production # expected exit 3
   lineage, legal rights, source adjustment receipts, fixed 15-session embargo,
   >=3 chronological held-out folds, cost/slippage, missing-name handling and
   a buy-and-hold/beta baseline. None are presently independently certified.
+## V3 transitive wheel SHA-256 lock (captured on PR #404)
+
+- Four real SDK PR-only runs were completed with no network in Docker: Pydantic,
+  QuantStats, VectorBT, DuckDB, all synthetic-only. Wheelhouse receipts from GitHub
+  run 42413693277 were reviewed for all four, and a complete SHA256 lock of all
+  observed binary wheel filenames, exact versions, sizes and hashes was committed
+  to `strong4_wheelhouse_lock.json`.
+- Exact reviewed wheel counts: Pydantic 5, QuantStats 34, VectorBT 68, DuckDB 1;
+  combined 108 wheel artifacts. The GitHub PR workflow checks the lock before
+  Docker build, AND repeats the exact SHA256 verification inside network-disabled
+  Docker BEFORE package installation. Changed transient dependency resolves MUST
+  FAIL, no implicit upgrades.
+- Lock is tied to Python 3.12, the GitHub CI environment and observed wheel tags.
+  The base `python:3.12-slim` image digest is **not pinned**; build provenance,
+  dependency advisories, software-bill-of-materials legality and production
+  vulnerability assessment are NOT certified by a SHA lock alone.
+- For a future wheel upgrade, human review/re-lock and independent tests are
+  mandatory. No scheduled updates or paid services were added.
