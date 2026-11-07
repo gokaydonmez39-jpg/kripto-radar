@@ -117,7 +117,7 @@ jobs:
           set -euo pipefail
           docker run --rm --network none --read-only --cap-drop ALL \
             --security-opt no-new-privileges --pids-limit 96 --memory 3g --cpus 2 \
-            --tmpfs /tmp:rw,nosuid,noexec,size=128m \
+            --tmpfs /tmp:rw,nosuid,noexec,size=384m \
             --mount "type=bind,source=$GITHUB_WORKSPACE/personal-swing/research_lab,target=/lab,readonly" \
             --workdir /lab \
             -e XRAY_CONTAINER_NO_NETWORK=1 -e XRAY_NO_SECRETS=1 \
