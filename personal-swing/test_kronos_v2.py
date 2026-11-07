@@ -280,6 +280,59 @@ class V2Tests(unittest.TestCase):
                 k.ShadowHold,"KRONOS2_PARTITION_ROW_WITHOUT_ID"):
             v.read_partition(api,api.month)
 
+    def test_complete_prior_month_does_not_block_new_asof(self):
+        """Full immutable 477*3 previous-month ledger must be admissible."""
+        from urllib.parse import quote
+        prev_asof="2026-10-30"
+        prior=v.month_sheet(prev_asof)
+        api=FakeApi()
+        all_previous=[]
+        for symbol in SYMS:
+            all_previous.extend(v.build_v2_rows(
+                symbol,prev_asof,SCOPE,POLICY,prev_asof,
+                candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
+        old_request=api.request
+        def with_prior(path,*,method="GET",body=None):
+            if method=="GET" and path.startswith("?"):
+                meta=old_request(path,method=method,body=body)
+                meta["sheets"].append({"properties":{
+                    "sheetId":9778,"title":prior,
+                    "gridProperties":{"rowCount":1432,"columnCount":20}}})
+                return meta
+            if method=="GET" and quote(prior,safe="") in path:
+                return {"values":[list(k.HEADERS)]+all_previous}
+            return old_request(path,method=method,body=body)
+        api.request=with_prior
+        this_asof=[]
+        for symbol in SYMS:
+            this_asof.extend(v.build_v2_rows(
+                symbol,ASOF,SCOPE,POLICY,ASOF,
+                candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
+        fake_writer=types.ModuleType("private_sheet_writer")
+        fake_writer.as_cells=as_cells
+        with patch.dict(sys.modules,{"private_sheet_writer":fake_writer}), \
+             patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          return_value=(this_asof,{"RESEARCH_ONLY":477})):
+            output=v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(output["rows_written"],1431)
+        self.assertEqual(len(api.rows),1431)
+        self.assertEqual(api.writes,9)
+
+    def test_internal_blank_partition_row_blocks(self):
+        api=FakeApi()
+        api.created=True
+        good=v.build_v2_rows("T000",ASOF,SCOPE,POLICY,ASOF,
+                              candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                              "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        api.rows=[good[0],[],*good[1:]]
+        with self.assertRaisesRegex(
+                k.ShadowHold,"KRONOS2_INTERNAL_BLANK_ROW"):
+            v.read_partition(api,api.month)
+
     def test_single_model_runtime_failure_isolated_to_three_qc_hold_rows(self):
         """An isolated model RuntimeError must retain other valid symbols."""
         import engine
