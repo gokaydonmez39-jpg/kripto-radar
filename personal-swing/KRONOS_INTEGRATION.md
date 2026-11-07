@@ -94,3 +94,23 @@ does not satisfy these conditions. Do not do this automatically.
 No new cron, no extra ChatGPT automation, no private inference on pull_request,
 no modifications to existing 477 scanner, A34/Guardian, AL/STOP/2R, notification
 event ledger, or canonical/crypto research systems.
+
+
+## One-shot real 477 IEX **no-write** quality probe
+
+The opt-in **one-shot** real NASDAQ benchmark is triggered only on a
+protected-main merge of the existing workflow with an exact, distinct commit
+subject `test(personal-477): one-shot live Kronos 477 IEX research probe`.
+It does NOT add a cron, an automated daily 477 predictor, a database, or a
+ChatGPT task. It verifies original same-ASOF private 477/477 scan + Swing
+score SHA evidence, reads actual Alpaca IEX 1Day raw 52-session observations
+for the exact 477 point-in-time symbol set, loads the pinned small model once,
+and computes 12-step prediction QC for each symbol. It reports ONLY counts
+(477 / valid / QC categories), CPU seconds and peak RSS. NO symbols, OHLCV
+market data, predictions, Google rows, alerts, trades or artifacts are
+published or written. Exceeding the source, memory, CPU or quality gates
+fails closed.
+
+A real 477 probe without a persistent, partitioned per-ASOF research ledger
+is NOT 477 automatic daily production integration. A good real-data QC count
+also does NOT establish model accuracy or incremental trading alpha.
