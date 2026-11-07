@@ -10,7 +10,7 @@ RESEARCH_CLOSE_ONLY; native OHLC quality stays HOLD.
 from __future__ import annotations
 
 from collections import Counter
-from datetime import date
+from datetime import date, timedelta
 import hashlib
 import json
 import math
@@ -57,9 +57,13 @@ def read_partition(api, name):
               "KRONOS2_PARTITION_READ_LIMIT")
     k.require(tuple(matrix[0])==k.HEADERS,"KRONOS2_HEADER_DRIFT")
     rows=[]
+    blank_seen=False
     for r in matrix[1:]:
-        if not r or not r[0]:
+        if not r or all(x=="" for x in r):
+            blank_seen=True
             continue
+        k.require(bool(r[0]),"KRONOS2_PARTITION_ROW_WITHOUT_ID")
+        k.require(not blank_seen,"KRONOS2_INTERNAL_BLANK_ROW")
         k.require(len(r)<=20,"KRONOS2_ROW_TOO_WIDE")
         padded=list(r)+[""]*(20-len(r))
         k.require(padded[19]==k.canonical_sha(padded[:19]) and
@@ -226,6 +230,33 @@ def metadata_and_sheet(api, asof):
            {s["sheetId"] for s in sheets if type(s.get("sheetId")) is int}
 
 
+def require_previous_month_complete(api, asof):
+    """Read-only first-of-month custody gate; never backfill or repair history.
+
+    The current monthly partition may be empty at a new month boundary.
+    A pre-existing preceding-month partition must be nonempty and contain
+    exactly 477*3 immutable SHA-validated rows per ASOF, or new writes HOLD.
+    """
+    previous_day=date.fromisoformat(asof).replace(day=1)-timedelta(days=1)
+    name=month_sheet(previous_day.isoformat())
+    metadata=api.request(
+        "?fields=properties(timeZone),sheets.properties(sheetId,title,gridProperties(rowCount,columnCount))")
+    k.require(metadata.get("properties",{}).get("timeZone")=="Europe/Istanbul",
+              "KRONOS2_PREVIOUS_MONTH_TZ_DRIFT")
+    matches=[s["properties"] for s in metadata.get("sheets",[])
+             if "properties" in s and s["properties"].get("title")==name]
+    k.require(len(matches)<=1,"KRONOS2_PREVIOUS_MONTH_DUPLICATE_TAB")
+    if not matches:
+        return False
+    rows=read_partition(api,name)
+    counts=Counter(row[1] for row in rows)
+    k.require(bool(counts) and
+              all(count==EXPECTED*len(k.HORIZONS)
+                  for count in counts.values()),
+              "KRONOS2_PREVIOUS_MONTH_PARTIAL_HOLD")
+    return True
+
+
 def ensure_month_sheet(api,name,sid,occupied):
     import private_sheet_writer as writer
     if sid is not None:
@@ -251,6 +282,11 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     k.require(all(row[1]<=asof for row in before),"KRONOS2_FUTURE_LEDGER")
     previous=[row for row in before if row[1]<asof]
     current=[row for row in before if row[1]==asof]
+    # On the first ASOF of a new monthly partition, check the preceding
+    # month before any inference or write. Never silently drop partial
+    # previous-month records at the calendar boundary.
+    if not previous:
+        require_previous_month_complete(api,asof)
     k.require(before==previous+current,
               "KRONOS2_NONAPPEND_CURRENT_DATA")
     # A prior interrupted ASOF cannot be silently treated as an accepted
