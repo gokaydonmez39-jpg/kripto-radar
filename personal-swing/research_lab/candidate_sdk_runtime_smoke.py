@@ -63,13 +63,13 @@ def smoke(candidate: str) -> dict:
         # OpenBB 5.0 attempts to write .build.lock inside its installed package.
         # Keep the image read-only: copy only this package to an isolated /tmp
         # directory and import the unchanged SDK from there. No provider access.
-        import importlib.util
+        from importlib.util import find_spec
         import shutil
         import sys
         import tempfile
         from pathlib import Path
 
-        spec = importlib.util.find_spec("openbb")
+        spec = find_spec("openbb")
         require(spec is not None and spec.submodule_search_locations,
                 "OPENBB_PACKAGE_SPEC_MISSING")
         package_root = Path(next(iter(spec.submodule_search_locations)))
