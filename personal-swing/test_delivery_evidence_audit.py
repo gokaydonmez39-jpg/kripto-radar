@@ -224,6 +224,25 @@ class AsOfDeliveryReconciliationTests(unittest.TestCase):
 class RequiredCiEvidenceGateTests(unittest.TestCase):
     """The mandatory PR check must test this P0 evidence contract."""
 
+    def test_required_pr_ci_gates_all_kronos_contracts(self):
+        """One required CI status must cover V2 fail-closed research paths."""
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parent.parent /
+                  ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml"
+                  ).read_text(encoding="utf-8")
+        modules=(
+            "test_kronos_shadow",
+            "test_kronos_oos_audit",
+            "test_kronos_capacity_probe",
+            "test_kronos_real_477_probe",
+            "test_kronos_v2",
+        )
+        for mod in modules:
+            with self.subTest(module=mod):
+                self.assertIn("python -m unittest -q "+mod,workflow)
+                self.assertIn("python -O -m unittest -q "+mod,workflow)
+        self.assertNotIn("continue-on-error: true",workflow)
+
     def test_required_pr_ci_runs_evidence_audit_normal_and_optimized(self):
         from pathlib import Path
         workflow = (Path(__file__).resolve().parent.parent /
