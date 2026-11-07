@@ -194,6 +194,22 @@ class V2Tests(unittest.TestCase):
         self.assertEqual(len(api.rows),3)
         self.assertEqual(api.writes,0)
 
+    def test_older_incomplete_asof_blocks_new_month_append(self):
+        api=FakeApi()
+        api.created=True
+        api.rows=v.build_v2_rows("T000","2026-11-06",SCOPE,POLICY,
+                  "2026-11-06",candles(),[101.]*12,
+                  v.MODEL_STATUS_FULL,
+                  "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        with patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          side_effect=AssertionError("No model call with partial history")):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "PRIOR_ASOF_PARTIAL_HOLD"):
+                v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(api.writes,0)
+
     def test_capacity_explicit_fail_closed(self):
         api=FakeApi()
         api.created=True
