@@ -35,6 +35,11 @@ jobs:
           python -O -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
           python personal-swing/research_lab/research_runner.py --mode catalogue
           python personal-swing/research_lab/source_inventory_reconcile.py --registry personal-swing/research_lab/unified_research_88.json
+      - name: Explicit Qlib dependency HOLD (not a runtime PASS)
+        if: github.event_name == 'pull_request' && github.event.pull_request.number == 403
+        run: |
+          echo 'QLIB_RUNTIME=HOLD_PYQLIB_0_9_7_GYM_SOURCE_ONLY' >> "$GITHUB_STEP_SUMMARY"
+          echo 'QLIB_PIT_OOS=HOLD; SDK_IMPORT_NOT_PROVEN; NO_ALPHA_OR_ORDER_AUTHORITY' >> "$GITHUB_STEP_SUMMARY"
   github-source-freshness:
     needs: offline-contracts
     if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
@@ -68,8 +73,6 @@ jobs:
             distribution: pydantic-ai-slim==2.66.0
           - candidate: mcp-use
             distribution: mcp-use==1.7.1
-          - candidate: qlib
-            distribution: pyqlib==0.9.7
           - candidate: openbb-v5
             distribution: openbb==5.0.0
     steps:
