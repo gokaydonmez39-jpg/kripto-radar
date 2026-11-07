@@ -162,5 +162,59 @@ class TestKronosShadow(unittest.TestCase):
                 k.synchronize(api, ASOF,lambda *a:{'AAPL':make_bars()}, lambda:object())
 
 
+    def test_qc_cause_is_distinct_and_immutable_hold_row_has_no_price(self):
+        rows = [dict(open=100, high=105, low=99, close=104, volume=-3)] * 12
+        with self.assertRaisesRegex(k.ShadowHold,'KRONOS_INVALID_FORECAST_VOLUME'):
+            k.validate_prediction(FakePredFrame(rows), 102)
+        rows = [dict(open=100, high=100, low=99, close=104, volume=3)] * 12
+        with self.assertRaisesRegex(k.ShadowHold,'KRONOS_INVALID_FORECAST_GEOMETRY'):
+            k.validate_prediction(FakePredFrame(rows), 102)
+        holds = k.build_qc_hold_rows('AAPL', ASOF, SHA1, SHA2, ASOF,
+                                      make_bars(), 'KRONOS_INVALID_FORECAST_VOLUME')
+        self.assertEqual(len(holds), 3)
+        self.assertEqual([r[3] for r in holds], ['1', '5', '12'])
+        self.assertEqual({r[17] for r in holds}, {'HOLD_QC_VOLUME'})
+        self.assertTrue(all(r[5] == r[6] == r[15] == '' for r in holds))
+        self.assertTrue(k.assert_existing(holds, ASOF, ['AAPL'], SHA1, SHA2))
+
+    def test_qc_isolated_cohort_and_fails_open_forecast_promotion(self):
+        api = FakeApi()
+        fake_writer = types.ModuleType('private_sheet_writer')
+        fake_writer.as_cells = lambda rows, sheet_id: {
+            'appendCells':{'sheetId':sheet_id,
+                           'rows':[{'values':[{'userEnteredValue':{'stringValue':v}}
+                                                for v in row]} for row in rows],
+                           'fields':'userEnteredValue'}}
+        fake_engine = types.ModuleType('engine')
+        fake_engine.analyze = lambda symbol, bars, asof: {'sessions':52,'decision':'IZLE'}
+        predictions = iter(([103.0]*12, k.ShadowHold('KRONOS_INVALID_FORECAST_VOLUME')))
+        def predict(*_):
+            result = next(predictions)
+            if isinstance(result, Exception):
+                raise result
+            return result
+        with patch.dict(sys.modules, {'private_sheet_writer':fake_writer,'engine':fake_engine}), \
+             patch.object(k, 'current_authority', return_value=(['AAPL','MSFT'], SHA1,SHA2,ASOF)), \
+             patch.object(k, 'future_xnas_days', return_value=['2026-11-%02d' % d for d in range(7,19)]), \
+             patch.object(k, 'predict_one', side_effect=predict):
+            result = k.synchronize(api, ASOF,
+                                   lambda symbols, asof:{'AAPL':make_bars(),
+                                                         'MSFT':make_bars()},
+                                   predictor_factory=lambda:object())
+            self.assertEqual(result['status'], 'KRONOS_SHADOW_QC_HOLD_READBACK')
+            self.assertEqual(result['qc_hold_symbols'], 1)
+            self.assertEqual(result['qc_categories'],
+                             {'KRONOS_INVALID_FORECAST_VOLUME':1})
+            self.assertEqual(len(api.rows), 6)
+            self.assertEqual(api.post_count, 1)
+            self.assertEqual(sum(r[17]=='RESEARCH_ONLY' for r in api.rows), 3)
+            self.assertEqual(sum(r[17]=='HOLD_QC_VOLUME' for r in api.rows), 3)
+            again = k.synchronize(api, ASOF,
+                                  lambda *a: self.fail('Must not repeat provider call'),
+                                  predictor_factory=lambda: self.fail('Must not reload AI'))
+            self.assertEqual(again['status'], 'KRONOS_SHADOW_IDEMPOTENT_QC_HOLD')
+            self.assertEqual(api.post_count, 1)
+
+
 if __name__ == '__main__':
     unittest.main()
