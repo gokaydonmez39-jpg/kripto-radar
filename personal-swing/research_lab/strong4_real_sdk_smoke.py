@@ -30,24 +30,51 @@ def run(key: str) -> dict:
     guard(version==VERSIONS[key],"UNEXPECTED_PACKAGE_VERSION")
     metrics={}
     if key=="pydantic":
-        from pydantic import BaseModel, ConfigDict, Field, ValidationError
+        from datetime import date
+        from typing import Literal
+        from pydantic import BaseModel, ConfigDict, Field, FiniteFloat, ValidationError, field_validator
         class Evidence(BaseModel):
             model_config=ConfigDict(strict=True,extra="forbid",frozen=True)
             asof_et: str
-            symbol: str
-            source: str
-            may_place_order: bool = False
-        valid=Evidence.model_validate({"asof_et":"2026-11-06","symbol":"AAPL",
-                                       "source":"Alpaca IEX","may_place_order":False})
-        guard(valid.may_place_order is False,"ORDER_FLAG_NOT_DENIED")
-        bad={"asof_et":"2026-11-06","symbol":"AAPL","source":"Alpaca IEX",
-             "may_place_order":"false","unknown_access":True}
-        try:
-            Evidence.model_validate(bad)
-        except ValidationError:
-            metrics["rejects_coerced_bool_and_extra_fields"]=True
-        else:
-            raise RuntimeError("PYDANTIC_FAIL_OPEN")
+            symbol: str = Field(pattern=r"^[A-Z][A-Z0-9.]{0,14}$")
+            source: Literal["Alpaca IEX"]
+            close: FiniteFloat
+            may_place_order: Literal[False] = False
+            may_write_private_sheet: Literal[False] = False
+
+            @field_validator("asof_et")
+            @classmethod
+            def check_date(cls, value: str) -> str:
+                try:
+                    if date.fromisoformat(value).isoformat()!=value:
+                        raise ValueError("NONCANONICAL_ASOF")
+                except ValueError as exc:
+                    raise ValueError("INVALID_ASOF") from exc
+                return value
+
+        clean={"asof_et":"2026-11-06","symbol":"AAPL","source":"Alpaca IEX",
+               "close":123.5,"may_place_order":False,"may_write_private_sheet":False}
+        valid=Evidence.model_validate(clean)
+        guard(valid.may_place_order is False and valid.may_write_private_sheet is False,
+              "PERSISTENT_CAPABILITY_FLAG_NOT_DENIED")
+        invalids=[
+            {"may_place_order":True},
+            {"may_write_private_sheet":True},
+            {"source":"SIP"},
+            {"asof_et":"2026-02-30"},
+            {"symbol":"INVALID!"},
+            {"close":float("nan")},
+            {"may_place_order":"false"},
+            {"unknown_access":True},
+        ]
+        rejected=0
+        for patch in invalids:
+            try:
+                Evidence.model_validate({**clean,**patch})
+            except ValidationError:
+                rejected+=1
+        guard(rejected==len(invalids),"PYDANTIC_NEGATIVE_FAIL_OPEN")
+        metrics["negative_permission_source_time_price_and_extra_cases_rejected"]=rejected
     elif key=="quantstats":
         import pandas as pd
         import quantstats as qs
