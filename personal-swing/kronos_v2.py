@@ -179,21 +179,63 @@ def build_v2_rows(symbol,asof,scope_sha,policy_sha,scan_id,candles,
 
 
 def make_predictions(symbols,asof,scope_sha,policy_sha,scan_id,
-                     read_batch,predictor_factory):
+                     read_batch,predictor_factory,existing_rows=None):
+    """Revalidate all IEX sources; infer only symbols NOT already persisted.
+
+    A stochastic model cannot reproduce old sampled predictions on retry.
+    The immutable, verified prefix stays authoritative. A source drift,
+    partial H1/H5/H12 group or provenance conflict stops before any POST.
+    """
     import engine
+    prior=list(existing_rows or [])
+    n_horizons=len(k.HORIZONS)
+    k.require(len(prior)<=len(symbols)*n_horizons and
+              len(prior)%n_horizons==0,
+              "KRONOS2_RESTART_PARTIAL_HORIZONS")
+    completed=len(prior)//n_horizons
+    expected_prefix=[
+        f"{asof}|{symbol}|H{h}"
+        for symbol in symbols[:completed] for h in k.HORIZONS
+    ]
+    k.require([r[0] for r in prior]==expected_prefix,
+              "KRONOS2_RESTART_NOT_EXACT_PREFIX")
     bars=read_batch(symbols,asof)
     k.require(isinstance(bars,dict) and set(bars)==set(symbols),
               "KRONOS2_PROVIDER_SCOPE_DRIFT")
     future=k.future_xnas_days(asof)
-    predictor=predictor_factory()
+    predictor=predictor_factory() if completed<len(symbols) else None
     result=[]
     counts=Counter()
-    for symbol in symbols:
+    for i,symbol in enumerate(symbols):
         candles=k.validate_candles(bars[symbol],asof)
         analyzed=engine.analyze(symbol,candles,asof)
         k.require(analyzed.get("sessions",0)>=52 and
                   analyzed.get("decision") in ("AL","IZLE","ELE"),
                   "KRONOS2_SOURCE_NOT_ANALYZABLE")
+        if i<completed:
+            original=prior[i*n_horizons:(i+1)*n_horizons]
+            raw_source=[
+                {field:b[field] for field in (
+                    "timestamp","open","high","low","close","volume")}
+                for b in candles[-k.LOOKBACK:]
+            ]
+            expected_input_sha=k.canonical_sha(raw_source)
+            expected_close=f"{float(candles[-1]['close']):.6f}"
+            k.require(all(
+                r[13]==scan_id and r[14]==expected_input_sha and
+                r[4]==expected_close and
+                r[19]==k.canonical_sha(r[:19]) for r in original),
+                "KRONOS2_RESTART_SOURCE_DRIFT")
+            k.require(len({r[17] for r in original})==1 and
+                      len({r[15] for r in original})==1,
+                      "KRONOS2_RESTART_HORIZON_INCONSISTENCY")
+            status=original[0][17]
+            k.require(status in (MODEL_STATUS_FULL,MODEL_STATUS_CLOSE)
+                      or status.startswith(QUALITY_PREFIX),
+                      "KRONOS2_RESTART_STATUS_DRIFT")
+            result.extend(original)
+            counts[status]+=1
+            continue
         # A recoverable model exception must not drop 476 unrelated rows.
         # Only the failed symbol gets three immutable QC HOLD records.
         # A source or provenance failure remains a hard cohort-level HOLD.
@@ -208,7 +250,7 @@ def make_predictions(symbols,asof,scope_sha,policy_sha,scan_id,
         counts[status]+=1
         result.extend(build_v2_rows(symbol,asof,scope_sha,policy_sha,scan_id,
                                     candles,closes,status,policy))
-    k.require(len(result)==len(symbols)*3 and
+    k.require(len(result)==len(symbols)*n_horizons and
               len({r[0] for r in result})==len(result),
               "KRONOS2_INCOMPLETE_PREDICTIONS")
     return result,counts
@@ -309,9 +351,11 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
                 "qc_hold":len({r[2] for r in current if r[17].startswith(QUALITY_PREFIX)}),
                 "orders":False}
     rows,counts=make_predictions(symbols,asof,scope_sha,policy_sha,
-                                 scan_id,read_batch,predictor_factory)
+                                 scan_id,read_batch,predictor_factory,
+                                 existing_rows=current)
     if current:
-        k.require(rows[:len(current)]==current,"KRONOS2_RESTART_NONDETERMINISTIC")
+        k.require(rows[:len(current)]==current,
+                  "KRONOS2_RESTART_IMMUTABLE_PREFIX_DRIFT")
     k.require(len(previous)+len(rows)<MAX_ROWS_PER_MONTH,
               "KRONOS2_MONTH_CAPACITY")
     # Verify the pre-write ledger did not change during expensive CPU inference.

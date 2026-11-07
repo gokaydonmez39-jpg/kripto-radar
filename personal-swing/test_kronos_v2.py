@@ -201,6 +201,90 @@ class V2Tests(unittest.TestCase):
             self.assertEqual(len(api.rows),1431)
             self.assertEqual(len({row[0] for row in api.rows}),1431)
 
+    def test_stochastic_resume_keeps_first_60_symbols_unchanged(self):
+        """A restarted stochastic decoder must NOT regenerate committed rows."""
+        import engine
+        api=FakeApi()
+        api.raise_after=3  # First 180 (60 symbols) committed, next POST rejects
+        fake_writer=types.ModuleType("private_sheet_writer")
+        fake_writer.as_cells=as_cells
+        calls=[]
+        def changing_frame(*unused):
+            calls.append(1)
+            result=Frame()
+            for row in result.rows:
+                row["close"]=100.0+len(calls)*0.0001
+            return result
+        with patch.dict(sys.modules,{"private_sheet_writer":fake_writer}), \
+             patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(engine,"analyze",
+                          return_value={"sessions":52,"decision":"ELE"}), \
+             patch.object(k,"validate_candles",side_effect=lambda a,b:a), \
+             patch.object(k,"future_xnas_days",return_value=[ASOF]*12), \
+             patch.object(v,"predict_frame",side_effect=changing_frame):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED"):
+                v.synchronize(
+                    api,ASOF,
+                    lambda syms,day:{s:candles() for s in syms},
+                    predictor_factory=lambda:object())
+            self.assertEqual(len(api.rows),180)
+            preserved=[list(x) for x in api.rows]
+            self.assertEqual(len(calls),477)
+            api.raise_after=None
+            done=v.synchronize(
+                api,ASOF,
+                lambda syms,day:{s:candles() for s in syms},
+                predictor_factory=lambda:object())
+        self.assertEqual(done["rows_written"],1251)
+        self.assertEqual(len(api.rows),1431)
+        self.assertEqual(api.rows[:180],preserved)
+        self.assertEqual(len(calls),477+417)
+        self.assertEqual(api.writes,10)
+        self.assertEqual(len(set(x[0] for x in api.rows)),1431)
+
+    def test_stochastic_resume_rejects_partial_horizon_group_before_fetch(self):
+        """A committed incomplete H1/H5/H12 group has no safe resume boundary."""
+        partial=v.build_v2_rows(
+            "T000",ASOF,SCOPE,POLICY,ASOF,candles(),[101.]*12,
+            v.MODEL_STATUS_FULL,"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")[:1]
+        def cannot_fetch(*args):
+            raise AssertionError("Malformed prefix must hold before IEX call")
+        with self.assertRaisesRegex(
+                k.ShadowHold,"KRONOS2_RESTART_PARTIAL_HORIZONS"):
+            v.make_predictions(
+                SYMS,ASOF,SCOPE,POLICY,ASOF,cannot_fetch,lambda:object(),
+                existing_rows=partial)
+
+    def test_stochastic_resume_fails_on_source_sha_drift(self):
+        """Prior inference remains immutable if current input bars drift."""
+        import engine
+        api=FakeApi()
+        api.created=True
+        api.rows=v.build_v2_rows(
+            "T000",ASOF,SCOPE,POLICY,ASOF,candles(),[101.]*12,
+            v.MODEL_STATUS_FULL,"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY")
+        def drifted_bars():
+            changed=candles()
+            changed[-1]["close"]=102.0
+            return changed
+        with patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(engine,"analyze",
+                          return_value={"sessions":52,"decision":"ELE"}), \
+             patch.object(k,"validate_candles",side_effect=lambda a,b:a), \
+             patch.object(k,"future_xnas_days",return_value=[ASOF]*12), \
+             patch.object(v,"predict_frame",return_value=Frame()):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_RESTART_SOURCE_DRIFT"):
+                v.synchronize(
+                    api,ASOF,
+                    lambda syms,day:{s:drifted_bars() for s in syms},
+                    predictor_factory=lambda:object())
+        self.assertEqual(len(api.rows),3)
+        self.assertEqual(api.writes,0)
+
     def test_drift_holds_even_after_valid_readback(self):
         api=FakeApi()
         api.created=True
@@ -217,7 +301,7 @@ class V2Tests(unittest.TestCase):
              patch.object(v,"make_predictions",
                           return_value=(newer,{"RESEARCH_ONLY":477})):
             with self.assertRaisesRegex(k.ShadowHold,
-                                        "RESTART_NONDETERMINISTIC"):
+                                        "RESTART_IMMUTABLE_PREFIX_DRIFT"):
                 v.synchronize(api,ASOF,lambda *_:None)
         self.assertEqual(len(api.rows),3)
         self.assertEqual(api.writes,0)
