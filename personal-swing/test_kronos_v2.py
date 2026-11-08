@@ -390,6 +390,33 @@ class V2Tests(unittest.TestCase):
             v.require_previous_month_complete(api,ASOF)
         self.assertEqual(api.writes,0)
 
+    def test_same_month_complete_row_count_wrong_horizon_blocks(self):
+        """A previous November ASOF cannot hide a wrong H2 under 1431 rows."""
+        old_asof="2026-11-06"
+        api=FakeApi()
+        api.created=True
+        for symbol in SYMS:
+            api.rows.extend(v.build_v2_rows(
+                symbol,old_asof,SCOPE,POLICY,old_asof,
+                candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
+        self.assertEqual(len(api.rows),1431)
+        # Prove a valid full cohort can pass this structural gate.
+        self.assertIsNone(v.require_full_horizon_cohorts(
+            api.rows,"KRONOS2_PRIOR_ASOF_HORIZON_HOLD"))
+        bad=api.rows[1]
+        bad[3]="2"
+        bad[0]=f"{old_asof}|T000|H2"
+        bad[19]=k.canonical_sha(bad[:19])
+        with patch.object(v,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,ASOF)), \
+             patch.object(v,"make_predictions",
+                          side_effect=AssertionError("No inference on broken prior ASOF")):
+            with self.assertRaisesRegex(
+                    k.ShadowHold,"KRONOS2_PRIOR_ASOF_HORIZON_HOLD"):
+                v.synchronize(api,ASOF,lambda *_:None)
+        self.assertEqual(api.writes,0)
+
     def test_empty_id_but_populated_partition_row_blocks(self):
         api=FakeApi()
         api.created=True
