@@ -353,6 +353,43 @@ class V2Tests(unittest.TestCase):
                 v.synchronize(api,ASOF,lambda *_:None)
         self.assertEqual(api.writes,0)
 
+    def test_previous_month_full_count_wrong_horizon_blocks(self):
+        """A 1431-row ledger with H1/H2/H12 is not a full H1/H5/H12 cohort."""
+        from urllib.parse import quote
+        prev_asof="2026-10-30"
+        prior_tab=v.month_sheet(prev_asof)
+        api=FakeApi()
+        previous=[]
+        for symbol in SYMS:
+            previous.extend(v.build_v2_rows(
+                symbol,prev_asof,SCOPE,POLICY,prev_asof,
+                candles(),[101.]*12,v.MODEL_STATUS_FULL,
+                "IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY"))
+        # Keep exactly 1431 rows, all valid row hashes, unique IDs and
+        # the correct sort order. Only the T000 H5 horizon is replaced by H2.
+        bad=previous[1]
+        self.assertEqual(bad[3],"5")
+        bad[3]="2"
+        bad[0]=f"{prev_asof}|T000|H2"
+        bad[19]=k.canonical_sha(bad[:19])
+        self.assertEqual(len(previous),1431)
+        old_request=api.request
+        def with_prior(path,*,method="GET",body=None):
+            if method=="GET" and path.startswith("?"):
+                meta=old_request(path,method=method,body=body)
+                meta["sheets"].append({"properties":{
+                    "sheetId":9779,"title":prior_tab,
+                    "gridProperties":{"rowCount":1432,"columnCount":20}}})
+                return meta
+            if method=="GET" and quote(prior_tab,safe="") in path:
+                return {"values":[list(k.HEADERS)]+previous}
+            return old_request(path,method=method,body=body)
+        api.request=with_prior
+        with self.assertRaisesRegex(
+                k.ShadowHold,"KRONOS2_PREVIOUS_MONTH_HORIZON_HOLD"):
+            v.require_previous_month_complete(api,ASOF)
+        self.assertEqual(api.writes,0)
+
     def test_empty_id_but_populated_partition_row_blocks(self):
         api=FakeApi()
         api.created=True
