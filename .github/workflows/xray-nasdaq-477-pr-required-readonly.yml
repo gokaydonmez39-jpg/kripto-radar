@@ -80,5 +80,12 @@ jobs:
         run: |
           python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+      - name: Fundamental SEC Shadow strict offline contract (NO SEC HTTP)
+        working-directory: personal-swing/research_lab
+        run: |
+          python -m unittest -q test_fundamental_shadow test_fundamental_sec_capture
+          python -O -m unittest -q test_fundamental_shadow test_fundamental_sec_capture
+          python -m py_compile fundamental_shadow.py fundamental_sec_capture.py test_fundamental_shadow.py test_fundamental_sec_capture.py
+          # Offline synthetic claims only; never live EDGAR or production AL.
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
