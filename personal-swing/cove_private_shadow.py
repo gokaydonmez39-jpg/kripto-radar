@@ -152,6 +152,10 @@ def main():
         asof=engine.trading_asof().isoformat()
         phase="AUTHENTICATED_READBACK"
         result=run_private(asof,api,engine.live_read)
+        # Never claim a live research PASS for a valid but empty source cohort.
+        need(result["baseline"]["episodes"]>0 and
+             result["baseline"]["status"]!="HOLD_NO_EPISODES",
+             "NO_PRIVATE_EPISODES")
         phase="DONE"
         # Safe public status: no candidate names, prices, counts, forecast
         # details, SHA-derived private payload, Google IDs or credentials.
