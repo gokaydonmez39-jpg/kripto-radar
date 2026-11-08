@@ -176,6 +176,46 @@ class TestFundamentalShadow(unittest.TestCase):
         out = analyze(d, self.allowed)
         self.assertTrue(out["sec_submissions_clock_not_used_for_pit"])
 
+    def test_recent_10q_and_8k_index_only_research_flags(self):
+        d = fixture()
+        recent = d["submissions"]["filings"]["recent"]
+        for accession, form in (("0001559720-26-000032", "10-Q"),
+                                ("0001193125-26-449727", "8-K")):
+            recent["accessionNumber"].append(accession)
+            recent["form"].append(form)
+            recent["filingDate"].append("2026-11-05")
+            recent["acceptanceDateTime"].append("2026-11-05T21:02:09Z")
+        out = analyze(d, self.allowed)
+        events = out["recent_disclosures_index_only"]
+        self.assertEqual(len(events), 2)
+        self.assertEqual({e["form"] for e in events}, {"10-Q", "8-K"})
+        self.assertTrue(all(e["filing_date"] == "2026-11-05" for e in events))
+        self.assertTrue(all(e["pit_accepted_timestamp_proven"] is False for e in events))
+        self.assertTrue(all(e["research_only"] for e in events))
+        self.assertFalse(out["may_change_al"])
+
+    def test_older_future_and_unrelated_filings_do_not_claim_current_event(self):
+        d = fixture()
+        rec = d["submissions"]["filings"]["recent"]
+        for day, form, accession in (("2026-10-01", "8-K", "0001559720-26-000030"),
+                                     ("2099-01-01", "10-Q", "0001559720-99-000001"),
+                                     ("2026-11-05", "4", "0001559720-26-000031")):
+            rec["accessionNumber"].append(accession)
+            rec["form"].append(form)
+            rec["filingDate"].append(day)
+            rec["acceptanceDateTime"].append(day + "T12:00:00Z")
+        self.assertEqual(analyze(d, self.allowed)["recent_disclosures_index_only"], [])
+
+    def test_duplicate_recent_disclosure_id_fails_closed(self):
+        d = fixture()
+        rec = d["submissions"]["filings"]["recent"]
+        for _ in range(2):
+            rec["accessionNumber"].append("0001193125-26-449727")
+            rec["form"].append("8-K")
+            rec["filingDate"].append("2026-11-05")
+            rec["acceptanceDateTime"].append("2026-11-05T21:02:09Z")
+        self.check_hold(d, "RECENT_DISCLOSURE_ACCESSION_DUPLICATE")
+
     def test_no_replay_backfill_trade_or_sheet_modules(self):
         import fundamental_shadow
         content = fundamental_shadow.__file__

@@ -31,6 +31,8 @@ REVENUE_TAGS = (
     "RevenueFromContractWithCustomerExcludingAssessedTax",
     "Revenues", "SalesRevenueNet",
 )
+DISCLOSURE_REVIEW_FORMS = frozenset(("10-Q", "10-Q/A", "8-K", "8-K/A", "10-K/A"))
+RECENT_DISCLOSURE_WINDOW_DAYS = 14
 TAGS = {
     "operating_cash_flow": ("NetCashProvidedByUsedInOperatingActivities",),
     "capex": ("PaymentsToAcquirePropertyPlantAndEquipment",),
@@ -155,6 +157,38 @@ def _filing_record(submissions: dict, cik: str, ticker: str, cutoff: datetime) -
     return {"filed": latest_day.isoformat(), "accn": latest_accn}
 
 
+def _recent_disclosure_index_only(submissions: dict, cutoff: datetime) -> list[dict]:
+    """Research-only SEC index references, NOT accepted-time or PIT proof.
+
+    A current submissions list may mention events whose true first-public
+    timestamp is unknown. Never relabel these as verified earnings catalysts,
+    live risk clearance, or a signal/alert. A new observation is NOT a PIT replay.
+    """
+    recent = submissions["filings"]["recent"]
+    candidates = []
+    seen = set()
+    first_day = cutoff.date() - timedelta(days=RECENT_DISCLOSURE_WINDOW_DAYS)
+    for accession, form, filed in zip(recent["accessionNumber"],
+                                      recent["form"], recent["filingDate"]):
+        if form not in DISCLOSURE_REVIEW_FORMS:
+            continue
+        require(type(accession) is str and ACCESSION_RE.fullmatch(accession),
+                "DISCLOSURE_ACCESSION_MALFORMED")
+        filed_day = parsed_date(filed)
+        if not first_day <= filed_day <= cutoff.date():
+            continue
+        require(accession not in seen, "RECENT_DISCLOSURE_ACCESSION_DUPLICATE")
+        seen.add(accession)
+        candidates.append({"accession": accession, "form": form,
+                           "filing_date": filed_day.isoformat(),
+                           "verification": "PROVISIONAL_SEC_INDEX_ONLY",
+                           "pit_accepted_timestamp_proven": False,
+                           "research_only": True})
+    require(len(candidates) <= 100, "RECENT_DISCLOSURE_BUDGET_EXCEEDED")
+    return sorted(candidates, key=lambda item: (item["filing_date"], item["accession"]),
+                  reverse=True)
+
+
 def _fact_periods(us_gaap: dict, tags: tuple[str, ...], accn: str,
                   filing_date: str, cutoff: datetime, positive: bool) -> tuple[str, dict]:
     for tag in tags:
@@ -233,6 +267,7 @@ def analyze(source: dict, approved_symbols: set[str] | frozenset[str]) -> dict:
     cutoff, observed = timestamp(source.get("asof_utc")), timestamp(source.get("observed_at_utc"))
     require(observed <= cutoff, "SOURCE_OBSERVED_AFTER_CUTOFF")
     filing = _filing_record(source.get("submissions"), cik, ticker, cutoff)
+    recent_disclosures = _recent_disclosure_index_only(source["submissions"], cutoff)
     if parsed_date(filing["filed"]) > cutoff.date():
         raise ShadowHold("FILING_DATE_AFTER_CUTOFF")
     headers = source.get("filing_headers")
@@ -276,6 +311,8 @@ def analyze(source: dict, approved_symbols: set[str] | frozenset[str]) -> dict:
             "annual_periods": periods, "metrics_usd": metrics,
             "growth_pct": growth, "source_tags": tags,
             "claims": claims, "input_sha256": source_hash,
+            "recent_disclosures_index_only": recent_disclosures,
+            "recent_disclosures_window_days": RECENT_DISCLOSURE_WINDOW_DAYS,
             "independent_sec_origin_proven": False,
             "historical_pit_proven": False,
             "current_ticker_identity_not_historical": True,
@@ -287,6 +324,7 @@ def analyze(source: dict, approved_symbols: set[str] | frozenset[str]) -> dict:
                 "Offline payload origin is untrusted until independent SEC fetch evidence.",
                 "SEC header acceptance is not independent first-public-availability proof.",
                 "Present-day ticker to CIK mapping does not prove historical issuer identity.",
+                "Recent 10-Q/8-K index dates do NOT establish acceptance, first-public timestamp, or earnings category.",
                 "No quarterly normalization, restatement/revision or backtest admission.",
                 "FCF proxy excludes leasing and broader commitments.",
             ]}
