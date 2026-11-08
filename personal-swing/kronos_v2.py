@@ -88,6 +88,29 @@ def read_partition(api, name):
     return rows
 
 
+
+def require_full_horizon_cohorts(rows, reason):
+    """Validate exact H1/H5/H12 per symbol in each completed historical ASOF.
+
+    A 1431-row count alone is not proof of a full 477-symbol cohort: for
+    example, H1/H2/H12 with a recomputed valid row SHA must fail closed.
+    This structural check does not claim PIT identity or financial OOS PASS.
+    """
+    allowed={str(h) for h in k.HORIZONS}
+    by_asof={}
+    for row in rows:
+        day=row[1]
+        symbol=row[2]
+        horizon=row[3]
+        symbols=by_asof.setdefault(day,{})
+        horizons=symbols.setdefault(symbol,set())
+        k.require(horizon in allowed and horizon not in horizons,reason)
+        horizons.add(horizon)
+    k.require(all(
+        len(symbols)==EXPECTED and all(hs==allowed for hs in symbols.values())
+        for symbols in by_asof.values()
+    ),reason)
+
 def private_authority(api, asof):
     """477 IEX + source/policy/swing independent authenticated gate."""
     import runner
@@ -296,6 +319,7 @@ def require_previous_month_complete(api, asof):
               all(count==EXPECTED*len(k.HORIZONS)
                   for count in counts.values()),
               "KRONOS2_PREVIOUS_MONTH_PARTIAL_HOLD")
+    require_full_horizon_cohorts(rows,"KRONOS2_PREVIOUS_MONTH_HORIZON_HOLD")
     return True
 
 
@@ -337,6 +361,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     k.require(all(count==EXPECTED*len(k.HORIZONS)
                   for count in prior_counts.values()),
               "KRONOS2_PRIOR_ASOF_PARTIAL_HOLD")
+    require_full_horizon_cohorts(previous,"KRONOS2_PRIOR_ASOF_HORIZON_HOLD")
     expected_ids={f"{asof}|{s}|H{h}" for s in symbols for h in k.HORIZONS}
     k.require(set(r[0] for r in current).issubset(expected_ids),
               "KRONOS2_ASOF_SCOPE_MISMATCH")
