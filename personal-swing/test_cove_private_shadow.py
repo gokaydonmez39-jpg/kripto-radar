@@ -116,6 +116,24 @@ class PrivateReadOnlyTests(unittest.TestCase):
         self.assertEqual(out["baseline"]["status"],"HOLD_NO_EPISODES")
         self.assertFalse(self.read_calls)
 
+    def test_live_cli_refuses_empty_private_episode_receipt(self):
+        """A source-valid but empty private candidate ledger is NOT PASS."""
+        from datetime import date
+        self.api.rows["ADAY_GECMISI"]=[list(writer.CANDIDATE_HEADER)]
+        with patch.dict(priv.os.environ,{
+                "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"masked",
+                "XRAY_PRIVATE_SPREADSHEET_ID":"masked"},clear=True), \
+             patch.object(priv,"ReadOnlySheetApi",return_value=self.api), \
+             patch.object(priv.engine,"trading_asof",
+                          return_value=date.fromisoformat(ASOF)), \
+             patch.object(priv.engine,"live_read",side_effect=
+                          AssertionError("No provider needed for empty ledger")), \
+             redirect_stdout(io.StringIO()) as buffer:
+            result=priv.main()
+        self.assertEqual(result,3)
+        self.assertIn("HOLD_NO_DATA_PUBLISHED_NO_WRITES",buffer.getvalue())
+        self.assertNotIn("READONLY_RESEARCH_PASS",buffer.getvalue())
+
     def test_log_redaction_on_exception(self):
         with patch.dict(priv.os.environ,{
                 "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"secret",
