@@ -60,6 +60,13 @@ jobs:
           python -m unittest -q test_kronos_v2
           python -O -m unittest -q test_kronos_v2
           python -m py_compile kronos_shadow.py kronos_oos_audit.py kronos_capacity_probe.py kronos_real_477_probe.py kronos_v2.py
+      - name: Cove-method personal research shadow strict contract (offline only)
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -O -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
+          # Private IEX/Sheets/alerts/broker not accessed by this CI step.
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
         run: |

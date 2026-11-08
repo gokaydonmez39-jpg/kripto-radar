@@ -1,0 +1,93 @@
+name: XRAY Personal Cove-Method Shadow Research (Read-Only)
+
+# Additional independent shadow after EXISTING personal EOD only.
+# No new cron, no trades, no signal, no private Sheet writes, no notifications.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'personal-swing/cove_shadow.py'
+      - 'personal-swing/cove_private_shadow.py'
+      - 'personal-swing/test_cove_shadow.py'
+      - 'personal-swing/test_cove_private_shadow.py'
+      - 'personal-swing/COVE_SHADOW_INTEGRATION.md'
+      - '.github/workflows/xray-personal-cove-shadow.yml'
+  workflow_run:
+    workflows: [XRAY Personal 477 EOD Daily Health (Research Only)]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xray-personal-cove-shadow-${{ github.event_name }}-${{ github.event.pull_request.number || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  offline-contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Deterministic private research invariants normal and optimized
+        working-directory: personal-swing
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements.txt
+          python -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -O -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
+
+  private-eod-research:
+    # No PR code or alternate/canonical NASDAQ plane; schedule after
+    # exact protected main EOD receipt only. Fail closed if Sheet/source
+    # receipt or score not from same completed XNAS ASOF.
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'schedule' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
+      XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
+      XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+      XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: main
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install data-only Python and Google readonly adapter
+        run: |
+          set -euo pipefail
+          python -m pip install -r personal-swing/requirements.txt
+          python -m pip install 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+      - name: Verify no trade and no notification boundary
+        run: |
+          set -euo pipefail
+          [[ -n "$XRAY_ALPACA_DATA_KEY_ID" && -n "$XRAY_ALPACA_DATA_SECRET_KEY" &&
+             -n "$XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON" &&
+             -n "$XRAY_PRIVATE_SPREADSHEET_ID" ]] || {
+            echo 'COVE_SHADOW_RESEARCH=HOLD_MISSING_READ_ONLY_CREDENTIALS'
+            exit 3
+          }
+      - name: Authenticated 477 source/score + episode IEX read-only analytics
+        working-directory: personal-swing
+        run: python cove_private_shadow.py
+      - name: Explicit no fills, no AL changes, no private output
+        if: always()
+        run: |
+          echo 'COVE_METHOD_INDEPENDENT_RESEARCH_ONLY; NO_COVE_CODE; NO_ORDER; NO_SHEETS_WRITE; NO_AL_STOP_CHANGE; NO_PUBLIC_PRIVATE_DATA; PIT_OOS_HOLD' >> "$GITHUB_STEP_SUMMARY"
