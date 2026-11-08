@@ -102,17 +102,20 @@ class SecCapture:
         return obj
 
 
-def capture_one(ticker: str, cik: str, cutoff_utc: str, *, client: SecCapture,
+def capture_one(ticker: str, cik: str, cutoff_utc: str | None, *, client: SecCapture,
                 clock_utc=None) -> dict:
-    """Capture exactly one company. Caller must separately validate origin/PIT.
+    """Capture a *current-observation* SEC snapshot for one approved issuer.
 
-    Does not rely on submissions acceptanceDateTime for cutoff evidence.
+    A fresh network read can NEVER prove what an investor could observe on a
+    historical decision date. Explicit dated cutoffs fail BEFORE HTTP; only
+    current observations are eligible, with cutoff=collection timestamp.
+    Does not rely on submissions acceptanceDateTime for publication evidence.
     """
+    require(cutoff_utc is None, "HISTORICAL_SEC_RETRIEVAL_NOT_PIT")
     require(type(ticker) is str and TICKER_RE.fullmatch(ticker) is not None,
             "TICKER_MALFORMED")
     require(type(cik) is str and re.fullmatch(r"[0-9]{10}", cik) is not None,
             "CIK_MALFORMED")
-    cutoff = timestamp(cutoff_utc)
     subs = client.json(f"https://data.sec.gov/submissions/CIK{cik}.json")
     facts = client.json(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json")
     recent = subs.get("filings", {}).get("recent")
@@ -123,9 +126,11 @@ def capture_one(ticker: str, cik: str, cutoff_utc: str, *, client: SecCapture,
     lengths = [len(recent[k]) for k in keys]
     require(0 < lengths[0] <= 20000 and len(set(lengths)) == 1,
             "SUBMISSIONS_COLUMN_LENGTH_DRIFT")
+    # Candidate chosen from SEC's current filing list. The final header clock
+    # is independently checked by fundamental_shadow.analyze().
     annual = sorted((parsed_date(day), accession)
                     for accession, day, form in zip(*(recent[k] for k in keys))
-                    if form == "10-K" and parsed_date(day) <= cutoff.date()
+                    if form == "10-K"
                     and type(accession) is str and ACCESSION_RE.fullmatch(accession))
     require(bool(annual), "NO_ANNUAL_FILING_BY_CUTOFF")
     selected_acc = annual[-1][1]
@@ -140,7 +145,7 @@ def capture_one(ticker: str, cik: str, cutoff_utc: str, *, client: SecCapture,
             "CAPTURE_CLOCK_INVALID")
     observed_at = now.astimezone(timezone.utc).isoformat()
     return {"schema": INPUT_SCHEMA, "ticker": ticker, "cik": cik,
-            "asof_utc": cutoff.isoformat(), "observed_at_utc": observed_at,
+            "asof_utc": observed_at, "observed_at_utc": observed_at,
             "submissions": subs, "companyfacts": facts,
             "filing_headers": {selected_acc: {
                 "raw": raw_header, "observed_at_utc": observed_at,
@@ -151,7 +156,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Explicit SEC one-ticker capture, no scheduled service")
     parser.add_argument("--ticker", required=True)
     parser.add_argument("--cik", required=True)
-    parser.add_argument("--asof-utc", required=True, help="ISO8601 cutoff with timezone")
+    parser.add_argument("--current-research", action="store_true", required=True,
+                        help="Read current SEC filings only; historical PIT is forbidden")
     parser.add_argument("--watchlist", required=True, type=Path)
     parser.add_argument("--private-output", required=True, type=Path,
                         help="LOCAL untracked path outside Git checkout only")
@@ -165,7 +171,7 @@ def main() -> int:
         require(not args.private_output.is_symlink() and not path.exists(),
                 "PRIVATE_OUTPUT_EXISTS_OR_SYMLINK")
         identity = os.environ.get("XRAY_SEC_USER_AGENT", "")
-        capture = capture_one(args.ticker, args.cik, args.asof_utc,
+        capture = capture_one(args.ticker, args.cik, None,
                               client=SecCapture(identity=identity))
         result = analyze(capture, allowed)
         require(result["status"] == "OFFLINE_STRUCTURE_PASS_NOT_LIVE",
