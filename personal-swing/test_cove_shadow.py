@@ -137,7 +137,7 @@ class CoveShadowContractTests(unittest.TestCase):
 
     def test_signal_entry_mismatch_and_future_episode_block(self):
         src=bundle()
-        src["episodes"][0]["reference_close"]=99.
+        src["episodes"][0].update(reference_close=99.,stop=94.,target_2r=109.)
         with self.assertRaisesRegex(ValueError,"ENTRY_SOURCE_CLOSE_MISMATCH"):
             shadow.run_bundle(src)
         src=bundle()
