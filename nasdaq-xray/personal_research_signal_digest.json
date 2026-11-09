@@ -69,8 +69,8 @@
     "DDOG",
     "ON",
     "AAL",
-    "DASH",
     "SOFI",
+    "DASH",
     "CDNS",
     "MCHP",
     "NTRA",
@@ -1136,7 +1136,7 @@
   "research_setup_candidate_count": 0,
   "research_setup_candidate_symbols": [],
   "schema": "XRAY_PERSONAL_EOD_RESEARCH_DIGEST_V1",
-  "source_candidates_sha256": "d2862f594686a4099da64ac6e8884e32d6112c15466585a3996461457b16e292",
+  "source_candidates_sha256": "dc60e18026d181aa6eec54e341d67287e14c1d4bcce90f5dd83d26ea10083113",
   "source_confidence": {
     "grade": "LOW",
     "rationale": "Existing SINA price observations and calendar-bound formula audits; independent original RTH volume, split lineage, primary MC and event clearance unproven",
@@ -1145,7 +1145,7 @@
   "source_epoch_blobs": {
     "master": "a1a28bd54cb0def9de00732fe628c3af335b9b59",
     "price": "e2ca9c0d32678ee02b876f4fccf1ab770f111e59",
-    "root": "165913d97373f10c5a46d425f83b95572557ef8b"
+    "root": "5459f7451d5e0e4bb15a5db53c97a69742a4269c"
   },
   "status": "PERSONAL_LIQUIDITY_WATCH_AND_REJECTED_TRIGGERS",
   "technical_evaluated_count": 476,
@@ -1165,5 +1165,5 @@
   },
   "unknown_never_pass": true,
   "watchlist_count": 480,
-  "watchlist_digest": "db8178f43892f2f00b4a1e7b6b14ea54604d2c359bec7eae8eb238374bdc0e94"
+  "watchlist_digest": "b1c67a5d154ac46bae9a2ce0380f4fc96f702c2becd2f992837df163a560b906"
 }
