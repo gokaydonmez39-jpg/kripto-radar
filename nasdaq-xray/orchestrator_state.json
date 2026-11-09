@@ -3,13 +3,13 @@
   "asof_et": "2026-11-06",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-06",
-    "attempted_count": 475,
+    "attempted_count": 480,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 480,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 471,
+    "evaluated_count": 476,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,17 +18,12 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 31,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 9,
+    "pending_count": 4,
     "pending_symbols": [
       "FISV",
       "CCC",
       "GRAL",
-      "MORN",
-      "BWIN",
-      "CBRL",
-      "NSIT",
-      "MRX",
-      "WAY"
+      "MORN"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -699,6 +694,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "BWIN": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "BZ": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -739,6 +740,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "CBRL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "CBSH": {
@@ -2670,6 +2677,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "MRX": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "MSFT": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -2805,6 +2818,12 @@
         "terminal_scan": true
       },
       "NRIX": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "NSIT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
@@ -4285,6 +4304,12 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
+      "WAY": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
       "WDAY": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -4528,8 +4553,8 @@
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "dc60e18026d181aa6eec54e341d67287e14c1d4bcce90f5dd83d26ea10083113",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 127,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 314,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 131,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 315,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 25,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
@@ -4591,7 +4616,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 210,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-09T05:30:11.043045+00:00",
+  "updated_at_utc": "2026-11-09T11:56:53.126072+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
