@@ -3,13 +3,13 @@
   "asof_et": "2026-11-06",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-06",
-    "attempted_count": 480,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 480,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 476,
+    "evaluated_count": 471,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,12 +18,17 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 31,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 4,
+    "pending_count": 9,
     "pending_symbols": [
       "FISV",
       "CCC",
       "GRAL",
-      "MORN"
+      "MORN",
+      "BWIN",
+      "CBRL",
+      "NSIT",
+      "MRX",
+      "WAY"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -694,12 +699,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "BWIN": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
-        "terminal_scan": true
-      },
       "BZ": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -740,12 +739,6 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "CBRL": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "CBSH": {
@@ -2677,12 +2670,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "MRX": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
       "MSFT": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -2818,12 +2805,6 @@
         "terminal_scan": true
       },
       "NRIX": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
-        "terminal_scan": true
-      },
-      "NSIT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
@@ -4304,12 +4285,6 @@
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
-      "WAY": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
-        "terminal_scan": true
-      },
       "WDAY": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -4551,10 +4526,10 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "d2862f594686a4099da64ac6e8884e32d6112c15466585a3996461457b16e292",
+    "source_candidates_sha256": "dc60e18026d181aa6eec54e341d67287e14c1d4bcce90f5dd83d26ea10083113",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 131,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 315,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 127,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 314,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 25,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1,
@@ -4562,7 +4537,7 @@
     },
     "transient_retry_count": 4,
     "unknown_never_pass": true,
-    "watchlist_digest": "db8178f43892f2f00b4a1e7b6b14ea54604d2c359bec7eae8eb238374bdc0e94"
+    "watchlist_digest": "b1c67a5d154ac46bae9a2ce0380f4fc96f702c2becd2f992837df163a560b906"
   },
   "cursor": 3192,
   "downstream_invalidation": {
@@ -4616,7 +4591,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 210,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-07T02:47:08.055304+00:00",
+  "updated_at_utc": "2026-11-09T05:30:11.043045+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -4634,7 +4609,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "d2862f594686a4099da64ac6e8884e32d6112c15466585a3996461457b16e292",
+    "source_candidates_sha256": "dc60e18026d181aa6eec54e341d67287e14c1d4bcce90f5dd83d26ea10083113",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4894,7 +4869,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 263.78,
-        "dv30_usd_observed": 3177306859.79,
+        "dv30_usd_observed": 3181651448.28,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Western Digital Corporation - Common Stock",
@@ -5174,7 +5149,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 190.71,
-        "dv30_usd_observed": 1275832116.45,
+        "dv30_usd_observed": 1277224776.22,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Astera Labs, Inc. - Common Stock",
@@ -5216,7 +5191,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 148.91,
-        "dv30_usd_observed": 1187906014.15,
+        "dv30_usd_observed": 1188045021.63,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Shopify Inc. - Class A Subordinate Voting Shares",
@@ -5244,7 +5219,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 460.42,
-        "dv30_usd_observed": 1165879742.94,
+        "dv30_usd_observed": 1165957323.71,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Amgen Inc. - Common Stock",
@@ -5454,7 +5429,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 105.41,
-        "dv30_usd_observed": 824243339.47,
+        "dv30_usd_observed": 824324715.99,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Starbucks Corporation - Common Stock",
@@ -5509,6 +5484,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 16.21,
+        "dv30_usd_observed": 741558536.2,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "SoFi Technologies, Inc.  - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "SOFI",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 179.67,
         "dv30_usd_observed": 741128633.2,
         "exact_completed_sessions": 30,
@@ -5518,20 +5507,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DASH",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 16.21,
-        "dv30_usd_observed": 740459336.1,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "SoFi Technologies, Inc.  - Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "SOFI",
         "tracking_state": "PERSISTING"
       },
       {
@@ -5804,7 +5779,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 15.55,
-        "dv30_usd_observed": 547261536.68,
+        "dv30_usd_observed": 547885223.86,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Applied Digital Corporation - Common Stock",
@@ -6210,7 +6185,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 94.62,
-        "dv30_usd_observed": 408950314.75,
+        "dv30_usd_observed": 409044792.83,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "EchoStar Corporation - Common stock",
@@ -6238,7 +6213,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 69.775,
-        "dv30_usd_observed": 403535829.4,
+        "dv30_usd_observed": 403582578.65,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Flex Ltd. - Ordinary Shares",
@@ -6448,7 +6423,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 66.51,
-        "dv30_usd_observed": 350271857.67,
+        "dv30_usd_observed": 350379969.67,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "TTM Technologies, Inc. - Common Stock",
@@ -6644,7 +6619,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 79.41,
-        "dv30_usd_observed": 310550192.45,
+        "dv30_usd_observed": 310562342.18,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "DexCom, Inc. - Common Stock",
@@ -7554,7 +7529,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 12.93,
-        "dv30_usd_observed": 188818212.6,
+        "dv30_usd_observed": 188862387.94,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "The Trade Desk, Inc. - Class A Common Stock",
@@ -7666,7 +7641,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 58.12,
-        "dv30_usd_observed": 182518207.36,
+        "dv30_usd_observed": 182548720.36,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Maplebear Inc. - Common Stock",
@@ -8324,7 +8299,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 23.13,
-        "dv30_usd_observed": 136132608.88,
+        "dv30_usd_observed": 136137130.8,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "The Campbell's Company - Common Stock",
@@ -8492,7 +8467,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 22.725,
-        "dv30_usd_observed": 127706868.58,
+        "dv30_usd_observed": 127719526.4,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Figure Technology Solutions, Inc. - Class A Common Stock",
@@ -8828,7 +8803,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 99.3,
-        "dv30_usd_observed": 110982522.95,
+        "dv30_usd_observed": 111301275.95,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Kodiak Sciences Inc - Common Stock",
@@ -9052,7 +9027,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 38.89,
-        "dv30_usd_observed": 100304727.96,
+        "dv30_usd_observed": 100309005.86,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Gaming and Leisure Properties, Inc. - Common Stock",
@@ -9612,7 +9587,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 41.13,
-        "dv30_usd_observed": 82081480.33,
+        "dv30_usd_observed": 82087814.34,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Ultra Clean Holdings, Inc. - Common Stock",
@@ -9696,7 +9671,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 6.015,
-        "dv30_usd_observed": 79853949.23,
+        "dv30_usd_observed": 79878322.01,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Bitdeer Technologies Group - Ordinary Shares",
@@ -9710,7 +9685,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 27.51,
-        "dv30_usd_observed": 78645378.59,
+        "dv30_usd_observed": 78722805.49,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "SolarEdge Technologies, Inc. - Common Stock",
@@ -10186,7 +10161,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 10.78,
-        "dv30_usd_observed": 67448525.2,
+        "dv30_usd_observed": 67491655.98,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Novavax, Inc. - Common Stock",
@@ -10298,7 +10273,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 44.61,
-        "dv30_usd_observed": 65372944.66,
+        "dv30_usd_observed": 65424474.36,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "ACM Research, Inc. - Class A Common Stock",
@@ -10648,7 +10623,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 19.88,
-        "dv30_usd_observed": 59433708.51,
+        "dv30_usd_observed": 59460138.97,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Gentex Corporation - Common Stock",
@@ -11361,6 +11336,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 480,
-    "watchlist_digest": "db8178f43892f2f00b4a1e7b6b14ea54604d2c359bec7eae8eb238374bdc0e94"
+    "watchlist_digest": "b1c67a5d154ac46bae9a2ce0380f4fc96f702c2becd2f992837df163a560b906"
   }
 }
