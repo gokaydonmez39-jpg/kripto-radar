@@ -156,6 +156,36 @@ class TestOosAudit(unittest.TestCase):
                          ['RESEARCH_CLOSE_ONLY'],1)
         self.assertFalse(output['sufficient_for_decision'])
 
+    def test_quality_strata_report_separate_accuracy_not_pooled_only(self):
+        rows=[
+            {'asof':'2026-11-06','forecast_status':'RESEARCH_ONLY',
+             'model_pct_error':1.0,'baseline_pct_error':2.0,'direction_correct':True},
+            {'asof':'2026-11-06','forecast_status':'RESEARCH_CLOSE_ONLY',
+             'model_pct_error':9.0,'baseline_pct_error':2.0,'direction_correct':False},
+        ]
+        out=o.summarize({1:rows},0,0)
+        h=out['horizons']['1']
+        self.assertEqual(h['model_mape_pct'],5.0)
+        native=h['quality_strata']['RESEARCH_ONLY']
+        close=h['quality_strata']['RESEARCH_CLOSE_ONLY']
+        self.assertEqual((native['samples'],native['model_mape_pct'],
+                          native['persistence_mape_pct'],native['direction_hit_rate']),
+                         (1,1.0,2.0,1.0))
+        self.assertEqual((close['samples'],close['model_mape_pct'],
+                          close['persistence_mape_pct'],close['direction_hit_rate']),
+                         (1,9.0,2.0,0.0))
+        empty=out['horizons']['5']['quality_strata']['RESEARCH_ONLY']
+        self.assertEqual(empty['samples'],0)
+        self.assertIsNone(empty['model_mape_pct'])
+        self.assertIsNone(empty['direction_hit_rate'])
+        self.assertEqual(out['decision_influence'],'NO_GO')
+
+    def test_quality_stratum_unknown_status_fail_closed(self):
+        row={'asof':'2026-11-06','forecast_status':'UNREVIEWED',
+             'model_pct_error':1.0,'baseline_pct_error':2.0,'direction_correct':True}
+        with self.assertRaisesRegex(k.ShadowHold,'OOS_UNKNOWN_QUALITY_STRATUM'):
+            o.summarize({1:[row]},0,0)
+
     def test_load_recent_month_partition_preserves_no_future_boundary(self):
         import kronos_v2 as v2
         legacy=forecast('AAPL','2026-11-06')

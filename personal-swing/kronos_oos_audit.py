@@ -197,11 +197,27 @@ def summarize(evidence, pending, qc_holds, corporate_censored=None):
             baseline = sum(x['baseline_pct_error'] for x in rows)/n
             hit = sum(x['direction_correct'] for x in rows)/n
         else: model = baseline = hit = None
-        status_counts = {s:sum(row.get('forecast_status','RESEARCH_ONLY')==s
-                               for row in rows)
-                         for s in ('RESEARCH_ONLY','RESEARCH_CLOSE_ONLY')}
+        # Separate the native-quality and close-only estimands; pooled
+        # metrics remain for continuity, never as evidence of native quality.
+        statuses = ('RESEARCH_ONLY','RESEARCH_CLOSE_ONLY')
+        require(all(row.get('forecast_status','RESEARCH_ONLY') in statuses
+                    for row in rows),'KRONOS_OOS_UNKNOWN_QUALITY_STRATUM')
+        strata = {}
+        for status in statuses:
+            cohort = [row for row in rows
+                      if row.get('forecast_status','RESEARCH_ONLY') == status]
+            count = len(cohort)
+            strata[status] = {
+                'samples':count,
+                'distinct_asofs':len({row['asof'] for row in cohort}),
+                'model_mape_pct':round(sum(row['model_pct_error'] for row in cohort)/count,5) if count else None,
+                'persistence_mape_pct':round(sum(row['baseline_pct_error'] for row in cohort)/count,5) if count else None,
+                'direction_hit_rate':round(sum(row['direction_correct'] for row in cohort)/count,5) if count else None,
+            }
+        status_counts = {status:metrics['samples'] for status,metrics in strata.items()}
         out['horizons'][str(h)] = {
             'forecast_quality_counts':status_counts,
+            'quality_strata':strata,
             'corporate_action_censored':corporate_censored.get(h,0),
             'samples':n,'distinct_asofs':distinct_asofs,
             'model_mape_pct':round(model,5) if model is not None else None,
