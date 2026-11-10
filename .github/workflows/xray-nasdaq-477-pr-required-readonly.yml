@@ -80,5 +80,12 @@ jobs:
         run: |
           python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+      - name: Forward-only GNTX 477 PIT cutover regression
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_forward_gntx_pit
+          python -O -m unittest -q test_forward_gntx_pit
+          python -m py_compile test_forward_gntx_pit.py
+          # Exact named change only; NO BACKFILL; NO ORDER; no private Sheet access.
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
