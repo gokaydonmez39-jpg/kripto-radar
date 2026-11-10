@@ -1,0 +1,59 @@
+name: XRAY v46 A2 Synthetic Pagination Contract (No Data No AL)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'nasdaq-xray/xray_v46_offline_pagination_proof.py'
+      - 'nasdaq-xray/test_xray_v46_offline_pagination_proof.py'
+      - 'nasdaq-xray/xray_v46_a2_synthetic_pages.json'
+      - '.github/workflows/xray-v46-a2-synthetic-pagination-offline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-a2-red-team:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Compile, red-team tests and optimized Python tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nasdaq-xray
+          python -m py_compile xray_v46_offline_pagination_proof.py test_xray_v46_offline_pagination_proof.py
+          python -m unittest -v test_xray_v46_offline_pagination_proof.py
+          python -O -m unittest -v test_xray_v46_offline_pagination_proof.py
+          python xray_v46_offline_pagination_proof.py xray_v46_a2_synthetic_pages.json
+      - name: No provider network, no keys, no orders, no canonical authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          code = Path('nasdaq-xray/xray_v46_offline_pagination_proof.py').read_text(encoding='utf-8')
+          tree = ast.parse(code)
+          modules = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  modules.update(x.name.split('.')[0] for x in node.names)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  modules.add(node.module.split('.')[0])
+          forbidden = {'requests','urllib','http','socket','subprocess','alpaca','os','ccxt','aiohttp'}
+          assert not modules.intersection(forbidden), modules & forbidden
+          for needle in ("'actual_provider_request_performed': False",
+                         "'actual_sip_pages_attested': False",
+                         "'a2_release_ready': False",
+                         "'canonical_price_pass': False",
+                         "'registered_r92_count': 0",
+                         "'execution': 'NONE'", "'real_money': 'NO-GO'"):
+              assert needle in code, needle
+          print('XRAY_V46_OFFLINE_SYNTHETIC_PAGINATION_NO_RELEASE=PASS')
+          PY
