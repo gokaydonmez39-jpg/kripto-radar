@@ -45,6 +45,29 @@ class ROKUFlightPITTests(unittest.TestCase):
         self.assertEqual(out["device_receipts_verified"],0)
         self.assertEqual(out["latest_verified_scan_asof"],"2026-11-10")
 
+    def test_nov10_cannot_use_nov6_fingerprint(self):
+        b=fixture()
+        b[1][-1][9]=fp(RAW)
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
+    def test_nov10_cannot_use_unreviewed_uniform_fingerprint(self):
+        b=fixture()
+        for row in b[1][1:]:
+            row[9]=fp(("a"*64,"b"*64))
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
+    def test_nov9_failed_epoch_cannot_be_promoted(self):
+        b=fixture()
+        b[1].insert(-1,["2026-11-09","GitHub schedule VERIFIED IEX EOD",
+                        "477","477","477","0","TRUE","0","private",fp(RAW)])
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                "FLIGHT_FAILED_EPOCH_REPLAY"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
     def test_unknown_cutover_policy_sha_rejected(self):
         b=fixture()
         b[1][-1][9]=fp((NEW[0],"f"*64))
