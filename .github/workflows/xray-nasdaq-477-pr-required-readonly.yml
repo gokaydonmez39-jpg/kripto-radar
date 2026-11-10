@@ -99,6 +99,8 @@ jobs:
         run: |
           python -m unittest -q test_roku_corporate_lifecycle
           python -O -m unittest -q test_roku_corporate_lifecycle
+          python -m unittest -q test_lifecycle_failure_diagnostics
+          python -O -m unittest -q test_lifecycle_failure_diagnostics
           python -m py_compile test_roku_corporate_lifecycle.py
           # No fake ROKU daily bar, no price-target terminal, no fills.
       - name: ROKU last-trade raw-IEX witness with no fabricated 9 Nov price
