@@ -97,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-10T01:45:43.215332+00:00",
+  "generated_at_utc": "2026-11-10T04:44:30.808414+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -2463,142 +2463,106 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 15,
+      "row_count": 11,
       "rows": [
         {
-          "BX Action": "Delete",
-          "Company Name": "Apollo Commercial Real Estate Finance",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "ARI"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Bowman Consulting Group Ltd.",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "BWMN"
-        },
-        {
           "BX Action": "Add",
-          "Company Name": "Haymaker Acquisition Corp V",
-          "Effective Date": "11/9/2026",
+          "Company Name": "BNY Mellon ETF Trust II",
+          "Effective Date": "11/10/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "HYAC"
+          "Primary Listing Market": "Z",
+          "Symbol": "BGRD"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Haymaker Acquisition Corp V",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "HYAC+"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Lazard Active ETF Trust",
-          "Effective Date": "11/9/2026",
+          "Company Name": "Principal Exchange-Traded Funds",
+          "Effective Date": "11/10/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "HYB"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Lazard Active ETF Trust",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "HYFY"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Ultimus Managers Trust",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "LYR"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Ultimus Managers Trust",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "LYRI"
+          "Symbol": "EMDI"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Charming Medical Limited",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "MCTA"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Nomura ETF Trust II",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "MFIX"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Roku, Inc.",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Q",
-          "Symbol": "ROKU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Nomura ETF Trust II",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "SMDC"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "REX ETF Trust",
-          "Effective Date": "11/9/2026",
+          "Company Name": "Tidal Trust I",
+          "Effective Date": "11/10/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "Z",
-          "Symbol": "TLDR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "REX ETF Trust",
-          "Effective Date": "11/9/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "ULTI"
+          "Symbol": "HAUS"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Lazard Active ETF Trust",
-          "Effective Date": "11/9/2026",
+          "Company Name": "The RBB Fund Trust",
+          "Effective Date": "11/10/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "XDLR"
+          "Primary Listing Market": "N",
+          "Symbol": "LTEQ"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Principal Exchange-Traded Funds",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "PGRW"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Tidal Trust I",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "REAI"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "SPACCircle Acquisition Corp.",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCQC"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "SPACCircle Acquisition Corp.",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCQCR"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "SPACCircle Acquisition Corp.",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SCQCW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Deep Sea Minerals Corp.",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "SEAM"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Stran & Company, Inc.",
+          "Effective Date": "11/10/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "SWAGW"
         }
       ],
       "status": "PASS",
