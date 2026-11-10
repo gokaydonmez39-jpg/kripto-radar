@@ -69,6 +69,56 @@ class ROKUFlightPITTests(unittest.TestCase):
         out=flight.inspect(*b,expected_asof="2026-11-10")
         self.assertEqual(out["matched_new_al_outbox"],1)
 
+    def corporate_fixture(self):
+        b=fixture()
+        episode="2026-10-27|ROKU"
+        b[0][1][0]=episode
+        b[0][1][2]="ROKU"
+        b[0][1][7]="KAPALI • CORPORATE_ACTION_REVIEW • 8/15 SEANS"
+        b[0][1][8]="2026-11-09"
+        b[0][1][9]="CORPORATE_ACTION_REVIEW"
+        b[0][1][10]=""
+        b[2][1][0]=episode+"|2026-10-27|AL_NEW_EPISODE|1"
+        b[2][1][1]=episode
+        b[2][1][3]="ROKU"
+        terminal=list(b[2][1])
+        terminal[0]=episode+"|2026-11-09|CORPORATE_ACTION_REVIEW|1"
+        terminal[4]="2026-11-09"
+        terminal[5]="CORPORATE_ACTION_REVIEW"
+        terminal[6]="KURUMSAL_ISLEM"
+        terminal[7]=""
+        terminal[17]="EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST"
+        terminal[19]="Official Nasdaq https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806"
+        b[2].append(terminal)
+        return b
+
+    def test_fabricated_corporate_price_rejected(self):
+        b=self.corporate_fixture()
+        b[2][-1][7]="101"
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,"FLIGHT_CORPORATE_ACTION_EVENT_INVALID"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
+    def test_corporate_outcome_fake_pnl_rejected(self):
+        b=self.corporate_fixture()
+        b[0][1][10]="2.5"
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,"FLIGHT_CORPORATE_ACTION_EPISODE_INVALID"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
+    def test_wrong_corporate_issuer_rejected(self):
+        b=self.corporate_fixture()
+        for row in (b[0][1], b[2][1], b[2][-1]):
+            for i,v in enumerate(row):
+                if isinstance(v,str):
+                    row[i]=v.replace("ROKU","AAA")
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,"FLIGHT_CORPORATE_ACTION_EPISODE_INVALID"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
+    def test_missing_official_notice_rejected(self):
+        b=self.corporate_fixture()
+        b[2][-1][19]="unreviewed"
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,"FLIGHT_CORPORATE_ACTION_EVENT_INVALID"):
+            flight.inspect(*b,expected_asof="2026-11-10")
+
     def test_corporate_terminal_never_becomes_price_fill_or_device_ack(self):
         b=fixture()
         episode="2026-10-27|ROKU"
@@ -87,7 +137,8 @@ class ROKUFlightPITTests(unittest.TestCase):
         terminal[5]="CORPORATE_ACTION_REVIEW"
         terminal[7]=""
         terminal[17]="EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST"
-        terminal[19]="Corporate action, no price/fill"
+        terminal[6]="KURUMSAL_ISLEM"
+        terminal[19]="Official Nasdaq https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806"
         b[2].append(terminal)
         out=flight.inspect(*b,expected_asof="2026-11-10")
         self.assertEqual(out["matched_terminal_outbox"],1)
