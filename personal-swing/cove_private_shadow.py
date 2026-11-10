@@ -96,6 +96,22 @@ def build_private_bundle(api,asof,read_batch):
         need(key not in ids,"DUPLICATE_EPISODE_ROW")
         ids.add(key)
         need(str(row[7]).startswith(("AÇIK","KAPALI")),"UNKNOWN_EPISODE_STATE")
+        # Only the officially verified, already-closed historical ROKU issuer
+        # is excluded from the CURRENT prospective price-model cohort.
+        # It remains intact in the private ledger and in the independent
+        # Flight Recorder audit; GNTX is NEVER a ROKU price-history alias.
+        reviewed_roku_closure = (
+            asof >= "2026-11-10" and
+            len(row) >= 11 and str(row[2]) == "ROKU" and
+            str(row[1]) < "2026-11-10" and
+            key == str(row[1])+"|ROKU" and
+            str(row[7]).startswith("KAPALI • CORPORATE_ACTION_REVIEW • ") and
+            str(row[8]) == "2026-11-09" and
+            str(row[9]) == "CORPORATE_ACTION_REVIEW" and
+            str(row[10]) == ""
+        )
+        if reviewed_roku_closure:
+            continue
         episode_list.append({
             "id":key,
             "asof_et":str(row[1]),
