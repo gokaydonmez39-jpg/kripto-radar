@@ -19,11 +19,10 @@ jobs:
         with:
           node-version: '22'
       - run: node --test watchdog.test.mjs
-      - name: Resolve exact public dependency lock for isolated review
+      - name: Install exact reviewed public dependency lock
         run: |
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-          node --input-type=module -e 'import fs from "node:fs"; import crypto from "node:crypto"; const lock=JSON.parse(fs.readFileSync("package-lock.json","utf8")); for(const p of Object.values(lock.packages)){if(p.resolved){const u=new URL(p.resolved); if(u.protocol!=="https:"||u.hostname!=="registry.npmjs.org"||u.username||u.password||u.search||u.hash||!p.integrity)throw Error("UNAPPROVED_DEPENDENCY_RESOLUTION");}} const s=JSON.stringify(lock); console.log("XRAY_LOCK_SHA256 "+crypto.createHash("sha256").update(s).digest("hex")); console.log("XRAY_LOCK_JSON "+s);'
           npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          git diff --exit-code -- package-lock.json
       - name: Public package advisory audit
         run: npm audit --audit-level=high --registry=https://registry.npmjs.org
       - run: npx --no-install playwright install chromium
