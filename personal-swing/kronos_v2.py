@@ -127,12 +127,15 @@ def private_authority(api, asof):
     k.require([writer.numeric(last[i]) for i in (2,3,4,5)] ==
               [477,477,477,0] and str(last[6]).upper()=="TRUE",
               "KRONOS2_SOURCE_NOT_477_PASS")
-    symbols=sorted(runner.get_scope(
+    # EOD hashes the *original ordered* personal watchlist. Sorting is
+    # allowed only for deterministic inference scheduling, never source SHA.
+    source_order=runner.get_scope(
         watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
-        asof=asof))
+        asof=asof)
+    symbols=sorted(source_order)
     k.require(len(symbols)==EXPECTED and len(set(symbols))==EXPECTED,
               "KRONOS2_NOT_EXACT_SCOPE")
-    sha=runner.sha_symbols(symbols)
+    sha=runner.sha_symbols(source_order)
     policy=runner.analysis_fingerprint()
     proof=writer.scan_source_proof(last[9])
     k.require(proof["scopeSHA"]==sha and proof["algorithmSHA"]==policy,
