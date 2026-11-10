@@ -1,7 +1,7 @@
 import "./node_modules/@perspective-dev/viewer/dist/cdn/perspective-viewer.js";
 import "./node_modules/@perspective-dev/viewer-datagrid/dist/cdn/perspective-viewer-datagrid.js";
 import perspective from "./node_modules/@perspective-dev/client/dist/cdn/perspective.js";
-import {createChart,CandlestickSeries,LineSeries,LineStyle} from "./node_modules/lightweight-charts/dist/lightweight-charts.production.mjs";
+import {createChart,CandlestickSeries,LineSeries,LineStyle} from "./node_modules/lightweight-charts/dist/lightweight-charts.standalone.production.mjs";
 // No private data, credentials, connector, network API or production input.
 const rows=Array.from({length:477},(_,i)=>({symbol:"DEMO"+String(i+1).padStart(3,"0"),score:40+i%61,status:["AL","IZLE","ELE"][i%3],quality:i%5===0?"HOLD":i%3===0?"NATIVE":"RESEARCH_CLOSE_ONLY",asof:"SYNTHETIC"}));
 const status=document.querySelector("#status"),select=document.querySelector("#symbol"),detail=document.querySelector("#detail");
