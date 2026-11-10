@@ -153,14 +153,27 @@ def compare_current_directory_scope(raw, watchlist):
         'scope_count': 477, 'directory_basic_flag_match': matching,
         'directory_flagged': flagged, 'directory_missing': missing,
         'scope_sha256': hashlib.sha256(
-            '\n'.join(symbols).encode('utf-8')).hexdigest(),
+            ('\n'.join(symbols)+'\n').encode('utf-8')).hexdigest(),
         'historical_membership_proven': False, 'may_clear_risk': False,
     }
 
-def local_watchlist():
-    location = Path(__file__).resolve().parents[1] / 'nasdaq_watchlist_477.json'
+def local_watchlist(asof=None):
+    """Static file for legacy callers; current observation uses the core PIT policy."""
+    root = Path(__file__).resolve().parents[1]
+    location = root / 'nasdaq_watchlist_477.json'
     with location.open('r', encoding='utf-8') as stream:
-        return json.load(stream)
+        document = json.load(stream)
+    if asof is not None:
+        # Reuse the authoritative policy, never duplicate its transition rules.
+        import sys
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        import runner
+        symbols = runner.get_scope(watchlist_file=str(location), asof=asof)
+        if len(symbols) != 477 or len(set(symbols)) != 477:
+            raise ValueError('SCOPE_477_COUNT_MISMATCH')
+        document = {**document, 'liquidity_watch_symbols': symbols}
+    return document
 
 def probe_once(source, opener=None):
     if source not in SOURCES:
@@ -196,7 +209,12 @@ def probe_once(source, opener=None):
         'HTTP_AND_FORMAT_OBSERVED_NOT_LIVE_ACCEPTANCE'
     ) and result.get('directory_stale') is False:
         try:
-            result.update(compare_current_directory_scope(raw, local_watchlist()))
+            from zoneinfo import ZoneInfo
+            observation_day = datetime.fromisoformat(observed).astimezone(
+                ZoneInfo('America/New_York')).date().isoformat()
+            result.update(compare_current_directory_scope(
+                raw, local_watchlist(observation_day)))
+            result['scope_observation_date_et'] = observation_day
         except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
             result['scope_status'] = 'SCOPE_FAIL_CLOSED'
             result['scope_error_type'] = type(exc).__name__
