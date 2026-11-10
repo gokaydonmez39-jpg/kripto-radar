@@ -86,6 +86,7 @@ jobs:
           python -m unittest -q test_forward_gntx_pit
           python -O -m unittest -q test_forward_gntx_pit
           python -m py_compile test_forward_gntx_pit.py
+          python -c "from pathlib import Path; import runner; s=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json', asof='2026-11-10'); print('GNTX_PIT_SCOPE_SHA='+runner.sha_symbols(s)); print('GNTX_POLICY_SHA='+runner.analysis_fingerprint())"
           # Exact named change only; NO BACKFILL; NO ORDER; no private Sheet access.
       - name: Non-price ROKU corporate-action lifecycle contracts
         working-directory: personal-swing
