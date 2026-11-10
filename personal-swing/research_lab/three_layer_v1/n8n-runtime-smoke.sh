@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-tag=docker.n8n.io/n8nio/n8n:2.47.3
+tag=docker.n8n.io/n8nio/n8n@sha256:6723b440354bb8e1395a1ecee12685fe03923f897bf6e4d5bb2c6c2bd2051697
 docker pull "$tag"
 image=$(docker image inspect --format '{{.Id}}' "$tag")
 docker image inspect --format '{{json .RepoDigests}}' "$tag"
