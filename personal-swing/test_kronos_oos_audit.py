@@ -97,6 +97,35 @@ class TestOosAudit(unittest.TestCase):
         self.assertFalse(out['sufficient_for_decision'])
         self.assertEqual(out['decision_influence'],'NO_GO')
 
+    def test_delisted_roku_matured_is_explicitly_censored_not_missing_bar(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU')+forecast('AAPL')
+        def reader(symbols,asof):
+            # No delisted issuer lookup or GNTX/FOXA proxy.
+            self.assertEqual(symbols,['AAPL'])
+            return {'AAPL':[{'timestamp':'2026-11-09','close':103.0}]}
+        with patch.object(o,'load_recent_ledgers',return_value=matrix):
+            out=o.audit(None,'2026-11-10',reader)
+        self.assertEqual(out['corporate_action_censored_rows'],1)
+        self.assertEqual(out['horizons']['1']['corporate_action_censored'],1)
+        self.assertEqual(out['horizons']['1']['samples'],1)
+        self.assertEqual(out['pending_horizon_rows'],4)
+        self.assertEqual(out['decision_influence'],'NO_GO')
+
+    def test_roku_pre_delisting_outcome_still_scored(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-05')
+        def reader(symbols,asof):
+            self.assertEqual(symbols,['ROKU'])
+            return {'ROKU':[{'timestamp':'2026-11-06','close':103.0}]}
+        with patch.object(o,'load_recent_ledgers',return_value=matrix):
+            out=o.audit(None,'2026-11-10',reader)
+        self.assertEqual(out['corporate_action_censored_rows'],0)
+        self.assertEqual(out['horizons']['1']['samples'],1)
+
+    def test_post_delisting_roku_forecast_is_rejected(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-10')
+        with self.assertRaisesRegex(k.ShadowHold,'ROKU_POST_DELISTING_FORECAST'):
+            o.validate_ledger(matrix)
+
     def test_future_source_record_is_fail_closed(self):
         with self.assertRaisesRegex(k.ShadowHold,'FUTURE_SOURCE_ROW'):
             o.select_matured(forecast(),'2026-11-05')
