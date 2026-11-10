@@ -83,6 +83,8 @@ jobs:
       - name: ROKU P0 corporate-action fail-closed contracts (synthetic only)
         working-directory: personal-swing
         run: |
+          python -m unittest -q test_lifecycle_failure_diagnostics
+          python -O -m unittest -q test_lifecycle_failure_diagnostics
           python -m unittest -q test_corporate_action_gate
           python -O -m unittest -q test_corporate_action_gate
           python -m py_compile corporate_action_gate.py test_corporate_action_gate.py
