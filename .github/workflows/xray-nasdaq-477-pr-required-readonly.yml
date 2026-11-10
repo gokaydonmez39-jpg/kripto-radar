@@ -59,6 +59,8 @@ jobs:
           python -O -m unittest -q test_kronos_real_477_probe
           python -m unittest -q test_kronos_v2
           python -O -m unittest -q test_kronos_v2
+          python -m unittest -q test_kronos_eod_scope_order
+          python -O -m unittest -q test_kronos_eod_scope_order
           python -m py_compile kronos_shadow.py kronos_oos_audit.py kronos_capacity_probe.py kronos_real_477_probe.py kronos_v2.py
       - name: Cove-method personal research shadow strict contract (offline only)
         working-directory: personal-swing
