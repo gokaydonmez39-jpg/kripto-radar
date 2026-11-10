@@ -78,6 +78,13 @@ def parse_ledger(matrix):
             raise LedgerRefused('DUPLICATE_EVENT_KEY')
         if status not in ALLOWED_STATES:
             raise LedgerRefused('UNKNOWN_DELIVERY_STATE')
+        if row[5] == 'CORPORATE_ACTION_REVIEW':
+            if not (len(row) == 20 and row[3] == 'ROKU' and
+                    row[2] <= '2026-11-06' and row[4] == '2026-11-09' and
+                    row[6] == 'KURUMSAL_ISLEM' and row[7] == '' and
+                    'https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806'
+                    in str(row[19])):
+                raise LedgerRefused('CORPORATE_ACTION_EVENT_INVALID')
         if status == QUARANTINED and row[5] != 'NEW_52_SESSION_HIGH':
             raise LedgerRefused('QUARANTINE_WRONG_EVENT_TYPE')
         if status == SUPPRESSED and row[5] != 'AL_NEW_EPISODE':
