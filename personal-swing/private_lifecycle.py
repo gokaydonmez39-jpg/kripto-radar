@@ -318,12 +318,13 @@ def plan_outbox_events(plan, alert_values, verified_run_url):
         priority=('KURUMSAL_ISLEM' if kind=='CORPORATE_ACTION_REVIEW'
                   else 'KRITIK' if kind in ('STOP_TOUCHED','BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
                   else 'HEDEF' if kind=='TARGET_TOUCHED' else 'SURE_SONU')
-        note=('Corporate action: ROKU delisted; no IEX closing bar, no '
-              'theoretical exit-price or fill; independently review cash/share '
-              'consideration; Nasdaq '+event['source_notice'])
-             if kind=='CORPORATE_ACTION_REVIEW' else
-             'Verified historical Alpaca IEX daily bar; theoretical contact only; '
-             'gap_below_stop='+str(event['gap'])+'; never executable fill')
+        if kind=='CORPORATE_ACTION_REVIEW':
+            note=('Corporate action: ROKU delisted; no IEX closing bar, no '
+                  'theoretical exit-price or fill; independently review cash/share '
+                  'consideration; Nasdaq '+event['source_notice'])
+        else:
+            note=('Verified historical Alpaca IEX daily bar; theoretical contact only; '
+                  'gap_below_stop='+str(event['gap'])+'; never executable fill')
         row=[event['event_key'],event['episode_id'],event['original_asof'],
              event['symbol'],event['event_day'],kind,priority,
              str(event['iex_close']),str(event['stop']),str(event['target']),
