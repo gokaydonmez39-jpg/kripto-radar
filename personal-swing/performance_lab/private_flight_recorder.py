@@ -123,6 +123,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
                              for scan in scans}
     latest_fp = issuance_fingerprints[cutoff]
     need(latest_fp is not None, 'FLIGHT_CURRENT_SCAN_SHA_MISSING')
+    # The 9 Nov ROKU delisting scan failed (476/477); it is never a
+    # successful receipt. Corporate-action event day 9 Nov is still valid.
+    need('2026-11-09' not in days, 'FLIGHT_FAILED_EPOCH_REPLAY')
+    # Date chooses the reviewed cohort; a stale or uniformly forged SHA
+    # cannot choose a legacy branch and self-authorize after the cutover.
+    if cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER:
+        need(latest_fp == PIT_ROKU_REPLACEMENT_SHA,
+             'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+    else:
+        need(latest_fp != PIT_ROKU_REPLACEMENT_SHA,
+             'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
     verified_days = set()
     for scan in scans:
         day = value(scan,0)
