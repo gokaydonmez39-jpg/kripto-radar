@@ -110,5 +110,10 @@ jobs:
           python -O -m unittest -q test_raw_corporate_action_witness test_roku_raw_witness_cutover
           python -m py_compile raw_corporate_action_witness.py test_roku_raw_witness_cutover.py
           # Independent read-only review; NO AL release or vendor price stitch.
+      - name: Verified EOD origin and no-op downstream admission regression
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_downstream_eod_origin
+          python -O -m unittest -q test_downstream_eod_origin
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'

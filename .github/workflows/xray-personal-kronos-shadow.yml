@@ -226,7 +226,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.event != 'pull_request'
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -297,13 +297,13 @@ jobs:
 
   kronos-v2-full-477-research:
     # Once per successful protected personal EOD; disjoint research Sheet.
-    # Never activated for PR/push, no replay of 2026-11-06 legacy forecasts.
+    # Only successful current-epoch schedule or dispatch EOD; never PR/push NOOP.
     if: >-
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.event != 'pull_request'
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
