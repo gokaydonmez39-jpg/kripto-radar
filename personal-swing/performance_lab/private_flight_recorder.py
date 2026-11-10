@@ -199,6 +199,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             terminal_day, terminal_kind = value(row,8), value(row,9)
             need(start <= terminal_day <= cutoff and terminal_kind in TERMINAL_CODES,
                  'FLIGHT_TERMINAL_EVENT_INVALID')
+            if terminal_kind == 'CORPORATE_ACTION_REVIEW':
+                need(symbol == 'ROKU' and start <= '2026-11-06' and
+                     terminal_day == '2026-11-09' and cutoff >= '2026-11-10' and
+                     value(row,10) == '' and
+                     re.fullmatch(r'KAPALI • CORPORATE_ACTION_REVIEW • (?:[0-9]|1[0-4])/15 SEANS',
+                                  status) is not None,
+                     'FLIGHT_CORPORATE_ACTION_EPISODE_INVALID')
             terminal_id=f'{key}|{terminal_day}|{terminal_kind}|1'
             terminal_expected.add(terminal_id)
             closed_terminal_by_owner[key] = terminal_id
@@ -233,6 +240,14 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
              'FLIGHT_EVENT_DEDUP_KEY_INVALID')
         need(price(value(row,8)) == stop and price(value(row,9)) == target,
              'FLIGHT_ORIGINAL_LEVELS_CHANGED')
+        if code == 'CORPORATE_ACTION_REVIEW':
+            need(symbol == 'ROKU' and start <= '2026-11-06' and
+                 event_day == '2026-11-09' and cutoff >= '2026-11-10' and
+                 closed_terminal_by_owner.get(owner) == eventkey and
+                 value(row,6) == 'KURUMSAL_ISLEM' and value(row,7) == '' and
+                 'https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806'
+                 in value(row,19),
+                 'FLIGHT_CORPORATE_ACTION_EVENT_INVALID')
         status = value(row,17)
         if status in PENDING:
             pending += 1
