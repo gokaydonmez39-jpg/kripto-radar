@@ -3,30 +3,26 @@
   "asof_et": "2026-11-09",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-09",
-    "attempted_count": 475,
+    "attempted_count": 479,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 479,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 472,
+    "evaluated_count": 476,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
     "full_scope_scanned": false,
-    "independent_math_audit_count": 29,
+    "independent_math_audit_count": 30,
     "independent_math_audit_unresolved_count": 0,
-    "independent_math_audit_verified_count": 29,
+    "independent_math_audit_verified_count": 30,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 7,
+    "pending_count": 3,
     "pending_symbols": [
       "FISV",
       "CCC",
-      "GRAL",
-      "MRX",
-      "CBRL",
-      "NSIT",
-      "RLAY"
+      "GRAL"
     ],
     "preliminary_technical_watch_count": 1,
     "preliminary_technical_watch_symbols": [
@@ -34,7 +30,7 @@
     ],
     "provider_credits_assumed_available": false,
     "real_money": "NO-GO",
-    "recent_a_b_d_trigger_count": 28,
+    "recent_a_b_d_trigger_count": 29,
     "recent_a_b_d_trigger_symbols": [
       "MSFT",
       "WMT",
@@ -63,7 +59,8 @@
       "SEZL",
       "ARQT",
       "MORN",
-      "MIDD"
+      "MIDD",
+      "RLAY"
     ],
     "registered_r92_count": 0,
     "remaining_primary_release_gates": [
@@ -687,6 +684,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "CBRL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
         "terminal_scan": true
       },
       "CBSH": {
@@ -2544,6 +2547,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "MRX": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "MSFT": {
         "completed_weeks": 54,
         "confirmed_families": [
@@ -2679,6 +2688,12 @@
         "terminal_scan": true
       },
       "NRIX": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "NSIT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
@@ -3152,6 +3167,64 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "RLAY": {
+        "completed_weeks": 54,
+        "confirmed_families": [
+          "D"
+        ],
+        "family_results": {
+          "D": {
+            "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RISK_PERCENT_GT_8PCT",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 10.4639,
+              "stop_s0_usd": 9.0639,
+              "target_t1_usd": 11.49
+            },
+            "diagnostic_only_not_trade_signal": true,
+            "diagnostic_only_reason": null,
+            "entry_band_usd": null,
+            "entry_usd": null,
+            "event_primary_status": "UNKNOWN",
+            "final_AL": false,
+            "independent_geometry_audit": {
+              "basic_rr": 0.505796,
+              "independently_verified": true,
+              "risk_atr": 1.326202,
+              "risk_pass": false,
+              "risk_pct": 13.37989,
+              "rr_pass": false,
+              "scope": "FROZEN_MATH_STOP_BREACH_NOT_INDEPENDENT_R1_DISCOVERY",
+              "severe_rr": 0.258431,
+              "status": "PASS_INDEPENDENT_FORMULA_AUDIT"
+            },
+            "regime_primary_status": "UNKNOWN",
+            "risk_percent": null,
+            "risk_rr_geometry_observed": false,
+            "setup_id": "d6aa5d4e5077d3a8679eacc2",
+            "severe_rr": null,
+            "source_r1_target": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+            "status": "FAIL_RISK_GEOMETRY",
+            "structural_stop_usd": null,
+            "target_t1_usd": null,
+            "trigger_date": "2026-11-06"
+          }
+        },
+        "history_source": "SINA_US_DAILY",
+        "status": "TECHNICAL_GEOMETRY_NOT_APPROVED",
+        "technical_observation_ready": false,
         "terminal_scan": true
       },
       "RMBS": {
@@ -4395,9 +4468,9 @@
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
     "source_candidates_sha256": "aa0e3fe1947891666c04b7db0bee67ac819240b469832b9c3907b3e9143a3214",
     "status_counts": {
-      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 129,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 315,
-      "TECHNICAL_GEOMETRY_NOT_APPROVED": 23,
+      "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 131,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 316,
+      "TECHNICAL_GEOMETRY_NOT_APPROVED": 24,
       "TECHNICAL_WATCH_NEEDS_PRIMARY": 1,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 4
@@ -4458,7 +4531,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 212,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-10T08:04:43.432852+00:00",
+  "updated_at_utc": "2026-11-10T09:44:30.949733+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
