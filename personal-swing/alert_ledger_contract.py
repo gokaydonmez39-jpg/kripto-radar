@@ -28,7 +28,9 @@ TYPES=frozenset((
     'SUPPORT_20_BREAKDOWN','DAILY_DROP_2ATR','NEAR_STOP',
     'NEAR_STOP_1ATR',
     '52_SESSION_BREAKOUT','NEW_52_SESSION_HIGH',
-    'OFFICIAL_ISSUER_RISK'
+    'OFFICIAL_ISSUER_RISK',
+    # Delisting is not STOP/TARGET or an executable sale.
+    'CORPORATE_ACTION_REVIEW'
 ))
 TICKER=re.compile(r'^[A-Z0-9.]{1,16}$')
 
