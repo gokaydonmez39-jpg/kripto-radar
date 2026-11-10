@@ -59,12 +59,14 @@ jobs:
           python -O -m unittest -q test_kronos_real_477_probe
           python -m unittest -q test_kronos_v2
           python -O -m unittest -q test_kronos_v2
+          python -m unittest -q test_kronos_eod_scope_order
+          python -O -m unittest -q test_kronos_eod_scope_order
           python -m py_compile kronos_shadow.py kronos_oos_audit.py kronos_capacity_probe.py kronos_real_477_probe.py kronos_v2.py
       - name: Cove-method personal research shadow strict contract (offline only)
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_cove_shadow test_cove_private_shadow
-          python -O -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
+          python -O -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
           # Private IEX/Sheets/alerts/broker not accessed by this CI step.
       - name: Independent A14 PIT regression normal and optimized
@@ -72,14 +74,47 @@ jobs:
         run: |
           python -m unittest discover -q -p 'test_private_performance_adapter.py'
           python -O -m unittest discover -q -p 'test_private_performance_adapter.py'
+          python -m unittest -q test_roku_performance_cutover
+          python -O -m unittest -q test_roku_performance_cutover
           # A34 flight recorder PIT provenance is a mandatory merge gate.
           python -m unittest -q test_private_flight_recorder
           python -O -m unittest -q test_private_flight_recorder
+          python -m unittest -q test_roku_flight_cutover
+          python -O -m unittest -q test_roku_flight_cutover
       - name: A42 candidate queue contract normal and optimized
         working-directory: nasdaq-candidate-autopilot
         run: |
           python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+      - name: Forward-only GNTX 477 PIT cutover regression
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_forward_gntx_pit
+          python -O -m unittest -q test_forward_gntx_pit
+          python -m py_compile test_forward_gntx_pit.py
+          python -c "from pathlib import Path; import runner; s=runner.get_scope(watchlist_file='nasdaq_watchlist_477.json', asof='2026-11-10'); print('GNTX_PIT_SCOPE_SHA='+runner.sha_symbols(s)); print('GNTX_POLICY_SHA='+runner.analysis_fingerprint())"
+          # Exact named change only; NO BACKFILL; NO ORDER; no private Sheet access.
+      - name: Non-price ROKU corporate-action lifecycle contracts
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_roku_corporate_lifecycle
+          python -O -m unittest -q test_roku_corporate_lifecycle
+          python -m unittest -q test_lifecycle_failure_diagnostics
+          python -O -m unittest -q test_lifecycle_failure_diagnostics
+          python -m py_compile test_roku_corporate_lifecycle.py
+          # No fake ROKU daily bar, no price-target terminal, no fills.
+      - name: ROKU last-trade raw-IEX witness with no fabricated 9 Nov price
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_raw_corporate_action_witness test_roku_raw_witness_cutover
+          python -O -m unittest -q test_raw_corporate_action_witness test_roku_raw_witness_cutover
+          python -m py_compile raw_corporate_action_witness.py test_roku_raw_witness_cutover.py
+          # Independent read-only review; NO AL release or vendor price stitch.
+      - name: Verified EOD origin and no-op downstream admission regression
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_downstream_eod_origin
+          python -O -m unittest -q test_downstream_eod_origin
       - name: Fundamental SEC Shadow strict offline contract (NO SEC HTTP)
         working-directory: personal-swing/research_lab
         run: |

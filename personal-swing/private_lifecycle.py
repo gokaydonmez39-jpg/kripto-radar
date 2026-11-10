@@ -79,8 +79,25 @@ _PUBLIC_LIFECYCLE_CODES = frozenset({
     'LIFECYCLE_TERMINAL_BAR_NOT_UNIQUE',
     'LIFECYCLE_TERMINAL_INCONSISTENT',
     'LIFECYCLE_TOO_MANY_EPISODES',
+    'LIFECYCLE_CORPORATE_ACTION_LAST_TRADE_NOT_VERIFIED',
     'LIFECYCLE_UNKNOWN_STATUS',
 })
+
+
+# Exact tracker-authored errors only. No exception data or per-symbol context
+# may enter public Actions logs; everything else stays UNCLASSIFIED.
+_TRACKER_PUBLIC_FAILURE_CODES = {
+    'FOLLOWUP_ASOF_BAR_MISSING_NO_ADVANCE':
+        'LIFECYCLE_FOLLOWUP_ASOF_BAR_MISSING',
+    'FOLLOWUP_MISSING_INTERMEDIATE_SESSION':
+        'LIFECYCLE_FOLLOWUP_INTERMEDIATE_SESSION_MISSING',
+    'DUPLICATE_FOLLOWUP_BAR':
+        'LIFECYCLE_FOLLOWUP_DUPLICATE_BAR',
+    'INVALID_FOLLOWUP_OHLCV':
+        'LIFECYCLE_FOLLOWUP_INVALID_OHLCV',
+    'INVALID_FOLLOWUP_BAR_RANGE':
+        'LIFECYCLE_FOLLOWUP_INVALID_RANGE',
+}
 
 
 def lifecycle_public_failure_code(exc):
@@ -90,11 +107,19 @@ def lifecycle_public_failure_code(exc):
         return shared_code
     if isinstance(exc, HandoffBlocked) and str(exc) in _PUBLIC_LIFECYCLE_CODES:
         return str(exc)
+    if type(exc) is ValueError:
+        return _TRACKER_PUBLIC_FAILURE_CODES.get(str(exc), 'UNCLASSIFIED')
     return 'UNCLASSIFIED'
 
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
 MAX_EPISODES = 4770
 CALENDAR = 'XNAS'
+# Source-anchored issuer lifecycle: 9 Nov ROKU has NO exchange daily bar.
+# GNTX is a NEW issuer in the prospective scope, never a ROKU alias.
+_ROKU_LAST_TRADING = '2026-11-06'
+_ROKU_DELIST_EFFECTIVE = '2026-11-09'
+_ROKU_FIRST_NEW_PIT = '2026-11-10'
+_ROKU_NASDAQ_NOTICE = 'https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806'
 
 VERIFIED_RUN_URL = re.compile(
     r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*$')
@@ -193,12 +218,43 @@ def build_updates(values, asof, read_batch):
     if not due:
         return {'updates':[],'total_open':len(episode_list),
                 'evaluated':0,'closed':0,'asof_et':asof}
-    syms=sorted({e['symbol'] for e in due})
+    # Non-market corporate termination must not query a fabricated ROKU bar.
+    # It is allowed ONLY after the verified historical episode was already
+    # followed through ROKU's actual final 6 Nov trading session.
+    corporate=set()
+    for episode in due:
+        if episode['symbol']=='ROKU' and asof>=_ROKU_FIRST_NEW_PIT:
+            require(episode['processed_through']==_ROKU_LAST_TRADING and
+                    episode['asof_et']<=_ROKU_LAST_TRADING,
+                    'LIFECYCLE_CORPORATE_ACTION_LAST_TRADE_NOT_VERIFIED')
+            corporate.add(episode['id'])
+    syms=sorted({e['symbol'] for e in due if e['id'] not in corporate})
     require(all(s.isascii() and s.isupper() for s in syms),'LIFECYCLE_BAD_SYMBOL')
-    bars_by_symbol=read_batch(syms,asof)
+    bars_by_symbol=read_batch(syms,asof) if syms else {}
     require(isinstance(bars_by_symbol,dict),'LIFECYCLE_PROVIDER_RESPONSE_INVALID')
     updates=[]
     for episode in due:
+        if episode['id'] in corporate:
+            held=episode['days_held']
+            code='CORPORATE_ACTION_REVIEW'
+            day=_ROKU_DELIST_EFFECTIVE
+            event={
+                'event_key':episode['id']+'|'+day+'|'+code+'|1',
+                'episode_id':episode['id'],
+                'original_asof':episode['asof_et'],
+                'symbol':'ROKU','event_day':day,'event_code':code,
+                'iex_close':'',  # No official 9 Nov ROKU candle; no price/fill.
+                'stop':episode['stop'],'target':episode['target_2r'],
+                'days_held':held,'gap':False,'source_notice':_ROKU_NASDAQ_NOTICE,
+            }
+            updates.append({
+                'event':event,'sheet_row_index':episode['sheet_row_index'],
+                'id':episode['id'],'original_row':episode['original_row'],
+                'new_cells':['KAPALI • '+code+' • %d/15 SEANS'%held,
+                             day,code,''],
+                'terminal':True,'asof_et':asof
+            })
+            continue
         symbol=episode['symbol']
         require(symbol in bars_by_symbol and isinstance(bars_by_symbol[symbol],list),
                 'LIFECYCLE_MISSING_SYMBOL_BARS')
@@ -277,15 +333,21 @@ def plan_outbox_events(plan, alert_values, verified_run_url):
             if event['event_key'] not in existing:
                 continue
         kind=event['event_code']
-        priority=('KRITIK' if kind in ('STOP_TOUCHED','BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
+        priority=('KURUMSAL_ISLEM' if kind=='CORPORATE_ACTION_REVIEW'
+                  else 'KRITIK' if kind in ('STOP_TOUCHED','BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
                   else 'HEDEF' if kind=='TARGET_TOUCHED' else 'SURE_SONU')
+        if kind=='CORPORATE_ACTION_REVIEW':
+            note=('Corporate action: ROKU delisted; no IEX closing bar, no '
+                  'theoretical exit-price or fill; independently review cash/share '
+                  'consideration; Nasdaq '+event['source_notice'])
+        else:
+            note=('Verified historical Alpaca IEX daily bar; theoretical contact only; '
+                  'gap_below_stop='+str(event['gap'])+'; never executable fill')
         row=[event['event_key'],event['episode_id'],event['original_asof'],
              event['symbol'],event['event_day'],kind,priority,
              str(event['iex_close']),str(event['stop']),str(event['target']),
              '','','','','',str(event['days_held'])+'/15',verified_run_url,
-             EVENT_PENDING,'',
-             'Verified historical Alpaca IEX daily bar; theoretical contact only; '
-             'gap_below_stop='+str(event['gap'])+'; never executable fill']
+             EVENT_PENDING,'',note]
         old=existing.get(event['event_key'])
         if old is not None:
             require(len(old)>=20 and old[:10]==row[:10] and

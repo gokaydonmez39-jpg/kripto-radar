@@ -494,6 +494,17 @@
       "historical_identity": "NEW_SUPN_2026_11_03_ONWARD_INHERITS_INDV_HISTORY",
       "legacy_supn_history": "DO_NOT_JOIN_SEPARATE_LEGACY_SUPN_ISSUER",
       "status": "REVIEWED_POINT_IN_TIME_IDENTITY_ONLY_NO_AUTO_AL_RELEASE"
+    },
+    {
+      "effective_asof_et": "2026-11-10",
+      "old_symbol": "ROKU",
+      "new_symbol": "GNTX",
+      "reason": "ROKU_FOX_ACQUISITION_DELISTING_SEPARATE_NEW_ISSUER_FIXED_477_OWNER_APPROVED",
+      "nasdaq_corporate_action": "https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806",
+      "sec_confirmation": "https://www.sec.gov/Archives/edgar/data/1428439/000119312526451874/d181620d8k.htm",
+      "replacement_issuer_sec": "https://www.sec.gov/Archives/edgar/data/355811/000035581126000065/gntx-20260930.htm",
+      "history_policy": "NO_ROKU_GNTX_PRICE_HISTORY_JOIN_HISTORICAL_EPISODES_UNCHANGED",
+      "status": "OWNER_APPROVED_2026_11_10_FORWARD_ONLY_NO_BACKFILL_NO_REPLAY"
     }
   ]
 }

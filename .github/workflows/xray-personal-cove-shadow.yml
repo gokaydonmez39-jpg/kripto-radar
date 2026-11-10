@@ -46,14 +46,14 @@ jobs:
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
 
   private-eod-research:
-    # No PR code or alternate/canonical NASDAQ plane; schedule after
+    # No PR code or alternate/canonical NASDAQ plane; schedule/dispatch after
     # exact protected main EOD receipt only. Fail closed if Sheet/source
     # receipt or score not from same completed XNAS ASOF.
     if: >-
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.event == 'schedule' &&
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15

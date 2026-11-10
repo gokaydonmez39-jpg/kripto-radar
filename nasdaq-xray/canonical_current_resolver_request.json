@@ -1,12 +1,11 @@
 {
-  "asof_et": "2026-11-06",
+  "asof_et": "2026-11-09",
   "compiled_policy_blob_sha": "16c50cc8f887a5234a4be23862d7c8d0e564b0ac",
   "compiled_policy_hash": "68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4",
   "compiled_policy_path": "nasdaq-xray/chatgpt_compiled_policy_v3.json",
   "compiled_policy_version": "C4.17",
   "execution": "NONE",
   "expected30": [
-    "2026-09-28",
     "2026-09-29",
     "2026-09-30",
     "2026-10-01",
@@ -35,9 +34,10 @@
     "2026-11-03",
     "2026-11-04",
     "2026-11-05",
-    "2026-11-06"
+    "2026-11-06",
+    "2026-11-09"
   ],
-  "master_unknown_count": 17,
+  "master_unknown_count": 19,
   "master_unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -174,6 +174,24 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "RFAM": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "RF Acquisition Corp III - Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "TACH": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Titan Acquisition Corp. - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "TCXB": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -193,7 +211,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "6bbde3d34da00fcbd24ba01cb285ff3016c6fb656f54334f2d7738c6096788a3",
+  "master_unknown_hash": "45ab653700c5ad1367b2bd106a6d2ee8c035b735e6ea051496f9fb7730b38993",
   "master_unknown_symbols": [
     "ALIS",
     "BACC",
@@ -210,10 +228,12 @@
     "MACI",
     "MCGA",
     "PAXG",
+    "RFAM",
+    "TACH",
     "TCXB",
     "WTG"
   ],
-  "official_footer": "File Creation Time: 1106202621:31|||||||",
+  "official_footer": "File Creation Time: 1109202621:31|||||||",
   "pointer_asof_et": "2026-10-07",
   "price_blocked_count": 0,
   "price_blocked_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -226,7 +246,7 @@
     "dv30": ">=50000000 exact30 median",
     "price": ">=5"
   },
-  "price_unknown_count": 562,
+  "price_unknown_count": 558,
   "price_unknown_detail": {
     "AAL": {
       "price_result": {
@@ -397,16 +417,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "AGNC Investment Corp. - Common Stock"
-    },
-    "AIIO": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Robo.ai Inc. - Class B Ordinary Shares"
     },
     "AKAM": {
       "price_result": {
@@ -698,6 +708,16 @@
       },
       "security_name": "AST SpaceMobile, Inc. - Class A Common Stock"
     },
+    "AUBN": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Auburn National Bancorporation, Inc. - Common Stock"
+    },
     "AUGO": {
       "price_result": {
         "info": {
@@ -838,7 +858,7 @@
       },
       "security_name": "Baker Hughes Company - Common Stock"
     },
-    "BMHL": {
+    "BLLN": {
       "price_result": {
         "info": {
           "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
@@ -846,7 +866,7 @@
         "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
-      "security_name": "Bluemount Holdings Limited - Class B Ordinary Shares"
+      "security_name": "BillionToOne, Inc. - Class A common stock"
     },
     "BMRN": {
       "price_result": {
@@ -877,6 +897,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Popular, Inc. - Common Stock"
+    },
+    "BRBI": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "BRBI BR Partners S.A. - ADSs"
     },
     "BRKR": {
       "price_result": {
@@ -938,16 +968,6 @@
       },
       "security_name": "BrightSpring Health Services, Inc. - Common Stock"
     },
-    "BWIN": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "The Baldwin Insurance Group, Inc. - Class A Common Stock"
-    },
     "BZ": {
       "price_result": {
         "info": {
@@ -1007,16 +1027,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Maplebear Inc. - Common Stock"
-    },
-    "CASK": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Sempreon, Inc. - Common Stock"
     },
     "CASY": {
       "price_result": {
@@ -1138,26 +1148,6 @@
       },
       "security_name": "Century Aluminum Company - Common Stock"
     },
-    "CEPS": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Cantor Equity Partners VI, Inc. - Class A Ordinary Shares"
-    },
-    "CEPV": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Cantor Equity Partners V, Inc. - Class A Ordinary Shares"
-    },
     "CG": {
       "price_result": {
         "info": {
@@ -1217,16 +1207,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Check Point Software Technologies Ltd. - Ordinary Shares"
-    },
-    "CHNR": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "China Natural Resources, Inc. - Common Shares"
     },
     "CHRD": {
       "price_result": {
@@ -1438,6 +1418,16 @@
       },
       "security_name": "The Campbell's Company - Common Stock"
     },
+    "CPBI": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Central Plains Bancshares, Inc. - Common Stock"
+    },
     "CPRT": {
       "price_result": {
         "info": {
@@ -1557,6 +1547,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Cognizant Technology Solutions Corporation - Class A Common Stock"
+    },
+    "CUB": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Lionheart Holdings - Class A Ordinary Shares"
     },
     "CVCO": {
       "price_result": {
@@ -1678,16 +1678,6 @@
       },
       "security_name": "Dollar Tree, Inc. - Common Stock"
     },
-    "DNMX": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Dynamix Corporation III - Class A Ordinary Shares"
-    },
     "DNTH": {
       "price_result": {
         "info": {
@@ -1747,6 +1737,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "DexCom, Inc. - Common Stock"
+    },
+    "DYN": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Dyne Therapeutics, Inc. - Common Stock"
     },
     "EBAY": {
       "price_result": {
@@ -2098,16 +2098,6 @@
       },
       "security_name": "FormFactor, Inc. - Common Stock"
     },
-    "FORTY": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Formula Systems (1985) Ltd. - American Depositary Shares"
-    },
     "FOXA": {
       "price_result": {
         "info": {
@@ -2228,7 +2218,7 @@
       },
       "security_name": "Georgia Banking Company, Inc. - Common Stock"
     },
-    "GDEV": {
+    "GCGR": {
       "price_result": {
         "info": {
           "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
@@ -2236,7 +2226,7 @@
         "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
-      "security_name": "GDEV Inc. - Ordinary Shares"
+      "security_name": "General Catalyst Global Resilience Merger Corp. - Class A Ordinary Shares"
     },
     "GDS": {
       "price_result": {
@@ -2297,6 +2287,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Gores Holdings XI, Inc. - Class A Ordinary Shares"
+    },
+    "GIGM": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "GigaMedia Limited - Ordinary Shares"
     },
     "GILD": {
       "price_result": {
@@ -2408,6 +2408,16 @@
       },
       "security_name": "Globalstar, Inc. - Common Stock"
     },
+    "GTEN": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Gores Holdings X, Inc. - Class A ordinary shares"
+    },
     "GTLB": {
       "price_result": {
         "info": {
@@ -2427,6 +2437,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Garrett Motion Inc. - Common Stock"
+    },
+    "GURE": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Gulf Resources, Inc. - Common Stock"
     },
     "HALO": {
       "price_result": {
@@ -2457,6 +2477,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Huntington Bancshares Incorporated - Common Stock"
+    },
+    "HCIC": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Hennessy Capital Investment Corp. VIII - Class A Ordinary Shares"
     },
     "HDL": {
       "price_result": {
@@ -2878,16 +2908,6 @@
       },
       "security_name": "Jack Henry & Associates, Inc. - Common Stock"
     },
-    "JSPR": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Jasper Therapeutics, Inc. - Class A Common Stock"
-    },
     "KBON": {
       "price_result": {
         "info": {
@@ -3128,16 +3148,6 @@
       },
       "security_name": "Lam Research Corporation - Common Stock"
     },
-    "LRE": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Lead Real Estate Co., Ltd - American Depositary Shares"
-    },
     "LSCC": {
       "price_result": {
         "info": {
@@ -3147,6 +3157,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Lattice Semiconductor Corporation - Common Stock"
+    },
+    "LSE": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Leishen Energy Holding Co., Ltd. - Class A Ordinary Shares"
     },
     "LSTR": {
       "price_result": {
@@ -3187,16 +3207,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Intuitive Machines, Inc. - Class A Common Stock"
-    },
-    "LXEH": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Lixiang Education Holding Co., Ltd. - American Depositary Shares"
     },
     "LYCA": {
       "price_result": {
@@ -3308,6 +3318,16 @@
       },
       "security_name": "Mondelez International, Inc. - Class A Common Stock"
     },
+    "MDRR": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Medalist Diversified, Inc. - Common Stock"
+    },
     "MEDP": {
       "price_result": {
         "info": {
@@ -3417,16 +3437,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Monster Beverage Corporation - Common Stock"
-    },
-    "MOLN": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Molecular Partners AG - American Depositary Shares"
     },
     "MORN": {
       "price_result": {
@@ -3588,16 +3598,6 @@
       },
       "security_name": "Neurocrine Biosciences, Inc. - Common Stock"
     },
-    "NCEW": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "New Century Logistics (BVI) Limited - Ordinary Shares"
-    },
     "NDAQ": {
       "price_result": {
         "info": {
@@ -3638,6 +3638,16 @@
       },
       "security_name": "Netflix, Inc. - Common Stock"
     },
+    "NHIV": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "NewHold Investment Corp IV - Class A Ordinary Shares"
+    },
     "NICE": {
       "price_result": {
         "info": {
@@ -3648,7 +3658,7 @@
       },
       "security_name": "NICE Ltd - American Depositary Shares each representing one Ordinary Share"
     },
-    "NICM": {
+    "NOEM": {
       "price_result": {
         "info": {
           "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
@@ -3656,7 +3666,7 @@
         "provenance": "DYNAMIC_BRIDGE_DEFERRED",
         "status": "UNKNOWN"
       },
-      "security_name": "Nicola Mining Inc. - American Depositary Shares"
+      "security_name": "CO2 Energy Transition Corp. - Common Stock"
     },
     "NOVT": {
       "price_result": {
@@ -3998,6 +4008,16 @@
       },
       "security_name": "Paychex, Inc. - Common Stock"
     },
+    "PBHC": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Pathfinder Bancorp, Inc. - Common Stock"
+    },
     "PCAR": {
       "price_result": {
         "info": {
@@ -4068,16 +4088,6 @@
       },
       "security_name": "PepsiCo, Inc. - Common Stock"
     },
-    "PETZ": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "TDH Holdings, Inc. - Common Shares"
-    },
     "PFG": {
       "price_result": {
         "info": {
@@ -4087,16 +4097,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Principal Financial Group Inc - Common Stock"
-    },
-    "PHOE": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Phoenix Asia Holdings Limited - Ordinary Shares"
     },
     "PI": {
       "price_result": {
@@ -4288,16 +4288,6 @@
       },
       "security_name": "Ultragenyx Pharmaceutical Inc. - Common Stock"
     },
-    "RDIB": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Reading International Inc - Class B Voting Common Stock"
-    },
     "REG": {
       "price_result": {
         "info": {
@@ -4388,6 +4378,16 @@
       },
       "security_name": "Rocket Lab Corporation - Common Stock"
     },
+    "RLAY": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Relay Therapeutics, Inc. - Common Stock"
+    },
     "RMBS": {
       "price_result": {
         "info": {
@@ -4417,16 +4417,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Roivant Sciences Ltd. - Common Shares"
-    },
-    "ROKU": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Roku, Inc. - Class A Common Stock"
     },
     "ROP": {
       "price_result": {
@@ -4638,6 +4628,16 @@
       },
       "security_name": "Sprouts Farmers Market, Inc. - Common Stock"
     },
+    "SFWL": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Shengfeng Development Limited - Class A Ordinary Shares"
+    },
     "SHAZ": {
       "price_result": {
         "info": {
@@ -4667,6 +4667,16 @@
         "status": "UNKNOWN"
       },
       "security_name": "Shopify Inc. - Class A Subordinate Voting Shares"
+    },
+    "SHOT": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "RMG ML Sports Holdings - Class A Ordinary Shares"
     },
     "SIMO": {
       "price_result": {
@@ -4768,6 +4778,16 @@
       },
       "security_name": "Semtech Corporation - Common Stock"
     },
+    "SMX": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "SMX (Security Matters) Public Limited Company - Ordinary Shares"
+    },
     "SNEX": {
       "price_result": {
         "info": {
@@ -4838,6 +4858,16 @@
       },
       "security_name": "Scholar Rock Holding Corporation - Common Stock"
     },
+    "SSBI": {
+      "price_result": {
+        "info": {
+          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
+        },
+        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
+        "status": "UNKNOWN"
+      },
+      "security_name": "Summit State Bank - Common Stock"
+    },
     "SSNC": {
       "price_result": {
         "info": {
@@ -4907,16 +4937,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Supernus, Inc. - Common Stock"
-    },
-    "SVCC": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Stellar V Capital Corp. - Class A Ordinary Shares"
     },
     "SWKS": {
       "price_result": {
@@ -5038,16 +5058,6 @@
       },
       "security_name": "TG Therapeutics, Inc. - Common Stock"
     },
-    "THCH": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "TH International Limited - Ordinary shares"
-    },
     "THRM": {
       "price_result": {
         "info": {
@@ -5067,16 +5077,6 @@
         "status": "UNKNOWN"
       },
       "security_name": "Millicom International Cellular S.A. - Common Stock"
-    },
-    "TLIH": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Ten-League International Holdings Limited - Ordinary Shares"
     },
     "TLN": {
       "price_result": {
@@ -5578,16 +5578,6 @@
       },
       "security_name": "Viatris Inc. - Common Stock"
     },
-    "WAY": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "Waystar Holding Corp. - Common Stock"
-    },
     "WDAY": {
       "price_result": {
         "info": {
@@ -5818,16 +5808,6 @@
       },
       "security_name": "Zions Bancorporation N.A. - Common Stock"
     },
-    "ZKIN": {
-      "price_result": {
-        "info": {
-          "reason": "AUTHENTICATED_SIP_RESOLVER_BRIDGE_REQUIRED"
-        },
-        "provenance": "DYNAMIC_BRIDGE_DEFERRED",
-        "status": "UNKNOWN"
-      },
-      "security_name": "ZK International Group Co., Ltd - Ordinary Share"
-    },
     "ZM": {
       "price_result": {
         "info": {
@@ -5849,7 +5829,7 @@
       "security_name": "Zscaler, Inc. - Common Stock"
     }
   },
-  "price_unknown_hash": "7ddd2be2e2b4e3295b4cb77e48829f10025868e02a01b7d158fa8d61d1cde583",
+  "price_unknown_hash": "6ca57c5c0900e1aa176a3ae43bae88e36f175c42e84a3878e7ec3dfe845dd15a",
   "price_unknown_symbols": [
     "AAL",
     "AAOI",
@@ -5868,7 +5848,6 @@
     "AEP",
     "AFRM",
     "AGNC",
-    "AIIO",
     "AKAM",
     "ALAB",
     "ALGM",
@@ -5898,6 +5877,7 @@
     "ASPE",
     "ASST",
     "ASTS",
+    "AUBN",
     "AUGO",
     "AVAV",
     "AVGO",
@@ -5912,24 +5892,23 @@
     "BIIB",
     "BKNG",
     "BKR",
-    "BMHL",
+    "BLLN",
     "BMRN",
     "BNTX",
     "BPOP",
+    "BRBI",
     "BRKR",
     "BRZE",
     "BSP",
     "BSY",
     "BTDR",
     "BTSG",
-    "BWIN",
     "BZ",
     "CAI",
     "CAKE",
     "CALM",
     "CAMT",
     "CART",
-    "CASK",
     "CASY",
     "CBRL",
     "CBRS",
@@ -5942,15 +5921,12 @@
     "CELC",
     "CELH",
     "CENX",
-    "CEPS",
-    "CEPV",
     "CG",
     "CGNX",
     "CGON",
     "CHDN",
     "CHEF",
     "CHKP",
-    "CHNR",
     "CHRD",
     "CHRW",
     "CHTR",
@@ -5972,6 +5948,7 @@
     "CORZ",
     "COST",
     "CPB",
+    "CPBI",
     "CPRT",
     "CRDO",
     "CROX",
@@ -5984,6 +5961,7 @@
     "CSX",
     "CTAS",
     "CTSH",
+    "CUB",
     "CVCO",
     "CVLT",
     "CWST",
@@ -5996,13 +5974,13 @@
     "DFTX",
     "DKNG",
     "DLTR",
-    "DNMX",
     "DNTH",
     "DOCU",
     "DOX",
     "DPZ",
     "DUOL",
     "DXCM",
+    "DYN",
     "EBAY",
     "ECHO",
     "EEFT",
@@ -6038,7 +6016,6 @@
     "FLEX",
     "FLY",
     "FORM",
-    "FORTY",
     "FOXA",
     "FROG",
     "FRPT",
@@ -6051,13 +6028,14 @@
     "FUTU",
     "FWONK",
     "GBC",
-    "GDEV",
+    "GCGR",
     "GDS",
     "GEHC",
     "GEN",
     "GFS",
     "GH",
     "GHXI",
+    "GIGM",
     "GILD",
     "GLBE",
     "GLNG",
@@ -6069,11 +6047,14 @@
     "GOOGL",
     "GRAL",
     "GSAT",
+    "GTEN",
     "GTLB",
     "GTX",
+    "GURE",
     "HALO",
     "HAS",
     "HBAN",
+    "HCIC",
     "HDL",
     "HLNE",
     "HLT",
@@ -6116,7 +6097,6 @@
     "JBHT",
     "JD",
     "JKHY",
-    "JSPR",
     "KBON",
     "KDP",
     "KLAC",
@@ -6141,13 +6121,12 @@
     "LPLA",
     "LQDA",
     "LRCX",
-    "LRE",
     "LSCC",
+    "LSE",
     "LSTR",
     "LTGR",
     "LULU",
     "LUNR",
-    "LXEH",
     "LYCA",
     "LYFT",
     "MANH",
@@ -6159,6 +6138,7 @@
     "MDGL",
     "MDLN",
     "MDLZ",
+    "MDRR",
     "MEDP",
     "MELI",
     "META",
@@ -6170,7 +6150,6 @@
     "MMSI",
     "MNDY",
     "MNST",
-    "MOLN",
     "MORN",
     "MPWR",
     "MRNA",
@@ -6187,13 +6166,13 @@
     "NAVN",
     "NBIS",
     "NBIX",
-    "NCEW",
     "NDAQ",
     "NDSN",
     "NESR",
     "NFLX",
+    "NHIV",
     "NICE",
-    "NICM",
+    "NOEM",
     "NOVT",
     "NRIX",
     "NSIT",
@@ -6228,6 +6207,7 @@
     "PAGP",
     "PANW",
     "PAYX",
+    "PBHC",
     "PCAR",
     "PCTY",
     "PCVX",
@@ -6235,9 +6215,7 @@
     "PEGA",
     "PENG",
     "PEP",
-    "PETZ",
     "PFG",
-    "PHOE",
     "PI",
     "PLTR",
     "PLXS",
@@ -6257,7 +6235,6 @@
     "QLYS",
     "QNT",
     "RARE",
-    "RDIB",
     "REG",
     "REGN",
     "RELY",
@@ -6267,10 +6244,10 @@
     "RIOT",
     "RIVN",
     "RKLB",
+    "RLAY",
     "RMBS",
     "ROAD",
     "ROIV",
-    "ROKU",
     "ROP",
     "ROST",
     "RPRX",
@@ -6292,9 +6269,11 @@
     "SENEB",
     "SEZL",
     "SFM",
+    "SFWL",
     "SHAZ",
     "SHOO",
     "SHOP",
+    "SHOT",
     "SIMO",
     "SIRI",
     "SITM",
@@ -6305,6 +6284,7 @@
     "SMCI",
     "SMMT",
     "SMTC",
+    "SMX",
     "SNEX",
     "SNPS",
     "SNY",
@@ -6312,6 +6292,7 @@
     "SOLS",
     "SPCX",
     "SRRK",
+    "SSBI",
     "SSNC",
     "SSRM",
     "STLD",
@@ -6319,7 +6300,6 @@
     "STRL",
     "STX",
     "SUPN",
-    "SVCC",
     "SWKS",
     "SYM",
     "SYNA",
@@ -6332,10 +6312,8 @@
     "TENB",
     "TER",
     "TGTX",
-    "THCH",
     "THRM",
     "TIGO",
-    "TLIH",
     "TLN",
     "TMDX",
     "TMUS",
@@ -6386,7 +6364,6 @@
     "VSEC",
     "VSNT",
     "VTRS",
-    "WAY",
     "WDAY",
     "WDC",
     "WFRD",
@@ -6410,12 +6387,11 @@
     "Z",
     "ZBRA",
     "ZION",
-    "ZKIN",
     "ZM",
     "ZS"
   ],
-  "queue_hash": "74a68cf8ac0423f01b054878b1fd228420385f95e217f3bef2858d3410ecbeea",
-  "queue_total": 3192,
+  "queue_hash": "b798498b0b616c516ef8a1bb9f7e90e6e712d2286e0090096d38c8023c45e0be",
+  "queue_total": 3189,
   "real_money": "NO-GO",
   "resolver_policy": "ALPACA_SIP_PREFERRED__RALLIES_LONGBRIDGE_DUAL_SOURCE_CONNECTOR_FAILOVER__NEVER_G9__FAIL_CLOSED__SAME_ASOF_QUEUE_BINDING",
   "schema": "XRAY_RESOLVER_EPOCH_REQUEST_V1",
@@ -6432,30 +6408,31 @@
     "NVDA",
     "MSFT"
   ],
-  "source_master_blob_sha": "a1a28bd54cb0def9de00732fe628c3af335b9b59",
+  "source_master_blob_sha": "b9558e48467b6dc90afab25263e815c9491f4137",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "ec9ef89ba2d08d8720f732412246295f26ed1634",
+  "source_overlay_blob_sha": "63b36e66d6b7435d372fb322b9dca113a3915467",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "11761c589063d28d8795621844c9ce8f965dd911",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
-  "source_price_blob_sha": "e2ca9c0d32678ee02b876f4fccf1ab770f111e59",
+  "source_price_blob_sha": "dc00ad0e2fa3d29a4748b347e2bef333f587c069",
   "source_price_counts": {
-    "FAIL_DV30": 1255,
-    "FAIL_PRICE": 1364,
-    "FAIL_PRICE_NO_ASOF_BAR": 11,
-    "UNKNOWN": 562
+    "FAIL_DV30": 1269,
+    "FAIL_DV30_INSUFFICIENT_SESSIONS": 1,
+    "FAIL_PRICE": 1352,
+    "FAIL_PRICE_NO_ASOF_BAR": 9,
+    "UNKNOWN": 558
   },
   "source_price_global_asof_sentinel_fast_fail": false,
   "source_price_pass_count": 0,
   "source_price_pass_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "27c4f021a3f938b41d9088ca089d6f6c8b6bfc6b",
+  "source_state_blob_sha": "d964edb6b2e68967ce6b8a83f9a8fe42055943ca",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "39e207a811c4d329c888966f37e58eb9093d3bc7",
+  "source_unknowns_blob_sha": "2358d7f3e4ba7ddbb35ceb36b78c9b4eaf5556a4",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
-  "symbol_count": 562,
-  "symbol_hash": "7ddd2be2e2b4e3295b4cb77e48829f10025868e02a01b7d158fa8d61d1cde583",
+  "symbol_count": 558,
+  "symbol_hash": "6ca57c5c0900e1aa176a3ae43bae88e36f175c42e84a3878e7ec3dfe845dd15a",
   "symbols": [
     "AAL",
     "AAOI",
@@ -6474,7 +6451,6 @@
     "AEP",
     "AFRM",
     "AGNC",
-    "AIIO",
     "AKAM",
     "ALAB",
     "ALGM",
@@ -6504,6 +6480,7 @@
     "ASPE",
     "ASST",
     "ASTS",
+    "AUBN",
     "AUGO",
     "AVAV",
     "AVGO",
@@ -6518,24 +6495,23 @@
     "BIIB",
     "BKNG",
     "BKR",
-    "BMHL",
+    "BLLN",
     "BMRN",
     "BNTX",
     "BPOP",
+    "BRBI",
     "BRKR",
     "BRZE",
     "BSP",
     "BSY",
     "BTDR",
     "BTSG",
-    "BWIN",
     "BZ",
     "CAI",
     "CAKE",
     "CALM",
     "CAMT",
     "CART",
-    "CASK",
     "CASY",
     "CBRL",
     "CBRS",
@@ -6548,15 +6524,12 @@
     "CELC",
     "CELH",
     "CENX",
-    "CEPS",
-    "CEPV",
     "CG",
     "CGNX",
     "CGON",
     "CHDN",
     "CHEF",
     "CHKP",
-    "CHNR",
     "CHRD",
     "CHRW",
     "CHTR",
@@ -6578,6 +6551,7 @@
     "CORZ",
     "COST",
     "CPB",
+    "CPBI",
     "CPRT",
     "CRDO",
     "CROX",
@@ -6590,6 +6564,7 @@
     "CSX",
     "CTAS",
     "CTSH",
+    "CUB",
     "CVCO",
     "CVLT",
     "CWST",
@@ -6602,13 +6577,13 @@
     "DFTX",
     "DKNG",
     "DLTR",
-    "DNMX",
     "DNTH",
     "DOCU",
     "DOX",
     "DPZ",
     "DUOL",
     "DXCM",
+    "DYN",
     "EBAY",
     "ECHO",
     "EEFT",
@@ -6644,7 +6619,6 @@
     "FLEX",
     "FLY",
     "FORM",
-    "FORTY",
     "FOXA",
     "FROG",
     "FRPT",
@@ -6657,13 +6631,14 @@
     "FUTU",
     "FWONK",
     "GBC",
-    "GDEV",
+    "GCGR",
     "GDS",
     "GEHC",
     "GEN",
     "GFS",
     "GH",
     "GHXI",
+    "GIGM",
     "GILD",
     "GLBE",
     "GLNG",
@@ -6675,11 +6650,14 @@
     "GOOGL",
     "GRAL",
     "GSAT",
+    "GTEN",
     "GTLB",
     "GTX",
+    "GURE",
     "HALO",
     "HAS",
     "HBAN",
+    "HCIC",
     "HDL",
     "HLNE",
     "HLT",
@@ -6722,7 +6700,6 @@
     "JBHT",
     "JD",
     "JKHY",
-    "JSPR",
     "KBON",
     "KDP",
     "KLAC",
@@ -6747,13 +6724,12 @@
     "LPLA",
     "LQDA",
     "LRCX",
-    "LRE",
     "LSCC",
+    "LSE",
     "LSTR",
     "LTGR",
     "LULU",
     "LUNR",
-    "LXEH",
     "LYCA",
     "LYFT",
     "MANH",
@@ -6765,6 +6741,7 @@
     "MDGL",
     "MDLN",
     "MDLZ",
+    "MDRR",
     "MEDP",
     "MELI",
     "META",
@@ -6776,7 +6753,6 @@
     "MMSI",
     "MNDY",
     "MNST",
-    "MOLN",
     "MORN",
     "MPWR",
     "MRNA",
@@ -6793,13 +6769,13 @@
     "NAVN",
     "NBIS",
     "NBIX",
-    "NCEW",
     "NDAQ",
     "NDSN",
     "NESR",
     "NFLX",
+    "NHIV",
     "NICE",
-    "NICM",
+    "NOEM",
     "NOVT",
     "NRIX",
     "NSIT",
@@ -6834,6 +6810,7 @@
     "PAGP",
     "PANW",
     "PAYX",
+    "PBHC",
     "PCAR",
     "PCTY",
     "PCVX",
@@ -6841,9 +6818,7 @@
     "PEGA",
     "PENG",
     "PEP",
-    "PETZ",
     "PFG",
-    "PHOE",
     "PI",
     "PLTR",
     "PLXS",
@@ -6863,7 +6838,6 @@
     "QLYS",
     "QNT",
     "RARE",
-    "RDIB",
     "REG",
     "REGN",
     "RELY",
@@ -6873,10 +6847,10 @@
     "RIOT",
     "RIVN",
     "RKLB",
+    "RLAY",
     "RMBS",
     "ROAD",
     "ROIV",
-    "ROKU",
     "ROP",
     "ROST",
     "RPRX",
@@ -6898,9 +6872,11 @@
     "SENEB",
     "SEZL",
     "SFM",
+    "SFWL",
     "SHAZ",
     "SHOO",
     "SHOP",
+    "SHOT",
     "SIMO",
     "SIRI",
     "SITM",
@@ -6911,6 +6887,7 @@
     "SMCI",
     "SMMT",
     "SMTC",
+    "SMX",
     "SNEX",
     "SNPS",
     "SNY",
@@ -6918,6 +6895,7 @@
     "SOLS",
     "SPCX",
     "SRRK",
+    "SSBI",
     "SSNC",
     "SSRM",
     "STLD",
@@ -6925,7 +6903,6 @@
     "STRL",
     "STX",
     "SUPN",
-    "SVCC",
     "SWKS",
     "SYM",
     "SYNA",
@@ -6938,10 +6915,8 @@
     "TENB",
     "TER",
     "TGTX",
-    "THCH",
     "THRM",
     "TIGO",
-    "TLIH",
     "TLN",
     "TMDX",
     "TMUS",
@@ -6992,7 +6967,6 @@
     "VSEC",
     "VSNT",
     "VTRS",
-    "WAY",
     "WDAY",
     "WDC",
     "WFRD",
@@ -7016,7 +6990,6 @@
     "Z",
     "ZBRA",
     "ZION",
-    "ZKIN",
     "ZM",
     "ZS"
   ],

@@ -240,8 +240,13 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         workflow = (Path(__file__).resolve().parent.parent /
                     '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text(
                         encoding='utf-8')
+        # Stronger allowlist: PR AND pre-session push NOOP cannot qualify.
         self.assertIn(
             "github.event_name != 'workflow_run' || "
+            "(github.event.workflow_run.event == 'schedule' || "
+            "github.event.workflow_run.event == 'workflow_dispatch')",
+            workflow)
+        self.assertNotIn(
             "github.event.workflow_run.event != 'pull_request'",
             workflow)
         # The real private job must remain tied to actual EOD main source.

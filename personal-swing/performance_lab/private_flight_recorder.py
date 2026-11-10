@@ -29,7 +29,9 @@ EVENT_CODES = REVIEWED_EVENT_CODES
 TERMINAL_CODES = frozenset((
     'STOP_TOUCHED', 'TARGET_TOUCHED',
     'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE',
-    'GAP_BELOW_STOP'
+    'GAP_BELOW_STOP',
+    # Non-price issuer termination. No realized P&L or IEX close is implied.
+    'CORPORATE_ACTION_REVIEW'
 ))
 MAX_ROWS = 1000
 # Explicitly reviewed, immutable PIT handoff receipts. The official Nasdaq
@@ -53,6 +55,16 @@ PIT_ASOF_PIN_CUTOVER = '2026-11-06'
 PIT_ASOF_PIN_SHA = (
     '4045849b129e74a600982db512f2e5ad5343a960544476721ca552544f328a20',
     'c13c5a7ad14c1753d044f2392f37c6fdf7cd5e11f6c2edd3954902aa0716056b',
+)
+
+# Owner-reviewed FORWARD ONLY independent issuer replacement:
+# ROKU last trade 6 Nov, no ROKU 9 Nov bar, static history preserved.
+# No 9 Nov EOD backfill, no ROKU→GNTX price-history concatenation.
+# Public checksums from PR CI 42779376842 (52/52 IEX rows GNTX verified).
+PIT_ROKU_REPLACEMENT_CUTOVER = '2026-11-10'
+PIT_ROKU_REPLACEMENT_SHA = (
+    '3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060',
+    '0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523',
 )
 
 
@@ -111,6 +123,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
                              for scan in scans}
     latest_fp = issuance_fingerprints[cutoff]
     need(latest_fp is not None, 'FLIGHT_CURRENT_SCAN_SHA_MISSING')
+    # The 9 Nov ROKU delisting scan failed (476/477); it is never a
+    # successful receipt. Corporate-action event day 9 Nov is still valid.
+    need('2026-11-09' not in days, 'FLIGHT_FAILED_EPOCH_REPLAY')
+    # Date chooses the reviewed cohort; a stale or uniformly forged SHA
+    # cannot choose a legacy branch and self-authorize after the cutover.
+    if cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER:
+        need(latest_fp == PIT_ROKU_REPLACEMENT_SHA,
+             'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+    else:
+        need(latest_fp != PIT_ROKU_REPLACEMENT_SHA,
+             'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
     verified_days = set()
     for scan in scans:
         day = value(scan,0)
@@ -128,7 +151,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         # 1) 3 Nov: official XNAS point-in-time symbol cutover;
         # 2) 6 Nov: Alpaca raw bars asof pin (same universe, new engine hash).
         # The latest date and fingerprint MUST attest to the chosen cohort.
-        if cutoff >= PIT_ASOF_PIN_CUTOVER and latest_fp == PIT_ASOF_PIN_SHA:
+        if (cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER and
+                latest_fp == PIT_ROKU_REPLACEMENT_SHA):
+            if day < PIT_CUTOVER:
+                permitted_fp = PIT_PRE_CUTOVER_SHA
+            elif day < PIT_ASOF_PIN_CUTOVER:
+                permitted_fp = PIT_POST_CUTOVER_SHA
+            elif day < PIT_ROKU_REPLACEMENT_CUTOVER:
+                permitted_fp = PIT_ASOF_PIN_SHA
+            else:
+                permitted_fp = PIT_ROKU_REPLACEMENT_SHA
+        elif cutoff >= PIT_ASOF_PIN_CUTOVER and latest_fp == PIT_ASOF_PIN_SHA:
             if day < PIT_CUTOVER:
                 permitted_fp = PIT_PRE_CUTOVER_SHA
             elif day < PIT_ASOF_PIN_CUTOVER:
@@ -177,6 +210,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             terminal_day, terminal_kind = value(row,8), value(row,9)
             need(start <= terminal_day <= cutoff and terminal_kind in TERMINAL_CODES,
                  'FLIGHT_TERMINAL_EVENT_INVALID')
+            if terminal_kind == 'CORPORATE_ACTION_REVIEW':
+                need(symbol == 'ROKU' and start <= '2026-11-06' and
+                     terminal_day == '2026-11-09' and cutoff >= '2026-11-10' and
+                     value(row,10) == '' and
+                     re.fullmatch(r'KAPALI • CORPORATE_ACTION_REVIEW • (?:[0-9]|1[0-4])/15 SEANS',
+                                  status) is not None,
+                     'FLIGHT_CORPORATE_ACTION_EPISODE_INVALID')
             terminal_id=f'{key}|{terminal_day}|{terminal_kind}|1'
             terminal_expected.add(terminal_id)
             closed_terminal_by_owner[key] = terminal_id
@@ -211,6 +251,14 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
              'FLIGHT_EVENT_DEDUP_KEY_INVALID')
         need(price(value(row,8)) == stop and price(value(row,9)) == target,
              'FLIGHT_ORIGINAL_LEVELS_CHANGED')
+        if code == 'CORPORATE_ACTION_REVIEW':
+            need(symbol == 'ROKU' and start <= '2026-11-06' and
+                 event_day == '2026-11-09' and cutoff >= '2026-11-10' and
+                 closed_terminal_by_owner.get(owner) == eventkey and
+                 value(row,6) == 'KURUMSAL_ISLEM' and value(row,7) == '' and
+                 'https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806'
+                 in value(row,19),
+                 'FLIGHT_CORPORATE_ACTION_EVENT_INVALID')
         status = value(row,17)
         if status in PENDING:
             pending += 1

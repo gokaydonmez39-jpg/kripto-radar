@@ -29,13 +29,14 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-nasdaq-a34-private-preopen
+  # Test-only PR/push and PR-triggered workflow_run must never evict a pending live A34.
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push' || (github.event_name == 'workflow_run' && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push'))) && format('xray-nasdaq-a34-test-{0}', github.run_id) || 'xray-nasdaq-a34-private-preopen' }}
   cancel-in-progress: false
 jobs:
   offline-guard:
-    # An upstream EOD pull_request is test-only. Skip its A34 workflow_run
-    # entirely rather than reporting success when private-preopen was SKIPPED.
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.event != 'pull_request'
+    # An upstream EOD PR or push may be a test or pre-session NOOP.
+    # Only actual scheduled/dispatch EOD origin can start downstream A34.
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -66,7 +67,7 @@ jobs:
       (github.event_name != 'workflow_run' ||
        (github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main' &&
-        github.event.workflow_run.event != 'pull_request' &&
+        (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') &&
         github.event.workflow_run.repository.full_name == github.repository))
     runs-on: ubuntu-latest
     timeout-minutes: 25
