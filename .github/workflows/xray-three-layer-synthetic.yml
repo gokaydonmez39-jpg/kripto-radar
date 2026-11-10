@@ -1,0 +1,29 @@
+name: XRAY Three Layer Synthetic Browser PR
+on:
+  pull_request:
+    paths:
+      - 'personal-swing/research_lab/three_layer_v1/**'
+      - '.github/workflows/xray-three-layer-synthetic.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: personal-swing/research_lab/three_layer_v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: node --test watchdog.test.mjs
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npx --no-install playwright install chromium
+      - run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/xray-three-layer-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for i in {1..20}; do curl -fsS http://127.0.0.1:8765/ >/dev/null && break; sleep 1; done
+          npm run test:browser
