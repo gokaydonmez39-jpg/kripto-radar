@@ -136,8 +136,10 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(result['directory_basic_flag_match'],475)
         self.assertEqual(result['directory_flagged'],1)
         self.assertEqual(result['directory_missing'],1)
-        self.assertEqual(result['flagged_watchlist_index_zero_based'], 475)
-        self.assertEqual(result['flagged_directory_fields'], {'Financial Status': 'D'})
+        # Public log must not reveal the position of a flagged personal symbol.
+        self.assertIsNone(result.get('flagged_watchlist_index_zero_based'))
+        self.assertIsNone(result.get('flagged_directory_fields'))
+        self.assertEqual(result['directory_flagged'],1)
         self.assertFalse(result['historical_membership_proven'])
         self.assertFalse(result['may_clear_risk'])
         self.assertNotIn(symbols[-1],json.dumps(result))
