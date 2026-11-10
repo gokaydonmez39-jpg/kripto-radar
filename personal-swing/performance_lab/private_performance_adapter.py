@@ -138,7 +138,17 @@ def source_plan(candidate_values, scan_values, asof, universe, scope_sha, policy
         need(type(key) is str and key not in keys, 'DUPLICATE_OR_NONSTRING_EPISODE')
         keys.add(key)
         start, mark, symbol = key.partition('|')
-        need(mark and symbol in universe and row[1] == start and row[2] == symbol,
+        # A delisted historical ROKU episode is NOT a current GNTX member.
+        # Only a separately reviewed, non-price terminal event may remain
+        # in the private ledger; historic issuance stays in its original era.
+        reviewed_roku_history = (
+            asof >= '2026-11-10' and symbol == 'ROKU' and
+            start < '2026-11-10' and len(row) >= 11 and
+            str(row[7]).startswith('KAPALI • CORPORATE_ACTION_REVIEW • ') and
+            row[8:11] == ['2026-11-09', 'CORPORATE_ACTION_REVIEW', '']
+        )
+        need(mark and (symbol in universe or reviewed_roku_history) and
+             row[1] == start and row[2] == symbol,
              'CANDIDATE_IDENTITY_MISMATCH')
         iso(start)
         need(cal.is_session(start) and start <= asof, 'CANDIDATE_FUTURE_OR_NONSESSION')
