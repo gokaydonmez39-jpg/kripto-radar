@@ -75,6 +75,8 @@ jobs:
           # A34 flight recorder PIT provenance is a mandatory merge gate.
           python -m unittest -q test_private_flight_recorder
           python -O -m unittest -q test_private_flight_recorder
+          python -m unittest -q test_roku_flight_cutover
+          python -O -m unittest -q test_roku_flight_cutover
       - name: A42 candidate queue contract normal and optimized
         working-directory: nasdaq-candidate-autopilot
         run: |
