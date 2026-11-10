@@ -63,8 +63,8 @@ jobs:
       - name: Cove-method personal research shadow strict contract (offline only)
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_cove_shadow test_cove_private_shadow
-          python -O -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
+          python -O -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
           # Private IEX/Sheets/alerts/broker not accessed by this CI step.
       - name: Independent A14 PIT regression normal and optimized
@@ -72,6 +72,8 @@ jobs:
         run: |
           python -m unittest discover -q -p 'test_private_performance_adapter.py'
           python -O -m unittest discover -q -p 'test_private_performance_adapter.py'
+          python -m unittest -q test_roku_performance_cutover
+          python -O -m unittest -q test_roku_performance_cutover
           # A34 flight recorder PIT provenance is a mandatory merge gate.
           python -m unittest -q test_private_flight_recorder
           python -O -m unittest -q test_private_flight_recorder
