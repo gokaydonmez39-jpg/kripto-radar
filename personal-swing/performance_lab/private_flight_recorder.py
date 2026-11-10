@@ -29,7 +29,9 @@ EVENT_CODES = REVIEWED_EVENT_CODES
 TERMINAL_CODES = frozenset((
     'STOP_TOUCHED', 'TARGET_TOUCHED',
     'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS', 'TIME_EXIT_AT_CLOSE',
-    'GAP_BELOW_STOP'
+    'GAP_BELOW_STOP',
+    # Non-price issuer termination. No realized P&L or IEX close is implied.
+    'CORPORATE_ACTION_REVIEW'
 ))
 MAX_ROWS = 1000
 # Explicitly reviewed, immutable PIT handoff receipts. The official Nasdaq
