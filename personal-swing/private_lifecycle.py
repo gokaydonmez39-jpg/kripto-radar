@@ -84,6 +84,22 @@ _PUBLIC_LIFECYCLE_CODES = frozenset({
 })
 
 
+# Exact tracker-authored errors only. No exception data or per-symbol context
+# may enter public Actions logs; everything else stays UNCLASSIFIED.
+_TRACKER_PUBLIC_FAILURE_CODES = {
+    'FOLLOWUP_ASOF_BAR_MISSING_NO_ADVANCE':
+        'LIFECYCLE_FOLLOWUP_ASOF_BAR_MISSING',
+    'FOLLOWUP_MISSING_INTERMEDIATE_SESSION':
+        'LIFECYCLE_FOLLOWUP_INTERMEDIATE_SESSION_MISSING',
+    'DUPLICATE_FOLLOWUP_BAR':
+        'LIFECYCLE_FOLLOWUP_DUPLICATE_BAR',
+    'INVALID_FOLLOWUP_OHLCV':
+        'LIFECYCLE_FOLLOWUP_INVALID_OHLCV',
+    'INVALID_FOLLOWUP_BAR_RANGE':
+        'LIFECYCLE_FOLLOWUP_INVALID_RANGE',
+}
+
+
 def lifecycle_public_failure_code(exc):
     """Map an exception to an allowlisted code without leaking private data."""
     shared_code = public_failure_code(exc)
@@ -91,6 +107,8 @@ def lifecycle_public_failure_code(exc):
         return shared_code
     if isinstance(exc, HandoffBlocked) and str(exc) in _PUBLIC_LIFECYCLE_CODES:
         return str(exc)
+    if type(exc) is ValueError:
+        return _TRACKER_PUBLIC_FAILURE_CODES.get(str(exc), 'UNCLASSIFIED')
     return 'UNCLASSIFIED'
 
 OPEN_RE = re.compile(r'^AÇIK • ([0-9]{1,2})/15 SEANS$')
