@@ -51,7 +51,7 @@ def analysis_fingerprint():
 
 
 def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None, *, asof=None):
-    """Exact PIT symbols: preserve 2 Nov INDV, switch ONLY on/after 3 Nov.
+    """Exact PIT symbols: INDV→SUPN 3 Nov, ROKU→GNTX forward-only 10 Nov.
 
     This transforms identifier identity, never price bars or candidate history.
     A future, unreviewed corporate action must fail closed until approved.
@@ -69,22 +69,45 @@ def get_scope(symbols=None, repo_watchlist=False, watchlist_file=None, *, asof=N
                 raise ValueError('INVALID_PIT_ASOF') from exc
             if type(j) is not dict or type(values) is not list:
                 raise ValueError('PIT_WATCHLIST_METADATA_REQUIRED')
+            # Exact, owner-reviewed PIT transitions ONLY. The second is a
+            # membership replacement, never a historical-price alias:
+            # 2026-11-09 still contains ROKU; 2026-11-10 starts GNTX.
+            # Neither ROKU nor INDV historical bars are joined to new issuers.
             changes=j.get('point_in_time_symbol_changes',[])
-            if type(changes) is not list or len(changes)>1:
+            if type(changes) is not list or len(changes)!=2:
                 raise ValueError('UNREVIEWED_PIT_CHANGE_REGISTRY')
-            for change in changes:
-                if (type(change) is not dict or
-                    (change.get('effective_asof_et'),change.get('old_symbol'),
-                     change.get('new_symbol'))!=('2026-11-03','INDV','SUPN') or
-                    change.get('nasdaq_history_policy') !=
-                        'https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-25' or
-                    change.get('nasdaq_corporate_action') !=
-                        'https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-742'):
+            expected=(
+                ('2026-11-03','INDV','SUPN',
+                 'https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-742',
+                 'https://www.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-25'),
+                ('2026-11-10','ROKU','GNTX',
+                 'https://www.nasdaqtrader.com/TraderNews.aspx?id=eca2026-806',
+                 'https://www.sec.gov/Archives/edgar/data/355811/000035581126000065/gntx-20260930.htm'),
+            )
+            for change,approved in zip(changes,expected):
+                if type(change) is not dict:
                     raise ValueError('UNREVIEWED_PIT_SYMBOL_CHANGE')
-                if asof >= change['effective_asof_et']:
-                    if values.count('INDV')!=1 or 'SUPN' in values:
+                identity=(change.get('effective_asof_et'),
+                          change.get('old_symbol'),change.get('new_symbol'))
+                if identity!=approved[:3] or change.get('nasdaq_corporate_action')!=approved[3]:
+                    raise ValueError('UNREVIEWED_PIT_SYMBOL_CHANGE')
+                if approved[1]=='INDV':
+                    if change.get('nasdaq_history_policy')!=approved[4]:
+                        raise ValueError('UNREVIEWED_PIT_SYMBOL_CHANGE')
+                else:
+                    if (change.get('replacement_issuer_sec')!=approved[4] or
+                        change.get('sec_confirmation')!=
+                          'https://www.sec.gov/Archives/edgar/data/1428439/000119312526451874/d181620d8k.htm' or
+                        change.get('history_policy')!=
+                          'NO_ROKU_GNTX_PRICE_HISTORY_JOIN_HISTORICAL_EPISODES_UNCHANGED' or
+                        change.get('status')!=
+                          'OWNER_APPROVED_2026_11_10_FORWARD_ONLY_NO_BACKFILL_NO_REPLAY'):
+                        raise ValueError('UNREVIEWED_PIT_SYMBOL_CHANGE')
+                if asof>=approved[0]:
+                    old_name,new_name=approved[1:3]
+                    if values.count(old_name)!=1 or new_name in values:
                         raise ValueError('PIT_SYMBOL_IDENTITY_COLLISION')
-                    values=['SUPN' if s=='INDV' else s for s in values]
+                    values=[new_name if s==old_name else s for s in values]
     elif symbols:
         values=[s.strip() for s in symbols.split(',')]
     elif repo_watchlist:
