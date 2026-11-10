@@ -35,6 +35,11 @@ jobs:
           python -O -m unittest discover -v -s personal-swing/research_lab -p 'test_*.py'
           python personal-swing/research_lab/research_runner.py --mode catalogue
           python personal-swing/research_lab/source_inventory_reconcile.py --registry personal-swing/research_lab/unified_research_88.json
+      - name: Explicit Qlib dependency HOLD (not a runtime PASS)
+        if: github.event_name == 'pull_request' && github.event.pull_request.number == 403
+        run: |
+          echo 'QLIB_RUNTIME=HOLD_PYQLIB_0_9_7_GYM_SOURCE_ONLY' >> "$GITHUB_STEP_SUMMARY"
+          echo 'QLIB_PIT_OOS=HOLD; SDK_IMPORT_NOT_PROVEN; NO_ALPHA_OR_ORDER_AUTHORITY' >> "$GITHUB_STEP_SUMMARY"
   github-source-freshness:
     needs: offline-contracts
     if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
@@ -49,3 +54,76 @@ jobs:
           python-version: '3.12'
       - name: Public GitHub repository metadata ONLY, no vendor data access
         run: python personal-swing/research_lab/research_runner.py --mode github-watch --require-all-available
+  candidate-real-sdk-no-network-smoke:
+    # Draft PR #403 ONLY; never on cron, main push, manual dispatch or EOD.
+    # No secrets or market provider APIs. Imports run in no-network Docker.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.number == 403 &&
+      github.event.pull_request.draft == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - candidate: pydantic-ai
+            distribution: pydantic-ai-slim==2.66.0
+          - candidate: mcp-use
+            distribution: mcp-use==1.7.1
+          - candidate: openbb-v5
+            distribution: openbb==5.0.0
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Download fixed-version binary wheels (no setup execution)
+        shell: bash
+        env:
+          SDK_DISTRIBUTION: ${{ matrix.distribution }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/xray-wheels"
+          python -m pip download --disable-pip-version-check --only-binary=:all: --dest "$RUNNER_TEMP/xray-wheels" "$SDK_DISTRIBUTION"
+          test -n "$(find "$RUNNER_TEMP/xray-wheels" -maxdepth 1 -type f -name '*.whl' -print -quit)"
+      - name: Install wheelhouse only with Docker build network disabled
+        shell: bash
+        env:
+          SDK_DISTRIBUTION: ${{ matrix.distribution }}
+          SDK_CANDIDATE: ${{ matrix.candidate }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/xray-sdk-build"
+          cp -a "$RUNNER_TEMP/xray-wheels" "$RUNNER_TEMP/xray-sdk-build/wheels"
+          cat > "$RUNNER_TEMP/xray-sdk-build/Dockerfile" <<'DOCKER'
+          FROM python:3.12-slim
+          COPY wheels /wheels
+          ARG SDK_DISTRIBUTION
+          RUN python -m pip install --no-index --disable-pip-version-check --no-cache-dir --find-links=/wheels --only-binary=:all: "$SDK_DISTRIBUTION" \
+           && python -m pip check \
+           && rm -rf /wheels
+          USER 65534:65534
+          ENV PYTHONDONTWRITEBYTECODE=1
+          DOCKER
+          docker build --network none --build-arg SDK_DISTRIBUTION="$SDK_DISTRIBUTION" \
+            -t "xray-sdk-${SDK_CANDIDATE}:pr403" "$RUNNER_TEMP/xray-sdk-build"
+      - name: Run real SDK in no-network no-secrets read-only sandbox
+        shell: bash
+        env:
+          SDK_CANDIDATE: ${{ matrix.candidate }}
+        run: |
+          set -euo pipefail
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --pids-limit 96 --memory 3g --cpus 2 \
+            --tmpfs /tmp:rw,nosuid,noexec,size=384m \
+            --mount "type=bind,source=$GITHUB_WORKSPACE/personal-swing/research_lab,target=/lab,readonly" \
+            --workdir /lab \
+            -e XRAY_CONTAINER_NO_NETWORK=1 -e XRAY_NO_SECRETS=1 \
+            -e PYTHONDONTWRITEBYTECODE=1 -e HOME=/tmp -e XDG_CACHE_HOME=/tmp/.cache \
+            "xray-sdk-${SDK_CANDIDATE}:pr403" \
+            python -I /lab/candidate_sdk_runtime_smoke.py --candidate "$SDK_CANDIDATE"
