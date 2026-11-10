@@ -57,6 +57,16 @@ PIT_ASOF_PIN_SHA = (
     'c13c5a7ad14c1753d044f2392f37c6fdf7cd5e11f6c2edd3954902aa0716056b',
 )
 
+# Owner-reviewed FORWARD ONLY independent issuer replacement:
+# ROKU last trade 6 Nov, no ROKU 9 Nov bar, static history preserved.
+# No 9 Nov EOD backfill, no ROKU→GNTX price-history concatenation.
+# Public checksums from PR CI 42779376842 (52/52 IEX rows GNTX verified).
+PIT_ROKU_REPLACEMENT_CUTOVER = '2026-11-10'
+PIT_ROKU_REPLACEMENT_SHA = (
+    '3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060',
+    '0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523',
+)
+
 
 class FlightRecorderBlocked(ValueError):
     pass
@@ -130,7 +140,17 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         # 1) 3 Nov: official XNAS point-in-time symbol cutover;
         # 2) 6 Nov: Alpaca raw bars asof pin (same universe, new engine hash).
         # The latest date and fingerprint MUST attest to the chosen cohort.
-        if cutoff >= PIT_ASOF_PIN_CUTOVER and latest_fp == PIT_ASOF_PIN_SHA:
+        if (cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER and
+                latest_fp == PIT_ROKU_REPLACEMENT_SHA):
+            if day < PIT_CUTOVER:
+                permitted_fp = PIT_PRE_CUTOVER_SHA
+            elif day < PIT_ASOF_PIN_CUTOVER:
+                permitted_fp = PIT_POST_CUTOVER_SHA
+            elif day < PIT_ROKU_REPLACEMENT_CUTOVER:
+                permitted_fp = PIT_ASOF_PIN_SHA
+            else:
+                permitted_fp = PIT_ROKU_REPLACEMENT_SHA
+        elif cutoff >= PIT_ASOF_PIN_CUTOVER and latest_fp == PIT_ASOF_PIN_SHA:
             if day < PIT_CUTOVER:
                 permitted_fp = PIT_PRE_CUTOVER_SHA
             elif day < PIT_ASOF_PIN_CUTOVER:
