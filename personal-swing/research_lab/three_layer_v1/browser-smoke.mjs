@@ -3,9 +3,10 @@ import assert from "node:assert/strict";
 const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage({viewport:{width:390,height:844}});
- const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ const errors=[];page.on("pageerror",e=>{errors.push(e.message);console.log("PAGE_ERROR",e.message)});page.on("console",m=>{if(m.type()==="error"||m.type()==="warning")console.log("BROWSER",m.type(),m.text())});page.on("requestfailed",r=>console.log("REQUEST_FAILED",r.url(),r.failure()?.errorText));page.on("response",r=>{if(r.status()>=400)console.log("HTTP",r.status(),r.url())});
  await page.goto("http://127.0.0.1:8765/",{waitUntil:"domcontentloaded"});
- await page.waitForFunction(()=>document.body.dataset.ready==="true",{},{timeout:60000});
+ await page.waitForFunction(()=>["true","false"].includes(document.body.dataset.ready),{},{timeout:60000});
+ assert.equal(await page.locator("body").getAttribute("data-ready"),"true",await page.locator("#status").textContent());
  assert.equal(await page.locator("#symbol option").count(),477);
  assert.match(await page.locator("#status").textContent(),/477\/477/);
  assert.ok(await page.locator("#chart canvas").count()>0);
