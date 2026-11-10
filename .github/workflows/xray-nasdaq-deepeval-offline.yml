@@ -1,0 +1,43 @@
+name: XRAY NASDAQ DeepEval Deterministic Offline Notification Guard
+on:
+  pull_request:
+    paths:
+      - 'research/nasdaq_deepeval_alert_truth.py'
+      - 'research/test_nasdaq_deepeval_alert_truth.py'
+      - '.github/workflows/xray-nasdaq-deepeval-offline.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/nasdaq_deepeval_alert_truth.py'
+      - 'research/test_nasdaq_deepeval_alert_truth.py'
+      - '.github/workflows/xray-nasdaq-deepeval-offline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fictional-no-llm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      DEEPEVAL_DISABLE_DOTENV: '1'
+      DEEPEVAL_DISABLE_UPDATE: '1'
+      CONFIDENT_TELEMETRY_DISABLED: '1'
+      DEEPEVAL_TELEMETRY_OPT_OUT: 'YES'
+      DEEPEVAL_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Isolated Apache-2.0 DeepEval, no model keys
+        run: |
+          python -m pip install 'deepeval==4.3.2'
+          python -m pip check
+      - name: Eleven synthetic source fidelity and bad-ACK tests
+        run: |
+          python -m unittest discover -s research -p 'test_nasdaq_deepeval_alert_truth.py' -v
+          python -O -m unittest discover -s research -p 'test_nasdaq_deepeval_alert_truth.py' -v
+      - name: No data, model, alert or broker path
+        run: echo 'SYNTHETIC_ONLY; NO_MODEL; NO_SHEETS; NO_AL; NO_NOTIFICATION; NO_ORDERS'
