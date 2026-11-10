@@ -80,5 +80,12 @@ jobs:
         run: |
           python -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
           python -O -m unittest -q test_autopilot test_eod_admission test_assessment test_ledger test_queue
+      - name: ROKU P0 corporate-action fail-closed contracts (synthetic only)
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_corporate_action_gate
+          python -O -m unittest -q test_corporate_action_gate
+          python -m py_compile corporate_action_gate.py test_corporate_action_gate.py
+          # No vendor HTTP, private Sheets, historical episode data, trades, or mutation.
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
