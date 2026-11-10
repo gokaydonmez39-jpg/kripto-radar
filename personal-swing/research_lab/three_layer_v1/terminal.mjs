@@ -4,7 +4,7 @@ import perspective from "./node_modules/@perspective-dev/client/dist/cdn/perspec
 import {createChart,CandlestickSeries,LineSeries,LineStyle} from "./node_modules/lightweight-charts/dist/lightweight-charts.standalone.production.mjs";
 // No private data, credentials, connector, network API or production input.
 const rows=Array.from({length:477},(_,i)=>({symbol:"DEMO"+String(i+1).padStart(3,"0"),score:40+i%61,status:["AL","IZLE","ELE"][i%3],quality:i%5===0?"HOLD":i%3===0?"NATIVE":"RESEARCH_CLOSE_ONLY",asof:"SYNTHETIC"}));
-const status=document.querySelector("#status"),select=document.querySelector("#symbol"),detail=document.querySelector("#detail");
+const status=document.querySelector("#xray-status"),select=document.querySelector("#symbol"),detail=document.querySelector("#detail");
 const dates=["2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-11-02","2026-11-03","2026-11-04","2026-11-05","2026-11-06","2026-11-09","2026-11-10"];
 try{
  const worker=await perspective.worker();
