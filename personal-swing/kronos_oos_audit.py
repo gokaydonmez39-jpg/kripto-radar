@@ -19,6 +19,10 @@ import kronos_v2 as v2
 
 MIN_UNIQUE_PAIRS = 60
 MIN_DISTINCT_ASOFS = 4
+# Official Nasdaq ECA2026-806: ROKU last trade 6 Nov; suspension 9 Nov.
+# No price alias, merger consideration, or synthetic realized return.
+ROKU_LAST_TRADE = '2026-11-06'
+ROKU_DELIST = '2026-11-09'
 
 
 def require(ok, reason):
@@ -44,6 +48,8 @@ def validate_ledger(matrix):
                 horizon in ('1','5','12') and
                 row[0]==f"{asof}|{symbol}|H{horizon}",
                 "KRONOS_OOS_INVALID_ROW_IDENTITY")
+        require(symbol != "ROKU" or asof <= ROKU_LAST_TRADE,
+                "KRONOS_OOS_ROKU_POST_DELISTING_FORECAST")
         require(row[7:11]==[k.MODEL_ID,k.MODEL_REV,
                              k.TOKENIZER_REV,k.KRONOS_CODE_REV] and
                 row[16] in (k.VERSION,v2.VERSION_V2),
@@ -171,11 +177,13 @@ def score_matured(matured, completed_asof, read_batch):
     return evidence
 
 
-def summarize(evidence, pending, qc_holds):
+def summarize(evidence, pending, qc_holds, corporate_censored=None):
+    corporate_censored = corporate_censored or {}
     out = {
         'status':'KRONOS_OOS_RESEARCH_NOT_READY',
         'execution':'NONE', 'orders':False,
         'pending_horizon_rows':pending,'qc_hold_rows':qc_holds,
+        'corporate_action_censored_rows':sum(corporate_censored.values()),
         'benchmark':'PERSIST_LAST_IEX_CLOSE',
         'sufficient_for_decision':False,'decision_influence':'NO_GO',
         'horizons':{},
@@ -194,6 +202,7 @@ def summarize(evidence, pending, qc_holds):
                          for s in ('RESEARCH_ONLY','RESEARCH_CLOSE_ONLY')}
         out['horizons'][str(h)] = {
             'forecast_quality_counts':status_counts,
+            'corporate_action_censored':corporate_censored.get(h,0),
             'samples':n,'distinct_asofs':distinct_asofs,
             'model_mape_pct':round(model,5) if model is not None else None,
             'persistence_mape_pct':round(baseline,5) if baseline is not None else None,
@@ -211,8 +220,18 @@ def summarize(evidence, pending, qc_holds):
 def audit(api, completed_asof, read_batch):
     rows = validate_ledger(load_recent_ledgers(api,completed_asof))
     mature, pending, holds = select_matured(rows,completed_asof)
-    evidence = score_matured(mature,completed_asof,read_batch)
-    return summarize(evidence,pending,holds)
+    # Retain every immutable forecast. Only the exact officially delisted
+    # ROKU cohort has no exchange closing-price estimand after 6 Nov.
+    # Missing data for other symbols still fail closed. Censoring is not a
+    # realized price, a win/loss, or an alpha claim (selection bias remains).
+    eligible, censored = [], defaultdict(int)
+    for row, target in mature:
+        if row[2] == 'ROKU' and row[1] <= ROKU_LAST_TRADE and target >= ROKU_DELIST:
+            censored[int(row[3])] += 1
+        else:
+            eligible.append((row,target))
+    evidence = score_matured(eligible,completed_asof,read_batch)
+    return summarize(evidence,pending,holds,censored)
 
 
 def main():
