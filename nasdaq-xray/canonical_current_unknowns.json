@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-11-09",
+  "asof_et": "2026-11-10",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3189
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1109202621:31|||||||",
+  "official_footer": "File Creation Time: 1110202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3189
   },
-  "source_queue_hash": "b798498b0b616c516ef8a1bb9f7e90e6e712d2286e0090096d38c8023c45e0be",
-  "source_state_hash": "ae5d27e68989417aad6542abce1453d3cb6d72d43901a07f4906a9dc9981db8e",
+  "source_queue_hash": "0da4be192080c4208d2bfe1a61c1b79ff4a06e1e3d5ebd66b3eae0e225345e7c",
+  "source_state_hash": "8211a4b8e5aea9850f732622778836b11bdb5c629bf508f90e13e774c248c704",
   "source_unknown_count": 3189,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3189,
@@ -539,24 +539,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Acadia Healthcare Company, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "ACHV": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Achieve Life Sciences, Inc.  - Common Shares",
       "status": "UNKNOWN_STATIC"
     },
     "ACIC": {
@@ -18001,24 +17983,6 @@
       "security_name": "EZCORP, Inc. - Class A Non-Voting Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "EZRA": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Reliance Global Group, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "FA": {
       "attempts": 0,
       "discovery": {
@@ -20842,7 +20806,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Greene County Bancorp, Inc. - Common Stock",
+      "security_name": "Greene Bancorp, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "GCGR": {
@@ -42625,6 +42589,24 @@
       "security_name": "QuickLogic Corporation - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "QUIT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Achieve Life Sciences, Inc.  - Common Shares",
+      "status": "UNKNOWN_STATIC"
+    },
     "QURE": {
       "attempts": 0,
       "discovery": {
@@ -56105,6 +56087,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Exagen Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "XGPU": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Reliance Global Group, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "XHG": {
