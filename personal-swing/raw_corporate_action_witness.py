@@ -60,6 +60,7 @@ def inspect(candidate_values, scan_values, bars, asof):
     need(type(bars) is dict, 'RAW_PROVIDER_SHAPE')
     keys=set()
     issuances={}
+    reviewed_delisted=set()
     for r in episodes:
         need(len(r)>=13, 'INCOMPLETE_EPISODE')
         key=str(r[0]); d=str(r[1]); sym=str(r[2])
@@ -71,6 +72,14 @@ def inspect(candidate_values, scan_values, bars, asof):
         need(0<stop<close<target and
              abs(target-(close+2*(close-stop)))<=.025,
              'CORRUPT_HISTORICAL_PRICE_GEOMETRY')
+        # 9 Nov ROKU has no valid daily exchange price. A verified
+        # non-price terminal event, not a synthetic STOP/fill, is required.
+        if sym=='ROKU' and asof>='2026-11-10':
+            need(len(r)>=11 and d<='2026-11-06' and
+                 str(r[7]).startswith('KAPALI • CORPORATE_ACTION_REVIEW • ') and
+                 r[8:11]==['2026-11-09','CORPORATE_ACTION_REVIEW',''],
+                 'UNREVIEWED_DELISTED_ISSUER_EPISODE')
+            reviewed_delisted.add(sym)
         issuances.setdefault(sym,[]).append((d,close))
     need(set(bars)==set(issuances), 'RAW_SYMBOL_SCOPE_DRIFT')
     large_gap_count=0
@@ -92,12 +101,16 @@ def inspect(candidate_values, scan_values, bars, asof):
                  max(b['open'],b['close'])<=b['high'],
                  'INVALID_RAW_PRICE_RANGE')
             byday[day]=b
+        if sym in reviewed_delisted:
+            need(all(day<='2026-11-06' for day in byday),
+                 'DELISTED_ISSUER_POST_LAST_TRADE_BAR_REVIEW')
         needed_start=min(d for d,_ in issuances[sym])
         # AL metrics consume 52 contiguous daily bars INCLUDING 51 sessions
         # preceding the original signal. Start reviewing that exact original
         # indicator window; looking only AFTER the AL misses earlier splits.
         first=cal.session_offset(cal.date_to_session(needed_start),-51)
-        expected=[str(x.date()) for x in cal.sessions_in_range(first,asof)]
+        last_day='2026-11-06' if sym in reviewed_delisted else asof
+        expected=[str(x.date()) for x in cal.sessions_in_range(first,last_day)]
         need(all(d in byday for d in expected), 'RAW_MISSING_XNAS_SESSION')
         raw_bars_reviewed+=len(expected)
         previous=None
@@ -121,7 +134,9 @@ def inspect(candidate_values, scan_values, bars, asof):
        'raw_session_bars_checked':raw_bars_reviewed,
        'large_raw_open_gap_count':large_gap_count,
        'historical_issuance_close_mismatches':issuance_drift_count,
-       'state':('REVIEW_REQUIRED' if large_gap_count or issuance_drift_count
+       'corporate_action_review_count':len(reviewed_delisted),
+       'state':('REVIEW_REQUIRED' if (large_gap_count or issuance_drift_count or
+                                   reviewed_delisted)
                 else 'NO_LARGE_RAW_DISCONTINUITY_CA_STATUS_UNVERIFIED'),
        'corporate_action_cleared':False,
        'independent_vendor_corporate_action_confirmed':False,
