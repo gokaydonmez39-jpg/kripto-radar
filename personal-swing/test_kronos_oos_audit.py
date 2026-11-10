@@ -103,7 +103,11 @@ class TestOosAudit(unittest.TestCase):
             # No delisted issuer lookup or GNTX/FOXA proxy.
             self.assertEqual(symbols,['AAPL'])
             return {'AAPL':[{'timestamp':'2026-11-09','close':103.0}]}
-        with patch.object(o,'load_recent_ledgers',return_value=matrix):
+        future=['2026-11-09','2026-11-10','2026-11-11','2026-11-12',
+                  '2026-11-13','2026-11-16','2026-11-17','2026-11-18',
+                  '2026-11-19','2026-11-20','2026-11-23','2026-11-24']
+        with patch.object(o,'load_recent_ledgers',return_value=matrix), \
+                patch.object(k,'future_xnas_days',return_value=future):
             out=o.audit(None,'2026-11-10',reader)
         self.assertEqual(out['corporate_action_censored_rows'],1)
         self.assertEqual(out['horizons']['1']['corporate_action_censored'],1)
@@ -116,7 +120,11 @@ class TestOosAudit(unittest.TestCase):
         def reader(symbols,asof):
             self.assertEqual(symbols,['ROKU'])
             return {'ROKU':[{'timestamp':'2026-11-06','close':103.0}]}
-        with patch.object(o,'load_recent_ledgers',return_value=matrix):
+        future=['2026-11-06','2026-11-09','2026-11-10','2026-11-11',
+                  '2026-11-12','2026-11-13','2026-11-16','2026-11-17',
+                  '2026-11-18','2026-11-19','2026-11-20','2026-11-23']
+        with patch.object(o,'load_recent_ledgers',return_value=matrix), \
+                patch.object(k,'future_xnas_days',return_value=future):
             out=o.audit(None,'2026-11-10',reader)
         self.assertEqual(out['corporate_action_censored_rows'],0)
         self.assertEqual(out['horizons']['1']['samples'],1)
