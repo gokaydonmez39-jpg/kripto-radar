@@ -99,13 +99,18 @@ def build_readback(scan_matrix,score_matrix,kronos_matrix,*,expected_asof,expect
         _require(r[4]=="EPISODE" and r[3] in symbols and r[0]==day+"|"+r[2] and r[2] not in epkeys,"EPISODE_ID")
         epday,sep,epsym=r[2].partition("|")
         _require(sep=="|" and epsym==r[3] and _day(epday)<=day,"EPISODE_ID")
-        rank=_count(r[5]);score=_count(r[6])
-        _require(1<=rank<=n and rank not in ranks and score<=100,"RANK_OR_SCORE")
+        rank=_count(r[5])
+        score=_decimal(r[6])
+        _require(Decimal("0")<=score<=Decimal("100") and
+                 score*10==(score*10).to_integral_value(),
+                 "SCORE_PRECISION_OR_RANGE")
+        _require(1<=rank<=n and rank not in ranks,"RANK_OR_SCORE")
+        close=_decimal(r[14],True)
         ref,stop,target=(_decimal(r[i],True) for i in (15,16,17))
         _require(stop<ref<target and abs((target-ref)-2*(ref-stop))<=Decimal("0.004"),"FIXED_BRACKET")
         _require(_count(r[21])<=15,"EPISODE_HORIZON")
         ranks.add(rank);epkeys.add(r[2])
-        episodes.append({"episode_id":r[2],"symbol":r[3],"rank":rank,"technical_score":score,"reference":r[15],"stop":r[16],"target_2r":r[17]})
+        episodes.append({"episode_id":r[2],"symbol":r[3],"rank":rank,"technical_score":float(score),"current_close":r[14],"reference":r[15],"stop":r[16],"target_2r":r[17]})
     _require(len(episodes)==n and len(scores)==n+1 and _count(summary[8])==len({x["symbol"] for x in episodes}),"SCORE_COHORT")
     ledger=_matrix(kronos_matrix,KRONOS_HEADER,40000)
     current=[];group={}
