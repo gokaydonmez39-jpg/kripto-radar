@@ -85,7 +85,7 @@ class UnifiedEvidenceBridgeTests(unittest.TestCase):
             run(f)
 
     def test_kronos_missing_entire_month_denied(self):
-        f=fixture()
+        f=list(fixture())
         f[2]=f[2][:1]
         with self.assertRaisesRegex(ValueError,"KRONOS_COHORT"):
             run(f)
