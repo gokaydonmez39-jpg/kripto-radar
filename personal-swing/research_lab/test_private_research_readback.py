@@ -62,4 +62,14 @@ class ReadbackTest(unittest.TestCase):
         with self.assertRaises(ValueError):build(f)
         f=fixture();f[2].insert(2,[])
         with self.assertRaises(ValueError):build(f)
+    def test_real_decimal_score_and_current_close(self):
+        f=fixture()
+        f[1][2][6]="71.8"
+        out=build(f)
+        self.assertEqual(out["episodes"][0]["technical_score"],71.8)
+        self.assertEqual(out["episodes"][0]["current_close"],"100")
+    def test_score_precision_and_nonfinite_rejected(self):
+        for invalid in ("71.81","NaN","Infinity","-1","100.1"):
+            f=fixture();f[1][2][6]=invalid
+            with self.subTest(invalid=invalid),self.assertRaises(ValueError):build(f)
 if __name__=="__main__": unittest.main()
