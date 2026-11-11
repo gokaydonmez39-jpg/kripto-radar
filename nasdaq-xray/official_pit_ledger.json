@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-11-11T08:00:14.673662+00:00",
+  "last_ingest_at_utc": "2026-11-11T09:50:56.492905+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 381,
+  "snapshot_count": 382,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -183146,6 +183146,83 @@
         "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
       },
       "payload_sha256": "0589b90abe9f5a4e7baceed1f18fd0e6db2aed8d678c1a831845814ee9306a4e",
+      "source": "trading_system_adds_deletes",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-11T09:50:54.424405+00:00",
+      "observed_at_utc": "2026-11-11T09:50:56.492866+00:00",
+      "payload": {
+        "row_count": 7,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "First Trust Exchange-Traded Fund IV",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "IBLY"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "IQEE"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "IQEI"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "IQEL"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "IQES"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Karyopharm Therapeutics Inc.",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "KPTI"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "ETF Opportunities Trust",
+            "Effective Date": "11/11/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Z",
+            "Symbol": "MEMY"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "53492e259954cc0a52da03463e43f5567f210f425b6efbd9bb4f33e63fe219ef",
       "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
