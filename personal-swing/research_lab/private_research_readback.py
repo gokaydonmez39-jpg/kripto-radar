@@ -161,6 +161,16 @@ def build_readback(scan_matrix,score_matrix,kronos_matrix,*,expected_asof,expect
         previous=group.setdefault(r[2],(fingerprint,set()))
         _require(previous[0]==fingerprint and r[3] not in previous[1],"HORIZON_GROUP_DRIFT")
         previous[1].add(r[3])
-        current.append({"symbol":r[2],"horizon":int(r[3]),"model_quality":quality,"chart_kind":kind,"close":r[5] or None,"native_ohlc":None})
+        current.append({"symbol":r[2],"horizon":int(r[3]),"model_quality":quality,
+                        "chart_kind":kind,"close":r[5] or None,
+                        "source_close":r[4],"source_row_sha256":r[19],
+                        "native_ohlc":None})
     _require(len(current)==1431 and set(group)==symbols and all(h==set(HORIZONS) for _,h in group.values()),"KRONOS_COHORT")
+    # Both original research sources must describe the SAME completed IEX
+    # last close. Different rounding is acceptable, source revision drift isn't.
+    for ep in episodes:
+        source_close=_decimal(group[ep["symbol"]][0][0],True)
+        current_close=_decimal(ep["current_close"],True)
+        _require(abs(source_close-current_close)<=Decimal("0.0005005"),
+                 "KRONOS_EPISODE_CLOSE_MISMATCH")
     return {"schema":"XRAY_PRIVATE_RESEARCH_READBACK_V1","asof":day,"scope_sha":scope,"algorithm_sha":algo,"source_run_id":expected_run_id,"score_digest_consistency_only":digest,"scope_count":477,"score_count":n,"forecast_count":1431,"episodes":episodes,"forecasts":current,"source_authentication":"CALLER_WITNESS_NOT_ATTESTED","scan_classifications_available":False,"native_forecast_ohlc_available":False,"may_publish":False,"may_notify":False,"may_modify_al":False,"may_trade":False}
