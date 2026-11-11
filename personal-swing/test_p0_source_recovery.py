@@ -77,5 +77,40 @@ class ProductionFailureRegression(unittest.TestCase):
         self.assertNotIn("SECRET_PRIVATE_TOKEN",output)
         self.assertNotIn("MASKED",output)
 
+    def test_shadowhold_message_must_never_expose_private_text(self):
+        # A dynamically constructed error can carry a secret in its reason.
+        with patch.object(kronos_v2.k,"eligible_shadow_asof",
+                          return_value=KRONOS_ASOF), \
+             patch.dict(kronos_v2.os.environ,
+                        {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
+             patch("private_sheet_writer.SheetApi",
+                   side_effect=kronos_v2.k.ShadowHold(
+                       "KRONOS2_SECRET_PRIVATE_TOKEN")), \
+             contextlib.redirect_stdout(io.StringIO()) as printed:
+            status=kronos_v2.main()
+        output=printed.getvalue()
+        self.assertEqual(status,3)
+        self.assertIn('"reason_code": "KRONOS2_UNCLASSIFIED"',output)
+        self.assertNotIn("SECRET_PRIVATE_TOKEN",output)
+
+    def test_kronos_model_load_has_separate_static_stage(self):
+        stages=[]
+        api=KronosFakeApi()
+        from test_kronos_v2 import candles
+        def source(symbols,asof):
+            return {symbol:candles() for symbol in symbols}
+        def failing_model():
+            raise RuntimeError("SECRET_MODEL_CONTENT")
+        with patch.object(kronos_v2,"private_authority",
+                          return_value=(SYMS,SCOPE,POLICY,KRONOS_ASOF)), \
+             patch.object(kronos_v2.k,"future_xnas_days",
+                          return_value=[KRONOS_ASOF]*12):
+            with self.assertRaisesRegex(RuntimeError,"SECRET_MODEL_CONTENT"):
+                kronos_v2.synchronize(
+                    api,KRONOS_ASOF,source,
+                    predictor_factory=failing_model,stage=stages.append)
+        self.assertEqual(stages[-1],"MODEL_LOAD")
+        self.assertEqual(api.writes,0)
+
 if __name__=="__main__":
     unittest.main()
