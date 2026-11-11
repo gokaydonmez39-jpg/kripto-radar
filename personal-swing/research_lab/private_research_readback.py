@@ -112,6 +112,18 @@ def build_readback(scan_matrix,score_matrix,kronos_matrix,*,expected_asof,expect
         ranks.add(rank);epkeys.add(r[2])
         episodes.append({"episode_id":r[2],"symbol":r[3],"rank":rank,"technical_score":float(score),"current_close":r[14],"reference":r[15],"stop":r[16],"target_2r":r[17]})
     _require(len(episodes)==n and len(scores)==n+1 and _count(summary[8])==len({x["symbol"] for x in episodes}),"SCORE_COHORT")
+    # Independent original score digest, reconstructed from the immutable
+    # ledger's decimal scores, closes and risk tags in ranked order.
+    # Equal-looking SHA cells without matching content must fail closed.
+    score_signatures=[
+        (r[2],float(_decimal(r[6])),r[25],float(_decimal(r[14],True)))
+        for r in sorted((r for r in scores if r[4]=="EPISODE"),
+                        key=lambda r:_count(r[5]))
+    ]
+    reconstructed=canonical_sha({
+        "asof":day,"source":scope,"policy":algo,
+        "rows":score_signatures,"version":SCORE_VERSION})
+    _require(digest==reconstructed,"SCORE_CONTENT_DIGEST_MISMATCH")
     ledger=_matrix(kronos_matrix,KRONOS_HEADER,40000)
     current=[];group={}
     for r in ledger:

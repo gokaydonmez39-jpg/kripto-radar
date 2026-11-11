@@ -14,7 +14,21 @@ def fixture():
             policy={"RESEARCH_ONLY":"IEX_RAW_AMOUNT_OHLC_MEAN_VOLUME_PROXY","RESEARCH_CLOSE_ONLY":"RAW_CLOSE_ONLY__NATIVE_OHLC_GEOMETRY_INVALID","HOLD_QC_NONFINITE":"MODEL_OUTPUT_UNUSABLE"}[status]
             r=[f"{DAY}|{sym}|H{h}",DAY,sym,h,"100.000000","" if hold else "101.000000","" if hold else "1.000000",*MODEL,SCOPE,ALG,DAY,"c"*64,"" if hold else "d"*64,VERSION,status,policy]
             k.append(r+[canonical_sha(r)])
-    return scan,[list(SCORE_HEADER),s,e],k
+    f=(scan,[list(SCORE_HEADER),s,e],k)
+    reseal_score(f)
+    return f
+
+def reseal_score(f):
+    score=f[1]
+    summary=score[1]
+    rows=sorted(score[2:],key=lambda r:int(r[5]))
+    values=[(r[2],float(r[6]),r[25],float(r[14])) for r in rows]
+    digest=canonical_sha({"asof":DAY,"policy":ALG,"rows":values,"source":SCOPE,
+                          "version":SCORE_VERSION})
+    summary[29]=digest
+    for r in rows:
+        r[29]=digest
+
 def build(f,**kw):
     args=dict(expected_asof=DAY,expected_symbols=SYMS,expected_algorithm_sha=ALG,expected_run_id=RUN);args.update(kw)
     return build_readback(*f,**args)
@@ -37,7 +51,8 @@ class ReadbackTest(unittest.TestCase):
     def test_score_count_and_zero(self):
         f=fixture();f[1].pop()
         with self.assertRaises(ValueError):build(f)
-        f[1][1][5:9]=["0","0","0","0"];self.assertEqual(build(f)["score_count"],0)
+        f[1][1][5:9]=["0","0","0","0"];reseal_score(f)
+        self.assertEqual(build(f)["score_count"],0)
     def test_recomputed_digest_rejects_post_signing_content_tamper(self):
         f=fixture()
         f[1][2][25]="MUTATED_AFTER_ORIGINAL_DIGEST"
@@ -70,6 +85,7 @@ class ReadbackTest(unittest.TestCase):
     def test_real_decimal_score_and_current_close(self):
         f=fixture()
         f[1][2][6]="71.8"
+        reseal_score(f)
         out=build(f)
         self.assertEqual(out["episodes"][0]["technical_score"],71.8)
         self.assertEqual(out["episodes"][0]["current_close"],"100")
