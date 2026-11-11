@@ -49,7 +49,11 @@ def assess(core,evidence):
     sha(core["scope_sha"]);sha(core["algorithm_sha"])
     ref,stop,target,current=map(price,(core["reference"],core["stop"],core["target"],core["current_close"]))
     require(stop<ref<target and abs(target-(ref+2*(ref-stop)))<=Decimal("0.025"),"CORE_BRACKET")
-    require(type(core["technical_score"]) is int and 0<=core["technical_score"]<=100,"CORE_SCORE")
+    raw_score=core["technical_score"]
+    require(type(raw_score) in (int,float),"CORE_SCORE")
+    score=Decimal(str(raw_score))
+    require(score.is_finite() and Decimal("0")<=score<=Decimal("100")
+            and score*10==(score*10).to_integral_value(),"CORE_SCORE")
     require(type(evidence) in (list,tuple) and len(evidence)<=len(SOURCES),"EVIDENCE_COUNT")
     records={};status={k:"MISSING" for k in SOURCES};context="UNAVAILABLE";quality=None
     for e in evidence:
