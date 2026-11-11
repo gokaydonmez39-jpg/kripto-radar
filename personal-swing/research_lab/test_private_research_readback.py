@@ -58,6 +58,14 @@ class ReadbackTest(unittest.TestCase):
         f[1][2][25]="MUTATED_AFTER_ORIGINAL_DIGEST"
         with self.assertRaisesRegex(ValueError,"SCORE_CONTENT_DIGEST_MISMATCH"):
             build(f)
+    def test_score_component_corruption_rejected_with_valid_digest(self):
+        f=fixture()
+        f[1][2][7:14]=["20.0","15.0","15.0","15.0","10.0","8.0","0.0"]
+        self.assertEqual(build(f)["score_count"],1)
+        # Original score SHA doesn't sign the seven component fields.
+        f[1][2][7]="999.0"
+        with self.assertRaisesRegex(ValueError,"SCORE_COMPONENT_MISMATCH"):
+            build(f)
     def test_hash_mutation(self):
         f=fixture();f[2][1][5]="999"
         with self.assertRaises(ValueError):build(f)
