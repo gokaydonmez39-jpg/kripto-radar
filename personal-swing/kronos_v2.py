@@ -341,12 +341,20 @@ def ensure_month_sheet(api,name,sid,occupied):
     return new_id
 
 
-def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
+def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
+                *, stage=None):
+    """Same exact EOD authority; diagnostic labels are static and non-sensitive."""
     import private_sheet_writer as writer
+    def mark(label):
+        if stage is not None:
+            stage(label)
     month=month_sheet(asof)
+    mark("SOURCE_AUTHORITY")
     symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof)
+    mark("PARTITION_METADATA")
     name,sid,used=metadata_and_sheet(api,asof)
     assert name==month
+    mark("PARTITION_READ")
     before=read_partition(api,name) if sid is not None else []
     k.require(all(row[1]<=asof for row in before),"KRONOS2_FUTURE_LEDGER")
     previous=[row for row in before if row[1]<asof]
@@ -355,6 +363,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     # month before any inference or write. Never silently drop partial
     # previous-month records at the calendar boundary.
     if not previous:
+        mark("PRIOR_MONTH_CUSTODY")
         require_previous_month_complete(api,asof)
     k.require(before==previous+current,
               "KRONOS2_NONAPPEND_CURRENT_DATA")
@@ -378,8 +387,16 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
                 "close_only":len({r[2] for r in current if r[17]==MODEL_STATUS_CLOSE}),
                 "qc_hold":len({r[2] for r in current if r[17].startswith(QUALITY_PREFIX)}),
                 "orders":False}
+    def traced_read_batch(*args):
+        mark("IEX_SOURCE")
+        return read_batch(*args)
+    def traced_predictor_factory():
+        mark("MODEL_LOAD")
+        model=predictor_factory()
+        mark("MODEL_INFERENCE")
+        return model
     rows,counts=make_predictions(symbols,asof,scope_sha,policy_sha,
-                                 scan_id,read_batch,predictor_factory,
+                                 scan_id,traced_read_batch,traced_predictor_factory,
                                  existing_rows=current)
     if current:
         k.require(rows[:len(current)]==current,
@@ -390,6 +407,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     if sid is not None:
         k.require(read_partition(api,name)==before,
                   "KRONOS2_CONCURRENT_WRITE_DETECTED")
+    mark("SHEET_WRITE")
     sid=ensure_month_sheet(api,name,sid,used)
     # All 477 model results are already computed. Append in bounded chunks
     # and verify each original row exactly; interrupted run is resumable.
@@ -413,6 +431,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
                       "KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED")
         at+=len(chunk)
         written+=len(chunk)
+        mark("SHEET_READBACK")
         observed=read_partition(api,name)
         k.require(observed==expected_prefix,
                   "KRONOS2_CHUNK_READBACK_MISMATCH")
@@ -430,9 +449,16 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
             "decision_influence":"NO_GO"}
 
 
+# Exact, code-reviewed literals. NEVER accept arbitrary prefixed exception
+# strings: they may contain private symbol, identifier or credential fragments.
+SAFE_PUBLIC_HOLD_REASONS=frozenset("""
+KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED KRONOS2_AMBIGUOUS_POST_READBACK_UNAVAILABLE KRONOS2_ASOF_PROVENANCE_DRIFT KRONOS2_ASOF_SCOPE_MISMATCH KRONOS2_AUTH_MISSING KRONOS2_BAD_ASOF KRONOS2_BAD_HOLD_STATUS KRONOS2_CHUNK_READBACK_MISMATCH KRONOS2_CLOSE_ONLY_BAD_LENGTH KRONOS2_CONCURRENT_WRITE_DETECTED KRONOS2_DUPLICATE_LEDGER_KEYS KRONOS2_DUPLICATE_SHEET KRONOS2_FINAL_READBACK KRONOS2_FUTURE_LEDGER KRONOS2_HEADER_DRIFT KRONOS2_HOLD KRONOS2_IDEMPOTENT_READBACK KRONOS2_INCOMPLETE_PREDICTIONS KRONOS2_INTERNAL_BLANK_ROW KRONOS2_LAST_SCAN_ASOF KRONOS2_LEDGER_OUT_OF_ORDER KRONOS2_MONTH_CAPACITY KRONOS2_NONAPPEND_CURRENT_DATA KRONOS2_NOT_DUE KRONOS2_NOT_EXACT_SCOPE KRONOS2_NOT_STARTED_BEFORE_2026_11_09 KRONOS2_PARTITION_ASOF_DRIFT KRONOS2_PARTITION_READ_LIMIT KRONOS2_PARTITION_ROW_WITHOUT_ID KRONOS2_PREVIOUS_MONTH_DUPLICATE_TAB KRONOS2_PREVIOUS_MONTH_HORIZON_HOLD KRONOS2_PREVIOUS_MONTH_PARTIAL_HOLD KRONOS2_PREVIOUS_MONTH_TZ_DRIFT KRONOS2_PRIOR_ASOF_HORIZON_HOLD KRONOS2_PRIOR_ASOF_PARTIAL_HOLD KRONOS2_PRIVATE_READBACK_CLOSE_ONLY KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY KRONOS2_PRIVATE_READBACK_WITH_QC_HOLD KRONOS2_PROVIDER_SCOPE_DRIFT KRONOS2_RESTART_HORIZON_INCONSISTENCY KRONOS2_RESTART_IMMUTABLE_PREFIX_DRIFT KRONOS2_RESTART_NOT_EXACT_PREFIX KRONOS2_RESTART_PARTIAL_HORIZONS KRONOS2_RESTART_SOURCE_DRIFT KRONOS2_RESTART_STATUS_DRIFT KRONOS2_ROW_IDENTITY_DRIFT KRONOS2_ROW_TOO_WIDE KRONOS2_SCORE_HEADER KRONOS2_SCORE_NOT_READY KRONOS2_SHEET_GLOBAL_CAPACITY KRONOS2_SHEET_ID_CONFLICT KRONOS2_SOURCE_NOT_477_PASS KRONOS2_SOURCE_NOT_ANALYZABLE KRONOS2_SOURCE_SHA_CONFLICT KRONOS2_TAMPERED_OR_WRONG_VERSION KRONOS2_TIMEZONE_DRIFT KRONOS2_UNCLASSIFIED KRONOS_BAD_ASOF KRONOS_BAD_FORECAST_CLOSE KRONOS_BAD_REFERENCE_CLOSE KRONOS_CODE_REV KRONOS_COHORT_OVER_CAP KRONOS_CONCURRENT_EDIT_BLOCKED KRONOS_DUPLICATE_ID KRONOS_DUPLICATE_OR_UNSORTED_SESSIONS KRONOS_EPISODE_NOT_IN_SCOPE KRONOS_EXISTING_ASOF_PARTIAL_OR_SCOPE_DRIFT KRONOS_EXISTING_MODEL_OR_SOURCE_DRIFT KRONOS_EXISTING_QC_ROW_HAS_FORECAST KRONOS_EXISTING_ROW_TAMPERED KRONOS_HEADER_DRIFT KRONOS_HISTORICAL_BACKFILL_REJECTED KRONOS_INSUFFICIENT_FUTURE_SESSIONS KRONOS_INVALID_FORECAST_ KRONOS_INVALID_FORECAST_GEOMETRY KRONOS_INVALID_FORECAST_NONFINITE KRONOS_INVALID_FORECAST_PRICE KRONOS_INVALID_FORECAST_SCHEMA KRONOS_INVALID_FORECAST_VOLUME KRONOS_INVALID_QC_REASON KRONOS_INVALID_SOURCE_OHLCV KRONOS_INVALID_SYMBOL KRONOS_KOD_REVIZYON KRONOS_LAST_SCAN_ASOF_DRIFT KRONOS_LEDGER_CAPACITY KRONOS_NOT_FINAL_477 KRONOS_PROVIDER_SCOPE_DRIFT KRONOS_READBACK_MISMATCH KRONOS_REQUESTED_ASOF_NOT_CURRENT KRONOS_RESULT_INCOMPLETE KRONOS_ROW_TOO_WIDE KRONOS_SCOPE_NOT_477 KRONOS_SCORE_NOT_FULLY_READY KRONOS_SCORE_SUMMARY_MISSING_OR_SCOPE_DRIFT KRONOS_SHADOW_HOLD KRONOS_SHADOW_IDEMPOTENT_QC_HOLD KRONOS_SHADOW_IDEMPOTENT_READBACK_PASS KRONOS_SHADOW_NO_COMPLETED_SESSION KRONOS_SHADOW_NO_OPEN_EPISODES KRONOS_SHADOW_PRIVATE_READBACK_PASS KRONOS_SHADOW_QC_HOLD_READBACK KRONOS_SHADOW_V1_ARCHIVED_NO_NEW_WRITES KRONOS_SHEET_AUTH_MISSING KRONOS_SOURCE_ASOF_DRIFT KRONOS_SOURCE_INSUFFICIENT KRONOS_SOURCE_NOT_ANALYZABLE KRONOS_SOURCE_SHA_DRIFT KRONOS_SWING_SCORE_HEADER_DRIFT KRONOS_TAB_MISSING KRONOS_TAB_MISSING_OR_DUPLICATE KRONOS_TAHMIN_GUNLUK KRONOS_TIMEZONE_DRIFT KRONOS_UNAWARE_NOW KRONOS_UNCLASSIFIED KRONOS_WRONG_PRED_LENGTH
+""".split())
+
 def main():
     import engine
     import private_sheet_writer as writer
+    phase="SESSION_CLOCK"
     try:
         asof=k.eligible_shadow_asof()
         # First V2 session is a fresh forecast; never replay the old 2026-11-06
@@ -444,15 +470,36 @@ def main():
         if asof is None:
             print(json.dumps({"status":"KRONOS2_NOT_DUE","orders":False}))
             return 0
+        phase="SHEET_AUTH"
         secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         k.require(bool(secret),"KRONOS2_AUTH_MISSING")
         api=writer.SheetApi(secret)
-        out=synchronize(api,asof,engine.live_read)
+        def mark(label):
+            nonlocal phase
+            phase=label
+        out=synchronize(api,asof,engine.live_read,stage=mark)
         print(json.dumps(out,sort_keys=True))
         return 3 if out.get("qc_hold",0) else 0
     except Exception as exc:
-        reason=str(exc) if isinstance(exc,k.ShadowHold) else "KRONOS2_UNCLASSIFIED"
+        # Never log exception messages, symbols, model outputs, provider data,
+        # account IDs, credentials or tracebacks. Only allowlisted stage and
+        # static source-invariant error codes may reach public CI.
+        raw=str(exc) if isinstance(exc,k.ShadowHold) else ""
+        reason=(raw if raw in SAFE_PUBLIC_HOLD_REASONS
+                else "KRONOS2_UNCLASSIFIED")
+        allowed_stages={
+            "SESSION_CLOCK","SHEET_AUTH","SOURCE_AUTHORITY",
+            "PARTITION_METADATA","PARTITION_READ","PRIOR_MONTH_CUSTODY",
+            "IEX_SOURCE","MODEL_LOAD","MODEL_INFERENCE",
+            "SHEET_WRITE","SHEET_READBACK"}
+        safe_stage=phase if phase in allowed_stages else "UNKNOWN"
+        kind=type(exc).__name__
+        allowed_kinds={"ShadowHold","RuntimeError","ValueError","TypeError",
+                       "KeyError","OSError","MemoryError","ImportError",
+                       "AttributeError","PermissionError","AssertionError"}
+        safe_kind=kind if kind in allowed_kinds else "OTHER"
         print(json.dumps({"status":"KRONOS2_HOLD","reason_code":reason,
+                          "stage":safe_stage,"exception_family":safe_kind,
                           "orders":False},sort_keys=True))
         return 3
 

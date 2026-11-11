@@ -35,7 +35,9 @@ class FormerROKUCoveTests(unittest.TestCase):
     def setUp(self):
         self.calls=[]
         self.a=patch.object(priv.kronos_v2,"private_authority",
-            return_value=(SCOPE,runner.sha_symbols(SCOPE),
+            return_value=(SCOPE,runner.sha_symbols(runner.get_scope(
+                watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
+                asof=DAY)),
                           runner.analysis_fingerprint(),DAY))
         self.b=patch.object(priv.flight,"inspect",
             return_value={**flight_ok(),"latest_verified_scan_asof":DAY})

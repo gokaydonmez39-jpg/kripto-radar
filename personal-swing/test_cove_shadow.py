@@ -18,8 +18,9 @@ ENTRY = "2026-10-22"
 CAL = ec.get_calendar("XNAS")
 DAYS = [str(t.date()) for t in CAL.sessions_in_range("2026-08-13", ASOF)][-52:]
 FUTURE = [d for d in DAYS if d > ENTRY]
-SCOPE = sorted(runner.get_scope(
-    watchlist_file="nasdaq_watchlist_477.json", asof=ASOF))
+SOURCE_ORDER = runner.get_scope(
+    watchlist_file="nasdaq_watchlist_477.json", asof=ASOF)
+SCOPE = sorted(SOURCE_ORDER)
 SYMBOL = SCOPE[0]
 
 
@@ -39,7 +40,7 @@ def bundle():
     bars = baseline_bars()
     return dict(schema="XRAY_COVE_METHOD_SHADOW_INPUT_V1", asof_et=ASOF,
                 feed="ALPACA_IEX_DAILY_RAW_1DAY",
-                scope_sha256=runner.sha_symbols(SCOPE),
+                scope_sha256=runner.sha_symbols(SOURCE_ORDER),
                 algorithm_sha256=runner.analysis_fingerprint(),
                 source_counts={"requested":477,"processed":477,
                                "valid":477,"missing":0,"final":True},
