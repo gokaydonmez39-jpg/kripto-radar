@@ -38,6 +38,11 @@ class ReadbackTest(unittest.TestCase):
         f=fixture();f[1].pop()
         with self.assertRaises(ValueError):build(f)
         f[1][1][5:9]=["0","0","0","0"];self.assertEqual(build(f)["score_count"],0)
+    def test_recomputed_digest_rejects_post_signing_content_tamper(self):
+        f=fixture()
+        f[1][2][25]="MUTATED_AFTER_ORIGINAL_DIGEST"
+        with self.assertRaisesRegex(ValueError,"SCORE_CONTENT_DIGEST_MISMATCH"):
+            build(f)
     def test_hash_mutation(self):
         f=fixture();f[2][1][5]="999"
         with self.assertRaises(ValueError):build(f)
