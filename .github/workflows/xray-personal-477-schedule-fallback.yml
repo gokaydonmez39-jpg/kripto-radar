@@ -23,10 +23,6 @@ on:
     # UTC 00:25 Tue-Sat = Mon-Fri NY evening, after official XNAS close+45m.
     # The fallback only dispatches when NO current-session personal run exists.
     - cron: '25 0 * * 2-6'
-    # One bounded, independent second scheduler opportunity; the source-run
-    # receipt and per-workflow concurrency still suppress duplicate dispatch.
-    # Same official XNAS session; NEVER backfill old/failed EOD.
-    - cron: '25 1 * * 2-6'
 permissions:
   contents: read
 concurrency:
@@ -51,6 +47,10 @@ jobs:
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
           python -m py_compile schedule_failover.py
+      - name: Enforce global NASDAQ workflow-schedule boundary contract
+        run: |
+          python -m pip install 'PyYAML==6.0.2'
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/all_workflow_schedule_audit.py --selftest
   dispatch-if-missing:
     needs: offline-negative-regression
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

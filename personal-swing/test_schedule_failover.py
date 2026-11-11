@@ -194,31 +194,6 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,[])
         self.assertEqual(result['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
 
-    def test_redundant_schedule_declared_with_bounded_second_slot(self):
-        from pathlib import Path
-        workflow=(Path(__file__).resolve().parent.parent/
-                  ".github/workflows/xray-personal-477-schedule-fallback.yml").read_text()
-        self.assertEqual(workflow.count("- cron: '25 0 * * 2-6'"),1)
-        self.assertEqual(workflow.count("- cron: '25 1 * * 2-6'"),1)
-        self.assertEqual(workflow.count("- cron: "),2)
-
-    def test_second_slot_suppressed_by_first_dispatch_receipt(self):
-        calls=[]
-        first=sf.run(now=utc("2026-11-11T00:25:00Z"),
-                     read_runs=lambda:{"workflow_runs":[],"total_count":0},
-                     request_dispatch=lambda day:calls.append(day) or True)
-        self.assertEqual(first["status"],"DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED")
-        self.assertEqual(calls,["2026-11-10"])
-        second=sf.run(now=utc("2026-11-11T01:25:00Z"),
-                      read_runs=lambda:{"workflow_runs":[record(
-                          created="2026-11-11T00:26:00Z",
-                          event="workflow_dispatch",status="queued")],
-                                        "total_count":1},
-                      request_dispatch=lambda day:calls.append(day) or True)
-        self.assertEqual(second["status"],"NOOP_CURRENT_EPOCH_RUN_EXISTS")
-        self.assertEqual(calls,["2026-11-10"])
-
-
 
 if __name__=='__main__':
     unittest.main()
