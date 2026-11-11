@@ -5,7 +5,7 @@ SCOPE=scope_sha(SYMS)
 def fixture():
     scan=[list(SCAN_HEADER),[DAY,"GitHub schedule VERIFIED IEX EOD","477","477","477","0","TRUE","0",SOURCE_URL+RUN,f"scopeSHA={SCOPE};algorithmSHA={ALG};source_event=schedule"]]
     s=[""]*35;s[:9]=[DAY+"|SUMMARY",DAY,"","","SUMMARY","1","1","0","1"];s[26:33]=[SOURCE_URL+RUN,"REQUESTED_NOT_DEVICE_ACK","","b"*64,SCOPE,ALG,SCORE_VERSION]
-    e=[""]*35;e[:7]=[DAY+"|2026-11-06|DEMO000",DAY,"2026-11-06|DEMO000","DEMO000","EPISODE","1","83"];e[14:18]=["100","100","95","110"];e[21]="2";e[26:33]=[SOURCE_URL+RUN,"","","b"*64,SCOPE,ALG,SCORE_VERSION]
+    e=[""]*35;e[:7]=[DAY+"|2026-11-06|DEMO000",DAY,"2026-11-06|DEMO000","DEMO000","EPISODE","1","83"];e[7:14]=["20.0","15.0","15.0","15.0","10.0","8.0","0.0"];e[14:18]=["100","100","95","110"];e[21]="2";e[26:33]=[SOURCE_URL+RUN,"","","b"*64,SCOPE,ALG,SCORE_VERSION]
     k=[list(KRONOS_HEADER)]
     for i,sym in enumerate(SYMS):
         for h in HORIZONS:
@@ -93,6 +93,7 @@ class ReadbackTest(unittest.TestCase):
     def test_real_decimal_score_and_current_close(self):
         f=fixture()
         f[1][2][6]="71.8"
+        f[1][2][7:14]=["16.0","14.0","11.0","12.0","8.0","7.0","3.8"]
         reseal_score(f)
         out=build(f)
         self.assertEqual(out["episodes"][0]["technical_score"],71.8)

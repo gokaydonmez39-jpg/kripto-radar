@@ -105,6 +105,15 @@ def build_readback(scan_matrix,score_matrix,kronos_matrix,*,expected_asof,expect
                  score*10==(score*10).to_integral_value(),
                  "SCORE_PRECISION_OR_RANGE")
         _require(1<=rank<=n and rank not in ranks,"RANK_OR_SCORE")
+        # Source AD digest intentionally signs score/close/tag, but not
+        # H:N component contributions: validate these independently.
+        component_max=(20,15,15,15,10,15,10)
+        parts=[_decimal(v) for v in r[7:14]]
+        _require(len(parts)==7 and
+                 all(Decimal("0")<=v<=Decimal(limit)
+                     for v,limit in zip(parts,component_max)) and
+                 abs(sum(parts)-score)<=Decimal("0.35"),
+                 "SCORE_COMPONENT_MISMATCH")
         close=_decimal(r[14],True)
         ref,stop,target=(_decimal(r[i],True) for i in (15,16,17))
         _require(stop<ref<target and abs((target-ref)-2*(ref-stop))<=Decimal("0.004"),"FIXED_BRACKET")
