@@ -230,12 +230,14 @@ def run_bundle(bundle,*,slippage_bps=0.0,commission_per_share=0.0,
             counts.get("missing")==0 and
             counts.get("final") is True,
             "SOURCE_NOT_477_FINAL")
-    scope=sorted(runner.get_scope(
+    # Original EOD receipt signs ORIGINAL PIT order, not sorted compute order.
+    source_order=runner.get_scope(
         watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
-        asof=asof))
+        asof=asof)
+    scope=sorted(source_order)
     require(len(scope)==EXPECTED and len(set(scope))==EXPECTED,
             "SOURCE_SCOPE_NOT_477")
-    require(bundle.get("scope_sha256")==runner.sha_symbols(scope) and
+    require(bundle.get("scope_sha256")==runner.sha_symbols(source_order) and
             bundle.get("algorithm_sha256")==runner.analysis_fingerprint(),
             "SHA_MISMATCH")
     episodes=bundle.get("episodes")
