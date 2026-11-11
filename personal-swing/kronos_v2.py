@@ -341,12 +341,20 @@ def ensure_month_sheet(api,name,sid,occupied):
     return new_id
 
 
-def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
+def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
+                *, stage=None):
+    """Same exact EOD authority; diagnostic labels are static and non-sensitive."""
     import private_sheet_writer as writer
+    def mark(label):
+        if stage is not None:
+            stage(label)
     month=month_sheet(asof)
+    mark("SOURCE_AUTHORITY")
     symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof)
+    mark("PARTITION_METADATA")
     name,sid,used=metadata_and_sheet(api,asof)
     assert name==month
+    mark("PARTITION_READ")
     before=read_partition(api,name) if sid is not None else []
     k.require(all(row[1]<=asof for row in before),"KRONOS2_FUTURE_LEDGER")
     previous=[row for row in before if row[1]<asof]
@@ -355,6 +363,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     # month before any inference or write. Never silently drop partial
     # previous-month records at the calendar boundary.
     if not previous:
+        mark("PRIOR_MONTH_CUSTODY")
         require_previous_month_complete(api,asof)
     k.require(before==previous+current,
               "KRONOS2_NONAPPEND_CURRENT_DATA")
@@ -378,8 +387,16 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
                 "close_only":len({r[2] for r in current if r[17]==MODEL_STATUS_CLOSE}),
                 "qc_hold":len({r[2] for r in current if r[17].startswith(QUALITY_PREFIX)}),
                 "orders":False}
+    def traced_read_batch(*args):
+        mark("IEX_SOURCE")
+        return read_batch(*args)
+    def traced_predictor_factory():
+        mark("MODEL_LOAD")
+        model=predictor_factory()
+        mark("MODEL_INFERENCE")
+        return model
     rows,counts=make_predictions(symbols,asof,scope_sha,policy_sha,
-                                 scan_id,read_batch,predictor_factory,
+                                 scan_id,traced_read_batch,traced_predictor_factory,
                                  existing_rows=current)
     if current:
         k.require(rows[:len(current)]==current,
@@ -390,6 +407,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
     if sid is not None:
         k.require(read_partition(api,name)==before,
                   "KRONOS2_CONCURRENT_WRITE_DETECTED")
+    mark("SHEET_WRITE")
     sid=ensure_month_sheet(api,name,sid,used)
     # All 477 model results are already computed. Append in bounded chunks
     # and verify each original row exactly; interrupted run is resumable.
@@ -413,6 +431,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
                       "KRONOS2_AMBIGUOUS_POST_NOT_CONFIRMED")
         at+=len(chunk)
         written+=len(chunk)
+        mark("SHEET_READBACK")
         observed=read_partition(api,name)
         k.require(observed==expected_prefix,
                   "KRONOS2_CHUNK_READBACK_MISMATCH")
@@ -433,6 +452,7 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor):
 def main():
     import engine
     import private_sheet_writer as writer
+    phase="SESSION_CLOCK"
     try:
         asof=k.eligible_shadow_asof()
         # First V2 session is a fresh forecast; never replay the old 2026-11-06
@@ -444,15 +464,36 @@ def main():
         if asof is None:
             print(json.dumps({"status":"KRONOS2_NOT_DUE","orders":False}))
             return 0
+        phase="SHEET_AUTH"
         secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         k.require(bool(secret),"KRONOS2_AUTH_MISSING")
         api=writer.SheetApi(secret)
-        out=synchronize(api,asof,engine.live_read)
+        def mark(label):
+            nonlocal phase
+            phase=label
+        out=synchronize(api,asof,engine.live_read,stage=mark)
         print(json.dumps(out,sort_keys=True))
         return 3 if out.get("qc_hold",0) else 0
     except Exception as exc:
-        reason=str(exc) if isinstance(exc,k.ShadowHold) else "KRONOS2_UNCLASSIFIED"
+        # Never log exception messages, symbols, model outputs, provider data,
+        # account IDs, credentials or tracebacks. Only allowlisted stage and
+        # static source-invariant error codes may reach public CI.
+        raw=str(exc) if isinstance(exc,k.ShadowHold) else ""
+        reason=(raw if re.fullmatch(r"(?:KRONOS|KRONOS2)_[A-Z0-9_]{3,80}",raw)
+                else "KRONOS2_UNCLASSIFIED")
+        allowed_stages={
+            "SESSION_CLOCK","SHEET_AUTH","SOURCE_AUTHORITY",
+            "PARTITION_METADATA","PARTITION_READ","PRIOR_MONTH_CUSTODY",
+            "IEX_SOURCE","MODEL_LOAD","MODEL_INFERENCE",
+            "SHEET_WRITE","SHEET_READBACK"}
+        safe_stage=phase if phase in allowed_stages else "UNKNOWN"
+        kind=type(exc).__name__
+        allowed_kinds={"ShadowHold","RuntimeError","ValueError","TypeError",
+                       "KeyError","OSError","MemoryError","ImportError",
+                       "AttributeError","PermissionError","AssertionError"}
+        safe_kind=kind if kind in allowed_kinds else "OTHER"
         print(json.dumps({"status":"KRONOS2_HOLD","reason_code":reason,
+                          "stage":safe_stage,"exception_family":safe_kind,
                           "orders":False},sort_keys=True))
         return 3
 
