@@ -49,7 +49,8 @@ class PrivateReadOnlyTests(unittest.TestCase):
         self.api=FakeApi()
         self.read_calls=[]
         a=patch.object(priv.kronos_v2,"private_authority",
-            return_value=(SCOPE,runner.sha_symbols(SCOPE),
+            return_value=(SCOPE,runner.sha_symbols(runner.get_scope(
+                watchlist_file="nasdaq_watchlist_477.json",asof=ASOF)),
                           runner.analysis_fingerprint(),ASOF))
         b=patch.object(priv.flight,"inspect",return_value=flight_ok())
         a.start();b.start()

@@ -64,17 +64,22 @@ def _read_current(api):
             api.read("PANEL","B"))
 
 
-def build_private_bundle(api,asof,read_batch):
+def build_private_bundle(api,asof,read_batch,*,stage=None):
     """Attest source, private lifecycle, then bind 477-count + episode bars.
 
     The exact source-policy SHA and same-ASOF score receipt are checked by the
     existing Kronos V2 authority (not model inference). The A21 flight
     recorder verifies immutable episode/event/PANEL identity separately.
     """
+    def mark(label):
+        if stage is not None:
+            stage(label)
     need(callable(read_batch),"MISSING_READ_ONLY_PROVIDER")
+    mark("SOURCE_AUTHORITY")
     symbols,scope_sha,policy_sha,scan_id=kronos_v2.private_authority(api,asof)
     need(scan_id==asof and len(symbols)==477,"AUTHORITY_ASOF_OR_SCOPE_MISMATCH")
     before=_read_current(api)
+    mark("FLIGHT_RECORDER")
     receipt=flight.inspect(*before,expected_asof=asof)
     need(receipt["latest_verified_scan_asof"]==asof
          and receipt["unreserved_current_eod_al"]==0
@@ -88,6 +93,7 @@ def build_private_bundle(api,asof,read_batch):
     need(len(latest)>=10 and latest[6]=="TRUE"
          and [writer.numeric(latest[i]) for i in (2,3,4,5)]==[477,477,477,0],
          "SOURCE_NOT_477")
+    mark("EPISODE_SCOPE")
     episode_list=[]
     ids=set()
     for row in candidate_rows:
@@ -123,12 +129,14 @@ def build_private_bundle(api,asof,read_batch):
     active_symbols=sorted({e["symbol"] for e in episode_list})
     need(set(active_symbols).issubset(set(symbols)),"UNREVIEWED_PIT_EPISODE")
     if active_symbols:
+        mark("IEX_SOURCE")
         bars=read_batch(active_symbols,asof)
         need(type(bars) is dict and set(bars)==set(active_symbols),
              "PROVIDER_SYMBOL_SCOPE_MISMATCH")
     else:
         bars={}
     # The private sheet cannot change between attestation and output.
+    mark("SOURCE_RECHECK")
     need(_read_current(api)==before,"CONCURRENT_PRIVATE_SOURCE_DRIFT")
     return {
         "schema":cove_shadow.INPUT_SCHEMA,
@@ -144,9 +152,11 @@ def build_private_bundle(api,asof,read_batch):
 
 
 def run_private(asof,api,read_batch,*,slippage_bps=5.,
-                commission_per_share=0.005):
+                commission_per_share=0.005,stage=None):
     """Private in-memory result only; caller must not publish metrics/logs."""
-    source=build_private_bundle(api,asof,read_batch)
+    source=build_private_bundle(api,asof,read_batch,stage=stage)
+    if stage is not None:
+        stage("RESEARCH_MATH")
     result=cove_shadow.run_bundle(
         source,slippage_bps=slippage_bps,
         commission_per_share=commission_per_share)
@@ -167,7 +177,10 @@ def main():
         phase="ASOF"
         asof=engine.trading_asof().isoformat()
         phase="AUTHENTICATED_READBACK"
-        result=run_private(asof,api,engine.live_read)
+        def mark(label):
+            nonlocal phase
+            phase=label
+        result=run_private(asof,api,engine.live_read,stage=mark)
         # Never claim a live research PASS for a valid but empty source cohort.
         need(result["baseline"]["episodes"]>0 and
              result["baseline"]["status"]!="HOLD_NO_EPISODES",
@@ -182,7 +195,10 @@ def main():
     except Exception:
         # Any provider / credential / private data exception stays private.
         # Never print raw exception text or traceback into public GitHub logs.
-        safe=phase if phase in ("AUTH","ASOF","AUTHENTICATED_READBACK","DONE") else "UNKNOWN"
+        safe=phase if phase in (
+            "AUTH","ASOF","AUTHENTICATED_READBACK","SOURCE_AUTHORITY",
+            "FLIGHT_RECORDER","EPISODE_SCOPE","IEX_SOURCE",
+            "SOURCE_RECHECK","RESEARCH_MATH","DONE") else "UNKNOWN"
         print("COVE_SHADOW_POST_EOD=HOLD_NO_DATA_PUBLISHED_NO_WRITES;STAGE="+safe)
         return 3
 
