@@ -51,4 +51,10 @@ class DecisionTests(unittest.TestCase):
         for k,v in [("technical_score",True),("target","111"),("system","XRAY_CRYPTO"),("episode_id","2026-11-11|DEMO")]:
             c,s=sample();c[k]=v
             with self.subTest(k=k),self.assertRaises(ValueError):assess(c,[])
+    def test_actual_decimal_score_preserved(self):
+        c,s=sample();c["technical_score"]=71.8
+        self.assertEqual(assess(c,s)["technical_score"],71.8)
+        for invalid in (71.81,float("nan"),float("inf"),True,-1,100.1):
+            c,s=sample();c["technical_score"]=invalid
+            with self.subTest(invalid=invalid),self.assertRaises(ValueError):assess(c,s)
 if __name__=="__main__":unittest.main()
