@@ -69,6 +69,12 @@ jobs:
           python -O -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
           # Private IEX/Sheets/alerts/broker not accessed by this CI step.
+      - name: P0 original-PIT-order and fail-closed recovery regressions (no secrets)
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_p0_source_recovery
+          python -O -m unittest -q test_p0_source_recovery
+          python -m py_compile test_p0_source_recovery.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
         run: |
