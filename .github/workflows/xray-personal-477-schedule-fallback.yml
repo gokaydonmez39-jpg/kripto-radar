@@ -23,10 +23,6 @@ on:
     # UTC 00:25 Tue-Sat = Mon-Fri NY evening, after official XNAS close+45m.
     # The fallback only dispatches when NO current-session personal run exists.
     - cron: '25 0 * * 2-6'
-    # One bounded, independent second scheduler opportunity; the source-run
-    # receipt and per-workflow concurrency still suppress duplicate dispatch.
-    # Same official XNAS session; NEVER backfill old/failed EOD.
-    - cron: '25 1 * * 2-6'
 permissions:
   contents: read
 concurrency:
