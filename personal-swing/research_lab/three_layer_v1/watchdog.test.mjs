@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import vm from "node:vm";
+const w=JSON.parse(readFileSync(new URL("./n8n-watchdog.synthetic.json",import.meta.url),"utf8"));
+const code=w.nodes[1].parameters.jsCode;
+const demo={"asof":"2026-11-10","expected_asof":"2026-11-10","source_run":"123","run_status":"success","scan_count":477,"sheet_asof":"2026-11-10","sheet_exact":true,"guardian":true,"score":true,"identity_verified":true};
+const run=(o,seen=[])=>vm.runInNewContext(code.split("\nconst observation=")[0]+"\nclassify(input,seen)",{input:o,seen});
+test("inactive manual, no credentials or network",()=>{assert.equal(w.active,false);assert.deepEqual(w.nodes.map(n=>n.type),["n8n-nodes-base.manualTrigger","n8n-nodes-base.code"]);assert.ok(w.nodes.every(n=>!n.credentials));const out=vm.runInNewContext("(function(){"+code+"})()");assert.equal(out[0].json.fixture_only,true);assert.equal(out[0].json.may_notify,false)});
+test("stable ASOF identity and duplicate rerun",()=>{const a=run(demo);assert.equal(a.status,"ACCEPTED");assert.equal(run({...demo,source_run:"456"},[a.event_key]).status,"DUPLICATE");assert.equal(a.may_trade,false);assert.equal(a.may_dispatch,false)});
+test("fail closed",()=>{for(const [k,v,s] of [["scan_count",476,"HOLD"],["run_status","failure","HOLD"],["run_status","in_progress","WAIT"],["sheet_asof","2026-11-09","HOLD"],["sheet_exact",null,"UNKNOWN"],["identity_verified",false,"HOLD"],["expected_asof","2026-02-30","UNKNOWN"]])assert.equal(run({...demo,[k]:v}).status,s,k)});
