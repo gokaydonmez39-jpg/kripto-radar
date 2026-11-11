@@ -49,6 +49,7 @@ jobs:
           python -m py_compile schedule_failover.py
       - name: Enforce global NASDAQ workflow-schedule boundary contract
         run: |
+          python -m pip install 'PyYAML==6.0.2'
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/all_workflow_schedule_audit.py --selftest
   dispatch-if-missing:
     needs: offline-negative-regression
