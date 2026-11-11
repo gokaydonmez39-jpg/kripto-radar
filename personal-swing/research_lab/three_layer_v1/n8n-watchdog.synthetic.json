@@ -1,0 +1,47 @@
+{
+  "name": "XRAY watchdog V1 - SYNTHETIC MANUAL ONLY",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c6d64a64-81d1-4d9f-9a21-19e78b070001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const SYSTEM=\"XRAY_NASDAQ_PERSONAL\";\nconst keys=[\"asof\",\"source_run\",\"run_status\",\"scan_count\",\"sheet_asof\",\"sheet_exact\",\"guardian\",\"score\",\"identity_verified\"];\nconst iso=x=>typeof x===\"string\"&&/^\\d{4}-\\d{2}-\\d{2}$/.test(x)&&Number.isFinite(Date.parse(x+\"T00:00:00Z\"))&&new Date(x+\"T00:00:00Z\").toISOString().slice(0,10)===x;\nfunction classify(o,seen){\n const out=(status,reason,event_key=null)=>({system:SYSTEM,status,reason,event_key,may_notify:false,may_dispatch:false,may_trade:false,source_authentication:\"CALLER_WITNESS_NOT_ATTESTED\"});\n if(!o||!iso(o.expected_asof)||!Array.isArray(seen))return out(\"UNKNOWN\",\"INVALID_INPUT\");\n if(keys.some(k=>o[k]===null||o[k]===undefined))return out(\"UNKNOWN\",\"MISSING_WITNESS\");\n if(!iso(o.asof)||!iso(o.sheet_asof)||typeof o.source_run!==\"string\"||!(/^[1-9][0-9]{0,20}$/.test(o.source_run)))return out(\"UNKNOWN\",\"INVALID_WITNESS\");\n if(o.asof!==o.expected_asof)return out(\"HOLD\",\"SOURCE_ASOF_MISMATCH\");\n if([\"queued\",\"in_progress\",\"waiting\",\"pending\"].includes(o.run_status))return out(\"WAIT\",\"RUN_NOT_TERMINAL\");\n if(o.run_status!==\"success\")return out(\"HOLD\",\"RUN_NOT_SUCCESS\");\n if(o.scan_count!==477||o.sheet_asof!==o.expected_asof||[o.sheet_exact,o.guardian,o.score,o.identity_verified].some(v=>v!==true))return out(\"HOLD\",\"ACCEPTANCE_WITNESS_MISMATCH\");\n const key=SYSTEM+\"|EOD_ACCEPTED|\"+o.expected_asof;\n return out(seen.includes(key)?\"DUPLICATE\":\"ACCEPTED\",\"READ_ONLY_CANDIDATE\",key);\n}\n\nconst observation={\"asof\":\"2026-11-10\",\"expected_asof\":\"2026-11-10\",\"source_run\":\"123\",\"run_status\":\"success\",\"scan_count\":477,\"sheet_asof\":\"2026-11-10\",\"sheet_exact\":true,\"guardian\":true,\"score\":true,\"identity_verified\":true};\nreturn [{json:{...classify(observation,[]),fixture_only:true}}];\n"
+      },
+      "id": "c6d64a64-81d1-4d9f-9a21-19e78b070002",
+      "name": "Synthetic contract",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Synthetic contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "XraySynthetic001"
+}
