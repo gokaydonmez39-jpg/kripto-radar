@@ -136,6 +136,37 @@ class V2Tests(unittest.TestCase):
         self.assertFalse(api.created)
         self.assertEqual(api.writes,1)
 
+    def test_month_create_lost_reply_wrong_header_fails_closed(self):
+        api=FakeApi()
+        api.raise_after_apply=1
+        original=api.request
+        def corrupt_readback(path, *, method="GET", body=None):
+            if method=="GET" and path.startswith("/values/"):
+                return {"values":[["WRONG_HEADER"]]}
+            return original(path,method=method,body=body)
+        with patch.object(api,"request",side_effect=corrupt_readback):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "KRONOS2_AMBIGUOUS_CREATE_NOT_CONFIRMED"):
+                v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertTrue(api.created)
+        self.assertEqual(api.writes,1)
+
+    def test_month_create_lost_reply_wrong_id_fails_closed(self):
+        api=FakeApi()
+        api.raise_after_apply=1
+        original=api.request
+        def altered_metadata(path, *, method="GET", body=None):
+            result=original(path,method=method,body=body)
+            if method=="GET" and path.startswith("?") and api.created:
+                result["sheets"][-1]["properties"]["sheetId"]+=1
+            return result
+        with patch.object(api,"request",side_effect=altered_metadata):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "KRONOS2_AMBIGUOUS_CREATE_NOT_CONFIRMED"):
+                v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertTrue(api.created)
+        self.assertEqual(api.writes,1)
+
     def test_close_only_geometry_not_falsely_repaired(self):
         closes,state,policy=v.forecast_classification(Frame(bad_geometry=True))
         self.assertEqual(state,v.MODEL_STATUS_CLOSE)
