@@ -141,8 +141,8 @@
     "UTHR",
     "ODFL",
     "ROP",
-    "FAST",
     "FTAI",
+    "FAST",
     "FOXA",
     "CHTR",
     "STRL",
@@ -789,7 +789,7 @@
   "research_setup_candidate_count": 0,
   "research_setup_candidate_symbols": [],
   "schema": "XRAY_PERSONAL_EOD_RESEARCH_DIGEST_V1",
-  "source_candidates_sha256": "9ebade395a68bc09c7a1fdac095c2068a380c884e7b1a2ff9c31994709eb082e",
+  "source_candidates_sha256": "5242d6b2ecdcf206521d88f5bfb9dbd9a2b63b7daf52a677156d99af6a489352",
   "source_confidence": {
     "grade": "LOW",
     "rationale": "Existing SINA price observations and calendar-bound formula audits; independent original RTH volume, split lineage, primary MC and event clearance unproven",
@@ -798,7 +798,7 @@
   "source_epoch_blobs": {
     "master": "08d2fbdd8372607f877beb0c667d0638947fb7e4",
     "price": "4a0a56c40e3f3137dc3c22c81c4c824e4fdf956c",
-    "root": "b0c2842cfa86f6e09638a9804ac7871748c8c4de"
+    "root": "08a10c98f100c90b799a9a966eacaa8648c219d6"
   },
   "status": "PERSONAL_LIQUIDITY_WATCH_AND_REJECTED_TRIGGERS",
   "technical_evaluated_count": 475,
@@ -819,5 +819,5 @@
   },
   "unknown_never_pass": true,
   "watchlist_count": 480,
-  "watchlist_digest": "d84cb71757a20a90f358c4611195bf0b307731391038ffd6ec76597ae24e7e46"
+  "watchlist_digest": "ed11dfc718cca66b48cc863779178858ecb63375eb3b96a5daf1f217d4278706"
 }
