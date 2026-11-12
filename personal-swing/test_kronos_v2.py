@@ -81,6 +81,35 @@ def as_cells(rows, sheet_id):
 
 
 class V2Tests(unittest.TestCase):
+    def test_new_month_sheet_allows_one_visible_unfrozen_data_row(self):
+        """Google Sheets HTTP 400 when rowCount == frozenRowCount == 1.
+
+        This reproduces production's exact structural validation using only
+        a fake API. A separate synthetic real Google Sheets test confirmed
+        rowCount=1/frozen=1 is rejected and rowCount=2/frozen=1 accepted.
+        """
+        api=FakeApi()
+        recorded=[]
+        original=api.request
+        def observe(path, *, method="GET", body=None):
+            if method=="POST":
+                recorded.append(body)
+            return original(path, method=method, body=body)
+        with patch.object(api, "request", side_effect=observe):
+            sid=v.ensure_month_sheet(api, v.month_sheet(ASOF), None, {100})
+        self.assertTrue(api.created)
+        self.assertEqual(sid, api.sid)
+        self.assertEqual(len(recorded),1)
+        reqs=recorded[0]["requests"]
+        self.assertEqual(len(reqs),2)
+        grid=reqs[0]["addSheet"]["properties"]["gridProperties"]
+        self.assertEqual(grid["frozenRowCount"],1)
+        self.assertEqual(grid["columnCount"],len(k.HEADERS))
+        self.assertGreater(grid["rowCount"],grid["frozenRowCount"])
+        self.assertEqual(reqs[1]["appendCells"]["sheetId"],sid)
+        self.assertEqual(len(reqs[1]["appendCells"]["rows"][0]["values"]),
+                         len(k.HEADERS))
+
     def test_close_only_geometry_not_falsely_repaired(self):
         closes,state,policy=v.forecast_classification(Frame(bad_geometry=True))
         self.assertEqual(state,v.MODEL_STATUS_CLOSE)
