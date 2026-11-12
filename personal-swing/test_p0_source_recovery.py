@@ -176,5 +176,24 @@ class ProductionFailureRegression(unittest.TestCase):
         self.assertEqual(network.call_count,1)
 
 
+
+    def test_google_409_conflict_is_distinct_and_post_is_not_retried(self):
+        """A mocked write collision must retain an actionable safe code."""
+        from urllib.error import HTTPError
+        import private_sheet_writer as writer
+        client=writer.SheetApi.__new__(writer.SheetApi)
+        client.base="https://sheets.googleapis.com/v4/spreadsheets/test-id"
+        client.token="DUMMY_OFFLINE_TOKEN"
+        err=HTTPError("https://provider.invalid/",409,"Conflict",{},None)
+        with patch.object(writer, "urlopen",side_effect=err) as network:
+            with self.assertRaises(writer.HandoffBlocked) as held:
+                client.request(":batchUpdate",method="POST",
+                               body={"requests":[]})
+        self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_409")
+        self.assertEqual(writer.public_failure_code(held.exception),
+                         "GOOGLE_SHEETS_HTTP_409")
+        self.assertEqual(network.call_count,1)
+
+
 if __name__=="__main__":
     unittest.main()
