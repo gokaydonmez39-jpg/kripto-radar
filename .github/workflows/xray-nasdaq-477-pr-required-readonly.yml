@@ -43,6 +43,16 @@ jobs:
           python -O -m unittest -q test_preopen_a34
           python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
+      - name: Personal schedule fallback and official research-shadow negative acceptance
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_schedule_failover
+          python -O -m unittest -q test_schedule_failover
+          python -m py_compile schedule_failover.py
+          cd research_lab
+          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
+          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
+          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py
       - name: Kronos V2 research contracts normal and optimized (NO model download)
         working-directory: personal-swing
         run: |

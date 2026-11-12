@@ -189,5 +189,40 @@ class Shadow477Tests(unittest.TestCase):
             self.assertIn("SKIPPED_NO_COMPLETED_SCAN",console.getvalue())
             self.assertFalse(op.exists())
 
+    def test_public_reason_closed_allowlist(self):
+        self.assertEqual(m.public_reason(m.ShadowRejected("WATCHLIST_COUNT_INVALID")),
+                         "WATCHLIST_COUNT_INVALID")
+        self.assertEqual(m.public_reason(
+            m.ShadowRejected("EOD_HANDOFF_REFUSED_ValueError")),
+            "EOD_HANDOFF_REFUSED_ValueError")
+        self.assertEqual(m.public_reason(
+            m.ShadowRejected("PRIVATE_KEY=SUPER_SECRET")),
+            "SHADOW_UNCLASSIFIED")
+        self.assertEqual(m.public_reason(ValueError("PRIVATE_KEY=SUPER_SECRET")),
+                         "SHADOW_UNCLASSIFIED")
+
+    def test_cli_rejected_guard_has_static_reason_without_raw_data(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp);sp=p/"snap.json";wp=p/"watch.json"
+            gp=p/"guard.json";op=p/"shadow.json"
+            g=guard();g["status"]="FAILED"
+            sp.write_text(json.dumps(snapshot()),encoding="utf-8")
+            wp.write_text(json.dumps(WATCH),encoding="utf-8")
+            gp.write_text(json.dumps(g),encoding="utf-8")
+            buf=io.StringIO()
+            with redirect_stdout(buf):
+                code=m.main(["--snapshot",str(sp),"--watchlist",str(wp),
+                             "--guard",str(gp),"--out",str(op)])
+            self.assertEqual(code,4)
+            receipt=json.loads(buf.getvalue())
+            self.assertEqual(receipt["reason_code"],
+                             "OFFICIAL_GUARD_AUTHORITY_OR_STATUS_INVALID")
+            self.assertFalse(receipt["may_modify_al"])
+            self.assertFalse(receipt["market_clearance_proven"])
+            self.assertFalse(op.exists())
+            self.assertNotIn("rows",buf.getvalue())
+            self.assertNotIn("liquidity_watch_symbols",buf.getvalue())
+
+
 if __name__=="__main__":
     unittest.main()
