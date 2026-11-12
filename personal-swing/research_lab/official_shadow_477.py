@@ -39,6 +39,8 @@ EOD_SOURCE_ORDER_INVALID SOURCE_SNAPSHOT_MUTATED SHADOW_SCOPE_DRIFT
 SHADOW_MUST_NOT_OVERWRITE_EOD SHADOW_MUST_NOT_OVERWRITE_SOURCE
 EOD_HANDOFF_REFUSED_ValueError EOD_HANDOFF_REFUSED_TypeError
 EOD_HANDOFF_REFUSED_KeyError EOD_HANDOFF_REFUSED_ArithmeticError
+EOD_HANDOFF_REFUSED_HandoffInvalid PIT_WATCHLIST_DOCUMENT_DRIFT
+PIT_SCOPE_VALIDATION_FAILED
 """.split())
 
 
@@ -115,7 +117,21 @@ def validate_safety_witness(witness):
 
 def make_shadow(snapshot, watchlist, guard):
     """No side effects. Source absence is UNKNOWN, never explicit no-risk."""
-    symbols = exact_symbols(watchlist)
+    # The immutable base list keeps pre-cutover INDV/ROKU by design.
+    # Resolve approved replacements only through the same PIT validator
+    # as the production EOD engine; never reinterpret price history here.
+    exact_symbols(watchlist)
+    personal_watchlist=PERSONAL/"nasdaq_watchlist_477.json"
+    try:
+        authoritative=json.loads(personal_watchlist.read_text(encoding="utf-8"))
+    except (OSError,ValueError,UnicodeError):
+        raise ShadowRejected("PIT_SCOPE_VALIDATION_FAILED") from None
+    demand(watchlist==authoritative,"PIT_WATCHLIST_DOCUMENT_DRIFT")
+    try:
+        symbols=runner.get_scope(watchlist_file=str(personal_watchlist),
+                                 asof=snapshot["asof_et"])
+    except (ValueError,TypeError,KeyError):
+        raise ShadowRejected("PIT_SCOPE_VALIDATION_FAILED") from None
     before = sha(snapshot)
     # Reuse *production* handoff contract, never relax scope or AL rules.
     try:
