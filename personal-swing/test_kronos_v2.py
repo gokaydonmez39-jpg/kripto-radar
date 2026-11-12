@@ -110,6 +110,63 @@ class V2Tests(unittest.TestCase):
         self.assertEqual(len(reqs[1]["appendCells"]["rows"][0]["values"]),
                          len(k.HEADERS))
 
+    def test_month_creation_lost_response_get_confirms_without_second_post(self):
+        # First POST creates named tab and header; the HTTP response is lost.
+        # A safe GET can prove commit, but repeating addSheet is forbidden.
+        api=FakeApi()
+        api.raise_after_apply=1
+        recorded=[]
+        original=api.request
+        def observe(path, *, method="GET", body=None):
+            recorded.append((path,method))
+            return original(path,method=method,body=body)
+        with patch.object(api,"request",side_effect=observe):
+            sid=v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertEqual(sid,api.sid)
+        self.assertTrue(api.created)
+        self.assertEqual(api.writes,1)
+        self.assertEqual(sum(method=="POST" for _,method in recorded),1)
+
+    def test_month_creation_rejected_post_fails_without_retry(self):
+        api=FakeApi()
+        api.raise_after=1
+        with self.assertRaisesRegex(k.ShadowHold,
+                                    "KRONOS2_AMBIGUOUS_CREATE_NOT_CONFIRMED"):
+            v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertFalse(api.created)
+        self.assertEqual(api.writes,1)
+
+    def test_month_create_lost_reply_wrong_header_fails_closed(self):
+        api=FakeApi()
+        api.raise_after_apply=1
+        original=api.request
+        def corrupt_readback(path, *, method="GET", body=None):
+            if method=="GET" and path.startswith("/values/"):
+                return {"values":[["WRONG_HEADER"]]}
+            return original(path,method=method,body=body)
+        with patch.object(api,"request",side_effect=corrupt_readback):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "KRONOS2_AMBIGUOUS_CREATE_NOT_CONFIRMED"):
+                v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertTrue(api.created)
+        self.assertEqual(api.writes,1)
+
+    def test_month_create_lost_reply_wrong_id_fails_closed(self):
+        api=FakeApi()
+        api.raise_after_apply=1
+        original=api.request
+        def altered_metadata(path, *, method="GET", body=None):
+            result=original(path,method=method,body=body)
+            if method=="GET" and path.startswith("?") and api.created:
+                result["sheets"][-1]["properties"]["sheetId"]+=1
+            return result
+        with patch.object(api,"request",side_effect=altered_metadata):
+            with self.assertRaisesRegex(k.ShadowHold,
+                                        "KRONOS2_AMBIGUOUS_CREATE_NOT_CONFIRMED"):
+                v.ensure_month_sheet(api,v.month_sheet(ASOF),None,{100})
+        self.assertTrue(api.created)
+        self.assertEqual(api.writes,1)
+
     def test_close_only_geometry_not_falsely_repaired(self):
         closes,state,policy=v.forecast_classification(Frame(bad_geometry=True))
         self.assertEqual(state,v.MODEL_STATUS_CLOSE)
