@@ -487,6 +487,12 @@ def main():
         raw=str(exc) if isinstance(exc,k.ShadowHold) else ""
         reason=(raw if raw in SAFE_PUBLIC_HOLD_REASONS
                 else "KRONOS2_UNCLASSIFIED")
+        if isinstance(exc,writer.HandoffBlocked):
+            # Only provider-defined, hardcoded symbolic statuses are public.
+            # Never surface Google responses, URLs, Sheet cells or OAuth data.
+            provider_code=writer.public_failure_code(exc)
+            reason=(provider_code if provider_code!="UNCLASSIFIED"
+                    else "KRONOS2_UNCLASSIFIED")
         allowed_stages={
             "SESSION_CLOCK","SHEET_AUTH","SOURCE_AUTHORITY",
             "PARTITION_METADATA","PARTITION_READ","PRIOR_MONTH_CUSTODY",
@@ -494,7 +500,7 @@ def main():
             "SHEET_WRITE","SHEET_READBACK"}
         safe_stage=phase if phase in allowed_stages else "UNKNOWN"
         kind=type(exc).__name__
-        allowed_kinds={"ShadowHold","RuntimeError","ValueError","TypeError",
+        allowed_kinds={"ShadowHold","HandoffBlocked","RuntimeError","ValueError","TypeError",
                        "KeyError","OSError","MemoryError","ImportError",
                        "AttributeError","PermissionError","AssertionError"}
         safe_kind=kind if kind in allowed_kinds else "OTHER"
