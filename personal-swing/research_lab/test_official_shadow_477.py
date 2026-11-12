@@ -108,6 +108,19 @@ class Shadow477Tests(unittest.TestCase):
                          "UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
         self.assertFalse(result["market_clearance_proven"])
 
+    def test_mutated_point_in_time_registry_cannot_override_personal_authority(self):
+        s=snapshot()
+        bad=deepcopy(WATCH)
+        bad["point_in_time_symbol_changes"][1]["new_symbol"]="ZZZZ"
+        with self.assertRaisesRegex(m.ShadowRejected,
+                                    "PIT_WATCHLIST_DOCUMENT_DRIFT"):
+            m.make_shadow(s,bad,guard())
+
+    def test_explicit_recognized_handoff_invalid_is_safe_diagnostic(self):
+        self.assertEqual(
+            m.public_reason(m.ShadowRejected("EOD_HANDOFF_REFUSED_HandoffInvalid")),
+            "EOD_HANDOFF_REFUSED_HandoffInvalid")
+
     def test_future_source_must_not_backfill_old_al_decision(self):
         result=m.make_shadow(snapshot(),WATCH,guard("2026-10-31T13:07:05Z"))
         self.assertEqual(result["nasdaq_source_state"],"UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
