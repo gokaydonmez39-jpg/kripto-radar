@@ -86,6 +86,41 @@ class Shadow477Tests(unittest.TestCase):
         self.assertEqual([entry["symbol"] for entry in result["rows"]], source_order)
         self.assertEqual(result["private_eod_snapshot_sha256"], m.sha(s))
 
+    def test_nov11_live_pit_477_valid_shadow_not_rejected(self):
+        # Fail-first Nov 11 production-shaped EOD: SUPN replaces INDV,
+        # GNTX replaces ROKU. Original watchlist retains both legacy names.
+        s=snapshot("2026-11-11")
+        approved=m.runner.get_scope(
+            watchlist_file=str(ROOT/"personal-swing/nasdaq_watchlist_477.json"),
+            asof="2026-11-11")
+        self.assertEqual(len(approved),477)
+        self.assertIn("SUPN",approved)
+        self.assertIn("GNTX",approved)
+        self.assertNotIn("INDV",approved)
+        self.assertNotIn("ROKU",approved)
+        for row,sym in zip(s["rows"],approved):
+            row["symbol"]=sym
+        s["scope_sha256"]=m.runner.sha_symbols(approved)
+        result=m.make_shadow(s,WATCH,guard("2026-11-12T00:59:50Z"))
+        self.assertEqual(result["rows_count"],477)
+        self.assertEqual([x["symbol"] for x in result["rows"]],approved)
+        self.assertEqual(result["nasdaq_source_state"],
+                         "UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
+        self.assertFalse(result["market_clearance_proven"])
+
+    def test_mutated_point_in_time_registry_cannot_override_personal_authority(self):
+        s=snapshot()
+        bad=deepcopy(WATCH)
+        bad["point_in_time_symbol_changes"][1]["new_symbol"]="ZZZZ"
+        with self.assertRaisesRegex(m.ShadowRejected,
+                                    "PIT_WATCHLIST_DOCUMENT_DRIFT"):
+            m.make_shadow(s,bad,guard())
+
+    def test_explicit_recognized_handoff_invalid_is_safe_diagnostic(self):
+        self.assertEqual(
+            m.public_reason(m.ShadowRejected("EOD_HANDOFF_REFUSED_HandoffInvalid")),
+            "EOD_HANDOFF_REFUSED_HandoffInvalid")
+
     def test_future_source_must_not_backfill_old_al_decision(self):
         result=m.make_shadow(snapshot(),WATCH,guard("2026-10-31T13:07:05Z"))
         self.assertEqual(result["nasdaq_source_state"],"UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
