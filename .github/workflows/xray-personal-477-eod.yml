@@ -77,6 +77,15 @@ jobs:
           python -m py_compile alert_outbox_producer.py test_al_outbox_producer.py
           python -m py_compile xray_guardian.py test_xray_guardian.py
           python -m py_compile test_provider_read_retry.py
+      - name: Personal scheduler and official research-shadow fail-closed contracts
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_schedule_failover
+          python -O -m unittest -q test_schedule_failover
+          cd research_lab
+          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
+          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
+          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'

@@ -134,6 +134,25 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
         return {'status':verdict,'asof_et':session,'dispatch_requested':False}
     # Bind the fallback dispatch to the exact eligible XNAS date: the
     # downstream worker can start still later, across another midnight.
+    # Recheck just before dispatch: a late natural schedule may have arrived.
+    # Two GETs reduce but cannot eliminate the non-atomic GitHub dispatch race.
+    confirm=read_runs()
+    if not isinstance(confirm,dict) or not isinstance(confirm.get('workflow_runs'),list):
+        return {'status':'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE',
+                'asof_et':session,'dispatch_requested':False}
+    n=confirm.get('total_count')
+    if type(n) is not int or n<0 or n!=len(confirm['workflow_runs']):
+        return {'status':'BLOCKED_RECHECK_UNTRUSTED_RUN_PAGINATION',
+                'asof_et':session,'dispatch_requested':False}
+    rechecked,rechecked_session=decision(now,confirm['workflow_runs'])
+    if rechecked_session!=session:
+        return {'status':'BLOCKED_RECHECK_ASOF_CHANGED',
+                'asof_et':session,'dispatch_requested':False}
+    if rechecked!='DISPATCH_ONE_MISSING_SCHEDULE':
+        return {'status':('NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS'
+                          if rechecked=='NOOP_CURRENT_EPOCH_RUN_EXISTS'
+                          else 'BLOCKED_RECHECK_UNCERTAIN_RUN_STATE'),
+                'asof_et':session,'dispatch_requested':False}
     accepted=request_dispatch(session)
     if accepted is not True:
         return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED','asof_et':session,
