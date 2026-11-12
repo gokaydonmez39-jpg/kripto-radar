@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-11",
+  "asof_et": "2026-11-12",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3188
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3187
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3188
+    "UNKNOWN_STATIC": 3187
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1111202621:31|||||||",
+  "official_footer": "File Creation Time: 1112202615:41|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3188
+    "UNKNOWN_STATIC": 3187
   },
-  "source_queue_hash": "cd5580976401bbb012bec902244e5984e5ffc50696ca8ed3339908a0b5b019c5",
-  "source_state_hash": "baf0f62c3141568cf226300566d11e38b7b6ee20ae48985ecbf46de1abf78b4a",
-  "source_unknown_count": 3188,
+  "source_queue_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
+  "source_state_hash": "8bca7ff738a046eebe2ac2845fe6e64369b94e6d66dda743d06e8fd47651d30c",
+  "source_unknown_count": 3187,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3188,
+  "unknown_count": 3187,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -12887,6 +12887,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Critical Metals Corp. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "CRMN": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Skyline Builders Group Holding Limited - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "CRMT": {
@@ -28063,24 +28081,6 @@
       "security_name": "Karooooo Ltd. - Ordinary shares",
       "status": "UNKNOWN_STATIC"
     },
-    "KAZR": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Skyline Builders Group Holding Limited - Class A Ordinary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
     "KBON": {
       "attempts": 0,
       "discovery": {
@@ -37115,24 +37115,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Next Technology Holding Inc. - Ordinary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
-    "NXXT": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "NextNRG, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "NYAX": {
