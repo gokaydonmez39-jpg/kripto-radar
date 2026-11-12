@@ -331,9 +331,12 @@ def ensure_month_sheet(api,name,sid,occupied):
     if sid is not None:
         return sid
     new_id=choose_sheet_id(name,occupied)
+    # A 1-row grid with 1 frozen row is rejected by the real Sheets API:
+    # cannot freeze every visible row (HTTP 400, reproduced in a synthetic
+    # native spreadsheet). Leave one unfrozen row for future appendCells.
     body={"requests":[
         {"addSheet":{"properties":{"sheetId":new_id,"title":name,
-           "gridProperties":{"rowCount":1,"columnCount":20,"frozenRowCount":1}}}},
+           "gridProperties":{"rowCount":2,"columnCount":20,"frozenRowCount":1}}}},
         writer.as_cells([list(k.HEADERS)],new_id),
     ]}
     # One POST, never retry an ambiguous write.
