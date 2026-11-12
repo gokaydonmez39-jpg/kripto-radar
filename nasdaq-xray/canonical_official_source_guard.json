@@ -3,10 +3,10 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
+      "ARAI",
       "EFTY",
       "GNS",
       "HCHL",
-      "ICMB",
       "ITP",
       "LAWR",
       "LVWR.W",
@@ -54,6 +54,7 @@
       "WBD"
     ],
     "veto_symbols": [
+      "ARAI",
       "ARBEW",
       "BBBYW",
       "BLFS",
@@ -66,7 +67,6 @@
       "GFAIW",
       "GNS",
       "HCHL",
-      "ICMB",
       "ILLR",
       "ILLRW",
       "ITP",
@@ -101,7 +101,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-11T23:04:35.099997+00:00",
+  "generated_at_utc": "2026-11-12T00:59:50.553067+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -776,10 +776,10 @@
     "trade_halts": {
       "active_halt_count": 15,
       "active_halt_symbols": [
+        "ARAI",
         "EFTY",
         "GNS",
         "HCHL",
-        "ICMB",
         "ITP",
         "LAWR",
         "LVWR.W",
@@ -793,8 +793,23 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 160,
+      "item_count": 161,
       "items": [
+        {
+          "HaltDate": "11/11/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Arrive AI Inc. CS",
+          "IssueSymbol": "ARAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/11/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">ARAI</td><td valign=\"top\">Arrive AI Inc. CS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Wed, 11 Nov 2026 05:00:00 GMT",
+          "title": "ARAI"
+        },
         {
           "HaltDate": "11/11/2026",
           "HaltTime": "17:55:00.000",
@@ -802,11 +817,11 @@
           "IssueSymbol": "ICMB",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T2",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/11/2026                    </td><td valign=\"top\">17:55:00.000</td><td valign=\"top\">ICMB</td><td valign=\"top\">Investcorp Credit Mngt BDC Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T2</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "11/11/2026",
+          "ResumptionQuoteTime": "18:25:00",
+          "ResumptionTradeTime": "18:30:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/11/2026                    </td><td valign=\"top\">17:55:00.000</td><td valign=\"top\">ICMB</td><td valign=\"top\">Investcorp Credit Mngt BDC Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">11/11/2026                    </td><td valign=\"top\">18:25:00                      </td><td valign=\"top\">18:30:00                      </td></tr></table>",
           "pubDate": "Wed, 11 Nov 2026 05:00:00 GMT",
           "title": "ICMB"
         },
