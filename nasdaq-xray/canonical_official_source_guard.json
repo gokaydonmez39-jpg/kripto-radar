@@ -101,7 +101,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-12T00:59:50.553067+00:00",
+  "generated_at_utc": "2026-11-12T04:01:41.420735+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -3215,70 +3215,61 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 7,
+      "row_count": 6,
       "rows": [
         {
           "BX Action": "Add",
-          "Company Name": "First Trust Exchange-Traded Fund IV",
-          "Effective Date": "11/11/2026",
+          "Company Name": "Guinness Atkinson Funds",
+          "Effective Date": "11/12/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "KBTY"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Roundhill ETF Trust",
+          "Effective Date": "11/12/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "IBLY"
+          "Symbol": "MAGP"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
-          "Effective Date": "11/11/2026",
+          "Company Name": "Nomura ETF Trust II",
+          "Effective Date": "11/12/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "IQEE"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
-          "Effective Date": "11/11/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "IQEI"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
-          "Effective Date": "11/11/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "IQEL"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Invesco Actively Managed Exchange-Traded Fund Trust",
-          "Effective Date": "11/11/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "IQES"
+          "Symbol": "NJPN"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Karyopharm Therapeutics Inc.",
-          "Effective Date": "11/11/2026",
+          "Company Name": "NextNRG, Inc.",
+          "Effective Date": "11/12/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "Q",
-          "Symbol": "KPTI"
+          "Primary Listing Market": "S",
+          "Symbol": "NXXT"
         },
         {
-          "BX Action": "Delete",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/11/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
+          "BX Action": "Add",
+          "Company Name": "Rezera Inc.",
+          "Effective Date": "11/12/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "RZRA"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Vanguard Malvern Funds",
+          "Effective Date": "11/12/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
           "Primary Listing Market": "Z",
-          "Symbol": "MEMY"
+          "Symbol": "VEMB"
         }
       ],
       "status": "PASS",
