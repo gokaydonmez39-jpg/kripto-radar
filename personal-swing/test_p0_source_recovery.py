@@ -112,5 +112,88 @@ class ProductionFailureRegression(unittest.TestCase):
         self.assertEqual(stages[-1],"MODEL_LOAD")
         self.assertEqual(api.writes,0)
 
+
+    def test_kronos_google_403_at_sheet_write_has_safe_actionable_code(self):
+        """Real Google Sheet API denial should not collapse into OTHER."""
+        import private_sheet_writer as writer
+        import json
+        def failing_write(api, asof, read_batch, *, stage=None):
+            stage("SHEET_WRITE")
+            raise writer.HandoffBlocked("GOOGLE_SHEETS_HTTP_403")
+        with patch.object(kronos_v2.k, "eligible_shadow_asof",
+                          return_value=KRONOS_ASOF), \
+             patch.dict(kronos_v2.os.environ,
+                        {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"}, clear=True), \
+             patch("private_sheet_writer.SheetApi", return_value=object()), \
+             patch.object(kronos_v2, "synchronize", side_effect=failing_write), \
+             contextlib.redirect_stdout(io.StringIO()) as printed:
+            status=kronos_v2.main()
+        out=json.loads(printed.getvalue())
+        self.assertEqual(status,3)
+        self.assertEqual(out["stage"], "SHEET_WRITE")
+        self.assertEqual(out["exception_family"], "HandoffBlocked")
+        self.assertEqual(out["reason_code"], "GOOGLE_SHEETS_HTTP_403")
+        self.assertFalse(out["orders"])
+        self.assertNotIn("MASKED", printed.getvalue())
+
+    def test_kronos_google_unallowlisted_write_error_is_redacted(self):
+        """An arbitrary HandoffBlocked body must never leak private content."""
+        import private_sheet_writer as writer
+        import json
+        def failing_write(api, asof, read_batch, *, stage=None):
+            stage("SHEET_WRITE")
+            raise writer.HandoffBlocked("GOOGLE_SHEETS_HTTP_403 SECRET_TOKEN_DO_NOT_LOG")
+        with patch.object(kronos_v2.k, "eligible_shadow_asof",
+                          return_value=KRONOS_ASOF), \
+             patch.dict(kronos_v2.os.environ,
+                        {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"}, clear=True), \
+             patch("private_sheet_writer.SheetApi", return_value=object()), \
+             patch.object(kronos_v2, "synchronize", side_effect=failing_write), \
+             contextlib.redirect_stdout(io.StringIO()) as printed:
+            status=kronos_v2.main()
+        out=json.loads(printed.getvalue())
+        self.assertEqual(status,3)
+        self.assertEqual(out["stage"], "SHEET_WRITE")
+        self.assertEqual(out["reason_code"], "KRONOS2_UNCLASSIFIED")
+        self.assertNotIn("SECRET_TOKEN", printed.getvalue())
+        self.assertNotIn("MASKED", printed.getvalue())
+
+    def test_google_400_bad_request_is_distinct_from_unclassified_http(self):
+        """Mocked HTTP 400 exercises the exact provider boundary without a request."""
+        from urllib.error import HTTPError
+        import private_sheet_writer as writer
+        client=writer.SheetApi.__new__(writer.SheetApi)
+        client.base="https://sheets.googleapis.com/v4/spreadsheets/test-id"
+        client.token="DUMMY_OFFLINE_TOKEN"
+        err=HTTPError("https://provider.invalid/",400,"Bad Request",{},None)
+        with patch.object(writer, "urlopen",side_effect=err) as network:
+            with self.assertRaises(writer.HandoffBlocked) as held:
+                client.request(":batchUpdate",method="POST",
+                               body={"requests":[]})
+        self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_400")
+        self.assertEqual(writer.public_failure_code(held.exception),
+                         "GOOGLE_SHEETS_HTTP_400")
+        self.assertEqual(network.call_count,1)
+
+
+
+    def test_google_409_conflict_is_distinct_and_post_is_not_retried(self):
+        """A mocked write collision must retain an actionable safe code."""
+        from urllib.error import HTTPError
+        import private_sheet_writer as writer
+        client=writer.SheetApi.__new__(writer.SheetApi)
+        client.base="https://sheets.googleapis.com/v4/spreadsheets/test-id"
+        client.token="DUMMY_OFFLINE_TOKEN"
+        err=HTTPError("https://provider.invalid/",409,"Conflict",{},None)
+        with patch.object(writer, "urlopen",side_effect=err) as network:
+            with self.assertRaises(writer.HandoffBlocked) as held:
+                client.request(":batchUpdate",method="POST",
+                               body={"requests":[]})
+        self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_409")
+        self.assertEqual(writer.public_failure_code(held.exception),
+                         "GOOGLE_SHEETS_HTTP_409")
+        self.assertEqual(network.call_count,1)
+
+
 if __name__=="__main__":
     unittest.main()
