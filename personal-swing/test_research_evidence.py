@@ -4,10 +4,121 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 import research_evidence as r
+import research_source_events as events
 
 CUT = "2026-10-23T20:00:00Z"
 CIK = "0001234567"
 ACCESSION = "0001234567-26-000001"
+
+
+class ResearchSourceClockTests(unittest.TestCase):
+    def sec(self, **changes):
+        return {"source":"SEC", "kind":"8-K", "item":"2.02",
+                "status":"OBSERVED", "issuer_cik":"0001559720",
+                "accession":"0001193125-26-449727",
+                "accepted_at":"2026-11-05T21:02:09Z",
+                "observed_at":"2026-11-05T21:03:00Z",
+                "url":"https://www.sec.gov/Archives/edgar/data/1559720/000119312526449727/0001193125-26-449727-index.htm",
+                **changes}
+
+    def bls(self, **changes):
+        return {"source":"BLS", "kind":"CPI", "event_id":"CPI-2026-10",
+                "status":"SCHEDULED", "observed_at":"2026-11-09T20:00:00Z",
+                "scheduled_at":"2026-11-10T13:30:00Z",
+                "url":"https://www.bls.gov/schedule/2026/11_sched_list.htm",
+                **changes}
+
+    def feed(self, rows, cutoff):
+        return events.event_evidence(rows, cutoff_utc=cutoff)
+
+    def test_after_close_sec_event_not_visible_at_price_cutoff(self):
+        row = self.sec()
+        for cutoff in ("2026-11-05T21:00:00Z", "2026-11-05T21:02:09Z"):
+            self.assertEqual(self.feed([row], cutoff)["events"], [])
+        q = self.feed([row], "2026-11-05T21:03:00Z")
+        self.assertEqual(q["events"][0]["label"], "SEC_EARNINGS_DISCLOSURE")
+        self.assertFalse(q["events"][0]["first_publication_proven"])
+        self.assertFalse(q["production_eligible"])
+        self.assertFalse(q["live_source_attested"])
+        self.assertFalse(q["history_complete_proven"])
+        self.assertEqual(q["alerts_sent"], 0)
+
+    def test_general_sec_form_not_automatically_earnings(self):
+        q = self.feed([self.sec(item=None)], "2026-11-06T01:00:00Z")
+        self.assertEqual(q["events"][0]["label"], "SEC_FILING_REVIEW")
+
+    def test_pipeline_preserves_no_authority_and_rejects_cross_issuer(self):
+        cutoff = "2026-11-06T01:00:00Z"
+        record = r.build_record(symbol="ABNB", expected_cik="0001559720",
+                                cutoff_utc=cutoff, source_event_rows=[self.sec()])
+        self.assertEqual(len(record["official_source_events"]["events"]), 1)
+        self.assertFalse(record["production_eligible"])
+        self.assertIsNone(record["signal"])
+        self.assertFalse(record["stop_target_modified"])
+        self.assertEqual(record["alerts_sent"], 0)
+        with self.assertRaisesRegex(ValueError, "SOURCE_EVENT_ISSUER_MISMATCH"):
+            r.build_record(symbol="ABNB", expected_cik="0000000123",
+                           cutoff_utc=cutoff, source_event_rows=[self.sec()])
+
+    def test_calendar_and_release_are_distinct_at_each_cutoff(self):
+        planned = self.bls()
+        actual = self.bls(status="PUBLISHED", published_at="2026-11-10T08:30:00-05:00",
+                          observed_at="2026-11-10T13:30:10Z",
+                          url="https://www.bls.gov/news.release/cpi.nr0.htm")
+        for cutoff in ("2026-11-10T13:29:59Z", "2026-11-10T13:30:00Z"):
+            q = self.feed([actual, planned], cutoff)
+            self.assertEqual(q["events"][0]["status"], "SCHEDULED")
+            self.assertIsNone(q["events"][0]["published_at_utc"])
+        q = self.feed([planned, actual], "2026-11-10T13:30:10Z")
+        self.assertEqual(q["events"][0]["published_at_utc"], "2026-11-10T13:30:00+00:00")
+        self.assertEqual(q["events"][0]["status"], "PUBLISHED")
+        q = self.feed([planned, actual, self.bls(observed_at="2026-11-11T12:00:00Z")],
+                      "2026-11-11T13:00:00Z")
+        self.assertEqual(q["events"][0]["status"], "PUBLISHED")
+
+    def test_reject_host_identity_future_clock_and_calendar_promotion(self):
+        bad = [
+            self.sec(url="https://www.sec.gov.example/Archives/edgar/data/1559720/x"),
+            self.sec(issuer_cik="0000000123"),
+            self.sec(url=self.sec()["url"].replace("edgar/", "edgar/../")),
+            self.sec(accepted_at="2026-11-06T21:00:00Z"),
+            self.sec(observed_at="2026-11-05T21:00:00"),
+            self.bls(status="PUBLISHED", published_at="2026-11-09T19:00:00Z"),
+            self.bls(published_at="2026-11-09T19:00:00Z"),
+            self.bls(status="PUBLISHED", published_at="2026-11-10T13:30:00Z",
+                     url="https://www.bls.gov/news.release/cpi.nr0.htm"),
+        ]
+        q = self.feed(bad, "2026-11-11T13:00:00Z")
+        self.assertEqual(q["events"], [])
+        self.assertEqual(q["unverifiable_rows"], len(bad))
+        self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+
+    def test_distinct_fomc_kinds_and_duplicate_conflict(self):
+        plan = {"source":"FED", "kind":"FOMC_STATEMENT", "event_id":"meeting-2026-12",
+                "status":"SCHEDULED", "observed_at":"2026-11-09T20:00:00Z",
+                "scheduled_at":"2026-12-09T19:00:00Z",
+                "url":"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"}
+        press = {**plan, "kind":"FOMC_PRESS_CONFERENCE",
+                 "scheduled_at":"2026-12-09T19:30:00Z"}
+        minutes = {**plan, "kind":"FOMC_MINUTES", "scheduled_at":"2026-12-30T19:00:00Z"}
+        cutoff = "2026-11-11T00:00:00Z"
+        self.assertEqual(len(self.feed([plan, plan, press, minutes], cutoff)["events"]), 3)
+        disputed = {**plan, "scheduled_at":"2026-12-09T18:00:00Z"}
+        a = self.feed([plan, disputed, press], cutoff)
+        self.assertEqual(a, self.feed([disputed, press, plan], cutoff))
+        self.assertEqual(a["quarantined_events"], 1)
+        self.assertEqual([x["kind"] for x in a["events"]], ["FOMC_PRESS_CONFERENCE"])
+
+    def test_immutable_publication_clock_cannot_be_replaced_by_later_row(self):
+        a = self.bls(status="PUBLISHED", published_at="2026-11-10T13:30:00Z",
+                     observed_at="2026-11-10T13:30:10Z",
+                     url="https://www.bls.gov/news.release/cpi.nr0.htm")
+        b = {**a, "published_at":"2026-11-10T13:30:01Z",
+             "observed_at":"2026-11-10T14:30:10Z"}
+        self.assertEqual(len(self.feed([a,b], "2026-11-10T13:30:10Z")["events"]), 1)
+        q = self.feed([b,a], "2026-11-10T14:30:10Z")
+        self.assertEqual(q["events"], [])
+        self.assertEqual(q["quarantined_events"], 1)
 
 def sec_sample(when="2026-10-23T19:10:00Z", cik=1234567, sym="CVLT", form="8-K"):
     return {"cik": cik, "tickers": [sym], "exchanges": ["Nasdaq"],
@@ -134,6 +245,104 @@ class ResearchEvidenceTests(unittest.TestCase):
         q=r.fred_vintage_evidence(d,series_id="GDP",cutoff_utc=CUT,
              release_times={"2026-10-22|2026-10-23":"2026-10-23T15:00:00Z"})
         self.assertEqual([v["value"] for v in q["observations"]],[2.5])
+
+    def _fred_intraday(self, rows, clock, overrides=None):
+        releases = {
+            "2026-09-01|2026-10-13": "2026-10-13T12:30:00Z",
+            "2026-09-01|2026-11-10": "2026-11-10T13:30:00Z",
+        }
+        if overrides is not None:
+            releases = overrides
+        return r.fred_vintage_evidence(
+            {"observations": rows}, series_id="SYNTHETIC",
+            cutoff_utc=clock, release_times=releases)
+
+    def _fred_intraday_rows(self):
+        return [
+            {"date":"2026-09-01", "realtime_start":"2026-10-13",
+             "realtime_end":"2026-11-09", "value":"100"},
+            {"date":"2026-09-01", "realtime_start":"2026-11-10",
+             "realtime_end":"9999-12-31", "value":"101"},
+        ]
+
+    def test_fred_revision_day_last_known_before_release_and_new_at_boundary(self):
+        old, new = self._fred_intraday_rows()
+        for clock, expected in [("2026-11-10T13:29:59Z", 100.0),
+                                ("2026-11-10T13:30:00Z", 101.0),
+                                ("2026-11-10T13:30:01Z", 101.0)]:
+            with self.subTest(clock=clock):
+                for rows in ([old, new], [new, old]):
+                    q = self._fred_intraday(rows, clock)
+                    self.assertEqual([v["value"] for v in q["observations"]], [expected])
+                    self.assertFalse(q["live_source_attested"])
+
+    def test_fred_conflict_is_quarantined_in_both_orders(self):
+        old, new = self._fred_intraday_rows()
+        different = {**new, "value":"111"}
+        a = self._fred_intraday([old,new,different], "2026-11-10T13:30:01Z")
+        b = self._fred_intraday([old,different,new], "2026-11-10T13:30:01Z")
+        self.assertEqual(a, b)
+        self.assertEqual(a["observations"], [])
+        self.assertEqual(a["coverage"], "PARTIAL_UNKNOWN")
+        self.assertEqual(a["quarantined_observations"], 1)
+
+    def test_fred_duplicate_identical_no_row_order_dependency(self):
+        old, new = self._fred_intraday_rows()
+        clock = "2026-11-10T13:30:01Z"
+        self.assertEqual(self._fred_intraday([old,new,new], clock),
+                         self._fred_intraday([new,old], clock))
+
+    def test_fred_conflict_cannot_hide_in_float_rounding(self):
+        old, new = self._fred_intraday_rows()
+        a = {**new, "value":"101.00000000000000000001"}
+        b = {**new, "value":"101.00000000000000000002"}
+        for rows in ([old,a,b], [b,a,old]):
+            q = self._fred_intraday(rows, "2026-11-10T13:30:01Z")
+            self.assertEqual(q["observations"], [])
+            self.assertEqual(q["quarantined_observations"], 1)
+
+    def test_fred_signed_zero_is_order_independent(self):
+        old, new = self._fred_intraday_rows()
+        a, b = {**new, "value":"-0.0"}, {**new, "value":"0"}
+        clock = "2026-11-10T13:30:01Z"
+        q = self._fred_intraday([old,a,b], clock)
+        self.assertEqual(q, self._fred_intraday([b,a,old], clock))
+        self.assertEqual([v["value"] for v in q["observations"]], [0.0])
+        self.assertNotIn("-0.0", json.dumps(q))
+
+    def test_fred_never_extends_previous_vintage_across_unproved_boundary(self):
+        old, new = self._fred_intraday_rows()
+        clock = "2026-11-10T13:29:59Z"
+        q = self._fred_intraday([old,new], clock,
+               {"2026-09-01|2026-10-13":"2026-10-13T12:30:00Z"})
+        self.assertEqual(q["observations"], [])
+        self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+        q = self._fred_intraday([{**old,"realtime_end":"2026-11-08"},new], clock)
+        self.assertEqual(q["observations"], [])
+        self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+        q = self._fred_intraday([old], clock)
+        self.assertEqual(q["observations"], [])
+        self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+        q = self._fred_intraday([old], "2026-11-12T13:30:00Z")
+        self.assertEqual(q["observations"], [])
+        self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+
+    def test_fred_stale_missing_value_and_overlapping_versions_do_not_restore_old(self):
+        old, new = self._fred_intraday_rows()
+        clock = "2026-11-10T13:30:01Z"
+        for rows in ([old,{**new,"value":"."}],
+                     [{**old,"realtime_end":"2026-11-10"},new],
+                     [old,{**new,"realtime_end":"2026-11-09"}]):
+            with self.subTest(rows=rows):
+                q = self._fred_intraday(rows, clock)
+                self.assertEqual(q["observations"], [])
+                self.assertEqual(q["coverage"], "PARTIAL_UNKNOWN")
+
+    def test_fred_unavailable_conflict_does_not_change_pre_release_selection(self):
+        old, new = self._fred_intraday_rows()
+        q = self._fred_intraday([old,new,{**new,"value":"111"}],
+                                 "2026-11-10T13:29:59Z")
+        self.assertEqual([v["value"] for v in q["observations"]], [100.0])
 
     def test_13f_quarter_end_not_publication(self):
         x=r.holdings_13f_evidence(accession=ACCESSION,report_period="2026-09-30",
