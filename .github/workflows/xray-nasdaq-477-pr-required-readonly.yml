@@ -38,6 +38,8 @@ jobs:
           # P0 evidence audit is a fail-closed release gate, not optional.
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
+          python -m unittest -q test_delivery_reservation
+          python -O -m unittest -q test_delivery_reservation
           # A34 must fail required CI on a broken read-only preopen guard.
           python -m unittest -q test_preopen_a34
           python -O -m unittest -q test_preopen_a34
