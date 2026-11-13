@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-12",
+  "asof_et": "2026-11-13",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3187
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3188
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3187
+    "UNKNOWN_STATIC": 3188
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1112202618:01|||||||",
+  "official_footer": "File Creation Time: 1113202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3187
+    "UNKNOWN_STATIC": 3188
   },
-  "source_queue_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
-  "source_state_hash": "5d40c887685390224e87fb53e414813d2836fffba6cd79e84e180ef69c051dfa",
-  "source_unknown_count": 3187,
+  "source_queue_hash": "794e372b489e9ea188d052ed87659b596bb73c07d68cf87e1fe84a5be29f2286",
+  "source_state_hash": "cbc8bdb2215c10de2e90775a9d3c12d692d12342fd07f0f72833281e5b6b3f39",
+  "source_unknown_count": 3188,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3187,
+  "unknown_count": 3188,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -11303,24 +11303,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Clearfield, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "CLGN": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "CollPlant Biotechnologies Ltd. - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "CLIK": {
@@ -37672,7 +37654,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Olema Pharmaceuticals, Inc. - Common Stock",
+      "security_name": "Olema Oncology, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "OLOX": {
@@ -38123,6 +38105,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Opendoor Technologies Inc  - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "OPHI": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "CollPlant Biotechnologies Ltd. - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "OPI": {
@@ -41741,24 +41741,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Protagonist Therapeutics, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "PTLE": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "PTL LTD - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
     "PTLO": {
@@ -55006,7 +54988,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Weatherford International plc - Ordinary shares",
+      "security_name": "Weatherford International Corp - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "WGS": {
@@ -55727,6 +55709,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "WW International, Inc.  - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "WWB": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Windward Bio Group AG - Common shares",
       "status": "UNKNOWN_STATIC"
     },
     "WWD": {
@@ -57383,6 +57383,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Zymeworks Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "ZYN": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "PTL LTD - Class A Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     }
   }

@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-11-12",
+  "asof_et": "2026-11-13",
   "asof_identity_proof": {
-    "blob_sha": "0a50542975b0c66f627d7e213849cbac38d3a4ff",
+    "blob_sha": "9a2fe1e645bd8de840ecad628818d954a675db65",
     "counts": {
       "operating_overrides": 2,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261112.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261113.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,38 +28,38 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3187,
-    "UNKNOWN_IDENTITY": 21
+    "PASS_IDENTITY": 3188,
+    "UNKNOWN_IDENTITY": 22
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2397,
-  "explicit_excluded_hash": "3cfd50b7cb259b0f670f2cc8f06588a7440d4381e5d38088e6d62f85f418d213",
+  "explicit_excluded_count": 2394,
+  "explicit_excluded_hash": "d9da599c52b5e7689c5111018ab654c488e70ad1c8796fd1be3cb5e699db06ac",
   "explicit_excluded_reason_counts": {
     "DEBT": 57,
-    "ETF": 1282,
+    "ETF": 1278,
     "FUND": 32,
     "PREFERRED": 103,
     "RIGHT": 105,
     "SPAC_BLANK_CHECK": 191,
     "TEST_ISSUE": 8,
     "UNIT": 255,
-    "WARRANT": 362,
+    "WARRANT": 363,
     "WHEN_ISSUED": 2
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3187
+      "UNKNOWN_STATIC": 3188
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3187
+    "source_unknown_count": 3188
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1112202618:01|||||||",
-  "pass_count": 3187,
-  "pass_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
+  "official_footer": "File Creation Time: 1113202617:01|||||||",
+  "pass_count": 3188,
+  "pass_hash": "794e372b489e9ea188d052ed87659b596bb73c07d68cf87e1fe84a5be29f2286",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -688,7 +688,6 @@
     "CLBT",
     "CLDX",
     "CLFD",
-    "CLGN",
     "CLIK",
     "CLIR",
     "CLLS",
@@ -2178,6 +2177,7 @@
     "OPBK",
     "OPCH",
     "OPEN",
+    "OPHI",
     "OPI",
     "OPK",
     "OPNW",
@@ -2379,7 +2379,6 @@
     "PTCT",
     "PTEN",
     "PTGX",
-    "PTLE",
     "PTLO",
     "PTN",
     "PTON",
@@ -3156,6 +3155,7 @@
     "WVE",
     "WVVI",
     "WW",
+    "WWB",
     "WWD",
     "WXM",
     "WYFI",
@@ -3247,29 +3247,30 @@
     "ZURA",
     "ZVRA",
     "ZYBT",
-    "ZYME"
+    "ZYME",
+    "ZYN"
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
-  "queue_total": 3187,
-  "queue_unique": 3187,
-  "raw_identity_total": 3208,
+  "queue_hash": "794e372b489e9ea188d052ed87659b596bb73c07d68cf87e1fe84a5be29f2286",
+  "queue_total": 3188,
+  "queue_unique": 3188,
+  "raw_identity_total": 3210,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "2da67d4048c3ae78c02e57019b4c73d0cd2dda84",
+    "blob_sha": "cc6c79e04002345098ffb695da6dba4c6c43b5bb",
     "count": 557,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261112.json",
+    "path": "nasdaq-xray/master_sec_spac_proof_20261113.json",
     "symbol_hash": "f09b9eb361db080266d9ac97258beb6c89c85845d187c9d48a9b89a8047881f7"
   },
-  "source_state_blob_sha": "aafc17e5627fead90746fce96f0776e891f21d5a",
-  "source_state_hash": "5d40c887685390224e87fb53e414813d2836fffba6cd79e84e180ef69c051dfa",
+  "source_state_blob_sha": "29f6dffa00a1ca898c757b5a4a18931c90d9faef",
+  "source_state_hash": "cbc8bdb2215c10de2e90775a9d3c12d692d12342fd07f0f72833281e5b6b3f39",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 21,
+  "unknown_count": 22,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3379,6 +3380,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "LOVI": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Live Oak Acquisition Corp. VI - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "LPAA": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3475,6 +3485,7 @@
     "HCAC",
     "IPXG",
     "LEDR",
+    "LOVI",
     "LPAA",
     "MACI",
     "MCGA",
