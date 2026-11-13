@@ -27,6 +27,28 @@ def fixture():
 
 
 class RawCaWitnessTests(unittest.TestCase):
+    def test_confirmed_terminal_is_separate_from_unresolved_price_review(self):
+        day='2026-11-12'
+        c,s,b=fixture()
+        c[1]=['2026-10-26|ROKU','2026-10-26','ROKU','TEKNİK AL ADAYI',
+              '100','95','110','KAPALI • CORPORATE_ACTION_REVIEW • 9/15 SEANS',
+              '2026-11-09','CORPORATE_ACTION_REVIEW','','','']
+        s[1][0]=day
+        b={'ROKU':[{'timestamp':str(d.date())+'T04:00:00+00:00',
+                    'open':100.,'high':102.,'low':98.,'close':100.,'volume':1000.}
+                   for d in CAL.sessions_in_range(FIRST,'2026-11-06')]}
+        out=w.inspect(c,s,b,day)
+        self.assertEqual(out['state'],'HISTORICAL_TERMINAL_CENSORED_NOT_CLEARANCE')
+        self.assertEqual(w.exit_for_state(out['state']),3)
+        self.assertFalse(out['corporate_action_cleared'])
+        self.assertFalse(out['independent_vendor_corporate_action_confirmed'])
+        self.assertEqual(out['corporate_action_review_count'],1)
+        b['ROKU'][-1].update(open=75.,high=80.,low=74.,close=78.)
+        self.assertEqual(w.inspect(c,s,b,day)['state'],'REVIEW_REQUIRED')
+        b['ROKU'][-1]['timestamp']='2026-11-09T05:00:00+00:00'
+        with self.assertRaisesRegex(w.ActionWitnessBlocked,'POST_LAST_TRADE'):
+            w.inspect(c,s,b,day)
+
     def test_healthy_input_does_not_claim_corporate_action_clearance(self):
         c,s,b=fixture()
         result=w.inspect(c,s,b,DAY)
@@ -37,6 +59,10 @@ class RawCaWitnessTests(unittest.TestCase):
         self.assertEqual(result['raw_session_bars_checked'],len(WINDOW))
         self.assertFalse(result['sheet_writes'])
         self.assertFalse(result['device_ack'])
+        self.assertEqual(w.exit_for_state(result['state']),0)
+
+    def test_unknown_state_cannot_be_promoted_to_pass(self):
+        self.assertEqual(w.exit_for_state('UNRECOGNIZED_FUTURE_STATE'),3)
 
     def test_split_like_half_price_is_review_not_execution(self):
         c,s,b=fixture()
