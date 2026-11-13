@@ -19,7 +19,8 @@ def fixture(source_at="2026-10-30T20:15:00+00:00"):
         "analysis_fingerprint_sha256": "b" * 64,
         "rows": [{"symbol": s} for s in symbols],
     }
-    guard = {"status": "PASS", "alpha_authority": False}
+    guard = {"status": "PASS", "alpha_authority": False,
+             "generated_at_utc": source_at}
     rows = [{
         "symbol": s,
         "nasdaq": "UNKNOWN_NOT_A_MARKET_CLEARANCE",
@@ -60,6 +61,16 @@ class EodShadowReceiptTests(unittest.TestCase):
     def test_valid_477_receipt_never_grants_market_authority(self):
         self.assertEqual(m.verify(*fixture()),
                          "RESEARCH_LEDGER_READBACK_PASS_NO_MARKET_CLEARANCE")
+
+    def test_receipt_cannot_retime_a_late_witness_or_extend_cutoff(self):
+        s, r, g = fixture("2026-10-30T21:30:00+00:00")
+        r["source_observed_at_utc"] = "2026-10-30T20:00:00+00:00"
+        with self.assertRaisesRegex(m.ReceiptRefused, "SHADOW_OBSERVATION_TIME_DRIFT"):
+            m.verify(s, r, g)
+        r["source_observed_at_utc"] = g["generated_at_utc"]
+        r["decision_cutoff_utc"] = "2026-10-30T22:45:00+00:00"
+        with self.assertRaisesRegex(m.ReceiptRefused, "SHADOW_CUTOFF_DRIFT"):
+            m.verify(s, r, g)
 
     def test_future_source_cannot_appear_current_at_old_decision(self):
         s, r, g = fixture("2026-10-31T15:28:02+00:00")
@@ -200,6 +211,22 @@ class EodShadowReceiptTests(unittest.TestCase):
         self.assertIn("OFFICIAL_SHADOW=RECEIPT_VERIFIED_RESEARCH_ONLY", block)
         self.assertLess(block.index("OFFICIAL_SHADOW=SKIPPED_NO_COMPLETED_SCAN"),
                         block.index("python research_lab/official_shadow_477.py"))
+
+    def test_schedule_uses_one_pinned_guard_for_producer_and_verifier(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / ".github/workflows/xray-personal-477-eod.yml").read_text()
+        block = workflow.split("name: Optional official 477 PIT-aware shadow ledger", 1)[1]
+        block = block.split("  private-sheets-auth-preflight:", 1)[0]
+        self.assertIn('if [[ "$GITHUB_EVENT_NAME" == schedule ]]; then', block)
+        self.assertIn('--ref "$GITHUB_SHA" --out "$guard"', block)
+        self.assertIn("continue-on-error: true", block)
+        hold = block.index("OFFICIAL_SHADOW=HOLD_NO_VERIFIED_TIMELY_REPO_WITNESS")
+        producer = block.index("python research_lab/official_shadow_477.py")
+        verifier = block.index("python research_lab/official_eod_shadow_receipt.py")
+        self.assertLess(hold, producer)
+        self.assertLess(producer, verifier)
+        self.assertIn('--guard "$guard"', block[producer:verifier])
+        self.assertIn('--guard "$guard"', block[verifier:])
         self.assertIn("continue-on-error: true", block)
 
 

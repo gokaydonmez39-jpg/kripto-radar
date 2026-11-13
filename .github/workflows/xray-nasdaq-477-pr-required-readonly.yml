@@ -52,9 +52,9 @@ jobs:
           python -O -m unittest -q test_schedule_failover
           python -m py_compile schedule_failover.py
           cd research_lab
-          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
-          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt
-          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py
+          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
       - name: Kronos V2 research contracts normal and optimized (NO model download)
         working-directory: personal-swing
         run: |
