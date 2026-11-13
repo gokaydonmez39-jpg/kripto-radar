@@ -35,3 +35,20 @@ accepted without a marker. With the planner, exactly one event writer and
 exactly one digest writer were accepted in their separate races. A colliding
 marker ID rolled back another cell update and did not consume a fresh marker.
 The successful POST and independent GET passed the verifier in both races.
+
+
+## Private execution without a terminal
+
+The portable JavaScript module implements the same planner/verifier contract
+and the same marker namespace. It performs no calls and cannot send, reserve,
+or change data itself. Use a trusted private JS execution surface to run the
+exact immutable reviewed source. Never interpolate private input into code;
+pass it as an object to XRAY_RESERVATION.operation. If no actual private
+execution surface is available, remain HOLD. Do not approximate a request.
+The caller still owns source provenance, independent score digest, concurrent
+writer preflight, original POST response and independent complete GET.
+`scoreDigest` accepts ranked tuples of exact decimal strings for score and
+close, with empty strings when applicable, and refuses unsupported encodings.
+Do not log any private matrices or emit them into public CI. No new channel,
+credentials, or external runtime are needed. Restore Python-only caller config
+if portability acceptance fails; retain all markers and committed statuses.
