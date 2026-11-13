@@ -1,7 +1,7 @@
 {
   "schema": "XRAY_FINAL_GATE_OVERLAY_V2",
-  "generated_on": "2026-11-10",
-  "generated_at_utc": "2026-11-10T09:51:14.782465+00:00",
+  "generated_on": "2026-11-13",
+  "generated_at_utc": "2026-11-13T07:58:38.276714+00:00",
   "asof_et": "2026-10-07",
   "execution": "NONE",
   "real_money": "NO-GO",
@@ -95,10 +95,10 @@
   },
   "current_research_chain": {
     "exact": false,
-    "price_blob_sha": "dc00ad0e2fa3d29a4748b347e2bef333f587c069",
+    "price_blob_sha": "9ff3b3315a0b7d419672f7e71f4db071c276b869",
     "mc_input_blob_sha": "91c8948eced805cbdf6006017a0c3f07943823da",
     "coverage_complete": false,
-    "price_asof_et": "2026-11-09",
+    "price_asof_et": "2026-11-12",
     "price_pass_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "price_pass_count": 0,
     "history_source_mc_artifact": "nasdaq-xray/canonical_mc_bridge_20261007_c417_dv30_v28.json",
@@ -131,7 +131,7 @@
     "interpretation": "Persisted pointer state never creates PASS; current runtime gates control final-gate reporting."
   },
   "weekend_guard": {
-    "current_calendar_date": "2026-11-10",
+    "current_calendar_date": "2026-11-13",
     "last_completed_us_rth_asof": "2026-10-07",
     "asof_advanced_on_weekend": false
   },

@@ -97,6 +97,43 @@ class TestOosAudit(unittest.TestCase):
         self.assertFalse(out['sufficient_for_decision'])
         self.assertEqual(out['decision_influence'],'NO_GO')
 
+    def test_delisted_roku_matured_is_explicitly_censored_not_missing_bar(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU')+forecast('AAPL')
+        def reader(symbols,asof):
+            # No delisted issuer lookup or GNTX/FOXA proxy.
+            self.assertEqual(symbols,['AAPL'])
+            return {'AAPL':[{'timestamp':'2026-11-09','close':103.0}]}
+        future=['2026-11-09','2026-11-10','2026-11-11','2026-11-12',
+                  '2026-11-13','2026-11-16','2026-11-17','2026-11-18',
+                  '2026-11-19','2026-11-20','2026-11-23','2026-11-24']
+        with patch.object(o,'load_recent_ledgers',return_value=matrix), \
+                patch.object(k,'future_xnas_days',return_value=future):
+            out=o.audit(None,'2026-11-10',reader)
+        self.assertEqual(out['corporate_action_censored_rows'],1)
+        self.assertEqual(out['horizons']['1']['corporate_action_censored'],1)
+        self.assertEqual(out['horizons']['1']['samples'],1)
+        self.assertEqual(out['pending_horizon_rows'],4)
+        self.assertEqual(out['decision_influence'],'NO_GO')
+
+    def test_roku_pre_delisting_outcome_still_scored(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-05')
+        def reader(symbols,asof):
+            self.assertEqual(symbols,['ROKU'])
+            return {'ROKU':[{'timestamp':'2026-11-06','close':103.0}]}
+        future=['2026-11-06','2026-11-09','2026-11-10','2026-11-11',
+                  '2026-11-12','2026-11-13','2026-11-16','2026-11-17',
+                  '2026-11-18','2026-11-19','2026-11-20','2026-11-23']
+        with patch.object(o,'load_recent_ledgers',return_value=matrix), \
+                patch.object(k,'future_xnas_days',return_value=future):
+            out=o.audit(None,'2026-11-10',reader)
+        self.assertEqual(out['corporate_action_censored_rows'],0)
+        self.assertEqual(out['horizons']['1']['samples'],1)
+
+    def test_post_delisting_roku_forecast_is_rejected(self):
+        matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-10')
+        with self.assertRaisesRegex(k.ShadowHold,'ROKU_POST_DELISTING_FORECAST'):
+            o.validate_ledger(matrix)
+
     def test_future_source_record_is_fail_closed(self):
         with self.assertRaisesRegex(k.ShadowHold,'FUTURE_SOURCE_ROW'):
             o.select_matured(forecast(),'2026-11-05')
@@ -118,6 +155,36 @@ class TestOosAudit(unittest.TestCase):
         self.assertEqual(output['horizons']['1']['forecast_quality_counts']
                          ['RESEARCH_CLOSE_ONLY'],1)
         self.assertFalse(output['sufficient_for_decision'])
+
+    def test_quality_strata_report_separate_accuracy_not_pooled_only(self):
+        rows=[
+            {'asof':'2026-11-06','forecast_status':'RESEARCH_ONLY',
+             'model_pct_error':1.0,'baseline_pct_error':2.0,'direction_correct':True},
+            {'asof':'2026-11-06','forecast_status':'RESEARCH_CLOSE_ONLY',
+             'model_pct_error':9.0,'baseline_pct_error':2.0,'direction_correct':False},
+        ]
+        out=o.summarize({1:rows},0,0)
+        h=out['horizons']['1']
+        self.assertEqual(h['model_mape_pct'],5.0)
+        native=h['quality_strata']['RESEARCH_ONLY']
+        close=h['quality_strata']['RESEARCH_CLOSE_ONLY']
+        self.assertEqual((native['samples'],native['model_mape_pct'],
+                          native['persistence_mape_pct'],native['direction_hit_rate']),
+                         (1,1.0,2.0,1.0))
+        self.assertEqual((close['samples'],close['model_mape_pct'],
+                          close['persistence_mape_pct'],close['direction_hit_rate']),
+                         (1,9.0,2.0,0.0))
+        empty=out['horizons']['5']['quality_strata']['RESEARCH_ONLY']
+        self.assertEqual(empty['samples'],0)
+        self.assertIsNone(empty['model_mape_pct'])
+        self.assertIsNone(empty['direction_hit_rate'])
+        self.assertEqual(out['decision_influence'],'NO_GO')
+
+    def test_quality_stratum_unknown_status_fail_closed(self):
+        row={'asof':'2026-11-06','forecast_status':'UNREVIEWED',
+             'model_pct_error':1.0,'baseline_pct_error':2.0,'direction_correct':True}
+        with self.assertRaisesRegex(k.ShadowHold,'OOS_UNKNOWN_QUALITY_STRATUM'):
+            o.summarize({1:[row]},0,0)
 
     def test_load_recent_month_partition_preserves_no_future_boundary(self):
         import kronos_v2 as v2

@@ -38,11 +38,23 @@ jobs:
           # P0 evidence audit is a fail-closed release gate, not optional.
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
+          python -m unittest -q test_delivery_reservation
+          python -O -m unittest -q test_delivery_reservation
           # A34 must fail required CI on a broken read-only preopen guard.
           python -m unittest -q test_preopen_a34
           python -O -m unittest -q test_preopen_a34
           python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
+      - name: Personal schedule fallback and official research-shadow negative acceptance
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_schedule_failover
+          python -O -m unittest -q test_schedule_failover
+          python -m py_compile schedule_failover.py
+          cd research_lab
+          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
       - name: Kronos V2 research contracts normal and optimized (NO model download)
         working-directory: personal-swing
         run: |
@@ -69,6 +81,12 @@ jobs:
           python -O -m unittest -q test_cove_shadow test_cove_private_shadow test_cove_roku_pit
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
           # Private IEX/Sheets/alerts/broker not accessed by this CI step.
+      - name: P0 original-PIT-order and fail-closed recovery regressions (no secrets)
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_p0_source_recovery
+          python -O -m unittest -q test_p0_source_recovery
+          python -m py_compile test_p0_source_recovery.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
         run: |

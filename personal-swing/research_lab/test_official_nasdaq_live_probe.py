@@ -136,8 +136,10 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(result['directory_basic_flag_match'],475)
         self.assertEqual(result['directory_flagged'],1)
         self.assertEqual(result['directory_missing'],1)
-        self.assertEqual(result['flagged_watchlist_index_zero_based'], 475)
-        self.assertEqual(result['flagged_directory_fields'], {'Financial Status': 'D'})
+        # Public log must not reveal the position of a flagged personal symbol.
+        self.assertIsNone(result.get('flagged_watchlist_index_zero_based'))
+        self.assertIsNone(result.get('flagged_directory_fields'))
+        self.assertEqual(result['directory_flagged'],1)
         self.assertFalse(result['historical_membership_proven'])
         self.assertFalse(result['may_clear_risk'])
         self.assertNotIn(symbols[-1],json.dumps(result))
@@ -172,6 +174,29 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(len(data['liquidity_watch_symbols']),477)
         self.assertEqual(len(set(data['liquidity_watch_symbols'])),477)
         self.assertEqual(data['source_count'],477)
+
+    def test_current_directory_uses_forward_pit_scope_and_canonical_hash(self):
+        old=p.local_watchlist('2026-11-02')['liquidity_watch_symbols']
+        prior=p.local_watchlist('2026-11-09')['liquidity_watch_symbols']
+        current=p.local_watchlist('2026-11-10')['liquidity_watch_symbols']
+        self.assertEqual(len(set(current)),477)
+        self.assertIn('INDV',old)
+        self.assertIn('ROKU',prior)
+        self.assertNotIn('ROKU',current)
+        self.assertNotIn('INDV',current)
+        self.assertEqual(current.count('GNTX'),1)
+        self.assertEqual(current.count('SUPN'),1)
+        self.assertEqual(current.count('FOXA'),1)
+        self.assertEqual(current,[{'ROKU':'GNTX'}.get(s,s) for s in prior])
+        header='Symbol|Security Name|Market Category|Test Issue|Financial Status|ETF'
+        rows=[f'{s}|Synthetic|Q|N|N|N' for s in current]
+        raw=(header+'\n'+'\n'.join(rows)+'\nFile Creation Time: 111020261200||||||\n').encode()
+        out=p.compare_current_directory_scope(raw,p.local_watchlist('2026-11-10'))
+        self.assertEqual(out['directory_basic_flag_match'],477)
+        self.assertEqual(out['directory_missing'],0)
+        self.assertEqual(out['scope_sha256'],'3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060')
+        self.assertFalse(out['historical_membership_proven'])
+        self.assertFalse(out['may_clear_risk'])
 
     def test_outside_allowlist_no_request(self):
         fake=FakeOpener(None)

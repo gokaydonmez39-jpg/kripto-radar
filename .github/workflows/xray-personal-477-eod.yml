@@ -77,6 +77,15 @@ jobs:
           python -m py_compile alert_outbox_producer.py test_al_outbox_producer.py
           python -m py_compile xray_guardian.py test_xray_guardian.py
           python -m py_compile test_provider_read_retry.py
+      - name: Personal scheduler and official research-shadow fail-closed contracts
+        working-directory: personal-swing
+        run: |
+          python -m unittest -q test_schedule_failover
+          python -O -m unittest -q test_schedule_failover
+          cd research_lab
+          python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
+          python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
   daily-private-scan:
     needs: offline-guard
     if: github.event_name != 'pull_request'
@@ -182,13 +191,15 @@ jobs:
           python alert_outbox_producer.py --snapshot "$path"
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
-      - name: Optional official 477 PIT-aware shadow ledger (NO AL, no source HTTP, no Sheet)
+      - name: Optional official 477 PIT-aware shadow ledger (NO AL, no market provider HTTP, no Sheet)
         # This sidecar is strictly after normal private Sheet readback.
         # No completed EOD => explicit SKIP, never a false 477-shadow PASS.
         # Its failure cannot suppress or alter the original AL decisions.
         continue-on-error: true
         working-directory: personal-swing
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           snapshot="$RUNNER_TEMP/xray-private-data/latest.json"
@@ -197,10 +208,19 @@ jobs:
             echo 'OFFICIAL_SHADOW=SKIPPED_NO_COMPLETED_SCAN; ROWS=0; PIT=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
+          guard=../nasdaq-xray/canonical_official_source_guard.json
+          if [[ "$GITHUB_EVENT_NAME" == schedule ]]; then
+            guard="$RUNNER_TEMP/xray-private-data/official_guard_at_cutoff.json"
+            if ! timeout 60s python research_lab/official_guard_cutoff_select.py \
+                --snapshot "$snapshot" --ref "$GITHUB_SHA" --out "$guard"; then
+              echo 'OFFICIAL_SHADOW=HOLD_NO_VERIFIED_TIMELY_REPO_WITNESS; ROWS=0; PIT=UNKNOWN; NO_MARKET_CLEARANCE' >> "$GITHUB_STEP_SUMMARY"
+              exit 4
+            fi
+          fi
           if ! python research_lab/official_shadow_477.py \
             --snapshot "$snapshot" \
             --watchlist nasdaq_watchlist_477.json \
-            --guard ../nasdaq-xray/canonical_official_source_guard.json \
+            --guard "$guard" \
             --out "$receipt"; then
             echo 'OFFICIAL_SHADOW=FAILED_INDEPENDENT_NOT_MARKET_CLEARANCE' >> "$GITHUB_STEP_SUMMARY"
             exit 4
@@ -208,11 +228,11 @@ jobs:
           if ! python research_lab/official_eod_shadow_receipt.py \
             --snapshot "$snapshot" \
             --receipt "$receipt" \
-            --guard ../nasdaq-xray/canonical_official_source_guard.json; then
+            --guard "$guard"; then
             echo 'OFFICIAL_SHADOW=FAILED_INDEPENDENT_NOT_MARKET_CLEARANCE' >> "$GITHUB_STEP_SUMMARY"
             exit 4
           fi
-          echo 'OFFICIAL_SHADOW=RECEIPT_VERIFIED_RESEARCH_ONLY; ROWS=477; PIT=UNKNOWN; NO_AL_CHANGES; NO_ORDERS; NO_SHEETS; NO_PROVIDER_REQUESTS' >> "$GITHUB_STEP_SUMMARY"
+          echo 'OFFICIAL_SHADOW=RECEIPT_VERIFIED_RESEARCH_ONLY; ROWS=477; PIT=UNKNOWN; NO_AL_CHANGES; NO_ORDERS; NO_SHEETS; NO_MARKET_PROVIDER_REQUESTS' >> "$GITHUB_STEP_SUMMARY"
 
   private-sheets-auth-preflight:
     needs: offline-guard

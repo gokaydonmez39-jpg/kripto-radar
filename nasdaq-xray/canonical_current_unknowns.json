@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-09",
+  "asof_et": "2026-11-12",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3189
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3187
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3187
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1109202621:31|||||||",
+  "official_footer": "File Creation Time: 1112202618:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3189
+    "UNKNOWN_STATIC": 3187
   },
-  "source_queue_hash": "b798498b0b616c516ef8a1bb9f7e90e6e712d2286e0090096d38c8023c45e0be",
-  "source_state_hash": "ae5d27e68989417aad6542abce1453d3cb6d72d43901a07f4906a9dc9981db8e",
-  "source_unknown_count": 3189,
+  "source_queue_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
+  "source_state_hash": "5d40c887685390224e87fb53e414813d2836fffba6cd79e84e180ef69c051dfa",
+  "source_unknown_count": 3187,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3189,
+  "unknown_count": 3187,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -539,24 +539,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Acadia Healthcare Company, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "ACHV": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Achieve Life Sciences, Inc.  - Common Shares",
       "status": "UNKNOWN_STATIC"
     },
     "ACIC": {
@@ -12907,6 +12889,24 @@
       "security_name": "Critical Metals Corp. - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
+    "CRMN": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Skyline Builders Group Holding Limited - Class A Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
     "CRMT": {
       "attempts": 0,
       "discovery": {
@@ -18001,24 +18001,6 @@
       "security_name": "EZCORP, Inc. - Class A Non-Voting Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "EZRA": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Reliance Global Group, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "FA": {
       "attempts": 0,
       "discovery": {
@@ -20842,7 +20824,7 @@
         "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
-      "security_name": "Greene County Bancorp, Inc. - Common Stock",
+      "security_name": "Greene Bancorp, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "GCGR": {
@@ -28099,24 +28081,6 @@
       "security_name": "Karooooo Ltd. - Ordinary shares",
       "status": "UNKNOWN_STATIC"
     },
-    "KAZR": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Skyline Builders Group Holding Limited - Class A Ordinary Shares",
-      "status": "UNKNOWN_STATIC"
-    },
     "KBON": {
       "attempts": 0,
       "discovery": {
@@ -28727,24 +28691,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Kiora Pharmaceuticals, Inc.  - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "KPTI": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Karyopharm Therapeutics Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "KRAQ": {
@@ -37171,24 +37117,6 @@
       "security_name": "Next Technology Holding Inc. - Ordinary Shares",
       "status": "UNKNOWN_STATIC"
     },
-    "NXXT": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "NextNRG, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "NYAX": {
       "attempts": 0,
       "discovery": {
@@ -42623,6 +42551,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "QuickLogic Corporation - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "QUIT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Achieve Life Sciences, Inc.  - Common Shares",
       "status": "UNKNOWN_STATIC"
     },
     "QURE": {
@@ -56105,6 +56051,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Exagen Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "XGPU": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Reliance Global Group, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "XHG": {

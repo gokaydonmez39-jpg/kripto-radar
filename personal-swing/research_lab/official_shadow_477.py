@@ -27,6 +27,31 @@ STATUS = "RESEARCH_SHADOW_ONLY_NO_AUTHORITY"
 class ShadowRejected(ValueError):
     pass
 
+
+# Only code-reviewed literals can appear in public Actions diagnostics.
+# No arbitrary provider error, credentials, private rows or symbol identities.
+SAFE_PUBLIC_REASONS=frozenset("""
+INVALID_OBSERVATION_TIME NAIVE_OBSERVATION_TIME INVALID_XNAS_SESSION
+WATCHLIST_COUNT_INVALID WATCHLIST_SCOPE_INVALID OFFICIAL_GUARD_NOT_OBJECT
+OFFICIAL_GUARD_AUTHORITY_OR_STATUS_INVALID OFFICIAL_GUARD_FEEDS_UNVERIFIED
+OFFICIAL_GUARD_SYMBOLS_INVALID OFFICIAL_GUARD_VETO_UNION_DRIFT
+EOD_SOURCE_ORDER_INVALID SOURCE_SNAPSHOT_MUTATED SHADOW_SCOPE_DRIFT
+SHADOW_MUST_NOT_OVERWRITE_EOD SHADOW_MUST_NOT_OVERWRITE_SOURCE
+EOD_HANDOFF_REFUSED_ValueError EOD_HANDOFF_REFUSED_TypeError
+EOD_HANDOFF_REFUSED_KeyError EOD_HANDOFF_REFUSED_ArithmeticError
+EOD_HANDOFF_REFUSED_HandoffInvalid PIT_WATCHLIST_DOCUMENT_DRIFT
+PIT_SCOPE_VALIDATION_FAILED
+""".split())
+
+
+def public_reason(exc):
+    """Return a fixed safe diagnostic without exposing exception detail."""
+    if type(exc) is ShadowRejected and len(exc.args)==1:
+        value=exc.args[0]
+        if type(value) is str and value in SAFE_PUBLIC_REASONS:
+            return value
+    return "SHADOW_UNCLASSIFIED"
+
 def demand(ok, message):
     if not ok:
         raise ShadowRejected(message)
@@ -92,7 +117,21 @@ def validate_safety_witness(witness):
 
 def make_shadow(snapshot, watchlist, guard):
     """No side effects. Source absence is UNKNOWN, never explicit no-risk."""
-    symbols = exact_symbols(watchlist)
+    # The immutable base list keeps pre-cutover INDV/ROKU by design.
+    # Resolve approved replacements only through the same PIT validator
+    # as the production EOD engine; never reinterpret price history here.
+    exact_symbols(watchlist)
+    personal_watchlist=PERSONAL/"nasdaq_watchlist_477.json"
+    try:
+        authoritative=json.loads(personal_watchlist.read_text(encoding="utf-8"))
+    except (OSError,ValueError,UnicodeError):
+        raise ShadowRejected("PIT_SCOPE_VALIDATION_FAILED") from None
+    demand(watchlist==authoritative,"PIT_WATCHLIST_DOCUMENT_DRIFT")
+    try:
+        symbols=runner.get_scope(watchlist_file=str(personal_watchlist),
+                                 asof=snapshot["asof_et"])
+    except (ValueError,TypeError,KeyError):
+        raise ShadowRejected("PIT_SCOPE_VALIDATION_FAILED") from None
     before = sha(snapshot)
     # Reuse *production* handoff contract, never relax scope or AL rules.
     try:
@@ -204,6 +243,7 @@ def main(argv=None):
             ArithmeticError) as exc:
         print(json.dumps({"status":"SHADOW_REFUSED",
                           "reason_type":type(exc).__name__,
+                          "reason_code":public_reason(exc),
                           "market_clearance_proven":False,
                           "may_modify_al":False},sort_keys=True))
         return 4

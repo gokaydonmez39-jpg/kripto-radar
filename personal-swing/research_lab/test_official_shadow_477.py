@@ -86,6 +86,41 @@ class Shadow477Tests(unittest.TestCase):
         self.assertEqual([entry["symbol"] for entry in result["rows"]], source_order)
         self.assertEqual(result["private_eod_snapshot_sha256"], m.sha(s))
 
+    def test_nov11_live_pit_477_valid_shadow_not_rejected(self):
+        # Fail-first Nov 11 production-shaped EOD: SUPN replaces INDV,
+        # GNTX replaces ROKU. Original watchlist retains both legacy names.
+        s=snapshot("2026-11-11")
+        approved=m.runner.get_scope(
+            watchlist_file=str(ROOT/"personal-swing/nasdaq_watchlist_477.json"),
+            asof="2026-11-11")
+        self.assertEqual(len(approved),477)
+        self.assertIn("SUPN",approved)
+        self.assertIn("GNTX",approved)
+        self.assertNotIn("INDV",approved)
+        self.assertNotIn("ROKU",approved)
+        for row,sym in zip(s["rows"],approved):
+            row["symbol"]=sym
+        s["scope_sha256"]=m.runner.sha_symbols(approved)
+        result=m.make_shadow(s,WATCH,guard("2026-11-12T00:59:50Z"))
+        self.assertEqual(result["rows_count"],477)
+        self.assertEqual([x["symbol"] for x in result["rows"]],approved)
+        self.assertEqual(result["nasdaq_source_state"],
+                         "UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
+        self.assertFalse(result["market_clearance_proven"])
+
+    def test_mutated_point_in_time_registry_cannot_override_personal_authority(self):
+        s=snapshot()
+        bad=deepcopy(WATCH)
+        bad["point_in_time_symbol_changes"][1]["new_symbol"]="ZZZZ"
+        with self.assertRaisesRegex(m.ShadowRejected,
+                                    "PIT_WATCHLIST_DOCUMENT_DRIFT"):
+            m.make_shadow(s,bad,guard())
+
+    def test_explicit_recognized_handoff_invalid_is_safe_diagnostic(self):
+        self.assertEqual(
+            m.public_reason(m.ShadowRejected("EOD_HANDOFF_REFUSED_HandoffInvalid")),
+            "EOD_HANDOFF_REFUSED_HandoffInvalid")
+
     def test_future_source_must_not_backfill_old_al_decision(self):
         result=m.make_shadow(snapshot(),WATCH,guard("2026-10-31T13:07:05Z"))
         self.assertEqual(result["nasdaq_source_state"],"UNKNOWN_SOURCE_AFTER_EOD_CUTOFF")
@@ -188,6 +223,41 @@ class Shadow477Tests(unittest.TestCase):
             self.assertEqual(code,0)
             self.assertIn("SKIPPED_NO_COMPLETED_SCAN",console.getvalue())
             self.assertFalse(op.exists())
+
+    def test_public_reason_closed_allowlist(self):
+        self.assertEqual(m.public_reason(m.ShadowRejected("WATCHLIST_COUNT_INVALID")),
+                         "WATCHLIST_COUNT_INVALID")
+        self.assertEqual(m.public_reason(
+            m.ShadowRejected("EOD_HANDOFF_REFUSED_ValueError")),
+            "EOD_HANDOFF_REFUSED_ValueError")
+        self.assertEqual(m.public_reason(
+            m.ShadowRejected("PRIVATE_KEY=SUPER_SECRET")),
+            "SHADOW_UNCLASSIFIED")
+        self.assertEqual(m.public_reason(ValueError("PRIVATE_KEY=SUPER_SECRET")),
+                         "SHADOW_UNCLASSIFIED")
+
+    def test_cli_rejected_guard_has_static_reason_without_raw_data(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp);sp=p/"snap.json";wp=p/"watch.json"
+            gp=p/"guard.json";op=p/"shadow.json"
+            g=guard();g["status"]="FAILED"
+            sp.write_text(json.dumps(snapshot()),encoding="utf-8")
+            wp.write_text(json.dumps(WATCH),encoding="utf-8")
+            gp.write_text(json.dumps(g),encoding="utf-8")
+            buf=io.StringIO()
+            with redirect_stdout(buf):
+                code=m.main(["--snapshot",str(sp),"--watchlist",str(wp),
+                             "--guard",str(gp),"--out",str(op)])
+            self.assertEqual(code,4)
+            receipt=json.loads(buf.getvalue())
+            self.assertEqual(receipt["reason_code"],
+                             "OFFICIAL_GUARD_AUTHORITY_OR_STATUS_INVALID")
+            self.assertFalse(receipt["may_modify_al"])
+            self.assertFalse(receipt["market_clearance_proven"])
+            self.assertFalse(op.exists())
+            self.assertNotIn("rows",buf.getvalue())
+            self.assertNotIn("liquidity_watch_symbols",buf.getvalue())
+
 
 if __name__=="__main__":
     unittest.main()

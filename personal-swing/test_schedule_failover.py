@@ -74,7 +74,7 @@ class OfficialXnasFailover(unittest.TestCase):
             return True
         x=sf.run(now=utc('2026-10-27T00:25:00Z'),read_runs=get,
                  request_dispatch=dispatch)
-        self.assertEqual(calls,['GET','POST:2026-10-26'])
+        self.assertEqual(calls,['GET','GET','POST:2026-10-26'])
         self.assertEqual(x['status'],'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED')
         self.assertEqual(x['dispatch_requested'],True)
 
@@ -122,7 +122,7 @@ class OfficialXnasFailover(unittest.TestCase):
                       read_runs=lambda:calls.append('GET') or
                           {'workflow_runs':[],'total_count':0},
                       request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
-        self.assertEqual(calls,['GET','POST:2026-10-26'])
+        self.assertEqual(calls,['GET','GET','POST:2026-10-26'])
         self.assertEqual(result['asof_et'],'2026-10-26')
         self.assertTrue(result['dispatch_requested'])
 
@@ -193,6 +193,47 @@ class OfficialXnasFailover(unittest.TestCase):
                       request_dispatch=lambda asof:calls.append(asof) or True)
         self.assertEqual(calls,[])
         self.assertEqual(result['status'],'BLOCKED_UNTRUSTED_RUN_PAGINATION')
+
+    def test_second_read_new_main_run_suppresses_duplicate_dispatch(self):
+        calls=[]
+        snapshots=[
+            {'workflow_runs':[],'total_count':0},
+            {'workflow_runs':[record(created='2026-10-27T00:24:00Z',
+                                     event='schedule',status='queued',
+                                     conclusion=None)],'total_count':1},
+        ]
+        def read():
+            calls.append('GET')
+            return snapshots.pop(0)
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=read,
+                      request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
+        self.assertEqual(calls,['GET','GET'])
+        self.assertEqual(result['status'],'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS')
+        self.assertFalse(result['dispatch_requested'])
+
+    def test_second_read_unknown_pagination_fails_closed(self):
+        calls=[]
+        snapshots=[
+            {'workflow_runs':[],'total_count':0},
+            {'workflow_runs':[],'total_count':1},
+        ]
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=lambda:calls.append('GET') or snapshots.pop(0),
+                      request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
+        self.assertEqual(calls,['GET','GET'])
+        self.assertEqual(result['status'],'BLOCKED_RECHECK_UNTRUSTED_RUN_PAGINATION')
+        self.assertFalse(result['dispatch_requested'])
+
+    def test_second_read_invalid_payload_fails_closed(self):
+        calls=[]
+        snapshots=[{'workflow_runs':[],'total_count':0},None]
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=lambda:calls.append('GET') or snapshots.pop(0),
+                      request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
+        self.assertEqual(calls,['GET','GET'])
+        self.assertEqual(result['status'],'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE')
+        self.assertFalse(result['dispatch_requested'])
 
 
 if __name__=='__main__':

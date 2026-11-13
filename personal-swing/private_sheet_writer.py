@@ -48,6 +48,8 @@ class HandoffBlocked(ValueError):
 # logs; never emit private Sheet cells, Google response bodies, URLs, tokens,
 # secrets, exception values or tracebacks.
 _PUBLIC_BLOCK_CODES = frozenset({
+    'GOOGLE_SHEETS_HTTP_400',
+    'GOOGLE_SHEETS_HTTP_409',
     'GOOGLE_SHEETS_HTTP_429',
     'GOOGLE_SHEETS_HTTP_401',
     'GOOGLE_SHEETS_HTTP_403',
@@ -328,7 +330,7 @@ class SheetApi:
                     time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
                     continue
                 # Status only: no provider reason/body/URL/header in public logs.
-                if exc.code in (401, 403, 404, 429):
+                if exc.code in (400, 401, 403, 404, 409, 429):
                     category = 'GOOGLE_SHEETS_HTTP_' + str(exc.code)
                 elif 500 <= exc.code <= 599:
                     category = 'GOOGLE_SHEETS_HTTP_5XX'
