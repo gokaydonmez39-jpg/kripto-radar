@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-11-12",
   "asof_identity_proof": {
-    "blob_sha": "3ecfb3b28782c28b06a15faafbed798acd80e47a",
+    "blob_sha": "0a50542975b0c66f627d7e213849cbac38d3a4ff",
     "counts": {
       "operating_overrides": 2,
       "remove_from_asof": 0,
@@ -57,7 +57,7 @@
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1112202615:41|||||||",
+  "official_footer": "File Creation Time: 1112202618:01|||||||",
   "pass_count": 3187,
   "pass_hash": "bfef758db5cf1551d53f537776ab3ca8d7fcf828098f942ffc5615900ceae5cb",
   "pass_symbols": [
@@ -3258,13 +3258,13 @@
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "97d6afbe93169618d5ceb5898f8a2000353e69b0",
+    "blob_sha": "2da67d4048c3ae78c02e57019b4c73d0cd2dda84",
     "count": 557,
     "path": "nasdaq-xray/master_sec_spac_proof_20261112.json",
     "symbol_hash": "f09b9eb361db080266d9ac97258beb6c89c85845d187c9d48a9b89a8047881f7"
   },
-  "source_state_blob_sha": "ffa5bee6ca7ea7bdcd31dd4b07946f426846d063",
-  "source_state_hash": "8bca7ff738a046eebe2ac2845fe6e64369b94e6d66dda743d06e8fd47651d30c",
+  "source_state_blob_sha": "392166a12704a44a1fabc98511e7fd3792696a54",
+  "source_state_hash": "f54d6564dd60e16dde86645d66a11fa061b33ad4136f6d1e5da024471ca1c334",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
