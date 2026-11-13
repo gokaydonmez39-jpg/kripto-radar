@@ -133,6 +133,12 @@ jobs:
         run: |
           python -m unittest -q test_downstream_eod_origin
           python -O -m unittest -q test_downstream_eod_origin
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Personal 477 portable reservation parity (offline)
+        working-directory: personal-swing
+        run: node --test test_delivery_reservation_portable.js
       - name: Fundamental SEC Shadow strict offline contract (NO SEC HTTP)
         working-directory: personal-swing/research_lab
         run: |

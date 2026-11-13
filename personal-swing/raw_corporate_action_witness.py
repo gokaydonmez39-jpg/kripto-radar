@@ -25,6 +25,7 @@ MIN_RATIO = 0.78
 MAX_RATIO = 1.27
 MAX_ROWS = 1000
 SYM = re.compile(r'^[A-Z][A-Z0-9.]{0,15}$')
+HISTORICAL_TERMINAL_CENSORED = 'HISTORICAL_TERMINAL_CENSORED_NOT_CLEARANCE'
 
 
 class ActionWitnessBlocked(ValueError):
@@ -40,6 +41,14 @@ def _bar_day(bar):
     need(type(bar) is dict and type(bar.get('timestamp')) is str
          and len(bar['timestamp'])>=10, 'BAD_RAW_DATE')
     return bar['timestamp'][:10]
+
+
+def exit_for_state(state):
+    """An explained historical terminal remains a research hold, not clearance."""
+    return 0 if state in (
+        'NO_COMPLETED_XNAS_SESSION',
+        'NO_LARGE_RAW_DISCONTINUITY_CA_STATUS_UNVERIFIED',
+    ) else 3
 
 
 def inspect(candidate_values, scan_values, bars, asof):
@@ -135,8 +144,8 @@ def inspect(candidate_values, scan_values, bars, asof):
        'large_raw_open_gap_count':large_gap_count,
        'historical_issuance_close_mismatches':issuance_drift_count,
        'corporate_action_review_count':len(reviewed_delisted),
-       'state':('REVIEW_REQUIRED' if (large_gap_count or issuance_drift_count or
-                                   reviewed_delisted)
+       'state':('REVIEW_REQUIRED' if (large_gap_count or issuance_drift_count)
+                else HISTORICAL_TERMINAL_CENSORED if reviewed_delisted
                 else 'NO_LARGE_RAW_DISCONTINUITY_CA_STATUS_UNVERIFIED'),
        'corporate_action_cleared':False,
        'independent_vendor_corporate_action_confirmed':False,
@@ -172,7 +181,7 @@ def live_entrypoint():
              scans==api.read('TARAMA_KAYITLARI','J'),
              'CONCURRENT_PRIVATE_SOURCE_CHANGE')
         print(json.dumps(status,sort_keys=True))
-        return 3 if status['state']=='REVIEW_REQUIRED' else 0
+        return exit_for_state(status['state'])
     except Exception as exc:
         # No exception string: could carry symbol, vendor data, secret or prices.
         print(json.dumps({'state':'BLOCKED_NO_RAW_DATA_PUBLISHED',
