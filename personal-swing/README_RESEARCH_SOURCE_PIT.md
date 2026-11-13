@@ -70,10 +70,18 @@ date by itself does not prove a specific FRED availability time.
    where data was knowable in live research. AQR daily QMJ updates monthly.
    CFA model validation is a methodology reference. Damodaran is for valuation
    review, not the comparison feature. No 13F or Congress copy-trading.
-5. Proposed research eligibility floors, not statistical power: at least three
+5. Research eligibility floors, not statistical power: at least three
    chronologically disjoint OOS folds and at least 30 covered episodes per
-   arm per fold. Exclude overlapping unresolved 15-session labels from the
-   training edge. Measure dependence across issuer and session, report a
+   arm per fold (180 distinct eligible episodes is necessary for three folds).
+   `research_oos_admission.assess_oos_readiness` verifies this structure on
+   caller-supplied rows. It takes a chronological official session list, ordered
+   inclusive fold start/end pairs, and unique episodes with a signal session,
+   last verified session, Boolean PIT coverage, event flag and stop-contact
+   outcome. The full original 15 subsequent sessions must be verified, even
+   for an early touch. Outcomes crossing a fold edge do not count in that
+   fold. This does not authenticate the input or fit a model.
+   Exclude overlapping unresolved 15-session labels from the training edge.
+   Measure dependence across issuer and session, report a
    cluster-robust 95% interval, and check effect stability by fold. The interval
    must exclude zero and the finding must survive cost and ambiguity sensitivity
    before it merits further research. These are not trading approval criteria.

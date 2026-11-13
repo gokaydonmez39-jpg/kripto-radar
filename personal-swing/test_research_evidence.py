@@ -5,10 +5,74 @@ from pathlib import Path
 from unittest.mock import patch
 import research_evidence as r
 import research_source_events as events
+from research_oos_admission import assess_oos_readiness
 
 CUT = "2026-10-23T20:00:00Z"
 CIK = "0001234567"
 ACCESSION = "0001234567-26-000001"
+
+
+class ResearchOOSAdmissionTests(unittest.TestCase):
+    def packet(self):
+        from datetime import date, timedelta
+        days = [(date(2024, 1, 1) + timedelta(days=i)).isoformat()
+                for i in range(110)]
+        folds = [{"start":days[i], "end":days[i+29]} for i in (0, 35, 70)]
+        rows = []
+        for fi, offset in enumerate((0, 35, 70)):
+            for i in range(60):
+                signal = offset + i % 10
+                rows.append({"id":f"episode-{fi}-{i}", "signal_session":days[signal],
+                             "last_verified_session":days[signal+15],
+                             "pit_coverage_proven":True,
+                             "event_present":i < 30, "stop_contact":i % 3 == 0})
+        return days, folds, rows
+
+    def assess(self, days, folds, rows):
+        return assess_oos_readiness(rows, official_sessions=days, folds=folds)
+
+    def test_balanced_three_folds_is_structural_only(self):
+        days, folds, rows = self.packet()
+        q = self.assess(days, folds, rows)
+        self.assertEqual(q["status"], "STRUCTURAL_READY_FOR_RESEARCH")
+        self.assertEqual(q["eligible_episodes"], 180)
+        self.assertEqual(q["necessary_unique_floor"], 180)
+        self.assertEqual(q, self.assess(days, folds, list(reversed(rows))))
+        self.assertFalse(q["production_eligible"])
+        self.assertFalse(q["performance_improvement_proven"])
+
+    def test_missing_provenance_or_late_outcome_cannot_fill_group(self):
+        days, folds, rows = self.packet()
+        rows[0]["pit_coverage_proven"] = False
+        rows[-1]["last_verified_session"] = days[-1]
+        q = self.assess(days, folds, rows)
+        self.assertEqual(q["status"], "HOLD_INSUFFICIENT_OOS_COHORT")
+        self.assertEqual(q["excluded"]["unproved_coverage"], 1)
+        self.assertEqual(q["excluded"]["invalid_outcome_window"], 1)
+
+    def test_fold_edges_purge_overlapping_outcomes(self):
+        days, folds, rows = self.packet()
+        rows[0].update(signal_session=days[21], last_verified_session=days[36])
+        q = self.assess(days, folds, rows)
+        self.assertEqual(q["excluded"]["overlapping_outcome"], 1)
+        self.assertEqual(q["folds"][0]["event"], 29)
+        self.assertEqual(q["status"], "HOLD_INSUFFICIENT_OOS_COHORT")
+
+    def test_duplicate_and_overlapping_or_reordered_folds_rejected(self):
+        days, folds, rows = self.packet()
+        with self.assertRaisesRegex(ValueError, "OOS_DUPLICATE_EPISODE"):
+            self.assess(days, folds, rows + [rows[0]])
+        for f in ([folds[0], {"start":days[29], "end":days[62]}, folds[2]],
+                  list(reversed(folds)), folds[:2]):
+            with self.assertRaisesRegex(ValueError, "OOS_INVALID_FOLDS"):
+                self.assess(days, f, rows)
+
+    def test_event_flag_unknown_not_no_event(self):
+        days, folds, rows = self.packet()
+        rows[-1]["event_present"] = None
+        q = self.assess(days, folds, rows)
+        self.assertEqual(q["excluded"]["unproved_coverage"], 1)
+        self.assertEqual(q["folds"][-1]["no_event"], 29)
 
 
 class ResearchSourceClockTests(unittest.TestCase):
