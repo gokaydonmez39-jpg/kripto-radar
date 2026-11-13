@@ -99,7 +99,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-13T17:58:17.050929+00:00",
+  "generated_at_utc": "2026-11-13T18:45:43.997120+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -910,8 +910,68 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 59,
+      "item_count": 63,
       "items": [
+        {
+          "HaltDate": "11/13/2026",
+          "HaltTime": "13:39:15.643",
+          "IssueName": "Melar Acquisition Cp I Ord A",
+          "IssueSymbol": "MACI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/13/2026",
+          "ResumptionQuoteTime": "13:39:15",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:39:15.643</td><td valign=\"top\">MACI</td><td valign=\"top\">Melar Acquisition Cp I Ord A  </td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:39:15                      </td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Fri, 13 Nov 2026 05:00:00 GMT",
+          "title": "MACI"
+        },
+        {
+          "HaltDate": "11/13/2026",
+          "HaltTime": "13:35:01.843",
+          "IssueName": "Black Hawk Acquisition Corpora",
+          "IssueSymbol": "BKHAU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/13/2026",
+          "ResumptionQuoteTime": "13:35:01",
+          "ResumptionTradeTime": "13:40:01",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:35:01.843</td><td valign=\"top\">BKHAU</td><td valign=\"top\">Black Hawk Acquisition Corpora</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:35:01                      </td><td valign=\"top\">13:40:01                      </td></tr></table>",
+          "pubDate": "Fri, 13 Nov 2026 05:00:00 GMT",
+          "title": "BKHAU"
+        },
+        {
+          "HaltDate": "11/13/2026",
+          "HaltTime": "13:29:30.036",
+          "IssueName": "Black Hawk Acquisition Cl A OS",
+          "IssueSymbol": "BKHA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/13/2026",
+          "ResumptionQuoteTime": "13:29:30",
+          "ResumptionTradeTime": "13:34:30",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:29:30.036</td><td valign=\"top\">BKHA</td><td valign=\"top\">Black Hawk Acquisition Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:29:30                      </td><td valign=\"top\">13:34:30                      </td></tr></table>",
+          "pubDate": "Fri, 13 Nov 2026 05:00:00 GMT",
+          "title": "BKHA"
+        },
+        {
+          "HaltDate": "11/13/2026",
+          "HaltTime": "13:03:07.100",
+          "IssueName": "Black Hawk Acquisition Corpora",
+          "IssueSymbol": "BKHAU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/13/2026",
+          "ResumptionQuoteTime": "13:03:07",
+          "ResumptionTradeTime": "13:08:07",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:03:07.100</td><td valign=\"top\">BKHAU</td><td valign=\"top\">Black Hawk Acquisition Corpora</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/13/2026                    </td><td valign=\"top\">13:03:07                      </td><td valign=\"top\">13:08:07                      </td></tr></table>",
+          "pubDate": "Fri, 13 Nov 2026 05:00:00 GMT",
+          "title": "BKHAU"
+        },
         {
           "HaltDate": "11/13/2026",
           "HaltTime": "12:29:47.103",
