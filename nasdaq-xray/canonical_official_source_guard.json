@@ -109,7 +109,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-13T02:10:51.671446+00:00",
+  "generated_at_utc": "2026-11-13T03:35:42.059639+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -2222,61 +2222,124 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 6,
+      "row_count": 13,
       "rows": [
         {
           "BX Action": "Add",
-          "Company Name": "Guinness Atkinson Funds",
-          "Effective Date": "11/12/2026",
+          "Company Name": "Staysail Series Trust",
+          "Effective Date": "11/13/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "KBTY"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Roundhill ETF Trust",
-          "Effective Date": "11/12/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "MAGP"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Nomura ETF Trust II",
-          "Effective Date": "11/12/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "NJPN"
+          "Symbol": "BWLB"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "NextNRG, Inc.",
-          "Effective Date": "11/12/2026",
+          "Company Name": "Fidelity Covington Trust",
+          "Effective Date": "11/13/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "NXXT"
+          "Primary Listing Market": "G",
+          "Symbol": "FDFF"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Fidelity Covington Trust",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "FDIF"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Fidelity Covington Trust",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "FMED"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Fidelity Covington Trust",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "FMET"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Fidelity Covington Trust",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "Z",
+          "Symbol": "FPRO"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Rezera Inc.",
-          "Effective Date": "11/12/2026",
+          "Company Name": "Live Oak Bancshares, Inc.",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "LOB-B"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Live Oak Acquisition Corp. VI",
+          "Effective Date": "11/13/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "G",
-          "Symbol": "RZRA"
+          "Symbol": "LOVI"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Vanguard Malvern Funds",
-          "Effective Date": "11/12/2026",
+          "Company Name": "Live Oak Acquisition Corp. VI",
+          "Effective Date": "11/13/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "VEMB"
+          "Primary Listing Market": "G",
+          "Symbol": "LOVIW"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Modern Mining Technology Corp.",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "A",
+          "Symbol": "MDRN"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "USCF ETF Trust",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "USG"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "vVARDIS Holding AG",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "VVVV"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Windward Bio Group AG",
+          "Effective Date": "11/13/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Q",
+          "Symbol": "WWB"
         }
       ],
       "status": "PASS",
