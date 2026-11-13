@@ -132,6 +132,15 @@ def verify(snapshot, receipt, guard):
             "ROW_RISK_OR_AUTHORITY_DRIFT")
     cutoff = instant(receipt.get("decision_cutoff_utc"))
     seen = instant(receipt.get("source_observed_at_utc"))
+    import exchange_calendars as xc
+    try:
+        close = xc.get_calendar("XNAS").session_close(asof).to_pydatetime()
+    except (ValueError, TypeError, KeyError) as exc:
+        raise ReceiptRefused("SHADOW_XNAS_SESSION_INVALID") from exc
+    require(cutoff == close.astimezone(timezone.utc) + timedelta(minutes=45),
+            "SHADOW_CUTOFF_DRIFT")
+    require(seen == instant(guard.get("generated_at_utc")),
+            "SHADOW_OBSERVATION_TIME_DRIFT")
     state = AFTER if seen > cutoff else (
         STALE if cutoff - seen > timedelta(hours=24) else CURRENT)
     require(receipt.get("nasdaq_source_state") == state,
