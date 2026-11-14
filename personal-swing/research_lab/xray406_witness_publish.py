@@ -16,9 +16,13 @@ class Indeterminate(RuntimeError):
     """A write may have occurred. Reconcile read-only. Never retry blindly."""
 
 
+class WindowClosedBeforeMutation(Rejected):
+    """The transport did not submit any write."""
+
+
 class Transport(Protocol):
     def head(self, ref: str) -> str: ...
-    def publish_once(self, expected: str, candidate: str) -> bool: ...
+    def publish_once(self, expected: str, candidate: str, not_after: datetime) -> bool | None: ...
     def read_target(self, candidate: str) -> MainReceipt: ...
 
 
@@ -40,7 +44,10 @@ def publish(root, base: str, candidate: str, run: RunReceipt,
     if not source.check.finished_at <= checked_at < decision.latest_observed_at:
         raise Rejected("PUBLISH_WINDOW_CLOSED")
     try:
-        accepted = transport.publish_once(decision.expected, decision.candidate)
+        accepted = transport.publish_once(decision.expected, decision.candidate,
+                                          decision.latest_observed_at)
+    except WindowClosedBeforeMutation:
+        raise
     except Exception as exc:
         raise Indeterminate("WRITE_OUTCOME_UNKNOWN_DO_NOT_RETRY") from exc
     if accepted is False:

@@ -1,13 +1,16 @@
 """GitHub adapter for the isolated #406 Witness publisher, never for main."""
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import re
 import subprocess
 
-from xray406_witness_acceptance import CHECK, GUARD, LEDGER, SHA, CheckReceipt, MainReceipt, require
-from xray406_witness_handoff import REPO, STAGING_PREFIX, CheckSource, RunReceipt
+from xray406_witness_acceptance import CHECK, GUARD, LEDGER, SHA, CheckReceipt, MainReceipt, require, utc
+from xray406_witness_handoff import ACTOR, ACTOR_ID, REPO, STAGING_PREFIX, CheckSource, RunReceipt
+from xray406_witness_publish import WindowClosedBeforeMutation
 
 TARGET = "refs/heads/xray-406-writer-probe-20261114"
+REQUEST_TIMEOUT_SECONDS = 25
+WRITE_START_BUDGET = timedelta(seconds=30)
 MUTATION = """mutation Publish($input: UpdateRefsInput!) {
   updateRefs(input: $input) { clientMutationId }
 }"""
@@ -21,7 +24,7 @@ def gh(path, payload=None):
         args += ["--input", "-"]
         kwargs["input"] = json.dumps(payload)
     result = subprocess.run(args, capture_output=True, text=True,
-                            check=False, timeout=25, **kwargs)
+                            check=False, timeout=REQUEST_TIMEOUT_SECONDS, **kwargs)
     require(result.returncode == 0, "GITHUB_API_FAILED")
     return json.loads(result.stdout)
 
@@ -33,8 +36,15 @@ def api(path, call):
 def receipt_pair(run_id, attempt, candidate, call=gh):
     require(type(run_id) is int and run_id > 0 and type(attempt) is int and attempt > 0
             and isinstance(candidate, str) and SHA.fullmatch(candidate), "INVALID_EVIDENCE_INPUT")
+    require(attempt == 1, "FIRST_ATTEMPT_REQUIRED")
     run = api(f"actions/runs/{run_id}/attempts/{attempt}", call)
     require(run["id"] == run_id and run["run_attempt"] == attempt, "RUN_ATTEMPT_MISMATCH")
+    require(run.get("status") == "completed" and run.get("conclusion") == "success",
+            "RUN_NOT_VERIFIED")
+    for field in ("actor", "triggering_actor"):
+        actor = run.get(field)
+        require(isinstance(actor, dict) and (actor.get("login"), actor.get("id"))
+                == (ACTOR, ACTOR_ID), "APP_ACTOR_NOT_VERIFIED")
     rr = RunReceipt(run["repository"]["full_name"], run["head_repository"]["full_name"],
                     "refs/heads/" + run["head_branch"], run["head_sha"], run["actor"]["login"],
                     run["event"], run["path"], run_id, attempt)
@@ -69,7 +79,7 @@ class GitHubIsolatedTransport:
                 and SHA.fullmatch(response["object"]["sha"]), "REF_READ_UNVERIFIED")
         return response["object"]["sha"]
 
-    def publish_once(self, expected, candidate):
+    def publish_once(self, expected, candidate, not_after):
         require(all(isinstance(v, str) and SHA.fullmatch(v) for v in (expected, candidate))
                 and expected != candidate, "BAD_WRITE_SHAS")
         repo = self.call(f"repos/{REPO}")
@@ -81,6 +91,10 @@ class GitHubIsolatedTransport:
             "refUpdates": [{"name": TARGET, "beforeOid": expected,
                             "afterOid": candidate, "force": False}],
         }}}
+        # The lookup above can consume the remaining window. Check directly
+        # before submission, with headroom for the bounded client request.
+        if utc(self.clock()) + WRITE_START_BUDGET >= utc(not_after):
+            raise WindowClosedBeforeMutation("PUBLISH_WINDOW_CLOSED_BEFORE_MUTATION")
         result = self.call("graphql", payload)
         if result.get("errors"):
             return None

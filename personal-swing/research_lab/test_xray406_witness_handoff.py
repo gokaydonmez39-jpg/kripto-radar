@@ -16,8 +16,8 @@ class HandoffTests(unittest.TestCase):
         self.f.setUp()
         head = self.f.head
         self.run = RunReceipt(REPO, REPO, staging_ref(head), head, ACTOR, "push",
-                              CI_PATH, 314, 2)
-        self.source = CheckSource(self.f.check, 314, 2, 159,
+                              CI_PATH, 314, 1)
+        self.source = CheckSource(self.f.check, 314, 1, 159,
                                   f"https://github.com/{REPO}/actions/runs/314/job/159")
 
     def call(self, **overrides):
@@ -44,10 +44,15 @@ class HandoffTests(unittest.TestCase):
                 self.call(run=replace(self.run, **patch))
 
     def test_check_run_attempt_and_job_link_binding(self):
-        for patch in ({"run_id": 315}, {"attempt": 1}, {"job_id": 160},
+        for patch in ({"run_id": 315}, {"attempt": 2}, {"job_id": 160},
                       {"details_url": self.source.details_url + "?extra=1"}):
             with self.subTest(patch=patch), self.assertRaisesRegex(Rejected, "CHECK_RUN_BINDING"):
                 self.call(source=replace(self.source, **patch))
+
+    def test_matching_rerun_receipts_still_rejected(self):
+        with self.assertRaisesRegex(Rejected, "FIRST_ATTEMPT_REQUIRED"):
+            self.call(run=replace(self.run, attempt=2),
+                      source=replace(self.source, attempt=2))
 
     def test_success_required_for_same_commit(self):
         for patch in ({"head": self.f.base}, {"app_id": 9}, {"conclusion": "failure"}):

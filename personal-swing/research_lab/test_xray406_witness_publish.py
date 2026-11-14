@@ -5,6 +5,7 @@ import unittest
 
 import test_xray406_witness_acceptance as fixtures
 from xray406_witness_acceptance import GUARD, LEDGER, MainReceipt, Rejected
+from xray406_witness_github import GitHubIsolatedTransport
 from xray406_witness_handoff import ACTOR, CI_PATH, REPO, CheckSource, RunReceipt, staging_ref
 from xray406_witness_publish import Indeterminate, publish
 
@@ -23,7 +24,7 @@ class LocalGitTransport:
     def head(self, ref):
         return self.f.run_git("rev-parse", self.ref if ref == "target" else ref)
 
-    def publish_once(self, expected, candidate):
+    def publish_once(self, expected, candidate, not_after):
         self.calls += 1
         if self.mode == "race":
             self.f.run_git("update-ref", self.ref, self.f.head, expected)
@@ -83,6 +84,30 @@ class PublishTests(unittest.TestCase):
         with self.assertRaisesRegex(Rejected, "WINDOW_CLOSED"):
             self.call(clock=lambda: next(time))
         self.assertEqual(self.t.calls, 0)
+
+    def test_repository_lookup_crosses_deadline_no_mutation(self):
+        f = self.f
+        now = f.readback.observed_at
+        requests = []
+
+        def api(path, payload=None):
+            nonlocal now
+            requests.append(path)
+            if path == f"repos/{REPO}":
+                now = f.cutoff
+                return {"full_name": REPO, "node_id": "R_test"}
+            if path == "graphql":
+                return {"data": {"updateRefs": {"clientMutationId":
+                        f"xray406-witness-{f.head}"}}}
+            raise AssertionError(path)
+
+        transport = GitHubIsolatedTransport(lambda: now, api)
+        transport.head = self.t.head
+        transport.read_target = self.t.read_target
+        with self.assertRaisesRegex(Rejected, "PUBLISH_WINDOW_CLOSED"):
+            publish(f.root, f.base, f.head, self.run, self.source,
+                    transport, lambda: now, f.cutoff)
+        self.assertEqual(requests, [f"repos/{REPO}"])
 
     def test_lost_lease_does_not_repeat_write(self):
         self.t.mode = "race"

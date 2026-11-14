@@ -14,6 +14,7 @@ from xray406_witness_acceptance import (
 
 REPO = "gokaydonmez39-jpg/kripto-radar"
 ACTOR = "xray-406-isolated-ci-pilot[bot]"
+ACTOR_ID = 356585181
 CI_PATH = ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml"
 STAGING_PREFIX = "refs/heads/xray-406-official-witness-staging/"
 MAX_AGE = timedelta(minutes=15)
@@ -65,6 +66,7 @@ def plan(root, base, head, run, source, stage_head, target_head, now, cutoff):
             and source.details_url == (
                 f"https://github.com/{REPO}/actions/runs/{run.run_id}/job/{source.job_id}"
             ), "CHECK_RUN_BINDING_MISMATCH")
+    require(run.attempt == 1, "FIRST_ATTEMPT_REQUIRED")
     check = source.check
     require((check.head, check.name, check.app_id, check.conclusion)
             == (head, CHECK, ACTIONS_APP, "success"), "EXACT_CI_NOT_VERIFIED")

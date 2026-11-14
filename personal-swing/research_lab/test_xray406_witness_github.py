@@ -1,11 +1,13 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import unittest
 
 from xray406_witness_acceptance import CHECK, GUARD, LEDGER, Rejected
 from xray406_witness_github import GitHubIsolatedTransport, TARGET, receipt_pair
 from xray406_witness_handoff import ACTOR, CI_PATH, REPO, staging_ref
+from xray406_witness_publish import WindowClosedBeforeMutation
 
 BASE, HEAD, ROOT, NODE, GB, LB = [x * 40 for x in "123456"]
+PILOT_ID = 356585181
 
 
 class TransportTests(unittest.TestCase):
@@ -42,14 +44,26 @@ class TransportTests(unittest.TestCase):
         raise AssertionError(path)
 
     def test_atomic_only_isolated_target(self):
-        self.assertTrue(self.t.publish_once(BASE, HEAD))
+        self.assertTrue(self.t.publish_once(BASE, HEAD, self.now + timedelta(minutes=1)))
         p = self.calls[-1][1]["variables"]["input"]["refUpdates"][0]
         self.assertEqual(p, {"name": TARGET, "beforeOid": BASE, "afterOid": HEAD, "force": False})
 
     def test_failed_mutation_is_uncertain_not_retried(self):
         self.error = True
-        self.assertIsNone(self.t.publish_once(BASE, HEAD))
+        self.assertIsNone(self.t.publish_once(BASE, HEAD, self.now + timedelta(minutes=1)))
         self.assertEqual([p for p, _ in self.calls].count("graphql"), 1)
+
+    def test_write_budget_boundary_is_inclusive_rejection(self):
+        for seconds, accepted in ((29, False), (30, False), (31, True)):
+            with self.subTest(seconds=seconds):
+                self.calls.clear()
+                deadline = self.now + timedelta(seconds=seconds)
+                if accepted:
+                    self.assertTrue(self.t.publish_once(BASE, HEAD, deadline))
+                else:
+                    with self.assertRaises(WindowClosedBeforeMutation):
+                        self.t.publish_once(BASE, HEAD, deadline)
+                self.assertEqual(sum(p == "graphql" for p, _ in self.calls), int(accepted))
 
     def test_main_ref_not_allowed(self):
         with self.assertRaisesRegex(Rejected, "REF_OUT_OF_SCOPE"):
@@ -76,11 +90,14 @@ class TransportTests(unittest.TestCase):
 
 
 class EvidenceTests(unittest.TestCase):
-    def fixture(self, path, duplicate=False, bad_job=False):
-        if path.endswith("/attempts/1"):
-            return {"id": 31, "run_attempt": 1, "repository": {"full_name": REPO},
+    def fixture(self, path, duplicate=False, bad_job=False, attempt=1, **run_overrides):
+        if path.endswith(f"/attempts/{attempt}"):
+            return {"id": 31, "run_attempt": attempt, "repository": {"full_name": REPO},
                     "head_repository": {"full_name": REPO}, "head_branch": staging_ref(HEAD)[11:],
-                    "head_sha": HEAD, "actor": {"login": ACTOR}, "event": "push", "path": CI_PATH}
+                    "head_sha": HEAD, "actor": {"login": ACTOR, "id": PILOT_ID},
+                    "triggering_actor": {"login": ACTOR, "id": PILOT_ID},
+                    "status": "completed", "conclusion": "success",
+                    "event": "push", "path": CI_PATH, **run_overrides}
         if "/check-runs?" in path:
             c = {"name": CHECK, "head_sha": HEAD, "app": {"id": 15368}, "status": "completed",
                  "conclusion": "success", "completed_at": "2026-11-16T21:11:00Z",
@@ -104,6 +121,20 @@ class EvidenceTests(unittest.TestCase):
     def test_failed_job_rejected(self):
         with self.assertRaisesRegex(Rejected, "JOB_NOT_VERIFIED"):
             receipt_pair(31, 1, HEAD, lambda path: self.fixture(path, bad_job=True))
+
+    def test_rerun_not_allowed_even_with_green_job(self):
+        with self.assertRaisesRegex(Rejected, "FIRST_ATTEMPT_REQUIRED"):
+            receipt_pair(31, 2, HEAD, lambda path: self.fixture(path, attempt=2))
+
+    def test_app_login_must_match_actor_id_and_trigger(self):
+        for changes in ({"actor": {"login": ACTOR, "id": PILOT_ID + 1}},
+                        {"triggering_actor": {"login": "operator", "id": 3}}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(Rejected, "APP_ACTOR_NOT_VERIFIED"):
+                receipt_pair(31, 1, HEAD, lambda path: self.fixture(path, **changes))
+
+    def test_whole_run_must_be_green(self):
+        with self.assertRaisesRegex(Rejected, "RUN_NOT_VERIFIED"):
+            receipt_pair(31, 1, HEAD, lambda path: self.fixture(path, conclusion="failure"))
 
 
 if __name__ == "__main__":
