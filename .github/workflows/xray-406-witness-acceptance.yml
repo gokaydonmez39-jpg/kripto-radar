@@ -13,6 +13,7 @@ on:
       - 'personal-swing/research_lab/*xray406_witness_stage.py'
       - 'personal-swing/research_lab/*xray406_witness_natural_receipt.py'
       - 'personal-swing/research_lab/*xray406_witness_session_window.py'
+      - 'personal-swing/research_lab/*xray406_witness_ingress.py'
 permissions:
   contents: read
   actions: read
