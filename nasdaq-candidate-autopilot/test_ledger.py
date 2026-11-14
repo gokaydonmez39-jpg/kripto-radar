@@ -4,6 +4,8 @@ import hashlib
 import json
 import unittest
 from ledger import Blocked, SCHEMA, receive, reconcile
+from eod_admission import validate_event
+import test_eod_admission as eod_fixture
 
 A42 = {"schema": "XRAY_NASDAQ_CANDIDATE_AUTOPILOT_RECEIPT_V1",
        "source": "NASDAQ_RESEARCH_ONLY_NO_CRYPTO",
@@ -17,7 +19,8 @@ A43 = {"schema": "XRAY_NASDAQ_A43_EOD_ADMISSION_V1",
        "production_promotion": False, "asof_et": "2026-11-02",
        "scan_477": True, "sheet_readback": True,
        "lifecycle_readback": True, "panel_readback": True,
-       "run_id": 123, "run_sha": "b"*64, "log_sha256": "c"*64}
+       "run_id": 123, "run_sha": "f3c1ab20a61a7df698a4356ebd2e67358450708b",
+       "log_sha256": "c"*64}
 A44 = {"schema": "XRAY_NASDAQ_A44_SOURCE_EVIDENCE_V1",
        "scope": "NASDAQ_RESEARCH_ONLY_NO_CRYPTO",
        "automatic_promotion": False, "network_enabled": True,
@@ -35,6 +38,37 @@ A44 = {"schema": "XRAY_NASDAQ_A44_SOURCE_EVIDENCE_V1",
 class A45RollingLedgerTests(unittest.TestCase):
     def fresh(self):
         return receive(A42,A43,A44)
+
+    def test_git_commit_sha_and_log_digest_are_independent(self):
+        self.assertEqual(self.fresh()["run_sha"], A43["run_sha"])
+        self.assertEqual(self.fresh()["source_log_sha256"], A43["log_sha256"])
+        for field, invalid in (
+            ("run_sha", "b"*64), ("run_sha", "b"*39), ("run_sha", "G"*40),
+            ("log_sha256", "c"*40), ("log_sha256", "L"*64),
+        ):
+            with self.subTest(field=field, invalid=invalid):
+                bad = dict(A43, **{field: invalid})
+                with self.assertRaisesRegex(Blocked, "^SOURCE_EOD_RUN_IDENTITY$"):
+                    receive(A42, bad, A44)
+
+    def test_producer_receipt_advances_ledger_once_without_promotion(self):
+        log = eod_fixture.fixture()
+        result = validate_event(eod_fixture.EVENT, log)
+        asof = result["asof_et"]
+        a42 = dict(A42, asof=asof)
+        a44 = dict(A44, asof_et=asof)
+        queue = {"schema": "XRAY_NASDAQ_A46_LEDGER_QUEUE_V1",
+                 "registry_sha256": a42["registry_sha256"], "asof_et": asof,
+                 "source_run_id": result["run_id"], "automatic_promotion": False,
+                 "execution": "NONE", "selected_ids": [2]}
+        current = receive(a42, result, a44, queue)
+        self.assertEqual(current["run_sha"], eod_fixture.EVENT["head_sha"])
+        self.assertEqual(current["source_log_sha256"], hashlib.sha256(log.encode()).hexdigest())
+        state, status = reconcile(None, current)
+        self.assertEqual(status, "NEW_SOURCE_EPOCH_ADMITTED")
+        self.assertEqual(state["total_accepted_epochs"], 1)
+        self.assertFalse(state["candidate_states"]["2"]["production_integrated"])
+        self.assertEqual(reconcile(state, current), (state, "IDEMPOTENT_REPLAY"))
 
     def test_first_entry_explicitly_not_durable(self):
         out,status=reconcile(None,self.fresh())
