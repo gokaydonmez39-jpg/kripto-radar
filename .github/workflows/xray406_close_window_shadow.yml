@@ -13,7 +13,9 @@ jobs:
   close-window-shadow:
     if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
+    permissions:
+      contents: read
     steps:
       - name: Observe runner start
         shell: bash
@@ -74,3 +76,15 @@ jobs:
                   datetime.fromisoformat(os.environ["XRAY_SHADOW_RUNNER_STARTED_UTC"]),
                   datetime.now(timezone.utc)), sort_keys=True))
           PY
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Observe immutable Official Witness source pair without publishing
+        env:
+          XRAY_PROBE_CRON: ${{ github.event.schedule }}
+        run: |
+          echo '062e7bff3ccea16332f3a98b67f6bb1b3ab0cde4b8dfbed670701cac3ec98c97  nasdaq-xray/xray406_witness_source_probe.py' | sha256sum --check --strict
+          python nasdaq-xray/xray406_witness_source_probe.py
