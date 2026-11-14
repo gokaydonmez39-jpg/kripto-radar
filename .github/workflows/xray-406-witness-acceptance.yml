@@ -14,13 +14,24 @@ on:
       - 'personal-swing/research_lab/*xray406_witness_natural_receipt.py'
       - 'personal-swing/research_lab/*xray406_witness_session_window.py'
       - 'personal-swing/research_lab/*xray406_witness_ingress.py'
+      - 'personal-swing/research_lab/*xray406_witness_race_readback.py'
+  pull_request:
+    branches: [xray-406-race-ci-base-20261114]
+    paths:
+      - '.github/workflows/xray-406-witness-acceptance.yml'
+      - 'personal-swing/research_lab/*xray406_witness_race_readback.py'
 permissions:
   contents: read
   actions: read
   checks: read
 jobs:
   witness-offline:
-    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-witness-acceptance-20261114' && github.event_name == 'push'
+    if: >-
+      github.repository == 'gokaydonmez39-jpg/kripto-radar' &&
+      ((github.ref == 'refs/heads/xray-406-witness-acceptance-20261114' && github.event_name == 'push') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'xray-406-race-ci-base-20261114' &&
+       github.head_ref == 'xray-406-witness-acceptance-20261114' &&
+       github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
