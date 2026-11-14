@@ -502,6 +502,7 @@ jobs:
           set -euo pipefail
           git config user.name "xray-resilience-bot"
           git config user.email "xray-resilience-bot@users.noreply.github.com"
+          # Official guard and PIT ledger belong only to the independent Witness step.
           files=(
             nasdaq-xray/canonical_sec_official_witness.json
             nasdaq-xray/external_health_state.json
@@ -509,8 +510,6 @@ jobs:
             nasdaq-xray/canonical_candidate_enrichment.json
             nasdaq-xray/free_solution_verification.json
             nasdaq-xray/provider_health_ledger.json
-            nasdaq-xray/canonical_official_source_guard.json
-            nasdaq-xray/official_pit_ledger.json
             nasdaq-xray/canonical_data_lineage_registry.json
             nasdaq-xray/canonical_replay_guard.json
             nasdaq-xray/canonical_guardian_state.json
@@ -533,6 +532,10 @@ jobs:
               fi
             done
             git add "${files[@]}" 2>/dev/null || true
+            if ! git diff --cached --quiet -- nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json; then
+              echo "XRAY_RESILIENCE_BULK_WITNESS_PATH_WRITE_BLOCKED" >&2
+              exit 1
+            fi
             if git diff --cached --quiet; then
               echo "XRAY_RESILIENCE_COMMIT=NO_CHANGE"
               exit 0

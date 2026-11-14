@@ -11,6 +11,7 @@ import os
 import re
 import urllib.request
 from pathlib import Path
+from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME, terminal_guard_name, verify_terminal_guard
 
 ROOT=Path(__file__).resolve().parent
 POLICY=ROOT/"manual_decision_policy_v1.json"
@@ -22,7 +23,7 @@ EVIDENCE={
     "history":"canonical_current_history.json",
     "events":"canonical_current_event_state.json",
     "policy":"chatgpt_compiled_policy_v3.json",
-    "official_halt_guard":"canonical_official_source_guard.json",
+    "official_halt_guard":LIVE_NAME,
 }
 CHECKS=(
     "alpha_semantic_conformance_exact",
@@ -145,6 +146,34 @@ def candidate_check(key,row,mc_rec,event_status,master_ok,price_ok,history_ok,ha
         reasons.append("FINAL_REJECTED")
     return not reasons,sorted(set(reasons))
 
+def verify_live_guard(live_guard, candidates, now):
+    if (not isinstance(live_guard,dict)
+        or live_guard.get("schema")!="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+        or live_guard.get("execution")!="NONE"
+        or live_guard.get("real_money")!="NO-GO"
+        or live_guard.get("alpha_authority") is not False):
+        raise ValueError("LIVE_OFFICIAL_GUARD_INVALID")
+    try:
+        stamp=dt.datetime.fromisoformat(str(live_guard.get("generated_at_utc")).replace("Z","+00:00"))
+        if stamp.utcoffset() is None:
+            raise ValueError("GUARD_TIMEZONE_MISSING")
+        age=(now-stamp.astimezone(dt.timezone.utc)).total_seconds()
+    except (ValueError,TypeError,AttributeError):
+        age=float("inf")
+    if live_guard.get("status")!="PASS" or not (-60<=age<=900):
+        raise ValueError("LIVE_OFFICIAL_GUARD_UNVERIFIED_OR_STALE")
+    sources=live_guard.get("sources") or {}
+    halts=sources.get("trade_halts") or {}
+    suspensions=sources.get("security_status") or {}
+    if halts.get("status")!="PASS" or suspensions.get("status")!="PASS":
+        raise ValueError("LIVE_OFFICIAL_SOURCE_UNVERIFIED")
+    live_veto=set((live_guard.get("candidate_safety") or {}).get("veto_symbols") or [])
+    if live_veto!=set(halts.get("active_halt_symbols") or [])|set(suspensions.get("suspension_symbols") or []):
+        raise ValueError("LIVE_OFFICIAL_VETO_NOT_BOUND")
+    if any(x["symbol"] in live_veto for x in candidates):
+        raise ValueError("LIVE_OFFICIAL_CANDIDATE_VETO")
+
+
 def validate_and_generate(root:Path=ROOT):
     policy_path=root/"manual_decision_policy_v1.json"
     p=json.loads(policy_path.read_text())
@@ -174,6 +203,14 @@ def validate_and_generate(root:Path=ROOT):
     for key,filename in EVIDENCE.items():
         path=root/filename
         bound=ev.get(key) or {}
+        if key=="official_halt_guard":
+            archived_name=terminal_guard_name(bound,legacy=True)
+            if archived_name==TERMINAL_NAME:
+                archived=verify_terminal_guard(root,bound)
+                live_guard=json.loads((root/LIVE_NAME).read_bytes())
+                objs[key]=archived
+                hashes[key]=bound["blob_sha"]
+                continue
         if bound.get("path")!="nasdaq-xray/"+filename:
             raise ValueError("UNBOUND_SOURCE_PATH:"+key)
         current_bytes=path.read_bytes()
@@ -259,18 +296,7 @@ def validate_and_generate(root:Path=ROOT):
         else:
             for reason in reasons:reason_counts[reason]=reason_counts.get(reason,0)+1
     if candidates:
-        try:
-            stamp=dt.datetime.fromisoformat(str(live_guard.get("generated_at_utc")).replace("Z","+00:00"))
-            age=(dt.datetime.now(dt.timezone.utc)-stamp.astimezone(dt.timezone.utc)).total_seconds()
-        except (ValueError,TypeError,AttributeError):
-            age=float("inf")
-        if live_guard.get("status")!="PASS" or not (-60<=age<=900):
-            raise ValueError("LIVE_OFFICIAL_GUARD_UNVERIFIED_OR_STALE")
-        if not all((live_guard.get("sources") or {}).get(k,{}).get("status")=="PASS" for k in ("trade_halts","security_status")):
-            raise ValueError("LIVE_OFFICIAL_SOURCE_UNVERIFIED")
-        live_veto=set((live_guard.get("candidate_safety") or {}).get("veto_symbols") or [])
-        if any(x["symbol"] in live_veto for x in candidates):
-            raise ValueError("LIVE_OFFICIAL_CANDIDATE_VETO")
+        verify_live_guard(live_guard,candidates,dt.datetime.now(dt.timezone.utc))
         if t.get("candidate_local_research_pass") is not True:
             raise ValueError("TERMINAL_LOCAL_RESEARCH_NOT_PASS")
     status="QUALIFIED_RESEARCH_SIGNAL_AVAILABLE" if candidates else "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL"

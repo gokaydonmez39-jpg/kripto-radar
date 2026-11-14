@@ -4,6 +4,7 @@ from __future__ import annotations
 import glob,hashlib,json,os,re
 from datetime import datetime,timezone
 from pathlib import Path
+from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME, verify_terminal_guard
 
 ROOT=Path(__file__).resolve().parent
 TASK="6a825366222081918997094d76e6ae46"
@@ -33,7 +34,9 @@ GATE_FILES={
  "account_gate":ROOT/"account_gate_contract.json",
  "account_adapter":ROOT/"account_provider_adapter_contract.json",
 }
-OFFICIAL_HALT_GUARD=ROOT/"canonical_official_source_guard.json"
+OFFICIAL_HALT_GUARD=ROOT/(
+    TERMINAL_NAME if os.getenv("XRAY_USE_TERMINAL_OFFICIAL_EVIDENCE") == "1" else LIVE_NAME
+)
 HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","900"))
 
 LIFECYCLE_TERMINAL_ALLOWED_STATES={
@@ -628,14 +631,14 @@ def main():
     halt_vetoed=[]
     halt_guard_unknown=0
     halt_safety={
-      "status":"UNKNOWN","guard_path":"nasdaq-xray/canonical_official_source_guard.json",
+      "status":"UNKNOWN","guard_path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,
       "max_age_seconds":HALT_GUARD_MAX_AGE_SECONDS,"active_halt_symbols":[],
       "vetoed_candidates":[],"zero_alpha":True,
     }
     try:
-        g=load(OFFICIAL_HALT_GUARD)
-        assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
-        assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO"
+        guard_evidence={"path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,
+                        "blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
+        g=verify_terminal_guard(ROOT,guard_evidence,legacy=OFFICIAL_HALT_GUARD.name==LIVE_NAME)
         src=(g.get("sources") or {})
         hs=(src.get("trade_halts") or {})
         ss=(src.get("security_status") or {})
@@ -762,7 +765,7 @@ def main():
           "pass_count_exact":mc_binding["pass_count_exact"],
         },
         "official_halt_guard":(
-          {"path":"nasdaq-xray/canonical_official_source_guard.json","blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
+          {"path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,"blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
           if OFFICIAL_HALT_GUARD.exists() else {"status":"MISSING"}
         ),
         **gate_reporting["evidence"],

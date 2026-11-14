@@ -30,6 +30,8 @@ on:
       - "nasdaq-xray/canonical_current_event_state.json"
       - "nasdaq-xray/canonical_current_family_c.json"
       - "nasdaq-xray/canonical_official_source_guard.json"
+      - "nasdaq-xray/canonical_current_terminal_official_guard.json"
+      - "nasdaq-xray/terminal_official_guard_contract.py"
       - "nasdaq-xray/canonical_current_final_tech.json"
       - "nasdaq-xray/canonical_current_terminal.json"
       - "nasdaq-xray/canonical_current_final_gate_overlay.json"
@@ -175,8 +177,19 @@ jobs:
               "g9":"g9_runtime",
               "account":"account_gate",
           }
+          sys.path.insert(0,"nasdaq-xray")
+          from terminal_official_guard_contract import verify_terminal_guard
           drift=[]
+          bound_guard=ev.get("official_halt_guard") or {}
+          try:
+              verify_terminal_guard(root,bound_guard,legacy=True)
+              if gh_sha(bound_guard["path"])!=bound_guard["blob_sha"]:
+                  raise ValueError("TERMINAL_OFFICIAL_GUARD_NOT_COMMITTED")
+          except (OSError,ValueError,TypeError):
+              drift.append("official_halt_guard")
           for source_key,evidence_key in evidence_binding_pairs.items():
+              if evidence_key=="official_halt_guard":
+                  continue
               expected=ev.get(evidence_key) or {}
               expected_path="nasdaq-xray/"+names[source_key]
               if (expected.get("path")!=expected_path or
