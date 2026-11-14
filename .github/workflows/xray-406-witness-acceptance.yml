@@ -1,0 +1,23 @@
+name: XRAY 406 isolated Witness acceptance
+on:
+  push:
+    branches: [xray-406-witness-acceptance-20261114]
+    paths:
+      - '.github/workflows/xray-406-witness-acceptance.yml'
+      - 'personal-swing/research_lab/xray406_witness_acceptance.py'
+      - 'personal-swing/research_lab/test_xray406_witness_acceptance.py'
+permissions:
+  contents: read
+jobs:
+  witness-offline:
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-witness-acceptance-20261114' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Normal and optimized offline regression
+        run: |
+          python3 -m unittest discover -s personal-swing/research_lab -p test_xray406_witness_acceptance.py -v
+          python3 -O -m unittest discover -s personal-swing/research_lab -p test_xray406_witness_acceptance.py -v
