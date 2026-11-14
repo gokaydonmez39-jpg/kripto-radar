@@ -21,3 +21,34 @@ jobs:
         run: |
           python3 -m unittest discover -s personal-swing/research_lab -p test_xray406_witness_acceptance.py -v
           python3 -O -m unittest discover -s personal-swing/research_lab -p test_xray406_witness_acceptance.py -v
+      - name: Verify archived Official Witness commit without republishing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          history="$(mktemp -d)"
+          trap 'rm -rf "$history"' EXIT
+          git -C "$history" init -q
+          git -C "$history" remote add origin https://github.com/gokaydonmez39-jpg/kripto-radar.git
+          git -C "$history" config remote.origin.promisor true
+          git -C "$history" config remote.origin.partialclonefilter blob:none
+          export GIT_TERMINAL_PROMPT=0
+          base=8fa7a1746193b9c7be0f89c67a2a18eb928f1970
+          candidate=3c67b87fe16c9a79f3465c880049dba0ee53e518
+          timeout 90s git -C "$history" fetch --no-tags --depth=2 --filter=blob:none origin "$candidate"
+          PYTHONPATH=personal-swing/research_lab timeout 100s python3 - "$history" "$base" "$candidate" <<'PY'
+          import sys
+          from xray406_witness_acceptance import Rejected, check_candidate
+
+          root, base, candidate = sys.argv[1:]
+          generated, guard, ledger = check_candidate(root, base, candidate)
+          try:
+              check_candidate(root, candidate, candidate)
+          except Rejected as exc:
+              if str(exc) != "STALE_BASE_OR_NOT_SINGLE_PARENT":
+                  raise
+          else:
+              raise RuntimeError("WRONG_BASE_ACCEPTED")
+          print(f"ARCHIVE_CANDIDATE_OK head={candidate} base={base} generated={generated.isoformat()}")
+          print(f"ARCHIVE_BLOB_IDS guard={guard} ledger={ledger}")
+          print("ARCHIVE_ONLY_NO_CURRENT_CI_NO_PUBLICATION_NO_FIRST_VISIBILITY")
+          PY
