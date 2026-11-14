@@ -7,7 +7,7 @@ does not call GitHub, request a credential, or authorize a write.
 from dataclasses import dataclass
 from datetime import datetime
 
-from xray406_witness_acceptance import SHA, check_candidate, git, require, utc
+from xray406_witness_acceptance import GUARD, LEDGER, SHA, check_candidate, git, require, utc
 from xray406_witness_handoff import REPO, staging_ref
 from xray406_witness_session_window import Window
 from xray406_witness_stage import BUDGET
@@ -41,6 +41,9 @@ def preflight(root, base, head, run, market_window, now):
             and isinstance(base, str) and SHA.fullmatch(base), "SOURCE_BASE_NOT_VERIFIED")
     require(not git(root, "merge-base", "--is-ancestor", checkout, base),
             "SOURCE_BASE_NOT_VERIFIED")
+    for path in (GUARD, LEDGER):
+        require(git(root, "ls-tree", checkout, "--", path)
+                == git(root, "ls-tree", base, "--", path), "SOURCE_INPUT_BLOBS_MOVED")
     generated, guard, ledger = check_candidate(root, base, head)
     require(started <= generated <= now, "SOURCE_GENERATION_ORDER")
     deadline = market_window.publication_deadline(generated)

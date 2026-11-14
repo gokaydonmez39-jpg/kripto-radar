@@ -58,3 +58,16 @@ class IngressTests(TestCase):
         f.head=f.commit("candidate from refreshed base")
         self.assertNotEqual(original,f.base)
         self.assertEqual(self.check().base,f.base)
+
+    def test_shared_writer_changing_guard_after_checkout_blocks_restage(self):
+        f=self.f
+        from xray406_witness_acceptance import GUARD, LEDGER
+        f.run_git("checkout","--detach",f.base)
+        f.write(GUARD, {**f.guard, "generated_at_utc":
+                        (f.generated + timedelta(seconds=1)).isoformat()})
+        f.base=f.commit("another writer publishes a newer guard")
+        f.write(GUARD,f.guard)
+        f.write(LEDGER,f.ledger)
+        f.head=f.commit("old guard on newer base")
+        with self.assertRaisesRegex(Rejected,"SOURCE_INPUT_BLOBS_MOVED"):
+            self.check(now=f.generated+timedelta(seconds=2))
