@@ -12,6 +12,7 @@ on:
       - 'personal-swing/research_lab/*xray406_witness_github.py'
       - 'personal-swing/research_lab/*xray406_witness_stage.py'
       - 'personal-swing/research_lab/*xray406_witness_natural_receipt.py'
+      - 'personal-swing/research_lab/*xray406_witness_session_window.py'
 permissions:
   contents: read
   actions: read
@@ -25,7 +26,11 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - name: Install pinned exchange calendar for isolated cross-check
+        run: python3 -m pip install --disable-pip-version-check 'exchange-calendars==4.13.2'
       - name: Normal and optimized offline regression
+        env:
+          XRAY406_VERIFY_CALENDAR_LIBRARY: "1"
         run: |
           python3 -m unittest discover -s personal-swing/research_lab -p 'test_xray406_witness_*.py' -v
           python3 -O -m unittest discover -s personal-swing/research_lab -p 'test_xray406_witness_*.py' -v
