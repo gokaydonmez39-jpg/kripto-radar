@@ -71,3 +71,41 @@ class ProbeContractTests(unittest.TestCase):
             with self.subTest(value=value):
                 with self.assertRaisesRegex(ValueError, "XRAY_406_PROBE_FIXTURE_REJECTED"):
                     require_fixture(value)
+
+
+class PublicationEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        from xray406_probe_contract import PublicationEvidence
+        self.commit = "c" * 40
+        self.blob = "d" * 40
+        self.cutoff = "2026-11-13T21:45:00Z"
+        self.e = PublicationEvidence(REPOSITORY, TARGET, self.commit,
+                                     self.blob, "2026-11-13T21:44:58Z")
+
+    def test_exact_timely_target_readback(self):
+        from xray406_probe_contract import publication_admission
+        self.assertEqual(publication_admission(self.e, self.commit, self.blob, self.cutoff),
+                         "ISOLATED_READBACK_BEFORE_CUTOFF")
+
+    def test_early_commit_is_not_publication_evidence(self):
+        from xray406_probe_contract import publication_admission
+        self.assertEqual(publication_admission(None, self.commit, self.blob, self.cutoff),
+                         "PUBLICATION_EVIDENCE_MISSING")
+        late = replace(self.e, observed_at_utc="2026-11-13T21:46:00Z")
+        self.assertEqual(publication_admission(late, self.commit, self.blob, self.cutoff),
+                         "LATE_OR_UNPROVEN_PUBLICATION")
+
+    def test_wrong_target_sha_blob_or_timezone_refused(self):
+        from xray406_probe_contract import publication_admission
+        for change, reason in (
+            (dict(target_branch=STAGING), "SCOPE_REFUSED"),
+            (dict(target_branch="main"), "SCOPE_REFUSED"),
+            (dict(observed_target_sha="e" * 40), "PUBLICATION_READBACK_MISMATCH"),
+            (dict(observed_blob_sha="e" * 40), "PUBLICATION_READBACK_MISMATCH"),
+            (dict(observed_at_utc="2026-11-13T21:44:58"), "PUBLICATION_CLOCK_INVALID"),
+        ):
+            with self.subTest(change=change):
+                self.assertEqual(
+                    publication_admission(replace(self.e, **change), self.commit, self.blob,
+                                          self.cutoff), reason
+                )
