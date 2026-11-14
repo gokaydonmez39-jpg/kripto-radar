@@ -1,0 +1,61 @@
+name: XRAY 406 isolated GITHUB_TOKEN ingress probe
+on:
+  push:
+    branches: [xray-406-token-ingress-probe-20261114]
+    paths: [.github/workflows/xray-406-token-ingress-probe.yml]
+permissions:
+  contents: read
+jobs:
+  isolated-token-ingress:
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-token-ingress-probe-20261114' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Write one synthetic candidate to the isolated staging ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          repo = "gokaydonmez39-jpg/kripto-radar"
+          ingress = "refs/heads/xray-406-token-ingress-probe-20261114"
+          stage = "xray-406-ci-staging-probe-20261114"
+          expected = "e65e976a6b86582f22feac11c56346326f1b9d42"
+          marker = "personal-swing/xray406_token_ingress_probe.txt"
+          def check(ok, code):
+              if not ok:
+                  raise RuntimeError(code)
+          def api(method, path, data=None):
+              args = ["gh", "api", "--method", method, f"repos/{repo}/{path}"]
+              if data is not None:
+                  args += ["--input", "-"]
+              result = subprocess.run(args, input=json.dumps(data) if data is not None else None,
+                                      text=True, capture_output=True)
+              check(result.returncode == 0, "GITHUB_API_OPERATION_FAILED")
+              return json.loads(result.stdout)
+          check((os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_REF"],
+                 os.environ["GITHUB_EVENT_NAME"]) == (repo, ingress, "push"), "SCOPE_REFUSED")
+          read_ref = f"git/ref/heads/{stage}"
+          check(api("GET", read_ref)["object"]["sha"] == expected, "STAGING_DRIFT")
+          base_tree = api("GET", f"git/commits/{expected}")["tree"]["sha"]
+          tree = api("POST", "git/trees", {"base_tree": base_tree, "tree": [
+              {"path": marker, "mode": "100644", "type": "blob",
+               "content": "XRAY 406 isolated synthetic token ingress fixture. No production data.\n"}
+          ]})["sha"]
+          candidate = api("POST", "git/commits", {"tree": tree, "parents": [expected],
+              "message": "test(xray-406): stage synthetic candidate with Actions token"})["sha"]
+          check(re.fullmatch(r"[0-9a-f]{40}", candidate), "CANDIDATE_SHA_INVALID")
+          check(api("GET", read_ref)["object"]["sha"] == expected, "STAGING_DRIFT")
+          result = api("PATCH", f"git/refs/heads/{stage}", {"sha": candidate, "force": False})
+          check(result["object"]["sha"] == candidate and
+                api("GET", read_ref)["object"]["sha"] == candidate, "STAGING_READBACK_DRIFT")
+          print("XRAY_406_SYNTHETIC_TOKEN_INGRESS_SHA=" + candidate)
+          PY
