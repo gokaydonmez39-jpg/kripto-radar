@@ -8,6 +8,7 @@ on:
     branches: [main]
   push:
     branches: [xray-406-ci-staging-probe-20261114]
+    paths: [personal-swing/xray406_app_ingress_fixture.txt]
 
 permissions:
   contents: read
@@ -163,7 +164,7 @@ jobs:
       checks: read
     env:
       GH_TOKEN: ${{ github.token }}
-      XRAY_EXPECTED_TARGET: e65e976a6b86582f22feac11c56346326f1b9d42
+      XRAY_EXPECTED_TARGET: 7d2cc87620ceb9fc4f65ae09e7e482121b5abf1c
     steps:
       - name: Publish only the independently verified isolated candidate
         shell: bash
@@ -222,7 +223,7 @@ jobs:
           compare = api(f"compare/{expected}...{candidate}")
           allowed = {
               ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml",
-              "personal-swing/xray406_token_ingress_probe.txt",
+              "personal-swing/xray406_app_ingress_fixture.txt",
           }
           require(compare["status"] == "ahead" and compare["ahead_by"] == 2
                   and compare["behind_by"] == 0 and
