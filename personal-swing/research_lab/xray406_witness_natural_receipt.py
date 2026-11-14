@@ -115,4 +115,9 @@ def verify(run_id, job_id, run, jobs, summary, get):
     found = tuple(entry(tree, nested, path.rsplit("/", 1)[1], "blob", "100644")
                   for path in (GUARD, LEDGER))
     require(found == (guard, ledger), "WITNESS_IMMUTABLE_BLOB_MISMATCH")
+    main = get("git/ref/heads/main")
+    obj = main.get("object") or {}
+    require(main.get("ref") == "refs/heads/main" and obj.get("type") == "commit",
+            "MAIN_REF_READBACK_INVALID")
+    ancestor(head, sha(obj.get("sha")), get, "WITNESS_NOT_REACHABLE_FROM_MAIN")
     return Receipt(run_id, job_id, base, head, guard, ledger)

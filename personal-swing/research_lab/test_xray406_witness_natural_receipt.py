@@ -34,9 +34,12 @@ class NaturalReceiptTests(unittest.TestCase):
             {"path": p.rsplit("/", 1)[1], "sha": v, "type": "blob", "mode": "100644"}
             for p, v in ((GUARD, self.guard), (LEDGER, self.ledger))]}
         self.reads = []
+        self.main = self.head
 
     def get(self, path):
         self.reads.append(path)
+        if path == "git/ref/heads/main":
+            return {"ref": "refs/heads/main", "object": {"sha": self.main, "type": "commit"}}
         if path == f"compare/{MERGE}...{self.base}":
             return {"status": self.statuses[self.base], "merge_base_commit": {"sha": MERGE}}
         if path == f"commits/{self.head}":
@@ -103,6 +106,23 @@ class NaturalReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(Rejected, "WITNESS_IMMUTABLE_BLOB_MISMATCH"):
             self.call()
         self.assertFalse(any("/blobs/" in x for x in self.reads))
+
+    def test_commit_object_alone_does_not_prove_main_publication(self):
+        self.main = self.base
+        fallback = self.get
+        self.get = lambda path: ({"status": "behind", "merge_base_commit": {"sha": self.base}}
+                                 if path == f"compare/{self.head}...{self.base}"
+                                 else fallback(path))
+        with self.assertRaisesRegex(Rejected, "WITNESS_NOT_REACHABLE_FROM_MAIN"):
+            self.call()
+
+    def test_main_may_advance_without_invalidating_historical_receipt(self):
+        self.main = "1" * 40
+        fallback = self.get
+        self.get = lambda path: ({"status": "ahead", "merge_base_commit": {"sha": self.head}}
+                                 if path == f"compare/{self.head}...{self.main}"
+                                 else fallback(path))
+        self.assertEqual(self.call().head, self.head)
 
     def test_base_can_advance_after_run_checkout(self):
         checkout = self.run["head_sha"]
