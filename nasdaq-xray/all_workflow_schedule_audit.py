@@ -99,9 +99,9 @@ def inventory(files):
             errors.append("WORKFLOW_UNREADABLE:"+name)
             continue
         if name == "xray406_close_window_shadow.yml":
-            # Exact revision of the approved shadow only. A file change needs
+            # Exact revision of the approved no-publisher source shadow. A file change needs
             # another review, even when the textual cron values stay the same.
-            if hashlib.sha256(source.encode("utf-8")).hexdigest() != "1eb6e0034ca52d4d38840bccef78a8d7319306dec430ae61dfd1a4a7b71e3c54":
+            if hashlib.sha256(source.encode("utf-8")).hexdigest() != "5ac419a8f1ede40e24411ea78f3d05fb3ed9505d17a86a98452d518daf449922":
                 errors.append("XRAY406_SHADOW_REVIEWED_BYTES_DRIFT:"+name)
             try:
                 shadow=yaml.load(source,Loader=yaml.BaseLoader)
@@ -112,7 +112,7 @@ def inventory(files):
                 if (set(on)!={"schedule"} or slots!=expected
                         or shadow.get("permissions")!={}
                         or set(jobs)!={"close-window-shadow"}
-                        or "permissions" in jobs["close-window-shadow"]):
+                        or jobs["close-window-shadow"].get("permissions")!={"contents": "read"}):
                     errors.append("XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT:"+name)
             except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
                 errors.append("XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT:"+name)
@@ -350,6 +350,8 @@ def selftest():
     bad(lambda x:x.update({shadow:x[shadow].replace("permissions: {}", "permissions: {contents: write}")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
     bad(lambda x:x.update({shadow:x[shadow].replace("  schedule:", "  workflow_dispatch:\n  schedule:")}),
+        "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace("      contents: read", "      contents: write")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
     bad(lambda x:x.update({shadow:x[shadow]+"\n# unexpected byte change\n"}),
         "XRAY406_SHADOW_REVIEWED_BYTES_DRIFT")
