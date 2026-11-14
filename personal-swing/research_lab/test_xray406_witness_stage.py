@@ -70,11 +70,14 @@ class StageTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True)
             def command(args, **kwargs):
                 return subprocess.run([str(bare) if x == REMOTE else x for x in args], **kwargs)
-            t = GitStageTransport(command)
+            t = GitStageTransport(command, app_token="isolated-fixture-only")
             ref = staging_ref(self.candidate)
             self.assertIsNone(t.read(ref))
             self.assertTrue(t.create_only(self.f.root, ref, self.candidate))
             self.assertEqual(t.read(ref), self.candidate)
+            # Git can exit zero with "= [up to date]" when a concurrent
+            # actor already installed the exact SHA. That is not our App push.
+            self.assertFalse(t.create_only(self.f.root, ref, self.candidate))
             # Use a second fixed ref with the candidate suffix and an already
             # present, distinct commit. The empty-lease push must refuse it.
             subprocess.run(["git", "-C", str(bare), "update-ref", ref, self.base, self.candidate],
@@ -91,7 +94,8 @@ class StageTests(unittest.TestCase):
         calls = []
         def command(args, **kwargs):
             calls.append((args, kwargs["env"]))
-            return subprocess.CompletedProcess(args, 2 if "ls-remote" in args else 0, "", "")
+            porcelain = f"*\t{self.candidate}:{ref}\t[new branch]\n"
+            return subprocess.CompletedProcess(args, 2 if "ls-remote" in args else 0, porcelain, "")
         t = GitStageTransport(command, app_token="isolated-fixture-only")
         ref = staging_ref(self.candidate)
         with patch.dict("os.environ", {"GITHUB_TOKEN": "fixture", "GIT_TRACE_CURL": "1"}):
@@ -103,6 +107,11 @@ class StageTests(unittest.TestCase):
             self.assertNotIn("GIT_TRACE_CURL", env)
         self.assertNotIn("GH_TOKEN", calls[0][1])
         self.assertEqual(calls[1][1]["GH_TOKEN"], "isolated-fixture-only")
+
+    def test_missing_app_credentials_never_execute_push(self):
+        t = GitStageTransport(lambda *args, **kwargs: self.fail("unexpected push"))
+        with self.assertRaisesRegex(Rejected, "APP_TOKEN_REQUIRED"):
+            t.create_only(self.f.root, staging_ref(self.candidate), self.candidate)
 
 
 if __name__ == "__main__":

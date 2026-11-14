@@ -87,7 +87,12 @@ class GitStageTransport:
 
     def create_only(self, root, ref, candidate):
         require(ref == staging_ref(candidate), "REF_OUT_OF_SCOPE")
+        require(isinstance(self.app_token, str) and bool(self.app_token.strip()),
+                "APP_TOKEN_REQUIRED_FOR_STAGE")
         result = self.invoke(["-C", str(root), "-c", "core.hooksPath=/dev/null", "push", "--porcelain",
                               "--no-follow-tags", "--force-with-lease=" + ref + ":",
                               REMOTE, candidate + ":" + ref], timeout=35, write=True)
-        return result.returncode == 0
+        # An up-to-date result can also exit zero. Only a newly created
+        # exact ref proves that this invocation performed a push.
+        records = [line.split("\t", 2) for line in result.stdout.splitlines() if "\t" in line]
+        return result.returncode == 0 and records == [["*", candidate + ":" + ref, "[new branch]"]]

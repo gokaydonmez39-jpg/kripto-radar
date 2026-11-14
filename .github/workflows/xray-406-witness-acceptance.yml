@@ -65,6 +65,34 @@ jobs:
           print(f"ARCHIVE_BLOB_IDS guard={guard} ledger={ledger}")
           print("ARCHIVE_ONLY_NO_CURRENT_CI_NO_PUBLICATION_NO_FIRST_VISIBILITY")
           PY
+      - name: Validate latest observed natural Witness archive without replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=personal-swing/research_lab python3 - <<'PY'
+          from xray406_witness_acceptance import require
+          from xray406_witness_github import gh
+          from xray406_witness_handoff import REPO
+          from xray406_witness_natural_receipt import TITLE, LABEL, KEYS, verify
+
+          run_id, job_id = 43613895120, 132504638570
+          # Immutable values transcribed from GitHub job summary; the API
+          # independently confirms the run, jobs, ancestry and Git objects.
+          fields = ("ff660ea9476ad20fb1bac90cbd6df156d010b322",
+                    "1513fb72dfecc56ef1f254409bac076b3c0e6901",
+                    "a78bdfb33295e57418d176d57d1c4e48f0a879c3",
+                    "6bfeca48ad6c4a1230c1838d9b1d1f32dc77b06d")
+          observed = "\n".join((TITLE, LABEL, *(f"{k}: {v}" for k, v in zip(KEYS, fields))))
+          def get(path):
+              return gh(f"repos/{REPO}/{path}")
+          prefix = f"actions/runs/{run_id}/attempts/1"
+          result = verify(run_id, job_id, get(prefix), get(prefix + "/jobs"), observed, get)
+          require((result.base, result.head, result.guard, result.ledger) == fields
+                  and not result.proves_first_visibility, "NATURAL_ARCHIVE_NOT_BOUND")
+          print(result.status + ";ARCHIVE_RECHECK;NO_WRITE")
+          PY
       - name: Validate real GitHub evidence adapter without mutation
         env:
           GH_TOKEN: ${{ github.token }}
