@@ -16,7 +16,8 @@ from pathlib import Path
 
 SCHEMA = "XRAY_NASDAQ_A45_ROLLING_ARTIFACT_LEDGER_V1"
 SCOPE = "NASDAQ_RESEARCH_ONLY_NO_CRYPTO"
-HEX = re.compile(r"^[a-f0-9]{64}$")
+SHA256 = re.compile(r"[a-f0-9]{64}")
+GIT_SHA1 = re.compile(r"[a-f0-9]{40}")
 VALID = frozenset({
     "SOURCE_PROVENANCE_UNKNOWN",
     "NON_GITHUB_OR_MISSING_URL_MANUAL_PROVENANCE",
@@ -68,12 +69,12 @@ def receive(a42, a43, a44, queue=None):
          "SESSION_ASOF_CONFLICT")
     need(a42.get("registry_sha256") == a44.get("registry_sha256") and
          isinstance(a42.get("registry_sha256"), str) and
-         HEX.fullmatch(a42["registry_sha256"]), "REGISTRY_SHA_CONFLICT")
+         SHA256.fullmatch(a42["registry_sha256"]), "REGISTRY_SHA_CONFLICT")
     need(isinstance(a44.get("candidate_receipt_sha256"), str) and
-         HEX.fullmatch(a44["candidate_receipt_sha256"]), "A42_RECEIPT_SHA_UNKNOWN")
+         SHA256.fullmatch(a44["candidate_receipt_sha256"]), "A42_RECEIPT_SHA_UNKNOWN")
     need(type(a43.get("run_id")) is int and a43["run_id"] > 0 and
-         isinstance(a43.get("log_sha256"), str) and HEX.fullmatch(a43["log_sha256"]) and
-         isinstance(a43.get("run_sha"), str) and HEX.fullmatch(a43["run_sha"]),
+         isinstance(a43.get("log_sha256"), str) and SHA256.fullmatch(a43["log_sha256"]) and
+         isinstance(a43.get("run_sha"), str) and GIT_SHA1.fullmatch(a43["run_sha"]),
          "SOURCE_EOD_RUN_IDENTITY")
     rows = a44.get("results")
     need(isinstance(rows, list) and 1 <= len(rows) <= 7, "CANDIDATE_BATCH_BOUND")
