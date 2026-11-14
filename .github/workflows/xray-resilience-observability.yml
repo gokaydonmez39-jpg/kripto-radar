@@ -149,6 +149,7 @@ jobs:
 
 
       - name: Persist official safety independent of blocked research pointer
+        id: official_witness_persistence
         shell: bash
         run: |
           set -euo pipefail
@@ -244,6 +245,39 @@ jobs:
           test "$(git rev-parse origin/main:nasdaq-xray/canonical_official_source_guard.json)" = "$(git hash-object "$tmpdir/guard.json")"
           test "$(git rev-parse origin/main:nasdaq-xray/official_pit_ledger.json)" = "$(git hash-object "$tmpdir/ledger.json")"
           echo "XRAY_OFFICIAL_PERSISTENCE=PASS_EXACT_GITHUB_READBACK"
+          if [[ "${GITHUB_EVENT_NAME:-}" == schedule && "${GITHUB_REF:-}" == refs/heads/main && "${GITHUB_RUN_ATTEMPT:-}" == 1 ]]; then
+            if witness_head="$(git rev-parse HEAD)" &&
+               witness_base="$(git rev-parse HEAD^)" &&
+               witness_guard="$(git rev-parse "$witness_head:nasdaq-xray/canonical_official_source_guard.json")" &&
+               witness_ledger="$(git rev-parse "$witness_head:nasdaq-xray/official_pit_ledger.json")"; then
+              printf 'base=%s\nhead=%s\nguard_blob=%s\nledger_blob=%s\n' \
+                "$witness_base" "$witness_head" "$witness_guard" "$witness_ledger" \
+                >> "${GITHUB_OUTPUT:-/dev/null}" || echo 'XRAY406_WITNESS_OBSERVATION_UNAVAILABLE'
+            else
+              echo 'XRAY406_WITNESS_OBSERVATION_UNAVAILABLE'
+            fi
+          fi
+
+      - name: Record natural Official Witness publication evidence
+        if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 && steps.official_witness_persistence.outputs.head != ''
+        continue-on-error: true
+        shell: bash
+        env:
+          WITNESS_BASE: ${{ steps.official_witness_persistence.outputs.base }}
+          WITNESS_HEAD: ${{ steps.official_witness_persistence.outputs.head }}
+          WITNESS_GUARD: ${{ steps.official_witness_persistence.outputs.guard_blob }}
+          WITNESS_LEDGER: ${{ steps.official_witness_persistence.outputs.ledger_blob }}
+        run: |
+          python - <<'PY'
+          import os, re
+          rows = {k: os.environ[k] for k in ("WITNESS_BASE", "WITNESS_HEAD", "WITNESS_GUARD", "WITNESS_LEDGER")}
+          if any(re.fullmatch(r"[0-9a-f]{40}", x) is None for x in rows.values()):
+              raise SystemExit("XRAY406_INVALID_WITNESS_RECEIPT")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("### XRAY #406 · Natural Official Witness observation\n\n")
+              summary.write("Observation of the existing publication route. Not staging CI or production cutover acceptance.\n\n")
+              summary.write("".join(f"- {k}: `{v}`\n" for k, v in rows.items()))
+          PY
 
       - name: SEC official witness
         run: python nasdaq-xray/sec_official_witness.py
