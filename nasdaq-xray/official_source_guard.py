@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+import argparse
 import json, re, html as htmlmod, xml.etree.ElementTree as ET
 from datetime import datetime, timezone, date as calendar_date
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from resilience_runtime import fetch_text
+from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME
 
 ROOT=Path(__file__).resolve().parent
-OUT=ROOT/"canonical_official_source_guard.json"
+OUT=ROOT/LIVE_NAME
 UA={"User-Agent":"NASDAQ-SWING-XRAY/1.0 research github.com/gokaydonmez39-jpg/kripto-radar","Accept":"*/*"}
 SOURCES={
  "trading_system_adds_deletes":"https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt",
@@ -143,7 +145,8 @@ def parse_rss(txt):
             row[tag]=(child.text or "").strip()
         out.append(row)
     return out
-def main():
+def main(output=None):
+    output = OUT if output is None else output
     out={"schema":"XRAY_OFFICIAL_SOURCE_GUARD_V1","execution":"NONE","real_money":"NO-GO","alpha_authority":False,
          "authority":"NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT","generated_at_utc":now(),"sources":{},
          "rules":{"halt_poll_min_seconds":60,"security_status_symbol_change_mapping":"UNKNOWN_UNLESS_CORROBORATED","unknown_never_pass":True}}
@@ -229,6 +232,12 @@ def main():
         "veto_symbols":sorted(set(halt_syms)|set(susp_syms)),
         "rule":"REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED"
     }
-    OUT.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+    if output.is_symlink():
+        raise ValueError("OFFICIAL_GUARD_OUTPUT_SYMLINK")
+    output.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps({"status":out["status"],"sources":{k:v["status"] for k,v in out["sources"].items()}},sort_keys=True))
-if __name__=="__main__": main()
+if __name__=="__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("--terminal-evidence", action="store_true")
+    args = p.parse_args()
+    main(ROOT/TERMINAL_NAME if args.terminal_evidence else OUT)
