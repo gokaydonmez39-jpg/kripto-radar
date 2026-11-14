@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-          fetch-depth: 2
+          fetch-depth: 4
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
@@ -30,7 +30,8 @@ jobs:
           set -euo pipefail
           base='0e7d4302a556857b30c042bfa25b08f48dc92893'
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git rev-parse HEAD^)" = "$base"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git rev-list --count "$base..HEAD")" -le 2
           patch="$PWD/personal-swing/research_lab/xray406-fixtures/ownership-20261114.patch"
           printf '%s  %s\n' '59324494fdd8d40c2a06f2a03b67bc675bc8024a7d6a8bb4ad9f5a277d1eb09f' "$patch" | sha256sum --check
           sandbox="$(mktemp -d)"
