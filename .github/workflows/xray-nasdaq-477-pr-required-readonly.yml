@@ -6,6 +6,8 @@ name: XRAY NASDAQ 477 Required Read-Only PR CI
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [xray-406-ci-staging-probe-20261114]
 
 permissions:
   contents: read
@@ -139,5 +141,13 @@ jobs:
       - name: Personal 477 portable reservation parity (offline)
         working-directory: personal-swing
         run: node --test test_delivery_reservation_portable.js
+      - name: Isolated 406 CI publication proof
+        if: github.event_name == 'push' && github.ref == 'refs/heads/xray-406-ci-staging-probe-20261114'
+        working-directory: personal-swing
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m unittest -q test_xray406_probe_contract
+          python -O -m unittest -q test_xray406_probe_contract
+          echo "XRAY_406_STAGING_CI_EXACT_SHA=$GITHUB_SHA"
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
