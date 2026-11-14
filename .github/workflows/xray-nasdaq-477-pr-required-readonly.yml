@@ -6,20 +6,44 @@ name: XRAY NASDAQ 477 Required Read-Only PR CI
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact candidate commit SHA on the isolated #406 dispatch probe ref
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   xray-477-required-ci:
-    name: xray-477-required-ci
+    # A refused dispatch must never produce the status context used for main.
+    name: ${{ (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-dispatch-probe-20261114' && inputs.expected_sha == github.sha)) && 'xray-477-required-ci' || 'xray-477-dispatch-refused' }}
     runs-on: ubuntu-latest
     timeout-minutes: 22
     steps:
+      - name: Validate isolated dispatch identity before checkout
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REPOSITORY" == 'gokaydonmez39-jpg/kripto-radar' ]]
+          [[ "$GITHUB_REF" == 'refs/heads/xray-406-dispatch-probe-20261114' ]]
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$EXPECTED_SHA" == "$GITHUB_SHA" ]]
       - name: Checkout without credential persistence
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
+      - name: Verify checkout SHA for isolated dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          printf 'XRAY_406_DISPATCH_CANDIDATE_SHA=%s\n' "$GITHUB_SHA"
       - name: Offline Python runtime
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
