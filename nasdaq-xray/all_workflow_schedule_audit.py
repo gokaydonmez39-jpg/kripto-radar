@@ -6,6 +6,7 @@ Manual-only or push workflows remain in the inventory, not silently ignored.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -54,6 +55,7 @@ EXPECTED={
  "xray-twelve-history-resume.yml":("53 * * * *",),
  "xray-zero-cost-four-stage-verification.yml":("17 13 * * 1-5",),
  "xray-watch-delivery-microaudit.yml":("5 13 * * 1-5","35 22 * * 1-5"),
+ "xray406_close_window_shadow.yml":('15 13 * * 1-5', '15 16 * * 1-5'),
 }
 READONLY_PROVIDER_SCHEDULED={
  "xray-alpaca-free-sip-shadow-proof.yml",
@@ -96,6 +98,24 @@ def inventory(files):
         if not isinstance(source,str) or not source.strip():
             errors.append("WORKFLOW_UNREADABLE:"+name)
             continue
+        if name == "xray406_close_window_shadow.yml":
+            # Exact revision of the approved shadow only. A file change needs
+            # another review, even when the textual cron values stay the same.
+            if hashlib.sha256(source.encode("utf-8")).hexdigest() != "1eb6e0034ca52d4d38840bccef78a8d7319306dec430ae61dfd1a4a7b71e3c54":
+                errors.append("XRAY406_SHADOW_REVIEWED_BYTES_DRIFT:"+name)
+            try:
+                shadow=yaml.load(source,Loader=yaml.BaseLoader)
+                on=shadow.get("on",{})
+                slots=on.get("schedule",[])
+                jobs=shadow.get("jobs",{})
+                expected=[{"cron": cron, "timezone": "America/New_York"} for cron in EXPECTED[name]]
+                if (set(on)!={"schedule"} or slots!=expected
+                        or shadow.get("permissions")!={}
+                        or set(jobs)!={"close-window-shadow"}
+                        or "permissions" in jobs["close-window-shadow"]):
+                    errors.append("XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT:"+name)
+            except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
+                errors.append("XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT:"+name)
         found=crons(source)
         if found:
             scheduled[name]=list(found)
@@ -324,6 +344,15 @@ def selftest():
         result=inventory(sample)
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
+    shadow="xray406_close_window_shadow.yml"
+    bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
+        "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace("permissions: {}", "permissions: {contents: write}")}),
+        "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow].replace("  schedule:", "  workflow_dispatch:\n  schedule:")}),
+        "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
+    bad(lambda x:x.update({shadow:x[shadow]+"\n# unexpected byte change\n"}),
+        "XRAY406_SHADOW_REVIEWED_BYTES_DRIFT")
     bad(lambda x:x.update({"xray-account-gate-reconcile.yml":
         x["xray-account-gate-reconcile.yml"].replace(
           "  workflow_dispatch:\n",

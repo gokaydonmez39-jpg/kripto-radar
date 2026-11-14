@@ -1,0 +1,76 @@
+name: XRAY 406 Close Window Shadow (no publisher)
+
+on:
+  schedule:
+    - cron: '15 13 * * 1-5'
+      timezone: America/New_York
+    - cron: '15 16 * * 1-5'
+      timezone: America/New_York
+
+permissions: {}
+
+jobs:
+  close-window-shadow:
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Observe runner start
+        shell: bash
+        run: echo "XRAY_SHADOW_RUNNER_STARTED_UTC=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install the isolated shadow calendar dependency
+        run: python -m pip install --disable-pip-version-check 'exchange_calendars==4.13.3'
+      - name: Classify the candidate slot without fetching or writing Witnesses
+        env:
+          XRAY_SHADOW_CRON: ${{ github.event.schedule }}
+        run: |
+          python - <<'PY'
+          from datetime import datetime, timedelta, timezone
+          import json
+          import os
+          from zoneinfo import ZoneInfo
+          import exchange_calendars as ec
+
+          NY = ZoneInfo("America/New_York")
+          SUPPORTED = {"15 13 * * 1-5": 13, "15 16 * * 1-5": 16}
+
+          def classify(calendar, cron, observed, finished):
+              base = {
+                  "naturally_published": False,
+                  "verified_first_visibility": False,
+                  "source_receipt": False,
+                  "writes": False,
+              }
+              if cron not in SUPPORTED:
+                  return dict(base, state="HOLD_CRON_IDENTITY")
+              if observed.utcoffset() != timedelta(0) or finished.utcoffset() != timedelta(0) or finished < observed:
+                  return dict(base, state="HOLD_CLOCK_ORDER")
+              date = observed.astimezone(NY).date().isoformat()
+              if not calendar.is_session(date):
+                  return dict(base, state="SKIP_XNAS_CLOSED", asof_et=date)
+              close = calendar.session_close(date).to_pydatetime().astimezone(timezone.utc)
+              slot = close + timedelta(minutes=15)
+              slot_et = slot.astimezone(NY)
+              if (slot_et.hour, slot_et.minute) != (SUPPORTED[cron], 15):
+                  return dict(base, state="SKIP_NONMATCHING_CLOSE", asof_et=date)
+              cutoff = close + timedelta(minutes=45)
+              bound = dict(base, asof_et=date, scheduled_candidate_utc=slot.isoformat(),
+                           runner_started_utc=observed.isoformat(), observed_at_utc=finished.isoformat(),
+                           xnas_close_utc=close.isoformat(), close_plus_45_utc=cutoff.isoformat())
+              if observed < slot:
+                  return dict(bound, state="HOLD_RUNNER_BEFORE_SLOT")
+              if observed > cutoff or finished > cutoff:
+                  return dict(bound, state="HOLD_WINDOW_EXPIRED")
+              return dict(bound, state="SHADOW_WINDOW_OBSERVED_ONLY",
+                          observed_runner_delay_seconds=int((observed-slot).total_seconds()),
+                          remaining_close_budget_seconds=int((cutoff-finished).total_seconds()))
+
+          if __name__ == "__main__":
+              print(json.dumps(classify(
+                  ec.get_calendar("XNAS"), os.environ["XRAY_SHADOW_CRON"],
+                  datetime.fromisoformat(os.environ["XRAY_SHADOW_RUNNER_STARTED_UTC"]),
+                  datetime.now(timezone.utc)), sort_keys=True))
+          PY
