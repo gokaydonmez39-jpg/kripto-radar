@@ -1,0 +1,111 @@
+name: XRAY 406 isolated GitHub App ingress pilot
+on:
+  push:
+    branches: [xray-406-token-ingress-probe-20261114]
+    paths: [.github/workflows/xray-406-app-ingress-probe.yml]
+
+permissions: {}
+concurrency:
+  group: xray-406-isolated-app-ingress
+  cancel-in-progress: false
+
+jobs:
+  isolated-preflight:
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-token-ingress-probe-20261114' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify isolated baseline without secrets or writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(gh api 'repos/gokaydonmez39-jpg/kripto-radar/git/ref/heads/xray-406-ci-staging-probe-20261114' --jq .object.sha)" == '46385339dfda1b30c04626c5995b6ce2e5b9c632' ]]
+          [[ "$(gh api 'repos/gokaydonmez39-jpg/kripto-radar/git/ref/heads/xray-406-writer-probe-20261114' --jq .object.sha)" == '7d2cc87620ceb9fc4f65ae09e7e482121b5abf1c' ]]
+          printf '%s\n' 'XRAY406_ISOLATED_PREFLIGHT_PASS_NO_WRITES'
+
+  isolated-app-ingress:
+    needs: isolated-preflight
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-token-ingress-probe-20261114' && github.event_name == 'push' && vars.XRAY406_APP_PILOT_ARMED == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: xray-406-isolated-app-pilot
+    permissions: {}
+    steps:
+      - name: Mint short-lived token for the selected repository
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.XRAY406_APP_CLIENT_ID }}
+          private-key: ${{ secrets.XRAY406_APP_PRIVATE_KEY }}
+          owner: gokaydonmez39-jpg
+          repositories: kripto-radar
+          permission-contents: write
+
+      - name: Write one synthetic marker to the isolated staging ref
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          repo = "gokaydonmez39-jpg/kripto-radar"
+          ingress = "refs/heads/xray-406-token-ingress-probe-20261114"
+          stage = "xray-406-ci-staging-probe-20261114"
+          target = "xray-406-writer-probe-20261114"
+          expected = "46385339dfda1b30c04626c5995b6ce2e5b9c632"
+          target_base = "7d2cc87620ceb9fc4f65ae09e7e482121b5abf1c"
+          marker = "personal-swing/xray406_app_ingress_fixture.txt"
+          payload = "XRAY 406 isolated GitHub App synthetic fixture. No production data.\n"
+          sha = re.compile(r"[0-9a-f]{40}\Z")
+
+          def require(ok, code):
+              if not ok:
+                  raise RuntimeError(code)
+
+          def api(method, path, data=None):
+              args = ["gh", "api", "--method", method, f"repos/{repo}/{path}"]
+              if data is not None:
+                  args += ["--input", "-"]
+              result = subprocess.run(
+                  args, input=json.dumps(data) if data is not None else None,
+                  text=True, capture_output=True, timeout=25,
+              )
+              require(result.returncode == 0, "API_FAILED_NO_WRITE_RETRY")
+              return json.loads(result.stdout)
+
+          def ref(branch):
+              require(branch in {stage, target}, "REF_OUT_OF_SCOPE")
+              return api("GET", f"git/ref/heads/{branch}")["object"]["sha"]
+
+          require((os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_REF"],
+                   os.environ["GITHUB_EVENT_NAME"]) == (repo, ingress, "push"), "SCOPE_REFUSED")
+          require(re.fullmatch(r"[a-z0-9-]{1,100}", os.environ["APP_SLUG"]), "APP_IDENTITY_INVALID")
+          require(ref(stage) == expected and ref(target) == target_base, "ISOLATE_DRIFT")
+          base_tree = api("GET", f"git/commits/{expected}")["tree"]["sha"]
+          require(sha.fullmatch(base_tree), "TREE_INVALID")
+          tree = api("POST", "git/trees", {"base_tree": base_tree, "tree": [
+              {"path": marker, "mode": "100644", "type": "blob", "content": payload}
+          ]})["sha"]
+          require(sha.fullmatch(tree), "TREE_INVALID")
+          candidate = api("POST", "git/commits", {
+              "tree": tree, "parents": [expected],
+              "message": "test(xray-406): App stages synthetic CI ingress fixture",
+          })["sha"]
+          require(sha.fullmatch(candidate), "CANDIDATE_INVALID")
+          require(ref(stage) == expected and ref(target) == target_base, "ISOLATE_DRIFT")
+          result = api("PATCH", f"git/refs/heads/{stage}", {"sha": candidate, "force": False})
+          require(result["object"]["sha"] == candidate and ref(stage) == candidate,
+                  "STAGING_READBACK_UNKNOWN_NO_RETRY")
+          print("XRAY406_APP_STAGING_SHA=" + candidate)
+          print("XRAY406_APP_EXPECTED_PUSH_ACTOR=" + os.environ["APP_SLUG"] + "[bot]")
+          PY
