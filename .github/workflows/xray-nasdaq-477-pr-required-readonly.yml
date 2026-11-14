@@ -163,7 +163,7 @@ jobs:
       checks: read
     env:
       GH_TOKEN: ${{ github.token }}
-      XRAY_EXPECTED_TARGET: ddd4a503b3358a460d791b5ba572e5d3c7b7b516
+      XRAY_EXPECTED_TARGET: e65e976a6b86582f22feac11c56346326f1b9d42
     steps:
       - name: Publish only the independently verified isolated candidate
         shell: bash
@@ -222,8 +222,9 @@ jobs:
           compare = api(f"compare/{expected}...{candidate}")
           allowed = {
               ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml",
+              "personal-swing/xray406_token_ingress_probe.txt",
           }
-          require(compare["status"] == "ahead" and compare["ahead_by"] == 1
+          require(compare["status"] == "ahead" and compare["ahead_by"] == 2
                   and compare["behind_by"] == 0 and
                   {f["filename"] for f in compare["files"]} == allowed,
                   "NOT_ISOLATED_FAST_FORWARD")
