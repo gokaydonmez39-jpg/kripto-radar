@@ -1,0 +1,601 @@
+diff --git a/.github/workflows/xray-canonical-current-final.yml b/.github/workflows/xray-canonical-current-final.yml
+index 83b5815..d47c34f 100644
+--- a/.github/workflows/xray-canonical-current-final.yml
++++ b/.github/workflows/xray-canonical-current-final.yml
+@@ -31,6 +31,7 @@ on:
+       - "nasdaq-xray/sec_ticker_cik_cache.json"
+       - "nasdaq-xray/build_current_terminal.py"
+       - "nasdaq-xray/official_source_guard.py"
++      - "nasdaq-xray/terminal_official_guard_contract.py"
+       - "nasdaq-xray/resilience_runtime.py"
+       - "nasdaq-xray/build_final_gate_overlay_v2.py"
+       - "nasdaq-xray/semantic_cache_diff.py"
+@@ -572,10 +573,10 @@ jobs:
+       - name: Refresh official Nasdaq safety guard for atomic terminal binding
+         if: steps.event.outputs.ready == 'true'
+         run: |
+-          python nasdaq-xray/official_source_guard.py
++          python nasdaq-xray/official_source_guard.py --terminal-evidence
+           python - <<'PY'
+           import json
+-          g=json.load(open("nasdaq-xray/canonical_official_source_guard.json"))
++          g=json.load(open("nasdaq-xray/canonical_current_terminal_official_guard.json"))
+           assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1",g
+           assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO",g
+           s=g.get("sources") or {}
+@@ -592,6 +593,7 @@ jobs:
+       - name: Build dynamic terminal
+         if: steps.event.outputs.ready == 'true'
+         env:
++          XRAY_USE_TERMINAL_OFFICIAL_EVIDENCE: "1"
+           XRAY_TERMINAL_OUT: ${{ github.workspace }}/nasdaq-xray/canonical_current_terminal.json
+           XRAY_NO_BROKER_ACCOUNT_IO: "1"
+         run: python nasdaq-xray/build_current_terminal.py
+@@ -609,6 +611,10 @@ jobs:
+           d=json.load(open("nasdaq-xray/canonical_current_deep_full.json"))
+           f=json.load(open("nasdaq-xray/canonical_current_final_tech.json"))
+           t=json.load(open("nasdaq-xray/canonical_current_terminal.json"))
++          import pathlib,sys
++          sys.path.insert(0,"nasdaq-xray")
++          from terminal_official_guard_contract import verify_terminal_guard
++          verify_terminal_guard(pathlib.Path("nasdaq-xray"),t["evidence"]["official_halt_guard"])
+           a=t["asof_et"]
+           assert e["asof_et"]==c["asof_et"]==d["asof_et"]==f["asof_et"]==a
+           assert d["event_state_fresh"] is True
+@@ -699,7 +705,7 @@ jobs:
+             # blobs are handled separately below because deterministic CSV
+             # payloads can acquire a different gzip mtime header without any
+             # change in the OHLCV data actually consumed by Final.
+-            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_master_manifest.json               nasdaq-xray/canonical_current_price_dv30.json               nasdaq-xray/canonical_mc_bridge_*.json               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_current_event_state.json               ':(glob)nasdaq-xray/canonical_event_bridge_*.json'               nasdaq-xray/build_event_provenance_rebind.py               nasdaq-xray/alpha_semantics.py               nasdaq-xray/alpha_calibration_audit.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/build_candidate_legal_guard.py               nasdaq-xray/sec_ticker_cik_cache.json               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/final_risk_rr_independent_audit.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/semantic_cache_diff.py               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
++            changed="$(git diff --name-only "$GITHUB_SHA" "$latest" --               .github/workflows/xray-canonical-current-final.yml               nasdaq-xray/canonical_current_master_manifest.json               nasdaq-xray/canonical_current_price_dv30.json               nasdaq-xray/canonical_mc_bridge_*.json               nasdaq-xray/canonical_current_history.json               nasdaq-xray/canonical_current_legal.json               nasdaq-xray/canonical_current_stage1_input.json               nasdaq-xray/canonical_current_stage1.json               nasdaq-xray/canonical_current_regime.json               nasdaq-xray/canonical_current_deep_geometry.json               nasdaq-xray/canonical_current_event_request.json               nasdaq-xray/canonical_current_event_state.json               ':(glob)nasdaq-xray/canonical_event_bridge_*.json'               nasdaq-xray/build_event_provenance_rebind.py               nasdaq-xray/alpha_semantics.py               nasdaq-xray/alpha_calibration_audit.py               nasdaq-xray/stage1_shadow.py               nasdaq-xray/deep_pre_r1_shadow.py               nasdaq-xray/family_c_engine.py               nasdaq-xray/build_candidate_legal_guard.py               nasdaq-xray/sec_ticker_cik_cache.json               nasdaq-xray/final_tech_shadow.py               nasdaq-xray/final_risk_rr_independent_audit.py               nasdaq-xray/build_current_terminal.py               nasdaq-xray/official_source_guard.py               nasdaq-xray/terminal_official_guard_contract.py               nasdaq-xray/resilience_runtime.py               nasdaq-xray/build_final_gate_overlay_v2.py               nasdaq-xray/semantic_cache_diff.py               nasdaq-xray/select_account_live_probe.py               nasdaq-xray/select_account_live_probe_selftest.py               nasdaq-xray/chatgpt_compiled_policy_v3.json || true)"
+             cache_changed="$(git diff --name-only "$GITHUB_SHA" "$latest" -- 'nasdaq-xray/canonical_benchmark_cache/**' || true)"
+             semantic_cache_changed=""
+             if [[ -n "$cache_changed" ]]; then
+@@ -717,7 +723,7 @@ jobs:
+             fi
+           fi
+           files=(
+-            nasdaq-xray/canonical_official_source_guard.json
++            nasdaq-xray/canonical_current_terminal_official_guard.json
+             nasdaq-xray/canonical_current_event_state.json
+             nasdaq-xray/canonical_current_family_c.json
+             nasdaq-xray/canonical_current_deep_full.json
+@@ -797,10 +803,27 @@ jobs:
+               fi
+             done
+             git add "${files[@]}" 2>/dev/null || true
++            if ! git diff --cached --quiet -- nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json; then
++              echo "XRAY_FINAL_WITNESS_PATH_WRITE_BLOCKED" >&2
++              exit 1
++            fi
+             if git diff --cached --quiet; then
+               echo "XRAY_FACTORY_COMMIT=NO_CHANGE"
+               exit 0
+             fi
++            python - <<'PY'
++          import json,subprocess,sys
++          sys.path.insert(0,"nasdaq-xray")
++          from terminal_official_guard_contract import terminal_guard_name
++          def staged(path):
++              return subprocess.check_output(["git","show",":"+path])
++          terminal=json.loads(staged("nasdaq-xray/canonical_current_terminal.json"))
++          bound=terminal["evidence"]["official_halt_guard"]
++          filename=terminal_guard_name(bound,legacy=False)
++          actual=subprocess.check_output(["git","rev-parse",":nasdaq-xray/"+filename],text=True).strip()
++          if actual!=bound["blob_sha"]:
++              raise SystemExit("XRAY_FINAL_STAGED_OFFICIAL_GUARD_MISMATCH")
++          PY
+             git commit -m "chore(xray): current epoch final factory"
+             if git push origin HEAD:main; then
+               echo "XRAY_FACTORY_COMMIT=PASS"
+diff --git a/.github/workflows/xray-live-truth-attestation.yml b/.github/workflows/xray-live-truth-attestation.yml
+index 5eb49d1..c1812f4 100644
+--- a/.github/workflows/xray-live-truth-attestation.yml
++++ b/.github/workflows/xray-live-truth-attestation.yml
+@@ -30,6 +30,8 @@ on:
+       - "nasdaq-xray/canonical_current_event_state.json"
+       - "nasdaq-xray/canonical_current_family_c.json"
+       - "nasdaq-xray/canonical_official_source_guard.json"
++      - "nasdaq-xray/canonical_current_terminal_official_guard.json"
++      - "nasdaq-xray/terminal_official_guard_contract.py"
+       - "nasdaq-xray/canonical_current_final_tech.json"
+       - "nasdaq-xray/canonical_current_terminal.json"
+       - "nasdaq-xray/canonical_current_final_gate_overlay.json"
+@@ -175,8 +177,19 @@ jobs:
+               "g9":"g9_runtime",
+               "account":"account_gate",
+           }
++          sys.path.insert(0,"nasdaq-xray")
++          from terminal_official_guard_contract import verify_terminal_guard
+           drift=[]
++          bound_guard=ev.get("official_halt_guard") or {}
++          try:
++              verify_terminal_guard(root,bound_guard,legacy=True)
++              if gh_sha(bound_guard["path"])!=bound_guard["blob_sha"]:
++                  raise ValueError("TERMINAL_OFFICIAL_GUARD_NOT_COMMITTED")
++          except (OSError,ValueError,TypeError):
++              drift.append("official_halt_guard")
+           for source_key,evidence_key in evidence_binding_pairs.items():
++              if evidence_key=="official_halt_guard":
++                  continue
+               expected=ev.get(evidence_key) or {}
+               expected_path="nasdaq-xray/"+names[source_key]
+               if (expected.get("path")!=expected_path or
+diff --git a/.github/workflows/xray-resilience-observability.yml b/.github/workflows/xray-resilience-observability.yml
+index ebafa2e..fcd0689 100644
+--- a/.github/workflows/xray-resilience-observability.yml
++++ b/.github/workflows/xray-resilience-observability.yml
+@@ -502,6 +502,7 @@ jobs:
+           set -euo pipefail
+           git config user.name "xray-resilience-bot"
+           git config user.email "xray-resilience-bot@users.noreply.github.com"
++          # Official guard and PIT ledger belong only to the independent Witness step.
+           files=(
+             nasdaq-xray/canonical_sec_official_witness.json
+             nasdaq-xray/external_health_state.json
+@@ -509,8 +510,6 @@ jobs:
+             nasdaq-xray/canonical_candidate_enrichment.json
+             nasdaq-xray/free_solution_verification.json
+             nasdaq-xray/provider_health_ledger.json
+-            nasdaq-xray/canonical_official_source_guard.json
+-            nasdaq-xray/official_pit_ledger.json
+             nasdaq-xray/canonical_data_lineage_registry.json
+             nasdaq-xray/canonical_replay_guard.json
+             nasdaq-xray/canonical_guardian_state.json
+@@ -533,6 +532,10 @@ jobs:
+               fi
+             done
+             git add "${files[@]}" 2>/dev/null || true
++            if ! git diff --cached --quiet -- nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json; then
++              echo "XRAY_RESILIENCE_BULK_WITNESS_PATH_WRITE_BLOCKED" >&2
++              exit 1
++            fi
+             if git diff --cached --quiet; then
+               echo "XRAY_RESILIENCE_COMMIT=NO_CHANGE"
+               exit 0
+diff --git a/nasdaq-xray/build_current_terminal.py b/nasdaq-xray/build_current_terminal.py
+index e5d5daa..5d835e3 100644
+--- a/nasdaq-xray/build_current_terminal.py
++++ b/nasdaq-xray/build_current_terminal.py
+@@ -4,6 +4,7 @@ from __future__ import annotations
+ import glob,hashlib,json,os,re
+ from datetime import datetime,timezone
+ from pathlib import Path
++from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME, verify_terminal_guard
+ 
+ ROOT=Path(__file__).resolve().parent
+ TASK="6a825366222081918997094d76e6ae46"
+@@ -33,7 +34,9 @@ GATE_FILES={
+  "account_gate":ROOT/"account_gate_contract.json",
+  "account_adapter":ROOT/"account_provider_adapter_contract.json",
+ }
+-OFFICIAL_HALT_GUARD=ROOT/"canonical_official_source_guard.json"
++OFFICIAL_HALT_GUARD=ROOT/(
++    TERMINAL_NAME if os.getenv("XRAY_USE_TERMINAL_OFFICIAL_EVIDENCE") == "1" else LIVE_NAME
++)
+ HALT_GUARD_MAX_AGE_SECONDS=int(os.getenv("XRAY_HALT_GUARD_MAX_AGE_SECONDS","900"))
+ 
+ LIFECYCLE_TERMINAL_ALLOWED_STATES={
+@@ -628,14 +631,14 @@ def main():
+     halt_vetoed=[]
+     halt_guard_unknown=0
+     halt_safety={
+-      "status":"UNKNOWN","guard_path":"nasdaq-xray/canonical_official_source_guard.json",
++      "status":"UNKNOWN","guard_path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,
+       "max_age_seconds":HALT_GUARD_MAX_AGE_SECONDS,"active_halt_symbols":[],
+       "vetoed_candidates":[],"zero_alpha":True,
+     }
+     try:
+-        g=load(OFFICIAL_HALT_GUARD)
+-        assert g.get("schema")=="XRAY_OFFICIAL_SOURCE_GUARD_V1"
+-        assert g.get("execution")=="NONE" and g.get("real_money")=="NO-GO"
++        guard_evidence={"path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,
++                        "blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
++        g=verify_terminal_guard(ROOT,guard_evidence,legacy=OFFICIAL_HALT_GUARD.name==LIVE_NAME)
+         src=(g.get("sources") or {})
+         hs=(src.get("trade_halts") or {})
+         ss=(src.get("security_status") or {})
+@@ -762,7 +765,7 @@ def main():
+           "pass_count_exact":mc_binding["pass_count_exact"],
+         },
+         "official_halt_guard":(
+-          {"path":"nasdaq-xray/canonical_official_source_guard.json","blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
++          {"path":"nasdaq-xray/"+OFFICIAL_HALT_GUARD.name,"blob_sha":blob_sha(OFFICIAL_HALT_GUARD)}
+           if OFFICIAL_HALT_GUARD.exists() else {"status":"MISSING"}
+         ),
+         **gate_reporting["evidence"],
+diff --git a/nasdaq-xray/manual_decision_report.py b/nasdaq-xray/manual_decision_report.py
+index e23e03e..40615af 100644
+--- a/nasdaq-xray/manual_decision_report.py
++++ b/nasdaq-xray/manual_decision_report.py
+@@ -11,6 +11,7 @@ import os
+ import re
+ import urllib.request
+ from pathlib import Path
++from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME, terminal_guard_name, verify_terminal_guard
+ 
+ ROOT=Path(__file__).resolve().parent
+ POLICY=ROOT/"manual_decision_policy_v1.json"
+@@ -22,7 +23,7 @@ EVIDENCE={
+     "history":"canonical_current_history.json",
+     "events":"canonical_current_event_state.json",
+     "policy":"chatgpt_compiled_policy_v3.json",
+-    "official_halt_guard":"canonical_official_source_guard.json",
++    "official_halt_guard":LIVE_NAME,
+ }
+ CHECKS=(
+     "alpha_semantic_conformance_exact",
+@@ -145,6 +146,34 @@ def candidate_check(key,row,mc_rec,event_status,master_ok,price_ok,history_ok,ha
+         reasons.append("FINAL_REJECTED")
+     return not reasons,sorted(set(reasons))
+ 
++def verify_live_guard(live_guard, candidates, now):
++    if (not isinstance(live_guard,dict)
++        or live_guard.get("schema")!="XRAY_OFFICIAL_SOURCE_GUARD_V1"
++        or live_guard.get("execution")!="NONE"
++        or live_guard.get("real_money")!="NO-GO"
++        or live_guard.get("alpha_authority") is not False):
++        raise ValueError("LIVE_OFFICIAL_GUARD_INVALID")
++    try:
++        stamp=dt.datetime.fromisoformat(str(live_guard.get("generated_at_utc")).replace("Z","+00:00"))
++        if stamp.utcoffset() is None:
++            raise ValueError("GUARD_TIMEZONE_MISSING")
++        age=(now-stamp.astimezone(dt.timezone.utc)).total_seconds()
++    except (ValueError,TypeError,AttributeError):
++        age=float("inf")
++    if live_guard.get("status")!="PASS" or not (-60<=age<=900):
++        raise ValueError("LIVE_OFFICIAL_GUARD_UNVERIFIED_OR_STALE")
++    sources=live_guard.get("sources") or {}
++    halts=sources.get("trade_halts") or {}
++    suspensions=sources.get("security_status") or {}
++    if halts.get("status")!="PASS" or suspensions.get("status")!="PASS":
++        raise ValueError("LIVE_OFFICIAL_SOURCE_UNVERIFIED")
++    live_veto=set((live_guard.get("candidate_safety") or {}).get("veto_symbols") or [])
++    if live_veto!=set(halts.get("active_halt_symbols") or [])|set(suspensions.get("suspension_symbols") or []):
++        raise ValueError("LIVE_OFFICIAL_VETO_NOT_BOUND")
++    if any(x["symbol"] in live_veto for x in candidates):
++        raise ValueError("LIVE_OFFICIAL_CANDIDATE_VETO")
++
++
+ def validate_and_generate(root:Path=ROOT):
+     policy_path=root/"manual_decision_policy_v1.json"
+     p=json.loads(policy_path.read_text())
+@@ -174,6 +203,14 @@ def validate_and_generate(root:Path=ROOT):
+     for key,filename in EVIDENCE.items():
+         path=root/filename
+         bound=ev.get(key) or {}
++        if key=="official_halt_guard":
++            archived_name=terminal_guard_name(bound,legacy=True)
++            if archived_name==TERMINAL_NAME:
++                archived=verify_terminal_guard(root,bound)
++                live_guard=json.loads((root/LIVE_NAME).read_bytes())
++                objs[key]=archived
++                hashes[key]=bound["blob_sha"]
++                continue
+         if bound.get("path")!="nasdaq-xray/"+filename:
+             raise ValueError("UNBOUND_SOURCE_PATH:"+key)
+         current_bytes=path.read_bytes()
+@@ -259,18 +296,7 @@ def validate_and_generate(root:Path=ROOT):
+         else:
+             for reason in reasons:reason_counts[reason]=reason_counts.get(reason,0)+1
+     if candidates:
+-        try:
+-            stamp=dt.datetime.fromisoformat(str(live_guard.get("generated_at_utc")).replace("Z","+00:00"))
+-            age=(dt.datetime.now(dt.timezone.utc)-stamp.astimezone(dt.timezone.utc)).total_seconds()
+-        except (ValueError,TypeError,AttributeError):
+-            age=float("inf")
+-        if live_guard.get("status")!="PASS" or not (-60<=age<=900):
+-            raise ValueError("LIVE_OFFICIAL_GUARD_UNVERIFIED_OR_STALE")
+-        if not all((live_guard.get("sources") or {}).get(k,{}).get("status")=="PASS" for k in ("trade_halts","security_status")):
+-            raise ValueError("LIVE_OFFICIAL_SOURCE_UNVERIFIED")
+-        live_veto=set((live_guard.get("candidate_safety") or {}).get("veto_symbols") or [])
+-        if any(x["symbol"] in live_veto for x in candidates):
+-            raise ValueError("LIVE_OFFICIAL_CANDIDATE_VETO")
++        verify_live_guard(live_guard,candidates,dt.datetime.now(dt.timezone.utc))
+         if t.get("candidate_local_research_pass") is not True:
+             raise ValueError("TERMINAL_LOCAL_RESEARCH_NOT_PASS")
+     status="QUALIFIED_RESEARCH_SIGNAL_AVAILABLE" if candidates else "NO_QUALIFIED_TECHNICAL_RESEARCH_SIGNAL"
+diff --git a/nasdaq-xray/official_source_guard.py b/nasdaq-xray/official_source_guard.py
+index d262500..ea04703 100644
+--- a/nasdaq-xray/official_source_guard.py
++++ b/nasdaq-xray/official_source_guard.py
+@@ -1,13 +1,15 @@
+ #!/usr/bin/env python3
+ from __future__ import annotations
++import argparse
+ import json, re, html as htmlmod, xml.etree.ElementTree as ET
+ from datetime import datetime, timezone, date as calendar_date
+ from zoneinfo import ZoneInfo
+ from pathlib import Path
+ from resilience_runtime import fetch_text
++from terminal_official_guard_contract import LIVE_NAME, TERMINAL_NAME
+ 
+ ROOT=Path(__file__).resolve().parent
+-OUT=ROOT/"canonical_official_source_guard.json"
++OUT=ROOT/LIVE_NAME
+ UA={"User-Agent":"NASDAQ-SWING-XRAY/1.0 research github.com/gokaydonmez39-jpg/kripto-radar","Accept":"*/*"}
+ SOURCES={
+  "trading_system_adds_deletes":"https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt",
+@@ -143,7 +145,8 @@ def parse_rss(txt):
+             row[tag]=(child.text or "").strip()
+         out.append(row)
+     return out
+-def main():
++def main(output=None):
++    output = OUT if output is None else output
+     out={"schema":"XRAY_OFFICIAL_SOURCE_GUARD_V1","execution":"NONE","real_money":"NO-GO","alpha_authority":False,
+          "authority":"NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT","generated_at_utc":now(),"sources":{},
+          "rules":{"halt_poll_min_seconds":60,"security_status_symbol_change_mapping":"UNKNOWN_UNLESS_CORROBORATED","unknown_never_pass":True}}
+@@ -229,6 +232,12 @@ def main():
+         "veto_symbols":sorted(set(halt_syms)|set(susp_syms)),
+         "rule":"REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED"
+     }
+-    OUT.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
++    if output.is_symlink():
++        raise ValueError("OFFICIAL_GUARD_OUTPUT_SYMLINK")
++    output.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+     print(json.dumps({"status":out["status"],"sources":{k:v["status"] for k,v in out["sources"].items()}},sort_keys=True))
+-if __name__=="__main__": main()
++if __name__=="__main__":
++    p = argparse.ArgumentParser()
++    p.add_argument("--terminal-evidence", action="store_true")
++    args = p.parse_args()
++    main(ROOT/TERMINAL_NAME if args.terminal_evidence else OUT)
+diff --git a/nasdaq-xray/terminal_official_guard_contract.py b/nasdaq-xray/terminal_official_guard_contract.py
+new file mode 100644
+index 0000000..4809ab8
+--- /dev/null
++++ b/nasdaq-xray/terminal_official_guard_contract.py
+@@ -0,0 +1,43 @@
++"""Binding for historical terminal halt evidence, distinct from live veto data."""
++from __future__ import annotations
++
++import hashlib
++import json
++from pathlib import Path
++import re
++
++LIVE_NAME = "canonical_official_source_guard.json"
++TERMINAL_NAME = "canonical_current_terminal_official_guard.json"
++PREFIX = "nasdaq-xray/"
++
++
++def git_blob(data: bytes) -> str:
++    return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
++
++
++def terminal_guard_name(bound: dict, *, legacy: bool) -> str:
++    names = (TERMINAL_NAME, LIVE_NAME) if legacy else (TERMINAL_NAME,)
++    if (not isinstance(bound, dict)
++        or bound.get("path") not in tuple(PREFIX + n for n in names)
++        or not isinstance(bound.get("blob_sha"), str)
++        or not re.fullmatch(r"[0-9a-f]{40}", bound["blob_sha"])):
++        raise ValueError("TERMINAL_OFFICIAL_GUARD_BINDING_INVALID")
++    return bound["path"][len(PREFIX):]
++
++
++def verify_terminal_guard(root: Path, bound: dict, *, legacy: bool = False) -> dict:
++    filename = terminal_guard_name(bound, legacy=legacy)
++    path = root / filename
++    if path.is_symlink() or not path.is_file():
++        raise ValueError("TERMINAL_OFFICIAL_GUARD_NOT_REGULAR")
++    data = path.read_bytes()
++    if git_blob(data) != bound["blob_sha"]:
++        raise ValueError("TERMINAL_OFFICIAL_GUARD_BLOB_MISMATCH")
++    doc = json.loads(data)
++    if (not isinstance(doc, dict)
++        or doc.get("schema") != "XRAY_OFFICIAL_SOURCE_GUARD_V1"
++        or doc.get("execution") != "NONE"
++        or doc.get("real_money") != "NO-GO"
++        or doc.get("alpha_authority") is not False):
++        raise ValueError("TERMINAL_OFFICIAL_GUARD_SAFETY_INVALID")
++    return doc
+diff --git a/tests/test_ownership.py b/tests/test_ownership.py
+new file mode 100644
+index 0000000..f778bba
+--- /dev/null
++++ b/tests/test_ownership.py
+@@ -0,0 +1,203 @@
++from pathlib import Path
++import contextlib
++from datetime import datetime,timedelta,timezone
++import importlib.util
++import io
++import json
++import os
++import runpy
++import subprocess
++import sys
++import tempfile
++import types
++from unittest.mock import patch
++import re
++import unittest
++import yaml
++
++ROOT = Path(__file__).resolve().parents[1]
++WF = ROOT / '.github' / 'workflows'
++LEGACY = 'nasdaq-xray/canonical_official_source_guard.json'
++sys.path.insert(0, str(ROOT/'nasdaq-xray'))
++from terminal_official_guard_contract import git_blob, verify_terminal_guard
++
++PAIR = {LEGACY, 'nasdaq-xray/official_pit_ledger.json'}
++TERMINAL_GUARD = 'nasdaq-xray/canonical_current_terminal_official_guard.json'
++
++def step(workflow, name):
++    config = yaml.safe_load((WF / workflow).read_text())
++    return next(s for job in config['jobs'].values() for s in job['steps']
++                if s.get('name') == name)
++
++def published_files(workflow, name):
++    return set(re.search(r'^files=\(\n(.*?)^\)', step(workflow,name)['run'],
++                         flags=re.M|re.S).group(1).split())
++
++class WriterContract(unittest.TestCase):
++    def test_shared_final_does_not_own_witness_pair(self):
++        files = published_files('xray-canonical-current-final.yml', 'Commit current final artifacts')
++        self.assertEqual(files & PAIR, set())
++        self.assertIn(TERMINAL_GUARD, files)
++
++    def test_resilience_bulk_does_not_own_witness_pair(self):
++        files = published_files('xray-resilience-observability.yml', 'Commit resilience artifacts')
++        self.assertEqual(files & PAIR, set())
++        self.assertIn('nasdaq-xray/canonical_macro_context.json', files)
++
++def heredoc(step_text, anchor=None):
++    script=step_text.split(anchor,1)[-1] if anchor else step_text
++    body=script.split("<<'PY'\n",1)[1].split("\nPY",1)[0]
++    return body
++
++
++class IsolatedFileTests(unittest.TestCase):
++    def setUp(self):
++        self.tmp=tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.base=Path(self.tmp.name)
++        self.root=self.base/'nasdaq-xray'
++        self.root.mkdir()
++        self.doc={"schema":"XRAY_OFFICIAL_SOURCE_GUARD_V1","execution":"NONE",
++                  "real_money":"NO-GO","alpha_authority":False}
++        self.write(LEGACY,{**self.doc,"witness":"live"})
++        self.write(TERMINAL_GUARD,{**self.doc,"witness":"terminal"})
++        self.bound={"path":TERMINAL_GUARD,"blob_sha":git_blob((self.base/TERMINAL_GUARD).read_bytes())}
++        self.terminal='nasdaq-xray/canonical_current_terminal.json'
++        self.write(self.terminal,{"evidence":{"official_halt_guard":self.bound},"asof_et":"2026-11-16"})
++        self.git('init','-q')
++        self.git('config','user.name','XRAY test')
++        self.git('config','user.email','test@example.invalid')
++        self.git('add','.')
++        self.git('commit','-qm','local fixture')
++
++    def git(self,*cmd):
++        return subprocess.run(['git','-C',str(self.base),*cmd],
++                              text=True,capture_output=True,check=True).stdout.strip()
++
++    def write(self,name,payload):
++        path=self.base/name
++        path.write_text(json.dumps(payload))
++        return path
++
++    def python(self,script):
++        return subprocess.run([sys.executable,'-c',script], text=True, capture_output=True,
++            cwd=self.base, env={**os.environ,"PYTHONPATH":str(ROOT/"nasdaq-xray"),
++            "RUNNER_TEMP":str(self.base)}, check=False)
++
++    def test_exact_archived_and_legacy_evidence(self):
++        self.assertEqual(verify_terminal_guard(self.root,self.bound)["witness"],"terminal")
++        old={"path":LEGACY,"blob_sha":git_blob((self.base/LEGACY).read_bytes())}
++        with self.assertRaisesRegex(ValueError,"BINDING_INVALID"):
++            verify_terminal_guard(self.root,old)
++        self.assertEqual(verify_terminal_guard(self.root,old,legacy=True)["witness"],"live")
++
++    def test_wrong_path_blob_safety_and_symlink_fail(self):
++        for edit in ({"path":"nasdaq-xray/../file.json"},{"blob_sha":"f"*40}):
++            with self.subTest(edit=edit), self.assertRaises(ValueError):
++                verify_terminal_guard(self.root,{**self.bound,**edit})
++        path=self.write(TERMINAL_GUARD,{**self.doc,"alpha_authority":True})
++        with self.assertRaisesRegex(ValueError,"SAFETY_INVALID"):
++            verify_terminal_guard(self.root,{**self.bound,"blob_sha":git_blob(path.read_bytes())})
++        path.unlink()
++        path.symlink_to((self.base/LEGACY).name)
++        with self.assertRaisesRegex(ValueError,"NOT_REGULAR"):
++            verify_terminal_guard(self.root,self.bound)
++
++    def test_real_workflows_block_protected_paths_at_git_index(self):
++        for workflow, label, reason in (
++            ('xray-canonical-current-final.yml','Commit current final artifacts','XRAY_FINAL_WITNESS_PATH_WRITE_BLOCKED'),
++            ('xray-resilience-observability.yml','Commit resilience artifacts','XRAY_RESILIENCE_BULK_WITNESS_PATH_WRITE_BLOCKED'),
++        ):
++            script=step(workflow,label)['run']
++            gate=re.search(r'^  if ! git diff --cached --quiet -- [^\n]+\n.*?^  fi',script,flags=re.M|re.S).group(0)
++            self.git('reset','--hard','HEAD')
++            self.assertEqual(subprocess.run(['bash','-c',gate],cwd=self.base).returncode,0)
++            self.write(LEGACY,{**self.doc,"witness":"unexpected index write"})
++            self.git('add',LEGACY)
++            result=subprocess.run(['bash','-c',gate],cwd=self.base,text=True,capture_output=True)
++            self.assertEqual(result.returncode,1)
++            self.assertIn(reason,result.stderr)
++
++    def test_exact_staged_guard_gate_from_real_workflow(self):
++        final=step('xray-canonical-current-final.yml','Commit current final artifacts')['run']
++        check=heredoc(final,'case "$event_guard"')
++        ok=self.python(check)
++        self.assertEqual(ok.returncode,0,ok.stderr)
++        self.write(TERMINAL_GUARD,{**self.doc,"witness":"unrelated future evidence"})
++        self.assertEqual(self.python(check).returncode,0)  # index remains the actual commit candidate
++        self.git('add',TERMINAL_GUARD)
++        rejected=self.python(check)
++        self.assertIn("XRAY_FINAL_STAGED_OFFICIAL_GUARD_MISMATCH",rejected.stderr)
++        self.assertNotEqual(rejected.returncode,0)
++
++    def test_real_attestor_uses_committed_evidence_and_not_new_live_blob(self):
++        truth=step('xray-live-truth-attestation.yml',
++                   'Independently read all current blobs and compute truth report')['run']
++        script=heredoc(truth)
++        def verdict():
++            result=self.python(script)
++            self.assertEqual(result.returncode,0,result.stderr)
++            report=json.loads((self.base/'xray_live_truth_attestation.json').read_bytes())
++            self.assertEqual(report['execution'],'NONE')
++            self.assertTrue(report['this_workflow_never_authorizes_true_full_go'])
++            return report['diagnostics']['terminal_drift_sources']
++        self.assertNotIn('official_halt_guard',verdict())
++        self.write(LEGACY,{**self.doc,"witness":"newer independent live guard"})
++        self.git('add',LEGACY)
++        self.git('commit','-qm','independent witness moves')
++        self.assertNotIn('official_halt_guard',verdict())
++        self.write(TERMINAL_GUARD,{**self.doc,"witness":"mismatch"})
++        self.assertIn('official_halt_guard',verdict())
++        new={"path":TERMINAL_GUARD,"blob_sha":git_blob((self.base/TERMINAL_GUARD).read_bytes())}
++        self.write(self.terminal,{"evidence":{"official_halt_guard":new},"asof_et":"2026-11-16"})
++        self.assertIn('official_halt_guard',verdict())
++
++    def test_final_uses_distinct_source_from_live_default(self):
++        module=ROOT/'nasdaq-xray'/'build_current_terminal.py'
++        def read(enable):
++            env={**os.environ,"PYTHONPATH":str(module.parent)}
++            env.pop('XRAY_USE_TERMINAL_OFFICIAL_EVIDENCE',None)
++            if enable: env['XRAY_USE_TERMINAL_OFFICIAL_EVIDENCE']='1'
++            return subprocess.check_output([sys.executable,'-c',
++                 'import build_current_terminal as t; print(t.OFFICIAL_HALT_GUARD.name)'],
++                 text=True,env=env).strip()
++        self.assertEqual(read(True),Path(TERMINAL_GUARD).name)
++        self.assertEqual(read(False),Path(LEGACY).name)
++
++    def test_manual_current_guard_veto_is_not_replaced_by_terminal_snapshot(self):
++        from manual_decision_report import verify_live_guard
++        now=datetime(2026,11,16,21,20,tzinfo=timezone.utc)
++        live={**self.doc,"status":"PASS","generated_at_utc":now.isoformat(),
++              "sources":{"trade_halts":{"status":"PASS","active_halt_symbols":["TEST"]},
++                         "security_status":{"status":"PASS","suspension_symbols":[]}},
++              "candidate_safety":{"veto_symbols":["TEST"]}}
++        verify_live_guard(live,[{"symbol":"OK"}],now)
++        with self.assertRaisesRegex(ValueError,"CANDIDATE_VETO"):
++            verify_live_guard(live,[{"symbol":"TEST"}],now)
++        with self.assertRaisesRegex(ValueError,"UNVERIFIED_OR_STALE"):
++            verify_live_guard(live,[{"symbol":"OK"}],now+timedelta(seconds=901))
++        with self.assertRaisesRegex(ValueError,"VETO_NOT_BOUND"):
++            verify_live_guard({**live,"candidate_safety":{"veto_symbols":[]}},[{"symbol":"TEST"}],now)
++        with self.assertRaisesRegex(ValueError,"GUARD_INVALID"):
++            verify_live_guard({**live,"alpha_authority":True},[{"symbol":"OK"}],now)
++
++    def test_actual_producer_cli_keeps_live_blob_unchanged_in_terminal_mode(self):
++        source=ROOT/'nasdaq-xray'/'official_source_guard.py'
++        target=self.root/source.name
++        target.write_bytes(source.read_bytes())
++        original=(self.base/LEGACY).read_bytes()
++        mock=types.ModuleType("resilience_runtime")
++        def offline(*a,**k):
++            raise RuntimeError("fixture no network")
++        mock.fetch_text=offline
++        with patch.dict(sys.modules,{"resilience_runtime":mock}), patch.object(sys,"argv",[str(target),"--terminal-evidence"]), contextlib.redirect_stdout(io.StringIO()):
++            runpy.run_path(str(target),run_name="__main__")
++        self.assertEqual((self.base/LEGACY).read_bytes(),original)
++        generated=json.loads((self.base/TERMINAL_GUARD).read_bytes())
++        self.assertEqual(generated["status"],"DEGRADED")
++        self.assertEqual(generated["execution"],"NONE")
++        self.assertIs(generated["alpha_authority"],False)
++
++
++if __name__=='__main__':
++    unittest.main()
