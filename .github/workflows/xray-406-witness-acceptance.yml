@@ -12,6 +12,8 @@ on:
       - 'personal-swing/research_lab/*xray406_witness_github.py'
 permissions:
   contents: read
+  actions: read
+  checks: read
 jobs:
   witness-offline:
     if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.ref == 'refs/heads/xray-406-witness-acceptance-20261114' && github.event_name == 'push'
@@ -55,4 +57,30 @@ jobs:
           print(f"ARCHIVE_CANDIDATE_OK head={candidate} base={base} generated={generated.isoformat()}")
           print(f"ARCHIVE_BLOB_IDS guard={guard} ledger={ledger}")
           print("ARCHIVE_ONLY_NO_CURRENT_CI_NO_PUBLICATION_NO_FIRST_VISIBILITY")
+          PY
+      - name: Validate real GitHub evidence adapter without mutation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=personal-swing/research_lab python3 - <<'PY'
+          from datetime import datetime, timezone
+          from xray406_witness_github import GitHubIsolatedTransport, gh, receipt_pair
+          from xray406_witness_handoff import ACTOR, CHECK, CI_PATH, REPO
+
+          candidate = "c0cacce6809ec099d98c4788c9c585ef5821a7a4"
+          def read_only(path):
+              if not path.startswith(f"repos/{REPO}/"):
+                  raise RuntimeError("READ_SCOPE_REFUSED")
+              return gh(path)
+          run, src = receipt_pair(43589985977, 1, candidate, read_only)
+          if (run.actor, run.head, run.event, run.workflow, src.job_id,
+              src.check.name, src.check.conclusion) != (
+                  ACTOR, candidate, "push", CI_PATH, 132432458052, CHECK, "success"):
+              raise RuntimeError("ARCHIVED_CHECK_MISMATCH")
+          transport = GitHubIsolatedTransport(lambda: datetime.now(timezone.utc), read_only)
+          if transport.head("target") != candidate:
+              raise RuntimeError("ARCHIVED_TARGET_DRIFT")
+          print("REAL_GITHUB_EVIDENCE_ADAPTER_PASS_NO_MUTATION")
           PY
