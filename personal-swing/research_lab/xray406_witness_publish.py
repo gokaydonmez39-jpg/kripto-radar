@@ -36,7 +36,8 @@ def publish(root, base: str, candidate: str, run: RunReceipt,
     # Read target last, then rely on atomic lease at the actual write.
     stage, target = transport.head(staging_ref(candidate)), transport.head("target")
     decision = plan(root, base, candidate, run, source, stage, target, clock(), cutoff)
-    if utc(clock()) >= decision.latest_observed_at:
+    checked_at = utc(clock())
+    if not source.check.finished_at <= checked_at < decision.latest_observed_at:
         raise Rejected("PUBLISH_WINDOW_CLOSED")
     try:
         accepted = transport.publish_once(decision.expected, decision.candidate)
