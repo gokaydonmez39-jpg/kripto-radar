@@ -151,3 +151,103 @@ jobs:
           echo "XRAY_406_STAGING_CI_EXACT_SHA=$GITHUB_SHA"
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
+
+  isolated-406-actions-token-publisher:
+    needs: xray-477-required-ci
+    if: github.repository == 'gokaydonmez39-jpg/kripto-radar' && github.event_name == 'push' && github.ref == 'refs/heads/xray-406-ci-staging-probe-20261114'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+      checks: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      XRAY_EXPECTED_TARGET: ddd4a503b3358a460d791b5ba572e5d3c7b7b516
+    steps:
+      - name: Publish only the independently verified isolated candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          repository = "gokaydonmez39-jpg/kripto-radar"
+          stage = "xray-406-ci-staging-probe-20261114"
+          target = "xray-406-writer-probe-20261114"
+          workflow = ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml"
+          check_name = "xray-477-required-ci"
+          candidate = os.environ["GITHUB_SHA"]
+          expected = os.environ["XRAY_EXPECTED_TARGET"]
+
+          def require(condition, code):
+              if not condition:
+                  raise RuntimeError(code)
+
+          def api(path):
+              return json.loads(subprocess.check_output(
+                  ["gh", "api", "repos/" + repository + "/" + path], text=True))
+
+          def ref(name):
+              require(name in {stage, target}, "REF_OUT_OF_SCOPE")
+              return api("git/ref/heads/" + name)["object"]["sha"]
+
+          require(os.environ["GITHUB_REPOSITORY"] == repository
+                  and os.environ["GITHUB_EVENT_NAME"] == "push"
+                  and os.environ["GITHUB_REF"] == "refs/heads/" + stage,
+                  "RUN_OUT_OF_SCOPE")
+          require(all(re.fullmatch(r"[0-9a-f]{40}", v) for v in (candidate, expected))
+                  and candidate != expected, "CANDIDATE_SHA_INVALID")
+          run = api("actions/runs/" + os.environ["GITHUB_RUN_ID"])
+          require(run["head_sha"] == candidate and run["head_branch"] == stage
+                  and run["path"] == workflow and run["event"] == "push"
+                  and run["repository"]["full_name"] == repository
+                  and run["head_repository"]["full_name"] == repository,
+                  "RUN_BINDING_INVALID")
+          checks = api(f"commits/{candidate}/check-runs?check_name={check_name}")
+          records = checks["check_runs"]
+          require(checks["total_count"] == len(records) == 1, "CHECK_CARDINALITY")
+          c = records[0]
+          require(c["name"] == check_name and c["head_sha"] == candidate
+                  and c["status"] == "completed" and c["conclusion"] == "success"
+                  and c["app"]["id"] == 15368, "CHECK_NOT_VERIFIED")
+          jobs = api(f"actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs")
+          matching = [j for j in jobs["jobs"] if j["name"] == check_name]
+          require(len(matching) == 1 and matching[0]["conclusion"] == "success"
+                  and c["details_url"].endswith("/job/" + str(matching[0]["id"])),
+                  "CHECK_NOT_FROM_THIS_RUN")
+          compare = api(f"compare/{expected}...{candidate}")
+          allowed = {
+              ".github/workflows/xray-nasdaq-477-pr-required-readonly.yml",
+          }
+          require(compare["status"] == "ahead" and compare["ahead_by"] == 1
+                  and compare["behind_by"] == 0 and
+                  {f["filename"] for f in compare["files"]} == allowed,
+                  "NOT_ISOLATED_FAST_FORWARD")
+          require(ref(stage) == candidate and ref(target) == expected, "REF_DRIFT")
+
+          repository_id = run["repository"]["node_id"]
+          require(repository_id.startswith("R_"), "REPOSITORY_NODE_INVALID")
+          request = {"query": (
+              "mutation Publish(\u0024input: UpdateRefsInput!) "
+              "{ updateRefs(input: \u0024input) { clientMutationId } }"
+          ), "variables": {"input": {
+              "repositoryId": repository_id, "clientMutationId": "xray-406-isolated",
+              "refUpdates": [{"name": "refs/heads/" + target, "beforeOid": expected,
+                              "afterOid": candidate, "force": False}],
+          }}}
+          result = subprocess.run(
+              ["gh", "api", "graphql", "--input", "-"],
+              input=json.dumps(request), text=True, capture_output=True)
+          observed = ref(target)
+          require(result.returncode == 0 and observed == candidate,
+                  "ISOLATED_PUBLISH_UNCONFIRMED_DO_NOT_RETRY")
+          response = json.loads(result.stdout)
+          require((response.get("data") or {}).get("updateRefs", {})
+                  .get("clientMutationId") == "xray-406-isolated",
+                  "ISOLATED_RECEIPT_UNCONFIRMED_DO_NOT_RETRY")
+          print("XRAY_406_ACTIONS_TOKEN_EXACT_PROTECTED_READBACK=" + observed)
+          PY
