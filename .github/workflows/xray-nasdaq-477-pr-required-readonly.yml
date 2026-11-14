@@ -6,10 +6,11 @@ name: XRAY NASDAQ 477 Required Read-Only PR CI
 on:
   pull_request:
     branches: [main]
-  # Only the dedicated Official Witness candidate branch is eligible.
+  # Each candidate has its own branch so concurrent staging does not replace it.
+  # The publisher must separately validate the exact ref suffix against head SHA.
   # No path filter: the exact candidate commit needs this status.
   push:
-    branches: [xray-406-official-witness-staging]
+    branches: ['xray-406-official-witness-staging/*']
 
 permissions:
   contents: read
