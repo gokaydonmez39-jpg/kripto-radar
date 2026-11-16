@@ -3,13 +3,13 @@
   "asof_et": "2026-11-13",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-13",
-    "attempted_count": 477,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 477,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 474,
+    "evaluated_count": 472,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,11 +18,13 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 11,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 3,
+    "pending_count": 5,
     "pending_symbols": [
       "FISV",
       "GRAL",
-      "LIFE"
+      "LIFE",
+      "NSIT",
+      "MRX"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -1972,12 +1974,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "MRX": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
       "MSFT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2069,12 +2065,6 @@
         "terminal_scan": true
       },
       "NRIX": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "NSIT": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3469,17 +3459,17 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "4e9a656d93e064444a96c5a12c3b35816ff288e45a5ad0ef67917c146626c61a",
+    "source_candidates_sha256": "9bdabdadc59304bba325225253d6998394141483d62d2ca53a34d23bd3f2fc29",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 149,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 314,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 312,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 9,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 2
     },
     "transient_retry_count": 3,
     "unknown_never_pass": true,
-    "watchlist_digest": "f319b9a0d8b9bf9afecead0770fb5e1dd9f305f9bd56f90a500fc4ec732c5418"
+    "watchlist_digest": "dfa6dd0b85c43837022d1b00c832bf2c3d8da82266142ed23e15a283d1fab9a4"
   },
   "cursor": 3188,
   "downstream_invalidation": {
@@ -3519,8 +3509,8 @@
   "history_unknown_reason_counts": {
     "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 45,
     "EXACT30_SESSIONS_INCOMPLETE": 3,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 140,
-    "STATIC_UNKNOWN_OTHER": 30
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 141,
+    "STATIC_UNKNOWN_OTHER": 29
   },
   "late_asof_canary_probes_this_run": 0,
   "pending_late_asof_recheck": 0,
@@ -3533,7 +3523,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 218,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-14T03:10:58.528811+00:00",
+  "updated_at_utc": "2026-11-16T05:43:43.250310+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -3551,7 +3541,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "4e9a656d93e064444a96c5a12c3b35816ff288e45a5ad0ef67917c146626c61a",
+    "source_candidates_sha256": "9bdabdadc59304bba325225253d6998394141483d62d2ca53a34d23bd3f2fc29",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -3685,7 +3675,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 295.77,
-        "dv30_usd_observed": 9035589329.31,
+        "dv30_usd_observed": 9052897641.83,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Alphabet Inc. - Class A Common Stock",
@@ -3993,7 +3983,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 152.32,
-        "dv30_usd_observed": 1913579893.92,
+        "dv30_usd_observed": 1914261906.72,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "KLA Corporation  - Common Stock",
@@ -4007,7 +3997,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 172.47,
-        "dv30_usd_observed": 1814888717.43,
+        "dv30_usd_observed": 1815439931.55,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "QUALCOMM Incorporated - Common Stock",
@@ -4090,6 +4080,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 26.865,
+        "dv30_usd_observed": 1240027431.0,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Super Micro Computer, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "SMCI",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 221.83,
         "dv30_usd_observed": 1235704396.94,
         "exact_completed_sessions": 30,
@@ -4099,20 +4103,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALAB",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 26.865,
-        "dv30_usd_observed": 1233714935.09,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Super Micro Computer, Inc. - Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "SMCI",
         "tracking_state": "PERSISTING"
       },
       {
@@ -4357,7 +4347,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 1491.49,
-        "dv30_usd_observed": 861746321.21,
+        "dv30_usd_observed": 862116956.47,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "MercadoLibre, Inc. - Common Stock",
@@ -4707,7 +4697,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 59.28,
-        "dv30_usd_observed": 564813213.0,
+        "dv30_usd_observed": 565162550.04,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "PayPal Holdings, Inc. - Common Stock",
@@ -4973,7 +4963,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 85.4,
-        "dv30_usd_observed": 446809145.38,
+        "dv30_usd_observed": 446882418.58,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Akamai Technologies, Inc. - Common Stock",
@@ -5155,7 +5145,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 315.43,
-        "dv30_usd_observed": 401684138.91,
+        "dv30_usd_observed": 401854628.83,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Axon Enterprise, Inc. - Common Stock",
@@ -5659,7 +5649,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 46.25,
-        "dv30_usd_observed": 299856918.8,
+        "dv30_usd_observed": 299886218.17,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Exelon Corporation - Common Stock",
@@ -5701,7 +5691,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 6.99,
-        "dv30_usd_observed": 293504629.44,
+        "dv30_usd_observed": 293949658.27,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "MARA Holdings, Inc. - Common Stock",
@@ -5995,7 +5985,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 112.35,
-        "dv30_usd_observed": 236652145.83,
+        "dv30_usd_observed": 236718039.11,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Lattice Semiconductor Corporation - Common Stock",
@@ -6037,7 +6027,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 100.27,
-        "dv30_usd_observed": 230060386.37,
+        "dv30_usd_observed": 230075727.68,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Halozyme Therapeutics, Inc. - Common Stock",
@@ -6233,7 +6223,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 69.31,
-        "dv30_usd_observed": 203836588.37,
+        "dv30_usd_observed": 203841855.93,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Royalty Pharma plc - Class A Ordinary Shares",
@@ -6611,7 +6601,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 33.91,
-        "dv30_usd_observed": 173733212.5,
+        "dv30_usd_observed": 173809681.27,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Kratos Defense & Security Solutions, Inc. - Common Stock",
@@ -8038,6 +8028,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 19.56,
+        "dv30_usd_observed": 98773435.79,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Upstart Holdings, Inc. - Common stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "UPST",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 104.0,
         "dv30_usd_observed": 98559051.71,
         "exact_completed_sessions": 30,
@@ -8061,20 +8065,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CINF",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 19.56,
-        "dv30_usd_observed": 98311797.37,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Upstart Holdings, Inc. - Common stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "UPST",
         "tracking_state": "PERSISTING"
       },
       {
@@ -8249,7 +8239,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 33.48,
-        "dv30_usd_observed": 90655948.05,
+        "dv30_usd_observed": 91170284.55,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Ouster, Inc. - Common Stock",
@@ -8711,7 +8701,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 14.15,
-        "dv30_usd_observed": 76465865.2,
+        "dv30_usd_observed": 76781367.75,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Summit Therapeutics Inc.  - Common Stock",
@@ -10236,6 +10226,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 477,
-    "watchlist_digest": "f319b9a0d8b9bf9afecead0770fb5e1dd9f305f9bd56f90a500fc4ec732c5418"
+    "watchlist_digest": "dfa6dd0b85c43837022d1b00c832bf2c3d8da82266142ed23e15a283d1fab9a4"
   }
 }
