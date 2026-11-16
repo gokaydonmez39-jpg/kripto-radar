@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-11-13",
+  "asof_et": "2026-11-16",
   "asof_identity_proof": {
-    "blob_sha": "e00ff9fdc0cd1ccd91e41dbf8ec995cb6ec56005",
+    "blob_sha": "bdbf216848677b0453beef00c78bf3e2985fdbc1",
     "counts": {
       "operating_overrides": 2,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261113.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261116.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,38 +28,38 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3188,
-    "UNKNOWN_IDENTITY": 22
+    "PASS_IDENTITY": 3186,
+    "UNKNOWN_IDENTITY": 27
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2394,
-  "explicit_excluded_hash": "d9da599c52b5e7689c5111018ab654c488e70ad1c8796fd1be3cb5e699db06ac",
+  "explicit_excluded_count": 2389,
+  "explicit_excluded_hash": "e76666dbb56b58b95fbabd3cb196cac17cd6cd16fae3ee154afe1458bb039367",
   "explicit_excluded_reason_counts": {
     "DEBT": 57,
-    "ETF": 1278,
+    "ETF": 1279,
     "FUND": 32,
     "PREFERRED": 103,
     "RIGHT": 105,
-    "SPAC_BLANK_CHECK": 191,
+    "SPAC_BLANK_CHECK": 187,
     "TEST_ISSUE": 8,
     "UNIT": 255,
-    "WARRANT": 363,
+    "WARRANT": 361,
     "WHEN_ISSUED": 2
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3188
+      "UNKNOWN_STATIC": 3186
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3188
+    "source_unknown_count": 3186
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1113202621:31|||||||",
-  "pass_count": 3188,
-  "pass_hash": "794e372b489e9ea188d052ed87659b596bb73c07d68cf87e1fe84a5be29f2286",
+  "official_footer": "File Creation Time: 1116202617:01|||||||",
+  "pass_count": 3186,
+  "pass_hash": "7149797b1fc7a3a0f19e2d564cb523473c084636f123004cc297a907ac27e609",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -2101,7 +2101,6 @@
     "NVX",
     "NWBI",
     "NWCL",
-    "NWE",
     "NWFL",
     "NWGL",
     "NWL",
@@ -2297,7 +2296,6 @@
     "PLBC",
     "PLBL",
     "PLBY",
-    "PLCE",
     "PLMR",
     "PLPC",
     "PLRX",
@@ -3252,26 +3250,35 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "794e372b489e9ea188d052ed87659b596bb73c07d68cf87e1fe84a5be29f2286",
-  "queue_total": 3188,
-  "queue_unique": 3188,
-  "raw_identity_total": 3210,
+  "queue_hash": "7149797b1fc7a3a0f19e2d564cb523473c084636f123004cc297a907ac27e609",
+  "queue_total": 3186,
+  "queue_unique": 3186,
+  "raw_identity_total": 3213,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "c1d4b06ff47cb527571be42076342400d581c090",
-    "count": 557,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261113.json",
-    "symbol_hash": "f09b9eb361db080266d9ac97258beb6c89c85845d187c9d48a9b89a8047881f7"
+    "blob_sha": "8141f6aad5981baf844a0940acf927466e82b5dd",
+    "count": 553,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261116.json",
+    "symbol_hash": "a4c09344108dbf325c991e61bd555a3326b90f952203385fba6722c7554c5ba5"
   },
-  "source_state_blob_sha": "dfe8437e06cea5a9e611ef0eaa1c897e3eca428d",
-  "source_state_hash": "8ff2686959e8c1e3477033aa376e5344a34545b728328a296e1035cb70505bd0",
+  "source_state_blob_sha": "9a45389ed72f79620679a2caa18b9ce6c9b49dea",
+  "source_state_hash": "d484ae8864ced39c05af4dc2cdc701eeb249749e585da0165b91fc13861fdcbf",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 22,
+  "unknown_count": 27,
   "unknown_detail": {
+    "AEAQ": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Activate Energy Acquisition Corp. - Class A Ordinary Share",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "ALIS": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3287,6 +3294,24 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Blue Acquisition Corp. - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "BID": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Tribeca Strategic Acquisition Corp. - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "BRRK": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Bluerock Acquisition Corp. II - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3341,6 +3366,15 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "FACT II Acquisition Corp. - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "FDMM": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Freedom Metals Acquisition Corp. - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3425,6 +3459,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "PLMK": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Plum Acquisition Corp. IV - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "RFAM": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3473,14 +3516,18 @@
   },
   "unknown_never_pass": true,
   "unknown_symbols": [
+    "AEAQ",
     "ALIS",
     "BACC",
+    "BID",
+    "BRRK",
     "BSAA",
     "CXII",
     "DAAQ",
     "DBCA",
     "DTSQ",
     "FACT",
+    "FDMM",
     "FVN",
     "HCAC",
     "IPXG",
@@ -3490,6 +3537,7 @@
     "MACI",
     "MCGA",
     "PAXG",
+    "PLMK",
     "RFAM",
     "SCQC",
     "TACH",
