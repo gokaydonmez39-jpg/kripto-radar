@@ -45,8 +45,8 @@
     "IREN",
     "CRDO",
     "PEP",
-    "ALAB",
     "SMCI",
+    "ALAB",
     "COIN",
     "SHOP",
     "APP",
@@ -327,9 +327,9 @@
     "PCTY",
     "ZION",
     "TVTX",
+    "UPST",
     "SYRE",
     "CINF",
-    "UPST",
     "REG",
     "KOD",
     "GLPI",
@@ -721,7 +721,7 @@
   "research_setup_candidate_count": 0,
   "research_setup_candidate_symbols": [],
   "schema": "XRAY_PERSONAL_EOD_RESEARCH_DIGEST_V1",
-  "source_candidates_sha256": "4e9a656d93e064444a96c5a12c3b35816ff288e45a5ad0ef67917c146626c61a",
+  "source_candidates_sha256": "9bdabdadc59304bba325225253d6998394141483d62d2ca53a34d23bd3f2fc29",
   "source_confidence": {
     "grade": "LOW",
     "rationale": "Existing SINA price observations and calendar-bound formula audits; independent original RTH volume, split lineage, primary MC and event clearance unproven",
@@ -730,7 +730,7 @@
   "source_epoch_blobs": {
     "master": "b02a88826b12700899f5a4d733c2258044d37d09",
     "price": "10c7f392d9aa2feece5b8b3d2ef111b66b738e6c",
-    "root": "50a1a1ffbd8ffab1e9cb8774da981fa90df4c2ed"
+    "root": "a2710729ea04951a2601161cccecdc6485346550"
   },
   "status": "PERSONAL_LIQUIDITY_WATCH_AND_REJECTED_TRIGGERS",
   "technical_evaluated_count": 474,
@@ -748,5 +748,5 @@
   },
   "unknown_never_pass": true,
   "watchlist_count": 477,
-  "watchlist_digest": "f319b9a0d8b9bf9afecead0770fb5e1dd9f305f9bd56f90a500fc4ec732c5418"
+  "watchlist_digest": "dfa6dd0b85c43837022d1b00c832bf2c3d8da82266142ed23e15a283d1fab9a4"
 }
