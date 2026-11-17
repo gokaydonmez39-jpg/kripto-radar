@@ -3,13 +3,13 @@
   "asof_et": "2026-11-16",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-16",
-    "attempted_count": 475,
+    "attempted_count": 476,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 476,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 472,
+    "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,12 +18,11 @@
     "independent_math_audit_unresolved_count": 0,
     "independent_math_audit_verified_count": 12,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 4,
+    "pending_count": 3,
     "pending_symbols": [
       "FISV",
       "GRAL",
-      "LIFE",
-      "CHEF"
+      "LIFE"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -596,6 +595,12 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CONFIRMED_A_B_D_RECENT_TRIGGER",
+        "terminal_scan": true
+      },
+      "CHEF": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
       "CHKP": {
@@ -3513,7 +3518,7 @@
     "source_candidates_sha256": "d932f08f9012585feab7a3e5ff8a1b1d54d62bf079a6f2a6d7f1101ca778e538",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 149,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 311,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 312,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 10,
       "UNKNOWN_260_OFFICIAL_HISTORY": 3,
       "WATCH_TRIGGER_WITH_FINAL_GATE_BLOCKERS": 2
@@ -3574,7 +3579,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 203,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-17T08:43:42.580526+00:00",
+  "updated_at_utc": "2026-11-17T14:30:00.921021+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
