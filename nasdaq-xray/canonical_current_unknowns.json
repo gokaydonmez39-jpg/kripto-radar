@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-11-16",
+  "asof_et": "2026-11-17",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3186
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3186
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1116202621:31|||||||",
+  "official_footer": "File Creation Time: 1117202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3186
   },
-  "source_queue_hash": "7149797b1fc7a3a0f19e2d564cb523473c084636f123004cc297a907ac27e609",
-  "source_state_hash": "2130c9ab526fa98d3eb9d3ac932632efc7104f1385230878fb5a0204022cb82b",
+  "source_queue_hash": "73a1da41a685d24077cab572c22b230f45548829c07d72ea45d949b0a40bfe8d",
+  "source_state_hash": "d021205f55228b4c6e8e5d72869bf749c57b2ef5c348d9c287152bde6a6429e6",
   "source_unknown_count": 3186,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3186,
@@ -15715,24 +15715,6 @@
       "security_name": "Duos Technologies Group, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "DVLT": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Datavault AI Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "DWSN": {
       "attempts": 0,
       "discovery": {
@@ -21779,6 +21761,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Galaxy Digital Inc. - Class A common stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "GM": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "General Motors Company - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "GMAB": {
@@ -53137,24 +53137,6 @@
       "security_name": "Valion Bio, Inc. - Common stock",
       "status": "UNKNOWN_STATIC"
     },
-    "VBNK": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "VersaBank - Common Shares",
-      "status": "UNKNOWN_STATIC"
-    },
     "VC": {
       "attempts": 0,
       "discovery": {
@@ -54143,6 +54125,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Verra Mobility Corporation - Class A Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "VRSA": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Versa Bancorp - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "VRSK": {
