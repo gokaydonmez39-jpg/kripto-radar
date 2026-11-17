@@ -29058,8 +29058,8 @@
   "pending_late_asof_recheck": 0,
   "pending_retry": 0,
   "processed_late_asof_canary_this_run": 0,
-  "processed_late_asof_recheck_this_run": 0,
-  "processed_new_this_run": 186,
+  "processed_late_asof_recheck_this_run": 39,
+  "processed_new_this_run": 0,
   "processed_retry_this_run": 0,
   "processed_transport_rescue_this_run": 0,
   "queue": [
@@ -36569,17 +36569,17 @@
       "updated_at_utc": "2026-11-17T00:49:13.360382+00:00"
     },
     "AUBN": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 4515,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:49:13.360386+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947702+00:00"
     },
     "AUC": {
       "attempts": 1,
@@ -38516,17 +38516,17 @@
       "updated_at_utc": "2026-11-17T00:49:13.360683+00:00"
     },
     "BMHL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 285,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:49:13.360680+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947644+00:00"
     },
     "BMM": {
       "attempts": 1,
@@ -39832,17 +39832,17 @@
       "updated_at_utc": "2026-11-17T00:49:48.629181+00:00"
     },
     "CAES": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 86,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:49:48.629278+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947680+00:00"
     },
     "CAI": {
       "attempts": 1,
@@ -40914,17 +40914,17 @@
       "updated_at_utc": "2026-11-17T00:49:48.629309+00:00"
     },
     "CEPS": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 118,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:49:48.629317+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947664+00:00"
     },
     "CEPV": {
       "attempts": 1,
@@ -43693,17 +43693,17 @@
       "updated_at_utc": "2026-11-17T00:50:22.309761+00:00"
     },
     "CUB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 10815,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:50:22.309764+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947689+00:00"
     },
     "CUE": {
       "attempts": 1,
@@ -44881,17 +44881,17 @@
       "updated_at_utc": "2026-11-17T00:50:22.309958+00:00"
     },
     "DNMX": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 206,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:50:22.309967+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947671+00:00"
     },
     "DNTH": {
       "attempts": 1,
@@ -45890,17 +45890,17 @@
       "updated_at_utc": "2026-11-17T00:50:22.310098+00:00"
     },
     "EFTY": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 40,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:50:22.310092+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947622+00:00"
     },
     "EGAN": {
       "attempts": 1,
@@ -49751,17 +49751,17 @@
       "updated_at_utc": "2026-11-17T00:50:56.213549+00:00"
     },
     "GCGR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 64,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:50:56.213521+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947657+00:00"
     },
     "GCL": {
       "attempts": 1,
@@ -50210,17 +50210,17 @@
       "updated_at_utc": "2026-11-17T00:50:56.213615+00:00"
     },
     "GIGM": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 5362,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:50:56.213617+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947698+00:00"
     },
     "GIII": {
       "attempts": 1,
@@ -51193,17 +51193,17 @@
       "updated_at_utc": "2026-11-17T00:50:56.213741+00:00"
     },
     "GSIW": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 721,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:51:29.199586+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947716+00:00"
     },
     "GSM": {
       "attempts": 1,
@@ -51703,17 +51703,17 @@
       "updated_at_utc": "2026-11-17T00:51:29.199678+00:00"
     },
     "HCHL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 244,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:51:29.199676+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947706+00:00"
     },
     "HCIC": {
       "attempts": 1,
@@ -51822,17 +51822,17 @@
       "updated_at_utc": "2026-11-17T00:51:29.199690+00:00"
     },
     "HDL": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 494,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:51:29.199697+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947712+00:00"
     },
     "HDRN": {
       "attempts": 1,
@@ -52942,17 +52942,17 @@
       "updated_at_utc": "2026-11-17T00:51:29.199841+00:00"
     },
     "HVMC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 164,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:51:29.199863+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947741+00:00"
     },
     "HWBK": {
       "attempts": 1,
@@ -55401,17 +55401,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.938718+00:00"
     },
     "JFU": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1787,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.938724+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947751+00:00"
     },
     "JG": {
       "attempts": 1,
@@ -55792,17 +55792,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.938768+00:00"
     },
     "KBON": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 149,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.938770+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947748+00:00"
     },
     "KBSX": {
       "attempts": 1,
@@ -55912,17 +55912,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.938782+00:00"
     },
     "KELYB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1749,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.938784+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947769+00:00"
     },
     "KEQU": {
       "attempts": 1,
@@ -56838,17 +56838,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.938897+00:00"
     },
     "LAWR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 69,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.938899+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947755+00:00"
     },
     "LBGJ": {
       "attempts": 1,
@@ -56898,17 +56898,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.938902+00:00"
     },
     "LBTYB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2187,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.938908+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947759+00:00"
     },
     "LBTYK": {
       "attempts": 1,
@@ -58144,17 +58144,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.939054+00:00"
     },
     "LRE": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 744,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.939052+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947773+00:00"
     },
     "LRMR": {
       "attempts": 1,
@@ -58286,17 +58286,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.939074+00:00"
     },
     "LTGR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 35,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.939081+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947766+00:00"
     },
     "LTRN": {
       "attempts": 1,
@@ -58630,17 +58630,17 @@
       "updated_at_utc": "2026-11-17T00:52:05.939116+00:00"
     },
     "MAGH": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 81,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:05.939119+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947763+00:00"
     },
     "MAKO": {
       "attempts": 1,
@@ -58889,17 +58889,17 @@
       "updated_at_utc": "2026-11-17T00:52:39.342327+00:00"
     },
     "MBBC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 343,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:39.342321+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947791+00:00"
     },
     "MBIN": {
       "attempts": 1,
@@ -59257,17 +59257,17 @@
       "updated_at_utc": "2026-11-17T00:52:39.342367+00:00"
     },
     "MDRR": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1856,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:39.342365+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947780+00:00"
     },
     "MDWD": {
       "attempts": 1,
@@ -61514,7 +61514,7 @@
       "updated_at_utc": "2026-11-17T00:52:39.342669+00:00"
     },
     "NCEW": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 417,
         "dates": [
@@ -61549,10 +61549,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:39.342674+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947776+00:00"
     },
     "NCI": {
       "attempts": 1,
@@ -62018,17 +62018,17 @@
       "updated_at_utc": "2026-11-17T00:52:39.342751+00:00"
     },
     "NHIV": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 54,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:52:39.342752+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947784+00:00"
     },
     "NHP": {
       "attempts": 1,
@@ -64499,17 +64499,17 @@
       "updated_at_utc": "2026-11-17T00:53:15.940238+00:00"
     },
     "ORIQ": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 164,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:15.940242+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947788+00:00"
     },
     "ORKA": {
       "attempts": 1,
@@ -64653,17 +64653,17 @@
       "updated_at_utc": "2026-11-17T00:53:15.940260+00:00"
     },
     "OST": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 847,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:15.940258+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947795+00:00"
     },
     "OSUR": {
       "attempts": 1,
@@ -65194,17 +65194,17 @@
       "updated_at_utc": "2026-11-17T00:53:15.940319+00:00"
     },
     "PBHC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 3455,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:15.940329+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947798+00:00"
     },
     "PBK": {
       "attempts": 1,
@@ -65264,17 +65264,17 @@
       "updated_at_utc": "2026-11-17T00:53:15.940331+00:00"
     },
     "PC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1808,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:15.940431+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947801+00:00"
     },
     "PCAR": {
       "attempts": 1,
@@ -68115,17 +68115,17 @@
       "updated_at_utc": "2026-11-17T00:53:50.359057+00:00"
     },
     "RACD": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 72,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:50.359056+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947805+00:00"
     },
     "RADX": {
       "attempts": 1,
@@ -68489,17 +68489,17 @@
       "updated_at_utc": "2026-11-17T00:53:50.359109+00:00"
     },
     "RDIB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2271,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:53:50.359111+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947835+00:00"
     },
     "RDNT": {
       "attempts": 1,
@@ -70822,17 +70822,17 @@
       "updated_at_utc": "2026-11-17T00:54:48.615962+00:00"
     },
     "SENEB": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 2987,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:54:48.615966+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947810+00:00"
     },
     "SENS": {
       "attempts": 1,
@@ -71408,7 +71408,7 @@
       "updated_at_utc": "2026-11-17T00:54:48.616028+00:00"
     },
     "SHOT": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 569,
         "dates": [
@@ -71437,10 +71437,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:54:48.616106+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947813+00:00"
     },
     "SHPH": {
       "attempts": 1,
@@ -73549,7 +73549,7 @@
       "updated_at_utc": "2026-11-17T00:54:48.616304+00:00"
     },
     "SUPN": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 3597,
         "dates": [
@@ -73563,10 +73563,10 @@
         "reason": "EXACT30_INCOMPLETE_NEVER_PASS"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:54:48.616302+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947818+00:00"
     },
     "SUPX": {
       "attempts": 1,
@@ -74106,17 +74106,17 @@
       "updated_at_utc": "2026-11-17T00:55:23.435586+00:00"
     },
     "TBCV": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 26,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:55:23.435582+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947825+00:00"
     },
     "TBLA": {
       "attempts": 1,
@@ -74707,17 +74707,17 @@
       "updated_at_utc": "2026-11-17T00:55:23.435690+00:00"
     },
     "TJGC": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 201,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:55:23.435686+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947822+00:00"
     },
     "TKLF": {
       "attempts": 1,
@@ -76033,17 +76033,17 @@
       "updated_at_utc": "2026-11-17T00:55:23.435842+00:00"
     },
     "TWLV": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 805,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:55:23.435840+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947838+00:00"
     },
     "TWST": {
       "attempts": 1,
@@ -76238,17 +76238,17 @@
       "updated_at_utc": "2026-11-17T00:55:23.435861+00:00"
     },
     "UCFI": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1,
         "history_short": true,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:55:23.435865+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947828+00:00"
     },
     "UCL": {
       "attempts": 1,
@@ -79971,17 +79971,17 @@
       "updated_at_utc": "2026-11-17T00:55:56.752964+00:00"
     },
     "YQ": {
-      "attempts": 1,
+      "attempts": 2,
       "info": {
         "bars": 1483,
         "history_short": false,
         "reason": "ASOF_MISSING_REQUIRES_RESOLUTION"
       },
       "late_asof_canary_probe_round": 0,
-      "late_asof_recheck_round": 0,
+      "late_asof_recheck_round": 1,
       "status": "UNKNOWN_STATIC",
       "transport_rescue_round": 0,
-      "updated_at_utc": "2026-11-17T00:55:56.752959+00:00"
+      "updated_at_utc": "2026-11-17T04:41:57.947831+00:00"
     },
     "YSWY": {
       "attempts": 1,
@@ -83663,12 +83663,12 @@
     "ZYME": "Zymeworks Inc. - Common Stock",
     "ZYN": "PTL LTD - Class A Ordinary Shares"
   },
-  "state_hash": "6eaa51a3487b2d491ab4b3db3cb559c43d19dc0e54bbf308c7a3f037f8831f6b",
+  "state_hash": "27e0e4ae9240ca1b0031c3dafd31084792e2a96d701ce312d45343b1f3d04cef",
   "state_hash_version": "SHA256_DETERMINISTIC_WITHOUT_SELF_FIELD_V1",
   "status": "HISTORY_PARTIAL",
   "task_id": "6a825366222081918997094d76e6ae46",
   "transport_rescue_status": "REAL_PROVIDER_RETRY_ONLY_UNKNOWN_IF_FAILED",
   "unknown_count": 203,
   "unknown_never_pass": true,
-  "updated_at_utc": "2026-11-17T00:55:56.951137+00:00"
+  "updated_at_utc": "2026-11-17T04:41:58.240110+00:00"
 }
