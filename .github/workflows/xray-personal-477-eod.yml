@@ -443,6 +443,7 @@ jobs:
           fi
           echo "XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_ASOF_${SCORE_ASOF}_NOT_CHATGPT_DELIVERY"
       - name: Load NASDAQ source evidence bridge (schedule only)
+        id: source-note-checkout
         if: ${{ success() && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
         continue-on-error: true
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -450,7 +451,7 @@ jobs:
           persist-credentials: false
       - name: Prepare private Sheet proof bridge dependencies (schedule only)
         id: source-note-deps
-        if: ${{ success() && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        if: ${{ success() && steps.source-note-checkout.outcome == 'success' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
         continue-on-error: true
         timeout-minutes: 1
         run: |
