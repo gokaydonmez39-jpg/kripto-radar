@@ -230,6 +230,14 @@ class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
         end = re.search(r"(?m)^  [A-Za-z][A-Za-z0-9_-]*:\s*$", rest)
         return rest[:end.start()] if end else rest
 
+    @staticmethod
+    def step(job, name):
+        marker = "      - name: " + name + "\n"
+        if job.count(marker) != 1:
+            raise AssertionError("Missing or duplicate workflow step " + name)
+        rest = job.split(marker, 1)[1]
+        return rest.split("\n      - name: ", 1)[0]
+
     def test_producer_exports_real_outcome_before_continue_on_error(self):
         followups = self.job(self.workflow(), "private-episode-followups")
         self.assertIn("swing_score_outcome:", followups)
@@ -247,8 +255,31 @@ class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
         self.assertIn("needs.private-episode-followups.outputs.swing_score_outcome",gate)
         self.assertIn('[[ "$SCORE_OUTCOME" == "success" ]]',gate)
         self.assertIn("exit 3",gate)
-        self.assertNotIn("continue-on-error",gate)
+        header = gate.split("    steps:", 1)[0]
+        hard = self.step(gate, "Gate raw score outcome after Guardian (fail closed)")
+        self.assertNotIn("continue-on-error", header)
+        self.assertNotIn("continue-on-error", hard)
         self.assertNotIn("method: POST",gate)
+
+    def test_optional_summary_note_is_schedule_only_after_the_mandatory_gate(self):
+        job = self.job(self.workflow(), "daily-private-score-acceptance")
+        hard = "Gate raw score outcome after Guardian (fail closed)"
+        names = ("Load NASDAQ source evidence bridge (schedule only)",
+                 "Prepare private Sheet proof bridge dependencies (schedule only)",
+                 "Attach and verify current B evidence note (schedule only)")
+        self.assertEqual(re.findall(r"(?m)^      - name: (.*)$", job), [hard, *names])
+        for index, name in enumerate(names):
+            step = self.step(job, name)
+            for predicate in ("success()", "github.event_name == 'schedule'",
+                              "github.ref == 'refs/heads/main'", "github.run_attempt == 1"):
+                self.assertIn(predicate, step)
+            self.assertIn("continue-on-error: true", step)
+            if index < 2:
+                self.assertNotIn("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON",step)
+        prepare, publish = (self.step(job, name) for name in names[1:])
+        self.assertIn("steps.source-note-checkout.outcome == 'success'", prepare)
+        self.assertIn("steps.source-note-deps.outcome == 'success'", publish)
+        self.assertIn("publish_b_source_note.py",publish)
 
     def test_no_second_provider_score_run_or_new_schedule(self):
         content = self.workflow()
@@ -341,8 +372,10 @@ class ZeroSessionReceiptFailClosedTests(unittest.TestCase):
               ".github/workflows/xray-personal-477-eod.yml").read_text("utf-8")
         section=DailyScoreWorkflowAcceptanceTests.job(
             yaml,"daily-private-score-acceptance")
-        self.assertEqual(section.count("        run: |\n"),1)
-        script=textwrap.dedent(section.split("        run: |\n",1)[1])
+        hard = DailyScoreWorkflowAcceptanceTests.step(
+            section,"Gate raw score outcome after Guardian (fail closed)")
+        self.assertEqual(hard.count("        run: |\n"),1)
+        script=textwrap.dedent(hard.split("        run: |\n",1)[1])
         cases=[
             ("push","success","SWING_SCORE_NO_COMPLETED_SESSION","",0,
              "NOT_DUE_PRE_SESSION_NO_DAILY_ACCEPTANCE"),

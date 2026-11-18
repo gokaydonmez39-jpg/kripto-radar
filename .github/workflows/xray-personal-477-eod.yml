@@ -62,6 +62,7 @@ jobs:
           python -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
           python -O -m unittest -q test_ci_v6 test_v6_alpaca_rest test_research_evidence test_research_validation test_handoff_guard test_private_sheet_writer test_private_lifecycle test_panel_reconciler test_al_outbox_producer test_xray_guardian test_provider_read_retry
           python -m unittest -q test_swing_score_daily
+          python -m unittest discover -s ../tests -p test_publish_b_source_note.py
           python -O -m unittest -q test_swing_score_daily
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
@@ -397,13 +398,15 @@ jobs:
   daily-private-score-acceptance:
     # Guardian remains independently successful even if advisory score fails.
     # An incomplete daily score can never turn the entire EOD green.
-    # No IEX, Google Sheet API, secrets, extra cron, orders or delivery here.
+    # No IEX, extra cron, orders or delivery here. The optional proof bridge only
+    # annotates the verified current SUMMARY link cell. It cannot reserve a delivery.
     needs: [guardian-acceptance, private-episode-followups]
     if: ${{ always() && github.event_name != 'pull_request' && needs.guardian-acceptance.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
       contents: read
+      actions: read
     steps:
       - name: Gate raw score outcome after Guardian (fail closed)
         shell: bash
@@ -439,3 +442,28 @@ jobs:
             exit 3
           fi
           echo "XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_ASOF_${SCORE_ASOF}_NOT_CHATGPT_DELIVERY"
+      - name: Load NASDAQ source evidence bridge (schedule only)
+        id: source-note-checkout
+        if: ${{ success() && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        continue-on-error: true
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare private Sheet proof bridge dependencies (schedule only)
+        id: source-note-deps
+        if: ${{ success() && steps.source-note-checkout.outcome == 'success' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        continue-on-error: true
+        timeout-minutes: 1
+        run: |
+          python3 -m venv "$RUNNER_TEMP/xray-source-note"
+          "$RUNNER_TEMP/xray-source-note/bin/python" -m pip install --disable-pip-version-check 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+      - name: Attach and verify current B evidence note (schedule only)
+        if: ${{ success() && steps.source-note-deps.outcome == 'success' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        continue-on-error: true
+        timeout-minutes: 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+          XRAY_SCORE_ASOF: ${{ needs.private-episode-followups.outputs.swing_score_asof }}
+          XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+          XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+        run: '"$RUNNER_TEMP/xray-source-note/bin/python" personal-swing/publish_b_source_note.py'
