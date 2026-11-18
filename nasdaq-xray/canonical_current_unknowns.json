@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-17",
+  "asof_et": "2026-11-18",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3186
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3185
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3186
+    "UNKNOWN_STATIC": 3185
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1117202621:31|||||||",
+  "official_footer": "File Creation Time: 1118202617:01|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3186
+    "UNKNOWN_STATIC": 3185
   },
-  "source_queue_hash": "73a1da41a685d24077cab572c22b230f45548829c07d72ea45d949b0a40bfe8d",
-  "source_state_hash": "83e24b3598bc38587661af0670248ffbb36afadffa9bac60bf0248e87b000489",
-  "source_unknown_count": 3186,
+  "source_queue_hash": "6538e8b8247d72e74b78b4948655a39ed447ecd04c2eb7b0c96c05ac1aaaa97c",
+  "source_state_hash": "f8454863fa4443622b3f2dfe3c231b05c21db63291b6f7b2caa4210ecdcba077",
+  "source_unknown_count": 3185,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3186,
+  "unknown_count": 3185,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -22717,6 +22717,24 @@
       "security_name": "Garrett Motion Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "GUER": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Guerrilla RF, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "GURE": {
       "attempts": 0,
       "discovery": {
@@ -39331,24 +39349,6 @@
       "security_name": "PicoCELA Inc. - American Depositary Shares",
       "status": "UNKNOWN_STATIC"
     },
-    "PCRX": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Pacira BioSciences, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "PCSA": {
       "attempts": 0,
       "discovery": {
@@ -46349,24 +46349,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Shenandoah Telecommunications Co - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "SHFS": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "SHF Holdings, Inc. - Class A Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "SHIM": {
