@@ -111,7 +111,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-18T01:19:56.101134+00:00",
+  "generated_at_utc": "2026-11-18T04:48:29.565668+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -2110,169 +2110,160 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 18,
+      "row_count": 17,
       "rows": [
         {
-          "BX Action": "Delete",
-          "Company Name": "Integer Holdings Corporation",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": ""
+          "BX Action": "Add",
+          "Company Name": "Global X Funds",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "CCHP"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "BlackRock ETF Trust",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "GMIX"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Guerrilla RF, Inc.",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "S",
+          "Symbol": "GUER"
         },
         {
           "BX Action": "Delete",
+          "Company Name": "Impact BioMedical, Inc.",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "A",
+          "Symbol": "IBO"
+        },
+        {
+          "BX Action": "Add",
           "Company Name": "Tidal Trust II",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "Z",
-          "Symbol": "ASTN"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Two Roads Shared Trust",
-          "Effective Date": "11/17/2026",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "G",
-          "Symbol": "CWPD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Two Roads Shared Trust",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "CWPG"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "GraniteShares ETF Trust",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "DAU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "GraniteShares ETF Trust",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "DRAC"
+          "Symbol": "IQQI"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Datavault AI Inc.",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Pacira BioSciences, Inc.",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "Q",
+          "Symbol": "PCRX"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Exchange Listed Funds Trust",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "SDC"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "SHF Holdings, Inc.",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "S",
-          "Symbol": "DVLT"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "General Motors Company",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Q",
-          "Symbol": "GM"
+          "Symbol": "SHFS"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "General Motors Company",
-          "Effective Date": "11/17/2026",
+          "Company Name": "SHF Holdings, Inc.",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "GM"
+          "Primary Listing Market": "S",
+          "Symbol": "SHFSW"
         },
         {
           "BX Action": "Add",
-          "Company Name": "GraniteShares ETF Trust",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Global X Funds",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "MEA"
+          "Primary Listing Market": "P",
+          "Symbol": "SHLA"
         },
         {
           "BX Action": "Add",
-          "Company Name": "NuShares ETF Trust",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Direxion Shares ETF Trust",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "NTCR"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "SPDR Series Trust",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "PCHX"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "VanEck Funds",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "PIVT"
+          "Primary Listing Market": "P",
+          "Symbol": "TRLL"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Tidal Trust II",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Exchange Listed Funds Trust",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "RKLZ"
+          "Primary Listing Market": "P",
+          "Symbol": "TYYY"
         },
         {
           "BX Action": "Add",
-          "Company Name": "American Beacon Select Funds",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Listed Funds Trust",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "SIMI"
+          "Symbol": "VEN"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Elevation Series Trust",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Z",
+          "Symbol": "VVPL"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Tidal Trust II",
-          "Effective Date": "11/17/2026",
+          "Company Name": "ETF Opportunities Trust",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "P",
-          "Symbol": "STSM"
+          "Primary Listing Market": "Z",
+          "Symbol": "WZRD"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Torex Resources Inc.",
-          "Effective Date": "11/17/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "TXR"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Bitwise Funds Trust",
-          "Effective Date": "11/17/2026",
+          "Company Name": "Yorkville America Investment Trust",
+          "Effective Date": "11/18/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "ZDAY"
+          "Symbol": "YASX"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Amplify ETF Trust",
+          "Effective Date": "11/18/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "YO"
         }
       ],
       "status": "PASS",

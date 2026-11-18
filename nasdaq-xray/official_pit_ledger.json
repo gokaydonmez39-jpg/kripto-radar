@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-11-18T01:19:57.981372+00:00",
+  "last_ingest_at_utc": "2026-11-18T04:48:30.550422+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 435,
+  "snapshot_count": 436,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -214519,6 +214519,173 @@
       },
       "payload_sha256": "189178d73062d3216cc7294d16f3bdefe867ffe8210cd7590736ec15f3079030",
       "source": "candidate_safety",
+      "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-18T04:48:29.565668+00:00",
+      "observed_at_utc": "2026-11-18T04:48:30.550380+00:00",
+      "payload": {
+        "row_count": 17,
+        "rows": [
+          {
+            "BX Action": "Add",
+            "Company Name": "Global X Funds",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "CCHP"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "BlackRock ETF Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "GMIX"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Guerrilla RF, Inc.",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "S",
+            "Symbol": "GUER"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Impact BioMedical, Inc.",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "A",
+            "Symbol": "IBO"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Tidal Trust II",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "IQQI"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Pacira BioSciences, Inc.",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Q",
+            "Symbol": "PCRX"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Exchange Listed Funds Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "G",
+            "Symbol": "SDC"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "SHF Holdings, Inc.",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "S",
+            "Symbol": "SHFS"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "SHF Holdings, Inc.",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "S",
+            "Symbol": "SHFSW"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Global X Funds",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "SHLA"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Direxion Shares ETF Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "TRLL"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "Exchange Listed Funds Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "P",
+            "Symbol": "TYYY"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Listed Funds Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "VEN"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Elevation Series Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "Z",
+            "Symbol": "VVPL"
+          },
+          {
+            "BX Action": "Delete",
+            "Company Name": "ETF Opportunities Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Delete",
+            "PSX Action": "Delete",
+            "Primary Listing Market": "Z",
+            "Symbol": "WZRD"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Yorkville America Investment Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "YASX"
+          },
+          {
+            "BX Action": "Add",
+            "Company Name": "Amplify ETF Trust",
+            "Effective Date": "11/18/2026",
+            "NASDAQ Action": "Add",
+            "PSX Action": "Add",
+            "Primary Listing Market": "P",
+            "Symbol": "YO"
+          }
+        ],
+        "status": "PASS",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "a9c970da71d8c157ee4f70e356d04d4b53600d443ccd261a16f17766e72ba0f1",
+      "source": "trading_system_adds_deletes",
       "source_status": "PASS"
     }
   ],
