@@ -397,13 +397,15 @@ jobs:
   daily-private-score-acceptance:
     # Guardian remains independently successful even if advisory score fails.
     # An incomplete daily score can never turn the entire EOD green.
-    # No IEX, Google Sheet API, secrets, extra cron, orders or delivery here.
+    # No IEX, Google Sheet writing, extra cron, orders or delivery here.
+    # The optional B proof emitter reads GitHub Actions metadata using this job's read token.
     needs: [guardian-acceptance, private-episode-followups]
     if: ${{ always() && github.event_name != 'pull_request' && needs.guardian-acceptance.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
       contents: read
+      actions: read
     steps:
       - name: Gate raw score outcome after Guardian (fail closed)
         shell: bash
@@ -439,3 +441,17 @@ jobs:
             exit 3
           fi
           echo "XRAY_DAILY_SWING_SCORE=PRIVATE_READBACK_PASS_ASOF_${SCORE_ASOF}_NOT_CHATGPT_DELIVERY"
+      - name: Load NASDAQ source evidence emitter (schedule only)
+        if: ${{ success() && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        continue-on-error: true
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Emit redacted B source envelope (schedule only)
+        if: ${{ success() && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        continue-on-error: true
+        timeout-minutes: 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+          XRAY_SCORE_ASOF: ${{ needs.private-episode-followups.outputs.swing_score_asof }}
+        run: python3 personal-swing/emit_b_source_envelope.py
