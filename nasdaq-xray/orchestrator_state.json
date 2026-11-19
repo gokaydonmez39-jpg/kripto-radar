@@ -3654,7 +3654,7 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "5684da26ef4ae986adb6877692c2d74be8a599fe0754a2ade30542511d2207aa",
+    "source_candidates_sha256": "c6b69ef69ef0129b28ad89610b2950ad7527f610c135b394ffb09d073fffcef6",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 143,
       "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 314,
@@ -3664,7 +3664,7 @@
     },
     "transient_retry_count": 4,
     "unknown_never_pass": true,
-    "watchlist_digest": "cf8b99fa932713faeb80956968cd9723d9d10fedbbfd935c6c47a11d26381fa6"
+    "watchlist_digest": "72f866a539e856ca507f3825c7d6c9f60509c862d28ba6afbc647248459978cf"
   },
   "cursor": 3185,
   "downstream_invalidation": {
@@ -3718,7 +3718,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 204,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-19T01:42:50.242485+00:00",
+  "updated_at_utc": "2026-11-19T03:55:41.758438+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -3728,485 +3728,7 @@
     "candidate_local_special_review": null,
     "execution": "NONE",
     "global_upstream_unknown_does_not_veto_healthy_watch_rows": true,
-    "new_watchlist_symbols": [
-      "AAL",
-      "AAOI",
-      "AAON",
-      "AAPL",
-      "ABNB",
-      "ACGL",
-      "ACHC",
-      "ACMR",
-      "ADBE",
-      "ADI",
-      "ADP",
-      "ADPT",
-      "ADSK",
-      "AEHR",
-      "AEIS",
-      "AEP",
-      "AFRM",
-      "AGNC",
-      "AKAM",
-      "ALAB",
-      "ALGM",
-      "ALGN",
-      "ALKS",
-      "ALM",
-      "ALNY",
-      "AMAT",
-      "AMBA",
-      "AMD",
-      "AMGN",
-      "AMKR",
-      "AMRX",
-      "AMZN",
-      "APA",
-      "APLD",
-      "APP",
-      "APPF",
-      "APPN",
-      "ARQT",
-      "ARWR",
-      "ASML",
-      "ASND",
-      "ASO",
-      "ASST",
-      "ASTS",
-      "AUGO",
-      "AVAV",
-      "AVGO",
-      "AVT",
-      "AXGN",
-      "AXON",
-      "AXSM",
-      "AXTI",
-      "BBIO",
-      "BIIB",
-      "BKNG",
-      "BKR",
-      "BLLN",
-      "BMRN",
-      "BPOP",
-      "BRKR",
-      "BRZE",
-      "BSY",
-      "BTSG",
-      "BZ",
-      "CAI",
-      "CAKE",
-      "CALM",
-      "CAMT",
-      "CART",
-      "CASY",
-      "CBRL",
-      "CBSH",
-      "CCC",
-      "CCEP",
-      "CDNA",
-      "CDNS",
-      "CDW",
-      "CELC",
-      "CELH",
-      "CENX",
-      "CG",
-      "CGNX",
-      "CGON",
-      "CHDN",
-      "CHKP",
-      "CHRD",
-      "CHRW",
-      "CHTR",
-      "CHYM",
-      "CIFR",
-      "CINF",
-      "CLMT",
-      "CLSK",
-      "CMCSA",
-      "CME",
-      "COCO",
-      "COGT",
-      "COHU",
-      "COIN",
-      "COKE",
-      "COLB",
-      "COO",
-      "CORT",
-      "CORZ",
-      "COST",
-      "CPB",
-      "CPRT",
-      "CRDO",
-      "CROX",
-      "CRSP",
-      "CRUS",
-      "CRWD",
-      "CRWV",
-      "CSCO",
-      "CSGP",
-      "CSX",
-      "CTAS",
-      "CTSH",
-      "CVCO",
-      "CVLT",
-      "CWST",
-      "CYTK",
-      "CZR",
-      "DASH",
-      "DAVE",
-      "DBX",
-      "DDOG",
-      "DKNG",
-      "DLTR",
-      "DNTH",
-      "DOCU",
-      "DOX",
-      "DPZ",
-      "DUOL",
-      "DXCM",
-      "EBAY",
-      "ECHO",
-      "EEFT",
-      "ENPH",
-      "ENSG",
-      "ENTG",
-      "EQIX",
-      "ERAS",
-      "ESLT",
-      "EVRG",
-      "EWBC",
-      "EWTX",
-      "EXC",
-      "EXE",
-      "EXEL",
-      "EXLS",
-      "EXPE",
-      "FANG",
-      "FAST",
-      "FCEL",
-      "FCFS",
-      "FCNCA",
-      "FER",
-      "FFIV",
-      "FHB",
-      "FIGR",
-      "FISV",
-      "FIVE",
-      "FIVN",
-      "FLEX",
-      "FLY",
-      "FORM",
-      "FOXA",
-      "FROG",
-      "FRPT",
-      "FRSH",
-      "FSLR",
-      "FSLY",
-      "FTAI",
-      "FTDR",
-      "FTNT",
-      "FWONK",
-      "GEHC",
-      "GEN",
-      "GFS",
-      "GH",
-      "GILD",
-      "GLBE",
-      "GLNG",
-      "GLPI",
-      "GLXY",
-      "GM",
-      "GNTX",
-      "GOOG",
-      "GOOGL",
-      "GRAL",
-      "GSAT",
-      "GTLB",
-      "GTX",
-      "HALO",
-      "HAS",
-      "HBAN",
-      "HLNE",
-      "HLT",
-      "HON",
-      "HOOD",
-      "HQY",
-      "HSIC",
-      "HST",
-      "HTFL",
-      "HURN",
-      "HUT",
-      "HWC",
-      "IBKR",
-      "IBRX",
-      "ICLR",
-      "IDCC",
-      "IDXX",
-      "IESC",
-      "ILMN",
-      "INCY",
-      "INOD",
-      "INSM",
-      "INTC",
-      "INTU",
-      "IONS",
-      "IOVA",
-      "IREN",
-      "IRON",
-      "IRTC",
-      "ISRG",
-      "ITRI",
-      "JAZZ",
-      "JBHT",
-      "JKHY",
-      "KDP",
-      "KLAC",
-      "KMB",
-      "KNSA",
-      "KOD",
-      "KRYS",
-      "KTOS",
-      "KYMR",
-      "LAMR",
-      "LECO",
-      "LFUS",
-      "LGN",
-      "LGND",
-      "LIFE",
-      "LIN",
-      "LITE",
-      "LKQ",
-      "LNT",
-      "LNTH",
-      "LOGI",
-      "LPLA",
-      "LQDA",
-      "LRCX",
-      "LSCC",
-      "LSTR",
-      "LULU",
-      "LUNR",
-      "LYFT",
-      "MANH",
-      "MAR",
-      "MARA",
-      "MAT",
-      "MCHP",
-      "MDB",
-      "MDGL",
-      "MDLZ",
-      "MEDP",
-      "MELI",
-      "META",
-      "MGNI",
-      "MIDD",
-      "MIRM",
-      "MKSI",
-      "MKTX",
-      "MMSI",
-      "MNDY",
-      "MNST",
-      "MORN",
-      "MPWR",
-      "MRNA",
-      "MRVL",
-      "MRX",
-      "MSFT",
-      "MSTR",
-      "MTCH",
-      "MTSI",
-      "MU",
-      "MXL",
-      "MYRG",
-      "NAVN",
-      "NBIS",
-      "NBIX",
-      "NDAQ",
-      "NDSN",
-      "NESR",
-      "NFLX",
-      "NOVT",
-      "NRIX",
-      "NSIT",
-      "NTAP",
-      "NTLA",
-      "NTNX",
-      "NTRA",
-      "NTRS",
-      "NTSK",
-      "NVAX",
-      "NVDA",
-      "NVMI",
-      "NVTS",
-      "NWSA",
-      "NXPI",
-      "NXST",
-      "NXT",
-      "ODFL",
-      "OKTA",
-      "OLED",
-      "OLLI",
-      "ON",
-      "ONB",
-      "OPCH",
-      "ORKA",
-      "ORLY",
-      "OUST",
-      "OZK",
-      "PAGP",
-      "PANW",
-      "PAYX",
-      "PCAR",
-      "PCTY",
-      "PCVX",
-      "PEGA",
-      "PENG",
-      "PEP",
-      "PFG",
-      "PI",
-      "PLTR",
-      "PLXS",
-      "PODD",
-      "POOL",
-      "POWL",
-      "PRAX",
-      "PTC",
-      "PTCT",
-      "PTEN",
-      "PTGX",
-      "PYPL",
-      "QBTS",
-      "QCOM",
-      "QLYS",
-      "REG",
-      "REGN",
-      "RELY",
-      "RGEN",
-      "RGLD",
-      "RGTI",
-      "RIOT",
-      "RIVN",
-      "RKLB",
-      "RMBS",
-      "ROAD",
-      "ROIV",
-      "ROP",
-      "ROST",
-      "RPRX",
-      "RUN",
-      "RVMD",
-      "RYTM",
-      "SAIA",
-      "SAIC",
-      "SAIL",
-      "SANM",
-      "SBAC",
-      "SBUX",
-      "SEDG",
-      "SEIC",
-      "SEZL",
-      "SFM",
-      "SGRY",
-      "SHOO",
-      "SHOP",
-      "SIRI",
-      "SITM",
-      "SLAB",
-      "SLM",
-      "SLS",
-      "SMCI",
-      "SMMT",
-      "SMTC",
-      "SNPS",
-      "SOFI",
-      "SOLS",
-      "SRRK",
-      "SSNC",
-      "SSRM",
-      "STLD",
-      "STNE",
-      "STRL",
-      "STX",
-      "SWKS",
-      "SYM",
-      "SYNA",
-      "SYRE",
-      "TARS",
-      "TEAM",
-      "TECH",
-      "TEM",
-      "TENB",
-      "TER",
-      "TGTX",
-      "TIGO",
-      "TLN",
-      "TMDX",
-      "TMUS",
-      "TNGX",
-      "TPG",
-      "TRI",
-      "TRMB",
-      "TRMD",
-      "TROW",
-      "TSCO",
-      "TSEM",
-      "TSLA",
-      "TTAN",
-      "TTD",
-      "TTEK",
-      "TTMI",
-      "TTWO",
-      "TVTX",
-      "TW",
-      "TWST",
-      "TXG",
-      "TXN",
-      "TXRH",
-      "UAL",
-      "UCTT",
-      "ULTA",
-      "UMBF",
-      "UPST",
-      "URBN",
-      "USAR",
-      "UTHR",
-      "VCTR",
-      "VCYT",
-      "VIAV",
-      "VICR",
-      "VKTX",
-      "VLY",
-      "VNOM",
-      "VRNS",
-      "VRSK",
-      "VRSN",
-      "VRTX",
-      "VSAT",
-      "VSEC",
-      "VTRS",
-      "WDAY",
-      "WDC",
-      "WFRD",
-      "WGS",
-      "WING",
-      "WIX",
-      "WMG",
-      "WMT",
-      "WSC",
-      "WTFC",
-      "WTW",
-      "WULF",
-      "WWD",
-      "WYNN",
-      "XEL",
-      "XMTR",
-      "XP",
-      "Z",
-      "ZBRA",
-      "ZION",
-      "ZM",
-      "ZS"
-    ],
+    "new_watchlist_symbols": [],
     "no_longer_in_top_watchlist": [],
     "orders": [],
     "price_liquidity_screened_count": 477,
@@ -4214,7 +3736,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "5684da26ef4ae986adb6877692c2d74be8a599fe0754a2ade30542511d2207aa",
+    "source_candidates_sha256": "c6b69ef69ef0129b28ad89610b2950ad7527f610c135b394ffb09d073fffcef6",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4230,7 +3752,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVDA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4244,7 +3766,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4258,7 +3780,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4272,7 +3794,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAPL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4286,7 +3808,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MSFT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4300,7 +3822,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TSLA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4314,7 +3836,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "META",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4328,7 +3850,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMZN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4342,7 +3864,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4356,7 +3878,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4370,7 +3892,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INTC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4384,7 +3906,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GOOG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4398,7 +3920,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MRVL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4412,7 +3934,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LITE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4426,7 +3948,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PLTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4440,7 +3962,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NBIS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4454,7 +3976,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRWV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4468,7 +3990,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "STX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4482,7 +4004,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MRNA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4496,7 +4018,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMAT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4510,7 +4032,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WDC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4524,7 +4046,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LRCX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4538,7 +4060,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NFLX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4552,7 +4074,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASML",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4566,7 +4088,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WMT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4580,7 +4102,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4594,7 +4116,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MSTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4608,7 +4130,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TXN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4622,7 +4144,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRWD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4636,7 +4158,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PANW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4650,7 +4172,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KLAC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4664,7 +4186,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CSCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4678,7 +4200,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "QCOM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4692,7 +4214,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4706,7 +4228,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HOOD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4720,13 +4242,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IREN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 141.87,
-        "dv30_usd_observed": 1274130819.06,
+        "dv30_usd_observed": 1274742349.7,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "PepsiCo, Inc. - Common Stock",
@@ -4734,7 +4256,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PEP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4748,7 +4270,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SMCI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4762,7 +4284,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRDO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4776,7 +4298,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COIN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4790,13 +4312,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MPWR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 390.91,
-        "dv30_usd_observed": 1161634638.53,
+        "dv30_usd_observed": 1165868780.2,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Applovin Corporation - Class A Common Stock",
@@ -4804,7 +4326,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4818,7 +4340,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SHOP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4832,7 +4354,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALAB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4846,7 +4368,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4860,7 +4382,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NXPI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4874,7 +4396,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BKNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4888,7 +4410,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TER",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4902,13 +4424,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LIN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 420.95,
-        "dv30_usd_observed": 952884217.7,
+        "dv30_usd_observed": 953299484.88,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Intuitive Surgical, Inc. - Common Stock",
@@ -4916,7 +4438,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ISRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4930,13 +4452,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RKLB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 226.2,
-        "dv30_usd_observed": 927227430.0,
+        "dv30_usd_observed": 927574420.8,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Adobe Inc. - Common Stock",
@@ -4944,7 +4466,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADBE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4958,13 +4480,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GILD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 164.02,
-        "dv30_usd_observed": 920248935.98,
+        "dv30_usd_observed": 920437394.96,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "T-Mobile US, Inc. - Common Stock",
@@ -4972,7 +4494,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TMUS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -4986,7 +4508,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SNPS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5000,7 +4522,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAOI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5014,7 +4536,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INTU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5028,7 +4550,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MCHP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5042,7 +4564,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SBUX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5056,7 +4578,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MELI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5070,7 +4592,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DASH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5084,7 +4606,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DDOG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5098,7 +4620,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5112,13 +4634,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SOFI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 536.45,
-        "dv30_usd_observed": 694189530.04,
+        "dv30_usd_observed": 694441393.31,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Vertex Pharmaceuticals Incorporated - Common Stock",
@@ -5126,7 +4648,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VRTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5140,7 +4662,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CDNS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5154,7 +4676,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5168,7 +4690,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FTNT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5182,7 +4704,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CMCSA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5196,13 +4718,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EQIX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 945.53,
-        "dv30_usd_observed": 656015069.36,
+        "dv30_usd_observed": 656098276.0,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Regeneron Pharmaceuticals, Inc. - Common Stock",
@@ -5210,7 +4732,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "REGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5224,7 +4746,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5238,7 +4760,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASTS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5252,7 +4774,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ABNB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5266,13 +4788,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HLT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 107.24,
-        "dv30_usd_observed": 619019383.85,
+        "dv30_usd_observed": 619172308.09,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Kimberly-Clark Corporation - Common Stock",
@@ -5280,7 +4802,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KMB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5294,7 +4816,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MAR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5308,7 +4830,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CME",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5322,7 +4844,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5336,7 +4858,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTRA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5350,7 +4872,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OKTA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5364,7 +4886,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5378,7 +4900,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KDP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5392,7 +4914,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXTI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5406,7 +4928,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WULF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5420,7 +4942,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PYPL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5434,7 +4956,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TTWO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5448,7 +4970,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TEAM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5462,7 +4984,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ZS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5476,7 +4998,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "UAL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5490,7 +5012,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "XEL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5504,7 +5026,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ORLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5518,7 +5040,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ILMN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5532,7 +5054,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TSEM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5546,7 +5068,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CSX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5560,7 +5082,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MDB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5574,7 +5096,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FLEX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5588,7 +5110,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APLD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5602,7 +5124,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ROST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5616,7 +5138,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AKAM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5630,7 +5152,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MDLZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5644,7 +5166,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EBAY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5658,7 +5180,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MNST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5672,7 +5194,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AEP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5686,7 +5208,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MTSI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5700,7 +5222,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5714,7 +5236,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ENTG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5728,7 +5250,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WDAY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5742,7 +5264,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FSLR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5756,7 +5278,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXPE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5770,7 +5292,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RVMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5784,7 +5306,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ECHO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5798,7 +5320,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5812,7 +5334,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5826,7 +5348,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FOXA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5840,7 +5362,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TEM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5854,7 +5376,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TSCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5868,7 +5390,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SMTC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5882,7 +5404,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FANG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5896,13 +5418,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CTSH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 222.0,
-        "dv30_usd_observed": 381381687.48,
+        "dv30_usd_observed": 381464937.48,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Cintas Corporation - Common Stock",
@@ -5910,7 +5432,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CTAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5924,7 +5446,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CIFR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5938,13 +5460,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 149.4,
-        "dv30_usd_observed": 374226458.5,
+        "dv30_usd_observed": 374284425.7,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Alnylam Pharmaceuticals, Inc. - Common Stock",
@@ -5952,7 +5474,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALNY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5966,7 +5488,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IBKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -5980,13 +5502,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PCAR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 60.48,
-        "dv30_usd_observed": 366551772.09,
+        "dv30_usd_observed": 366607413.69,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Fiserv, Inc. - Common Stock",
@@ -5994,7 +5516,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FISV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6008,7 +5530,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TLN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6022,7 +5544,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTAP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6036,7 +5558,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TTMI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6050,7 +5572,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DXCM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6064,7 +5586,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FTAI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6078,7 +5600,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HUT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6092,7 +5614,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ROP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6106,7 +5628,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FAST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6120,7 +5642,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6134,7 +5656,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CPRT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6148,7 +5670,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RIOT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6162,7 +5684,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NDAQ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6176,7 +5698,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ODFL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6190,7 +5712,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SWKS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6204,7 +5726,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LULU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6218,7 +5740,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RIVN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6232,7 +5754,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MKSI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6246,7 +5768,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PAYX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6260,7 +5782,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "STRL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6274,7 +5796,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HBAN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6288,7 +5810,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6302,7 +5824,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TWST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6316,7 +5838,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IDXX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6330,7 +5852,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INSM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6344,7 +5866,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CASY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6358,7 +5880,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BIIB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6372,7 +5894,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6386,7 +5908,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "XP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6400,7 +5922,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "UTHR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6414,7 +5936,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SITM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6428,7 +5950,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GEHC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6442,7 +5964,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MARA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6456,13 +5978,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AFRM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 648.51,
-        "dv30_usd_observed": 270394506.51,
+        "dv30_usd_observed": 270427904.77,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Ulta Beauty, Inc. - Common Stock",
@@ -6470,7 +5992,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ULTA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6484,7 +6006,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VRSN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6498,7 +6020,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6512,7 +6034,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FFIV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6526,7 +6048,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DLTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6540,7 +6062,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6554,7 +6076,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CDW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6568,7 +6090,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FWONK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6582,7 +6104,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LPLA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6596,7 +6118,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ZM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6610,7 +6132,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VRSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6624,7 +6146,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DPZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6638,7 +6160,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DKNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6652,7 +6174,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ROIV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6666,7 +6188,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AGNC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6680,7 +6202,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6694,7 +6216,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CORZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6708,7 +6230,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LSCC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6722,7 +6244,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HALO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6736,7 +6258,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TROW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6750,7 +6272,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ACGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6764,7 +6286,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GFS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6778,7 +6300,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CART",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6792,7 +6314,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHRW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6806,13 +6328,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MXL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 118.86,
-        "dv30_usd_observed": 210072818.55,
+        "dv30_usd_observed": 210717682.44,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Coca-Cola Europacific Partners plc - Ordinary Shares",
@@ -6820,7 +6342,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CCEP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6834,7 +6356,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NXT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6848,7 +6370,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WWD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6862,7 +6384,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RPRX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6876,7 +6398,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ZBRA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6890,7 +6412,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BRZE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6904,7 +6426,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6918,7 +6440,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PODD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6932,7 +6454,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "STLD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6946,7 +6468,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TXG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6960,7 +6482,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LNT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6974,7 +6496,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FROG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -6988,7 +6510,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INCY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7002,7 +6524,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TTD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7016,7 +6538,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TECH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7030,7 +6552,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "JBHT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7044,7 +6566,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGEN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7058,7 +6580,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NBIX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7072,7 +6594,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SBAC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7086,7 +6608,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TXRH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7100,7 +6622,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BBIO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7114,7 +6636,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHKP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7128,7 +6650,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GEN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7142,7 +6664,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTRS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7156,7 +6678,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VICR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7170,7 +6692,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VIAV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7184,7 +6706,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EVRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7198,7 +6720,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CSGP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7212,7 +6734,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LYFT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7226,7 +6748,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DOCU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7240,7 +6762,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TRI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7254,7 +6776,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FIVE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7268,7 +6790,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MANH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7282,7 +6804,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VTRS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7296,7 +6818,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "QLYS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7310,7 +6832,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7324,7 +6846,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7338,7 +6860,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7352,7 +6874,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AEHR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7366,7 +6888,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KTOS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7380,7 +6902,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PENG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7394,7 +6916,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "JAZZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7408,7 +6930,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGTI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7422,7 +6944,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ICLR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7436,7 +6958,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VRNS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7450,7 +6972,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GTLB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7464,7 +6986,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WYNN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7478,7 +7000,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ENPH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7492,7 +7014,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MDGL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7506,7 +7028,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WING",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7520,7 +7042,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXEL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7534,7 +7056,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVAV",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7548,7 +7070,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASND",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7562,7 +7084,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "QBTS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7576,7 +7098,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CROX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7590,7 +7112,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FCNCA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7604,7 +7126,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CAKE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7618,7 +7140,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WTW",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7632,7 +7154,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CELH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7646,7 +7168,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MEDP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7660,7 +7182,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RMBS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7674,7 +7196,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AEIS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7688,7 +7210,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FORM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7702,7 +7224,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CZR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7716,7 +7238,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7730,7 +7252,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CCC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7744,7 +7266,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SFM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7758,13 +7280,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MTCH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 241.82,
-        "dv30_usd_observed": 144605589.67,
+        "dv30_usd_observed": 144640532.66,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Royal Gold, Inc. - Common Stock",
@@ -7772,7 +7294,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGLD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7786,7 +7308,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VSAT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7800,7 +7322,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CLSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7814,7 +7336,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FER",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7828,7 +7350,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TENB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7842,7 +7364,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTNX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7856,7 +7378,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXSM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7870,7 +7392,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DUOL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7884,7 +7406,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7898,7 +7420,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IOVA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7912,7 +7434,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "USAR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7926,7 +7448,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SANM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7940,7 +7462,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "JKHY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7954,7 +7476,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BMRN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7968,7 +7490,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OLLI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7982,7 +7504,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CPB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -7996,7 +7518,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLXY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8010,7 +7532,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LQDA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8024,7 +7546,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PRAX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8038,7 +7560,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "POOL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8052,7 +7574,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PFG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8066,7 +7588,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BTSG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8080,7 +7602,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SOLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8094,7 +7616,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SSNC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8108,7 +7630,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TRMB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8122,7 +7644,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTSK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8136,7 +7658,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PCVX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8150,7 +7672,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FSLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8164,7 +7686,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TPG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8178,7 +7700,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BRKR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8192,7 +7714,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IONS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8206,7 +7728,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FIGR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8220,7 +7742,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "Z",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8234,7 +7756,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SYNA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8248,7 +7770,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MKTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8262,7 +7784,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VKTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8276,7 +7798,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PCTY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8290,7 +7812,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8304,7 +7826,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVTS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8318,7 +7840,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AVT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8332,7 +7854,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DBX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8346,7 +7868,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SIRI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8360,7 +7882,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SAIA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8374,7 +7896,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHYM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8388,7 +7910,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHRD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8402,7 +7924,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LOGI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8416,7 +7938,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CAI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8430,7 +7952,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "POWL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8444,7 +7966,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "REG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8458,7 +7980,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COKE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8472,7 +7994,21 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OPCH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 150.95,
+        "dv30_usd_observed": 104693004.35,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Commvault Systems, Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "CVLT",
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8486,7 +8022,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TTAN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8500,21 +8036,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KYMR",
-        "tracking_state": "NEW_ON_WATCHLIST"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 150.95,
-        "dv30_usd_observed": 103361700.83,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Commvault Systems, Inc. - Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "CVLT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8528,7 +8050,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HSIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8542,7 +8064,21 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NDSN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 268.45,
+        "dv30_usd_observed": 102505887.72,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Dave Inc.  - Class A Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "DAVE",
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8556,21 +8092,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NWSA",
-        "tracking_state": "NEW_ON_WATCHLIST"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 268.45,
-        "dv30_usd_observed": 101921778.54,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Dave Inc.  - Class A Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "DAVE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8584,7 +8106,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TGTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8598,7 +8120,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CYTK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8612,7 +8134,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ARWR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8626,7 +8148,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CINF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8640,7 +8162,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ONB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8654,7 +8176,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IBRX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8668,7 +8190,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ZION",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8682,7 +8204,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EWBC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8696,7 +8218,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SYRE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8710,7 +8232,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GRAL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8724,7 +8246,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LNTH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8738,7 +8260,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KOD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8752,7 +8274,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "UPST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8766,7 +8288,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BSY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8780,7 +8302,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IESC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8794,7 +8316,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LFUS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8808,7 +8330,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLPI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8822,7 +8344,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALGM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8836,7 +8358,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTGX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8850,7 +8372,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVMI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8864,7 +8386,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MNDY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8878,7 +8400,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LKQ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8892,7 +8414,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CGNX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8906,7 +8428,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EXLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8920,7 +8442,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MAT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8934,7 +8456,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CHDN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8948,7 +8470,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRUS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8962,7 +8484,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8976,7 +8498,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TVTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -8990,7 +8512,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LAMR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9004,7 +8526,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FCFS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9018,7 +8540,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VNOM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9032,7 +8554,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VSEC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9046,7 +8568,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "URBN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9060,7 +8582,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TTEK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9074,13 +8596,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CDNA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 79.8,
-        "dv30_usd_observed": 83255326.14,
+        "dv30_usd_observed": 83321639.94,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "AAON, Inc. - Common Stock",
@@ -9088,7 +8610,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AAON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9102,7 +8624,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COLB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9116,13 +8638,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CORT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 10.12,
-        "dv30_usd_observed": 81451025.67,
+        "dv30_usd_observed": 81791125.64,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Intuitive Machines, Inc. - Class A Common Stock",
@@ -9130,7 +8652,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LUNR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9144,7 +8666,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ASO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9158,7 +8680,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HTFL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9172,7 +8694,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CELC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9186,7 +8708,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "XMTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9200,7 +8722,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "UMBF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9214,13 +8736,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SAIL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 221.33,
-        "dv30_usd_observed": 79390372.71,
+        "dv30_usd_observed": 79415715.0,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Silicon Laboratories, Inc. - Common Stock",
@@ -9228,7 +8750,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SLAB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9242,7 +8764,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TIGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9256,7 +8778,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PEGA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9270,7 +8792,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ORKA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9284,7 +8806,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9298,7 +8820,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OUST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9312,7 +8834,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SMMT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9326,7 +8848,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BZ",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9340,7 +8862,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SEDG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9354,7 +8876,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LECO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9368,7 +8890,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ERAS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9382,7 +8904,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TMDX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9396,7 +8918,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RYTM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9410,7 +8932,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TNGX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9424,7 +8946,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTEN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9438,7 +8960,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WFRD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9452,7 +8974,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMRX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9466,7 +8988,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALKS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9480,7 +9002,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WTFC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9494,7 +9016,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RUN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9508,7 +9030,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CRSP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9522,7 +9044,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KRYS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9536,7 +9058,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OZK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9550,7 +9072,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MYRG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9564,7 +9086,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AMBA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9578,7 +9100,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HQY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9592,7 +9114,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DNTH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9606,7 +9128,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SEIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9620,7 +9142,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9634,7 +9156,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APPF",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9648,7 +9170,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GSAT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9662,7 +9184,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FRPT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9676,7 +9198,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9690,7 +9212,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SSRM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9704,7 +9226,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "UCTT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9718,7 +9240,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SGRY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9732,7 +9254,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BPOP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9746,7 +9268,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CLMT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9760,7 +9282,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SRRK",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9774,7 +9296,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AXGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9788,7 +9310,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PLXS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9802,7 +9324,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COGT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9816,7 +9338,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SEZL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9830,7 +9352,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CENX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9844,7 +9366,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NVAX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9858,7 +9380,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FCEL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9872,7 +9394,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IRTC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9886,7 +9408,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LGN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9900,7 +9422,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CGON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9914,7 +9436,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VCTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9928,7 +9450,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CALM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9942,7 +9464,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "DOX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9956,7 +9478,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "AUGO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9970,7 +9492,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IRON",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9984,7 +9506,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CWST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -9998,7 +9520,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CAMT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10012,7 +9534,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "COHU",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10026,7 +9548,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ACHC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10040,7 +9562,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLNG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10054,7 +9576,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FRSH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10068,7 +9590,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RELY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10082,7 +9604,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SLM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10096,7 +9618,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ESLT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10110,7 +9632,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NRIX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10124,7 +9646,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HURN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10138,7 +9660,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LGND",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10152,7 +9674,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PAGP",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10166,7 +9688,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SAIC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10180,7 +9702,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WIX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10194,7 +9716,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WMG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10208,7 +9730,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SLS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10222,7 +9744,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "IDCC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10236,7 +9758,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HWC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10250,7 +9772,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ALM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10264,7 +9786,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "PTCT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10278,7 +9800,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TRMD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10292,7 +9814,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NOVT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10306,7 +9828,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "INOD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10320,7 +9842,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TARS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10334,7 +9856,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SYM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10348,7 +9870,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NSIT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10362,7 +9884,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "KNSA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10376,7 +9898,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "OLED",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10390,13 +9912,13 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NXST",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 23.94,
-        "dv30_usd_observed": 57211081.08,
+        "dv30_usd_observed": 57212302.02,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "First Hawaiian, Inc. - Common Stock",
@@ -10404,7 +9926,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FHB",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10418,7 +9940,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WGS",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10432,7 +9954,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "BLLN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10446,7 +9968,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ACMR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10460,7 +9982,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ADPT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10474,7 +9996,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "VCYT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10488,7 +10010,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FTDR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10502,7 +10024,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "HLNE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10516,7 +10038,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ARQT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10530,7 +10052,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FLY",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10544,7 +10066,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EEFT",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10558,7 +10080,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ITRI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10572,7 +10094,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GNTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10586,7 +10108,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MIDD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10600,7 +10122,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "STNE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10614,7 +10136,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "WSC",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10628,7 +10150,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "EWTX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10642,7 +10164,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MGNI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10656,7 +10178,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LSTR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10670,7 +10192,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MMSI",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10684,7 +10206,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "SHOO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10698,7 +10220,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CBSH",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10712,7 +10234,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MIRM",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10726,7 +10248,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ROAD",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10740,7 +10262,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CVCO",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10754,7 +10276,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MORN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10768,7 +10290,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "ENSG",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10782,7 +10304,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NAVN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10796,7 +10318,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "FIVN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10810,7 +10332,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LIFE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10824,7 +10346,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NTLA",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10838,7 +10360,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "NESR",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10852,7 +10374,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "GLBE",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10866,7 +10388,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "CBRL",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10880,7 +10402,7 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "MRX",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       },
       {
         "buy_signal": false,
@@ -10894,11 +10416,11 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "APPN",
-        "tracking_state": "NEW_ON_WATCHLIST"
+        "tracking_state": "PERSISTING"
       }
     ],
     "watchlist_cap": null,
     "watchlist_count": 477,
-    "watchlist_digest": "cf8b99fa932713faeb80956968cd9723d9d10fedbbfd935c6c47a11d26381fa6"
+    "watchlist_digest": "72f866a539e856ca507f3825c7d6c9f60509c862d28ba6afbc647248459978cf"
   }
 }
