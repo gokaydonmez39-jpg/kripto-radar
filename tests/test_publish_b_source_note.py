@@ -120,5 +120,85 @@ class NotePublisherTests(unittest.TestCase):
         self.deny("SCORE_HEADER_DRIFT")
 
 
+
+
+class ASourceSupplementTests(unittest.TestCase):
+    def application_inputs(self):
+        import datetime as dt
+        import json
+        import emit_b_source_envelope as producer
+
+        y = "2026-11-18T21:05:00Z"
+        z = "2026-11-18T21:06:00Z"
+        jobs = {n: {"id": i + 1, "started_at": y, "completed_at": z}
+                for i, n in enumerate(producer.NAMES)}
+        jobs[producer.CARRIER]["completed_at"] = None
+        txt = lambda row: y + " " + json.dumps(row, separators=(",", ":"))
+        here = {"asof_et": ASOF}
+        logs = {
+            producer.NAMES[0]: "\n".join([
+                y + " " + producer.SCAN_MARK,
+                txt(dict(here, status="PRIVATE_SHEET_READBACK_PASS", candidates=2)),
+                txt(dict(here, no_execution=True, final_ready=True, universe=477, processed=477, valid=477,
+                         invalid_or_missing=0, remaining=0, new_entries=2, scope_sha256=producer.A_SCOPE,
+                         analysis_fingerprint_sha256=producer.A_ALGO)),
+                txt(dict(here, status="AL_OUTBOX_PENDING_READBACK_PASS", technical_al=2, messages_sent=0,
+                         device_ack=False, new_pending=2, new_suppressed=0, not_allowlisted="fixture-private")),
+            ]),
+            producer.NAMES[1]: "\n".join([
+                txt(dict(here, status="SWING_SCORE_PRIVATE_READBACK_PASS", execution="NONE",
+                         active_episodes=24, scoreable=24)),
+                txt(dict(here, status="PANEL_READBACK_PASS", device_ack=False)),
+                txt(dict(here, status="LIFECYCLE_READBACK_PASS", device_ack=False,
+                         notification_delivery="NOT_ATTEMPTED_BY_GITHUB", terminal_updates=1)),
+            ]),
+            producer.NAMES[2]: txt(dict(schema="XRAY_PERSONAL_PRIVATE_EVIDENCE_AUDIT_V1", status="READ_ONLY_EVIDENCE_AUDIT",
+                                  execution="NONE", sheet_writes=0, messages_sent=0, last_verified_scan_asof=ASOF,
+                                  last_asof_score="SUMMARY_PRESENT", score_count=24, score_hold_count=0,
+                                  scored_active_episodes=24)),
+        }
+        now = dt.datetime.fromisoformat(z.replace("Z", "+00:00"))
+        return producer, jobs, logs, now
+
+    def test_complete_witness_keeps_b_proof_and_note_only_write(self):
+        p, jobs, logs, now = self.application_inputs()
+        old_paths = {**logs, p.NAMES[1]: logs[p.NAMES[1]].splitlines()[0]}
+        b = p.envelope(jobs, old_paths, 101, "a" * 40, ASOF, now)
+        both = p.envelope(jobs, logs, 101, "a" * 40, ASOF, now)
+        self.assertEqual({k: v for k, v in both.items() if k != "a"}, b)
+        self.assertEqual(both["a"]["schema"], p.A_SCHEMA)
+        self.assertEqual(both["a"]["outbox"][1:], [2, 0])
+        self.assertEqual(both["a"]["life"][1], 1)
+        self.assertNotIn("fixture-private", writer.note_text(both))
+        api = FakeApi()
+        self.assertEqual(writer.synchronize_note(api, both), "ATTACHED_AND_VERIFIED")
+        self.assertEqual(len(api.posts), 1)
+        self.assertEqual(api.posts[0]["requests"][0]["updateCells"]["fields"], "note")
+
+    def test_wrong_policy_or_duplicate_receipt_does_not_attach_a(self):
+        p, jobs, logs, now = self.application_inputs()
+        k = p.NAMES[0]
+        broken = [
+            logs[k].replace(p.A_SCOPE, "b" * 64),
+            logs[k] + "\n" + logs[k].splitlines()[-1],
+            logs[k].replace('"new_pending":2', '"new_pending":3'),
+            logs[k].replace('"messages_sent":0', '"messages_sent":1'),
+        ]
+        b = p.envelope(jobs, {**logs, k: broken[0]}, 101, "a"*40, ASOF, now)
+        for text in broken:
+            with self.subTest(length=len(text)):
+                got = p.envelope(jobs, {**logs, k: text}, 101, "a"*40, ASOF, now)
+                self.assertEqual(got, b)
+                self.assertNotIn("a", got)
+
+    def test_late_or_noncurrent_panel_is_not_witnessed(self):
+        p, jobs, logs, now = self.application_inputs()
+        key = p.NAMES[1]
+        panel = logs[key].splitlines()[1]
+        for change in (panel.replace("T21:05:00Z", "T21:25:00Z"), panel.replace(ASOF, "2026-01-05")):
+            next_logs = {**logs, key: logs[key].replace(panel, change)}
+            got = p.envelope(jobs, next_logs, 101, "a"*40, ASOF, now)
+            self.assertNotIn("a", got)
+
 if __name__ == "__main__":
     unittest.main()

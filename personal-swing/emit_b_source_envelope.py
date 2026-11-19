@@ -150,6 +150,74 @@ def receipts(log: str, job: dict, asof: str, index: int) -> list[list[str]]:
     return [one(exact, "SCAN_HANDOFF_UNAVAILABLE"), line] if index == 0 else [line]
 
 
+
+# Optional A witness. No event keys, symbols, account fields, or raw logs enter the note.
+A_SCHEMA = "XRAY_477_A_SOURCE_ENVELOPE_V1"
+A_SCOPE = "3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060"
+A_ALGO = "0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523"
+
+
+def a_log_rows(log: str, job: dict) -> list[tuple[str, dict]]:
+    started, ended = utc(job["started_at"]), utc(job["completed_at"])
+    found = []
+    for raw in log.splitlines():
+        stamp, sep, text = raw.partition(" ")
+        if not sep or not STAMP.fullmatch(stamp) or not started <= utc(stamp) < ended + dt.timedelta(seconds=1):
+            continue
+        text = text.strip()
+        if text.startswith('***"') and text.endswith("***"):
+            text = "{" + text[3:-3] + "}"
+        if not text.startswith("{") or not text.endswith("}"):
+            continue
+        try:
+            obj = json.loads(text)
+        except ValueError:
+            continue
+        if isinstance(obj, dict):
+            found.append((stamp, obj))
+    return found
+
+
+def a_supplement(jobs: dict, logs: dict[str, str], asof: str, source_proof: list) -> dict:
+    rows = [a_log_rows(logs[name], jobs[name]) for name in NAMES[:3]]
+    scan, follow, guard = rows
+    new = json.loads(source_proof[0]["lines"][1][1])["candidates"]
+
+    def match(pool, predicate, label):
+        return one([(t, o) for t, o in pool if predicate(o)], "A_SOURCE_" + label)
+
+    def today(o):
+        return o.get("asof_et") == asof
+
+    s, _ = match(scan, lambda o: today(o) and o.get("no_execution") is True
+                 and o.get("final_ready") is True
+                 and all(type(o.get(k)) is int and o[k] == 477 for k in ("universe", "processed", "valid"))
+                 and all(type(o.get(k)) is int and o[k] == 0 for k in ("invalid_or_missing", "remaining"))
+                 and type(o.get("new_entries")) is int and o["new_entries"] == new
+                 and o.get("scope_sha256") == A_SCOPE and o.get("analysis_fingerprint_sha256") == A_ALGO,
+                 "SCAN")
+    o, outbox = match(scan, lambda x: today(x) and x.get("status") == "AL_OUTBOX_PENDING_READBACK_PASS"
+                      and type(x.get("technical_al")) is int and x["technical_al"] == new
+                      and type(x.get("messages_sent")) is int and x["messages_sent"] == 0
+                      and x.get("device_ack") is False and count(x.get("new_pending"), 477)
+                      and count(x.get("new_suppressed"), 477)
+                      and x["new_pending"] + x["new_suppressed"] <= new, "OUTBOX")
+    p, _ = match(follow, lambda x: today(x) and x.get("status") == "PANEL_READBACK_PASS"
+                 and x.get("device_ack") is False, "PANEL")
+    l, facts = match(follow, lambda x: today(x) and x.get("status") == "LIFECYCLE_READBACK_PASS"
+                     and x.get("notification_delivery") == "NOT_ATTEMPTED_BY_GITHUB"
+                     and x.get("device_ack") is False and count(x.get("terminal_updates")), "LIFECYCLE")
+    g, _ = match(guard, lambda x: x.get("last_verified_scan_asof") == asof
+                 and x.get("schema") == "XRAY_PERSONAL_PRIVATE_EVIDENCE_AUDIT_V1"
+                 and x.get("status") == "READ_ONLY_EVIDENCE_AUDIT" and x.get("execution") == "NONE"
+                 and type(x.get("messages_sent")) is int and x["messages_sent"] == 0
+                 and type(x.get("sheet_writes")) is int and x["sheet_writes"] == 0, "GUARD")
+    if g != source_proof[2]["lines"][0][0]:
+        raise EvidenceError("A_AND_B_GUARD_WITNESS_DRIFT")
+    return {"schema": A_SCHEMA, "scan": s, "outbox": [o, outbox["new_pending"], outbox["new_suppressed"]],
+            "panel": p, "life": [l, facts["terminal_updates"]], "guard": g}
+
+
 def envelope(jobs: dict, logs: dict[str, str], run_id: int, sha: str, asof: str,
              now: dt.datetime) -> dict:
     if dt.date.fromisoformat(asof).isoformat() != asof:
@@ -168,6 +236,15 @@ def envelope(jobs: dict, logs: dict[str, str], run_id: int, sha: str, asof: str,
     obj = {"schema": SCHEMA, "asof": asof, "run": run_id, "head": sha, "proof": out}
     if len(json.dumps(obj, separators=(",", ":"))) > 2500:
         raise EvidenceError("B_ENVELOPE_UNEXPECTED_SIZE")
+    try:
+        extra = a_supplement(jobs, logs, asof, out)
+        next_obj = {**obj, "a": extra}
+        if len(json.dumps(next_obj, separators=(",", ":"))) <= 2500:
+            return next_obj
+    except EvidenceError:
+        # A may still use its established exact job-log path. Missing A evidence
+        # cannot block or weaken the pre-existing B note.
+        pass
     return obj
 
 
