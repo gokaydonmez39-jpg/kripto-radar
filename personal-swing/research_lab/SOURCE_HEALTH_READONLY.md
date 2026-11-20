@@ -42,7 +42,13 @@ exact `main`, same repository, attempt 1, and bound to the expected head.
 | `OFFICIAL_477` | `RESEARCH_LEDGER_READBACK_PASS_NO_MARKET_CLEARANCE` | `rows` = 477, false `pit_verified` and `market_clearance` |
 
 **A sibling job's matching SHA and a green step alone do not prove exact
-source-parent identity.** The caller must independently obtain the child's
+source-parent identity.** GitHub's `workflow_run` event executes against the
+latest default-branch commit, so a correctly parented child's *own* head SHA
+can legitimately differ from the historical natural EOD producer's head SHA.
+Keep the child SHA syntactically verified, but demand that its independent
+post-readback parent marker matches the exact EOD run ID, EOD commit, ASOF,
+and canonical scan/score receipts. The CORE and OFFICIAL_477 primary run SHA
+still must equal the EOD producer SHA. The caller must independently obtain the child's
 parent binding and source ASOF, not fill those fields from the expected
 epoch. When a producer only exposes a status and does not provide an
 independent binding, leave that lane `UNKNOWN`. A mismatched, duplicate or
