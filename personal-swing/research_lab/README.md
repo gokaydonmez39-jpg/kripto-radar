@@ -1,5 +1,8 @@
 # XRAY Research Source Lab - Operational Runbook (2026-10-25)
 
+For the independent Personal 477 aggregate receipt view and its acceptance
+boundaries, see [Source Health (read-only)](SOURCE_HEALTH_READONLY.md).
+
 **STRICTLY RESEARCH-ONLY; this is NOT the 477-share live AL/FINAL engine.**
 
 ## Implemented and executable
