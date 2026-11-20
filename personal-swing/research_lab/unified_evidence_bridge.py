@@ -9,8 +9,15 @@ from __future__ import annotations
 from collections import defaultdict
 import decision_intelligence as decision
 import private_research_readback as readback
+import source_health
 
 SCHEMA="XRAY_UNIFIED_READONLY_EVIDENCE_V1"
+
+
+def compose_source_health(*, asof, eod_run_id, eod_head_sha, receipts):
+    """Private companion view. Available even when model data is missing."""
+    return source_health.observe(asof=asof, eod_run_id=eod_run_id,
+                                 eod_head_sha=eod_head_sha, receipts=receipts)
 
 
 def compose(scan_matrix,score_matrix,kronos_matrix,*,
