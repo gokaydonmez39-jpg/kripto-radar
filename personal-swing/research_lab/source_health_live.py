@@ -166,7 +166,7 @@ def aggregate(github, sheets, current_asof):
                         continue
                     line = lines[0]
                     def field(k):
-                        match = re.search(r'"' + re.escape(k) + r'": (\d+)(?:[,\s]|$)', line)
+                        match = re.search(r'"' + re.escape(k) + r'": (\d+)(?:[,}\s]|$)', line)
                         require(match is not None)
                         return int(match.group(1))
                     if (f'"asof_et": "{current_asof}"' not in line or
