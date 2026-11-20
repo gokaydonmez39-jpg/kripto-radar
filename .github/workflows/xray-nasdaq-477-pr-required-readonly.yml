@@ -146,6 +146,6 @@ jobs:
         run: node --test test_delivery_reservation_portable.js
       - name: Personal 477 native write acknowledgement and independent readback (offline)
         working-directory: personal-swing
-        run: node --test test_xray_a_canary_read_shape.js test_xray_b_batch_native.js
+        run: node --test test_xray_a_canary_read_shape.js test_xray_b_batch_native.js test_xray_ab_empty_a_daily_b.js
       - name: Explicit no-trade and no-private-access scope
         run: echo 'XRAY_REQUIRED_PR_CI=PASS_ONLY_IF_ALL_OFFLINE_TESTS_PASS;NO_BROKER;NO_ORDERS;NO_IEX_API;NO_SHEETS_WRITE;NO_CHATGPT_SEND'
