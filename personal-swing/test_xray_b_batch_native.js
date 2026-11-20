@@ -107,3 +107,56 @@ for(const kind of ['structured','nested','ack-missing','post-throws','readback-f
   else assert.equal(out.stage,'POST_UNCERTAIN_DO_NOT_RESEND');
  });
 }
+
+
+// Regression: A reservation is not a ChatGPT-delivered STOP card.
+// The guard is read from the exact versioned runtime blob used by the native task.
+const bNaturalText=rt.blocks.filter(s=>/^const XRAY_B_NATURAL\s*=/m.test(s));
+assert.equal(bNaturalText.length,1);
+const gStart=bNaturalText[0].indexOf(' function stopQueue(response,asof,priorA,sourceRunId){');
+const gEnd=bNaturalText[0].indexOf('\n function getOnlyRetry(',gStart);
+assert.ok(gStart>0&&gEnd>gStart,'stop guard must be unique');
+const stopGate=Function('unpack',bNaturalText[0].slice(gStart,gEnd)+'\nreturn stopQueue;')(r=>r);
+const riskDate='2026-11-20', sourceRun='777';
+const riskHeaders=Array.from({length:20},(_,j)=>'FIELD_'+j);
+for(const [at,label] of [[0,'OLAY_ANAHTARI'],[4,'OLAY_ASOF_ET'],[5,'OLAY_KODU'],[6,'ONCELIK'],[17,'BILDIRIM_DURUMU']])
+ riskHeaders[at]=label;
+const RISK_PENDING='EVENT_CONFIRMED_PENDING_DELIVERY_REQUEST';
+const RISK_RESERVED='ALERT_REQUESTED_NOT_DEVICE_ACK';
+const riskRow=(key,status,code='STOP_TOUCHED',day=riskDate)=>{
+ const row=Array(20).fill('');
+ row[0]=key;row[4]=day;row[5]=code;row[6]=code==='STOP_TOUCHED'?'KRITIK':'YENI AL';row[17]=status;
+ return row;
+};
+const riskSheet=(...rows)=>({range:'UYARI_OLAYLARI!A1:T'+(rows.length+1),majorDimension:'ROWS',values:[riskHeaders,...rows]});
+const aReceipt=(keys,day=riskDate,run=sourceRun,count=keys.length)=>({
+ content_text:'## 🦖 XRAY NASDAQ Ω · Olaylar\n\nXRAY_A_RECEIPT_V1 | '+day+' | '+run+
+  ' | 2026-11-21 03:00 TRT | COUNT='+count+' | POST=ACK_1 | GET_VERIFY=PASS\n'+
+  keys.map(k=>'Olay: ' + String.fromCharCode(96)+k+String.fromCharCode(96)).join('\n'),
+ content_truncated:false,is_failure_message:false,requires_user_action:false
+});
+for(const [name,rows,receipt,run,expected] of [
+ ['nonrisk reservation cannot block B',[riskRow('al',RISK_RESERVED,'AL_NEW_EPISODE')],null,sourceRun,null],
+ ['pending STOP blocks B',[riskRow('one',RISK_PENDING)],null,sourceRun,'B_STOP_PRIORITY_PENDING'],
+ ['reserved STOP without output receipt blocks B',[riskRow('one',RISK_RESERVED)],null,sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['valid natural A receipt releases B',[riskRow('one',RISK_RESERVED)],aReceipt(['one']),sourceRun,null],
+ ['wrong session cannot release B',[riskRow('one',RISK_RESERVED)],aReceipt(['one'],'2026-11-19'),sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['wrong EOD run cannot release B',[riskRow('one',RISK_RESERVED)],aReceipt(['one']),"778",'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['wrong event key cannot release B',[riskRow('one',RISK_RESERVED)],aReceipt(['two']),sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['partial A receipt blocks B',[riskRow('one',RISK_RESERVED),riskRow('two',RISK_RESERVED)],aReceipt(['one']),sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['all two risk keys release B',[riskRow('one',RISK_RESERVED),riskRow('two',RISK_RESERVED)],aReceipt(['one','two']),sourceRun,null],
+ ['truncated task result blocks B',[riskRow('one',RISK_RESERVED)],{...aReceipt(['one']),content_truncated:true},sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['failed task result blocks B',[riskRow('one',RISK_RESERVED)],{...aReceipt(['one']),is_failure_message:true},sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['A count lower than reserved STOP count blocks B',[riskRow('one',RISK_RESERVED),riskRow('two',RISK_RESERVED)],aReceipt(['one','two'],riskDate,sourceRun,1),sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['mixed queued STOP remains priority',[riskRow('one',RISK_RESERVED),riskRow('two',RISK_PENDING)],aReceipt(['one']),sourceRun,'B_STOP_PRIORITY_PENDING'],
+ ['duplicate event identity fails closed',[riskRow('one',RISK_RESERVED),riskRow('one',RISK_RESERVED)],aReceipt(['one']),sourceRun,'B_STOP_QUEUE_IDENTITY'],
+ ['old session event cannot block current B',[riskRow('old',RISK_RESERVED,'STOP_TOUCHED','2026-11-19')],null,sourceRun,null],
+ ['missing EOD ID blocks B',[riskRow('one',RISK_RESERVED)],aReceipt(['one']),null,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['duplicate A receipt lines block B',[riskRow('one',RISK_RESERVED)],{...aReceipt(['one']),content_text:aReceipt(['one']).content_text+'\n'+aReceipt(['one']).content_text},sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED'],
+ ['duplicate same event in A text blocks B',[riskRow('one',RISK_RESERVED)],{...aReceipt(['one']),content_text:aReceipt(['one']).content_text+'\nOlay: ' + String.fromCharCode(96)+'one'+String.fromCharCode(96)},sourceRun,'B_STOP_A_RECEIPT_UNVERIFIED']
+]){
+ test('B STOP receipt boundary: '+name,()=>{
+  const out=stopGate(riskSheet(...rows),riskDate,receipt,run);
+  assert.equal(out,expected);
+ });
+}
