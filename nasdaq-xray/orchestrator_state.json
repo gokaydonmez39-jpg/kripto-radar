@@ -3,33 +3,32 @@
   "asof_et": "2026-11-19",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-19",
-    "attempted_count": 475,
+    "attempted_count": 476,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 476,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 472,
+    "evaluated_count": 473,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
     "full_scope_scanned": false,
-    "independent_math_audit_count": 15,
+    "independent_math_audit_count": 16,
     "independent_math_audit_unresolved_count": 1,
-    "independent_math_audit_verified_count": 14,
+    "independent_math_audit_verified_count": 15,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 4,
+    "pending_count": 3,
     "pending_symbols": [
       "FISV",
       "FROG",
-      "GRAL",
-      "CBRL"
+      "GRAL"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
     "provider_credits_assumed_available": false,
     "real_money": "NO-GO",
-    "recent_a_b_d_trigger_count": 15,
+    "recent_a_b_d_trigger_count": 16,
     "recent_a_b_d_trigger_symbols": [
       "TSCO",
       "EXC",
@@ -45,7 +44,8 @@
       "WMG",
       "NXST",
       "ITRI",
-      "VRDN"
+      "VRDN",
+      "CBRL"
     ],
     "registered_r92_count": 0,
     "remaining_primary_release_gates": [
@@ -528,6 +528,63 @@
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "CBRL": {
+        "completed_weeks": 54,
+        "confirmed_families": [
+          "D"
+        ],
+        "family_results": {
+          "D": {
+            "basic_rr": null,
+            "diagnostic_blockers": [
+              "LIFECYCLE_CHASE_NO_VALID_FILL",
+              "RR_BASIC_BELOW_THRESHOLD",
+              "RR_SEVERE_BELOW_THRESHOLD",
+              "EXTENSION_VETO",
+              "EVENT_UNKNOWN",
+              "REGIME_UNKNOWN",
+              "MC_STATE_CAP_WATCH",
+              "R92_INELIGIBLE"
+            ],
+            "diagnostic_only_entry_stop_target": {
+              "entry_model_usd": 56.3343,
+              "stop_s0_usd": 54.0246,
+              "target_t1_usd": 58.78
+            },
+            "diagnostic_only_not_trade_signal": true,
+            "diagnostic_only_reason": null,
+            "entry_band_usd": null,
+            "entry_usd": null,
+            "event_primary_status": "UNKNOWN",
+            "final_AL": false,
+            "independent_geometry_audit": {
+              "basic_rr": 0.648218,
+              "independently_verified": true,
+              "risk_atr": 0.802769,
+              "risk_pass": true,
+              "risk_pct": 4.10009,
+              "rr_pass": false,
+              "scope": "FROZEN_MATH_STOP_BREACH_NOT_INDEPENDENT_R1_DISCOVERY",
+              "severe_rr": 0.268669,
+              "status": "PASS_INDEPENDENT_FORMULA_AUDIT"
+            },
+            "regime_primary_status": "UNKNOWN",
+            "risk_percent": null,
+            "risk_rr_geometry_observed": false,
+            "setup_id": "c3aa242704859f368d0023d4",
+            "severe_rr": null,
+            "source_r1_target": "STRUCTURAL_ACTIVE_R1_LOWER_BOUND",
+            "status": "FAIL_RR",
+            "structural_stop_usd": null,
+            "target_t1_usd": null,
+            "trigger_date": "2026-11-18"
+          }
+        },
+        "history_source": "SINA_US_DAILY",
+        "status": "TECHNICAL_GEOMETRY_NOT_APPROVED",
+        "technical_observation_ready": false,
         "terminal_scan": true
       },
       "CBSH": {
@@ -3659,7 +3716,7 @@
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 144,
       "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 314,
-      "TECHNICAL_GEOMETRY_NOT_APPROVED": 14,
+      "TECHNICAL_GEOMETRY_NOT_APPROVED": 15,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1
     },
@@ -3719,7 +3776,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 201,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-20T03:49:26.010674+00:00",
+  "updated_at_utc": "2026-11-20T07:59:58.845400+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
