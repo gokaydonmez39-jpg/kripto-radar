@@ -310,3 +310,39 @@ test('native intent preserves the existing STOP-first subset when a non-risk AL 
   assert.deepEqual(a.events.map(e=>e.code),['STOP_TOUCHED']);
   assert.equal(a.authorization,'NONE');
 });
+
+for(const kind of ['structured','nested','ack-missing','post-throws','readback-fails']){
+ test('A '+kind+' makes one POST and always attempts an independent GET',async()=>{
+  const P=compile(release.portable.code+'\nreturn XRAY_RESERVATION;')();
+  const stamp=ASOF+' 23:18 TRT', before=structuredClone(queue), after=structuredClone(queue);
+  const attempts=[];
+  const io={range:async()=>{
+    const written=attempts.includes('POST'); attempts.push(written?'AFTER':'BEFORE');
+    if(written&&kind==='readback-fails')throw Error('synthetic read failure');
+    return {structuredContent:{range:'UYARI_OLAYLARI!A1:T1000',majorDimension:'ROWS',values:written?after:before}};
+  },cells:async({ranges})=>({syntheticMarker:ranges[0]}),stillAuthorized:async()=>true,
+  post:async({spreadsheet_id,requests})=>{
+    attempts.push('POST');assert.equal(spreadsheet_id,SHEET);
+    for(const q of requests.filter(r=>r.updateCells)){
+      const r=q.updateCells;after[r.start.rowIndex][17]=r.rows[0].values[0].userEnteredValue.stringValue;
+      after[r.start.rowIndex][18]=r.rows[0].values[1].userEnteredValue.stringValue;
+    }
+    if(kind==='post-throws')throw Error('synthetic ambiguous transport');
+    const raw={spreadsheetId:SHEET,replies:requests.map((r,i)=>i%2?{}:structuredClone(r)),updatedSpreadsheet:null};
+    if(kind==='ack-missing')return {structuredContent:{status:'success'}};
+    if(kind==='nested')return {structuredContent:{result:{structuredContent:raw}}};
+    return {content:[{type:'text',text:'Action completed.'}],structuredContent:raw,isError:false};
+  }};
+  const source={expected_asof:ASOF,scan,history,alerts:before,logs,
+    runResponse:encodeGit(URL,run),jobsResponse:encodeGit(JOBS_URL,{total_count:jobs.length,jobs}),
+    slot_verified:true,writer_verified:true,alertSheetId:6,spreadsheetId:SHEET,stamp};
+  const result=await A.reserveA(source,io,P,(record,m)=>record.syntheticMarker===m?{
+    kind:'exact_not_found',name:m,spreadsheetId:SHEET}:null);
+  assert.deepEqual(attempts,['BEFORE','POST','AFTER']);
+  assert.equal(result.post_calls,1);
+  if(['structured','nested'].includes(kind)){
+   assert.equal(result.state,'EMIT_NOW');assert.match(result.text,/POST=ACK_1 \| GET_VERIFY=PASS/);
+  }else if(kind==='readback-fails')assert.equal(result.stage,'A_GET_VERIFY_DO_NOT_RESEND');
+  else assert.equal(result.stage,'A_POST_UNCERTAIN_DO_NOT_RESEND');
+ });
+}
