@@ -265,3 +265,48 @@ for(const [name,flag,expected] of [
     assert.equal(eligible,false);
   });
 }
+
+const {buildNativeAIntent}=require('./xray_477_native_a_intent');
+const {createHash}=require('node:crypto');
+const releaseBytes=JSON.stringify(release)+'\n';
+const blob=id=>createHash('sha1').update('blob '+Buffer.byteLength(id)+'\0'+id).digest('hex');
+const intentInput=(changes={})=>({
+  runtimeText:releaseBytes,runtimeBlob:blob(releaseBytes),binding:{task:TASK,chat:CHAT,sheet:SHEET},
+  expectedAsof:ASOF,snapshot:snapshot({}),runResponse:encodeGit(URL,run),
+  jobsResponse:encodeGit(JOBS_URL,{total_count:jobs.length,jobs}),logs,...changes
+});
+test('native source intent is deterministic, STOP-first, bound to the existing planner, and never authorizes writes',()=>{
+  const a=buildNativeAIntent(intentInput()), b=buildNativeAIntent(intentInput());
+  assert.equal(a.state,'SOURCE_INTENT_ONLY');
+  assert.deepEqual(a,b);
+  assert.equal(a.post_calls,0);assert.equal(a.authorization,'NONE');
+  assert.deepEqual(a.events.map(x=>x.code),['STOP_TOUCHED','AL_NEW_EPISODE']);
+  assert.deepEqual(a.events.map(x=>[x.event_row,x.episode_row]),[[3,3],[2,2]]);
+  const text=JSON.stringify(a);
+  assert.doesNotMatch(text,/SYNTHAL|SYNTHSTOP|spreadsheetId|addNamedRange|updateCells|ARMED_AFTER_CANARY/);
+});
+for(const [name,change,expected] of [
+ ['modified runtime bytes',{runtimeText:releaseBytes+' '},'NATIVE_INTENT_RUNTIME_PIN'],
+ ['wrong forced source date',{expectedAsof:'2026-01-07'},'WAIT_CURRENT_EOD'],
+ ['late source note',{snapshot:snapshot({invalid:true})},'NATIVE_INTENT_NOTE_UNVERIFIED'],
+ ['missing source note supplement',{snapshot:snapshot({noAddon:true})},'NATIVE_INTENT_NOTE_UNVERIFIED'],
+ ['missing direct logs',{logs:{}},'A_JOB_LOG'],
+ ['manual workflow result',{runResponse:encodeGit(URL,{...run,event:'workflow_dispatch'})},'EOD_RUN_IDENTITY']
+]){
+ test('native source intent holds on '+name,()=>{
+   const p=buildNativeAIntent(intentInput(change));
+   assert.equal(p.state,'HOLD');assert.equal(p.stage,expected);
+   assert.equal(p.post_calls,0);assert.equal(p.authorization,'NONE');
+   assert.equal(p.events,undefined);
+ });
+}
+
+test('native intent preserves the existing STOP-first subset when a non-risk AL is held',()=>{
+  const draft=snapshot({});
+  const alerts=draft.structuredContent.sheets.find(s=>s.properties.title==='UYARI_OLAYLARI');
+  alerts.data[0].rowData[1].values[7].formattedValue='101';
+  const a=buildNativeAIntent(intentInput({snapshot:draft}));
+  assert.equal(a.state,'SOURCE_INTENT_ONLY');
+  assert.deepEqual(a.events.map(e=>e.code),['STOP_TOUCHED']);
+  assert.equal(a.authorization,'NONE');
+});
