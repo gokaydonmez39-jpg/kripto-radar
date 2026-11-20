@@ -64,7 +64,11 @@ def _evaluate(source, receipt, asof, eod_run_id, eod_head_sha):
     _require(_valid_id(run["id"]) and (run["id"] == eod_run_id) == (source in PRIMARY)
              and run["path"] == WORKFLOWS[source]
              and run["repository"] == REPOSITORY and run["branch"] == "main"
-             and run["head_sha"] == eod_head_sha
+             and _valid_sha(run["head_sha"])
+             # workflow_run child SHA may be a later default-branch commit.
+             # For children the signed original parent marker, not this SHA,
+             # establishes the canonical EOD identity (see live collector).
+             and (source not in PRIMARY or run["head_sha"] == eod_head_sha)
              and type(run["attempt"]) is int and run["attempt"] == 1
              and run["event"] == ("schedule" if source in PRIMARY else "workflow_run"),
              "RUN_IDENTITY_MISMATCH")
