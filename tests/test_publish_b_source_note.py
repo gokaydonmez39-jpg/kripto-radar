@@ -1,5 +1,6 @@
 import copy
 import pathlib
+import subprocess
 import sys
 import unittest
 from urllib.parse import parse_qs
@@ -199,6 +200,13 @@ class ASourceSupplementTests(unittest.TestCase):
             next_logs = {**logs, key: logs[key].replace(panel, change)}
             got = p.envelope(jobs, next_logs, 101, "a"*40, ASOF, now)
             self.assertNotIn("a", got)
+
+class RuntimeCanaryAdapterTests(unittest.TestCase):
+    def test_synthetic_runtime_canary_capabilities(self):
+        script = pathlib.Path(__file__).resolve().parents[1] / "personal-swing" / "test_xray_a_canary_read_shape.js"
+        run = subprocess.run(["node", "--test", str(script)], capture_output=True, text=True, timeout=20)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
