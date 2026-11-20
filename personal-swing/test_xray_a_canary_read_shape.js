@@ -178,6 +178,67 @@ for(const [name, opts, expected] of [
     assert.equal(eligible,false);
   });
 }
+
+const canarySeal='b'.repeat(64);
+const isolatedCompile = src => () => {
+  const value=compile(src)();
+  return src.startsWith('const XRAY_B_NATURAL=')?{
+    ...value, run:async()=>({state:'HOLD',stage:'B_STOP_PRIORITY_PENDING',post_calls:0})
+  }:value;
+};
+const stagedOnly=Function('__xrayCompile','__xrayBlocks',blocks[11]+'\nreturn XRAY_AB_STAGED;')(
+  isolatedCompile,()=>blocks);
+async function inspectPhase(options={}) {
+  const observed=options.early?'2026-01-07 01:57:40 UTC':'2026-01-07 01:58:05 UTC';
+  const t0={id:TURN,recorded_status:'in_progress',scheduled_for:SLOT,
+    started_at:options.early?'2026-01-07T01:57:19Z':SLOT,completed_at:null,chat_ref:null};
+  let prompt=PROMPT, updates=0, reads=0;
+  const record=last=>({id:TASK,is_enabled:true,conversation_id:CHAT,default_timezone:'Europe/Istanbul',
+    timing_mode:'exact_schedule',schedule:'RRULE:FREQ=HOURLY;BYMINUTE=57',prompt,
+    run_details:{last_run:last,latest_result:null}});
+  const io={
+    mcp__codex_apps__automations_peek:async()=>{
+      reads++;
+      const fresh=reads===1?options.changeBefore:options.changeAfter;
+      return {structuredContent:{automations:[record({...t0,...fresh})]}};
+    },
+    clock__curr_time:async()=>({current_time:observed}),
+    mcp__codex_apps__automations_update:async x=>{
+      updates++;assert.equal(x.jawbone_id,TASK);assert.match(x.prompt,/ARMED_AFTER_CANARY_V1/);
+      prompt=x.prompt;return {structuredContent:{success:true}};
+    }
+  };
+  const proof={state:'A_READY_DRY',asof:ASOF,count:1,post_calls:0};
+  const result=await stagedOnly.run(ASOF,io,Object.keys(io),{
+    runNaturalCandidate:async args=>{assert.equal(args.dryRun,true);return proof;}
+  },canarySeal,record(t0));
+  assert.equal(result.post_calls,0);
+  return {result,updates};
+}
+test('canary phase is not updated before the nominal schedule',async()=>{
+  const {result,updates}=await inspectPhase({early:true});
+  assert.equal(result.stage,'A_CANARY_BEFORE_SCHEDULED_FOR');
+  assert.equal(updates,0);
+});
+for(const [field,t] of [
+  ['started_at','2026-01-07T01:57:56Z'],['scheduled_for','2026-01-07T01:57:49Z']
+]){
+  test('same ID with drifted '+field+' is not authorized',async()=>{
+    const {result,updates}=await inspectPhase({changeBefore:{[field]:t}});
+    assert.equal(result.stage,'A_CANARY_ACTIVATION_DRIFT');
+    assert.equal(updates,0);
+  });
+}
+test('same-ID second start during phase readback is not reported as armed',async()=>{
+  const {result,updates}=await inspectPhase({changeAfter:{started_at:'2026-01-07T01:57:56Z'}});
+  assert.equal(result.stage,'A_CANARY_ACTIVATION_READBACK');
+  assert.equal(updates,1);
+});
+test('the eligible same natural slot still promotes exactly once after its scheduled time',async()=>{
+  const {result,updates}=await inspectPhase();
+  assert.equal(result.state,'A_CANARY_VERIFIED_ARMED_NEXT_NATURAL');
+  assert.equal(updates,1);
+});
 test('bad note with exact job logs preserves fallback and dry acceptance',async()=>{
   const {result,calls,eligible}=await probe({post:true,logs:true,invalid:true});
   assert.equal(result.state,'A_READY_DRY');
