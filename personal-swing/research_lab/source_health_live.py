@@ -120,6 +120,9 @@ def aggregate(github, sheets, current_asof):
     except (NoProof, KeyError, ValueError, OSError):
         incomplete["OFFICIAL_477"] = "OFFICIAL_LOG_NOT_VERIFIED"
 
+    # workflow_run child head_sha may be the moving default-branch HEAD.
+    # Require a valid child SHA here; actual EOD parent is independently
+    # authenticated by the exact redacted child marker below.
     # The child event is not proof of parentage. Parse each child's own
     # redacted parent marker, generated *after* authenticated scan/score readback.
     for source, (workflow, name) in RUN_NAMES.items():
@@ -130,7 +133,8 @@ def aggregate(github, sheets, current_asof):
             for run in results.get("workflow_runs", []):
                 if (run.get("path") != contract.WORKFLOWS[source] or
                     run.get("event") != "workflow_run" or
-                    run.get("head_branch") != "main" or run.get("head_sha") != head or
+                    run.get("head_branch") != "main" or
+                    not contract._valid_sha(run.get("head_sha")) or
                     run.get("status") != "completed" or run.get("conclusion") != "success" or
                     run.get("head_repository", {}).get("full_name") != REPO or
                     run.get("run_attempt") != 1 or not safe_id(run.get("id"))):

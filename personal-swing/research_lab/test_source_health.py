@@ -76,11 +76,25 @@ class SourceHealthTest(unittest.TestCase):
     def test_wrong_workflow_branch_repo_event_attempt_and_head_fail(self):
         for key, value in [("id", RUN), ("path", EOD), ("attempt", True), ("attempt", 2),
                            ("event", "workflow_dispatch"), ("branch", "test"),
-                           ("repository", "other/repo"), ("head_sha", "c"*40)]:
+                           ("repository", "other/repo"), ("head_sha", "c"*39)]:
             with self.subTest(key=key, value=value):
                 inp = example()
                 inp[2]["run"][key] = value
                 self.assertEqual(health(inp)["sources"]["COVE"]["reason"], "RUN_IDENTITY_MISMATCH")
+
+    def test_child_default_branch_sha_drift_preserves_exact_eod_parent(self):
+        inp = example()
+        inp[1]["run"]["head_sha"] = "c" * 40
+        inp[2]["run"]["head_sha"] = "d" * 40
+        out = health(inp)["sources"]
+        self.assertEqual(out["KRONOS_V2"]["state"], "MATCHED_CLOSE_ONLY")
+        self.assertEqual(out["COVE"]["state"], "MATCHED_RESEARCH_READONLY")
+
+    def test_primary_eod_sha_must_still_match_parent(self):
+        inp = example()
+        inp[0]["run"]["head_sha"] = "c" * 40
+        self.assertEqual(health(inp)["sources"]["CORE"]["reason"],
+                         "RUN_IDENTITY_MISMATCH")
 
     def test_failed_or_queued_jobs_not_promoted(self):
         for key, value in [("conclusion", "failure"), ("status", "in_progress")]:
