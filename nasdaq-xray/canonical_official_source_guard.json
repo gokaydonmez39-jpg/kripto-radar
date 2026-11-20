@@ -9,7 +9,10 @@
       "HCHL",
       "ITP",
       "LAWR",
+      "LICN",
       "MAGH",
+      "NIXX",
+      "NTCL",
       "OST",
       "PC",
       "SVA",
@@ -71,10 +74,13 @@
       "ITP",
       "LAWR",
       "LESL",
+      "LICN",
       "MAGH",
       "MAMK",
       "NHPBP",
+      "NIXX",
       "NSTS",
+      "NTCL",
       "NVNI",
       "NVNIW",
       "OST",
@@ -99,7 +105,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-19T23:49:38.996668+00:00",
+  "generated_at_utc": "2026-11-20T03:53:25.632871+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -892,7 +898,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 14,
+      "active_halt_count": 17,
       "active_halt_symbols": [
         "DDC",
         "EFTY",
@@ -900,7 +906,10 @@
         "HCHL",
         "ITP",
         "LAWR",
+        "LICN",
         "MAGH",
+        "NIXX",
+        "NTCL",
         "OST",
         "PC",
         "SVA",
@@ -910,8 +919,53 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 54,
+      "item_count": 57,
       "items": [
+        {
+          "HaltDate": "11/19/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "NETCLASS TECH INC Cl A Ord Shs",
+          "IssueSymbol": "NTCL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/19/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">NTCL</td><td valign=\"top\">NETCLASS TECH INC Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 19 Nov 2026 05:00:00 GMT",
+          "title": "NTCL"
+        },
+        {
+          "HaltDate": "11/19/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Lichen Intl Ltd Cl A Ord",
+          "IssueSymbol": "LICN",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/19/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">LICN</td><td valign=\"top\">Lichen Intl Ltd Cl A Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 19 Nov 2026 05:00:00 GMT",
+          "title": "LICN"
+        },
+        {
+          "HaltDate": "11/19/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Nixxy Inc Cmn",
+          "IssueSymbol": "NIXX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/19/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">NIXX</td><td valign=\"top\">Nixxy Inc Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Thu, 19 Nov 2026 05:00:00 GMT",
+          "title": "NIXX"
+        },
         {
           "HaltDate": "11/19/2026",
           "HaltTime": "15:50:13.276",
@@ -1727,124 +1781,133 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 13,
+      "row_count": 14,
       "rows": [
         {
           "BX Action": "Add",
-          "Company Name": "Anthropic, PBC",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Kartoon Studios Acquisition Corp.",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "Q",
-          "Symbol": "ANT"
+          "Primary Listing Market": "N",
+          "Symbol": ""
         },
         {
           "BX Action": "Add",
-          "Company Name": "Capital Group Multi-Asset Income Builder ETF",
-          "Effective Date": "11/19/2026",
+          "Company Name": "EA Series Trust",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "CGBI"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Capital Group Multi-Asset Income ETF",
-          "Effective Date": "11/19/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "CGMI"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Enovix Corporation",
-          "Effective Date": "11/19/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Q",
-          "Symbol": "ENVXW"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "F&M Bank Corp.",
-          "Effective Date": "11/19/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "A",
-          "Symbol": "FMBM"
+          "Primary Listing Market": "G",
+          "Symbol": "AAUD"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Tidal Trust III",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Amplitech Group, Inc.",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "P",
-          "Symbol": "GMMA"
+          "Primary Listing Market": "S",
+          "Symbol": "AMPGZ"
         },
         {
           "BX Action": "Add",
-          "Company Name": "The Advisors' Inner Circle Fund III",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Cizzle Brands Corporation",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "GQGG"
+          "Primary Listing Market": "S",
+          "Symbol": "CZZL"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Goldman Sachs ETF Trust",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Football Manager SPAC Inc.",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "GSCZ"
+          "Primary Listing Market": "G",
+          "Symbol": "FBLLU"
         },
         {
           "BX Action": "Add",
-          "Company Name": "J.P. Morgan Exchange-Traded Fund Trust",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Exchange Listed Funds Trust",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "JALL"
+          "Primary Listing Market": "G",
+          "Symbol": "ISMH"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Luxfer Holdings PLC",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Mercer International Inc.",
+          "Effective Date": "11/20/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "Q",
+          "Symbol": "MERC"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "OPay Limited",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "N",
-          "Symbol": "LXFR"
+          "Symbol": "OPAY"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Socket Mobile, Inc.",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Opendoor Technologies Inc",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "SCKT"
+          "Primary Listing Market": "Q",
+          "Symbol": "OPENL"
         },
         {
           "BX Action": "Delete",
-          "Company Name": "SoundThinking, Inc.",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Opendoor Technologies Inc",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
-          "Primary Listing Market": "S",
-          "Symbol": "SSTI"
+          "Primary Listing Market": "Q",
+          "Symbol": "OPENW"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Opendoor Technologies Inc",
+          "Effective Date": "11/20/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "Q",
+          "Symbol": "OPENZ"
         },
         {
           "BX Action": "Add",
-          "Company Name": "T. Rowe Price Exchange-Traded Funds, Inc.",
-          "Effective Date": "11/19/2026",
+          "Company Name": "Southern Company (The)",
+          "Effective Date": "11/20/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "SONN"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Utz Brands Inc",
+          "Effective Date": "11/20/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "N",
+          "Symbol": "UTZ"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Harbor ETF Trust",
+          "Effective Date": "11/20/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "TFIX"
+          "Symbol": "YLDS"
         }
       ],
       "status": "PASS",
