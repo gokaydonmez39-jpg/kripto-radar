@@ -73,3 +73,30 @@ automatic trading, additional writer/scheduler, or data-provider grant. No
 historical replay. Roll back only the companion module, import, tests and
 documentation if necessary. Do not change the original research bridge's
 decision result, core feed, or active deliveries.
+
+
+## Bounded automatic read recovery (Personal 477 only)
+
+The natural Research Source Lab's independent source_health_live.py performs
+**GET-only** source recovery. On GitHub HTTP 429, 500, 502, 503, 504,
+URLError or TimeoutError it performs at most **three total reads** of the
+same API path, with 1- then 2-second backoff. On recovery, it reports
+aggregate transient_failures, recovered_reads, max_attempts and mutations: 0.
+Recovery of transport alone is never a provenance PASS; the complete
+exact EOD/Sheet/child-run receipt must still validate.
+
+HTTP 400/401/403/404/409/422, invalid path, oversized body, malformed
+content, mismatched EOD or incomplete private receipt **never trigger**
+automatic alteration or a fake ACK. Exhaustion returns a fixed HOLD and
+requires a separate observed correction. No job rerun, workflow dispatch,
+GitHub POST, auto-merge, credential rotation, price-bar repair, Sheet write,
+ChatGPT card, iOS notification or order is permitted.
+
+**Acceptance before merge:** both ordinary and optimized Research Source
+Lab CI pass for the existing full suite plus test_source_health_repair.py;
+required Personal 477 read-only PR CI also passes.
+**Live acceptance:** a natural scheduled Source Lab run logs either
+the exact four-lane results or explicit HOLD; a synthetic recovered GET
+does not count as a live provider outage. This is a bounded
+self-healing *transport subcomponent*, not an unattended self-modifying
+AI or guaranteed device delivery.
