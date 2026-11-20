@@ -17,6 +17,8 @@ from test_cove_private_shadow import FakeApi as CoveFakeApi
 from test_kronos_v2 import ASOF as KRONOS_ASOF, FakeApi as KronosFakeApi
 from test_kronos_v2 import SYMS, SCOPE, POLICY
 
+SYNTHETIC_PARENT = kronos_v2.epoch_binding.Parent(1234, "a"*40)
+
 
 class ProductionFailureRegression(unittest.TestCase):
     def test_cove_original_scope_order_is_the_source_sha(self):
@@ -64,6 +66,8 @@ class ProductionFailureRegression(unittest.TestCase):
     def test_kronos_main_redacts_exception_and_reports_safe_stage(self):
         with patch.object(kronos_v2.k,"eligible_shadow_asof",
                           return_value=KRONOS_ASOF), \
+             patch.object(kronos_v2.epoch_binding,"scheduled_parent",
+                          return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
              patch("private_sheet_writer.SheetApi",
@@ -81,6 +85,8 @@ class ProductionFailureRegression(unittest.TestCase):
         # A dynamically constructed error can carry a secret in its reason.
         with patch.object(kronos_v2.k,"eligible_shadow_asof",
                           return_value=KRONOS_ASOF), \
+             patch.object(kronos_v2.epoch_binding,"scheduled_parent",
+                          return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
              patch("private_sheet_writer.SheetApi",
@@ -90,8 +96,25 @@ class ProductionFailureRegression(unittest.TestCase):
             status=kronos_v2.main()
         output=printed.getvalue()
         self.assertEqual(status,3)
+        self.assertIn('"stage": "SHEET_AUTH"',output)
         self.assertIn('"reason_code": "KRONOS2_UNCLASSIFIED"',output)
         self.assertNotIn("SECRET_PRIVATE_TOKEN",output)
+
+    def test_kronos_main_rejects_missing_eod_parent_before_sheet_auth(self):
+        import json
+        with patch.object(kronos_v2.k,"eligible_shadow_asof",
+                          return_value=KRONOS_ASOF), \
+             patch.dict(kronos_v2.os.environ,
+                        {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
+             patch("private_sheet_writer.SheetApi") as auth, \
+             contextlib.redirect_stdout(io.StringIO()) as printed:
+            status=kronos_v2.main()
+        self.assertEqual(status,3)
+        auth.assert_not_called()
+        out=json.loads(printed.getvalue())
+        self.assertEqual(out["stage"],"EOD_PARENT")
+        self.assertFalse(out["orders"])
+        self.assertNotIn("MASKED",printed.getvalue())
 
     def test_kronos_model_load_has_separate_static_stage(self):
         stages=[]
@@ -117,11 +140,14 @@ class ProductionFailureRegression(unittest.TestCase):
         """Real Google Sheet API denial should not collapse into OTHER."""
         import private_sheet_writer as writer
         import json
-        def failing_write(api, asof, read_batch, *, stage=None):
+        def failing_write(api, asof, read_batch, *, stage=None, parent=None):
+            self.assertEqual(parent,SYNTHETIC_PARENT)
             stage("SHEET_WRITE")
             raise writer.HandoffBlocked("GOOGLE_SHEETS_HTTP_403")
         with patch.object(kronos_v2.k, "eligible_shadow_asof",
                           return_value=KRONOS_ASOF), \
+             patch.object(kronos_v2.epoch_binding,"scheduled_parent",
+                          return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"}, clear=True), \
              patch("private_sheet_writer.SheetApi", return_value=object()), \
@@ -140,11 +166,14 @@ class ProductionFailureRegression(unittest.TestCase):
         """An arbitrary HandoffBlocked body must never leak private content."""
         import private_sheet_writer as writer
         import json
-        def failing_write(api, asof, read_batch, *, stage=None):
+        def failing_write(api, asof, read_batch, *, stage=None, parent=None):
+            self.assertEqual(parent,SYNTHETIC_PARENT)
             stage("SHEET_WRITE")
             raise writer.HandoffBlocked("GOOGLE_SHEETS_HTTP_403 SECRET_TOKEN_DO_NOT_LOG")
         with patch.object(kronos_v2.k, "eligible_shadow_asof",
                           return_value=KRONOS_ASOF), \
+             patch.object(kronos_v2.epoch_binding,"scheduled_parent",
+                          return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"}, clear=True), \
              patch("private_sheet_writer.SheetApi", return_value=object()), \
