@@ -19,6 +19,7 @@ import re
 from urllib.parse import quote
 
 import kronos_shadow as k
+import research_epoch_binding as epoch_binding
 
 VERSION_V2 = "XRAY_KRONOS_CLOSE_ONLY_V2_20261107"
 PARTITION_PREFIX = "KRONOS2_"
@@ -111,7 +112,7 @@ def require_full_horizon_cohorts(rows, reason):
         for symbols in by_asof.values()
     ),reason)
 
-def private_authority(api, asof):
+def private_authority(api, asof, *, parent=None):
     """477 IEX + source/policy/swing independent authenticated gate."""
     import runner
     import private_sheet_writer as writer
@@ -151,6 +152,8 @@ def private_authority(api, asof):
               int(summary[0][7])==0 and
               int(summary[0][5])==int(summary[0][6]),
               "KRONOS2_SCORE_NOT_READY")
+    if parent is not None:
+        epoch_binding.verify_sheet_parent(parent,last[8],summary[0][26])
     return symbols,sha,policy,last[0]
 
 
@@ -367,7 +370,7 @@ def ensure_month_sheet(api,name,sid,occupied):
 
 
 def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
-                *, stage=None):
+                *, stage=None, parent=None):
     """Same exact EOD authority; diagnostic labels are static and non-sensitive."""
     import private_sheet_writer as writer
     def mark(label):
@@ -375,7 +378,8 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
             stage(label)
     month=month_sheet(asof)
     mark("SOURCE_AUTHORITY")
-    symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof)
+    authority_args={"parent":parent} if parent is not None else {}
+    symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof,**authority_args)
     mark("PARTITION_METADATA")
     name,sid,used=metadata_and_sheet(api,asof)
     assert name==month
@@ -468,7 +472,8 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
             "KRONOS2_PRIVATE_READBACK_CLOSE_ONLY" if close_only else
             "KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY")
     return {"status":status,"asof_et":asof,"scope":EXPECTED,
-            "rows_written":written,"full_geometry":counts.get(MODEL_STATUS_FULL,0),
+            "rows_written":written,"rows_verified":len(rows),
+            "full_geometry":counts.get(MODEL_STATUS_FULL,0),
             "close_only":close_only,"qc_hold":qc,"orders":False,
             "model_quality_full_pass":not bool(qc or close_only),
             "decision_influence":"NO_GO"}
@@ -495,6 +500,8 @@ def main():
         if asof is None:
             print(json.dumps({"status":"KRONOS2_NOT_DUE","orders":False}))
             return 0
+        phase="EOD_PARENT"
+        parent=epoch_binding.scheduled_parent(os.environ)
         phase="SHEET_AUTH"
         secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         k.require(bool(secret),"KRONOS2_AUTH_MISSING")
@@ -502,7 +509,10 @@ def main():
         def mark(label):
             nonlocal phase
             phase=label
-        out=synchronize(api,asof,engine.live_read,stage=mark)
+        out=synchronize(api,asof,engine.live_read,stage=mark,parent=parent)
+        if out["status"] in ("KRONOS2_PRIVATE_READBACK_CLOSE_ONLY",
+                             "KRONOS2_PRIVATE_READBACK_FULL_GEOMETRY"):
+            out.update(epoch_binding.redacted_parent(parent,asof))
         print(json.dumps(out,sort_keys=True))
         return 3 if out.get("qc_hold",0) else 0
     except Exception as exc:
@@ -519,7 +529,7 @@ def main():
             reason=(provider_code if provider_code!="UNCLASSIFIED"
                     else "KRONOS2_UNCLASSIFIED")
         allowed_stages={
-            "SESSION_CLOCK","SHEET_AUTH","SOURCE_AUTHORITY",
+            "SESSION_CLOCK","EOD_PARENT","SHEET_AUTH","SOURCE_AUTHORITY",
             "PARTITION_METADATA","PARTITION_READ","PRIOR_MONTH_CUSTODY",
             "IEX_SOURCE","MODEL_LOAD","MODEL_INFERENCE",
             "SHEET_WRITE","SHEET_READBACK"}

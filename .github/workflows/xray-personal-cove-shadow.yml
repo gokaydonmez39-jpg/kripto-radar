@@ -10,6 +10,8 @@ on:
       - 'personal-swing/cove_private_shadow.py'
       - 'personal-swing/test_cove_shadow.py'
       - 'personal-swing/test_cove_private_shadow.py'
+      - 'personal-swing/research_epoch_binding.py'
+      - 'personal-swing/test_research_epoch_binding.py'
       - 'personal-swing/COVE_SHADOW_INTEGRATION.md'
       - '.github/workflows/xray-personal-cove-shadow.yml'
   workflow_run:
@@ -41,19 +43,20 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -r requirements.txt
-          python -m unittest -q test_cove_shadow test_cove_private_shadow
-          python -O -m unittest -q test_cove_shadow test_cove_private_shadow
+          python -m unittest -q test_cove_shadow test_cove_private_shadow test_research_epoch_binding
+          python -O -m unittest -q test_cove_shadow test_cove_private_shadow test_research_epoch_binding
           python -m py_compile cove_shadow.py cove_private_shadow.py test_cove_shadow.py test_cove_private_shadow.py
 
   private-eod-research:
-    # No PR code or alternate/canonical NASDAQ plane; schedule/dispatch after
+    # No PR code or alternate/canonical NASDAQ plane; natural schedule after
     # exact protected main EOD receipt only. Fail closed if Sheet/source
     # receipt or score not from same completed XNAS ASOF.
     if: >-
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
-      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') &&
+      github.event.workflow_run.event == 'schedule' &&
+      github.event.workflow_run.run_attempt == 1 &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 15

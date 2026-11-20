@@ -81,6 +81,34 @@ def as_cells(rows, sheet_id):
 
 
 class V2Tests(unittest.TestCase):
+    def test_authority_requires_both_receipts_to_match_natural_parent(self):
+        import private_sheet_writer as writer
+        import runner
+
+        parent = v.epoch_binding.Parent(1234, "a"*40)
+        link = v.epoch_binding.EOD_WEB + "1234"
+        scan = [ASOF, "SYNTHETIC", "477", "477", "477", "0", "TRUE", "0", link, "PROOF"]
+        h = ("FIXTURE",)
+        summary = [""]*32
+        summary[0], summary[5], summary[6], summary[7] = ASOF+"|SUMMARY", "1", "1", "0"
+        summary[26], summary[27] = link, "READY_FOR_CHATGPT_DAILY_DIGEST"
+        summary[30], summary[31] = "scope", "policy"
+        score = types.SimpleNamespace(HEADER=h, score_read=lambda api: None,
+                                      normalize_rows=lambda rows: [list(h), summary])
+        api = types.SimpleNamespace(check_metadata=lambda: None, read=lambda *args: None)
+        with patch.dict(sys.modules, {"swing_score_daily":score}), \
+                patch.object(writer,"rows_only",return_value=[scan]), \
+                patch.object(writer,"scan_source_proof",return_value={
+                    "scopeSHA":"scope", "algorithmSHA":"policy"}), \
+                patch.object(runner,"get_scope",return_value=[f"DEMO{i:03d}" for i in range(477)]), \
+                patch.object(runner,"sha_symbols",return_value="scope"), \
+                patch.object(runner,"analysis_fingerprint",return_value="policy"):
+            self.assertEqual(v.private_authority(api,ASOF,parent=parent)[-1],ASOF)
+            summary[26] = v.epoch_binding.EOD_WEB + "1235"
+            with self.assertRaisesRegex(v.epoch_binding.EpochBindingError,
+                                       "PARENT_SHEET_RECEIPTS_MISMATCH"):
+                v.private_authority(api,ASOF,parent=parent)
+
     def test_new_month_sheet_allows_one_visible_unfrozen_data_row(self):
         """Google Sheets HTTP 400 when rowCount == frozenRowCount == 1.
 

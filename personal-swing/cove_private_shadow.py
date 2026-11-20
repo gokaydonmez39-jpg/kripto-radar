@@ -15,6 +15,7 @@ import cove_shadow
 import engine
 import kronos_v2
 import private_sheet_writer as writer
+import research_epoch_binding as epoch_binding
 import runner
 from performance_lab import private_flight_recorder as flight
 
@@ -64,7 +65,7 @@ def _read_current(api):
             api.read("PANEL","B"))
 
 
-def build_private_bundle(api,asof,read_batch,*,stage=None):
+def build_private_bundle(api,asof,read_batch,*,stage=None,parent=None):
     """Attest source, private lifecycle, then bind 477-count + episode bars.
 
     The exact source-policy SHA and same-ASOF score receipt are checked by the
@@ -76,7 +77,8 @@ def build_private_bundle(api,asof,read_batch,*,stage=None):
             stage(label)
     need(callable(read_batch),"MISSING_READ_ONLY_PROVIDER")
     mark("SOURCE_AUTHORITY")
-    symbols,scope_sha,policy_sha,scan_id=kronos_v2.private_authority(api,asof)
+    authority_args={"parent":parent} if parent is not None else {}
+    symbols,scope_sha,policy_sha,scan_id=kronos_v2.private_authority(api,asof,**authority_args)
     need(scan_id==asof and len(symbols)==477,"AUTHORITY_ASOF_OR_SCOPE_MISMATCH")
     before=_read_current(api)
     mark("FLIGHT_RECORDER")
@@ -152,9 +154,9 @@ def build_private_bundle(api,asof,read_batch,*,stage=None):
 
 
 def run_private(asof,api,read_batch,*,slippage_bps=5.,
-                commission_per_share=0.005,stage=None):
+                commission_per_share=0.005,stage=None,parent=None):
     """Private in-memory result only; caller must not publish metrics/logs."""
-    source=build_private_bundle(api,asof,read_batch,stage=stage)
+    source=build_private_bundle(api,asof,read_batch,stage=stage,parent=parent)
     if stage is not None:
         stage("RESEARCH_MATH")
     result=cove_shadow.run_bundle(
@@ -168,8 +170,10 @@ def run_private(asof,api,read_batch,*,slippage_bps=5.,
 
 def main():
     # No command arguments, output files, schedule creation or privileged API.
-    phase="AUTH"
+    phase="EOD_PARENT"
     try:
+        parent=epoch_binding.scheduled_parent(os.environ)
+        phase="AUTH"
         secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON")
         sheet_id=os.environ.get("XRAY_PRIVATE_SPREADSHEET_ID")
         need(bool(secret) and bool(sheet_id),"MISSING_READ_ONLY_AUTH")
@@ -180,7 +184,7 @@ def main():
         def mark(label):
             nonlocal phase
             phase=label
-        result=run_private(asof,api,engine.live_read,stage=mark)
+        result=run_private(asof,api,engine.live_read,stage=mark,parent=parent)
         # Never claim a live research PASS for a valid but empty source cohort.
         need(result["baseline"]["episodes"]>0 and
              result["baseline"]["status"]!="HOLD_NO_EPISODES",
@@ -190,13 +194,16 @@ def main():
         # details, SHA-derived private payload, Google IDs or credentials.
         need(result["orders"] is False and result["writes"] is False,
              "MUTATION_POLICY_DRIFT")
+        # Only already-public EOD IDs, the source head and the session date.
+        print("COVE_SOURCE_PARENT_V1="+json.dumps(
+            epoch_binding.redacted_parent(parent,asof),sort_keys=True))
         print("COVE_SHADOW_POST_EOD=READONLY_RESEARCH_PASS_NO_PUBLIC_METRICS;NO_ORDERS;NO_AL_STOP_CHANGE;OOS_HOLD")
         return 0
     except Exception:
         # Any provider / credential / private data exception stays private.
         # Never print raw exception text or traceback into public GitHub logs.
         safe=phase if phase in (
-            "AUTH","ASOF","AUTHENTICATED_READBACK","SOURCE_AUTHORITY",
+            "EOD_PARENT","AUTH","ASOF","AUTHENTICATED_READBACK","SOURCE_AUTHORITY",
             "FLIGHT_RECORDER","EPISODE_SCOPE","IEX_SOURCE",
             "SOURCE_RECHECK","RESEARCH_MATH","DONE") else "UNKNOWN"
         print("COVE_SHADOW_POST_EOD=HOLD_NO_DATA_PUBLISHED_NO_WRITES;STAGE="+safe)

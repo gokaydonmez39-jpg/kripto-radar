@@ -22,6 +22,8 @@ on:
       - 'personal-swing/test_kronos_real_477_probe.py'
       - 'personal-swing/kronos_v2.py'
       - 'personal-swing/test_kronos_v2.py'
+      - 'personal-swing/research_epoch_binding.py'
+      - 'personal-swing/test_research_epoch_binding.py'
       - 'personal-swing/KRONOS_INTEGRATION.md'
       - '.github/workflows/xray-personal-kronos-shadow.yml'
   workflow_run:
@@ -55,8 +57,8 @@ jobs:
           python -O -m unittest -q test_kronos_capacity_probe
           python -m unittest -q test_kronos_real_477_probe
           python -O -m unittest -q test_kronos_real_477_probe
-          python -m unittest -q test_kronos_v2
-          python -O -m unittest -q test_kronos_v2
+          python -m unittest -q test_kronos_v2 test_research_epoch_binding
+          python -O -m unittest -q test_kronos_v2 test_research_epoch_binding
           python -m py_compile kronos_shadow.py test_kronos_shadow.py kronos_oos_audit.py test_kronos_oos_audit.py kronos_capacity_probe.py test_kronos_capacity_probe.py kronos_real_477_probe.py test_kronos_real_477_probe.py kronos_v2.py test_kronos_v2.py
   actual-model-smoke:
     if: github.event_name == 'pull_request'
@@ -226,7 +228,8 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
+      github.event.workflow_run.event == 'schedule' &&
+      github.event.workflow_run.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -303,7 +306,8 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
+      github.event.workflow_run.event == 'schedule' &&
+      github.event.workflow_run.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:

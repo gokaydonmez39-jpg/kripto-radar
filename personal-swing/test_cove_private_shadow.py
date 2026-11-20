@@ -125,6 +125,8 @@ class PrivateReadOnlyTests(unittest.TestCase):
                 "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"masked",
                 "XRAY_PRIVATE_SPREADSHEET_ID":"masked"},clear=True), \
              patch.object(priv,"ReadOnlySheetApi",return_value=self.api), \
+             patch.object(priv.epoch_binding,"scheduled_parent",
+                          return_value=priv.epoch_binding.Parent(123,"a"*40)), \
              patch.object(priv.engine,"trading_asof",
                           return_value=date.fromisoformat(ASOF)), \
              patch.object(priv.engine,"live_read",side_effect=
