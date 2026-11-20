@@ -47,8 +47,10 @@ class WorkflowRunShaRaceTest(unittest.TestCase):
     def test_wrong_core_parent_sha_is_rejected(self):
         gh = Github()
         gh.docs["/actions/runs/101"]["head_sha"] = "b" * 40
-        with self.assertRaises(live.NoProof):
-            live.aggregate(gh, Sheets(), D)
+        report, gaps = live.aggregate(gh, Sheets(), D)
+        self.assertEqual(report["sources"]["COVE"]["state"], "UNKNOWN")
+        self.assertEqual(report["sources"]["KRONOS_V2"]["state"], "UNKNOWN")
+        self.assertIn("COVE", gaps)
 
 
 if __name__ == "__main__":
