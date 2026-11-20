@@ -11,6 +11,8 @@ import json
 import os
 import re
 import sys
+import time
+from urllib.error import HTTPError, URLError
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -226,21 +228,47 @@ def aggregate(github, sheets, current_asof):
 
 
 class GitHubReader:
-    """Bounded, authenticated, read-only GitHub REST API client."""
+    """Self-healing read-only GitHub REST: bounded GET recovery, fail-closed."""
+    MAX_READ_ATTEMPTS = 3
+    RETRYABLE_HTTP = frozenset((429, 500, 502, 503, 504))
+
     def __init__(self, token):
         require(bool(token))
         self.token = token
+        self.transient_failures = 0
+        self.recovered_reads = 0
 
     def _get(self, path):
+        # Deliberately no request method, body, dispatch, mutation or credential logging.
         require(path.startswith("/actions/") and ".." not in path and len(path) < 250)
         u = "https://api.github.com/repos/" + REPO + path
-        req = Request(u, headers={"Authorization": "Bearer " + self.token,
-                                  "Accept": "application/vnd.github+json",
-                                  "X-GitHub-Api-Version": "2022-11-28"})
-        with urlopen(req, timeout=20) as response:
-            body = response.read(2_000_001)
-        require(len(body) <= 2_000_000)
-        return body
+        for attempt in range(self.MAX_READ_ATTEMPTS):
+            try:
+                req = Request(u, headers={
+                    "Authorization": "Bearer " + self.token,
+                    "Accept": "application/vnd.github+json",
+                    "X-GitHub-Api-Version": "2022-11-28"})
+                with urlopen(req, timeout=20) as response:
+                    body = response.read(2_000_001)
+                # A successful transport with invalid/oversized evidence is
+                # NOT a transient fault; never auto-repair invalid provenance.
+                require(len(body) <= 2_000_000)
+                if attempt:
+                    self.recovered_reads += 1
+                return body
+            except HTTPError as err:
+                # Auth, permissions, missing receipt, and malformed requests
+                # are permanent until independently fixed; never retry them.
+                if err.code not in self.RETRYABLE_HTTP:
+                    raise NoProof("NONRETRYABLE_GITHUB_READ") from None
+            except (URLError, TimeoutError):
+                # A transient GET is safe to repeat: no POST and no state change.
+                pass
+            self.transient_failures += 1
+            if attempt + 1 == self.MAX_READ_ATTEMPTS:
+                raise NoProof("GITHUB_READ_RETRY_EXHAUSTED") from None
+            time.sleep(2 ** attempt)
+        raise NoProof("GITHUB_READ_RETRY_EXHAUSTED")
 
     def json(self, path):
         value = json.loads(self._get(path))
@@ -268,13 +296,18 @@ def main():
         api = ReadOnlySheet(os.environ["XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON"])
         api.check_metadata()
         current = engine.trading_asof().isoformat()
-        health, gaps = aggregate(GitHubReader(os.environ["GITHUB_TOKEN"]), api, current)
+        gh = GitHubReader(os.environ["GITHUB_TOKEN"])
+        health, gaps = aggregate(gh, api, current)
         states = {k: v["state"] for k, v in health["sources"].items()}
         # ONLY aggregate states and previously public source EOD run id.
         print("XRAY_SOURCE_HEALTH_AUTO_V1=" + json.dumps({
             "asof": health["asof"], "eod_run_id": health["eod_run_id"],
             "sources": states, "gaps": gaps,
             "may_notify": False, "may_trade": False,
+            "bounded_get_repair": {"transient_failures": gh.transient_failures,
+                                   "recovered_reads": gh.recovered_reads,
+                                   "max_attempts": gh.MAX_READ_ATTEMPTS,
+                                   "mutations": 0},
             "decision_influence": "NO_GO"}, sort_keys=True))
         return 0 if all(s.startswith("MATCHED_") for s in states.values()) else 3
     except Exception:
