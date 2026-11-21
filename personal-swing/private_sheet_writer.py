@@ -11,6 +11,7 @@ import json
 import math
 import os
 import random
+import re
 import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -26,6 +27,8 @@ CANDIDATE_HEADER = ('ALARM KİMLİĞİ','ASOF ET','SEMBOL','SINIF',
 SCAN_HEADER = ('ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ',
                'EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI')
 BATCH_ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
+VERIFIED_RUN_URL = re.compile(
+    r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*$')
 # Bound loaded private ledger entries, not the initial 1,000-row grid.
 # The Sheets API appendCells extends the grid; a capped read silently misses
 # older events and can cause duplicate AL/STOP or replay. Read all occupied
@@ -156,7 +159,7 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
         snapshot, symbols, scope_sha=runner.sha_symbols(symbols),
         policy_sha=runner.analysis_fingerprint())
     require(isinstance(run_url, str) and
-            run_url.startswith('https://github.com/') and '/actions/runs/' in run_url,
+            VERIFIED_RUN_URL.fullmatch(run_url) is not None,
             'UNVERIFIED_RUN_ID')
     require(type(run_event) is str and run_event in RUN_EVENT_LABELS,
             'UNTRUSTED_GITHUB_EVENT')
