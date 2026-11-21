@@ -284,15 +284,16 @@ def inventory(files):
             primary=yaml.load(files[primary_name],Loader=yaml.BaseLoader)
             jobs=primary["jobs"]
             triggers=primary["on"]
-            writer_guard="github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'"
+            writer_guard="github.event_name == 'schedule'"
             writer_jobs=("daily-private-scan","private-sheets-auth-preflight")
             downstream=("private-episode-followups","guardian-acceptance","daily-private-score-acceptance")
             safe=(set(triggers).issuperset({"schedule","push","pull_request","workflow_dispatch"})
                 and len(triggers["schedule"])==1
                 and triggers["schedule"][0].get("cron")=="16 23 * * 1-5"
                 and all(jobs[j].get("if")==writer_guard for j in writer_jobs)
-                and all("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'"
-                        in jobs[j].get("if","") for j in downstream)
+                and all("github.event_name == 'schedule'" in jobs[j].get("if","")
+                        and "workflow_dispatch" not in jobs[j].get("if","")
+                        for j in downstream)
                 and jobs["offline-guard"].get("if") is None
                 and primary.get("permissions",{}).get("contents")=="read")
             if not safe:
@@ -400,12 +401,16 @@ def selftest():
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
     primary="xray-personal-477-eod.yml"
     bad(lambda x:x.update({primary:x[primary].replace(
-        "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
+        "    if: github.event_name == 'schedule'",
         "    if: github.event_name != 'pull_request'",1)}),
         "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     bad(lambda x:x.update({primary:x[primary].replace(
-        "    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')",
+        "    if: always() && needs.offline-guard.result == 'success' && github.event_name == 'schedule'",
         "    if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: github.event_name == 'schedule'",
+        "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",1)}),
         "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     a14="xray-personal-nasdaq-a14-readonly.yml"
     bad(lambda x:x.update({a14:x[a14].replace(
