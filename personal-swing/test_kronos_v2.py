@@ -87,7 +87,9 @@ class V2Tests(unittest.TestCase):
 
         parent = v.epoch_binding.Parent(1234, "a"*40)
         link = v.epoch_binding.EOD_WEB + "1234"
-        scan = [ASOF, "SYNTHETIC", "477", "477", "477", "0", "TRUE", "0", link, "PROOF"]
+        scan = [ASOF, writer.RUN_EVENT_LABELS["schedule"],
+                "477", "477", "477", "0", "TRUE", "0", link,
+                "source_event=schedule"]
         h = ("FIXTURE",)
         summary = [""]*32
         summary[0], summary[5], summary[6], summary[7] = ASOF+"|SUMMARY", "1", "1", "0"
@@ -104,6 +106,12 @@ class V2Tests(unittest.TestCase):
                 patch.object(runner,"sha_symbols",return_value="scope"), \
                 patch.object(runner,"analysis_fingerprint",return_value="policy"):
             self.assertEqual(v.private_authority(api,ASOF,parent=parent)[-1],ASOF)
+            scan[1] = writer.RUN_EVENT_LABELS["workflow_dispatch"]
+            scan[9] = "source_event=workflow_dispatch"
+            with self.assertRaisesRegex(k.ShadowHold,"KRONOS2_NON_NATURAL_SOURCE"):
+                v.private_authority(api,ASOF,parent=parent)
+            scan[1] = writer.RUN_EVENT_LABELS["schedule"]
+            scan[9] = "source_event=schedule"
             summary[26] = v.epoch_binding.EOD_WEB + "1235"
             with self.assertRaisesRegex(v.epoch_binding.EpochBindingError,
                                        "PARENT_SHEET_RECEIPTS_MISMATCH"):
