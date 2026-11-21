@@ -117,13 +117,54 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                     w.synchronize(snapshot(), RUN, api, run_event=event)
                 self.assertEqual(api.apply_count, 0)
 
-    def test_legacy_scan_replay_never_changes_historical_provenance(self):
+    def test_same_asof_different_trigger_must_not_borrow_existing_receipt(self):
         api = FakeApi()
         w.synchronize(snapshot(), RUN, api, run_event='workflow_dispatch')
         original = copy.deepcopy(api.scans[1])
-        w.synchronize(snapshot(), RUN, api, run_event='schedule')
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'EXISTING_SCAN_SOURCE_IDENTITY_CONFLICT'):
+            w.synchronize(snapshot(), RUN, api, run_event='schedule')
         self.assertEqual(api.scans[1], original)
         self.assertEqual(len(api.scans), 2)
+        self.assertEqual(api.apply_count, 1)
+
+    def test_same_asof_different_github_run_cannot_claim_existing_receipt(self):
+        api = FakeApi()
+        w.synchronize(snapshot(), RUN, api, run_event='schedule')
+        other='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999002'
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'EXISTING_SCAN_SOURCE_IDENTITY_CONFLICT'):
+            w.synchronize(snapshot(), other, api, run_event='schedule')
+        self.assertEqual(api.apply_count, 1)
+        self.assertEqual(len(api.scans), 2)
+
+    def test_same_asof_source_note_or_label_tamper_fails_closed(self):
+        for kind in ('label','missing_event','duplicate_event','wrong_event','run_url'):
+            with self.subTest(kind=kind):
+                api = FakeApi()
+                w.synchronize(snapshot(), RUN, api, run_event='schedule')
+                if kind == 'label':
+                    api.scans[1][1]='GitHub workflow_dispatch VERIFIED IEX EOD'
+                elif kind == 'missing_event':
+                    api.scans[1][9]=api.scans[1][9].replace(';source_event=schedule','')
+                elif kind == 'duplicate_event':
+                    api.scans[1][9]+=';source_event=schedule'
+                elif kind == 'wrong_event':
+                    api.scans[1][9]=api.scans[1][9].replace(
+                        ';source_event=schedule',';source_event=workflow_dispatch')
+                else:
+                    api.scans[1][8]='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999002'
+                with self.assertRaisesRegex(w.HandoffBlocked,
+                                            'EXISTING_SCAN_SOURCE_IDENTITY_CONFLICT'):
+                    w.synchronize(snapshot(), RUN, api, run_event='schedule')
+                self.assertEqual(api.apply_count, 1)
+
+    def test_same_asof_same_run_same_trigger_preserves_idempotent_noop(self):
+        api = FakeApi()
+        w.synchronize(snapshot(), RUN, api, run_event='schedule')
+        p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
+        self.assertEqual(p['scan_rows'],[])
+        self.assertEqual(p['candidate_rows'],[])
 
     def test_idempotent_replay_no_duplicate(self):
         api=FakeApi()
