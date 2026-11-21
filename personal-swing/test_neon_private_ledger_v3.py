@@ -167,6 +167,39 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"LATEST_SCAN_ASOF_MISMATCH"):
             self.calculate(scans_data=old)
 
+    def test_scan_rejects_out_of_order_future_epoch_before_valid_tail(self):
+        # A trailing valid ASOF cannot hide a newer epoch inserted earlier.
+        forged=scans()
+        future=copy.deepcopy(forged[1])
+        future[0]="2026-11-20"
+        forged.insert(1,future)
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"SCAN_DATE_ORDER_OR_DUPLICATE"):
+            self.calculate(scans_data=forged)
+
+    def test_archive_rejects_reverse_complete_day_blocks(self):
+        # Each block has 477 rows: uniqueness alone is insufficient.
+        today=self.calculate()["rows"]
+        old=copy.deepcopy(today)
+        for row in old:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+        data=[list(ledger.HEADER)]+today+old
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_ASOF_ORDER_OR_NONCONTIGUOUS"):
+            self.calculate(old=data)
+
+    def test_archive_rejects_interleaved_complete_day_blocks(self):
+        today=self.calculate()["rows"]
+        old=copy.deepcopy(today)
+        for row in old:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+        data=[list(ledger.HEADER)]+old[:200]+today+old[200:]
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_ASOF_ORDER_OR_NONCONTIGUOUS"):
+            self.calculate(old=data)
+
     def test_scan_requires_single_exact_natural_source_event(self):
         for origin in (
             "source_event=scheduled",
