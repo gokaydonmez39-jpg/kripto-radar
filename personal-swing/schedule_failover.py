@@ -217,6 +217,13 @@ def main(argv=None):
     def dispatch(session):
         if args.dry_run:
             return True
+        # FAIL CLOSED: automated fallback writes source_event=workflow_dispatch.
+        # The canonical A/B gate only authorizes schedule; an early fallback
+        # scan could lock this ASOF to unaccepted provenance forever.
+        # Never dispatch from this scheduled fallback until an independently
+        # tested parent-child/Sheet receipt authorization is deployed.
+        if os.environ.get('GITHUB_EVENT_NAME') == 'schedule':
+            return False
         return api_json(base+'/dispatches',token,method='POST',
                         body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
