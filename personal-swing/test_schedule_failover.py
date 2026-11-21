@@ -437,5 +437,39 @@ class AutomaticFallbackProvenanceGate(unittest.TestCase):
         self.assertFalse(sf.allow_dispatch_for_event('schedule'))
 
 
+class PrimaryEodPendingIsolationTests(unittest.TestCase):
+    def test_offline_main_push_cannot_evict_pending_natural_eod(self):
+        # Github's default concurrency can replace an older pending run.
+        # An offline-only main push MUST have its own isolated test group.
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / '.github' /
+                  'workflows' / 'xray-personal-477-eod.yml').read_text(encoding='utf-8')
+        groups = [line.strip() for line in source.splitlines()
+                  if line.lstrip().startswith('group:')]
+        self.assertEqual(len(groups), 1)
+        group = groups[0]
+        self.assertIn("(github.event_name == 'pull_request' || github.event_name == 'push')", group)
+        self.assertIn("format('xray-personal-477-daily-eod-test-{0}', github.run_id)", group)
+        self.assertIn("|| 'xray-personal-477-daily-eod'", group)
+        self.assertIn('cancel-in-progress: false', source)
+        self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"), 1)
+
+
+    def test_fallback_offline_checks_cannot_evict_scheduled_recovery(self):
+        # The scheduled fallback must be insulated from PR and push checks.
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / '.github' /
+                  'workflows' / 'xray-personal-477-schedule-fallback.yml').read_text(encoding='utf-8')
+        groups = [line.strip() for line in source.splitlines()
+                  if line.lstrip().startswith('group:')]
+        self.assertEqual(len(groups), 1)
+        group = groups[0]
+        self.assertIn("(github.event_name == 'pull_request' || github.event_name == 'push')", group)
+        self.assertIn("format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)", group)
+        self.assertIn("|| 'xray-personal-477-scheduler-fallback'", group)
+        self.assertIn('cancel-in-progress: false', source)
+        self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
+
+
 if __name__=='__main__':
     unittest.main()

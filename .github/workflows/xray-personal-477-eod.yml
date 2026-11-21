@@ -43,7 +43,7 @@ permissions:
   contents: read
 concurrency:
   # Offline pull requests must not evict a queued scheduled private EOD.
-  group: ${{ github.event_name == 'pull_request' && format('xray-personal-477-daily-eod-test-{0}', github.run_id) || 'xray-personal-477-daily-eod' }}
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('xray-personal-477-daily-eod-test-{0}', github.run_id) || 'xray-personal-477-daily-eod' }}
   cancel-in-progress: false
 jobs:
   offline-guard:
