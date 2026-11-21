@@ -75,7 +75,7 @@ def validated_bars(symbol, provided, dates):
             raise NeonHold("RAW_BAR_TIMESTAMP_INVALID") from exc
         require(stamp.tzinfo is not None and stamp.utcoffset() is not None,
                 "RAW_BAR_TIMESTAMP_NAIVE")
-        day = stamp.date().isoformat()
+        # Alpaca daily bars are attached to the official UTC XNAS session.\n        # The timestamp's own timezone date is untrusted provenance.\n        day = stamp.astimezone(timezone.utc).date().isoformat()
         require(day <= dates[-1], "RAW_BAR_FROM_FUTURE")
         if day < dates[0]:
             continue
