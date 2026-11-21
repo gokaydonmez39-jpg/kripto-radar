@@ -214,6 +214,7 @@ class FirstClaimAndReadback(unittest.TestCase):
             ("status","completed"),
             ("conclusion","failure"),
             ("created_at","2026-11-24T00:00:00Z"),
+            ("created_at","2026-11-23T21:20:00Z"),
             ("updated_at","2026-11-24T00:00:00Z"),
         )
         for key,bad in variants:
@@ -295,7 +296,8 @@ class FirstClaimAndReadback(unittest.TestCase):
                     claim(natural(),incomplete)
                 self.assertEqual(
                     [(m,p) for m,p,_ in git.calls],
-                    [("GET","/rulesets"),("GET","/rulesets/11"),
+                    [("GET","/actions/runs/"+str(natural()["run_id"])),
+                     ("GET","/rulesets"),("GET","/rulesets/11"),
                      ("POST","/git/tags")])
 
     def test_transport_timeout_does_not_retry_post(self):
@@ -393,6 +395,14 @@ class FirstClaimAndReadback(unittest.TestCase):
                 with self.assertRaisesRegex(
                     lease.LeaseHold,"LEASE_API_PATH_INVALID"):
                     tr(method,path,{} if method=="POST" else None)
+
+    def test_only_exact_run_get_is_a_read_route(self):
+        def fail_on_network(*_args,**_kwargs):
+            raise AssertionError("EXACT_ALLOWED_GITHUB_GET_PATH")
+        tr=lease.github_transport("masked-test-token",opener=fail_on_network)
+        with self.assertRaisesRegex(
+                AssertionError,"EXACT_ALLOWED_GITHUB_GET_PATH"):
+            tr("GET","/actions/runs/890123")
 
     def test_untrusted_github_runtime_source_cannot_claim_natural(self):
         import os
