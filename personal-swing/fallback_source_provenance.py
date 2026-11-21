@@ -96,6 +96,11 @@ def attest(parent, parent_receipt, child, child_receipt, jobs, scan,
                 item.get("conclusion") != "success" or
                 not _sha(item.get("head_sha"), 40)):
             return _blocked("RUN_ORIGIN_NOT_VERIFIED")
+    # The scheduled parent and executed child must use the exact same
+    # reviewed source commit. Self-consistent child receipts and job SHAs
+    # cannot elevate a different code revision into the parent's authority.
+    if parent["head_sha"] != child["head_sha"]:
+        return _blocked("PARENT_CHILD_SOURCE_SHA_DRIFT")
     p_created, p_end = _utc(parent.get("created_at")), _utc(parent.get("updated_at"))
     c_created, c_end = _utc(child.get("created_at")), _utc(child.get("updated_at"))
     if (None in (p_created, p_end, c_created, c_end) or
