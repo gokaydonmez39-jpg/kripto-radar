@@ -74,7 +74,7 @@ class NaturalReadOnlyCanary(unittest.TestCase):
         self.assertEqual(git.calls,[])
 
     def test_cli_rejects_unapproved_actions_without_http(self):
-        with patch.object(probe,"github_transport") as transport:
+        with patch.object(probe.lease,"github_transport") as transport:
             self.assertNotEqual(probe.main([]),0)
             self.assertNotEqual(probe.main(["--claim","2026-11-23"]),0)
             transport.assert_not_called()
@@ -82,7 +82,7 @@ class NaturalReadOnlyCanary(unittest.TestCase):
     def test_cli_requires_token_and_github_repository(self):
         with patch.dict("os.environ",{"GITHUB_REPOSITORY":lease.REPO,
                                       "GITHUB_TOKEN":""},clear=True):
-            with patch.object(probe,"github_transport") as transport:
+            with patch.object(probe.lease,"github_transport") as transport:
                 self.assertNotEqual(probe.main(["--verify"]),0)
                 transport.assert_not_called()
 
