@@ -222,6 +222,33 @@ class LifecycleTruthTests(unittest.TestCase):
                     life.synchronize(api,'2026-10-26',fetch)
                 self.assertEqual(api.writes,0)
 
+    def test_non_natural_eod_cannot_reserve_terminal_stop_or_target(self):
+        # EOD workflow push is offline only; manual dispatch has no
+        # certified parent-child/Sheet single-writer fallback authority.
+        for source in ('workflow_dispatch','push'):
+            with self.subTest(source_event=source):
+                api=FakeApi()
+                api.scans[1][1]=life.RUN_EVENT_LABELS[source]
+                api.scans[1][9]=api.scans[1][9].replace(
+                    'source_event=schedule','source_event='+source)
+                original=copy.deepcopy(api.rows)
+                with self.assertRaisesRegex(
+                        HandoffBlocked,'LIFECYCLE_NON_NATURAL_EOD_SOURCE'):
+                    life.synchronize(api,'2026-10-26',fetch)
+                self.assertEqual(api.writes,0)
+                self.assertEqual(api.rows,original)
+                self.assertEqual(len(api.alert_rows),1)
+
+    def test_terminal_scan_non_monotonic_history_must_fail_closed(self):
+        api=FakeApi()
+        api.scans[1:1]=[
+            ['2026-10-24'],['2026-10-23']]
+        with self.assertRaisesRegex(
+                HandoffBlocked,'LIFECYCLE_SCAN_DATE_ORDER_INVALID'):
+            life.synchronize(api,'2026-10-26',fetch)
+        self.assertEqual(api.writes,0)
+        self.assertEqual(len(api.alert_rows),1)
+
     def test_source_scan_cannot_change_between_preflight_and_write(self):
         api=FakeApi()
         original=api.read
