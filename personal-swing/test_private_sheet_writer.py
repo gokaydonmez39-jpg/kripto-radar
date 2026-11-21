@@ -68,6 +68,24 @@ class FakeApi:
 
 
 class PrivateSheetHandoffTests(unittest.TestCase):
+    def test_natural_scan_source_is_exact_single_field_not_substring(self):
+        row=["2026-11-23",w.RUN_EVENT_LABELS["schedule"],
+             "477","477","477","0","TRUE","0",RUN,
+             "scopeSHA="+"a"*64+";algorithmSHA="+"b"*64+
+             ";source_event=schedule;NO_ORDERS"]
+        self.assertTrue(w.canonical_natural_scan_source(row))
+        for origin,label in (
+            ("source_event=workflow_dispatch",w.RUN_EVENT_LABELS["schedule"]),
+            ("source_event=scheduled",w.RUN_EVENT_LABELS["schedule"]),
+            ("source_event=schedule;source_event=push",w.RUN_EVENT_LABELS["schedule"]),
+            ("source_event=schedule",w.RUN_EVENT_LABELS["workflow_dispatch"]),
+        ):
+            with self.subTest(origin=origin,label=label):
+                fake=list(row)
+                fake[9]=fake[9].replace("source_event=schedule",origin)
+                fake[1]=label
+                self.assertFalse(w.canonical_natural_scan_source(fake))
+
     def test_real_cli_non_natural_run_cannot_write_canonical_eod(self):
         # Existing manual fallback lacks separately attested parent/child
         # and immutable single-writer provenance. It must NOT poison the
