@@ -77,6 +77,8 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'SHEET_CAPACITY_REACHED',
     'CANDIDATE_IDENTITY_CONFLICT',
     'CANDIDATE_ORIGINAL_LEVEL_CONFLICT',
+    'CANDIDATE_EPOCH_SET_CONFLICT',
+    'CANDIDATE_EPOCH_READBACK_SET_CONFLICT',
     'CANDIDATE_READBACK_DUPLICATE_KEY',
     'CANDIDATE_READBACK_LEVELS_OR_VALUES_CHANGED',
     'CANDIDATE_READBACK_MISSING_OR_DUPLICATE',
@@ -225,6 +227,21 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
 
     matching_scans = [r for r in old_scans if r[0] == asof]
     require(len(matching_scans) <= 1, 'SCAN_EPOCH_COLLISION')
+    # EOD scan and all its new-AL candidates are appended in ONE Google
+    # batchUpdate. A complete existing epoch must have EXACTLY the candidate
+    # set specified by its immutable research snapshot. A candidate without
+    # a scan is an orphan, not permission to reconstruct/backfill the scan.
+    epoch_candidates = [
+        r for r in old_candidates
+        if str(r[0]).startswith(asof + '|') or
+           (len(r) > 1 and r[1] == asof)
+    ]
+    expected_epoch_keys = {asof + '|' + r['symbol'] for r in all_al}
+    existing_epoch_keys = {r[0] for r in epoch_candidates}
+    require((existing_epoch_keys == expected_epoch_keys and
+             len(epoch_candidates) == len(expected_epoch_keys))
+            if matching_scans else not epoch_candidates,
+            'CANDIDATE_EPOCH_SET_CONFLICT')
     appended_scans = []
     if matching_scans:
         existing = matching_scans[0]
@@ -311,6 +328,17 @@ def verify_readback(p, candidates, scans):
             numeric(matching_scan[7]) == p['expected_count'],
             'SCAN_COUNT_READBACK_MISMATCH')
     observed={r[0]:r for r in cr}
+    # The second live GET must reject additional same-ASOF candidates,
+    # including rows injected after the original atomic batch but before
+    # independent readback. A subset check is not an exact-set receipt.
+    epoch_rows = [
+        r for r in cr
+        if str(r[0]).startswith(p['asof_et'] + '|') or
+           (len(r) > 1 and r[1] == p['asof_et'])
+    ]
+    require(len(epoch_rows) == len(p['expected_keys']) and
+            {r[0] for r in epoch_rows} == set(p['expected_keys']),
+            'CANDIDATE_EPOCH_READBACK_SET_CONFLICT')
     for key in p['expected_keys']:
         require(key in observed,'CANDIDATE_READBACK_MISSING_OR_DUPLICATE')
         require(observed[key] == p['expected_candidate_rows'][key],
