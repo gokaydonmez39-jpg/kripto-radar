@@ -43,6 +43,7 @@ class MockGit:
         self.barrier=Barrier(rendezvous) if rendezvous else None
         self.tamper=None
         self.protection="valid"
+        self.disable_after_ref=False
 
     def __call__(self,method,path,body=None):
         with self.lock:
@@ -76,6 +77,8 @@ class MockGit:
                 if body["ref"] in self.refs:
                     raise HTTPError("https://fake.invalid",422,"duplicate",None,None)
                 self.refs[body["ref"]]=body["sha"]
+                if self.disable_after_ref:
+                    self.protection="disabled"
             return {"ref":body["ref"],
                     "object":{"type":"tag","sha":body["sha"]}}
         if method=="GET" and path.startswith("/git/ref/tags/"):
@@ -168,7 +171,8 @@ class FirstClaimAndReadback(unittest.TestCase):
             [("GET","/rulesets"),("GET","/rulesets/11"),
              ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
-             ("GET","/git/tags/"+out["tag_sha"])])
+             ("GET","/git/tags/"+out["tag_sha"]),
+             ("GET","/rulesets"),("GET","/rulesets/11")])
         manifest=json.loads(git.tags[out["tag_sha"]]["message"])
         self.assertEqual(manifest["run_id"],owner["run_id"])
         self.assertEqual(manifest["asof_et"],ASOF)
@@ -206,6 +210,18 @@ class FirstClaimAndReadback(unittest.TestCase):
                 with self.assertRaisesRegex(lease.LeaseHold,
                                             "LEASE_READBACK_CONFLICT"):
                     lease.acquire_first_claim(natural(),git)
+
+    def test_ruleset_revoked_mid_claim_never_authorizes_writer(self):
+        # The Git tag may already exist; a now-unprotected ref is NOT a
+        # valid one-writer lease. No Sheet or A/B authorization may follow.
+        git=MockGit()
+        git.disable_after_ref=True
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                    "LEASE_TAG_PROTECTION_UNVERIFIED"):
+            lease.acquire_first_claim(natural(),git)
+        self.assertEqual(len(git.refs),1)
+        self.assertEqual(len(git.tags),1)
+        self.assertEqual(git.protection,"disabled")
 
     def test_missing_post_receipt_and_error_are_not_authority(self):
         for response in (None,{},{"sha":"malformed"}):
