@@ -176,6 +176,18 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
                           if rechecked=='NOOP_CURRENT_EPOCH_RUN_EXISTS'
                           else 'BLOCKED_RECHECK_UNCERTAIN_RUN_STATE'),
                 'asof_et':session,'dispatch_requested':False}
+    # A future caller must not bypass the deny-by-default policy merely by
+    # supplying a different dispatch function. Check before side effects.
+    # This is independent of the main() HTTP wrapper.
+    if not allow_dispatch_for_event(trigger_event):
+        reason=('NATURAL_FALLBACK_POLICY_LOCKED'
+                if trigger_event=='schedule' else
+                'MANUAL_FALLBACK_POLICY_LOCKED'
+                if trigger_event=='workflow_dispatch' else
+                'UNTRUSTED_FALLBACK_TRIGGER')
+        return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED',
+                'asof_et':session, 'dispatch_requested':False,
+                'reason_code':reason}
     accepted=request_dispatch(session)
     if accepted is not True:
         # Distinguish intentional policy locks from uncertain dispatch
