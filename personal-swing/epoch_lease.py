@@ -111,7 +111,7 @@ def _manifest(owner, *, now=None):
         observed=owner["observed_at"]
         require(isinstance(observed,str) and re.fullmatch(
                     r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T"
-                    r"[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{6})?Z",
+                    r"[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{6})?Z",
                     observed) is not None,"LEASE_OWNER_CONTRACT_INVALID")
         parsed=datetime.fromisoformat(observed.replace("Z","+00:00"))
         require(parsed.tzinfo is not None and
