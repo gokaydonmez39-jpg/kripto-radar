@@ -259,6 +259,53 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"RISK_UNKNOWN_CANNOT_BECOME_PASS"):
             self.calculate(payload=p)
 
+    def test_reordered_rank_score_is_not_authoritative(self):
+        # A valid-looking 477 list may contain internally contradictory ranks.
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["score"]="70.00"
+        p["rows"][0]["factors"]={key:70.0 for key in neon.WEIGHTS}
+        # Keep the first row's corridor consistent: isolate rank ordering.
+        p["rows"][0]["decision_corridor"]="BEKLE"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_RANK_SCORE_OUT_OF_ORDER"):
+            self.calculate(payload=p)
+
+    def test_high_score_in_wait_corridor_is_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["decision_corridor"]="BEKLE"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_SCORE_CORRIDOR_DRIFT"):
+            self.calculate(payload=p)
+
+    def test_low_score_in_watch_corridor_is_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][-1]["score"]="70.00"
+        p["rows"][-1]["factors"]={key:70.0 for key in neon.WEIGHTS}
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_SCORE_CORRIDOR_DRIFT"):
+            self.calculate(payload=p)
+
+    def test_malformed_daily_bar_timestamp_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["last_valid_bar_time"]=ASOF+"TFAKE"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_BAR_TIMESTAMP_INVALID"):
+            self.calculate(payload=p)
+
+    def test_naive_daily_bar_timestamp_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["last_valid_bar_time"]=ASOF+"T00:00:00"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_BAR_TIMESTAMP_INVALID"):
+            self.calculate(payload=p)
+
+    def test_timezone_shifted_bar_date_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["last_valid_bar_time"]=ASOF+"T23:30:00-05:00"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_BAR_TIMESTAMP_INVALID"):
+            self.calculate(payload=p)
+
+    def test_unrecognized_liquidity_proof_rejected(self):
+        p=copy.deepcopy(self.snap)
+        p["rows"][0]["liquidity"]="PASS_TOTAL_MARKET_UNVERIFIED"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_LIQUIDITY_STATUS_INVALID"):
+            self.calculate(payload=p)
+
     def test_local_private_run_no_extra_network_via_plan(self):
         p=self.calculate()
         self.assertEqual(len(p["rows"]),477)

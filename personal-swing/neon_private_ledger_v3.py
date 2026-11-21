@@ -11,7 +11,7 @@ import json
 import os
 import re
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 
@@ -128,6 +128,7 @@ def validated_shadow(payload, asof, master, master_sha, policy_sha):
          type(rows) is list and len(rows)==477,
          "SHADOW_NOT_477_FULLY_SCORED")
     result={}
+    previous_ranked_score=None
     for index, row in enumerate(rows,1):
         need(type(row) is dict and row.get("symbol") in master and
              type(row.get("rank")) is int and row["rank"]==index,
@@ -137,11 +138,26 @@ def validated_shadow(payload, asof, master, master_sha, policy_sha):
              type(row.get("last_valid_bar_time")) is str and
              row["last_valid_bar_time"][:10]==asof,
              "SHADOW_DUPLICATE_OR_BAR_ASOF")
+        # A matching date prefix is not a valid IEX timestamp or provenance.
+        # A timezone-offset timestamp must resolve to the same UTC XNAS date.
+        try:
+            bar_time=datetime.fromisoformat(
+                row["last_valid_bar_time"].replace("Z","+00:00"))
+        except (ValueError, TypeError):
+            raise NeonLedgerHold("SHADOW_BAR_TIMESTAMP_INVALID") from None
+        need(bar_time.tzinfo is not None and bar_time.utcoffset() is not None
+             and bar_time.astimezone(timezone.utc).date().isoformat()==asof,
+             "SHADOW_BAR_TIMESTAMP_INVALID")
         factors=row.get("factors")
         need(type(factors) is dict and set(factors)==set(neon.WEIGHTS),
              "SHADOW_FACTOR_SET_INVALID")
         values={key:number(value) for key,value in factors.items()}
         score=number(row.get("score"))
+        # Ranks are sequential, but that alone does not establish ordering.
+        # Equal-score symbol order is presentation-only; numerical order is required.
+        need(previous_ranked_score is None or score <= previous_ranked_score,
+             "SHADOW_RANK_SCORE_OUT_OF_ORDER")
+        previous_ranked_score=score
         expected=sum((values[k]*Decimal(w) for k,w in neon.WEIGHTS.items()),
                      Decimal(0)).quantize(Decimal(".01"), rounding=ROUND_HALF_UP)
         need(abs(score-expected)<=Decimal(".02"), "SHADOW_SCORE_MATH_DRIFT")
@@ -153,9 +169,15 @@ def validated_shadow(payload, asof, master, master_sha, policy_sha):
                  row["decision_corridor"]=="HOLD_OUTBOX_NOT_ATTESTED",
                  "AL_CANNOT_GAIN_NEON_DELIVERY_AUTHORITY")
         else:
-            need(row["signal_status"]=="NO_NEW_AL" and
-                 row["decision_corridor"] in ("YAKINDAN_IZLE","BEKLE"),
+            need(row["signal_status"]=="NO_NEW_AL",
                  "SCORE_CANNOT_CREATE_AL")
+            expected_corridor=("YAKINDAN_IZLE" if score>=Decimal("75")
+                               else "BEKLE")
+            need(row["decision_corridor"]==expected_corridor,
+                 "SHADOW_SCORE_CORRIDOR_DRIFT")
+        need(row.get("liquidity") in ("PASS_IEX_SINGLE_VENUE",
+                                      "FAIL_IEX_SINGLE_VENUE"),
+             "SHADOW_LIQUIDITY_STATUS_INVALID")
         need(row.get("spread")=="UNKNOWN" and row.get("gap")=="UNKNOWN" and
              row.get("orders_sent")==0, "RISK_UNKNOWN_CANNOT_BECOME_PASS")
         result[s]=(score,values,row)
