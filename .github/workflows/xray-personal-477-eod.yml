@@ -108,7 +108,7 @@ jobs:
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
       - name: Require real natural EOD GitHub-run receipt (GET only, no tag claim)
-        if: github.event_name == 'schedule'
+        if: ${{ github.event_name == 'schedule' }}
         working-directory: personal-swing
         env:
           GITHUB_TOKEN: ${{ github.token }}
