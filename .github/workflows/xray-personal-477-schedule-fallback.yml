@@ -8,6 +8,8 @@ on:
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
+      - 'personal-swing/fallback_job_receipt.py'
+      - 'personal-swing/test_fallback_job_receipt.py'
       - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   push:
@@ -18,6 +20,8 @@ on:
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
+      - 'personal-swing/fallback_job_receipt.py'
+      - 'personal-swing/test_fallback_job_receipt.py'
       - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   workflow_dispatch:
@@ -52,8 +56,8 @@ jobs:
       - name: Fail-closed official session and CAS-like duplicate-suppression tests
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease
-          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease
+          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
+          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
           python -m py_compile schedule_failover.py fallback_source_provenance.py epoch_lease.py
       - name: Enforce global NASDAQ workflow-schedule boundary contract
         run: |
