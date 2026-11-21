@@ -339,6 +339,42 @@ class FirstClaimAndReadback(unittest.TestCase):
                     lease.LeaseHold,"LEASE_API_PATH_INVALID"):
                     tr(method,path,{} if method=="POST" else None)
 
+    def test_untrusted_github_runtime_source_cannot_claim_natural(self):
+        import os
+        from unittest.mock import patch
+        adversaries=(
+            ("GITHUB_EVENT_NAME","workflow_dispatch"),
+            ("GITHUB_EVENT_NAME","push"),
+            ("GITHUB_REPOSITORY","other/repository"),
+            ("GITHUB_REF","refs/heads/dev"),
+            ("GITHUB_WORKFLOW_REF",lease.REPO+"/.github/workflows/other.yml@refs/heads/main"),
+            ("GITHUB_RUN_ATTEMPT","2"),
+            ("GITHUB_SHA","b"*40),
+            ("GITHUB_RUN_ID","890999"),
+        )
+        for key,bad in adversaries:
+            with self.subTest(key=key,bad=bad):
+                runtime=env()
+                runtime[key]=bad
+                git=MockGit()
+                with patch.dict(os.environ,runtime,clear=True):
+                    with self.assertRaisesRegex(
+                        lease.LeaseHold,
+                        "LEASE_NATURAL_PRODUCER_UNVERIFIED|LEASE_OWNER_PROVENANCE_UNVERIFIED"):
+                        lease.acquire_first_claim(natural(),git,now=NOW)
+                self.assertEqual(git.calls,[])
+                self.assertEqual(git.refs,{})
+
+    def test_missing_live_github_env_must_never_claim(self):
+        import os
+        from unittest.mock import patch
+        git=MockGit()
+        with patch.dict(os.environ,{},clear=True):
+            with self.assertRaisesRegex(
+                lease.LeaseHold,"LEASE_NATURAL_PRODUCER_UNVERIFIED"):
+                lease.acquire_first_claim(natural(),git,now=NOW)
+        self.assertEqual(git.calls,[])
+
     def test_missing_token_is_fail_closed(self):
         with self.assertRaisesRegex(lease.LeaseHold,
                                     "LEASE_GITHUB_TOKEN_NOT_CONFIGURED"):
