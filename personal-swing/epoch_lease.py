@@ -189,6 +189,66 @@ def verify_live_tag_protection(transport, *, probe_only=False):
     raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:EXACT_RULE_MISMATCH")
 
 
+def verify_live_natural_run_receipt(owner, receipt, *, now):
+    """Require actual GitHub REST run identity before *any* permanent tag.
+
+    GITHUB_* process environment alone cannot prove that a run ID actually
+    belongs to this canonical scheduled EOD. This read-only witness is a
+    NECESSARY precondition, never a standalone lease or delivery receipt.
+    """
+    require(isinstance(owner,dict) and isinstance(receipt,dict) and
+            isinstance(now,datetime) and now.tzinfo is not None and
+            now.utcoffset() is not None,
+            "LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+    observed=now.astimezone(timezone.utc)
+    require(type(receipt.get("id")) is int and
+            receipt["id"] == owner["run_id"] and
+            type(receipt.get("run_attempt")) is int and
+            receipt["run_attempt"] == 1 and
+            receipt.get("event") == "schedule" and
+            receipt.get("path") == WORKFLOW and
+            receipt.get("head_branch") == "main" and
+            receipt.get("head_sha") == owner["source_sha"] and
+            isinstance(receipt.get("repository"),dict) and
+            receipt["repository"].get("full_name") == REPO and
+            receipt.get("status") == "in_progress" and
+            receipt.get("conclusion") is None,
+            "LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+
+    def utc(raw):
+        if not isinstance(raw,str) or not raw.endswith("Z"):
+            return None
+        try:
+            parsed=datetime.fromisoformat(raw[:-1]+"+00:00")
+            if parsed.isoformat().replace("+00:00","Z")!=raw:
+                return None
+            return parsed
+        except ValueError:
+            return None
+
+    created=utc(receipt.get("created_at"))
+    updated=utc(receipt.get("updated_at"))
+    require(created is not None and updated is not None and
+            created <= updated <= observed+timedelta(seconds=5) and
+            observed-timedelta(hours=10) <= created,
+            "LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+    # A scheduled run created before the *actual* XNAS close+45m can never
+    # claim the protected day, even if its event and branch labels look good.
+    try:
+        import exchange_calendars as ec
+        calendar=ec.get_calendar("XNAS")
+        require(calendar.is_session(owner["asof_et"]),
+                "LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+        cutoff=(calendar.session_close(owner["asof_et"]).to_pydatetime()
+                .astimezone(timezone.utc)+timedelta(minutes=45))
+    except LeaseHold:
+        raise
+    except Exception:
+        raise LeaseHold("LEASE_NATURAL_RUN_READBACK_UNVERIFIED") from None
+    require(created >= cutoff,"LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+    return True
+
+
 def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
     """One unrepeatable claim, followed by two independent GET checks.
 
@@ -216,6 +276,11 @@ def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
         raise LeaseHold("LEASE_NATURAL_PRODUCER_UNVERIFIED") from None
     require(owner==reconstructed,"LEASE_OWNER_PROVENANCE_UNVERIFIED")
     try:
+        # Independently read the *real* GitHub scheduled run before any POST.
+        # No unproven GITHUB_RUN_ID or manually forged source owner may write
+        # a one-way protected epoch tag.
+        current_run=transport("GET","/actions/runs/"+str(owner["run_id"]))
+        verify_live_natural_run_receipt(owner,current_run,now=captured)
         verify_live_tag_protection(transport)
         tagged=transport("POST", "/git/tags", {
             "tag": owner["tag"], "message": message,
@@ -293,6 +358,7 @@ def github_transport(token, *, opener=urlopen):
             (method=="POST" and path in ("/git/tags","/git/refs"))
             or (method=="GET" and (
                 path=="/rulesets"
+                or re.fullmatch(r"/actions/runs/[1-9][0-9]*",path) is not None
                 or re.fullmatch(r"/rulesets/[1-9][0-9]*",path) is not None
                 or re.fullmatch(
                     r"/git/ref/tags/xray-personal477-eod-epoch-"
