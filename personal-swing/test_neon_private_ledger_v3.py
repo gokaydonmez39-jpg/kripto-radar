@@ -264,6 +264,8 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         p=copy.deepcopy(self.snap)
         p["rows"][0]["score"]="70.00"
         p["rows"][0]["factors"]={key:70.0 for key in neon.WEIGHTS}
+        # Keep the first row's corridor consistent: isolate rank ordering.
+        p["rows"][0]["decision_corridor"]="BEKLE"
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_RANK_SCORE_OUT_OF_ORDER"):
             self.calculate(payload=p)
 
