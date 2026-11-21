@@ -80,6 +80,16 @@ class SourceProvenanceAcceptance(unittest.TestCase):
         self.assertEqual(r["sheet_writes"], 0)
         self.assertEqual(r["device_ack"], "UNKNOWN")
 
+    def test_official_cutoff_must_match_exchange_calendar(self):
+        # A caller-provided time is not proof of an official XNAS close.
+        # 2026-11-23 regular close = 21:00Z; cutoff = 21:45Z.
+        for bogus in ("2026-11-23T20:45:00Z",
+                      "2026-11-23T21:44:00Z",
+                      "2026-11-23T22:45:00Z"):
+            with self.subTest(cutoff=bogus):
+                r = verify(fixture(), cutoff=bogus)
+                self.assertEqual(r["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+
     def test_parent_mutations_fail_closed(self):
         changes = [
             ("event", "workflow_dispatch"), ("path", f.CHILD_PATH),
