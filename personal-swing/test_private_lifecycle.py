@@ -81,6 +81,27 @@ class LifeCycleNaturalWriterSourceAcceptance(unittest.TestCase):
                 calendar.assert_not_called()
                 provider.assert_not_called()
 
+    def test_valid_natural_session_reaches_offline_lifecycle_contract(self):
+        with patch.dict(os.environ,self.source_env(),clear=True):
+            with patch.object(life.daily_job,'current_completed_session',
+                              return_value='2026-11-23') as clock:
+                with patch.object(life,'SheetApi',return_value=object()) as provider:
+                    with patch.object(life,'synchronize',
+                        return_value={
+                            'status':'LIFECYCLE_READBACK_PASS',
+                            'asof_et':'2026-11-23','device_ack':False,
+                            'notification_delivery':'NOT_ATTEMPTED_BY_GITHUB',
+                            'terminal_updates':0,
+                        }) as operation,contextlib.redirect_stdout(io.StringIO()) as captured:
+                            rc=life.main([])
+        result=json.loads(captured.getvalue())
+        self.assertEqual(rc,0,result)
+        self.assertEqual(result['status'],'LIFECYCLE_READBACK_PASS')
+        self.assertFalse(result['device_ack'])
+        clock.assert_called_once()
+        provider.assert_called_once()
+        operation.assert_called_once()
+
     def test_legitimate_natural_no_session_preserves_noop_without_sheet(self):
         with patch.dict(os.environ,self.source_env(),clear=True):
             with patch.object(life.daily_job,'current_completed_session',
@@ -585,7 +606,16 @@ class LifecyclePublicDiagnosticsTests(unittest.TestCase):
         with patch.object(life.daily_job, 'current_completed_session',
                           return_value='2026-11-05'):
             with patch.dict(life.os.environ,
-                            {'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SYNTHETIC_SECRET'},
+                            {'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SYNTHETIC_SECRET',
+                             'GITHUB_EVENT_NAME':'schedule',
+                             'GITHUB_RUN_ID':'999001',
+                             'GITHUB_RUN_ATTEMPT':'1',
+                             'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+                             'GITHUB_REF':'refs/heads/main',
+                             'GITHUB_SHA':'a'*40,
+                             'GITHUB_WORKFLOW_REF':
+                              'gokaydonmez39-jpg/kripto-radar/'
+                              '.github/workflows/xray-personal-477-eod.yml@refs/heads/main'},
                             clear=True):
                 with patch.object(life, 'SheetApi', return_value=object()):
                     with patch.object(life, 'synchronize', side_effect=error):
