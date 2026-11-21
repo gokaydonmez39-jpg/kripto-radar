@@ -67,6 +67,14 @@ PIT_ROKU_REPLACEMENT_SHA = (
     '0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523',
 )
 
+# Reviewed security-only IEX UTC-session normalization. Forward-only from the
+# first eligible natural XNAS EOD after PR #494; immutable prior receipts.
+PIT_IEX_UTC_CODE_CUTOVER = '2026-11-23'
+PIT_IEX_UTC_CODE_SHA = (
+    '3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060',
+    'cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c',
+)
+
 
 class FlightRecorderBlocked(ValueError):
     pass
@@ -128,11 +136,15 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     need('2026-11-09' not in days, 'FLIGHT_FAILED_EPOCH_REPLAY')
     # Date chooses the reviewed cohort; a stale or uniformly forged SHA
     # cannot choose a legacy branch and self-authorize after the cutover.
-    if cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER:
+    if cutoff >= PIT_IEX_UTC_CODE_CUTOVER:
+        need(latest_fp == PIT_IEX_UTC_CODE_SHA,
+             'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
+    elif cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER:
         need(latest_fp == PIT_ROKU_REPLACEMENT_SHA,
              'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
     else:
-        need(latest_fp != PIT_ROKU_REPLACEMENT_SHA,
+        need(latest_fp != PIT_ROKU_REPLACEMENT_SHA and
+             latest_fp != PIT_IEX_UTC_CODE_SHA,
              'FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT')
     verified_days = set()
     for scan in scans:
@@ -151,7 +163,19 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         # 1) 3 Nov: official XNAS point-in-time symbol cutover;
         # 2) 6 Nov: Alpaca raw bars asof pin (same universe, new engine hash).
         # The latest date and fingerprint MUST attest to the chosen cohort.
-        if (cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER and
+        if (cutoff >= PIT_IEX_UTC_CODE_CUTOVER and
+                latest_fp == PIT_IEX_UTC_CODE_SHA):
+            if day < PIT_CUTOVER:
+                permitted_fp = PIT_PRE_CUTOVER_SHA
+            elif day < PIT_ASOF_PIN_CUTOVER:
+                permitted_fp = PIT_POST_CUTOVER_SHA
+            elif day < PIT_ROKU_REPLACEMENT_CUTOVER:
+                permitted_fp = PIT_ASOF_PIN_SHA
+            elif day < PIT_IEX_UTC_CODE_CUTOVER:
+                permitted_fp = PIT_ROKU_REPLACEMENT_SHA
+            else:
+                permitted_fp = PIT_IEX_UTC_CODE_SHA
+        elif (cutoff >= PIT_ROKU_REPLACEMENT_CUTOVER and
                 latest_fp == PIT_ROKU_REPLACEMENT_SHA):
             if day < PIT_CUTOVER:
                 permitted_fp = PIT_PRE_CUTOVER_SHA
