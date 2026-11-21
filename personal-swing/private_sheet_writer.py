@@ -98,6 +98,7 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'SCAN_READBACK_PROVENANCE_OR_VALUES_CHANGED',
     'GITHUB_RUN_ID_MISSING',
     'UNTRUSTED_GITHUB_EVENT',
+    'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED',
     'UNVERIFIED_RUN_ID',
     'MISSING_AUTHENTICATED_SHEET_METADATA',
     'INVALID_EXISTING_LEVEL',
@@ -470,6 +471,13 @@ def main(argv=None):
         require(run_id.isdigit(),'GITHUB_RUN_ID_MISSING')
         run_event=os.environ.get('GITHUB_EVENT_NAME','')
         require(run_event in RUN_EVENT_LABELS,'UNTRUSTED_GITHUB_EVENT')
+        # A manual dispatch/push has no independently attested natural
+        # scheduler parent/child and no Sheets compare-and-swap recovery
+        # contract. Such a run must NEVER reserve a canonical EOD epoch
+        # which would then veto the next scheduled EOD and A34 lifecycle.
+        # The pure plan remains available for offline research tests only.
+        require(run_event == 'schedule',
+                'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED')
         snapshot=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
         api=SheetApi(credential)
         out=synchronize(snapshot,
