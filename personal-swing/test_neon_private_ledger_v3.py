@@ -312,6 +312,8 @@ class PrivateNeonLedgerTests(unittest.TestCase):
             row[0]="2026-11-18|"+row[2]
             row[1]="2026-11-18"
             row[4]="70.00"
+            for j in range(7,12):
+                row[j]="70.00"
         p=self.calculate(old=[list(ledger.HEADER)]+older)
         self.assertEqual(p["rows"][0][5],"2026-11-18")
         self.assertEqual(p["rows"][0][6],"10.00")
@@ -322,6 +324,8 @@ class PrivateNeonLedgerTests(unittest.TestCase):
             row[0]="2026-11-18|"+row[2]
             row[1]="2026-11-18"
             row[4]="70.00"
+            for j in range(7,12):
+                row[j]="70.00"
             row[20]="a"*64
         old[0][2]="OLDPIT"
         old[0][0]="2026-11-18|OLDPIT"
@@ -336,6 +340,8 @@ class PrivateNeonLedgerTests(unittest.TestCase):
             row[0]="2026-11-18|"+row[2]
             row[1]="2026-11-18"
             row[4]="70.00"
+            for j in range(7,12):
+                row[j]="70.00"
             row[21]="a"*64
         rows=self.calculate(old=[list(ledger.HEADER)]+old)["rows"]
         self.assertTrue(all(row[6]=="N/A" for row in rows))
