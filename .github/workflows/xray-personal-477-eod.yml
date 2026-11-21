@@ -84,9 +84,9 @@ jobs:
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
           # Research-only NEON: real 477 PIT master, 52 XNAS bars, no broker/push.
-          python -m unittest -q test_neon_shadow_v3
-          python -O -m unittest -q test_neon_shadow_v3
-          python -m py_compile neon_shadow_v3.py daily_job.py
+          python -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
+          python -O -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
+          python -m py_compile neon_shadow_v3.py daily_job.py test_neon_shadow_wiring.py
           cd research_lab
           python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
