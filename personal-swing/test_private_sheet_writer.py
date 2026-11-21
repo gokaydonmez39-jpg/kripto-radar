@@ -655,5 +655,85 @@ class SheetsTransportRegressionTests(unittest.TestCase):
 
 
 
+
+class AtomicSheetWriteLeaseFence(unittest.TestCase):
+    """Injectable offline tag owner. No actual Google or GitHub mutation."""
+
+    def setUp(self):
+        import test_epoch_lease as cases
+        self.cases=cases
+        self.git=cases.MockGit()
+        cases.claim(cases.natural(),self.git)
+        self.git.calls.clear()
+
+    def runtime(self,run="890123"):
+        return {**self.cases.env(run),
+                "GITHUB_TOKEN":"fake-offline-gh-token",
+                "XRAY_PERSONAL477_EPOCH_LEASE_MODE":"ENFORCE"}
+
+    def test_current_owner_can_pass_read_only_fence(self):
+        out=w.require_epoch_lease_before_private_post(
+            self.runtime(),transport=self.git,now=self.cases.NOW,
+            completed_session=lambda _:self.cases.ASOF)
+        self.assertEqual(out["state"],"LEASE_OWNER_READBACK_ONLY")
+        self.assertEqual(out["run_id"],890123)
+        self.assertFalse(any(m=="POST" for m,_,_ in self.git.calls))
+
+    def test_another_runner_cannot_borrow_one_tag(self):
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,"EPOCH_LEASE_CONSUMER_UNVERIFIED"):
+            w.require_epoch_lease_before_private_post(
+                self.runtime("890124"),transport=self.git,now=self.cases.NOW,
+                completed_session=lambda _:self.cases.ASOF)
+        self.assertFalse(any(m=="POST" for m,_,_ in self.git.calls))
+
+    def test_disabled_tag_protection_denied(self):
+        self.git.protection="disabled"
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,"EPOCH_LEASE_CONSUMER_UNVERIFIED"):
+            w.require_epoch_lease_before_private_post(
+                self.runtime(),transport=self.git,now=self.cases.NOW,
+                completed_session=lambda _:self.cases.ASOF)
+
+    def test_unknown_mode_missing_token_and_wrong_event_fail_closed(self):
+        variants=(
+            ({"XRAY_PERSONAL477_EPOCH_LEASE_MODE":"BAD"},
+             "EPOCH_LEASE_MODE_UNRECOGNIZED"),
+            ({**self.runtime(),"GITHUB_TOKEN":""},
+             "EPOCH_LEASE_TOKEN_MISSING"),
+            ({**self.runtime(),"GITHUB_EVENT_NAME":"workflow_dispatch"},
+             "NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED"),
+        )
+        for runtime,reason in variants:
+            with self.subTest(reason=reason):
+                with self.assertRaisesRegex(w.HandoffBlocked,reason):
+                    w.require_epoch_lease_before_private_post(
+                        runtime,transport=self.git,now=self.cases.NOW,
+                        completed_session=lambda _:self.cases.ASOF)
+
+    def test_enforced_batch_post_rejected_before_google_network(self):
+        api=object.__new__(w.SheetApi)
+        api.base="https://sheets.googleapis.com/v4/spreadsheets/OFFLINE"
+        api.token="OFFLINE"
+        with patch.dict(os.environ,self.runtime(),clear=True):
+            with patch.object(w,"require_epoch_lease_before_private_post",
+                side_effect=w.HandoffBlocked("EPOCH_LEASE_CONSUMER_UNVERIFIED")
+            ) as guard,patch.object(w,"urlopen",
+                side_effect=AssertionError("GOOGLE_POST_SENT")
+            ) as net:
+                with self.assertRaisesRegex(w.HandoffBlocked,
+                         "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
+                    api.request(":batchUpdate",method="POST",body={"requests":[]})
+                guard.assert_called_once()
+                net.assert_not_called()
+
+    def test_default_off_does_not_query_github_or_google(self):
+        out=w.require_epoch_lease_before_private_post(
+            self.cases.env(),transport=self.git,now=self.cases.NOW,
+            completed_session=lambda _:self.cases.ASOF)
+        self.assertEqual(out["state"],"LEASE_ENFORCEMENT_NOT_ACTIVATED")
+        self.assertEqual(self.git.calls,[])
+
+
 if __name__=='__main__':
     unittest.main()
