@@ -8,6 +8,8 @@ on:
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
+      - 'personal-swing/fallback_job_receipt.py'
+      - 'personal-swing/test_fallback_job_receipt.py'
       - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   push:
@@ -18,6 +20,8 @@ on:
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
+      - 'personal-swing/fallback_job_receipt.py'
+      - 'personal-swing/test_fallback_job_receipt.py'
       - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   workflow_dispatch:
@@ -52,8 +56,8 @@ jobs:
       - name: Fail-closed official session and CAS-like duplicate-suppression tests
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease
-          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease
+          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
+          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
           python -m py_compile schedule_failover.py fallback_source_provenance.py epoch_lease.py
       - name: Enforce global NASDAQ workflow-schedule boundary contract
         run: |
@@ -75,6 +79,7 @@ jobs:
       - name: Install official XNAS calendar
         run: python -m pip install -r personal-swing/requirements.txt
       - name: Dispatch personal DATA-ONLY scan only on verified missing scheduler epoch
+        id: primary-detect
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -85,6 +90,39 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "$DRY_RUN_INPUT" != "false" ]]; then
             args+=(--dry-run)
           fi
-          python personal-swing/schedule_failover.py "${args[@]}"
+          # Preserve the exact exit status: a missing EOD stays RED.
+          python personal-swing/schedule_failover.py "${args[@]}" | tee "$RUNNER_TEMP/xray-fallback-result.json"
+          # A green GITHUB scheduler run alone is insufficient; request a
+          # second, independent GitHub-only six-job source receipt.
+          python - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          try:
+              rows=Path(os.environ['RUNNER_TEMP'],'xray-fallback-result.json').read_text().splitlines()
+              if len(rows)!=1:
+                  raise ValueError('UNTRUSTED_FALLBACK_STATUS')
+              status=json.loads(rows[0])
+              if status.get('status') in ('NOOP_CURRENT_EPOCH_RUN_EXISTS',
+                                           'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS'):
+                  asof=status.get('asof_et')
+                  if not isinstance(asof,str) or not re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',asof):
+                      raise ValueError('UNTRUSTED_EOD_ASOF')
+                  with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf8') as handle:
+                      handle.write('primary_found=true\n')
+                      handle.write('verified_asof='+asof+'\n')
+          except Exception:
+              print('BLOCKED_FALLBACK_SOURCE_STATUS_PARSE')
+              raise SystemExit(3)
+          PY
+      - name: Independent natural primary six-job source audit (GH GET only)
+        if: ${{ github.event_name == 'schedule' && steps.primary-detect.outputs.primary_found == 'true' }}
+        working-directory: personal-swing
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PRIMARY_ASOF: ${{ steps.primary-detect.outputs.verified_asof }}
+        run: |
+          set -euo pipefail
+          python fallback_job_receipt.py --asof "$PRIMARY_ASOF"
       - name: Explicit safe fallback bounds
         run: echo 'No market bars or signals read here, no Sheets, no broker or user-facing notification.'
