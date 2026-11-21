@@ -30,7 +30,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-personal-477-scheduler-fallback
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id) || 'xray-personal-477-scheduler-fallback' }}
   cancel-in-progress: false
 jobs:
   offline-negative-regression:
