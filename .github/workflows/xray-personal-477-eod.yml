@@ -50,6 +50,11 @@ jobs:
   offline-guard:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    # This permits GET of the current scheduled workflow run only.
+    # No tag/ref writes, no orders, no extra schedule.
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
@@ -84,6 +89,9 @@ jobs:
         run: |
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
+          python -m unittest -q test_natural_run_readonly_probe
+          python -O -m unittest -q test_natural_run_readonly_probe
+          python -m py_compile natural_run_readonly_probe.py
           # Fail-closed if GitHub delivers a natural EOD after the safe source window.
           python -m unittest -q test_natural_eod_expiry_guard
           python -O -m unittest -q test_natural_eod_expiry_guard
@@ -99,6 +107,14 @@ jobs:
           python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
+      - name: Require real natural EOD GitHub-run receipt (GET only, no tag claim)
+        if: github.event_name == 'schedule'
+        working-directory: personal-swing
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python natural_run_readonly_probe.py --verify
   daily-private-scan:
     needs: offline-guard
     if: github.event_name == 'schedule'
