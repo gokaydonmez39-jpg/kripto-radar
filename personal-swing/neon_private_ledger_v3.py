@@ -286,6 +286,9 @@ def main(argv=None):
         run_id=os.environ.get("GITHUB_RUN_ID","")
         need(re.fullmatch(r"[1-9][0-9]*",run_id) is not None,
              "INVALID_GITHUB_RUN_ID")
+        # Advisory research archive can still permanently mutate private
+        # rows: never let unrelated scheduled jobs assume EOD provenance.
+        original.verify_natural_eod_writer_identity(os.environ)
         credential=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         need(bool(credential),"PRIVATE_SHEET_AUTH_MISSING")
         snapshot=json.loads(Path(args.snapshot).read_text(encoding="utf-8"))

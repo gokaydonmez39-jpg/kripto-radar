@@ -7,6 +7,7 @@ Never emits rows, private identifiers or credentials to public Actions logs.
 No brokerage, trades, public artifacts, push messaging, or alarm send.
 """
 import argparse
+from collections.abc import Mapping
 import json
 import math
 import os
@@ -99,11 +100,43 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'GITHUB_RUN_ID_MISSING',
     'UNTRUSTED_GITHUB_EVENT',
     'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED',
+    'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED',
     'UNVERIFIED_RUN_ID',
     'MISSING_AUTHENTICATED_SHEET_METADATA',
     'INVALID_EXISTING_LEVEL',
     'BAD_NUMERIC_LEVEL',
 })
+
+
+EXPECTED_EOD_WORKFLOW_REF = (
+    'gokaydonmez39-jpg/kripto-radar/'
+    '.github/workflows/xray-personal-477-eod.yml@refs/heads/main')
+EXPECTED_EOD_REPOSITORY = 'gokaydonmez39-jpg/kripto-radar'
+RUN_ID_RE = re.compile(r'[1-9][0-9]*')
+GIT_COMMIT_RE = re.compile(r'[0-9a-f]{40}')
+
+
+def verify_natural_eod_writer_identity(environment):
+    """Reject cross-workflow, rerun, non-main and forged event metadata.
+
+    This is the REAL canonical Sheet writer's entry-point admission,
+    separate from the inactive atomic Git lease library. A successful
+    source check does NOT imply Sheet delivery or ChatGPT card delivery.
+    No I/O or credentials are needed to make this decision.
+    """
+    require(
+        isinstance(environment,Mapping) and
+        environment.get('GITHUB_EVENT_NAME') == 'schedule' and
+        environment.get('GITHUB_REPOSITORY') == EXPECTED_EOD_REPOSITORY and
+        environment.get('GITHUB_REF') == 'refs/heads/main' and
+        environment.get('GITHUB_WORKFLOW_REF') == EXPECTED_EOD_WORKFLOW_REF and
+        environment.get('GITHUB_RUN_ATTEMPT') == '1' and
+        isinstance(environment.get('GITHUB_SHA'),str) and
+        GIT_COMMIT_RE.fullmatch(environment['GITHUB_SHA']) is not None and
+        isinstance(environment.get('GITHUB_RUN_ID'),str) and
+        RUN_ID_RE.fullmatch(environment['GITHUB_RUN_ID']) is not None,
+        'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED')
+    return True
 
 
 def public_failure_code(exc):
@@ -493,6 +526,10 @@ def main(argv=None):
         # The pure plan remains available for offline research tests only.
         require(run_event == 'schedule',
                 'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED')
+        # The event label alone is untrusted. GitHub's actual natural EOD
+        # repository, default branch, workflow, source SHA and attempt must
+        # ALL agree before reading snapshot or opening any Google client.
+        verify_natural_eod_writer_identity(os.environ)
         snapshot=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
         api=SheetApi(credential)
         out=synchronize(snapshot,

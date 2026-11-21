@@ -114,6 +114,79 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                     self.assertFalse(result['device_ack'])
                     client.assert_not_called()
 
+    def test_canonical_writer_rejects_wrong_natural_job_before_provider(self):
+        # A runner with valid Sheets credentials is not sufficient:
+        # workflow path, branch, repo, source SHA and attempt also matter.
+        good={
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_WORKFLOW_REF':
+                'gokaydonmez39-jpg/kripto-radar/'
+                '.github/workflows/xray-personal-477-eod.yml@refs/heads/main',
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+        adversaries=(
+            ('GITHUB_REPOSITORY','other/repo'),
+            ('GITHUB_REF','refs/heads/dev'),
+            ('GITHUB_WORKFLOW_REF','gokaydonmez39-jpg/kripto-radar/'
+             '.github/workflows/other-scheduled.yml@refs/heads/main'),
+            ('GITHUB_WORKFLOW_REF','gokaydonmez39-jpg/kripto-radar/'
+             '.github/workflows/xray-personal-477-eod.yml@refs/heads/dev'),
+            ('GITHUB_RUN_ATTEMPT','2'),
+            ('GITHUB_SHA','invalid'),
+            ('GITHUB_SHA','B'*40),
+            ('GITHUB_RUN_ID','0'),
+            ('GITHUB_RUN_ID','001'),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            file=Path(td)/'synthetic.json'
+            file.write_text(json.dumps(snapshot()),encoding='utf-8')
+            for key,value in adversaries:
+                with self.subTest(key=key,value=value):
+                    environment=dict(good)
+                    environment[key]=value
+                    with patch.dict(os.environ,environment,clear=True):
+                        with patch.object(w,'SheetApi',
+                            side_effect=AssertionError('AUTHENTICATED_SHEET_STARTED')
+                        ) as provider,contextlib.redirect_stdout(io.StringIO()) as out:
+                            rc=w.main(['--snapshot',str(file)])
+                    result=json.loads(out.getvalue())
+                    self.assertEqual(rc,3)
+                    self.assertEqual(result['reason_code'],
+                                     'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED')
+                    provider.assert_not_called()
+
+    def test_canonical_writer_complete_scheduled_identity_accepts_fake_api(self):
+        good={
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_WORKFLOW_REF':
+                'gokaydonmez39-jpg/kripto-radar/'
+                '.github/workflows/xray-personal-477-eod.yml@refs/heads/main',
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+        with tempfile.TemporaryDirectory() as td:
+            file=Path(td)/'synthetic.json'
+            file.write_text(json.dumps(snapshot()),encoding='utf-8')
+            fake=FakeApi()
+            with patch.dict(os.environ,good,clear=True):
+                with patch.object(w,'SheetApi',return_value=fake) as provider:
+                    with contextlib.redirect_stdout(io.StringIO()) as out:
+                        rc=w.main(['--snapshot',str(file)])
+            result=json.loads(out.getvalue())
+            self.assertEqual(rc,0,result)
+            self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
+            self.assertEqual(fake.apply_count,1)
+            provider.assert_called_once()
+
     def test_atomic_two_sheet_append_and_independent_readback(self):
         api=FakeApi()
         result=w.synchronize(snapshot(),RUN,api,run_event='schedule')
@@ -539,6 +612,11 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             file = Path(root) / 'synthetic.json'
             file.write_text('{}', encoding='utf-8')
             env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'GITHUB_RUN_ATTEMPT':'1',
+                   'GITHUB_REPOSITORY':w.EXPECTED_EOD_REPOSITORY,
+                   'GITHUB_REF':'refs/heads/main',
+                   'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
+                   'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'PRIVATE_TEST_TOKEN_MUST_NOT_APPEAR'}
             with patch.dict(w.os.environ, env, clear=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
@@ -558,6 +636,11 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             file = Path(root) / 'synthetic.json'
             file.write_text('{}', encoding='utf-8')
             env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'GITHUB_RUN_ATTEMPT':'1',
+                   'GITHUB_REPOSITORY':w.EXPECTED_EOD_REPOSITORY,
+                   'GITHUB_REF':'refs/heads/main',
+                   'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
+                   'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SENSITIVE_UNIT_TEST'}
             with patch.dict(w.os.environ, env, clear=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
