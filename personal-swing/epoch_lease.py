@@ -189,14 +189,32 @@ def verify_live_tag_protection(transport, *, probe_only=False):
     raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:EXACT_RULE_MISMATCH")
 
 
-def acquire_first_claim(owner, transport, *, now=None):
+def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
     """One unrepeatable claim, followed by two independent GET checks.
 
     Every uncertain/error/duplicate POST fails closed. No retries, even after
     a timeout. A lease alone NEVER constitutes an EOD or ChatGPT acceptance.
+    The caller's source_event field is NOT authoritative: independently
+    re-derive the producer identity from the real GitHub runner environment.
+    runtime_env and now injection are strictly for OFFLINE tests.
     """
-    message=_manifest(owner,now=now)
+    captured=now if now is not None else datetime.now(timezone.utc)
+    message=_manifest(owner,now=captured)
     require(callable(transport), "LEASE_TRANSPORT_UNAVAILABLE")
+    # Do this after strict timestamp/window validation but BEFORE *any* IO.
+    # A forged owner with source_event='schedule' is not a natural run.
+    import os
+    if runtime_env is not None:
+        require(now is not None,"LEASE_OWNER_PROVENANCE_UNVERIFIED")
+    live=dict(os.environ) if runtime_env is None else dict(runtime_env)
+    try:
+        observed=datetime.fromisoformat(owner["observed_at"].replace("Z","+00:00"))
+        reconstructed=verified_natural_owner(live,owner["asof_et"],observed)
+    except LeaseHold:
+        raise
+    except Exception:
+        raise LeaseHold("LEASE_NATURAL_PRODUCER_UNVERIFIED") from None
+    require(owner==reconstructed,"LEASE_OWNER_PROVENANCE_UNVERIFIED")
     try:
         verify_live_tag_protection(transport)
         tagged=transport("POST", "/git/tags", {
