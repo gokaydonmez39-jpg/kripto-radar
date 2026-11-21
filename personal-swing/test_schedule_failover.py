@@ -334,8 +334,6 @@ class NaturalFallbackExitSemantics(unittest.TestCase):
             'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE',
             'BLOCKED_UNTRUSTED_RUN_PAGINATION',
             'BLOCKED_GITHUB_API_UNCERTAIN',
-            'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW',
-            'NOOP_SESSION_NOT_READY',
             'DRY_RUN_WOULD_DISPATCH',
             'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
             None,
@@ -344,20 +342,30 @@ class NaturalFallbackExitSemantics(unittest.TestCase):
                 self.assertEqual(
                     sf.exit_code_for_result({'status':status},'schedule'),3)
 
-    def test_only_verified_primary_epoch_is_scheduled_success(self):
+    def test_only_existence_or_official_calendar_noop_is_scheduled_success(self):
         for status in ('NOOP_CURRENT_EPOCH_RUN_EXISTS',
-                       'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS'):
+                       'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS',
+                       'NOOP_SESSION_NOT_READY',
+                       'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW'):
             self.assertEqual(
                 sf.exit_code_for_result({'status':status},'schedule'),0)
 
     def test_manual_probe_is_not_scheduled_provenance(self):
         for status in ('DRY_RUN_WOULD_DISPATCH',
-                       'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
-                       'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW'):
+                       'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'):
             self.assertEqual(
                 sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
             self.assertEqual(
                 sf.exit_code_for_result({'status':status},'schedule'),3)
+
+    def test_thanksgiving_is_normal_safe_noop_not_false_incident(self):
+        # 27 Nov 00:26Z is Thanksgiving evening ET. No new XNAS EOD
+        # exists and the previous completed session is outside the window.
+        out=sf.run(now=utc('2026-11-27T00:26:00Z'),
+                   read_runs=lambda: self.fail('NO_GITHUB_API_ON_HOLIDAY'),
+                   request_dispatch=lambda asof:self.fail('NO_DISPATCH'))
+        self.assertEqual(out['status'],'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
+        self.assertEqual(sf.exit_code_for_result(out,'schedule'),0)
 
     def test_missing_result_and_unknown_trigger_are_fail_closed(self):
         for obj,event in ((None,'schedule'),({},'schedule'),
