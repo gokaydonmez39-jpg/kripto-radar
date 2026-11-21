@@ -210,6 +210,34 @@ def scheduler_parent_receipt(result, env):
             'ab_release_authorized': False,
             'writes': 0, 'orders': 0}
 
+def exit_code_for_result(result, event):
+    """A scheduled fallback with no proven primary EOD must never be green.
+
+    A normal success means only that an eligible genuine EOD run was found,
+    NOT that a ChatGPT card or a device notification was delivered. On a
+    missing primary run the scheduler cannot auto-dispatch until an
+    independently verified parent-child provenance contract is deployed.
+    """
+    if not isinstance(result, dict) or not isinstance(event, str):
+        return 3
+    status=result.get('status')
+    accepted=('NOOP_CURRENT_EPOCH_RUN_EXISTS',
+              'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS')
+    # Official XNAS holidays/early no-session windows are legitimate safe
+    # no-ops, not missing natural EODs. Never turn holidays into false alarms.
+    safe_noop=('NOOP_SESSION_NOT_READY',
+               'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
+    if event == 'schedule':
+        return 0 if status in accepted+safe_noop else 3
+    if event == 'workflow_dispatch':
+        # Explicit manual dry-run, no-session and manual accepted request
+        # are diagnostics: they do not promote to an EOD delivery claim.
+        return 0 if status in accepted+safe_noop+(
+            'DRY_RUN_WOULD_DISPATCH',
+            'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED') else 3
+    return 3
+
+
 def main(argv=None):
     p=argparse.ArgumentParser()
     p.add_argument('--dry-run',action='store_true')
@@ -247,7 +275,7 @@ def main(argv=None):
         if receipt is not None:
             result['parent_receipt']=receipt
         print(json.dumps(result,sort_keys=True))
-        return 0
+        return exit_code_for_result(result, os.environ.get('GITHUB_EVENT_NAME',''))
     except (HTTPError,URLError,RuntimeError,ValueError,TimeoutError) as exc:
         # The exception class is enough. Never leak tokens or vendor endpoints.
         print(json.dumps({'status':'BLOCKED_GITHUB_API_UNCERTAIN',
