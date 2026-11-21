@@ -38,9 +38,22 @@ def fixture():
                      "asof_et": ASOF, "source_event": "workflow_dispatch",
                      "source_sha": SHA40, "source_readback_verified": True,
                      "orders": False}
+    # Exact six-job provenance includes immutable child identity and DAG timestamps.
+    spans = [
+        ("offline-guard", "00:55", "00:57"),
+        ("private-sheets-auth-preflight", "00:58", "01:01"),
+        ("daily-private-scan", "00:58", "01:04"),
+        ("private-episode-followups", "01:05", "01:07"),
+        ("guardian-acceptance", "01:08", "01:10"),
+        ("daily-private-score-acceptance", "01:11", "01:13"),
+    ]
+    run_url = "https://api.github.com/repos/" + f.REPO + "/actions/runs/102"
     jobs = [{"id": i + 1, "name": name, "run_id": 102, "run_attempt": 1,
-             "status": "completed", "conclusion": "success"}
-            for i, name in enumerate(sorted(f.JOBS))]
+             "status": "completed", "conclusion": "success",
+             "head_sha": SHA40, "head_branch": "main", "run_url": run_url,
+             "started_at": "2026-11-24T" + start + ":00Z",
+             "completed_at": "2026-11-24T" + finish + ":00Z"}
+            for i, (name, start, finish) in enumerate(spans)]
     scan = {"asof_et": ASOF, "source_event": "workflow_dispatch",
             "run_id": 102, "requested": 477, "processed": 477, "valid": 477,
             "missing": 0, "final_ready": True,
@@ -66,6 +79,45 @@ class SourceProvenanceAcceptance(unittest.TestCase):
         self.assertFalse(r["orders"])
         self.assertEqual(r["sheet_writes"], 0)
         self.assertEqual(r["device_ack"], "UNKNOWN")
+
+    def test_official_cutoff_must_match_exchange_calendar(self):
+        # A caller-provided time is not proof of an official XNAS close.
+        # 2026-11-23 regular close = 21:00Z; cutoff = 21:45Z.
+        for bogus in ("2026-11-23T20:45:00Z",
+                      "2026-11-23T21:44:00Z",
+                      "2026-11-23T22:45:00Z"):
+            with self.subTest(cutoff=bogus):
+                r = verify(fixture(), cutoff=bogus)
+                self.assertEqual(r["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+
+    def test_xnas_early_close_and_thanksgiving_session(self):
+        # Friday after Thanksgiving: XNAS ends at 13:00 ET = 18:00 UTC.
+        # No regular 16:00 ET close can be substituted as evidence.
+        p = fixture()
+        p[0]["created_at"] = "2026-11-28T00:50:00Z"
+        p[0]["updated_at"] = "2026-11-28T00:55:00Z"
+        p[2]["created_at"] = "2026-11-28T00:53:00Z"
+        p[2]["updated_at"] = "2026-11-28T01:50:00Z"
+        for job in p[4]:
+            for key in ("started_at", "completed_at"):
+                job[key] = job[key].replace("2026-11-24", "2026-11-28")
+        for item, field in ((p[1], "requested_asof_et"), (p[3], "asof_et"),
+                            (p[5], "asof_et"), (p[6], "asof_et")):
+            item[field] = "2026-11-27"
+        observed = "2026-11-28T02:00:00Z"
+        good = verify(p, asof="2026-11-27",
+                      cutoff="2026-11-27T18:45:00Z", now=observed)
+        self.assertEqual(good["state"], "RECOVERY_CHAIN_PROVEN_READ_ONLY")
+        wrong = verify(p, asof="2026-11-27",
+                       cutoff="2026-11-27T21:45:00Z", now=observed)
+        self.assertEqual(wrong["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+        # Thanksgiving itself is not an XNAS trading session.
+        for item, field in ((p[1], "requested_asof_et"), (p[3], "asof_et"),
+                            (p[5], "asof_et"), (p[6], "asof_et")):
+            item[field] = "2026-11-26"
+        holiday = verify(p, asof="2026-11-26",
+                         cutoff="2026-11-26T21:45:00Z", now=observed)
+        self.assertEqual(holiday["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
 
     def test_parent_mutations_fail_closed(self):
         changes = [
@@ -127,6 +179,30 @@ class SourceProvenanceAcceptance(unittest.TestCase):
                 if mutation == "duplicate": p[4][1]["name"] = p[4][0]["name"]
                 if mutation == "foreign_run": p[4][0]["run_id"] = 999
                 self.assertEqual(verify(p)["state"], "HOLD")
+
+    def test_each_job_must_prove_child_identity_and_time_bounds(self):
+        for key, value in [
+            ("head_sha", "f" * 40),
+            ("head_branch", "not-main"),
+            ("run_url", "https://api.github.com/repos/wrong/repo/actions/runs/102"),
+            ("started_at", None),
+            ("completed_at", "2026-11-24T02:01:00Z"),
+            ("started_at", "2026-11-24T01:30:00Z"),
+        ]:
+            with self.subTest(field=key, value=value):
+                values = fixture()
+                values[4][0][key] = value
+                self.assertEqual(verify(values)["state"], "HOLD")
+
+    def test_job_dependency_order_is_required(self):
+        values = fixture()
+        followups = next(j for j in values[4] if j["name"] == "private-episode-followups")
+        followups["started_at"] = "2026-11-24T01:02:00Z"  # scan ends at 01:04
+        self.assertEqual(verify(values)["state"], "HOLD")
+        values = fixture()
+        guardian = next(j for j in values[4] if j["name"] == "guardian-acceptance")
+        guardian["started_at"] = "2026-11-24T01:06:00Z"  # followups end at 01:07
+        self.assertEqual(verify(values)["state"], "HOLD")
 
     def test_private_readback_must_bind_exact_child(self):
         for k, v in [

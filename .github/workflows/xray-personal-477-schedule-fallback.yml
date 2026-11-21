@@ -5,12 +5,16 @@ on:
     paths:
       - 'personal-swing/schedule_failover.py'
       - 'personal-swing/test_schedule_failover.py'
+      - 'personal-swing/fallback_source_provenance.py'
+      - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   push:
     branches: [main]
     paths:
       - 'personal-swing/schedule_failover.py'
       - 'personal-swing/test_schedule_failover.py'
+      - 'personal-swing/fallback_source_provenance.py'
+      - 'personal-swing/test_fallback_source_provenance.py'
       - '.github/workflows/xray-personal-477-schedule-fallback.yml'
   workflow_dispatch:
     inputs:
