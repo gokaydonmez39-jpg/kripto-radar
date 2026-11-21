@@ -299,6 +299,26 @@ def inventory(files):
                 errors.append("PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
         except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
             errors.append("PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    # A14 private readers may follow only a genuine scheduled or explicitly
+    # dispatched completed EOD, not an offline-only primary workflow push.
+    a14_name="xray-personal-nasdaq-a14-readonly.yml"
+    if a14_name in files:
+        try:
+            a14=yaml.load(files[a14_name],Loader=yaml.BaseLoader)
+            a14_jobs=a14["jobs"]
+            guarded=("private-flight-recorder","private-research-after-eod")
+            def safe_a14_origin(job):
+                condition=a14_jobs[job]["if"]
+                return (isinstance(condition,str)
+                    and "github.event_name == 'workflow_run'" in condition
+                    and "github.event.workflow_run.conclusion == 'success'" in condition
+                    and "github.event.workflow_run.event == 'schedule' ||" in condition
+                    and "github.event.workflow_run.event == 'workflow_dispatch'" in condition
+                    and "github.event.workflow_run.event != 'pull_request'" not in condition)
+            if not all(safe_a14_origin(j) for j in guarded):
+                errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
+        except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
+            errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -376,6 +396,15 @@ def selftest():
         "    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')",
         "    if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'",1)}),
         "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    a14="xray-personal-nasdaq-a14-readonly.yml"
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "github.event.workflow_run.event == 'schedule' ||",
+        "github.event.workflow_run.event != 'pull_request' ||",1)}),
+        "PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "github.event.workflow_run.event == 'workflow_dispatch'",
+        "github.event.workflow_run.event != 'pull_request'",1)}),
+        "PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
