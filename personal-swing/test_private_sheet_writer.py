@@ -182,7 +182,7 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                     with contextlib.redirect_stdout(io.StringIO()) as out:
                         rc=w.main(['--snapshot',str(file)])
             result=json.loads(out.getvalue())
-            self.assertEqual(rc,0)
+            self.assertEqual(rc,0,result)
             self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
             self.assertEqual(fake.apply_count,1)
             provider.assert_called_once()
@@ -612,6 +612,11 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             file = Path(root) / 'synthetic.json'
             file.write_text('{}', encoding='utf-8')
             env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'GITHUB_RUN_ATTEMPT':'1',
+                   'GITHUB_REPOSITORY':w.EXPECTED_EOD_REPOSITORY,
+                   'GITHUB_REF':'refs/heads/main',
+                   'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
+                   'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'PRIVATE_TEST_TOKEN_MUST_NOT_APPEAR'}
             with patch.dict(w.os.environ, env, clear=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
@@ -631,6 +636,11 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             file = Path(root) / 'synthetic.json'
             file.write_text('{}', encoding='utf-8')
             env = {'GITHUB_RUN_ID': '77', 'GITHUB_EVENT_NAME': 'schedule',
+                   'GITHUB_RUN_ATTEMPT':'1',
+                   'GITHUB_REPOSITORY':w.EXPECTED_EOD_REPOSITORY,
+                   'GITHUB_REF':'refs/heads/main',
+                   'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
+                   'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SENSITIVE_UNIT_TEST'}
             with patch.dict(w.os.environ, env, clear=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
