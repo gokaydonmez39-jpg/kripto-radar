@@ -141,10 +141,43 @@ def validate(run,jobs,asof,observed_at):
          len({j["id"] for j in entries})==len(NAMES) and
          {j.get("name") for j in entries}==set(NAMES),
          "PRIMARY_JOB_RECEIPT_MISSING")
+    # A green job name or a relabelled job from another attempt/commit is
+    # NOT the canonical natural run's receipt. Bind every job to the exact
+    # GitHub REST run URL, attempt, protected branch and immutable SHA.
+    # The public GitHub jobs endpoint exposes these fields.
+    job_times={}
+    expected_url=EOD_RUN_BASE+str(run["id"])
+    for job in entries:
+        begun,ended=utc(job.get("started_at")),utc(job.get("completed_at"))
+        need(type(job.get("run_attempt")) is int and
+             job["run_attempt"]==1 and
+             job.get("run_url")==expected_url and
+             job.get("head_sha")==run["head_sha"] and
+             job.get("head_branch")=="main" and
+             begun is not None and ended is not None and
+             created<=begun<=ended<=updated,
+             "PRIMARY_JOB_RECEIPT_MISSING")
+        job_times[job["name"]]=(begun,ended)
+    # Assert the real EOD needs-DAG at the timestamps recorded by GitHub.
+    # The authorization preflight and vendor scan may run concurrently;
+    # Guardian must wait for BOTH, and score must wait for Guardian.
+    edges=(
+        ("offline-guard","private-sheets-auth-preflight"),
+        ("offline-guard","daily-private-scan"),
+        ("daily-private-scan","private-episode-followups"),
+        ("private-episode-followups","guardian-acceptance"),
+        ("private-sheets-auth-preflight","guardian-acceptance"),
+        ("guardian-acceptance","daily-private-score-acceptance"),
+    )
+    need(all(job_times[parent][1]<=job_times[child][0]
+             for parent,child in edges),"PRIMARY_JOB_DAG_UNVERIFIED")
     for job in entries:
         names=REQUIRED_STEPS.get(job["name"],())
         steps=job.get("steps")
         need(isinstance(steps,list),"PRIMARY_JOB_STEP_RECEIPT_MISSING")
+        prev_number=0
+        prev_end=None
+        job_begin,job_end=job_times[job["name"]]
         for expected in names:
             found=[x for x in steps if isinstance(x,dict) and
                    x.get("name")==expected]
@@ -152,6 +185,15 @@ def validate(run,jobs,asof,observed_at):
                  found[0].get("status")=="completed" and
                  found[0].get("conclusion")=="success",
                  "PRIMARY_JOB_STEP_RECEIPT_MISSING")
+            step=found[0]
+            begun,ended=utc(step.get("started_at")),utc(step.get("completed_at"))
+            number=step.get("number")
+            need(type(number) is int and number>prev_number and
+                 begun is not None and ended is not None and
+                 job_begin<=begun<=ended<=job_end and
+                 (prev_end is None or prev_end<=begun),
+                 "PRIMARY_JOB_STEP_RECEIPT_MISSING")
+            prev_number,prev_end=number,ended
     return {
         "status":"PRIMARY_EOD_SIX_JOB_PROVEN_GH_ONLY",
         "asof_et":asof,"run_id":run["id"],
