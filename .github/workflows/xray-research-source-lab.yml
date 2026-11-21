@@ -16,8 +16,10 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: xray-research-source-lab-${{ github.ref }}
-  cancel-in-progress: true
+  # PR/push runs are isolated: they cannot cancel the naturally scheduled source audit.
+  # All natural/explicit source audits retain one serialized production group.
+  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('xray-research-source-lab-test-{0}', github.run_id) || 'xray-research-source-lab-natural' }}
+  cancel-in-progress: false
 jobs:
   offline-contracts:
     runs-on: ubuntu-latest
