@@ -40,7 +40,16 @@ def price_matches(cell, engine_value):
 
 def plan(snapshot, candidates, scans, alerts, run_url):
     """Return only append-only new events. No AL, STOP or existing row mutation."""
-    expected = writer.plan(snapshot, candidates, scans, run_url)
+    try:
+        expected = writer.plan(snapshot, candidates, scans, run_url)
+    except writer.HandoffBlocked as exc:
+        # The upstream writer now rejects an incomplete/orphan same-day
+        # candidate set before returning a plan. Keep the outbox's stable
+        # fail-closed public reason: an exact source readback is mandatory.
+        if str(exc) == 'CANDIDATE_EPOCH_SET_CONFLICT':
+            raise OutboxBlocked(
+                'UPSTREAM_PRIVATE_SHEET_READBACK_REQUIRED') from None
+        raise
     require(not expected['candidate_rows'] and not expected['scan_rows'],
             'UPSTREAM_PRIVATE_SHEET_READBACK_REQUIRED')
     existing_candidates = writer.rows_only(candidates, writer.CANDIDATE_HEADER)
