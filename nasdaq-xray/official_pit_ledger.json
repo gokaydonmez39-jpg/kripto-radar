@@ -2,10 +2,10 @@
   "alpha_authority": false,
   "append_only_semantics": true,
   "execution": "NONE",
-  "last_ingest_at_utc": "2026-11-21T07:44:07.114191+00:00",
+  "last_ingest_at_utc": "2026-11-21T11:38:05.772128+00:00",
   "real_money": "NO-GO",
   "schema": "XRAY_OFFICIAL_PIT_LEDGER_V1",
-  "snapshot_count": 477,
+  "snapshot_count": 483,
   "snapshots": [
     {
       "guard_generated_at_utc": "2026-10-04T20:54:27.194776+00:00",
@@ -231478,8 +231478,83 @@
       "payload_sha256": "85159c1ca34d35d481c8becf2cf9a49da432c2eb4765c64559f885d68ad05c19",
       "source": "trade_halts",
       "source_status": "PASS"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772055+00:00",
+      "payload": {
+        "reason": "HTTPError:HTTP Error 503: Service Unavailable",
+        "status": "UNKNOWN",
+        "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates"
+      },
+      "payload_sha256": "8c006f587a41bd9a4c5341039ced671d6e083bc90417b5e0ae011052d7bbd508",
+      "source": "security_status",
+      "source_status": "UNKNOWN"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772091+00:00",
+      "payload": {
+        "reason": "HTTPError:HTTP Error 503: Service Unavailable",
+        "status": "UNKNOWN",
+        "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=IPO"
+      },
+      "payload_sha256": "204f3a1fb3ee59c7eb17965a6ab7afc99d71243979de7209bcfe0415fb593c61",
+      "source": "system_status_ipo",
+      "source_status": "UNKNOWN"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772102+00:00",
+      "payload": {
+        "reason": "HTTPError:HTTP Error 503: Service Unavailable",
+        "status": "UNKNOWN",
+        "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
+      },
+      "payload_sha256": "191cefdaded16978c19d751d8a601bee239a6c1e65f2e4d9130f4dfa4bb2d93e",
+      "source": "system_status_selfhelp",
+      "source_status": "UNKNOWN"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772109+00:00",
+      "payload": {
+        "reason": "HTTPError:HTTP Error 503: Service Unavailable",
+        "status": "UNKNOWN",
+        "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
+      },
+      "payload_sha256": "44c87da2e0d5280ddc715e16afd3f7c0fb3892c49b9d72e2b7ab4b973451a6a5",
+      "source": "trade_halts",
+      "source_status": "UNKNOWN"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772116+00:00",
+      "payload": {
+        "reason": "HTTPError:HTTP Error 503: Service Unavailable",
+        "status": "UNKNOWN",
+        "url": "https://www.nasdaqtrader.com/dynamic/SymDir/TradingSystemAddsDeletes.txt"
+      },
+      "payload_sha256": "42f6479c933b2dc0932c96abb15161e25cf032b1af75fdd501c6e4a5cff128b1",
+      "source": "trading_system_adds_deletes",
+      "source_status": "UNKNOWN"
+    },
+    {
+      "guard_generated_at_utc": "2026-11-21T11:33:53.912138+00:00",
+      "observed_at_utc": "2026-11-21T11:38:05.772125+00:00",
+      "payload": {
+        "active_halt_symbols": [],
+        "halt_guard_status": "UNKNOWN",
+        "rule": "REGISTERED_RESEARCH_CANDIDATE_DELIVERY_MUST_FAIL_CLOSED_ON_ACTIVE_HALT_SECURITY_SUSPENSION_OR_UNKNOWN_OFFICIAL_SAFETY_FEED",
+        "security_status_guard_status": "UNKNOWN",
+        "security_status_suspension_symbols": [],
+        "veto_symbols": []
+      },
+      "payload_sha256": "f955f375864c879a1669d8c6d7893d22099288c072eead5de9185332818ac61a",
+      "source": "candidate_safety",
+      "source_status": "UNKNOWN"
     }
   ],
-  "status": "PASS",
+  "status": "DEGRADED",
   "unknown_never_pass": true
 }
