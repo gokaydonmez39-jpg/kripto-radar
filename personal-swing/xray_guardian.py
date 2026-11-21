@@ -83,6 +83,11 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
          and 0 <= sheets.numeric(s[7]) <= 477, "AL_COUNT_INVALID")
     need(EVENT_RUN.fullmatch(str(s[8])) is not None, "UNTRUSTED_RUN_PROOF")
     proof = sheets.scan_source_proof(s[9])
+    origins = [part.strip() for part in str(s[9]).split(';')
+               if part.strip().startswith('source_event=')]
+    need(s[1] == sheets.RUN_EVENT_LABELS['schedule'] and
+         origins == ['source_event=schedule'],
+         'GUARDIAN_NON_NATURAL_SOURCE')
     universe = runner.get_scope(
         watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
         asof=expected_asof)
@@ -139,13 +144,17 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
     need(p["asof_et"] == expected_asof, "PANEL_SOURCE_ASOF_DRIFT")
     existing_run = s[8].rsplit("/", 1)[-1]
     if expected_run_id is not None:
-        need(str(expected_run_id).isdigit(), "EXPECTED_RUN_ID_INVALID")
-    replay = expected_run_id is not None and existing_run != str(expected_run_id)
+        need(re.fullmatch(r"[1-9][0-9]*", str(expected_run_id)) is not None,
+             "EXPECTED_RUN_ID_INVALID")
+        # Another run must not borrow the old run's verified Guardian result
+        # or authorize a PANEL repair using a different producer identity.
+        need(existing_run == str(expected_run_id),
+             "GUARDIAN_SOURCE_RUN_ID_MISMATCH")
     return {
         "schema": SCHEMA,
         "status": "PERSONAL_EOD_AND_AL_LEDGER_VERIFIED",
         "asof_et": expected_asof,
-        "source_run_same": not replay,
+        "source_run_same": True,
         "valid_symbols": 477,
         "new_technical_al": len(same_day),
         "alarm_ledger_events": len(events),
@@ -259,6 +268,7 @@ def main(argv=None):
             "EXPECTED_ASOF_INVALID", "SCAN_MISSING_OR_DUPLICATE",
             "SCAN_ORDER_DRIFT", "LATEST_SCAN_ASOF_NOT_ACCEPTED",
             "SOURCE_SCOPE_OR_POLICY_SHA_DRIFT",
+            "GUARDIAN_NON_NATURAL_SOURCE", "GUARDIAN_SOURCE_RUN_ID_MISMATCH",
             "SCOPE_OR_COVERAGE_DRIFT", "FINAL_READY_FALSE",
             "AL_COUNT_INVALID", "UNTRUSTED_RUN_PROOF",
             "CANDIDATE_KEY_DUPLICATE", "AL_COUNT_VS_CANDIDATE_ROWS",
