@@ -5,12 +5,14 @@ No new scheduler, signal generation, broker, push, source edits or public rows.
 Runs only inside the existing private EOD follow-up job with existing secrets.
 """
 from datetime import date
+from pathlib import Path
+import runner
 import json
 import os
 import re
 from private_sheet_writer import (
     SheetApi, HandoffBlocked, CANDIDATE_HEADER, SCAN_HEADER,
-    rows_only, numeric, require,
+    rows_only, numeric, require, scan_source_proof, RUN_EVENT_LABELS,
 )
 
 PANEL_TITLE = 'XRAY — KİŞİSEL NASDAQ START / FINAL'
@@ -57,6 +59,21 @@ def plan(panel, candidate_table, scan_table):
             'PANEL_LATEST_NOT_477_FINAL')
     require(RUN_RE.fullmatch(str(s[8])) is not None,
             'PANEL_UNTRUSTED_PROVENANCE_LINK')
+    # PANEL is writable before Guardian runs. Enforce canonical provenance
+    # independently, rather than letting a forged final row self-certify.
+    origins = [part.strip() for part in str(s[9]).split(';')
+               if part.strip().startswith('source_event=')]
+    require(s[1] == RUN_EVENT_LABELS['schedule'] and
+            origins == ['source_event=schedule'],
+            'PANEL_NON_NATURAL_EOD_SOURCE')
+    proof = scan_source_proof(s[9])
+    universe = runner.get_scope(
+        watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),
+        asof=day)
+    require(len(universe) == 477 and
+            proof['scopeSHA'] == runner.sha_symbols(universe) and
+            proof['algorithmSHA'] == runner.analysis_fingerprint(),
+            'PANEL_SOURCE_SHA_CONFLICT')
     require(numeric(s[7]).is_integer() and 0 <= numeric(s[7]) <= 477,
             'PANEL_BAD_NEW_COUNT')
     identities = []
