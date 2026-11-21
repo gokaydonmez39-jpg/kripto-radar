@@ -232,6 +232,55 @@ class PrivateSheetHandoffTests(unittest.TestCase):
             w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
+    def test_existing_eod_missing_one_candidate_must_not_reconstruct(self):
+        api=FakeApi()
+        w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        api.candidates.pop()
+        original=copy.deepcopy(api.candidates)
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'CANDIDATE_EPOCH_SET_CONFLICT'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,1)
+        self.assertEqual(api.candidates,original)
+
+    def test_existing_eod_extra_same_asof_candidate_must_not_be_accepted(self):
+        api=FakeApi()
+        w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        extra=copy.deepcopy(api.candidates[1])
+        extra[0]='2026-10-26|'+SYMS[2]
+        extra[2]=SYMS[2]
+        api.candidates.append(extra)
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'CANDIDATE_EPOCH_SET_CONFLICT'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,1)
+
+    def test_candidate_without_same_asof_scan_cannot_repair_partial_epoch(self):
+        api=FakeApi()
+        first=w.plan(snapshot(),api.candidates,api.scans,RUN)
+        api.candidates.append(copy.deepcopy(first['candidate_rows'][0]))
+        before=copy.deepcopy(api.candidates)
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'CANDIDATE_EPOCH_SET_CONFLICT'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,0)
+        self.assertEqual(api.candidates,before)
+        self.assertEqual(len(api.scans),1)
+
+    def test_after_write_unexpected_same_day_candidate_must_fail_readback(self):
+        class InjectUnexpectedAfterApply(FakeApi):
+            def apply(self,p):
+                super().apply(p)
+                extra=copy.deepcopy(self.candidates[1])
+                extra[0]='2026-10-26|'+SYMS[2]
+                extra[2]=SYMS[2]
+                self.candidates.append(extra)
+        api=InjectUnexpectedAfterApply()
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'CANDIDATE_EPOCH_READBACK_SET_CONFLICT'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,1)
+
     def test_same_asof_different_counts_blocks(self):
         api=FakeApi()
         p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
