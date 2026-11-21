@@ -14,7 +14,7 @@ import os
 import random
 import re
 import time
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
@@ -101,6 +101,9 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'UNTRUSTED_GITHUB_EVENT',
     'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED',
     'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED',
+    'EPOCH_LEASE_MODE_UNRECOGNIZED',
+    'EPOCH_LEASE_TOKEN_MISSING',
+    'EPOCH_LEASE_CONSUMER_UNVERIFIED',
     'UNVERIFIED_RUN_ID',
     'MISSING_AUTHENTICATED_SHEET_METADATA',
     'INVALID_EXISTING_LEVEL',
@@ -396,6 +399,62 @@ def verify_readback(p, candidates, scans):
             'candidates':p['expected_count'],'device_ack':False}
 
 
+def require_epoch_lease_before_private_post(
+        environment, *, transport=None, now=None, completed_session=None):
+    """Staged, opt-in owner fence for ALL NASDAQ private Sheets POSTs.
+
+    No Sheet mutation can begin in ENFORCE mode without the current,
+    separately read-back, immutable natural EOD tag owner. OFF is the
+    existing production setting until the Actions ruleset credential can
+    prove the full no-bypass rule and a live two-writer canary succeeds.
+
+    A verified lease is ONLY the precondition for POST, never delivery,
+    AL/STOP authority, an execution permission, or evidence that a Google
+    batch committed. Test injection cannot enable a production lease.
+    """
+    require(isinstance(environment,Mapping),
+            'EPOCH_LEASE_MODE_UNRECOGNIZED')
+    mode=environment.get('XRAY_PERSONAL477_EPOCH_LEASE_MODE','OFF')
+    require(mode in ('OFF','ENFORCE'), 'EPOCH_LEASE_MODE_UNRECOGNIZED')
+    if mode == 'OFF':
+        return {'state':'LEASE_ENFORCEMENT_NOT_ACTIVATED',
+                'sheet_writes':0,'ab_release_authorized':False}
+    # Check GH runner provenance before token, tag or Google network use.
+    verify_natural_eod_writer_identity(environment)
+    token=environment.get('GITHUB_TOKEN','')
+    require(isinstance(token,str) and bool(token),
+            'EPOCH_LEASE_TOKEN_MISSING')
+    try:
+        import epoch_lease
+        import daily_job
+        observed=now if now is not None else datetime.now(timezone.utc)
+        asof=(completed_session(observed)
+              if completed_session is not None else
+              daily_job.current_completed_session(observed))
+        require(isinstance(asof,str) and bool(asof),
+                'EPOCH_LEASE_CONSUMER_UNVERIFIED')
+        verified=epoch_lease.verify_existing_tag_consumer(
+            asof,
+            transport if transport is not None
+            else epoch_lease.github_transport(token),
+            now=observed,
+            runtime_env=dict(environment) if now is not None else None,
+            completed_session=completed_session)
+        require(verified.get('state')=='LEASE_OWNER_READBACK_ONLY' and
+                verified.get('asof_et')==asof and
+                verified.get('run_id')==int(environment['GITHUB_RUN_ID']) and
+                verified.get('source_sha')==environment['GITHUB_SHA'] and
+                verified.get('sheet_writes')==0 and
+                verified.get('orders') is False and
+                verified.get('ab_release_authorized') is False,
+                'EPOCH_LEASE_CONSUMER_UNVERIFIED')
+        return verified
+    except Exception:
+        # No bearer token, private row, provider reason, or REST body in
+        # GitHub Actions logs; no retries or optimistic completion.
+        raise HandoffBlocked('EPOCH_LEASE_CONSUMER_UNVERIFIED') from None
+
+
 class SheetApi:
     """Restrict HTTP calls to official Google Sheets API (credential is scoped)."""
 
@@ -423,6 +482,12 @@ class SheetApi:
         self.sheet_ids=None
 
     def request(self, path, *, method='GET', body=None):
+        # One central last-mile barrier: canonical EOD scan, outbox,
+        # lifecycle, PANEL, score and NEON all use this Sheets client.
+        # In ENFORCE mode, a missing/competing protected tag owner denies
+        # every private batch POST BEFORE Google network I/O.
+        if method == 'POST':
+            require_epoch_lease_before_private_post(os.environ)
         url=self.base+path
         raw=json.dumps(body,ensure_ascii=False).encode('utf-8') if body is not None else None
         req=Request(url, data=raw, method=method,
