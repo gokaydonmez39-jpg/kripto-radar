@@ -153,6 +153,21 @@ def scan_source_proof(note):
     return proof
 
 
+def canonical_natural_scan_source(row):
+    """Exact receipt-origin predicate for downstream research-only consumers.
+
+    A valid SHA cannot elevate a manual/duplicate/mislabeled run to the
+    canonical scheduled producer. This is pure; never grants write authority.
+    """
+    if not isinstance(row, (list, tuple)) or len(row) < 10:
+        return False
+    if row[1] != RUN_EVENT_LABELS['schedule'] or not isinstance(row[9], str):
+        return False
+    fields = [part.strip() for part in row[9].split(';')
+              if part.strip().startswith('source_event=')]
+    return fields == ['source_event=schedule']
+
+
 def canonical_scan_day(day):
     """Reject malformed private ASOF keys before lexicographic ordering."""
     if type(day) is not str or re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',day) is None:
