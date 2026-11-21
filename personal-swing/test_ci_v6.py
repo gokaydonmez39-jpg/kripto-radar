@@ -192,6 +192,53 @@ class OfflineCIPipeline(unittest.TestCase):
         bar={'timestamp':'2026-10-23T04:00:00Z','open':103.,'high':111.,'low':94.,'close':105.,'volume':10000}
         tracker.track_symbol(sig,[bar],'2026-10-23')
         self.assertEqual(sig['outcome'],'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS')
+    def test_nov20_utc_offset_stop_survives_missing_scan_before_nov23(self):
+        # Synthetic, no 20 Nov Sheet row. UTC 20 Nov must not be mistaken
+        # for 19 Nov because its supplied timezone offset says 19 Nov.
+        episode={'symbol':'CVLT','status':'OPEN','asof_et':'2026-11-19',
+                 'processed_through':'2026-11-19','reference_close':100.,
+                 'stop':95.,'target_2r':110.,'days_held':0,'events':[]}
+        friday={'timestamp':'2026-11-19T23:30:00-05:00',
+                'open':100.,'high':104.,'low':94.,'close':100.,'volume':10000}
+        monday={'timestamp':'2026-11-23T05:00:00Z',
+                'open':115.,'high':130.,'low':112.,'close':120.,'volume':10000}
+        tracker.track_symbol(episode,[friday,monday],'2026-11-23')
+        self.assertEqual(episode['outcome'],'STOP_TOUCHED')
+        self.assertEqual(episode['closed_date'],'2026-11-20')
+        self.assertEqual(episode['days_held'],1)
+
+    def test_offset_to_non_session_sat_cannot_forge_friday_stop(self):
+        episode={'symbol':'CVLT','status':'OPEN','asof_et':'2026-11-19',
+                 'processed_through':'2026-11-19','reference_close':100.,
+                 'stop':95.,'target_2r':110.,'days_held':0,'events':[]}
+        # Local Friday 23:30 ET is UTC Saturday: NOT a 20 Nov XNAS bar.
+        bad={'timestamp':'2026-11-20T23:30:00-05:00',
+             'open':100.,'high':104.,'low':94.,'close':100.,'volume':10000}
+        with self.assertRaisesRegex(ValueError,'FOLLOWUP_ASOF_BAR_MISSING_NO_ADVANCE'):
+            tracker.track_symbol(episode,[bad],'2026-11-20')
+        self.assertEqual(episode['status'],'OPEN')
+        self.assertEqual(episode['days_held'],0)
+
+    def test_naive_invalid_and_duplicate_utc_followup_timestamps(self):
+        def original():
+            return {'symbol':'CVLT','status':'OPEN','asof_et':'2026-11-19',
+                    'processed_through':'2026-11-19','reference_close':100.,
+                    'stop':95.,'target_2r':110.,'days_held':0,'events':[]}
+        for stamp,code in (
+                ('2026-11-20T05:00:00','FOLLOWUP_TIMESTAMP_WITHOUT_TZ'),
+                ('2026-11-20NOT_ISO','FOLLOWUP_TIMESTAMP_INVALID')):
+            bar={'timestamp':stamp,'open':100.,'high':104.,
+                 'low':94.,'close':100.,'volume':10000}
+            episode=original()
+            with self.assertRaisesRegex(ValueError,code):
+                tracker.track_symbol(episode,[bar],'2026-11-20')
+            self.assertEqual(episode['status'],'OPEN')
+        first={'timestamp':'2026-11-19T23:30:00-05:00',
+               'open':100.,'high':104.,'low':96.,'close':100.,'volume':10000}
+        second=dict(first,timestamp='2026-11-20T04:30:00Z')
+        with self.assertRaisesRegex(ValueError,'DUPLICATE_FOLLOWUP_BAR'):
+            tracker.track_symbol(original(),[first,second],'2026-11-20')
+
     def test_missing_followup_intermediate_session_is_rejected(self):
         sig={'symbol':'CVLT','status':'OPEN','asof_et':'2026-10-20','processed_through':'2026-10-20',
              'stop':95.,'target_2r':110.,'reference_close':100.,'days_held':0,'events':[]}
