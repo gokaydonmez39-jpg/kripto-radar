@@ -277,6 +277,53 @@ class FirstClaimAndReadback(unittest.TestCase):
                 self.assertFalse(
                     any(method=="POST" for method,_,_ in git.calls))
 
+    def test_invalid_asof_must_not_ever_write_permanent_tag(self):
+        for asof in ("2026-02-30","2026-11-3","2099-01-01","2026-11-22"):
+            with self.subTest(asof=asof):
+                owner=natural()
+                owner["asof_et"]=asof
+                owner["tag"]=lease.TAG_PREFIX+asof
+                owner["ref"]=lease.REF_PREFIX+asof
+                git=MockGit()
+                with self.assertRaisesRegex(
+                    lease.LeaseHold,"LEASE_OWNER_CONTRACT_INVALID"):
+                    lease.acquire_first_claim(owner,git)
+                self.assertEqual(git.calls,[])
+                self.assertEqual(git.refs,{})
+
+    def test_invalid_or_unbounded_observation_must_not_write(self):
+        invalid=("invalid",None,1,"2026-11-23T22:05:00+03:00",
+                 "2026-11-23T22:05:00","2026-11-24T15:05:00Z",
+                 "2026-11-20T22:05:00Z")
+        for at in invalid:
+            with self.subTest(value=at):
+                owner=natural()
+                owner["observed_at"]=at
+                git=MockGit()
+                with self.assertRaisesRegex(
+                    lease.LeaseHold,"LEASE_OWNER_CONTRACT_INVALID"):
+                    lease.acquire_first_claim(owner,git)
+                self.assertEqual(git.calls,[])
+
+    def test_http_transport_only_exact_lease_endpoints(self):
+        def fail_on_network(*_args,**_kwargs):
+            raise AssertionError("UNAUTHORIZED_VENDOR_REQUEST_SENT")
+        tr=lease.github_transport("redacted",opener=fail_on_network)
+        for method,path in (
+            ("POST","/git/commits"),("POST","/git/blobs"),
+            ("POST","/git/ref/tags/forged"),
+            ("POST","/rulesets"),
+            ("GET","/git/blobs/"+"a"*40),
+            ("GET","/git/ref/heads/main"),
+            ("GET","/git/tags/not-a-sha"),
+            ("GET","/git/ref/tags/xray-not-personal477-epoch-2026-11-23"),
+            ("GET","/rulesets/01"),
+        ):
+            with self.subTest(method=method,path=path):
+                with self.assertRaisesRegex(
+                    lease.LeaseHold,"LEASE_API_PATH_INVALID"):
+                    tr(method,path,{} if method=="POST" else None)
+
     def test_missing_token_is_fail_closed(self):
         with self.assertRaisesRegex(lease.LeaseHold,
                                     "LEASE_GITHUB_TOKEN_NOT_CONFIGURED"):
