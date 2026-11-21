@@ -52,6 +52,32 @@ class Fake:
 
 
 class ALPendingOutboxSourceIsolation(unittest.TestCase):
+    def test_valid_natural_eod_retains_pending_outbox_readback(self):
+        good={
+            'GITHUB_EVENT_NAME':'schedule','GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':writer.EXPECTED_EOD_REPOSITORY,
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_WORKFLOW_REF':writer.EXPECTED_EOD_WORKFLOW_REF,
+            'GITHUB_SHA':'a'*40,
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+        api=Fake()
+        with tempfile.TemporaryDirectory() as folder:
+            file=Path(folder)/'synthetic.json'
+            file.write_text(json.dumps(api.snap),encoding='utf-8')
+            with patch.dict(os.environ,good,clear=True):
+                with patch.object(out,'AlertApi',return_value=api) as provider:
+                    with contextlib.redirect_stdout(io.StringIO()) as buf:
+                        rc=out.main(['--snapshot',str(file)])
+        result=json.loads(buf.getvalue())
+        self.assertEqual(rc,0,result)
+        self.assertEqual(result['status'],'AL_OUTBOX_PENDING_READBACK_PASS')
+        self.assertEqual(result['messages_sent'],0)
+        self.assertEqual(result['new_pending'],2)
+        self.assertEqual(api.append_calls,1)
+        provider.assert_called_once()
+
     def test_noncanonical_scheduled_producer_never_opens_outbox_sheet(self):
         good={
             'GITHUB_EVENT_NAME':'schedule','GITHUB_RUN_ID':'999001',
