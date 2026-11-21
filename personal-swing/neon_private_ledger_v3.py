@@ -60,6 +60,12 @@ def source_proof(scans, asof, url, master_sha, policy_sha):
          "SCAN_HEADER_DRIFT")
     existing = [r for r in scans[1:] if r and r[0]]
     need(all(len(r) >= 10 for r in existing), "SCAN_PARTIAL_ROW")
+    # Do not let a valid last row hide an out-of-order/future scan epoch.
+    # Gaps remain legal; an old session may NEVER be appended after a new one.
+    days=[r[0] for r in existing]
+    need(all(original.canonical_scan_day(d) for d in days) and
+         len(days)==len(set(days)) and days==sorted(days),
+         "SCAN_DATE_ORDER_OR_DUPLICATE")
     need(existing and existing[-1][0] == asof, "LATEST_SCAN_ASOF_MISMATCH")
     hits = [r for r in existing if r[0] == asof]
     need(len(hits) == 1, "SCAN_ASOF_DUPLICATE")
@@ -86,6 +92,7 @@ def previous_archive(existing, asof, master):
          "NEON_LEDGER_HEADER_DRIFT")
     day_rows={}
     found=set()
+    last_day=None
     for row in existing[1:]:
         need(isinstance(row,list) and len(row) == len(HEADER), "LEDGER_ROW_WIDTH")
         d,s=row[1],row[2]
@@ -93,6 +100,12 @@ def previous_archive(existing, asof, master):
             need(date.fromisoformat(d).isoformat()==d,"LEDGER_ASOF_INVALID")
         except (ValueError,TypeError) as exc:
             raise NeonLedgerHold("LEDGER_ASOF_INVALID") from None
+        # AppendCells must preserve 477-row day blocks in increasing ASOF.
+        # A reverse or interleaved historic block is not a reliable delta
+        # baseline even when all 477 symbol identities are individually valid.
+        need(last_day is None or d>=last_day,
+             "LEDGER_ASOF_ORDER_OR_NONCONTIGUOUS")
+        last_day=d
         need(type(s) is str and neon.SYMBOL.fullmatch(s) is not None and
              row[0] == d+"|"+s and (d,s) not in found,
              "LEDGER_IDENTITY_OR_DUPLICATE")
