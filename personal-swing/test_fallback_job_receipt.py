@@ -159,6 +159,36 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                             in item for item in calls))
         self.assertFalse(out["private_sheet_verified"])
 
+    def test_competing_natural_run_in_same_epoch_is_hold(self):
+        # A second natural EOD could have touched the private writer even
+        # when its final GitHub state is failed, queued or still in progress.
+        # A green first producer is NOT a unique source receipt.
+        cases=(("queued",None),("in_progress",None),
+               ("completed","failure"),("completed","success"))
+        for status,conclusion in cases:
+            with self.subTest(status=status,conclusion=conclusion):
+                run,jobs=fixture()
+                calls=[]
+                primary={"id":RUN_ID,"created_at":run["created_at"],
+                         "head_branch":"main","event":"schedule",
+                         "status":"completed","conclusion":"success"}
+                competing={"id":RUN_ID+1,"created_at":"2026-11-19T23:52:00Z",
+                           "head_branch":"main","event":"schedule",
+                           "status":status,"conclusion":conclusion}
+                def get(url):
+                    calls.append(url)
+                    if "/actions/workflows/" in url:
+                        return {"total_count":2,
+                                "workflow_runs":[primary,competing]}
+                    if url.endswith("/jobs?per_page=100"):
+                        return copy.deepcopy(jobs)
+                    return copy.deepcopy(run)
+                with self.assertRaisesRegex(
+                        proof.ReceiptHold,"PRIMARY_EOD_EPOCH_AMBIGUOUS"):
+                    proof.audit(ASOF,now=NOW,get=get)
+                # Ambiguous selection must stop before selecting job records.
+                self.assertEqual(len(calls),1)
+
     def test_successful_workflow_without_jobs_is_hold(self):
         run,jobs=fixture()
         def get(url):
