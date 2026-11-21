@@ -44,9 +44,9 @@ jobs:
       - name: Fail-closed official session and CAS-like duplicate-suppression tests
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_schedule_failover
-          python -O -m unittest -q test_schedule_failover
-          python -m py_compile schedule_failover.py
+          python -m unittest -q test_schedule_failover test_fallback_source_provenance
+          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance
+          python -m py_compile schedule_failover.py fallback_source_provenance.py
       - name: Enforce global NASDAQ workflow-schedule boundary contract
         run: |
           python -m pip install 'PyYAML==6.0.2'
