@@ -170,5 +170,75 @@ class ROKUFlightPITTests(unittest.TestCase):
         self.assertEqual(out["device_receipts_verified"],0)
 
 
+# Forward-only UTC source policy from the independently recalculated
+# engine.py + runner.py + requirements.txt + raw IEX feed contract.
+UTC_20261123=(
+    "3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060",
+    "cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c",
+)
+
+class ForwardUtcPolicy20261123Tests(unittest.TestCase):
+    """Old issue receipts immutable; only new natural XNAS sessions use the new SHA."""
+
+    def scenario(self):
+        table=fixture()
+        table[1].append([
+            "2026-11-19","GitHub schedule VERIFIED IEX EOD",
+            "477","477","477","0","TRUE","0","private",fp(NEW)])
+        table[1].append([
+            "2026-11-23","GitHub schedule VERIFIED IEX EOD",
+            "477","477","477","0","TRUE","0","private",fp(UTC_20261123)])
+        table[3][0][1]="2026-11-23"
+        return table
+
+    def test_forward_23_nov_accepts_exact_reviewed_utc_sha_without_backfill(self):
+        table=self.scenario()
+        original=copy.deepcopy(table)
+        result=flight.inspect(*table,expected_asof="2026-11-23")
+        self.assertEqual(result["latest_verified_scan_asof"],"2026-11-23")
+        self.assertEqual(result["source_verified_issuance_days"],6)
+        self.assertEqual(result["unreserved_prior_eod_al"],0)
+        self.assertEqual(result["device_receipts_verified"],0)
+        self.assertFalse(result["writes"])
+        self.assertFalse(result["orders"])
+        self.assertNotIn("2026-11-20", [r[0] for r in table[1][1:]])
+        self.assertEqual(table,original)
+
+    def test_old_19_nov_current_policy_remains_valid(self):
+        table=self.scenario()
+        table[1].pop()
+        table[3][0][1]="2026-11-19"
+        out=flight.inspect(*table,expected_asof="2026-11-19")
+        self.assertEqual(out["latest_verified_scan_asof"],"2026-11-19")
+
+    def test_new_utc_sha_may_not_be_backdated_to_19_nov(self):
+        table=self.scenario()
+        table[1][-2][9]=fp(UTC_20261123)
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*table,expected_asof="2026-11-23")
+
+    def test_23_nov_must_not_reuse_19_nov_source_policy(self):
+        table=self.scenario()
+        table[1][-1][9]=fp(NEW)
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*table,expected_asof="2026-11-23")
+
+    def test_23_nov_rejects_arbitrary_policy_hash(self):
+        table=self.scenario()
+        table[1][-1][9]=fp((UTC_20261123[0],"f"*64))
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*table,expected_asof="2026-11-23")
+
+    def test_pre_10_nov_historical_sha_alteration_remains_rejected(self):
+        table=self.scenario()
+        table[1][1][9]=fp(UTC_20261123)
+        with self.assertRaisesRegex(flight.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            flight.inspect(*table,expected_asof="2026-11-23")
+
+
 if __name__=="__main__":
     unittest.main()
