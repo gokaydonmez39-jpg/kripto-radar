@@ -38,9 +38,22 @@ def fixture():
                      "asof_et": ASOF, "source_event": "workflow_dispatch",
                      "source_sha": SHA40, "source_readback_verified": True,
                      "orders": False}
+    # Exact six-job provenance includes immutable child identity and DAG timestamps.
+    spans = [
+        ("offline-guard", "00:55", "00:57"),
+        ("private-sheets-auth-preflight", "00:58", "01:01"),
+        ("daily-private-scan", "00:58", "01:04"),
+        ("private-episode-followups", "01:05", "01:07"),
+        ("guardian-acceptance", "01:08", "01:10"),
+        ("daily-private-score-acceptance", "01:11", "01:13"),
+    ]
+    run_url = "https://api.github.com/repos/" + f.REPO + "/actions/runs/102"
     jobs = [{"id": i + 1, "name": name, "run_id": 102, "run_attempt": 1,
-             "status": "completed", "conclusion": "success"}
-            for i, name in enumerate(sorted(f.JOBS))]
+             "status": "completed", "conclusion": "success",
+             "head_sha": SHA40, "head_branch": "main", "run_url": run_url,
+             "started_at": "2026-11-24T" + start + ":00Z",
+             "completed_at": "2026-11-24T" + finish + ":00Z"}
+            for i, (name, start, finish) in enumerate(spans)]
     scan = {"asof_et": ASOF, "source_event": "workflow_dispatch",
             "run_id": 102, "requested": 477, "processed": 477, "valid": 477,
             "missing": 0, "final_ready": True,
@@ -127,6 +140,30 @@ class SourceProvenanceAcceptance(unittest.TestCase):
                 if mutation == "duplicate": p[4][1]["name"] = p[4][0]["name"]
                 if mutation == "foreign_run": p[4][0]["run_id"] = 999
                 self.assertEqual(verify(p)["state"], "HOLD")
+
+    def test_each_job_must_prove_child_identity_and_time_bounds(self):
+        for key, value in [
+            ("head_sha", "f" * 40),
+            ("head_branch", "not-main"),
+            ("run_url", "https://api.github.com/repos/wrong/repo/actions/runs/102"),
+            ("started_at", None),
+            ("completed_at", "2026-11-24T02:01:00Z"),
+            ("started_at", "2026-11-24T01:30:00Z"),
+        ]:
+            with self.subTest(field=key, value=value):
+                values = fixture()
+                values[4][0][key] = value
+                self.assertEqual(verify(values)["state"], "HOLD")
+
+    def test_job_dependency_order_is_required(self):
+        values = fixture()
+        followups = next(j for j in values[4] if j["name"] == "private-episode-followups")
+        followups["started_at"] = "2026-11-24T01:02:00Z"  # scan ends at 01:04
+        self.assertEqual(verify(values)["state"], "HOLD")
+        values = fixture()
+        guardian = next(j for j in values[4] if j["name"] == "guardian-acceptance")
+        guardian["started_at"] = "2026-11-24T01:06:00Z"  # followups end at 01:07
+        self.assertEqual(verify(values)["state"], "HOLD")
 
     def test_private_readback_must_bind_exact_child(self):
         for k, v in [
