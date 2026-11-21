@@ -51,6 +51,26 @@ class FakeApi:
 
 
 class TestKronosShadow(unittest.TestCase):
+    def test_current_authority_rejects_non_natural_scan_before_score_read(self):
+        import runner
+        import private_sheet_writer as writer
+        from pathlib import Path
+        scope=runner.get_scope(watchlist_file=str(Path(__file__).with_name(
+            "nasdaq_watchlist_477.json")),asof=ASOF)
+        note=("scopeSHA="+runner.sha_symbols(scope)+
+              ";algorithmSHA="+runner.analysis_fingerprint()+
+              ";source_event=workflow_dispatch")
+        row=[ASOF,writer.RUN_EVENT_LABELS["workflow_dispatch"],
+             "477","477","477","0","TRUE","0",
+             "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001",note]
+        def only_scan(name,col):
+            if name=="TARAMA_KAYITLARI":
+                return [list(writer.SCAN_HEADER),row]
+            raise AssertionError("NON_NATURAL_SOURCE_READ_OTHER_SHEETS")
+        api=types.SimpleNamespace(check_metadata=lambda:None,read=only_scan)
+        with self.assertRaisesRegex(k.ShadowHold,"KRONOS_NON_NATURAL_SOURCE"):
+            k.current_authority(api,ASOF)
+
     def test_model_and_schema_pins(self):
         self.assertEqual(len(k.HEADERS), 20)
         self.assertEqual(k.HORIZONS, (1, 5, 12))

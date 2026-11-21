@@ -125,6 +125,8 @@ def private_authority(api, asof, *, parent=None):
               sum(row[0]==asof for row in scans)==1,
               "KRONOS2_LAST_SCAN_ASOF")
     last=scans[-1]
+    k.require(writer.canonical_natural_scan_source(last),
+              "KRONOS2_NON_NATURAL_SOURCE")
     k.require([writer.numeric(last[i]) for i in (2,3,4,5)] ==
               [477,477,477,0] and str(last[6]).upper()=="TRUE",
               "KRONOS2_SOURCE_NOT_477_PASS")
