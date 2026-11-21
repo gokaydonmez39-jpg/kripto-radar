@@ -432,9 +432,12 @@ class AutomaticFallbackProvenanceGate(unittest.TestCase):
             with self.subTest(event=event):
                 self.assertFalse(sf.allow_dispatch_for_event(event))
 
-    def test_explicit_manual_recovery_is_not_silently_reclassified(self):
-        self.assertTrue(sf.allow_dispatch_for_event('workflow_dispatch'))
-        self.assertFalse(sf.allow_dispatch_for_event('schedule'))
+    def test_unverified_manual_recovery_cannot_dispatch_or_impersonate_schedule(self):
+        # Manual fallback does not have parent-child/CAS authority and
+        # cannot safely obtain a canonical private EOD receipt.
+        for event in ('workflow_dispatch', 'schedule', 'push', None):
+            with self.subTest(event=event):
+                self.assertFalse(sf.allow_dispatch_for_event(event))
 
 
 class PrimaryEodPendingIsolationTests(unittest.TestCase):
@@ -523,6 +526,17 @@ class MissingEodFailureAttributionTests(unittest.TestCase):
         self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
         self.assertEqual(reads,[True,True])
         self.assertEqual(requests,['2026-10-26'])
+
+    def test_manual_recovery_policy_lock_is_explicit_and_nongreen(self):
+        def runs():
+            return {'total_count':0, 'workflow_runs':[]}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=runs,request_dispatch=lambda _asof:
+                      sf.allow_dispatch_for_event('workflow_dispatch'),
+                      trigger_event='workflow_dispatch')
+        self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
+        self.assertEqual(result['dispatch_requested'],False)
+        self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
 
     def test_unconfirmed_explicit_manual_request_never_fake_ack(self):
         def runs():
