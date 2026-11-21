@@ -308,5 +308,16 @@ class FallbackParentReceiptSafety(unittest.TestCase):
                          'DISPATCH_ONE_MISSING_SCHEDULE')
 
 
+class AutomaticFallbackProvenanceGate(unittest.TestCase):
+    def test_scheduler_must_not_dispatch_before_child_provenance_release(self):
+        for event in ('schedule','push','pull_request','workflow_run',None,''):
+            with self.subTest(event=event):
+                self.assertFalse(sf.allow_dispatch_for_event(event))
+
+    def test_explicit_manual_recovery_is_not_silently_reclassified(self):
+        self.assertTrue(sf.allow_dispatch_for_event('workflow_dispatch'))
+        self.assertFalse(sf.allow_dispatch_for_event('schedule'))
+
+
 if __name__=='__main__':
     unittest.main()

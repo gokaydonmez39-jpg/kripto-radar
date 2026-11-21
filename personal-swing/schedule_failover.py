@@ -162,6 +162,13 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
 
 
 
+
+def allow_dispatch_for_event(event):
+    """Only an explicitly authorized manual recovery may dispatch today."""
+    # Natural fallback is observational until schedule/dispatch provenance
+    # and the private Sheet A/B gates support a complete parent-child proof.
+    return event == 'workflow_dispatch'
+
 def scheduler_parent_receipt(result, env):
     """Log-only immutable parent witness, never a new dispatch authority."""
     if not isinstance(result, dict) or not isinstance(env, dict):
@@ -217,6 +224,13 @@ def main(argv=None):
     def dispatch(session):
         if args.dry_run:
             return True
+        # FAIL CLOSED: automated fallback writes source_event=workflow_dispatch.
+        # The canonical A/B gate only authorizes schedule; an early fallback
+        # scan could lock this ASOF to unaccepted provenance forever.
+        # Never dispatch from this scheduled fallback until an independently
+        # tested parent-child/Sheet receipt authorization is deployed.
+        if not allow_dispatch_for_event(os.environ.get('GITHUB_EVENT_NAME')):
+            return False
         return api_json(base+'/dispatches',token,method='POST',
                         body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
