@@ -21,7 +21,8 @@ import tracker
 from private_sheet_writer import (SheetApi, HandoffBlocked, numeric, require,
                                   CANDIDATE_HEADER, SCAN_HEADER, as_cells,
                                   scan_source_proof, RUN_EVENT_LABELS,
-                                  public_failure_code)
+                                  public_failure_code,
+                                  verify_natural_eod_writer_identity)
 
 ALERT_HEADER = (
     'OLAY_ANAHTARI','ADAY_ANAHTARI','AL_ASOF_ET','SEMBOL',
@@ -472,6 +473,11 @@ def main(argv=None):
     parser.add_argument('--asof',default='')
     args=parser.parse_args(argv)
     try:
+        # This writer mutates immutable-identity episode followups and may
+        # reserve STOP/2R terminal events. Only the exact FIRST natural EOD
+        # workflow may reach its calendar/provider code, even if credentials
+        # are available to another scheduled job in the same repository.
+        verify_natural_eod_writer_identity(os.environ)
         # Public workflow runs before US close may not process the current day.
         eligible=daily_job.current_completed_session()
         if eligible is None:
