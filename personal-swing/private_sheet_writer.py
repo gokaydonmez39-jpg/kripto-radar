@@ -29,7 +29,7 @@ SCAN_HEADER = ('ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ',
 BATCH_ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
 # Match the exact production origin and numeric run identity; no suffixes.
 VERIFIED_RUN_URL = re.compile(
-    r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*
+    r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*$')
 # Bound loaded private ledger entries, not the initial 1,000-row grid.
 # The Sheets API appendCells extends the grid; a capped read silently misses
 # older events and can cause duplicate AL/STOP or replay. Read all occupied
