@@ -27,7 +27,7 @@ class AuthorityApi:
         return [list(writer.SCAN_HEADER),
             [DAY,"GitHub schedule VERIFIED IEX EOD",
              "477","477","477","0","TRUE","0","private",
-             "scopeSHA="+prov+";algorithmSHA="+POLICY_SHA]]
+             "scopeSHA="+prov+";algorithmSHA="+POLICY_SHA+";source_event=schedule"]]
 
 
 def ready_score():
