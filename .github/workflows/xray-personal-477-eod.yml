@@ -87,6 +87,10 @@ jobs:
           python -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
           python -O -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
           python -m py_compile neon_shadow_v3.py daily_job.py test_neon_shadow_wiring.py
+          # NEON 477 full private archive: exact scan/run proof, N/A, dedupe.
+          python -m unittest -q test_neon_private_ledger_v3
+          python -O -m unittest -q test_neon_private_ledger_v3
+          python -m py_compile neon_private_ledger_v3.py
           cd research_lab
           python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
@@ -196,6 +200,25 @@ jobs:
           python alert_outbox_producer.py --snapshot "$path"
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
+      - name: Private NEON 477 full-row archive (advisory; NEVER AL, order or push)
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        working-directory: personal-swing
+        shell: bash
+        env:
+          XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
+          XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+        run: |
+          set -euo pipefail
+          snapshot="$RUNNER_TEMP/xray-private-data/latest.json"
+          if [[ ! -f "$snapshot" ]]; then
+            echo 'NEON_LEDGER=SKIPPED_NO_FINAL; DELIVERY=UNKNOWN'
+            exit 0
+          fi
+          # Use exact private snapshot ASOF; never infer an epoch from UTC date.
+          asof=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["asof_et"])' "$snapshot")
+          shadow="$RUNNER_TEMP/xray-private-data/neon_shadow_v3_${asof}.json"
+          python neon_private_ledger_v3.py --snapshot "$snapshot" --shadow "$shadow"
       - name: Optional official 477 PIT-aware shadow ledger (NO AL, no market provider HTTP, no Sheet)
         # This sidecar is strictly after normal private Sheet readback.
         # No completed EOD => explicit SKIP, never a false 477-shadow PASS.
