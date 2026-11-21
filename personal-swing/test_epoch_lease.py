@@ -51,10 +51,24 @@ class MockGit:
         self.tamper=None
         self.protection="valid"
         self.disable_after_ref=False
+        self.run_overrides={}
 
     def __call__(self,method,path,body=None):
         with self.lock:
             self.calls.append((method,path,copy.deepcopy(body)))
+        if method=="GET" and path.startswith("/actions/runs/"):
+            rid=path.split("/")[-1]
+            receipt={
+                "id":int(rid),"run_attempt":1,"event":"schedule",
+                "path":lease.WORKFLOW,"head_branch":"main",
+                "head_sha":"a"*40,
+                "repository":{"full_name":lease.REPO},
+                "status":"in_progress","conclusion":None,
+                "created_at":"2026-11-23T22:03:00Z",
+                "updated_at":"2026-11-23T22:04:00Z",
+            }
+            receipt.update(self.run_overrides)
+            return receipt
         if method=="GET" and path=="/rulesets":
             if self.protection=="absent":
                 return [{"id":1,"target":"branch","enforcement":"active"}]
@@ -176,7 +190,8 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(out["device_ack"],"UNKNOWN")
         self.assertEqual(
             [(method,path) for method,path,_ in git.calls],
-            [("GET","/rulesets"),("GET","/rulesets/11"),
+            [("GET","/actions/runs/"+str(owner["run_id"]),
+             ("GET","/rulesets"),("GET","/rulesets/11"),
              ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
              ("GET","/git/tags/"+out["tag_sha"]),
@@ -186,6 +201,41 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(manifest["asof_et"],ASOF)
         self.assertNotIn("secret",manifest)
         self.assertNotIn("symbol",manifest)
+
+    def test_actual_github_run_receipt_must_match_before_claim(self):
+        variants=(
+            ("id",890124),
+            ("event","workflow_dispatch"),
+            ("path",".github/workflows/foreign.yml"),
+            ("head_branch","dev"),
+            ("head_sha","b"*40),
+            ("run_attempt",2),
+            ("repository",{"full_name":"other/repo"}),
+            ("status","completed"),
+            ("conclusion","failure"),
+            ("created_at","2026-11-24T00:00:00Z"),
+            ("updated_at","2026-11-24T00:00:00Z"),
+        )
+        for key,bad in variants:
+            with self.subTest(key=key):
+                git=MockGit();git.run_overrides={key:bad}
+                with self.assertRaisesRegex(
+                        lease.LeaseHold,"LEASE_NATURAL_RUN_READBACK_UNVERIFIED"):
+                    claim(natural(),git)
+                self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
+                self.assertEqual(git.refs,{})
+
+    def test_unavailable_real_run_receipt_is_never_authority(self):
+        git=MockGit()
+        def gone(method,path,body=None):
+            if method=="GET" and path.startswith("/actions/runs/"):
+                raise TimeoutError("ambiguous GitHub GET")
+            return git(method,path,body)
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"LEASE_GITHUB_TRANSPORT_UNCERTAIN"):
+            claim(natural(),gone)
+        self.assertEqual(git.tags,{})
+        self.assertEqual(git.refs,{})
 
     def test_idempotent_retry_cannot_repeat_first_claim(self):
         git=MockGit()
@@ -334,6 +384,10 @@ class FirstClaimAndReadback(unittest.TestCase):
             ("GET","/git/tags/not-a-sha"),
             ("GET","/git/ref/tags/xray-not-personal477-epoch-2026-11-23"),
             ("GET","/rulesets/01"),
+            ("GET","/actions/runs/not-an-id"),
+            ("GET","/actions/runs/01"),
+            ("GET","/actions/runs/890123/jobs"),
+            ("POST","/actions/runs/890123"),
         ):
             with self.subTest(method=method,path=path):
                 with self.assertRaisesRegex(
