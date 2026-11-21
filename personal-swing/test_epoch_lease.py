@@ -449,6 +449,89 @@ class FirstClaimAndReadback(unittest.TestCase):
             lease.github_transport("redacted")("POST","/untrusted",{})
 
 
+class ExistingLeaseConsumerReadback(unittest.TestCase):
+    """No second tag write: consumer must prove the unique current owner."""
+
+    def consumed(self, git, *, run="890123", now=NOW, runtime=None):
+        return lease.verify_existing_tag_consumer(
+            ASOF,git,now=now,
+            runtime_env=env(run) if runtime is None else runtime,
+            completed_session=lambda _:ASOF)
+
+    def test_existing_owner_can_be_revalidated_twice_without_post(self):
+        git=MockGit()
+        claim(natural(),git)
+        git.calls.clear()
+        for _ in range(2):
+            result=self.consumed(git)
+            self.assertEqual(result["state"],"LEASE_OWNER_READBACK_ONLY")
+            self.assertEqual(result["run_id"],890123)
+            self.assertEqual(result["sheet_writes"],0)
+            self.assertFalse(result["ab_release_authorized"])
+            self.assertFalse(result["orders"])
+            self.assertEqual(result["device_ack"],"UNKNOWN")
+        self.assertTrue(git.calls)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_other_run_id_cannot_borrow_existing_lease(self):
+        git=MockGit()
+        claim(natural(),git)
+        git.calls.clear()
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                    "LEASE_CONSUMER_OWNER_MISMATCH"):
+            self.consumed(git,run="890124")
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_tag_message_and_underlying_commit_drift_are_denied(self):
+        for mode in ("message","commit"):
+            with self.subTest(mode=mode):
+                git=MockGit()
+                claim(natural(),git)
+                git.tamper=mode
+                git.calls.clear()
+                with self.assertRaisesRegex(lease.LeaseHold,
+                                             "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED"):
+                    self.consumed(git)
+                self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_missing_tag_never_grants_consumer(self):
+        git=MockGit()
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                     "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED"):
+            self.consumed(git)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_tag_immutability_revoked_cannot_authorize(self):
+        git=MockGit()
+        claim(natural(),git)
+        git.protection="disabled"
+        git.calls.clear()
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                     "LEASE_TAG_PROTECTION_UNVERIFIED"):
+            self.consumed(git)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_non_natural_consumer_is_rejected_before_vendor(self):
+        for name,value in (
+            ("GITHUB_EVENT_NAME","workflow_dispatch"),
+            ("GITHUB_REF","refs/heads/feature"),
+            ("GITHUB_RUN_ATTEMPT","2"),
+        ):
+            with self.subTest(name=name):
+                git=MockGit()
+                e=env();e[name]=value
+                with self.assertRaises(lease.LeaseHold):
+                    self.consumed(git,runtime=e)
+                self.assertEqual(git.calls,[])
+
+    def test_stale_owner_epoch_does_not_gain_write_authority(self):
+        git=MockGit()
+        claim(natural(),git)
+        with self.assertRaises(lease.LeaseHold):
+            self.consumed(git,now=NOW+timedelta(hours=11))
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls[-4:]))
+
+
 class LiveTagReadonlyCanaryTests(unittest.TestCase):
     def test_live_cli_requires_real_active_ruleset_and_never_posts(self):
         import os
