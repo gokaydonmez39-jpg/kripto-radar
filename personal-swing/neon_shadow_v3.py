@@ -125,7 +125,11 @@ def compare_snapshot(row, m):
         ("prior_high20", m["prior_high20"], .00051),
         ("rsi14", m["rsi14"], .0051),
         ("relative_iex_volume", m["rvol20"], .00051)):
-        require(positive(row.get(source)) and abs(row[source] - observed) <= tolerance,
+        # RSI=0 is a valid observed downtrend, not missing market data.
+        valid = (type(row.get(source)) in (int, float) and
+                 math.isfinite(row[source]) and
+                 (row[source] >= 0 if source == "rsi14" else row[source] > 0))
+        require(valid and abs(row[source] - observed) <= tolerance,
                 "SNAPSHOT_INDICATOR_DRIFT")
     if row["decision"] == "AL":
         ref, atr = row["close"], row["atr14"]
@@ -246,17 +250,27 @@ class Capture:
         scope_digest(symbols)
         self.provider, self.master, self.symbols, self.asof = provider, list(symbols), set(symbols), asof
         self.raw = {}
+        self.capture_failed = False
 
     def read(self, symbols, asof):
+        # The PRIMARY provider call retains its original exceptions/semantics.
         result = self.provider(symbols, asof)
-        if asof == self.asof and isinstance(result, dict):
-            for symbol in symbols:
-                if symbol in self.symbols and isinstance(result.get(symbol), list):
-                    # 52 completed sessions plus one future/duplicate sentinel.
-                    self.raw[symbol] = result[symbol][-53:]
+        if self.capture_failed:
+            return result
+        try:
+            if asof == self.asof and isinstance(result, dict):
+                for symbol in symbols:
+                    if symbol in self.symbols and isinstance(result.get(symbol), list):
+                        self.raw[symbol] = result[symbol][-53:]
+        except Exception:
+            # Shadow-only extraction must not turn a successful IEX read into
+            # primary runner failure or a half-trusted 477 factor result.
+            self.raw.clear()
+            self.capture_failed = True
         return result
 
     def finish(self, snapshot, *, expected_policy_sha, now_utc, source_event, output_file):
+        require(not self.capture_failed, "RAW_CAPTURE_FAILED")
         result = evaluate(snapshot, self.master, self.raw,
                           expected_policy_sha=expected_policy_sha,
                           now_utc=now_utc, source_event=source_event)
