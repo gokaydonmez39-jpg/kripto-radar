@@ -63,7 +63,8 @@ class MockGit:
                     "include":[lease.PROTECTED_PATTERN],
                     "exclude":[]}},
                 "rules":[{"type":r} for r in types],
-                "bypass_actors":[{"actor_id":1}] if self.protection=="bypass" else [],
+                **({} if self.protection=="bypass_hidden" else
+                   {"bypass_actors":[{"actor_id":1}] if self.protection=="bypass" else []}),
             }
         if method=="POST" and path=="/git/tags":
             tag_sha=sha1(json.dumps(body,sort_keys=True).encode()).hexdigest()
@@ -304,7 +305,7 @@ class LiveTagReadonlyCanaryTests(unittest.TestCase):
     def test_live_cli_fails_closed_without_protection_and_cannot_post(self):
         import os
         from unittest.mock import patch
-        for mode in ("absent","disabled","bypass","no_update"):
+        for mode in ("absent","disabled","bypass","no_update","bypass_hidden"):
             with self.subTest(mode=mode):
                 git=MockGit();git.protection=mode
                 with patch.dict(os.environ,
@@ -314,6 +315,29 @@ class LiveTagReadonlyCanaryTests(unittest.TestCase):
                         self.assertEqual(lease.main(
                             ["--verify-tag-protection"]),3)
                 self.assertFalse(any(x=="POST" for x,_,_ in git.calls))
+
+    def test_probe_public_projection_with_hidden_bypass_has_no_release(self):
+        import os
+        from unittest.mock import patch
+        git=MockGit()
+        git.protection="bypass_hidden"
+        with patch.dict(os.environ,{"GITHUB_REPOSITORY":lease.REPO,
+                                    "GITHUB_TOKEN":"masked-test-token"}):
+            with patch.object(lease,"github_transport",return_value=git):
+                self.assertEqual(lease.main(["--probe-tag-protection"]),0)
+                self.assertEqual(lease.main(["--verify-tag-protection"]),3)
+        self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
+
+    def test_probe_does_not_accept_actual_bypass(self):
+        import os
+        from unittest.mock import patch
+        git=MockGit()
+        git.protection="bypass"
+        with patch.dict(os.environ,{"GITHUB_REPOSITORY":lease.REPO,
+                                    "GITHUB_TOKEN":"masked-test-token"}):
+            with patch.object(lease,"github_transport",return_value=git):
+                self.assertEqual(lease.main(["--probe-tag-protection"]),3)
+        self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
 
     def test_live_cli_rejects_missing_token_or_wrong_repository(self):
         import os
