@@ -190,7 +190,7 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(out["device_ack"],"UNKNOWN")
         self.assertEqual(
             [(method,path) for method,path,_ in git.calls],
-            [("GET","/actions/runs/"+str(owner["run_id"]),
+            [("GET","/actions/runs/"+str(owner["run_id"])),
              ("GET","/rulesets"),("GET","/rulesets/11"),
              ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
