@@ -27,9 +27,10 @@ def inputs():
         candidate("2026-11-04", "AAA", 0),
         candidate("2026-11-04", "BBB", 0),
     ]
-    scan = [ASOF, "GitHub auto VERIFIED IEX EOD", "477", "477", "477",
+    scan = [ASOF, writer.RUN_EVENT_LABELS["schedule"], "477", "477", "477",
             "0", "TRUE", "3", RUN,
-            "scopeSHA=" + SHA + ";algorithmSHA=" + POLICY + ";NO_ORDERS"]
+            "scopeSHA=" + SHA + ";algorithmSHA=" + POLICY +
+            ";source_event=schedule;NO_ORDERS"]
     scans = [list(writer.SCAN_HEADER), scan]
     alert = [""] * len(life.ALERT_HEADER)
     alert[0:6] = ["2026-11-04|BBB|2026-11-04|AL_NEW_EPISODE|1",
@@ -127,6 +128,17 @@ class SwingScoreTests(unittest.TestCase):
         self.assertEqual(rows[-1][5],"HOLD")
         self.assertEqual(rows[-1][6],"")
         self.assertIn("HOLD_VERI_YETERSIZ",rows[-1][25])
+
+    def test_non_natural_eod_is_rejected_before_provider(self):
+        c,s,a=inputs()
+        s[1][1]=writer.RUN_EVENT_LABELS["workflow_dispatch"]
+        s[1][9]=s[1][9].replace("source_event=schedule",
+                                  "source_event=workflow_dispatch")
+        def provider_must_not_run(*args):
+            raise AssertionError("NON_NATURAL_SOURCE_READ_PROVIDER_FORBIDDEN")
+        with self.assertRaisesRegex(writer.HandoffBlocked,
+                                    "SWING_SCORE_NON_NATURAL_SOURCE"):
+            score.build(c,s,a,ASOF,provider_must_not_run)
 
     def test_wrong_provenance_is_refused_before_provider(self):
         c,s,a=inputs()
