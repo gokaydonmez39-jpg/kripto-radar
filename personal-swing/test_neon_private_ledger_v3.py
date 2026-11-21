@@ -1,3 +1,10 @@
+import contextlib
+import io
+import json
+import os
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 """No network, no real sheet writes, no trading; all 477 keys are exact PIT master."""
 import copy
 import json
@@ -44,6 +51,36 @@ def scans():
         row[index]=value
     row[9]="scopeSHA="+SCOPE+";algorithmSHA="+POLICY+";source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK"
     return [list(writer.SCAN_HEADER),row]
+
+
+class NeonSourceIdentityIsolation(unittest.TestCase):
+    def test_cross_workflow_schedule_never_reads_private_source(self):
+        import private_sheet_writer as writer
+        env={
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':writer.EXPECTED_EOD_REPOSITORY,
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_WORKFLOW_REF':
+                writer.EXPECTED_EOD_REPOSITORY+'/'
+                '.github/workflows/unrelated-schedule.yml@refs/heads/main',
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            src=Path(folder)/'synthetic.json'
+            src.write_text('{}')
+            with patch.dict(os.environ,env,clear=True):
+                with patch.object(ledger.runner,'get_scope',
+                    side_effect=AssertionError('SCOPE_CONSUMED_BEFORE_IDENTITY')
+                ) as provider,contextlib.redirect_stdout(io.StringIO()) as output:
+                    rc=ledger.main(['--snapshot',str(src),
+                                    '--shadow',str(src)])
+        result=json.loads(output.getvalue())
+        self.assertEqual(rc,3)
+        self.assertEqual(result['status'],'NEON_PRIVATE_LEDGER_HOLD')
+        provider.assert_not_called()
 
 
 class FakeApi:
