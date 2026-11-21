@@ -44,7 +44,7 @@ class NeonWiringTests(unittest.TestCase):
                  patch.object(daily_job.tracker,'process_snapshot',side_effect=journal_ok):
                 result=daily_job.run_once(asof=ASOF,symbols=MASTER,
                       directory=directory,read_batch=provider,neon_shadow=shadow)
-            self.assertFalse((Path(directory)/'neon_shadow_v3_'+ASOF+'.json').exists())
+            self.assertFalse((Path(directory)/('neon_shadow_v3_'+ASOF+'.json')).exists())
         return result,calls
 
     def test_legacy_no_flag_keeps_existing_behavior(self):
