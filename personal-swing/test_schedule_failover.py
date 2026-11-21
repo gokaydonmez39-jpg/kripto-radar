@@ -8,7 +8,7 @@ def utc(s):
     return datetime.fromisoformat(s.replace('Z','+00:00'))
 
 
-def record(*,created='2026-10-26T22:57:18Z',event='push',
+def record(*,created='2026-10-26T22:57:18Z',event='schedule',
            status='completed',conclusion='success',branch='main'):
     return {'created_at':created,'event':event,
             'status':status,'conclusion':conclusion,'head_branch':branch}
@@ -29,6 +29,22 @@ class OfficialXnasFailover(unittest.TestCase):
             with self.subTest(status=status,conclusion=conclusion):
                 v,_=sf.decision(instant,[record(status=status,conclusion=conclusion)])
                 self.assertEqual(v,'NOOP_CURRENT_EPOCH_RUN_EXISTS')
+
+    def test_offline_push_must_not_mask_missing_natural_eod(self):
+        # Reproduce 21 Nov 00:37 UTC: an offline-only EOD push completed
+        # after Friday's close but cannot supply any private Sheet receipt.
+        instant=utc('2026-11-21T00:45:00Z')
+        for status in ('completed','queued','in_progress'):
+            with self.subTest(status=status):
+                bogus=record(created='2026-11-21T00:37:35Z',
+                             event='push',status=status)
+                verdict,asof=sf.decision(instant,[bogus])
+                self.assertEqual((verdict,asof),
+                                 ('DISPATCH_ONE_MISSING_SCHEDULE','2026-11-20'))
+        real=record(created='2026-11-21T00:40:00Z',
+                    event='schedule',status='queued')
+        self.assertEqual(sf.decision(instant,[bogus,real]),
+                         ('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-11-20'))
 
     def test_previous_session_success_cannot_suppress_today(self):
         v,_=sf.decision(utc('2026-10-27T00:25:00Z'),

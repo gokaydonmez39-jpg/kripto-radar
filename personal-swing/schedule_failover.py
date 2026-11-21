@@ -21,7 +21,9 @@ from zoneinfo import ZoneInfo
 
 WORKFLOW='xray-personal-477-eod.yml'
 NY=ZoneInfo('America/New_York')
-VALID_EVENTS=frozenset(('schedule','workflow_dispatch','push'))
+# An EOD workflow-file push runs ONLY offline tests and never writes private
+# source/Sheet data. It must not suppress detection of a missing natural EOD.
+VALID_EVENTS=frozenset(('schedule','workflow_dispatch'))
 VALID_STATUSES=frozenset(('requested','waiting','queued','pending','in_progress','completed'))
 # GitHub schedule delay can cross NY midnight. Limit backfill dispatch to
 # a 10-hour window following that SESSION's close+45m, never an ancient day.
