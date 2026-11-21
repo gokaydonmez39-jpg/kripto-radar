@@ -56,6 +56,9 @@ def decision(now, runs, *, calendar=None):
         return 'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW',candidate_date
     if not isinstance(runs,list):
         return 'BLOCKED_RUN_COLLECTION_UNKNOWN',candidate_date
+    # Existence suppresses duplicate dispatch; only a successful natural
+    # schedule may count as an observed EOD scheduler success.
+    matched=[]
     for item in runs:
         if not isinstance(item,dict):
             return 'BLOCKED_MALFORMED_RUN',candidate_date
@@ -68,12 +71,19 @@ def decision(now, runs, *, calendar=None):
         if created.tzinfo is None:
             return 'BLOCKED_RUN_TIMESTAMP_NAIVE',candidate_date
         if created>=cutoff:
-            status=item.get('status')
-            if status not in VALID_STATUSES:
+            if item.get('status') not in VALID_STATUSES:
                 return 'BLOCKED_RUN_STATUS_UNKNOWN',candidate_date
-            # ANY queued/completed run in the same fresh trading epoch
-            # suppresses retry. Even failure can be a correct fail-closed gate.
-            return 'NOOP_CURRENT_EPOCH_RUN_EXISTS',candidate_date
+            matched.append(item)
+    natural=[item for item in matched if item['event']=='schedule']
+    if any(item['status']=='completed' and item.get('conclusion')=='success'
+           for item in natural):
+        return 'NOOP_CURRENT_EPOCH_RUN_EXISTS',candidate_date
+    if natural:
+        if any(item['status']=='completed' for item in natural):
+            return 'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_NOT_SUCCESS',candidate_date
+        return 'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_INCOMPLETE',candidate_date
+    if matched:
+        return 'BLOCKED_CURRENT_EPOCH_NON_NATURAL_SOURCE',candidate_date
     return 'DISPATCH_ONE_MISSING_SCHEDULE',candidate_date
 
 
@@ -111,13 +121,24 @@ def api_json(url,token,method='GET',body=None):
         return json.load(response)
 
 
-def run(*,now=None,read_runs=None,request_dispatch=None):
+def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
     """Injectable vendor operations for offline, network-free negative tests."""
     now=now or datetime.now(timezone.utc)
     if now.tzinfo is None:raise ValueError('AWARE_NOW_REQUIRED')
     # Calendar first: no GitHub API IO outside the actual completed-session
     # fallback window (including on weekends, holidays and delayed jobs).
-    preliminary,_=decision(now,[],calendar=None)
+    preliminary,session=decision(now,[],calendar=None)
+    if preliminary=='NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW' and trigger_event=='schedule':
+        import exchange_calendars as ec
+        cutoff=(ec.get_calendar('XNAS').session_close(session).to_pydatetime()
+                +timedelta(minutes=45))
+        age=now.astimezone(timezone.utc)-cutoff
+        # GitHub can create an existing scheduled fallback >10h late.
+        # Failure must remain visible even though replay is prohibited.
+        # More than 24h means it is no longer the prior daily EOD epoch.
+        if MAX_FALLBACK_AGE < age <= timedelta(hours=24):
+            return {'status':'BLOCKED_NATURAL_FALLBACK_EXPIRED',
+                    'asof_et':session,'dispatch_requested':False}
     if preliminary!='DISPATCH_ONE_MISSING_SCHEDULE':
         return {'status':preliminary,'dispatch_requested':False}
     if read_runs is None or request_dispatch is None:
@@ -264,7 +285,8 @@ def main(argv=None):
         return api_json(base+'/dispatches',token,method='POST',
                         body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
-        result=run(now=captured_now,read_runs=get_runs,request_dispatch=dispatch)
+        result=run(now=captured_now,read_runs=get_runs,request_dispatch=dispatch,
+                   trigger_event=os.environ.get('GITHUB_EVENT_NAME'))
         if args.dry_run and result.get('dispatch_requested'):
             result['status']='DRY_RUN_WOULD_DISPATCH'
             result['dispatch_requested']=False
