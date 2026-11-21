@@ -20,9 +20,9 @@ on:
         type: boolean
         default: true
   schedule:
-    # UTC 00:25 Tue-Sat = Mon-Fri NY evening, after official XNAS close+45m.
+    # UTC 00:26 Tue-Sat = Mon-Fri NY evening, after official XNAS close+45m.
     # The fallback only dispatches when NO current-session personal run exists.
-    - cron: '25 0 * * 2-6'
+    - cron: '26 0 * * 2-6'
 permissions:
   contents: read
 concurrency:
