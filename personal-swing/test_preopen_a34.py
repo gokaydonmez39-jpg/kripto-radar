@@ -12,8 +12,9 @@ POLICY = '2'*64
 SYMBOLS = ['S%03d' % i for i in range(477)]
 SCAN = [['ASOF ET','KANAL','ISTENEN','ISLENEN','GECERLI','EKSIK',
          'FINAL READY','YENI KAYIT','RUN','NOTE'],
-        [ASOF,'GitHub','477','477','477','0','TRUE','2','https://example.invalid',
-         'scopeSHA='+SCOPE+';algorithmSHA='+POLICY+';NO_ORDERS']]
+        [ASOF,'GitHub schedule VERIFIED IEX EOD','477','477','477','0','TRUE','2',
+         'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001',
+         'scopeSHA='+SCOPE+';algorithmSHA='+POLICY+';source_event=schedule;NO_ORDERS']]
 ROWS = {s:{'symbol':s,'asof_et':ASOF,'sessions':52,
            'decision':'AL' if i < 2 else 'ELE'} for i,s in enumerate(SYMBOLS)}
 
@@ -77,6 +78,34 @@ class A34ContractTest(unittest.TestCase):
     def test_algorithm_sha_drift(self):
         with self.assertRaisesRegex(w.PreopenBlocked,'CURRENT_SOURCE'):
             w.validate_scope_and_scan(SYMBOLS,SCAN,ASOF,SCOPE,'4'*64)
+
+    def test_same_sha_manual_dispatch_cannot_masquerade_as_natural_eod(self):
+        for kind in ('manual_origin', 'label_mismatch', 'missing_origin',
+                     'duplicate_origin', 'wrong_origin', 'bad_run_url'):
+            with self.subTest(kind=kind):
+                s = copy.deepcopy(SCAN)
+                if kind == 'manual_origin':
+                    s[-1][1] = 'GitHub workflow_dispatch VERIFIED IEX EOD'
+                    s[-1][9] = s[-1][9].replace(
+                        'source_event=schedule', 'source_event=workflow_dispatch')
+                elif kind == 'label_mismatch':
+                    s[-1][1] = 'GitHub workflow_dispatch VERIFIED IEX EOD'
+                elif kind == 'missing_origin':
+                    s[-1][9] = s[-1][9].replace(';source_event=schedule','')
+                elif kind == 'duplicate_origin':
+                    s[-1][9] += ';source_event=schedule'
+                elif kind == 'wrong_origin':
+                    s[-1][9] = s[-1][9].replace(
+                        'source_event=schedule', 'source_event=workflow_dispatch')
+                elif kind == 'bad_run_url':
+                    s[-1][8] = 'https://github.com/another/repo/actions/runs/999001'
+                with self.assertRaisesRegex(
+                        w.PreopenBlocked, 'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED'):
+                    w.validate_scope_and_scan(SYMBOLS,s,ASOF,SCOPE,POLICY)
+
+    def test_natural_schedule_origin_is_still_accepted(self):
+        self.assertEqual(
+            w.validate_scope_and_scan(SYMBOLS,SCAN,ASOF,SCOPE,POLICY),2)
 
     def test_candidate_provider_missing_one_symbol(self):
         with self.assertRaisesRegex(w.PreopenBlocked,'IEX_PROVIDER_SCOPE'):
@@ -243,9 +272,13 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         # Stronger allowlist: PR AND pre-session push NOOP cannot qualify.
         self.assertIn(
             "github.event_name != 'workflow_run' || "
-            "(github.event.workflow_run.event == 'schedule' || "
-            "github.event.workflow_run.event == 'workflow_dispatch')",
+            "github.event.workflow_run.event == 'schedule'",
             workflow)
+        private_condition=workflow.split('  private-preopen:',1)[1].split(
+            '    runs-on:',1)[0]
+        self.assertNotIn(
+            "github.event.workflow_run.event == 'workflow_dispatch'",
+            private_condition)
         self.assertNotIn(
             "github.event.workflow_run.event != 'pull_request'",
             workflow)

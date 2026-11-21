@@ -42,11 +42,22 @@ class DownstreamOriginTests(unittest.TestCase):
         self.assert_origin_contract(KRONOS,"kronos-v2-full-477-research",schedule_only=True)
 
     def test_a34_private_workflow_run_never_uses_noop_push(self):
-        self.assert_origin_contract(A34,"private-preopen")
+        # No manually dispatched EOD may pose as a natural schedule parent.
+        # Direct A34 runs are still independently subject to private Sheet
+        # source_event=schedule and exact current EOD proof.
+        condition=job_condition(A34,"private-preopen")
+        self.assertIn("github.event.workflow_run.conclusion == 'success'",condition)
+        self.assertIn("github.event.workflow_run.head_branch == 'main'",condition)
+        self.assertIn("github.event.workflow_run.repository.full_name == github.repository",
+                      condition)
+        self.assertIn("github.event.workflow_run.event == 'schedule'",condition)
+        self.assertNotIn("github.event.workflow_run.event == 'workflow_dispatch'",condition)
+        self.assertNotIn("github.event.workflow_run.event != 'pull_request'",condition)
 
     def test_a34_skips_test_only_upstream_workflow_run(self):
         self.assertEqual(job_condition(A34,"offline-guard"),
-                         "github.event_name != 'workflow_run' || " + ORIGINS)
+                         "github.event_name != 'workflow_run' || "
+                         "github.event.workflow_run.event == 'schedule'")
 
     def test_cove_requires_natural_parent_not_dispatch_fallback(self):
         self.assert_origin_contract(COVE,"private-eod-research",schedule_only=True)
