@@ -38,7 +38,21 @@ def snapshot(day="2026-10-30"):
     }
 
 def guard(stamp="2026-10-30T20:00:00Z"):
+    # Synthetic PASS fixture for unit tests ONLY. The live official source
+    # guard is a time-varying fail-closed artifact and may rightly be DEGRADED.
+    # Never rewrite or relax nasdaq-xray/canonical_official_source_guard.json.
     result=deepcopy(GUARD)
+    result["status"]="PASS"
+    result["alpha_authority"]=False
+    result["execution"]="NONE"
+    result["real_money"]="NO-GO"
+    safety=result["candidate_safety"]
+    safety["halt_guard_status"]="PASS"
+    safety["security_status_guard_status"]="PASS"
+    first,second=WATCH["liquidity_watch_symbols"][:2]
+    safety["active_halt_symbols"]=[first]
+    safety["security_status_suspension_symbols"]=[second]
+    safety["veto_symbols"]=[first,second]
     result["generated_at_utc"]=stamp
     return result
 
@@ -48,6 +62,15 @@ class Shadow477Tests(unittest.TestCase):
         self.assertEqual(len(actual),477)
         self.assertEqual(len(set(actual)),477)
         self.assertEqual(actual[:5],["MU","NVDA","META","AAPL","TSLA"])
+
+    def test_degraded_official_guard_is_never_admitted(self):
+        # The real public witness is allowed to be DEGRADED/UNKNOWN.
+        # Synthetic positive fixtures must not turn that into market clearance.
+        degraded=deepcopy(GUARD)
+        degraded["status"]="DEGRADED"
+        with self.assertRaisesRegex(m.ShadowRejected,
+                                    "OFFICIAL_GUARD_AUTHORITY_OR_STATUS_INVALID"):
+            m.make_shadow(snapshot(),WATCH,degraded)
 
     def test_current_verified_veto_is_observation_never_clearance(self):
         s=snapshot();g=guard()
