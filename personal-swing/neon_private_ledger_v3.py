@@ -85,15 +85,24 @@ def previous_archive(existing, asof, master):
             need(date.fromisoformat(d).isoformat()==d,"LEDGER_ASOF_INVALID")
         except (ValueError,TypeError) as exc:
             raise NeonLedgerHold("LEDGER_ASOF_INVALID") from None
-        need(s in master and row[0] == d+"|"+s and (d,s) not in found,
+        need(type(s) is str and neon.SYMBOL.fullmatch(s) is not None and
+             row[0] == d+"|"+s and (d,s) not in found,
              "LEDGER_IDENTITY_OR_DUPLICATE")
-        need(row[19] and RUN.fullmatch(row[19]) is not None and
-             row[20] == neon.scope_digest(master) and row[22] == VERSION,
+        need(type(row[19]) is str and RUN.fullmatch(row[19]) is not None and
+             type(row[20]) is str and HEX64.fullmatch(row[20]) is not None and
+             type(row[21]) is str and HEX64.fullmatch(row[21]) is not None and
+             row[22] == VERSION and
+             (row[4] == "N/A" or 0 <= number(row[4]) <= 100),
              "LEDGER_PROVENANCE_INVALID")
         found.add((d,s))
         day_rows.setdefault(d,{})[s]=row
-    need(all(len(items)==477 and set(items)==set(master)
-             for items in day_rows.values()), "LEDGER_PARTIAL_ASOF")
+    need(all(len(items)==477 for items in day_rows.values()),
+         "LEDGER_PARTIAL_ASOF")
+    for rows in day_rows.values():
+        need(len({r[19] for r in rows.values()})==1 and
+             len({r[20] for r in rows.values()})==1 and
+             len({r[21] for r in rows.values()})==1,
+             "LEDGER_MIXED_DAY_SOURCE")
     if asof in day_rows:
         return day_rows, "EXISTS"
     need(not day_rows or asof > max(day_rows), "NO_REPLAY_OR_BACKFILL")
@@ -167,8 +176,10 @@ def plan(asof, url, master, policy_sha, scans, existing, shadow):
     ledger, prior=previous_archive(existing,asof,master)
     if prior=="EXISTS":
         same=ledger[asof]
-        need(all(row[19]==url and row[21]==policy_sha
-                 for row in same.values()), "SAME_ASOF_DIFFERENT_RUN_OR_POLICY")
+        need(set(same)==set(master) and
+             all(row[19]==url and row[20]==master_sha and
+                 row[21]==policy_sha for row in same.values()),
+             "SAME_ASOF_DIFFERENT_RUN_OR_POLICY")
         return {"status":"NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY",
                 "rows":[],"scored":sum(row[4]!="N/A" for row in same.values()),
                 "na":sum(row[4]=="N/A" for row in same.values()),"asof":asof}
@@ -176,7 +187,9 @@ def plan(asof, url, master, policy_sha, scans, existing, shadow):
     rows=[]
     for s in master:
         previous=ledger.get(prior,{}).get(s)
-        old=previous[4] if previous else "N/A"
+        # A different factor-policy version must never yield a numeric delta.
+        # PIT membership changes are not joined across distinct issuer identities.
+        old=previous[4] if previous and previous[21]==policy_sha else "N/A"
         if measures is None:
             score="N/A";rank="N/A";factors=["N/A"]*5
             status="HOLD_SHADOW_RESULT_MISSING";corridor="HOLD";source_dec="UNKNOWN"
