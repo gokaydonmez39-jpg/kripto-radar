@@ -1,7 +1,7 @@
 """No-I/O proof: fallback must not elevate a green GitHub workflow alone."""
 import copy
 import unittest
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 import fallback_job_receipt as proof
 
 ASOF="2026-11-19"
@@ -21,9 +21,19 @@ def fixture():
     }
     jobs=[]
     for i,name in enumerate(proof.NAMES):
-        steps=[{"name":s,"status":"completed","conclusion":"success"}
-               for s in proof.REQUIRED_STEPS.get(name,())]
+        start=datetime(2026,11,19,23,51+i,tzinfo=timezone.utc)
+        end=start+timedelta(seconds=45)
+        stamps=lambda t:t.isoformat().replace("+00:00","Z")
+        steps=[{"name":s,"status":"completed","conclusion":"success",
+                "number":j+1,
+                "started_at":stamps(start+timedelta(seconds=2+j*5)),
+                "completed_at":stamps(start+timedelta(seconds=3+j*5))}
+               for j,s in enumerate(proof.REQUIRED_STEPS.get(name,()))]
         jobs.append({"id":123450+i,"run_id":RUN_ID,"name":name,
+                     "run_attempt":1,
+                     "run_url":proof.EOD_RUN_BASE+str(RUN_ID),
+                     "head_sha":run["head_sha"],"head_branch":"main",
+                     "started_at":stamps(start),"completed_at":stamps(end),
                      "status":"completed","conclusion":"success",
                      "steps":steps})
     return run,{"total_count":6,"jobs":jobs}
@@ -73,6 +83,48 @@ class SixJobOnlyProof(unittest.TestCase):
                 jobs["total_count"]=len(jobs["jobs"])
                 with self.assertRaisesRegex(proof.ReceiptHold,"PRIMARY_JOB_RECEIPT_MISSING"):
                     proof.validate(run,jobs,ASOF,NOW)
+
+    def test_wrong_job_origin_or_missing_clock_cannot_pass(self):
+        run,jobs=fixture()
+        changes={
+            "head_sha":"b"*40,
+            "head_branch":"feature",
+            "run_attempt":2,
+            "run_url":"https://api.github.com/repos/wrong/project/actions/runs/"+str(RUN_ID),
+            "started_at":"2000-01-01T00:00:00Z",
+            "completed_at":"2026-11-21T00:00:00Z",
+        }
+        for key,value in changes.items():
+            with self.subTest(key=key):
+                damaged=copy.deepcopy(jobs)
+                damaged["jobs"][2][key]=value
+                with self.assertRaisesRegex(proof.ReceiptHold,
+                                            "PRIMARY_JOB_RECEIPT_MISSING"):
+                    proof.validate(run,damaged,ASOF,NOW)
+
+    def test_incorrect_dag_order_is_hold(self):
+        run,jobs=fixture()
+        # Guardian overlaps its mandatory predecessor followups.
+        jobs["jobs"][4]["started_at"]="2026-11-19T23:53:00Z"
+        with self.assertRaisesRegex(proof.ReceiptHold,
+                                    "PRIMARY_JOB_DAG_UNVERIFIED"):
+            proof.validate(run,jobs,ASOF,NOW)
+
+    def test_required_writer_step_cannot_be_out_of_order_or_out_of_job(self):
+        run,jobs=fixture()
+        for mutate in ("step_order","step_clock","missing_step_number"):
+            with self.subTest(mutate=mutate):
+                damaged=copy.deepcopy(jobs)
+                required=damaged["jobs"][2]["steps"]
+                if mutate=="step_order":
+                    required[2]["number"]=1
+                elif mutate=="step_clock":
+                    required[2]["completed_at"]="2026-11-21T00:00:00Z"
+                else:
+                    required[2].pop("number")
+                with self.assertRaisesRegex(proof.ReceiptHold,
+                                            "PRIMARY_JOB_STEP_RECEIPT_MISSING"):
+                    proof.validate(run,damaged,ASOF,NOW)
 
     def test_ambiguous_provider_pagination_cannot_be_green(self):
         run,jobs=fixture();jobs["total_count"]=7
