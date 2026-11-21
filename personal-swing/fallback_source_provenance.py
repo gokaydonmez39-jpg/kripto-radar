@@ -59,15 +59,28 @@ def attest(parent, parent_receipt, child, child_receipt, jobs, scan,
            epoch_lock, *, expected_asof, official_cutoff, observed_at):
     """Verify normalized primary evidence. No I/O and no side effects.
 
-    official_cutoff must be obtained from the official XNAS calendar and
-    must equal close+45m for expected_asof. The caller must separately
-    attest this origin; its arbitrary timestamp is NOT verified here.
+    official_cutoff must equal the locally resolved XNAS close+45m for the
+    exact expected session. A caller-supplied timestamp alone is never proof.
     """
     if not _day(expected_asof):
         return _blocked("ASOF_INVALID")
     cutoff, now = _utc(official_cutoff), _utc(observed_at)
     if cutoff is None or now is None or cutoff > now:
         return _blocked("XNAS_CUTOFF_OR_CLOCK_UNVERIFIED")
+    # The caller's cutoff is a claim, not independent calendar evidence.
+    # Verify the exact XNAS session close (including holidays and early close)
+    # before accepting ANY parent/child or private readback witness.
+    try:
+        import exchange_calendars as ec
+        cal = ec.get_calendar("XNAS")
+        if not cal.is_session(expected_asof):
+            return _blocked("XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+        actual_cutoff = (cal.session_close(expected_asof).to_pydatetime()
+                         .astimezone(timezone.utc) + timedelta(minutes=45))
+        if cutoff != actual_cutoff:
+            return _blocked("XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+    except Exception:
+        return _blocked("XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
     if not isinstance(parent, dict) or not isinstance(child, dict):
         return _blocked("RUN_DOCUMENT_MISSING")
     parent_id, child_id = parent.get("id"), child.get("id")
