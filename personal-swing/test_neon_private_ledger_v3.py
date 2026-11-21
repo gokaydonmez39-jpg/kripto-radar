@@ -132,6 +132,29 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"LATEST_SCAN_ASOF_MISMATCH"):
             self.calculate(scans_data=old)
 
+    def test_scan_requires_single_exact_natural_source_event(self):
+        for origin in (
+            "source_event=scheduled",
+            "source_event=schedule_recovered",
+            "source_event=schedule;source_event=workflow_dispatch",
+            "source_event=workflow_dispatch;source_event=schedule",
+        ):
+            with self.subTest(origin=origin):
+                forged=scans()
+                forged[1][9]=forged[1][9].replace("source_event=schedule",origin)
+                with self.assertRaisesRegex(
+                    ledger.NeonLedgerHold,"SCAN_POLICY_OR_EVENT_PROOF_DRIFT"
+                ):
+                    self.calculate(scans_data=forged)
+
+    def test_scan_requires_exact_natural_source_label(self):
+        forged=scans()
+        forged[1][1]="GitHub workflow_dispatch VERIFIED IEX EOD"
+        with self.assertRaisesRegex(
+            ledger.NeonLedgerHold,"SCAN_POLICY_OR_EVENT_PROOF_DRIFT"
+        ):
+            self.calculate(scans_data=forged)
+
     def test_shadow_malformed_missing_symbol(self):
         p=copy.deepcopy(self.snap);p["rows"]=p["rows"][:-1]
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"SHADOW_NOT_477_FULLY_SCORED"):

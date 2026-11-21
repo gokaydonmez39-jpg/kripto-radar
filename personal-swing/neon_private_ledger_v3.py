@@ -68,8 +68,16 @@ def source_proof(scans, asof, url, master_sha, policy_sha):
          [str(r[i]).upper() for i in (2,3,4,5,6)] ==
          ["477","477","477","0","TRUE"], "SCAN_NOT_FINAL_477_OR_WRONG_RUN")
     note=original.scan_source_proof(r[9])
-    need(note["scopeSHA"] == master_sha and note["algorithmSHA"] == policy_sha and
-         "source_event=schedule" in r[9], "SCAN_POLICY_OR_EVENT_PROOF_DRIFT")
+    # Substring membership accepts forged values such as 'scheduled' and
+    # duplicate conflicting origin tokens. Only the exact natural producer
+    # label and a SINGLE canonical source_event=schedule field may qualify.
+    origins=[part.strip() for part in str(r[9]).split(";")
+             if part.strip().startswith("source_event=")]
+    need(note["scopeSHA"] == master_sha and
+         note["algorithmSHA"] == policy_sha and
+         r[1] == original.RUN_EVENT_LABELS["schedule"] and
+         origins == ["source_event=schedule"],
+         "SCAN_POLICY_OR_EVENT_PROOF_DRIFT")
     return r
 
 
