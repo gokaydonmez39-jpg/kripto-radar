@@ -238,17 +238,19 @@ def audit(asof,*,now=None,get=None):
     verdict,official_asof=schedule_failover.decision(now,runs["workflow_runs"])
     need(verdict=="NOOP_CURRENT_EPOCH_RUN_EXISTS" and official_asof==asof,
          "PRIMARY_EOD_EPOCH_AMBIGUOUS")
-    # Exactly one successful natural run for this epoch; any competing
-    # successful producer is not a canonical single-source acceptance.
-    eligible=[x for x in runs["workflow_runs"] if isinstance(x,dict)
-              and x.get("event")=="schedule" and
-              x.get("head_branch")=="main" and
-              x.get("status")=="completed" and
-              x.get("conclusion")=="success"]
-    need(len(eligible)==1 and
-         type(eligible[0].get("id")) is int and eligible[0]["id"]>0,
+    # EXACTLY ONE natural producer, across ALL statuses, is necessary.
+    # A second queued/running/failed run may have made partial private
+    # writes, so a green first producer cannot prove a unique source.
+    # Never promote a successful-only subset into canonical acceptance.
+    natural=[x for x in runs["workflow_runs"] if isinstance(x,dict)
+             and x.get("event")=="schedule" and
+             x.get("head_branch")=="main"]
+    need(len(natural)==1 and
+         natural[0].get("status")=="completed" and
+         natural[0].get("conclusion")=="success" and
+         type(natural[0].get("id")) is int and natural[0]["id"]>0,
          "PRIMARY_EOD_EPOCH_AMBIGUOUS")
-    rid=eligible[0]["id"]
+    rid=natural[0]["id"]
     original=get(EOD_RUN_BASE+str(rid))
     need(isinstance(original,dict) and original.get("id")==rid,
          "PRIMARY_RUN_ORIGIN_NOT_VERIFIED")
