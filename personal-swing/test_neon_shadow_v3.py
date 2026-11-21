@@ -240,6 +240,14 @@ class NeonShadowV3Tests(unittest.TestCase):
                   'sma50':90.,'prior_high20':99.,'rsi14':60.,'rvol20':1.5}
         n.compare_snapshot(row,measured)
 
+    def test_rsi_zero_is_valid_observation_not_missing(self):
+        row={'decision':'ELE','close':100.,'atr14':2.,'sma20':105.,
+             'sma50':110.,'prior_high20':108.,'rsi14':0.,
+             'relative_iex_volume':1.0}
+        measured={'close':100.,'atr14':2.,'sma20':105.,'sma50':110.,
+                  'prior_high20':108.,'rsi14':0.,'rvol20':1.0}
+        n.compare_snapshot(row, measured)
+
     def test_score_with_reference_weight_contract(self):
         from decimal import Decimal, ROUND_HALF_UP
         for row in self.good['rows'][::61]:
