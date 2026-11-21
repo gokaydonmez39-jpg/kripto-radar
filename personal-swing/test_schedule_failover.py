@@ -23,12 +23,25 @@ class OfficialXnasFailover(unittest.TestCase):
         verdict,day=sf.decision(utc('2026-10-27T00:25:00Z'),[record()])
         self.assertEqual((verdict,day),('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-10-26'))
 
-    def test_queued_inprogress_failed_all_prevent_infinite_retry(self):
+    def test_incomplete_or_failed_natural_run_blocks_without_retrigger(self):
         instant=utc('2026-10-27T00:25:00Z')
-        for status,conclusion in [('queued',None),('in_progress',None),('completed','failure'),('completed','cancelled')]:
+        for status,conclusion,expected in [
+            ('queued',None,'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_INCOMPLETE'),
+            ('in_progress',None,'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_INCOMPLETE'),
+            ('completed','failure','BLOCKED_CURRENT_EPOCH_NATURAL_EOD_NOT_SUCCESS'),
+            ('completed','cancelled','BLOCKED_CURRENT_EPOCH_NATURAL_EOD_NOT_SUCCESS')]:
             with self.subTest(status=status,conclusion=conclusion):
-                v,_=sf.decision(instant,[record(status=status,conclusion=conclusion)])
-                self.assertEqual(v,'NOOP_CURRENT_EPOCH_RUN_EXISTS')
+                item=record(status=status,conclusion=conclusion)
+                v,_=sf.decision(instant,[item])
+                self.assertEqual(v,expected)
+                called=[]
+                out=sf.run(now=instant,
+                    read_runs=lambda:called.append('GET') or {
+                        'workflow_runs':[item],'total_count':1},
+                    request_dispatch=lambda asof:called.append('POST'))
+                self.assertEqual(out['status'],expected)
+                self.assertEqual(called,['GET'])
+                self.assertEqual(sf.exit_code_for_result(out,'schedule'),3)
 
     def test_offline_push_must_not_mask_missing_natural_eod(self):
         # Reproduce 21 Nov 00:37 UTC: an offline-only EOD push completed
@@ -44,7 +57,7 @@ class OfficialXnasFailover(unittest.TestCase):
         real=record(created='2026-11-21T00:40:00Z',
                     event='schedule',status='queued')
         self.assertEqual(sf.decision(instant,[bogus,real]),
-                         ('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-11-20'))
+                         ('BLOCKED_CURRENT_EPOCH_NATURAL_EOD_INCOMPLETE','2026-11-20'))
 
     def test_previous_session_success_cannot_suppress_today(self):
         v,_=sf.decision(utc('2026-10-27T00:25:00Z'),
@@ -55,6 +68,40 @@ class OfficialXnasFailover(unittest.TestCase):
         v,_=sf.decision(utc('2026-10-27T00:25:00Z'),
                         [record(event='pull_request',branch='some-branch')])
         self.assertEqual(v,'DISPATCH_ONE_MISSING_SCHEDULE')
+
+    def test_manual_source_never_masquerades_as_natural_schedule(self):
+        instant=utc('2026-11-21T00:26:00Z')
+        manual=record(created='2026-11-20T23:55:00Z',
+                      event='workflow_dispatch',conclusion='success')
+        self.assertEqual(sf.decision(instant,[manual]),
+                         ('BLOCKED_CURRENT_EPOCH_NON_NATURAL_SOURCE','2026-11-20'))
+        real=record(created='2026-11-20T23:56:00Z',
+                    event='schedule',conclusion='success')
+        for runs in ([manual,real],[real,manual]):
+            self.assertEqual(sf.decision(instant,runs),
+                             ('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-11-20'))
+
+    def test_10h_window_boundary_then_expired_scheduled_fallback(self):
+        # Friday 20 Nov official XNAS close +45m is Friday 21:45 UTC.
+        self.assertEqual(sf.decision(utc('2026-11-21T07:45:00Z'),[])[0],
+                         'DISPATCH_ONE_MISSING_SCHEDULE')
+        calls=[]
+        result=sf.run(now=utc('2026-11-21T07:45:01Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GET') or {'workflow_runs':[],'total_count':0},
+            request_dispatch=lambda asof:calls.append('POST:'+asof))
+        self.assertEqual(result['status'],'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+        self.assertEqual(result['asof_et'],'2026-11-20')
+        self.assertEqual(calls,[])
+        self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
+
+    def test_scheduled_thanksgiving_noop_stays_green(self):
+        x=sf.run(now=utc('2026-11-27T00:26:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:self.fail('NO_GITHUB_GET_ON_HOLIDAY'),
+            request_dispatch=lambda asof:self.fail('NO_DISPATCH_ON_HOLIDAY'))
+        self.assertEqual(x['status'],'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
+        self.assertEqual(sf.exit_code_for_result(x,'schedule'),0)
 
     def test_no_dispatch_before_xnas_close_plus_45_minutes(self):
         v,_=sf.decision(utc('2026-10-26T20:44:00Z'),[])
@@ -225,7 +272,7 @@ class OfficialXnasFailover(unittest.TestCase):
                       read_runs=read,
                       request_dispatch=lambda asof:calls.append('POST:'+asof) or True)
         self.assertEqual(calls,['GET','GET'])
-        self.assertEqual(result['status'],'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS')
+        self.assertEqual(result['status'],'BLOCKED_RECHECK_UNCERTAIN_RUN_STATE')
         self.assertFalse(result['dispatch_requested'])
 
     def test_second_read_unknown_pagination_fails_closed(self):
@@ -334,6 +381,10 @@ class NaturalFallbackExitSemantics(unittest.TestCase):
             'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE',
             'BLOCKED_UNTRUSTED_RUN_PAGINATION',
             'BLOCKED_GITHUB_API_UNCERTAIN',
+            'BLOCKED_NATURAL_FALLBACK_EXPIRED',
+            'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_NOT_SUCCESS',
+            'BLOCKED_CURRENT_EPOCH_NATURAL_EOD_INCOMPLETE',
+            'BLOCKED_CURRENT_EPOCH_NON_NATURAL_SOURCE',
             'DRY_RUN_WOULD_DISPATCH',
             'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
             None,
