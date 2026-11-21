@@ -28,7 +28,7 @@ EXPECTED={
  # Existing fail-closed personal research scheduled fallbacks, reviewed v35.
  "xray-personal-eod-research-digest.yml":("51 5-23 * * 1-5","51 0-3 * * 2-6"),
  "xray-personal-free-iex-eod-signals.yml":("55 12 * * 1-5",),
- "xray-personal-477-eod.yml":("15 23 * * 1-5",),
+ "xray-personal-477-eod.yml":("16 23 * * 1-5",),
  "xray-nasdaq-a34-preopen.yml":("17 3 * * 1-5",),
  # Exact already deployed personal EOD failover, never a second signal producer.
  "xray-personal-477-schedule-fallback.yml":("26 0 * * 2-6",),
@@ -276,6 +276,29 @@ def inventory(files):
                 errors.append("PERSONAL_EOD_FALLBACK_BOUNDARY_DRIFT")
         except (KeyError,StopIteration,AttributeError,TypeError,ValueError,yaml.YAMLError):
             errors.append("PERSONAL_EOD_FALLBACK_BOUNDARY_DRIFT")
+    # Primary 477 EOD workflow file changes only perform offline checks.
+    # A GitHub push can never write an immutable scan with source_event=push.
+    primary_name="xray-personal-477-eod.yml"
+    if primary_name in files:
+        try:
+            primary=yaml.load(files[primary_name],Loader=yaml.BaseLoader)
+            jobs=primary["jobs"]
+            triggers=primary["on"]
+            writer_guard="github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'"
+            writer_jobs=("daily-private-scan","private-sheets-auth-preflight")
+            downstream=("private-episode-followups","guardian-acceptance","daily-private-score-acceptance")
+            safe=(set(triggers).issuperset({"schedule","push","pull_request","workflow_dispatch"})
+                and len(triggers["schedule"])==1
+                and triggers["schedule"][0].get("cron")=="16 23 * * 1-5"
+                and all(jobs[j].get("if")==writer_guard for j in writer_jobs)
+                and all("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'"
+                        in jobs[j].get("if","") for j in downstream)
+                and jobs["offline-guard"].get("if") is None
+                and primary.get("permissions",{}).get("contents")=="read")
+            if not safe:
+                errors.append("PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+        except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
+            errors.append("PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     for n,expected in EXPECTED.items():
         if n not in names:errors.append("SCHEDULED_WORKFLOW_FILE_MISSING:"+n)
         elif crons(files[n])!=expected:errors.append("SCHEDULED_CRON_CHANGED:"+n)
@@ -325,7 +348,7 @@ def selftest():
     assert base["automated_schedules"]["xray-personal-full-universe-sip-coverage.yml"]==["10 22 * * 1-5"]
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
-    assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
+    assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["16 23 * * 1-5"]
     assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 3 * * 1-5"]
     assert "xray-nasdaq-a34-preopen.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["26 0 * * 2-6"]
@@ -344,6 +367,15 @@ def selftest():
         result=inventory(sample)
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
+    primary="xray-personal-477-eod.yml"
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
+        "    if: github.event_name != 'pull_request'",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')",
+        "    if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
