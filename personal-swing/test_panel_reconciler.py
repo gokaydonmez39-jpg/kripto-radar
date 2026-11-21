@@ -141,6 +141,24 @@ class PanelReconcileTests(unittest.TestCase):
             p.synchronize(api)
         self.assertEqual(api.writes,0)
 
+    def test_non_natural_source_must_not_repair_panel(self):
+        api=FakeApi()
+        api.scans[1][1]='GitHub workflow_dispatch VERIFIED IEX EOD'
+        api.scans[1][9]='source_event=workflow_dispatch'
+        with self.assertRaisesRegex(HandoffBlocked,
+                                    'PANEL_NON_NATURAL_EOD_SOURCE'):
+            p.synchronize(api)
+        self.assertEqual(api.writes,0)
+
+    def test_duplicated_natural_origin_is_not_exact_receipt(self):
+        api=FakeApi()
+        api.scans[1][1]='GitHub schedule VERIFIED IEX EOD'
+        api.scans[1][9]='source_event=schedule;source_event=workflow_dispatch'
+        with self.assertRaisesRegex(HandoffBlocked,
+                                    'PANEL_NON_NATURAL_EOD_SOURCE'):
+            p.synchronize(api)
+        self.assertEqual(api.writes,0)
+
     def test_unmatched_new_candidate_count_never_writes(self):
         api=FakeApi()
         api.scans[1][7]='0'
