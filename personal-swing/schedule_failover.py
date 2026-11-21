@@ -178,11 +178,12 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
                 'asof_et':session,'dispatch_requested':False}
     accepted=request_dispatch(session)
     if accepted is not True:
-        # Distinguish an intentionally locked scheduled fallback from a
-        # missing confirmation for a separately authorized manual request.
-        # This is diagnostic ONLY: no dispatch, replay, or changed exit status.
+        # Distinguish intentional policy locks from uncertain dispatch
+        # acknowledgments. No fallback event receives delivery authority.
         reason=('NATURAL_FALLBACK_POLICY_LOCKED'
                 if trigger_event=='schedule' and not allow_dispatch_for_event(trigger_event)
+                else 'MANUAL_FALLBACK_POLICY_LOCKED'
+                if trigger_event=='workflow_dispatch' and not allow_dispatch_for_event(trigger_event)
                 else 'DISPATCH_ACK_NOT_CONFIRMED')
         return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED','asof_et':session,
                 'dispatch_requested':False,'reason_code':reason}
@@ -193,10 +194,10 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
 
 
 def allow_dispatch_for_event(event):
-    """Only an explicitly authorized manual recovery may dispatch today."""
-    # Natural fallback is observational until schedule/dispatch provenance
-    # and the private Sheet A/B gates support a complete parent-child proof.
-    return event == 'workflow_dispatch'
+    """Fail closed until an atomic, verified parent-child recovery is deployed."""
+    # Natural and manual fallback are observational only. No source-event
+    # bypass, historical replay, or unproven child EOD job may be dispatched.
+    return False
 
 def scheduler_parent_receipt(result, env):
     """Log-only immutable parent witness, never a new dispatch authority."""
@@ -257,11 +258,10 @@ def exit_code_for_result(result, event):
     if event == 'schedule':
         return 0 if status in accepted+safe_noop else 3
     if event == 'workflow_dispatch':
-        # Explicit manual dry-run, no-session and manual accepted request
-        # are diagnostics: they do not promote to an EOD delivery claim.
+        # Only an explicit dry run can be successful without natural EOD.
+        # A purported dispatched manual child is NOT an accepted recovery.
         return 0 if status in accepted+safe_noop+(
-            'DRY_RUN_WOULD_DISPATCH',
-            'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED') else 3
+            'DRY_RUN_WOULD_DISPATCH',) else 3
     return 3
 
 
