@@ -134,6 +134,16 @@ class SourceProvenanceAcceptance(unittest.TestCase):
                 p = fixture(); p[0][k] = v
                 self.assertEqual(verify(p)["state"], "HOLD")
 
+    def test_child_source_sha_must_match_natural_parent_even_when_child_consistent(self):
+        # A newer child commit must not be treated as the parent's audited
+        # source merely because its own receipt and six jobs agree.
+        evidence = fixture()
+        evidence[2]["head_sha"] = "c" * 40
+        evidence[3]["source_sha"] = "c" * 40
+        for job in evidence[4]:
+            job["head_sha"] = "c" * 40
+        self.assertEqual(verify(evidence)["stage"], "PARENT_CHILD_SOURCE_SHA_DRIFT")
+
     def test_child_mutations_fail_closed(self):
         for k, v in [
             ("event", "schedule"), ("path", f.PARENT_PATH),
