@@ -83,6 +83,10 @@ jobs:
         run: |
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
+          # Research-only NEON: real 477 PIT master, 52 XNAS bars, no broker/push.
+          python -m unittest -q test_neon_shadow_v3
+          python -O -m unittest -q test_neon_shadow_v3
+          python -m py_compile neon_shadow_v3.py daily_job.py
           cd research_lab
           python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
@@ -122,7 +126,7 @@ jobs:
             [[ "$REQUESTED_ASOF" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo 'BLOCKED_INVALID_WORKFLOW_DISPATCH_ASOF'; exit 2; }
             args+=(--asof "$REQUESTED_ASOF")
           fi
-          python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log "${args[@]}"
+          python daily_job.py --dir "$RUNNER_TEMP/xray-private-data" --watchlist-file nasdaq_watchlist_477.json --batch-size 10 --github-safe-log --neon-shadow "${args[@]}"
       - name: Verify exact private 477-scoped handoff without publishing signals
         working-directory: personal-swing
         shell: bash
