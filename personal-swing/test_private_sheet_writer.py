@@ -1,5 +1,9 @@
 """Offline tests for private Sheets handoff; no Google writes or secrets."""
+import contextlib
 import copy
+import io
+import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -64,6 +68,34 @@ class FakeApi:
 
 
 class PrivateSheetHandoffTests(unittest.TestCase):
+    def test_real_cli_non_natural_run_cannot_write_canonical_eod(self):
+        # Existing manual fallback lacks separately attested parent/child
+        # and immutable single-writer provenance. It must NOT poison the
+        # only canonical Sheet, even inside today's completed ASOF window.
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'snapshot.json'
+            path.write_text(json.dumps(snapshot()),encoding='utf-8')
+            for event in ('workflow_dispatch','push'):
+                with self.subTest(event=event):
+                    output=io.StringIO()
+                    with patch.dict(os.environ,{
+                        'GITHUB_EVENT_NAME':event,
+                        'GITHUB_RUN_ID':'999001',
+                        'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'synthetic-offline-test',
+                    }), patch.object(
+                        w,'SheetApi',
+                        side_effect=AssertionError('PROVIDER_CLIENT_MUST_NOT_START')
+                    ) as client,contextlib.redirect_stdout(output):
+                        rc=w.main(['--snapshot',str(path)])
+                    result=json.loads(output.getvalue())
+                    self.assertEqual(rc,3)
+                    self.assertEqual(result['status'],'PRIVATE_SHEET_SYNC_BLOCKED')
+                    self.assertEqual(
+                        result['reason_code'],
+                        'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED')
+                    self.assertFalse(result['device_ack'])
+                    client.assert_not_called()
+
     def test_atomic_two_sheet_append_and_independent_readback(self):
         api=FakeApi()
         result=w.synchronize(snapshot(),RUN,api,run_event='schedule')
