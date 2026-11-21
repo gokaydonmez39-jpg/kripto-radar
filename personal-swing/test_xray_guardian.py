@@ -109,6 +109,33 @@ class GuardianTests(unittest.TestCase):
             guardian.run(a, a.asof)
         self.assertEqual(a.writes, 0)
 
+    def test_non_natural_source_cannot_authorize_guardian_panel_repair(self):
+        a = Fixture()
+        a.scans[1][1] = "GitHub workflow_dispatch VERIFIED IEX EOD"
+        a.scans[1][9] = a.scans[1][9].replace(
+            "source_event=schedule", "source_event=workflow_dispatch")
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    "GUARDIAN_NON_NATURAL_SOURCE"):
+            guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 0)
+
+    def test_duplicate_origin_is_never_a_natural_receipt(self):
+        a = Fixture()
+        a.scans[1][9] += ";source_event=workflow_dispatch"
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    "GUARDIAN_NON_NATURAL_SOURCE"):
+            guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 0)
+
+    def test_expected_run_id_mismatch_cannot_repair_panel(self):
+        a = Fixture()
+        same_day_run = a.scans[1][8].rsplit("/", 1)[-1]
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    "GUARDIAN_SOURCE_RUN_ID_MISMATCH"):
+            guardian.run(a, a.asof,
+                         expected_run_id=str(int(same_day_run) + 1))
+        self.assertEqual(a.writes, 0)
+
     def test_bad_asof_holds(self):
         a = Fixture()
         with self.assertRaisesRegex(guardian.GuardianHold, "LATEST_SCAN_ASOF_NOT_ACCEPTED"):
