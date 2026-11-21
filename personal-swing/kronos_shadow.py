@@ -244,6 +244,8 @@ def current_authority(api, asof: str):
     require(scans and scans[-1][0] == asof and sum(r[0] == asof for r in scans) == 1,
             'KRONOS_LAST_SCAN_ASOF_DRIFT')
     scan = scans[-1]
+    require(writer.canonical_natural_scan_source(scan),
+            'KRONOS_NON_NATURAL_SOURCE')
     require([writer.numeric(scan[i]) for i in (2, 3, 4, 5)] == [477,477,477,0]
             and str(scan[6]).upper() == 'TRUE', 'KRONOS_NOT_FINAL_477')
     scope = runner.get_scope(watchlist_file=str(Path(__file__).with_name(
