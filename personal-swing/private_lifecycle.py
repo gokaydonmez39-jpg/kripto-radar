@@ -71,9 +71,11 @@ _PUBLIC_LIFECYCLE_CODES = frozenset({
     'LIFECYCLE_READBACK_ORIGINAL_MODIFIED',
     'LIFECYCLE_READBACK_ROW_MISSING',
     'LIFECYCLE_SCAN_ASOF_DUPLICATE',
+    'LIFECYCLE_SCAN_DATE_ORDER_INVALID',
     'LIFECYCLE_SCAN_HEADER_DRIFT',
     'LIFECYCLE_SHEET_ID_NOT_VERIFIED',
     'LIFECYCLE_SOURCE_EVENT_DRIFT',
+    'LIFECYCLE_NON_NATURAL_EOD_SOURCE',
     'LIFECYCLE_SOURCE_SHA_MISMATCH',
     'LIFECYCLE_SUPPRESSED_OPENING_IDENTITY_CONFLICT',
     'LIFECYCLE_TERMINAL_BAR_NOT_UNIQUE',
@@ -136,6 +138,21 @@ def verified_terminal_eod_run(scans, asof):
     require(bool(rows),'LIFECYCLE_EOD_SCAN_MISSING')
     dates=[r[0] for r in rows]
     require(len(dates)==len(set(dates)),'LIFECYCLE_SCAN_ASOF_DUPLICATE')
+    # The terminal event outbox is allowed to consume only an immutable,
+    # monotonically ordered private daily EOD ledger. Never infer an old
+    # epoch became the latest merely because it was appended after a newer
+    # natural session. The writer separately enforces the same contract.
+    try:
+        canonical_days=all(
+            type(d) is str and
+            re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',d) is not None and
+            date.fromisoformat(d).isoformat()==d
+            for d in dates
+        )
+    except ValueError:
+        canonical_days=False
+    require(canonical_days and dates==sorted(dates),
+            'LIFECYCLE_SCAN_DATE_ORDER_INVALID')
     latest=[r for r in rows if r[0]==asof]
     require(len(latest)==1 and dates[-1]==asof,
             'LIFECYCLE_CURRENT_FINAL_SCAN_MISSING')
@@ -158,6 +175,11 @@ def verified_terminal_eod_run(scans, asof):
     require(len(src)==1 and src[0] in RUN_EVENT_LABELS and
             row[1]==RUN_EVENT_LABELS[src[0]],
             'LIFECYCLE_SOURCE_EVENT_DRIFT')
+    # Manual dispatch/push has no certified parent-child fallback or durable
+    # single-writer readback. A verified fingerprint is not authorization
+    # to generate an irreversible terminal STOP/2R event from that origin.
+    # Natural schedule remains the only current terminal source authority.
+    require(src[0]=='schedule','LIFECYCLE_NON_NATURAL_EOD_SOURCE')
     return url
 
 
