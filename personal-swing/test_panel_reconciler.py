@@ -1,6 +1,8 @@
 """Offline tests for NASDAQ PANEL reconciliation. Synthetic rows only."""
 import copy
 import unittest
+from pathlib import Path
+import runner
 import panel_reconciler as p
 from private_sheet_writer import CANDIDATE_HEADER, SCAN_HEADER, HandoffBlocked
 
@@ -23,9 +25,15 @@ class FakeApi:
         self.candidates=[list(CANDIDATE_HEADER),
                          [DAY+'|AAAA',DAY,'AAAA','TEKNİK AL ADAYI',
                           '100','95','110','AÇIK • 0/15 SEANS','','','','','']]
+        scope=runner.get_scope(
+            watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),
+            asof=DAY)
+        proof=('scopeSHA='+runner.sha_symbols(scope)+
+               ';algorithmSHA='+runner.analysis_fingerprint()+
+               ';source_event=schedule;NO_ORDERS; NOT_DEVICE_ACK')
         self.scans=[list(SCAN_HEADER),
-                    [DAY,'GitHub auto VERIFIED IEX EOD','477','477',
-                     '477','0','TRUE','1',URL,'no-device-ack']]
+                    [DAY,'GitHub schedule VERIFIED IEX EOD','477','477',
+                     '477','0','TRUE','1',URL,proof]]
         self.writes=0
         self.mutate_second=False
         self.reads=0
@@ -156,6 +164,16 @@ class PanelReconcileTests(unittest.TestCase):
         api.scans[1][9]='source_event=schedule;source_event=workflow_dispatch'
         with self.assertRaisesRegex(HandoffBlocked,
                                     'PANEL_NON_NATURAL_EOD_SOURCE'):
+            p.synchronize(api)
+        self.assertEqual(api.writes,0)
+
+    def test_wrong_private_source_sha_never_writes_panel(self):
+        api=FakeApi()
+        note=api.scans[1][9]
+        sha=note.split('scopeSHA=')[1][:64]
+        api.scans[1][9]=note.replace('scopeSHA='+sha,'scopeSHA='+'f'*64,1)
+        with self.assertRaisesRegex(HandoffBlocked,
+                                    'PANEL_SOURCE_SHA_CONFLICT'):
             p.synchronize(api)
         self.assertEqual(api.writes,0)
 
