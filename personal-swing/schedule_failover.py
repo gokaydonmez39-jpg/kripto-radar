@@ -161,6 +161,46 @@ def run(*,now=None,read_runs=None,request_dispatch=None):
             'asof_et':session,'dispatch_requested':True,'no_execution':True}
 
 
+
+def scheduler_parent_receipt(result, env):
+    """Log-only immutable parent witness, never a new dispatch authority."""
+    if not isinstance(result, dict) or not isinstance(env, dict):
+        return None
+    if (result.get('status') != 'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'
+            or result.get('dispatch_requested') is not True
+            or result.get('no_execution') is not True
+            or env.get('GITHUB_EVENT_NAME') != 'schedule'):
+        return None
+    number = env.get('GITHUB_RUN_ID')
+    sha = env.get('GITHUB_SHA')
+    repo = env.get('GITHUB_REPOSITORY')
+    ref = env.get('GITHUB_REF')
+    day = result.get('asof_et')
+    if (not isinstance(number, str) or not number.isascii() or
+            not number.isdecimal() or int(number) < 1 or
+            not isinstance(sha, str) or len(sha) != 40 or
+            any(c not in '0123456789abcdef' for c in sha) or
+            repo != 'gokaydonmez39-jpg/kripto-radar' or
+            ref != 'refs/heads/main' or
+            not isinstance(day, str) or len(day) != 10):
+        return None
+    try:
+        if datetime.fromisoformat(day).date().isoformat() != day:
+            return None
+    except ValueError:
+        return None
+    return {'schema': 'XRAY_477_FALLBACK_PARENT_RECEIPT_V1',
+            'parent_run_id': int(number),
+            'parent_source_event': 'schedule',
+            'parent_workflow': '.github/workflows/xray-personal-477-schedule-fallback.yml',
+            'parent_head_sha': sha,
+            'parent_ref': ref,
+            'requested_asof_et': day,
+            'dispatch_request_accepted': True,
+            'eod_completion_proven': False,
+            'ab_release_authorized': False,
+            'writes': 0, 'orders': 0}
+
 def main(argv=None):
     p=argparse.ArgumentParser()
     p.add_argument('--dry-run',action='store_true')
@@ -187,6 +227,9 @@ def main(argv=None):
         result['workflow']=WORKFLOW
         result['execution']='NONE'
         result['real_money']='NO-GO'
+        receipt=scheduler_parent_receipt(result, os.environ)
+        if receipt is not None:
+            result['parent_receipt']=receipt
         print(json.dumps(result,sort_keys=True))
         return 0
     except (HTTPError,URLError,RuntimeError,ValueError,TimeoutError) as exc:
