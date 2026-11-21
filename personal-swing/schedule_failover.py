@@ -178,8 +178,14 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
                 'asof_et':session,'dispatch_requested':False}
     accepted=request_dispatch(session)
     if accepted is not True:
+        # Distinguish an intentionally locked scheduled fallback from a
+        # missing confirmation for a separately authorized manual request.
+        # This is diagnostic ONLY: no dispatch, replay, or changed exit status.
+        reason=('NATURAL_FALLBACK_POLICY_LOCKED'
+                if trigger_event=='schedule' and not allow_dispatch_for_event(trigger_event)
+                else 'DISPATCH_ACK_NOT_CONFIRMED')
         return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED','asof_et':session,
-                'dispatch_requested':False}
+                'dispatch_requested':False,'reason_code':reason}
     return {'status':'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
             'asof_et':session,'dispatch_requested':True,'no_execution':True}
 
