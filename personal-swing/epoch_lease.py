@@ -346,6 +346,97 @@ def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
     }
 
 
+def verify_existing_tag_consumer(asof, transport, *, now=None,
+                                 runtime_env=None, completed_session=None):
+    """Independently re-read current natural owner's protected lease; GET only.
+
+    This cannot acquire ownership or release Sheets/A/B. Future consumers
+    may use its source witness only after separate integration/race tests.
+    Caller-injected runtime/clock/session are for isolated OFFLINE tests.
+    Never retry or mutate a missing/ambiguous permanent tag.
+    """
+    captured=now if now is not None else datetime.now(timezone.utc)
+    require(isinstance(captured,datetime) and captured.tzinfo is not None and
+            captured.utcoffset() is not None,
+            "LEASE_CONSUMER_CLOCK_UNVERIFIED")
+    captured=captured.astimezone(timezone.utc)
+    require(callable(transport),"LEASE_CONSUMER_TRANSPORT_UNAVAILABLE")
+    import os
+    if runtime_env is not None:
+        require(now is not None,"LEASE_CONSUMER_PROVENANCE_UNVERIFIED")
+    live=dict(os.environ) if runtime_env is None else dict(runtime_env)
+    # Reject manual dispatch, rerun, other repo/branch/workflow, invalid ASOF
+    # and an uncompleted XNAS session BEFORE contacting a tag endpoint.
+    expected=verified_natural_owner(
+        live,asof,captured,completed_session=completed_session)
+    try:
+        verify_live_tag_protection(transport)
+        ref=transport("GET","/git/ref/tags/"+expected["tag"])
+        require(isinstance(ref,dict) and
+                ref.get("ref")==expected["ref"] and
+                isinstance(ref.get("object"),dict) and
+                ref["object"].get("type")=="tag",
+                "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+        tag_sha=ref["object"].get("sha")
+        require(isinstance(tag_sha,str) and
+                SHA40.fullmatch(tag_sha) is not None,
+                "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+        tag=transport("GET","/git/tags/"+tag_sha)
+        require(isinstance(tag,dict) and tag.get("sha")==tag_sha and
+                tag.get("tag")==expected["tag"] and
+                isinstance(tag.get("message"),str) and
+                isinstance(tag.get("object"),dict) and
+                tag["object"].get("type")=="commit",
+                "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+        try:
+            manifest=json.loads(tag["message"])
+            keys=("schema","asof_et","ref","tag","source_event",
+                  "workflow","source_sha","run_id","run_attempt",
+                  "observed_at")
+            require(isinstance(manifest,dict) and
+                    set(manifest)==set(keys),
+                    "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+            observed=manifest["observed_at"]
+            require(isinstance(observed,str) and observed.endswith("Z"),
+                    "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+            attested=datetime.fromisoformat(
+                observed.replace("Z","+00:00"))
+            require(attested.utcoffset()==timedelta(0) and
+                    -timedelta(seconds=5)<=captured-attested<=timedelta(hours=10),
+                    "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+            # Exact canonical manifest bytes: no duplicate JSON keys,
+            # alternative serialization or unrecognized injected claims.
+            canonical=_manifest(manifest,now=attested)
+            require(tag["message"]==canonical and
+                    tag["object"].get("sha")==manifest["source_sha"],
+                    "LEASE_CONSUMER_TAG_READBACK_UNVERIFIED")
+        except (ValueError,TypeError,KeyError,LeaseHold):
+            raise LeaseHold("LEASE_CONSUMER_TAG_READBACK_UNVERIFIED") from None
+        # The current writer's actual natural run must equal the immutable
+        # recorded tag owner. A later run may NEVER borrow another run's tag.
+        fields=("schema","asof_et","ref","tag","source_event","workflow",
+                "source_sha","run_id","run_attempt")
+        require(all(manifest[k]==expected[k] for k in fields),
+                "LEASE_CONSUMER_OWNER_MISMATCH")
+        actual=transport("GET","/actions/runs/"+str(expected["run_id"]))
+        verify_live_natural_run_receipt(manifest,actual,now=captured)
+        # Repository protection might have been revoked during readback:
+        # a previously valid tag is not sufficient if protection is gone.
+        verify_live_tag_protection(transport)
+    except LeaseHold:
+        raise
+    except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
+        raise LeaseHold("LEASE_CONSUMER_TAG_READBACK_UNVERIFIED") from None
+    return {
+        "state":"LEASE_OWNER_READBACK_ONLY", "schema":SCHEMA,
+        "asof_et":asof, "run_id":expected["run_id"],
+        "source_sha":expected["source_sha"], "tag_sha":tag_sha,
+        "source_event":"schedule", "sheet_writes":0,
+        "orders":False, "ab_release_authorized":False,
+        "device_ack":"UNKNOWN",
+    }
+
+
 def github_transport(token, *, opener=urlopen):
     """Optional authenticated transport. NEVER log token, URL or HTTP body."""
     require(isinstance(token,str) and bool(token),
