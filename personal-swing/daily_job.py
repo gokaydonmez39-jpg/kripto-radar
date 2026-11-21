@@ -118,6 +118,27 @@ def current_completed_session(now=None):
     return completed if ready_at <= instant <= ready_at + timedelta(hours=10) else None
 
 
+def expired_natural_eod_window(now=None):
+    """Detect a provably late, still-attributable natural EOD without market IO.
+
+    A late scheduled run beyond close+45m+10h must not return success merely
+    because the safe source window is closed. The outer 24h bound prevents
+    a holiday's legitimate no-session cron from being called missing EOD.
+    Beyond 24h the exact scheduled epoch is unknown: keep no-op, no replay.
+    """
+    from datetime import timedelta
+    import exchange_calendars as ec
+    instant=(now or datetime.now(timezone.utc))
+    if instant.tzinfo is None or instant.utcoffset() is None:
+        raise ValueError('AWARE_NOW_REQUIRED')
+    instant=instant.astimezone(timezone.utc)
+    completed=engine.trading_asof(instant).isoformat()
+    cal=ec.get_calendar('XNAS')
+    cutoff=cal.session_close(completed).to_pydatetime() + timedelta(minutes=45)
+    age=instant-cutoff
+    return timedelta(hours=10) < age <= timedelta(hours=24)
+
+
 def main(argv=None):
     p=argparse.ArgumentParser(description='Personal, read-only daily START/FINAL scan')
     p.add_argument('--dir',default='private-data')
@@ -131,6 +152,14 @@ def main(argv=None):
     a=p.parse_args(argv)
     asof=a.asof if a.asof else current_completed_session()
     if asof is None:
+        if (os.environ.get('GITHUB_EVENT_NAME')=='schedule'
+                and expired_natural_eod_window()):
+            # This is NOT a request to rescan/backfill the previous session.
+            # It only prevents a missed real EOD from looking green.
+            print(json.dumps({'status':'BLOCKED_NATURAL_EOD_FRESHNESS_WINDOW_EXPIRED',
+                              'execution':'NONE','market_data_called':False,
+                              'dispatch_requested':False},sort_keys=True))
+            return 3
         print(json.dumps({'status':'SKIPPED_NO_COMPLETED_CURRENT_ET_SESSION',
                           'execution':'NONE','market_data_called':False},sort_keys=True))
         return 0

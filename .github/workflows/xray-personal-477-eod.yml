@@ -83,6 +83,9 @@ jobs:
         run: |
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
+          # Fail-closed if GitHub delivers a natural EOD after the safe source window.
+          python -m unittest -q test_natural_eod_expiry_guard
+          python -O -m unittest -q test_natural_eod_expiry_guard
           # Research-only NEON: real 477 PIT master, 52 XNAS bars, no broker/push.
           python -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
           python -O -m unittest -q test_neon_shadow_v3 test_neon_shadow_wiring
