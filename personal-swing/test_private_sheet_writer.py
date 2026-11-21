@@ -91,6 +91,23 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                 self.assertFalse(any('private auto handoff' in r[12]
                                      for r in p['candidate_rows']))
 
+    def test_github_run_url_rejects_cross_repo_and_path_spoofs(self):
+        forged = (
+            'https://github.com/another-owner/repo/actions/runs/999001',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar-evil/actions/runs/999001',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar/notreal/actions/runs/999001',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001/extra',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001?redirect=1',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/00099',
+            'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/not-a-number',
+        )
+        for run_url in forged:
+            with self.subTest(source=run_url):
+                api = FakeApi()
+                with self.assertRaisesRegex(w.HandoffBlocked, 'UNVERIFIED_RUN_ID'):
+                    w.synchronize(snapshot(), run_url, api, run_event='schedule')
+                self.assertEqual(api.apply_count, 0)
+
     def test_untrusted_or_missing_event_fails_before_sheet_write(self):
         for event in ('', 'pull_request', 'workflow_run', 'bogus', None):
             with self.subTest(event=event):
