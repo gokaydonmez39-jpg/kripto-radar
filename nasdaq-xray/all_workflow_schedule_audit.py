@@ -349,15 +349,6 @@ def selftest():
     assert base["automated_schedules"]["xray-research-watch-radar.yml"]==["0 13 * * 1-5","17 15,20,23 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-full-cohort-early-watch.yml"]==["42 22 * * 1-5"]
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["16 23 * * 1-5"]
-    primary="xray-personal-477-eod.yml"
-    bad(lambda x:x.update({primary:x[primary].replace(
-        "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
-        "    if: github.event_name != 'pull_request'",1)}),
-        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
-    bad(lambda x:x.update({primary:x[primary].replace(
-        "    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')",
-        "    if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'",1)}),
-        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 3 * * 1-5"]
     assert "xray-nasdaq-a34-preopen.yml" in base["extra_readonly_provider_scheduled"]
     assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["26 0 * * 2-6"]
@@ -376,6 +367,15 @@ def selftest():
         result=inventory(sample)
         assert result["contract_status"]=="FAIL"
         assert any(want in x for x in result["blockers"]),(want,result["blockers"])
+    primary="xray-personal-477-eod.yml"
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",
+        "    if: github.event_name != 'pull_request'",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')",
+        "    if: always() && needs.offline-guard.result == 'success' && github.event_name != 'pull_request'",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
