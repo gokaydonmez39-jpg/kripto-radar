@@ -31,7 +31,7 @@ EXPECTED={
  "xray-personal-477-eod.yml":("15 23 * * 1-5",),
  "xray-nasdaq-a34-preopen.yml":("17 3 * * 1-5",),
  # Exact already deployed personal EOD failover, never a second signal producer.
- "xray-personal-477-schedule-fallback.yml":("25 0 * * 2-6",),
+ "xray-personal-477-schedule-fallback.yml":("26 0 * * 2-6",),
  "xray-personal-full-cohort-early-watch.yml":("42 22 * * 1-5",),
  "xray-canonical-current-final.yml":("53 5-23 * * 1-5","53 0-3 * * 2-6"),
  "xray-canonical-current-post-mc.yml":("50 5-23 * * 1-5","50 0-3 * * 2-6"),
@@ -260,7 +260,7 @@ def inventory(files):
                 and offline.get("permissions",{}).get("contents")=="read"
                 and inputs["dry_run"].get("default")=="true"
                 and len(triggers["schedule"])==1
-                and triggers["schedule"][0].get("cron")=="25 0 * * 2-6"
+                and triggers["schedule"][0].get("cron")=="26 0 * * 2-6"
                 and "github.event_name == 'schedule'" in dispatch.get("if","")
                 and "github.event_name == 'workflow_dispatch'" in dispatch.get("if","")
                 and "schedule_failover.py" in run_script
@@ -328,7 +328,7 @@ def selftest():
     assert base["automated_schedules"]["xray-personal-477-eod.yml"]==["15 23 * * 1-5"]
     assert base["automated_schedules"]["xray-nasdaq-a34-preopen.yml"]==["17 3 * * 1-5"]
     assert "xray-nasdaq-a34-preopen.yml" in base["extra_readonly_provider_scheduled"]
-    assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["25 0 * * 2-6"]
+    assert base["automated_schedules"]["xray-personal-477-schedule-fallback.yml"]==["26 0 * * 2-6"]
     assert base["automated_schedules"]["xray-research-source-lab.yml"]==["41 5 * * *"]
     assert "xray-research-source-lab.yml" in base["extra_readonly_provider_scheduled"]
     assert "xray-personal-477-eod.yml" in base["extra_readonly_provider_scheduled"]
