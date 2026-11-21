@@ -97,6 +97,10 @@ _TRACKER_PUBLIC_FAILURE_CODES = {
         'LIFECYCLE_FOLLOWUP_INVALID_OHLCV',
     'INVALID_FOLLOWUP_BAR_RANGE':
         'LIFECYCLE_FOLLOWUP_INVALID_RANGE',
+    'FOLLOWUP_TIMESTAMP_INVALID':
+        'LIFECYCLE_FOLLOWUP_TIMESTAMP_INVALID',
+    'FOLLOWUP_TIMESTAMP_WITHOUT_TZ':
+        'LIFECYCLE_FOLLOWUP_TIMESTAMP_WITHOUT_TZ',
 }
 
 
@@ -279,7 +283,7 @@ def build_updates(values, asof, read_batch):
         if item['status']=='CLOSED':
             day=item['closed_date']
             observed=[b for b in bars_by_symbol[symbol]
-                      if str(b.get('timestamp',''))[:10]==day]
+                      if tracker.utc_session_date(b.get('timestamp'))==day]
             require(len(observed)==1,'LIFECYCLE_TERMINAL_BAR_NOT_UNIQUE')
             last=item['events'][-1]
             event={
