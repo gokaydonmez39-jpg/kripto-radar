@@ -106,7 +106,7 @@ def _manifest(owner):
                       sort_keys=True,separators=(",",":"),ensure_ascii=True)
 
 
-def verify_live_tag_protection(transport):
+def verify_live_tag_protection(transport, *, probe_only=False):
     """Read ruleset list + exact tag-rule details before ANY write.
 
     Neither branch rulesets nor unprotected tags are an immutable lease.
@@ -120,6 +120,10 @@ def verify_live_tag_protection(transport):
                 if isinstance(r,dict) and r.get("target")=="tag" and
                 r.get("enforcement")=="active" and
                 isinstance(r.get("id"),int) and r["id"]>0]
+    if not candidates:
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:ACTIVE_TAG_NOT_VISIBLE")
+    exact_rule_without_bypass=False
+    unavailable_bypass=False
     for item in candidates:
         detailed=transport("GET","/rulesets/"+str(item["id"]))
         if not isinstance(detailed,dict):
@@ -128,18 +132,32 @@ def verify_live_tag_protection(transport):
         if not isinstance(cond,dict):
             continue
         rules=detailed.get("rules")
-        if (detailed.get("id")==item["id"] and
-                detailed.get("target")=="tag" and
-                detailed.get("enforcement")=="active" and
-                cond.get("include")==[PROTECTED_PATTERN] and
-                cond.get("exclude")==[] and
-                detailed.get("bypass_actors")==[] and
-                isinstance(rules,list) and
-                {"update","deletion"}.issubset(
-                    {rule.get("type") for rule in rules
-                     if isinstance(rule,dict)})):
+        exact=(detailed.get("id")==item["id"] and
+               detailed.get("target")=="tag" and
+               detailed.get("enforcement")=="active" and
+               cond.get("include")==[PROTECTED_PATTERN] and
+               cond.get("exclude")==[] and
+               isinstance(rules,list) and
+               {"update","deletion"}.issubset(
+                   {rule.get("type") for rule in rules
+                    if isinstance(rule,dict)}))
+        if not exact:
+            continue
+        exact_rule_without_bypass=True
+        bypass=detailed.get("bypass_actors")
+        if bypass==[]:
             return True
-    raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED")
+        if bypass is None:
+            unavailable_bypass=True
+    if unavailable_bypass:
+        if probe_only:
+            # Action token may omit admin-only bypass metadata. This proves
+            # ONLY public rule conditions, NEVER full immutability authority.
+            return "TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_FIELD_UNAVAILABLE")
+    if exact_rule_without_bypass:
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_ACTOR_PRESENT")
+    raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:EXACT_RULE_MISMATCH")
 
 
 def acquire_first_claim(owner, transport):
@@ -245,7 +263,71 @@ def github_transport(token, *, opener=urlopen):
     return call
 
 
-# IMPORTANT: This module intentionally has no CLI or automatically invoked
-# production entry point. Activate only after a real tag-create collision
-# canary, immutable Git tag protection, parent-child provenance, and the
-# private Sheet/A/B consumer contracts are independently accepted.
+def main(argv=None):
+    """Read-only CI canary. This entry point NEVER creates tags or refs.
+
+    The atomic claim function is intentionally NOT invoked from any CLI.
+    A successful live protection GET is still NOT a race/producer receipt.
+    """
+    import os
+    import sys
+
+    args = sys.argv[1:] if argv is None else argv
+    if args not in (["--verify-tag-protection"],["--probe-tag-protection"]):
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": "UNSUPPORTED_CLI_ACTION",
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    if (os.environ.get("GITHUB_REPOSITORY") != REPO or
+            not os.environ.get("GITHUB_TOKEN")):
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": "TAG_CANARY_IDENTITY_OR_TOKEN_MISSING",
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    try:
+        result=verify_live_tag_protection(
+            github_transport(os.environ["GITHUB_TOKEN"]),
+            probe_only=(args==["--probe-tag-protection"]))
+    except Exception as exc:
+        # Only audit-approved fixed categories may enter public logs.
+        # Never expose HTTP body, exception message, URL or token.
+        if isinstance(exc, HTTPError):
+            status = exc.code if exc.code in (400, 401, 403, 404, 429) else 0
+            reason = ("TAG_RULESET_HTTP_" + str(status)
+                      if status else "TAG_RULESET_HTTP_OTHER")
+        elif isinstance(exc, LeaseHold):
+            # All subcodes are authored literals, never external strings.
+            code=str(exc)
+            kind=code.split(":",1)[1] if ":" in code else ""
+            allowed=frozenset(("ACTIVE_TAG_NOT_VISIBLE",
+                               "BYPASS_FIELD_UNAVAILABLE",
+                               "BYPASS_ACTOR_PRESENT",
+                               "EXACT_RULE_MISMATCH"))
+            reason=("TAG_RULESET_"+kind if kind in allowed
+                    else "TAG_RULESET_CONTRACT_NOT_MATCHED")
+        elif isinstance(exc, URLError):
+            reason = "TAG_RULESET_NETWORK_UNAVAILABLE"
+        else:
+            reason = "TAG_RULESET_READ_EXCEPTION"
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": reason,
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    partial=result=="TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
+    print(json.dumps({
+        "status": ("TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
+                   if partial else "TAG_RULESET_LIVE_GET_PASS"),
+        "protected_pattern": PROTECTED_PATTERN,
+        "bypass_verified": not partial,
+        "writes": 0, "ab_release_authorized": False,
+        "device_ack": "UNKNOWN",
+    }))
+    return 0
+
+
+# IMPORTANT: Only the GET-only ruleset preflight has a CLI. The first-claim
+# function has NO CLI, timer, Sheet or producer integration. A live immutable
+# Git tag create-ref collision and independent consumer receipts are still
+# necessary before any recovery can be enabled.
+if __name__ == "__main__":
+    raise SystemExit(main())
