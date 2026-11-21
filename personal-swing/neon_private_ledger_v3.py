@@ -124,6 +124,38 @@ def previous_archive(existing, asof, master):
              len({r[20] for r in rows.values()})==1 and
              len({r[21] for r in rows.values()})==1,
              "LEDGER_MIXED_DAY_SOURCE")
+        # Historic source SHA and complete 477 IDs do NOT imply that
+        # immutable persisted score cells remain mathematically coherent.
+        # An unvalidated historical score must not contaminate a new delta.
+        values=list(rows.values())
+        missing=[r[4]=="N/A" for r in values]
+        need(all(missing) or not any(missing),"LEDGER_MIXED_SCORE_STATUS")
+        if all(missing):
+            need(all(r[3]=="N/A" and
+                     all(v=="N/A" for v in r[7:12]) and
+                     r[12]=="HOLD" and r[13]=="UNKNOWN" and
+                     r[14]=="HOLD_SHADOW_RESULT_MISSING"
+                     for r in values),"LEDGER_NA_STATE_DRIFT")
+            continue
+        ranks=[r[3] for r in values]
+        need(all(type(k) is str and re.fullmatch(r"[1-9][0-9]*",k)
+                 for k in ranks) and
+             {int(k) for k in ranks}==set(range(1,478)),
+             "LEDGER_RANK_IDENTITY_DRIFT")
+        ranked=sorted(values,key=lambda r:int(r[3]))
+        last_score=None
+        for r in ranked:
+            score=number(r[4])
+            factors=[number(v) for v in r[7:12]]
+            expected=sum((value*Decimal(weight)
+                          for value,weight in zip(factors,neon.WEIGHTS.values())),
+                         Decimal(0)).quantize(Decimal(".01"),
+                                               rounding=ROUND_HALF_UP)
+            need(abs(score-expected)<=Decimal(".02"),
+                 "LEDGER_SCORE_FACTOR_DRIFT")
+            need(last_score is None or score<=last_score,
+                 "LEDGER_RANK_SCORE_ORDER_DRIFT")
+            last_score=score
     if asof in day_rows:
         return day_rows, "EXISTS"
     need(not day_rows or asof > max(day_rows), "NO_REPLAY_OR_BACKFILL")
