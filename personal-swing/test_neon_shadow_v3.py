@@ -206,6 +206,23 @@ class NeonShadowV3Tests(unittest.TestCase):
             self.assertEqual(data['scope_sha256'],n.scope_digest(MASTER))
             self.assertFalse(data['notification_sent'])
 
+    def test_shadow_capture_fault_does_not_block_original_provider(self):
+        class FailingSlice(list):
+            def __getitem__(self, key):
+                if isinstance(key, slice):
+                    raise ValueError('SIMULATED_SHADOW_COPY_FAILURE')
+                return super().__getitem__(key)
+        returned={MASTER[0]:FailingSlice(self.raw[MASTER[0]])}
+        capture=n.Capture(lambda group,asof:returned,MASTER,ASOF)
+        self.assertIs(capture.read([MASTER[0]],ASOF),returned)
+        self.assertTrue(capture.capture_failed)
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(n.NeonHold,'RAW_CAPTURE_FAILED'):
+                capture.finish(self.snapshot,expected_policy_sha=POLICY,
+                               now_utc=NOW,source_event='schedule',
+                               output_file=str(Path(d)/'neon.json'))
+            self.assertFalse((Path(d)/'neon.json').exists())
+
     def test_al_math_rejects_wrong_stop(self):
         row={'decision':'AL','close':100.,'atr14':2.,'indicative_stop':95.9,
              'indicative_target_2r':108.,'sma20':95.,'sma50':90.,
