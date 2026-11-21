@@ -61,6 +61,8 @@ def build(candidate_values, scan_values, alert_values, asof, read_batch):
                    sum(r[0] == asof for r in scans) == 1,
                    "SWING_SCORE_LAST_SCAN_ASOF_DRIFT")
     scan = scans[-1]
+    writer.require(writer.canonical_natural_scan_source(scan),
+                   "SWING_SCORE_NON_NATURAL_SOURCE")
     writer.require(len(scan) >= 10 and
                    [writer.numeric(scan[i]) for i in (2, 3, 4, 5)] == [477, 477, 477, 0] and
                    str(scan[6]).upper() == "TRUE" and
