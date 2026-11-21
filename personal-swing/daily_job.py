@@ -18,7 +18,7 @@ import tracker
 
 
 def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
-             read_batch=None, followups=False):
+             read_batch=None, followups=False, neon_shadow=False):
     engine.validate_asof(asof)
     dest=Path(directory)
     dest.mkdir(parents=True,exist_ok=True)
@@ -28,8 +28,22 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
         except BlockingIOError:
             raise RuntimeError('ALREADY_RUNNING_LOCK_HELD')
         try:
+            # Advisory tap reads original provider data exactly once per group.
+            # Any shadow setup failure leaves the primary data path unchanged.
+            neon_capture=None
+            shadow_reader=read_batch
+            if neon_shadow:
+                try:
+                    import neon_shadow_v3
+                    neon_capture=neon_shadow_v3.Capture(
+                        read_batch if read_batch is not None else engine.live_read,
+                        symbols, asof)
+                    shadow_reader=neon_capture.read
+                except Exception:
+                    neon_capture=None
+                    shadow_reader=read_batch
             snap=runner.scan(asof,symbols,dest,batch_size=batch_size,
-                             max_batches=max_batches,read_batch=read_batch)
+                             max_batches=max_batches,read_batch=shadow_reader)
             summary={
                 'asof_et':asof,'universe':len(symbols),
                 'processed':snap['processed_symbols'],
@@ -63,6 +77,21 @@ def run_once(*, asof, symbols, directory, batch_size=10, max_batches=None,
                     summary['history_outcome_changes']=len(state['closed_signals'])
                 else:
                     summary['followup_status']='NOT_RUN_NO_PERSISTED_HISTORY'
+            if neon_shadow:
+                # No failure from a purely advisory calculation may suppress
+                # existing EOD, AL, STOP, private Sheet or delivery contracts.
+                summary['neon_shadow']={
+                    'status':'NEON_SHADOW_HOLD_NO_DELIVERY',
+                    'scored':0,'notification_sent':False}
+                if neon_capture is not None and snap['valid_data_coverage_complete']:
+                    try:
+                        summary['neon_shadow']=neon_capture.finish(
+                            snap,expected_policy_sha=runner.analysis_fingerprint(),
+                            now_utc=datetime.now(timezone.utc),
+                            source_event=os.environ.get('GITHUB_EVENT_NAME','UNKNOWN'),
+                            output_file=dest/('neon_shadow_v3_'+asof+'.json'))
+                    except Exception:
+                        pass
             return summary
         finally:
             fcntl.flock(h.fileno(),fcntl.LOCK_UN)
@@ -97,6 +126,7 @@ def main(argv=None):
     p.add_argument('--batch-size',type=int,default=10)
     p.add_argument('--max-batches',type=int)
     p.add_argument('--followups',action='store_true')
+    p.add_argument('--neon-shadow',action='store_true',help='Ephemeral research-only NEON audit; no delivery')
     p.add_argument('--github-safe-log',action='store_true',help='Suppress per-symbol detail')
     a=p.parse_args(argv)
     asof=a.asof if a.asof else current_completed_session()
@@ -108,7 +138,7 @@ def main(argv=None):
     try:
         summary=run_once(asof=asof,symbols=symbols,directory=a.dir,
                          batch_size=a.batch_size,max_batches=a.max_batches,
-                         followups=a.followups)
+                         followups=a.followups,neon_shadow=a.neon_shadow)
     except Exception as exc:
         print(json.dumps({'status':'BLOCKED','reason_type':type(exc).__name__,
                           'execution':'NONE'},ensure_ascii=False))
