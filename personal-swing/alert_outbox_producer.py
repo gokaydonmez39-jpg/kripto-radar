@@ -173,6 +173,9 @@ def main(argv=None):
         require(bool(secret), 'GOOGLE_SERVICE_ACCOUNT_NOT_CONFIGURED')
         run_id = os.environ.get('GITHUB_RUN_ID', '')
         require(run_id.isdigit(), 'GITHUB_RUN_ID_MISSING')
+        # The outbox holds private signal identities. No other workflow,
+        # manual trigger, rerun or branch may reach its Sheets client.
+        writer.verify_natural_eod_writer_identity(os.environ)
         snapshot = json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
         api = AlertApi(secret)
         result = synchronize(snapshot, RUN_PREFIX + run_id, api)
