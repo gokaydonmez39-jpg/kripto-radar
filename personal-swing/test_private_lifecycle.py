@@ -127,6 +127,33 @@ class LifecycleTruthTests(unittest.TestCase):
             life.build_updates(rows,'2026-10-26',
                 lambda symbols,day:{'AAA':[bar('2026-10-23',o=101.,h=104.,l=99.,c=102.)]})
 
+    def test_nov19_to_nov23_terminal_event_uses_utc_nov20_without_scan(self):
+        # The 20 Nov production EOD is absent. Contiguous IEX daily bars
+        # may still resolve an older 19 Nov episode on the next natural EOD.
+        rows=[list(CANDIDATE_HEADER),
+              row('2026-11-19',100.,95.,110.,0)]
+        friday=bar('2026-11-19',o=100.,h=104.,l=94.,c=100.)
+        friday['timestamp']='2026-11-19T23:30:00-05:00'
+        monday=bar('2026-11-23',o=115.,h=130.,l=112.,c=120.)
+        plan=life.build_updates(rows,'2026-11-23',
+                lambda syms,asof:{'AAA':[friday,monday]})
+        self.assertEqual((plan['evaluated'],plan['closed']),(1,1))
+        event=plan['updates'][0]['event']
+        self.assertEqual(event['event_day'],'2026-11-20')
+        self.assertEqual(event['event_code'],'STOP_TOUCHED')
+        self.assertEqual(event['days_held'],1)
+        self.assertTrue(plan['updates'][0]['terminal'])
+
+    def test_public_timestamp_failure_is_categorical_not_raw_source(self):
+        self.assertEqual(
+            life.lifecycle_public_failure_code(
+                ValueError('FOLLOWUP_TIMESTAMP_WITHOUT_TZ')),
+            'LIFECYCLE_FOLLOWUP_TIMESTAMP_WITHOUT_TZ')
+        self.assertEqual(
+            life.lifecycle_public_failure_code(
+                ValueError('FOLLOWUP_TIMESTAMP_INVALID')),
+            'LIFECYCLE_FOLLOWUP_TIMESTAMP_INVALID')
+
     def test_duplicate_iex_bar_blocks(self):
         with self.assertRaisesRegex(ValueError,'DUPLICATE_FOLLOWUP_BAR'):
             life.build_updates(sheet(),'2026-10-26',
