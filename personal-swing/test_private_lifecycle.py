@@ -1,5 +1,10 @@
 """Offline XNAS lifecycle regression. Synthetic only: no vendor, secrets, orders."""
 import copy
+import contextlib
+import io
+import json
+import os
+import tempfile
 import unittest
 from unittest.mock import patch
 from pathlib import Path
@@ -34,6 +39,62 @@ def fetch(symbols,asof):
     assert symbols==['AAA'] and asof=='2026-10-26'
     return {'AAA':[bar()]}
 
+
+class LifeCycleNaturalWriterSourceAcceptance(unittest.TestCase):
+    def source_env(self):
+        import private_sheet_writer as writer
+        return {
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':writer.EXPECTED_EOD_REPOSITORY,
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_WORKFLOW_REF':writer.EXPECTED_EOD_WORKFLOW_REF,
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+
+    def test_noncanonical_runner_cannot_evaluate_or_mutate_lifecycle(self):
+        for key,bad in (
+            ('GITHUB_EVENT_NAME','workflow_dispatch'),
+            ('GITHUB_EVENT_NAME','push'),
+            ('GITHUB_REPOSITORY','other/repo'),
+            ('GITHUB_REF','refs/heads/not-main'),
+            ('GITHUB_WORKFLOW_REF','other/schedule.yml@refs/heads/main'),
+            ('GITHUB_SHA','X'*40),
+            ('GITHUB_RUN_ATTEMPT','2'),
+            ('GITHUB_RUN_ID','00077'),
+        ):
+            with self.subTest(key=key,bad=bad):
+                env=self.source_env();env[key]=bad
+                with patch.dict(os.environ,env,clear=True):
+                    with patch.object(life.daily_job,'current_completed_session',
+                          return_value='2026-11-23') as calendar:
+                        with patch.object(life,'SheetApi',
+                          side_effect=AssertionError('PRIVATE_PROVIDER_STARTED')
+                        ) as provider,contextlib.redirect_stdout(io.StringIO()) as captured:
+                            rc=life.main([])
+                result=json.loads(captured.getvalue())
+                self.assertEqual(rc,3)
+                self.assertEqual(result['status'],'LIFECYCLE_BLOCKED')
+                self.assertEqual(result['reason_type'],'HandoffBlocked')
+                calendar.assert_not_called()
+                provider.assert_not_called()
+
+    def test_legitimate_natural_no_session_preserves_noop_without_sheet(self):
+        with patch.dict(os.environ,self.source_env(),clear=True):
+            with patch.object(life.daily_job,'current_completed_session',
+                              return_value=None) as calendar:
+                with patch.object(life,'SheetApi',
+                     side_effect=AssertionError('SHOULD_NOT_OPEN_PROVIDER')
+                ) as provider,contextlib.redirect_stdout(io.StringIO()) as captured:
+                    rc=life.main([])
+        result=json.loads(captured.getvalue())
+        self.assertEqual(rc,0,result)
+        self.assertEqual(result['status'],'LIFECYCLE_NO_COMPLETED_SESSION')
+        self.assertFalse(result['market_data_called'])
+        calendar.assert_called_once()
+        provider.assert_not_called()
 
 class FakeApi:
     def __init__(self):
