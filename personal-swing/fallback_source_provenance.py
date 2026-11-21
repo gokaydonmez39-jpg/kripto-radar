@@ -114,14 +114,43 @@ def attest(parent, parent_receipt, child, child_receipt, jobs, scan,
         child_receipt.get("orders") is not False
     ):
         return _blocked("CHILD_PARENT_BINDING_MISSING")
+    # Bind each job to the same immutable child run, commit and real run
+    # time interval. A green job name without provenance is NOT a receipt.
+    child_run_url = "https://api.github.com/repos/" + REPO + "/actions/runs/" + str(child_id)
+
+    def job_verified(j):
+        if not isinstance(j, dict):
+            return False
+        begun = _utc(j.get("started_at"))
+        finished = _utc(j.get("completed_at"))
+        return (isinstance(j.get("name"), str) and
+                _id(j.get("id")) and j.get("run_id") == child_id and
+                j.get("run_attempt") == 1 and
+                j.get("run_url") == child_run_url and
+                j.get("head_sha") == child.get("head_sha") and
+                j.get("head_branch") == "main" and
+                j.get("status") == "completed" and
+                j.get("conclusion") == "success" and
+                begun is not None and finished is not None and
+                c_created <= begun <= finished <= c_end)
+
     if (not isinstance(jobs, list) or len(jobs) != len(JOBS) or
-            {j.get("name") for j in jobs if isinstance(j, dict)} != JOBS or
-            len({j.get("id") for j in jobs if isinstance(j, dict)}) != len(JOBS) or
-            any(not isinstance(j, dict) or not _id(j.get("id")) or
-                j.get("run_id") != child_id or j.get("run_attempt") != 1 or
-                j.get("status") != "completed" or j.get("conclusion") != "success"
-                for j in jobs)):
+            any(not job_verified(j) for j in jobs) or
+            {j["name"] for j in jobs} != JOBS or
+            len({j["id"] for j in jobs}) != len(JOBS)):
         return _blocked("EXACT_SIX_JOB_RECEIPT_MISSING")
+    by_name = {j["name"]: j for j in jobs}
+    dependencies = (
+        ("offline-guard", "private-sheets-auth-preflight"),
+        ("offline-guard", "daily-private-scan"),
+        ("daily-private-scan", "private-episode-followups"),
+        ("private-episode-followups", "guardian-acceptance"),
+        ("private-sheets-auth-preflight", "guardian-acceptance"),
+        ("guardian-acceptance", "daily-private-score-acceptance"),
+    )
+    if any(_utc(by_name[first]["completed_at"]) >
+           _utc(by_name[second]["started_at"]) for first, second in dependencies):
+        return _blocked("EOD_JOB_DAG_UNVERIFIED")
     if (not isinstance(scan, dict) or scan.get("asof_et") != expected_asof or
             scan.get("source_event") != "workflow_dispatch" or
             scan.get("run_id") != child_id or
