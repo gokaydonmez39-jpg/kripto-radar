@@ -1,16 +1,14 @@
+"""No network, no real sheet writes, no trading; all 477 keys are exact PIT master."""
 import contextlib
+import copy
 import io
 import json
 import os
 import tempfile
-from pathlib import Path
-from unittest.mock import patch
-"""No network, no real sheet writes, no trading; all 477 keys are exact PIT master."""
-import copy
-import json
 import unittest
 from decimal import Decimal
 from pathlib import Path
+from unittest.mock import patch
 
 import runner
 import neon_shadow_v3 as neon
