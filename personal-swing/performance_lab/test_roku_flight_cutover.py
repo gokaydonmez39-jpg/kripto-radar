@@ -191,6 +191,19 @@ class ForwardUtcPolicy20261123Tests(unittest.TestCase):
         table[3][0][1]="2026-11-23"
         return table
 
+    def test_reviewed_sha_matches_current_real_engine_and_477_pit_master(self):
+        # Bind the reviewed forward SHA to the real checked-out EOD modules.
+        # A later unreviewed engine/runner/dependency edit must fail CI.
+        from pathlib import Path
+        import runner
+        master = runner.get_scope(
+            watchlist_file=str(Path(__file__).resolve().parents[1] /
+                               "nasdaq_watchlist_477.json"),
+            asof="2026-11-23")
+        self.assertEqual(len(master),477)
+        self.assertEqual(runner.sha_symbols(master),UTC_20261123[0])
+        self.assertEqual(runner.analysis_fingerprint(),UTC_20261123[1])
+
     def test_forward_23_nov_accepts_exact_reviewed_utc_sha_without_backfill(self):
         table=self.scenario()
         original=copy.deepcopy(table)
