@@ -245,7 +245,47 @@ def github_transport(token, *, opener=urlopen):
     return call
 
 
-# IMPORTANT: This module intentionally has no CLI or automatically invoked
-# production entry point. Activate only after a real tag-create collision
-# canary, immutable Git tag protection, parent-child provenance, and the
-# private Sheet/A/B consumer contracts are independently accepted.
+def main(argv=None):
+    """Read-only CI canary. This entry point NEVER creates tags or refs.
+
+    The atomic claim function is intentionally NOT invoked from any CLI.
+    A successful live protection GET is still NOT a race/producer receipt.
+    """
+    import os
+    import sys
+
+    args = sys.argv[1:] if argv is None else argv
+    if args != ["--verify-tag-protection"]:
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": "UNSUPPORTED_CLI_ACTION",
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    if (os.environ.get("GITHUB_REPOSITORY") != REPO or
+            not os.environ.get("GITHUB_TOKEN")):
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": "TAG_CANARY_IDENTITY_OR_TOKEN_MISSING",
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    try:
+        verify_live_tag_protection(
+            github_transport(os.environ["GITHUB_TOKEN"]))
+    except Exception:
+        # Intentionally suppress exception details: never print credentials,
+        # provider response, internal headers or request URLs to CI logs.
+        print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
+                          "reason_code": "TAG_RULESET_UNVERIFIED",
+                          "writes": 0, "ab_release_authorized": False}))
+        return 3
+    print(json.dumps({"status": "TAG_RULESET_LIVE_GET_PASS",
+                      "protected_pattern": PROTECTED_PATTERN,
+                      "writes": 0, "ab_release_authorized": False,
+                      "device_ack": "UNKNOWN"}))
+    return 0
+
+
+# IMPORTANT: Only the GET-only ruleset preflight has a CLI. The first-claim
+# function has NO CLI, timer, Sheet or producer integration. A live immutable
+# Git tag create-ref collision and independent consumer receipts are still
+# necessary before any recovery can be enabled.
+if __name__ == "__main__":
+    raise SystemExit(main())
