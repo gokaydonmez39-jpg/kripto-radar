@@ -209,7 +209,6 @@ jobs:
         run: |
           set -euo pipefail
           snapshot="$RUNNER_TEMP/xray-private-data/latest.json"
-          shadow="$RUNNER_TEMP/xray-private-data/neon_shadow_v3_$(date -u +%F).json"
           if [[ ! -f "$snapshot" ]]; then
             echo 'NEON_LEDGER=SKIPPED_NO_FINAL; DELIVERY=UNKNOWN'
             exit 0
