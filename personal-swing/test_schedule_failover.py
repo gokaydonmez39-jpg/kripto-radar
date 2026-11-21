@@ -471,5 +471,35 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
 
 
+class MissingEodFailureAttributionTests(unittest.TestCase):
+    def test_natural_fallback_policy_lock_is_explicit_but_still_red(self):
+        reads = []
+        requests = []
+        def runs():
+            reads.append(True)
+            return {'total_count':0,'workflow_runs':[]}
+        def denied(asof):
+            requests.append(asof)
+            return False
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=runs,request_dispatch=denied,trigger_event='schedule')
+        self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
+        self.assertEqual(result['reason_code'],'NATURAL_FALLBACK_POLICY_LOCKED')
+        self.assertEqual(result['dispatch_requested'],False)
+        self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
+        self.assertEqual(reads,[True,True])
+        self.assertEqual(requests,['2026-10-26'])
+
+    def test_unconfirmed_explicit_manual_request_never_fake_ack(self):
+        def runs():
+            return {'total_count':0,'workflow_runs':[]}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=runs,request_dispatch=lambda asof:False,
+                      trigger_event='workflow_dispatch')
+        self.assertEqual(result['reason_code'],'DISPATCH_ACK_NOT_CONFIRMED')
+        self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
+        self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
+
+
 if __name__=='__main__':
     unittest.main()
