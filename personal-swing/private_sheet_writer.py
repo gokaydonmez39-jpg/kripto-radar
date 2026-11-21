@@ -7,6 +7,7 @@ Never emits rows, private identifiers or credentials to public Actions logs.
 No brokerage, trades, public artifacts, push messaging, or alarm send.
 """
 import argparse
+from collections.abc import Mapping
 import json
 import math
 import os
@@ -124,7 +125,7 @@ def verify_natural_eod_writer_identity(environment):
     No I/O or credentials are needed to make this decision.
     """
     require(
-        isinstance(environment,dict) and
+        isinstance(environment,Mapping) and
         environment.get('GITHUB_EVENT_NAME') == 'schedule' and
         environment.get('GITHUB_REPOSITORY') == EXPECTED_EOD_REPOSITORY and
         environment.get('GITHUB_REF') == 'refs/heads/main' and
