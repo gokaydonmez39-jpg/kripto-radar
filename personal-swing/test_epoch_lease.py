@@ -36,7 +36,8 @@ def natural(run="890123"):
 def claim(owner, transport):
     # Fixed source clock only for offline, no-I/O regression tests.
     # Production acquire_first_claim uses its actual UTC clock.
-    return lease.acquire_first_claim(owner, transport, now=NOW)
+    return lease.acquire_first_claim(owner, transport, now=NOW,
+                                     runtime_env=env(str(owner["run_id"])))
 
 
 class MockGit:
