@@ -227,21 +227,6 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
 
     matching_scans = [r for r in old_scans if r[0] == asof]
     require(len(matching_scans) <= 1, 'SCAN_EPOCH_COLLISION')
-    # EOD scan and all its new-AL candidates are appended in ONE Google
-    # batchUpdate. A complete existing epoch must have EXACTLY the candidate
-    # set specified by its immutable research snapshot. A candidate without
-    # a scan is an orphan, not permission to reconstruct/backfill the scan.
-    epoch_candidates = [
-        r for r in old_candidates
-        if str(r[0]).startswith(asof + '|') or
-           (len(r) > 1 and r[1] == asof)
-    ]
-    expected_epoch_keys = {asof + '|' + r['symbol'] for r in all_al}
-    existing_epoch_keys = {r[0] for r in epoch_candidates}
-    require((existing_epoch_keys == expected_epoch_keys and
-             len(epoch_candidates) == len(expected_epoch_keys))
-            if matching_scans else not epoch_candidates,
-            'CANDIDATE_EPOCH_SET_CONFLICT')
     appended_scans = []
     if matching_scans:
         existing = matching_scans[0]
@@ -276,6 +261,21 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
             ';algorithmSHA=' + snapshot['analysis_fingerprint_sha256'] +
             ';source_event=' + run_event +
             ';NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']]
+    # EOD scan and all its new-AL candidates are appended in ONE Google
+    # batchUpdate. A complete existing epoch must have EXACTLY the candidate
+    # set specified by its immutable research snapshot. A candidate without
+    # a scan is an orphan, not permission to reconstruct/backfill the scan.
+    epoch_candidates = [
+        r for r in old_candidates
+        if str(r[0]).startswith(asof + '|') or
+           (len(r) > 1 and r[1] == asof)
+    ]
+    expected_epoch_keys = {asof + '|' + r['symbol'] for r in all_al}
+    existing_epoch_keys = {r[0] for r in epoch_candidates}
+    require((existing_epoch_keys == expected_epoch_keys and
+             len(epoch_candidates) == len(expected_epoch_keys))
+            if matching_scans else not epoch_candidates,
+            'CANDIDATE_EPOCH_SET_CONFLICT')
     require(len(old_candidates) + len(appended_candidates) < MAX_ROWS and
             len(old_scans) + len(appended_scans) < MAX_ROWS,
             'SHEET_CAPACITY_REACHED')
@@ -328,6 +328,10 @@ def verify_readback(p, candidates, scans):
             numeric(matching_scan[7]) == p['expected_count'],
             'SCAN_COUNT_READBACK_MISMATCH')
     observed={r[0]:r for r in cr}
+    for key in p['expected_keys']:
+        require(key in observed,'CANDIDATE_READBACK_MISSING_OR_DUPLICATE')
+        require(observed[key] == p['expected_candidate_rows'][key],
+                'CANDIDATE_READBACK_LEVELS_OR_VALUES_CHANGED')
     # The second live GET must reject additional same-ASOF candidates,
     # including rows injected after the original atomic batch but before
     # independent readback. A subset check is not an exact-set receipt.
@@ -339,10 +343,6 @@ def verify_readback(p, candidates, scans):
     require(len(epoch_rows) == len(p['expected_keys']) and
             {r[0] for r in epoch_rows} == set(p['expected_keys']),
             'CANDIDATE_EPOCH_READBACK_SET_CONFLICT')
-    for key in p['expected_keys']:
-        require(key in observed,'CANDIDATE_READBACK_MISSING_OR_DUPLICATE')
-        require(observed[key] == p['expected_candidate_rows'][key],
-                'CANDIDATE_READBACK_LEVELS_OR_VALUES_CHANGED')
     return {'status':'PRIVATE_SHEET_READBACK_PASS','asof_et':p['asof_et'],
             'candidates':p['expected_count'],'device_ack':False}
 
