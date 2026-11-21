@@ -42,10 +42,28 @@ class MockGit:
         self.calls=[]
         self.barrier=Barrier(rendezvous) if rendezvous else None
         self.tamper=None
+        self.protection="valid"
 
     def __call__(self,method,path,body=None):
         with self.lock:
             self.calls.append((method,path,copy.deepcopy(body)))
+        if method=="GET" and path=="/rulesets":
+            if self.protection=="absent":
+                return [{"id":1,"target":"branch","enforcement":"active"}]
+            return [{"id":11,"target":"tag","enforcement":"active"}]
+        if method=="GET" and path=="/rulesets/11":
+            types=["update","deletion"]
+            if self.protection=="no_update":
+                types=["deletion"]
+            return {
+                "id":11,"target":"tag",
+                "enforcement":"disabled" if self.protection=="disabled" else "active",
+                "conditions":{"ref_name":{
+                    "include":[lease.PROTECTED_PATTERN],
+                    "exclude":[]}},
+                "rules":[{"type":r} for r in types],
+                "bypass_actors":[{"actor_id":1}] if self.protection=="bypass" else [],
+            }
         if method=="POST" and path=="/git/tags":
             tag_sha=sha1(json.dumps(body,sort_keys=True).encode()).hexdigest()
             with self.lock:
@@ -147,7 +165,8 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(out["device_ack"],"UNKNOWN")
         self.assertEqual(
             [(method,path) for method,path,_ in git.calls],
-            [("POST","/git/tags"),("POST","/git/refs"),
+            [("GET","/rulesets"),("GET","/rulesets/11"),
+             ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
              ("GET","/git/tags/"+out["tag_sha"])])
         manifest=json.loads(git.tags[out["tag_sha"]]["message"])
@@ -191,20 +210,28 @@ class FirstClaimAndReadback(unittest.TestCase):
     def test_missing_post_receipt_and_error_are_not_authority(self):
         for response in (None,{},{"sha":"malformed"}):
             with self.subTest(response=response):
-                calls=[]
-                def no_vendor(method,path,body=None):
-                    calls.append((method,path))
-                    return response
+                git=MockGit()
+                def incomplete(method,path,body=None):
+                    if method=="POST" and path=="/git/tags":
+                        git.calls.append((method,path,copy.deepcopy(body)))
+                        return response
+                    return git(method,path,body)
                 with self.assertRaisesRegex(lease.LeaseHold,
                                             "LEASE_TAG_OBJECT_UNVERIFIED"):
-                    lease.acquire_first_claim(natural(),no_vendor)
-                self.assertEqual(calls,[("POST","/git/tags")])
+                    lease.acquire_first_claim(natural(),incomplete)
+                self.assertEqual(
+                    [(m,p) for m,p,_ in git.calls],
+                    [("GET","/rulesets"),("GET","/rulesets/11"),
+                     ("POST","/git/tags")])
 
     def test_transport_timeout_does_not_retry_post(self):
+        git=MockGit()
         calls=[]
         def lost(method,path,body=None):
-            calls.append((method,path))
-            raise TimeoutError("ambiguous write")
+            if method=="POST":
+                calls.append((method,path))
+                raise TimeoutError("ambiguous write")
+            return git(method,path,body)
         with self.assertRaisesRegex(lease.LeaseHold,
                                     "LEASE_GITHUB_TRANSPORT_UNCERTAIN"):
             lease.acquire_first_claim(natural(),lost)
@@ -221,6 +248,17 @@ class FirstClaimAndReadback(unittest.TestCase):
                                             "LEASE_OWNER_CONTRACT_INVALID"):
                     lease.acquire_first_claim(owner,git)
                 self.assertEqual(git.calls,[])
+
+    def test_absent_or_mutable_tag_namespace_blocks_before_any_post(self):
+        for mode in ("absent","disabled","bypass","no_update"):
+            with self.subTest(mode=mode):
+                git=MockGit()
+                git.protection=mode
+                with self.assertRaisesRegex(
+                        lease.LeaseHold,"LEASE_TAG_PROTECTION_UNVERIFIED"):
+                    lease.acquire_first_claim(natural(),git)
+                self.assertFalse(
+                    any(method=="POST" for method,_,_ in git.calls))
 
     def test_missing_token_is_fail_closed(self):
         with self.assertRaisesRegex(lease.LeaseHold,
