@@ -200,6 +200,38 @@ class PrivateSheetHandoffTests(unittest.TestCase):
             w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
+    def test_old_asof_manual_dispatch_must_never_append_behind_latest_scan(self):
+        api = FakeApi()
+        api.scans.append(['2026-10-27','GitHub schedule VERIFIED IEX EOD',
+                          '477','477','477','0','TRUE','0',RUN,'source_event=schedule'])
+        original=copy.deepcopy(api.scans)
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'SCAN_DATE_ORDER_OR_STALE_ASOF'):
+            w.synchronize(snapshot(),RUN,api,run_event='workflow_dispatch')
+        self.assertEqual(api.apply_count,0)
+        self.assertEqual(api.scans,original)
+        self.assertEqual(len(api.candidates),1)
+
+    def test_older_same_run_epoch_reuse_after_newer_scan_must_be_refused(self):
+        api = FakeApi()
+        w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        api.scans.append(['2026-10-27','GitHub schedule VERIFIED IEX EOD',
+                          '477','477','477','0','TRUE','0',RUN,'source_event=schedule'])
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'SCAN_DATE_ORDER_OR_STALE_ASOF'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,1)
+        self.assertEqual(len(api.scans),3)
+
+    def test_corrupted_existing_scan_order_must_block_future_append(self):
+        api=FakeApi()
+        api.scans.extend([
+            ['2026-10-27'],['2026-10-25']])
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    'SCAN_DATE_ORDER_OR_STALE_ASOF'):
+            w.synchronize(snapshot(),RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,0)
+
     def test_same_asof_different_counts_blocks(self):
         api=FakeApi()
         p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event='schedule')
