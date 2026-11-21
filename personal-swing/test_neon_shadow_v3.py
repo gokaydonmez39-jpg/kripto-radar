@@ -113,6 +113,44 @@ class NeonShadowV3Tests(unittest.TestCase):
         with self.assertRaisesRegex(n.NeonHold,'DUPLICATE_RAW_BAR_SESSION'):
             self.result(raw=raw)
 
+    def test_utc_shifted_local_asof_bar_cannot_be_scored(self):
+        # A local date prefix is insufficient: Nov 19 23:30 -04:00 is
+        # Nov 20 03:30 UTC, i.e. not the requested Nov 19 XNAS bar.
+        raw=copy.deepcopy(self.raw)
+        raw[MASTER[0]][-1]['timestamp']='2026-11-19T23:30:00-04:00'
+        with self.assertRaisesRegex(n.NeonHold,
+                                    'RAW_BAR_FROM_FUTURE'):
+            self.result(raw=raw)
+
+    def test_neon_indicators_match_independent_production_engine(self):
+        # Production engine uses its own indicator implementation. Cross-check
+        # all key factors with source-derived 52 XNAS bars, not the NEON
+        # fixture-derived synthetic snapshot (which is otherwise self-referential).
+        import engine
+        for symbol in [MASTER[k] for k in (0, 119, 238, 357, 476)]:
+            with self.subTest(symbol=symbol):
+                bars=copy.deepcopy(self.raw[symbol])
+                # Perturb the CURRENT close/high/volume to catch off-by-one
+                # RSI, ATR, rolling-high and relative-volume regression.
+                last=bars[-1]
+                last['close']+=.23
+                last['high']=max(last['high'],last['close']+.1)
+                last['volume']*=1.17
+                prod=engine.analyze(symbol,bars,ASOF)
+                neon=n.indicators(bars)
+                self.assertNotEqual(prod['decision'],'VERI_YETERSIZ')
+                for source,metric,tolerance in (
+                    ('close','close',.00051),
+                    ('sma20','sma20',.00051),
+                    ('sma50','sma50',.00051),
+                    ('prior_high20','prior_high20',.00051),
+                    ('relative_iex_volume','rvol20',.00051),
+                    ('rsi14','rsi14',.0051),
+                    ('atr14','atr14',.00051)):
+                    self.assertLessEqual(abs(prod[source]-neon[metric]),
+                                         tolerance,
+                                         (symbol,source,prod[source],neon[metric]))
+
     def test_naive_timestamp_rejected(self):
         raw=dict(self.raw)
         bars=copy.deepcopy(self.raw[MASTER[0]])
