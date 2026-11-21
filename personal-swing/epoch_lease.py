@@ -269,11 +269,21 @@ def main(argv=None):
     try:
         verify_live_tag_protection(
             github_transport(os.environ["GITHUB_TOKEN"]))
-    except Exception:
-        # Intentionally suppress exception details: never print credentials,
-        # provider response, internal headers or request URLs to CI logs.
+    except Exception as exc:
+        # Only audit-approved fixed categories may enter public logs.
+        # Never expose HTTP body, exception message, URL or token.
+        if isinstance(exc, HTTPError):
+            status = exc.code if exc.code in (400, 401, 403, 404, 429) else 0
+            reason = ("TAG_RULESET_HTTP_" + str(status)
+                      if status else "TAG_RULESET_HTTP_OTHER")
+        elif isinstance(exc, LeaseHold):
+            reason = "TAG_RULESET_CONTRACT_NOT_MATCHED"
+        elif isinstance(exc, URLError):
+            reason = "TAG_RULESET_NETWORK_UNAVAILABLE"
+        else:
+            reason = "TAG_RULESET_READ_EXCEPTION"
         print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
-                          "reason_code": "TAG_RULESET_UNVERIFIED",
+                          "reason_code": reason,
                           "writes": 0, "ab_release_authorized": False}))
         return 3
     print(json.dumps({"status": "TAG_RULESET_LIVE_GET_PASS",
