@@ -1,5 +1,6 @@
 """No-IO adversarial tests for the personal 477 XNAS schedule fallback."""
 import unittest
+from unittest.mock import patch
 from datetime import datetime,timezone
 import schedule_failover as sf
 
@@ -15,6 +16,14 @@ def record(*,created='2026-10-26T22:57:18Z',event='schedule',
 
 
 class OfficialXnasFailover(unittest.TestCase):
+    def setUp(self):
+        # Exercise hypothetical authorized recovery decision mechanics;
+        # live production remains policy-locked. The separate isolation
+        # tests below always verify the default DENY side-effect boundary.
+        policy=patch.object(sf, "allow_dispatch_for_event",return_value=True)
+        policy.start()
+        self.addCleanup(policy.stop)
+
     def test_october_postclose_absent_run_would_dispatch_once(self):
         verdict,day=sf.decision(utc('2026-10-27T00:25:00Z'),[])
         self.assertEqual((verdict,day),('DISPATCH_ONE_MISSING_SCHEDULE','2026-10-26'))
@@ -513,6 +522,33 @@ class ManualEodSourceIsolation(unittest.TestCase):
         self.assertIn("cancel-in-progress: false",source)
 
 
+class DispatchCallbackPolicyIsolation(unittest.TestCase):
+    """An injectable dispatch callback may never bypass release policy."""
+
+    def test_locked_natural_and_manual_cannot_invoke_callback(self):
+        for event in ("schedule", "workflow_dispatch"):
+            with self.subTest(event=event):
+                reads=[]
+                calls=[]
+                def runs():
+                    reads.append(1)
+                    return {"total_count":0,"workflow_runs":[]}
+                def forbidden(asof):
+                    calls.append(asof)
+                    raise AssertionError("POLICY_LOCK_BYPASSED_REQUEST_DISPATCH")
+                result=sf.run(now=utc("2026-10-27T00:25:00Z"),
+                              read_runs=runs,
+                              request_dispatch=forbidden,
+                              trigger_event=event)
+                self.assertEqual(len(reads),2)
+                self.assertEqual(calls,[])
+                self.assertEqual(result["status"],"BLOCKED_DISPATCH_NOT_CONFIRMED")
+                self.assertEqual(result["reason_code"],
+                    "NATURAL_FALLBACK_POLICY_LOCKED" if event=="schedule"
+                    else "MANUAL_FALLBACK_POLICY_LOCKED")
+                self.assertFalse(result["dispatch_requested"])
+                self.assertEqual(sf.exit_code_for_result(result,event),3)
+
 class MissingEodFailureAttributionTests(unittest.TestCase):
     def test_natural_fallback_policy_lock_is_explicit_but_still_red(self):
         reads = []
@@ -530,7 +566,7 @@ class MissingEodFailureAttributionTests(unittest.TestCase):
         self.assertEqual(result['dispatch_requested'],False)
         self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
         self.assertEqual(reads,[True,True])
-        self.assertEqual(requests,['2026-10-26'])
+        self.assertEqual(requests,[])
 
     def test_manual_recovery_policy_lock_is_explicit_and_nongreen(self):
         def runs():
