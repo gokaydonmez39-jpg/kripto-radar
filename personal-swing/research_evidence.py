@@ -12,7 +12,10 @@ import math
 import re
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
+
+from research_source_events import event_evidence
 
 SCHEMA = "XRAY_RESEARCH_EVIDENCE_V1"
 ACCESSION_RE = re.compile(r"^\d{10}-\d{2}-\d{6}$")
@@ -165,57 +168,103 @@ def form4_transaction_evidence(xml_text, *, expected_cik, accepted_utc, cutoff_u
     return result
 
 def fred_vintage_evidence(payload, *, series_id, cutoff_utc, release_times):
-    """ALFRED vintage-aware selection, requiring explicit release timestamps.
+    """Select only locally supplied, time-evidenced ALFRED vintages.
 
-    realtime_start/realtime_end give *dates*, not minute-level publication times.
-    Never infer an intraday observation from a vintage date alone.
+    Date intervals are inclusive and retain the V1 UTC-day convention. The
+    immediately prior vintage can bridge into the revision day only when
+    adjacent and the successor's release clock is known and still ahead.
+    Caller-supplied clocks and intervals do not attest provider availability.
     """
     cutoff = utc_time(cutoff_utc)
-    if not isinstance(release_times, dict) or not isinstance(series_id, str) or not series_id:
+    cut_day = cutoff.date()
+    if type(release_times) is not dict or not isinstance(series_id, str) or not series_id.strip():
         raise ValueError("MACRO_SOURCE_METADATA_REQUIRED")
-    rows = payload.get("observations")
+    rows = payload.get("observations") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
         raise ValueError("FRED_OBSERVATIONS_MISSING")
-    selected, omitted = {}, 0
+
+    by_day, invalid_days, expired_days, omitted = {}, set(), set(), 0
     for row in rows:
+        observation = None
         try:
-            observation_date = strict_day(row["date"])
+            observation = strict_day(row["date"])
+            if observation > cut_day:
+                continue
             start = strict_day(row["realtime_start"])
+            if start > cut_day:
+                continue
             end = strict_day(row["realtime_end"])
-            raw = row["value"]
-            if observation_date > cutoff.date() or start > cutoff.date() or end < cutoff.date():
+            if end < start:
+                raise ValueError("FRED_INTERVAL_REVERSED")
+            if (cut_day - end).days > 1:
+                expired_days.add(observation)
                 continue
-            if raw == ".":
-                omitted += 1
-                continue
-            value = float(raw)
-            if not math.isfinite(value):
-                raise ValueError("FRED_VALUE_NOT_FINITE")
-            # Caller maps vintage+observation to an independently proved release instant.
-            time_key = f"{observation_date}|{start}"
-            released = utc_time(release_times[time_key])
-            if released > cutoff:
-                continue
+            # Keep exact source values for conflict detection, including when
+            # distinct decimals round to the same binary float.
+            clock_key = f"{observation}|{start}"
+            released = utc_time(release_times[clock_key])
             if released.date() < start:
                 raise ValueError("INVALID_RELEASE_BEFORE_VINTAGE")
-        except (KeyError, TypeError, ValueError):
+            # Unreleased values must never affect the as-of value, including
+            # disagreements between not-yet-available values of one revision.
+            raw = row.get("value")
+            if released > cutoff:
+                value = None
+            elif raw == ".":
+                value = None
+            else:
+                if type(raw) is not str or len(raw) > 100 or not re.fullmatch(
+                    r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?", raw
+                ):
+                    raise ValueError("FRED_VALUE_INVALID")
+                value = Decimal(raw)
+                numeric = float(value)
+                if not math.isfinite(numeric) or (value != 0 and numeric == 0):
+                    raise ValueError("FRED_VALUE_NOT_REPRESENTABLE")
+                if value == 0:
+                    value = Decimal(0)
+            by_day.setdefault(observation, set()).add((start, end, released, value))
+        except (KeyError, TypeError, ValueError, InvalidOperation, OverflowError):
+            omitted += 1
+            if observation is not None:
+                invalid_days.add(observation)
+
+    chosen, quarantined = [], invalid_days | (expired_days - by_day.keys())
+    for observation, versions in sorted(by_day.items()):
+        if observation in invalid_days:
+            continue
+        active = [v for v in versions if v[1] >= cut_day]
+        prior = [v for v in versions if v[1] < cut_day]
+        # Distinct date intervals or payload values on one applicable vintage
+        # cannot be resolved by input order or silently replaced by older data.
+        if len(active) != 1:
+            quarantined.add(observation)
+            continue
+        start, end, released, value = active[0]
+        if released > cutoff:
+            adjacent = (start == cut_day and released.date() == cut_day and
+                        len(prior) == 1 and prior[0][2] <= cutoff and
+                        prior[0][0] < start and prior[0][3] is not None)
+            if not adjacent:
+                if prior or observation in expired_days:
+                    quarantined.add(observation)
+                continue
+            start, end, released, value = prior[0]
+        if value is None:
+            quarantined.add(observation)
             omitted += 1
             continue
-        key = observation_date.isoformat()
-        candidate = {
-            "series_id": series_id, "observation_date": key,
+        chosen.append({
+            "series_id": series_id, "observation_date": observation.isoformat(),
             "vintage_start": start.isoformat(), "release_utc": released.isoformat(),
-            "value": value, "source": "FRED_ALFRED",
+            "value": float(value), "source": "FRED_ALFRED",
             "authority": "UNATTESTED_OFFLINE_INPUT", "action": "MACRO_RESEARCH_ONLY",
-        }
-        if key not in selected or (start.isoformat(), released.isoformat()) > (
-            selected[key]["vintage_start"], selected[key]["release_utc"]
-        ):
-            selected[key] = candidate
-    return {"observations": [selected[k] for k in sorted(selected)],
-            "unverifiable_rows": omitted,
-            "coverage": "PARTIAL_UNKNOWN" if omitted else "LOCAL_PAYLOAD_ONLY",
+        })
+    return {"observations": chosen, "unverifiable_rows": omitted,
+            "quarantined_observations": len(quarantined),
+            "coverage": "PARTIAL_UNKNOWN" if omitted or quarantined else "LOCAL_PAYLOAD_ONLY",
             "live_source_attested": False}
+
 
 def holdings_13f_evidence(*, accession, report_period, accepted_utc, cutoff_utc):
     """Never treat the quarter-end holding snapshot as the public availability time."""
@@ -235,7 +284,8 @@ def holdings_13f_evidence(*, accession, report_period, accepted_utc, cutoff_utc)
 
 def build_record(*, symbol, expected_cik, cutoff_utc,
                  sec_payload=None, form4_xml=None, form4_accepted=None,
-                 fred_payload=None, fred_series=None, release_times=None):
+                 fred_payload=None, fred_series=None, release_times=None,
+                 source_event_rows=None):
     utc_time(cutoff_utc)
     cik10(expected_cik)
     if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}", symbol):
@@ -264,6 +314,12 @@ def build_record(*, symbol, expected_cik, cutoff_utc,
         result["macro"] = fred_vintage_evidence(
             fred_payload, series_id=fred_series, cutoff_utc=cutoff_utc,
             release_times=release_times)
+    if source_event_rows is not None:
+        result["official_source_events"] = event_evidence(
+            source_event_rows, cutoff_utc=cutoff_utc)
+        if any(row["source"] == "SEC" and row["issuer_cik"] != cik10(expected_cik)
+               for row in result["official_source_events"]["events"]):
+            raise ValueError("SOURCE_EVENT_ISSUER_MISMATCH")
     return result
 
 def main(argv=None):
@@ -277,6 +333,8 @@ def main(argv=None):
     p.add_argument("--fred-json", type=Path)
     p.add_argument("--fred-series")
     p.add_argument("--fred-release-times-json", type=Path)
+    p.add_argument("--official-events-json", type=Path,
+                   help="Locally supplied SEC/Fed/BLS event observations, not live evidence")
     p.add_argument("--output", required=True, type=Path)
     a = p.parse_args(argv)
     load = lambda path: json.loads(path.read_text(encoding="utf-8")) if path else None
@@ -286,7 +344,8 @@ def main(argv=None):
         form4_xml=a.form4_xml.read_text(encoding="utf-8") if a.form4_xml else None,
         form4_accepted=a.form4_accepted_utc,
         fred_payload=load(a.fred_json), fred_series=a.fred_series,
-        release_times=load(a.fred_release_times_json))
+        release_times=load(a.fred_release_times_json),
+        source_event_rows=load(a.official_events_json))
     a.output.parent.mkdir(parents=True, exist_ok=True)
     if a.output.exists():
         raise RuntimeError("OUTPUT_ALREADY_EXISTS_NO_OVERWRITE")
