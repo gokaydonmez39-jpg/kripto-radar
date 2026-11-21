@@ -223,14 +223,16 @@ def exit_code_for_result(result, event):
     status=result.get('status')
     accepted=('NOOP_CURRENT_EPOCH_RUN_EXISTS',
               'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS')
+    # Official XNAS holidays/early no-session windows are legitimate safe
+    # no-ops, not missing natural EODs. Never turn holidays into false alarms.
+    safe_noop=('NOOP_SESSION_NOT_READY',
+               'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
     if event == 'schedule':
-        return 0 if status in accepted else 3
+        return 0 if status in accepted+safe_noop else 3
     if event == 'workflow_dispatch':
         # Explicit manual dry-run, no-session and manual accepted request
         # are diagnostics: they do not promote to an EOD delivery claim.
-        return 0 if status in accepted+(
-            'NOOP_SESSION_NOT_READY',
-            'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW',
+        return 0 if status in accepted+safe_noop+(
             'DRY_RUN_WOULD_DISPATCH',
             'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED') else 3
     return 3
