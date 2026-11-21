@@ -106,7 +106,7 @@ def _manifest(owner):
                       sort_keys=True,separators=(",",":"),ensure_ascii=True)
 
 
-def verify_live_tag_protection(transport):
+def verify_live_tag_protection(transport, *, probe_only=False):
     """Read ruleset list + exact tag-rule details before ANY write.
 
     Neither branch rulesets nor unprotected tags are an immutable lease.
@@ -147,9 +147,13 @@ def verify_live_tag_protection(transport):
         bypass=detailed.get("bypass_actors")
         if bypass==[]:
             return True
-        if not isinstance(bypass,list):
+        if bypass is None:
             unavailable_bypass=True
     if unavailable_bypass:
+        if probe_only:
+            # Action token may omit admin-only bypass metadata. This proves
+            # ONLY public rule conditions, NEVER full immutability authority.
+            return "TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
         raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_FIELD_UNAVAILABLE")
     if exact_rule_without_bypass:
         raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_ACTOR_PRESENT")
@@ -269,7 +273,7 @@ def main(argv=None):
     import sys
 
     args = sys.argv[1:] if argv is None else argv
-    if args != ["--verify-tag-protection"]:
+    if args not in (["--verify-tag-protection"],["--probe-tag-protection"]):
         print(json.dumps({"status": "TAG_RULESET_READ_ONLY_HOLD",
                           "reason_code": "UNSUPPORTED_CLI_ACTION",
                           "writes": 0, "ab_release_authorized": False}))
@@ -281,8 +285,9 @@ def main(argv=None):
                           "writes": 0, "ab_release_authorized": False}))
         return 3
     try:
-        verify_live_tag_protection(
-            github_transport(os.environ["GITHUB_TOKEN"]))
+        result=verify_live_tag_protection(
+            github_transport(os.environ["GITHUB_TOKEN"]),
+            probe_only=(args==["--probe-tag-protection"]))
     except Exception as exc:
         # Only audit-approved fixed categories may enter public logs.
         # Never expose HTTP body, exception message, URL or token.
@@ -308,10 +313,15 @@ def main(argv=None):
                           "reason_code": reason,
                           "writes": 0, "ab_release_authorized": False}))
         return 3
-    print(json.dumps({"status": "TAG_RULESET_LIVE_GET_PASS",
-                      "protected_pattern": PROTECTED_PATTERN,
-                      "writes": 0, "ab_release_authorized": False,
-                      "device_ack": "UNKNOWN"}))
+    partial=result=="TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
+    print(json.dumps({
+        "status": ("TAG_RULESET_PROJECTION_PASS_BYPASS_UNKNOWN"
+                   if partial else "TAG_RULESET_LIVE_GET_PASS"),
+        "protected_pattern": PROTECTED_PATTERN,
+        "bypass_verified": not partial,
+        "writes": 0, "ab_release_authorized": False,
+        "device_ack": "UNKNOWN",
+    }))
     return 0
 
 
