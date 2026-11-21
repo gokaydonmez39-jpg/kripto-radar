@@ -150,6 +150,23 @@ def main(argv=None):
     p.add_argument('--neon-shadow',action='store_true',help='Ephemeral research-only NEON audit; no delivery')
     p.add_argument('--github-safe-log',action='store_true',help='Suppress per-symbol detail')
     a=p.parse_args(argv)
+    # GitHub explicit-ASOF is a recovery hint, never permission to replay an
+    # expired or historical session. Check BEFORE watchlist or market IO.
+    # Ordinary local offline backtests retain their existing explicit-ASOF API.
+    if a.asof is not None and os.environ.get('GITHUB_EVENT_NAME') in (
+            'schedule', 'workflow_dispatch'):
+        try:
+            eligible_asof=current_completed_session()
+        except Exception:
+            # Unverified calendar/clock is HOLD, not an implicit waiver.
+            eligible_asof=None
+        if a.asof != eligible_asof:
+            print(json.dumps({
+                'status':'BLOCKED_EXPLICIT_ASOF_OUTSIDE_CURRENT_XNAS_FRESHNESS_WINDOW',
+                'execution':'NONE','market_data_called':False,
+                'dispatch_requested':False,'sheet_writes':False
+            },sort_keys=True))
+            return 3
     asof=a.asof if a.asof else current_completed_session()
     if asof is None:
         if (os.environ.get('GITHUB_EVENT_NAME')=='schedule'
