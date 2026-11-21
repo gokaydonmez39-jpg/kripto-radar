@@ -471,6 +471,40 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
 
 
+class ManualEodSourceIsolation(unittest.TestCase):
+    """Manual workflow invocations may run offline tests only.
+
+    With canonical writer failing closed on workflow_dispatch, allowing the
+    preceding 477-vendor scan is a partial side effect and no recovery.
+    """
+    def test_all_private_producers_require_natural_schedule(self):
+        from pathlib import Path
+        import re
+        source=(Path(__file__).resolve().parents[1] / '.github' /
+                'workflows' / 'xray-personal-477-eod.yml').read_text()
+        jobs=source.split('\n  ')[1:]
+        names=(
+            'daily-private-scan',
+            'private-sheets-auth-preflight',
+            'private-episode-followups',
+            'guardian-acceptance',
+            'daily-private-score-acceptance',
+        )
+        for name in names:
+            with self.subTest(job=name):
+                block=next((s for s in jobs if s.startswith(name+':')),None)
+                self.assertIsNotNone(block)
+                found=re.search(r"(?m)^    if: (.*)$",block)
+                self.assertIsNotNone(found)
+                expr=found.group(1)
+                self.assertIn("github.event_name == 'schedule'",expr)
+                self.assertNotIn("workflow_dispatch",expr)
+        self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"),1)
+        self.assertIn("  workflow_dispatch:",source)
+        self.assertIn("    needs: offline-guard",source)
+        self.assertIn("cancel-in-progress: false",source)
+
+
 class MissingEodFailureAttributionTests(unittest.TestCase):
     def test_natural_fallback_policy_lock_is_explicit_but_still_red(self):
         reads = []
