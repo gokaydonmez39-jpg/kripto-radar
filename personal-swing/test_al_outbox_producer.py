@@ -1,6 +1,13 @@
 """Offline regressions for private AL PENDING outbox; no Google or broker calls."""
 import copy
 import unittest
+import contextlib
+import io
+import json
+import os
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 
 import alert_ledger_contract as lc
 import alert_outbox_producer as out
@@ -43,6 +50,38 @@ class Fake:
         if not self.discard_append:
             self.alerts.extend(copy.deepcopy(rows))
 
+
+class ALPendingOutboxSourceIsolation(unittest.TestCase):
+    def test_noncanonical_scheduled_producer_never_opens_outbox_sheet(self):
+        good={
+            'GITHUB_EVENT_NAME':'schedule','GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':writer.EXPECTED_EOD_REPOSITORY,
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_WORKFLOW_REF':writer.EXPECTED_EOD_WORKFLOW_REF,
+            'GITHUB_SHA':'a'*40,
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'fake-offline-token',
+        }
+        for key,bad in (('GITHUB_EVENT_NAME','push'),
+                        ('GITHUB_EVENT_NAME','workflow_dispatch'),
+                        ('GITHUB_WORKFLOW_REF','other/workflow@refs/heads/main'),
+                        ('GITHUB_REPOSITORY','not-personal477/repo'),
+                        ('GITHUB_REF','refs/heads/not-main'),
+                        ('GITHUB_RUN_ATTEMPT','2')):
+            with self.subTest(key=key,value=bad):
+                env=dict(good);env[key]=bad
+                with tempfile.TemporaryDirectory() as folder:
+                    file=Path(folder)/'synthetic.json'
+                    file.write_text(json.dumps(snapshot()))
+                    with patch.dict(os.environ,env,clear=True):
+                        with patch.object(out,'AlertApi',
+                          side_effect=AssertionError('OUTBOX_PROVIDER_STARTED')
+                        ) as provider,contextlib.redirect_stdout(io.StringIO()) as buf:
+                            rc=out.main(['--snapshot',str(file)])
+                result=json.loads(buf.getvalue())
+                self.assertEqual(rc,3)
+                self.assertEqual(result['reason_type'],'HandoffBlocked')
+                provider.assert_not_called()
 
 class ALPendingOutboxTests(unittest.TestCase):
     def test_new_al_is_pending_and_replay_is_noop(self):
