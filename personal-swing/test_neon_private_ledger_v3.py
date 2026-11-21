@@ -191,6 +191,45 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         self.assertEqual(p["rows"][0][5],"2026-11-18")
         self.assertEqual(p["rows"][0][6],"10.00")
 
+    def test_prior_pit_changed_member_is_not_rejoined(self):
+        old=copy.deepcopy(self.calculate()["rows"])
+        for row in old:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+            row[4]="70.00"
+            row[20]="a"*64
+        old[0][2]="OLDPIT"
+        old[0][0]="2026-11-18|OLDPIT"
+        rows=self.calculate(old=[list(ledger.HEADER)]+old)["rows"]
+        self.assertEqual(rows[0][5],"2026-11-18")
+        self.assertEqual(rows[0][6],"N/A")
+        self.assertEqual(rows[1][6],"10.00")
+
+    def test_old_factor_policy_change_yields_na_delta(self):
+        old=copy.deepcopy(self.calculate()["rows"])
+        for row in old:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+            row[4]="70.00"
+            row[21]="a"*64
+        rows=self.calculate(old=[list(ledger.HEADER)]+old)["rows"]
+        self.assertTrue(all(row[6]=="N/A" for row in rows))
+
+    def test_same_asof_wrong_master_sha_rejected(self):
+        old=self.calculate()["rows"]
+        for row in old: row[20]="a"*64
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"SAME_ASOF_DIFFERENT_RUN_OR_POLICY"):
+            self.calculate(old=[list(ledger.HEADER)]+old)
+
+    def test_prior_mixed_source_day_rejected(self):
+        old=copy.deepcopy(self.calculate()["rows"])
+        for row in old:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+        old[0][19]=RUN+"2"
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"LEDGER_MIXED_DAY_SOURCE"):
+            self.calculate(old=[list(ledger.HEADER)]+old)
+
     def test_no_earlier_backfill_when_latest_same_day(self):
         old=self.calculate()["rows"]
         earlier=copy.deepcopy(old)
