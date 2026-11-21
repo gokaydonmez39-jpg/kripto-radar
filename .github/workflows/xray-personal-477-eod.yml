@@ -198,6 +198,8 @@ jobs:
             exit 3
           fi
           python alert_outbox_producer.py --snapshot "$path"
+      - name: No public delivery of private signals
+        run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
       - name: Private NEON 477 full-row archive (advisory; NEVER AL, order or push)
         if: github.event_name == 'schedule'
         continue-on-error: true
@@ -217,8 +219,6 @@ jobs:
           asof=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["asof_et"])' "$snapshot")
           shadow="$RUNNER_TEMP/xray-private-data/neon_shadow_v3_${asof}.json"
           python neon_private_ledger_v3.py --snapshot "$snapshot" --shadow "$shadow"
-      - name: No public delivery of private signals
-        run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
       - name: Optional official 477 PIT-aware shadow ledger (NO AL, no market provider HTTP, no Sheet)
         # This sidecar is strictly after normal private Sheet readback.
         # No completed EOD => explicit SKIP, never a false 477-shadow PASS.
