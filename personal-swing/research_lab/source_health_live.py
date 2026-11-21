@@ -37,6 +37,25 @@ class NoProof(ValueError):
     """Expected fail-closed lack of evidence, never includes source payloads."""
 
 
+# Stable failure codes only: never serialize exception text, token, URL, or raw row.
+SAFE_STAGES = frozenset(("DEPENDENCY_IMPORT", "CREDENTIAL_CHECK",
+                        "PRIVATE_SHEET_METADATA", "XNAS_ASOF",
+                        "PROVENANCE_AGGREGATE"))
+SAFE_FAULTS = frozenset(("NoProof", "PermissionError", "HTTPError",
+                        "URLError", "TimeoutError", "ValueError",
+                        "TypeError", "KeyError", "RuntimeError",
+                        "JSONDecodeError", "OSError"))
+
+
+def safe_failure_diagnostic(stage, exc):
+    """Classify an unverified failure without disclosing source contents."""
+    code = type(exc).__name__
+    return {"stage": stage if stage in SAFE_STAGES else "UNKNOWN",
+            "fault_type": code if code in SAFE_FAULTS else "UNCLASSIFIED",
+            "market_source": "UNVERIFIED",
+            "private_rows_logged": False, "mutations": 0, "notifications": 0}
+
+
 def require(ok):
     if not ok:
         raise NoProof("EVIDENCE_NOT_VERIFIED")
@@ -284,9 +303,11 @@ class GitHubReader:
 
 
 def main():
+    stage = "DEPENDENCY_IMPORT"
     try:
         import engine
         import private_sheet_writer as writer
+        stage = "CREDENTIAL_CHECK"
         need = ("GITHUB_TOKEN", "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON",
                 "XRAY_PRIVATE_SPREADSHEET_ID")
         require(all(os.environ.get(name) for name in need))
@@ -298,8 +319,11 @@ def main():
                 raise NoProof("WRITE_DISABLED")
 
         api = ReadOnlySheet(os.environ["XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON"])
+        stage = "PRIVATE_SHEET_METADATA"
         api.check_metadata()
+        stage = "XNAS_ASOF"
         current = engine.trading_asof().isoformat()
+        stage = "PROVENANCE_AGGREGATE"
         gh = GitHubReader(os.environ["GITHUB_TOKEN"])
         health, gaps = aggregate(gh, api, current)
         states = {k: v["state"] for k, v in health["sources"].items()}
@@ -314,10 +338,13 @@ def main():
                                    "mutations": 0},
             "decision_influence": "NO_GO"}, sort_keys=True))
         return 0 if all(s.startswith("MATCHED_") for s in states.values()) else 3
-    except Exception:
-        # Never leak authenticated HTTP response, sheet IDs, raw private rows,
-        # account credentials, symbols, upstream data or exception details.
+    except Exception as exc:
+        # Preserve the old status/exit code so existing alert gates stay fail-closed.
+        # Only internally selected stage and whitelisted exception CLASS can appear.
+        # Never print exc, its message, vendor URLs, symbols or private data.
         print("XRAY_SOURCE_HEALTH_AUTO_V1=HOLD_UNVERIFIED_NO_DATA_PUBLISHED")
+        print("XRAY_SOURCE_HEALTH_DIAGNOSTIC_V1=" + json.dumps(
+            safe_failure_diagnostic(stage, exc), sort_keys=True))
         return 3
 
 
