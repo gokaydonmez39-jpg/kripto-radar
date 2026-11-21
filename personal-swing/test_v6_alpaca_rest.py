@@ -37,6 +37,50 @@ class RestAdapterTests(unittest.TestCase):
         self.assertIn('APCA-API-KEY-ID',heads)
         self.assertIn('APCA-API-SECRET-KEY',heads)
 
+    def test_transport_normalizes_offset_timestamp_to_utc(self):
+        row=raw_row("2026-11-19")
+        row['t']="2026-11-19T23:30:00-04:00"
+        converted=engine.normalize_alpaca_raw_bar(row,SYMBOL)
+        self.assertEqual(converted['timestamp'],"2026-11-20T03:30:00+00:00")
+
+    def test_primary_engine_cannot_treat_future_utc_bar_as_current_asof(self):
+        import exchange_calendars as ec
+        days=[d.date().isoformat() for d in ec.get_calendar("XNAS")
+              .sessions_in_range("2026-08-31","2026-11-19")][-52:]
+        self.assertEqual(len(days),52)
+        bars=[]
+        for i,day in enumerate(days):
+            price=100+i*0.5
+            bars.append({"timestamp":day+"T04:00:00Z","open":price,
+                         "high":price+1,"low":price-1,"close":price,
+                         "volume":float(100000+i*100)})
+        original=engine.analyze(SYMBOL,bars,"2026-11-19")
+        self.assertNotEqual(original['decision'],"VERI_YETERSIZ")
+        # Local Nov 19 must not masquerade as Nov 19 XNAS if its UTC date
+        # is Nov 20. Direct engine injection bypasses REST adapter, so
+        # primary source must independently enforce UTC provenance.
+        bars[-1]['timestamp']="2026-11-19T23:30:00-04:00"
+        result=engine.analyze(SYMBOL,bars,"2026-11-19")
+        self.assertEqual(result['decision'],"VERI_YETERSIZ")
+        self.assertIn("MISSING_EXACT_ASOF_BAR",result['reasons'])
+        # Converse boundary: previous LOCAL date with matching UTC XNAS date
+        # must retain the original decision and avoid a false missing-day.
+        bars[-1]['timestamp']='2026-11-18T23:00:00-05:00'
+        valid=engine.analyze(SYMBOL,bars,'2026-11-19')
+        self.assertEqual(valid['decision'],original['decision'])
+        self.assertEqual(valid['asof_et'],'2026-11-19')
+        # Distinct local calendar dates that map to the same UTC XNAS
+        # session are duplicates, not 52 unique observations.
+        bars[-2]['timestamp']='2026-11-19T04:00:00Z'
+        with self.assertRaisesRegex(ValueError,'Duplicate daily bar'):
+            engine.analyze(SYMBOL,bars,'2026-11-19')
+
+    def test_direct_engine_rejects_naive_bar_timestamp(self):
+        row={"timestamp":"2026-11-19T04:00:00","open":100.0,
+             "high":101.0,"low":99.0,"close":100.0,"volume":10000.0}
+        with self.assertRaisesRegex(ValueError,"IEX_BAR_TIMESTAMP_WITHOUT_TZ"):
+            engine.analyze(SYMBOL,[row],"2026-11-19")
+
     def test_pagination_accumulates_both_pages(self):
         calls=[]
         def fetch(url, headers):

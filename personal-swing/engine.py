@@ -77,8 +77,18 @@ def analyze(symbol, bars, asof):
     """Deterministic raw single-exchange IEX daily screen. Never trade or call a broker."""
     observations={}
     for x in bars:
-        day=str(x.get('timestamp',''))[:10]
-        if not day or day>asof:
+        # Also protect direct/read_batch-injected data: REST normalization is
+        # not an independent ASOF proof for every caller.
+        if type(x) is not dict or type(x.get('timestamp')) is not str:
+            raise ValueError('IEX_BAR_TIMESTAMP_INVALID')
+        try:
+            stamp=dt.datetime.fromisoformat(x['timestamp'].replace('Z','+00:00'))
+        except (ValueError,TypeError) as exc:
+            raise ValueError('IEX_BAR_TIMESTAMP_INVALID') from exc
+        if stamp.tzinfo is None or stamp.utcoffset() is None:
+            raise ValueError('IEX_BAR_TIMESTAMP_WITHOUT_TZ')
+        day=stamp.astimezone(dt.timezone.utc).date().isoformat()
+        if day>asof:
             continue
         if day in observations:
             raise ValueError('Duplicate daily bar: '+symbol+' '+day)
@@ -90,7 +100,7 @@ def analyze(symbol, bars, asof):
         observations[day]=x
     ordered=[observations[k] for k in sorted(observations)]
     # An old bar must NEVER be presented as a fresh decision for a new ASOF.
-    if not ordered or ordered[-1]['timestamp'][:10] != asof:
+    if not ordered or asof not in observations:
         return {'symbol':symbol,'sessions':len(ordered),'asof_et':asof,
                 'decision':'VERI_YETERSIZ','reasons':['MISSING_EXACT_ASOF_BAR']}
     if len(ordered)<52:
@@ -132,7 +142,7 @@ def analyze(symbol, bars, asof):
     buy=not failures
     dist=(hi20-price)/hi20
     watch=not buy and trend and -0.05<=dist<=0.04 and price>=5 and liquid
-    return {'symbol':symbol,'sessions':len(ordered),'asof_et':ordered[-1]['timestamp'][:10],
+    return {'symbol':symbol,'sessions':len(ordered),'asof_et':asof,
             'close':round(price,3),'sma20':round(ma20,3),'sma50':round(ma50,3),
             'prior_high20':round(hi20,3),'relative_iex_volume':round(relative,3),'rsi14':round(rsi,2),
             'atr14':round(atr,3),'atr_risk_pct':round(risk*100,2),
@@ -189,7 +199,8 @@ def normalize_alpaca_raw_bar(raw, symbol):
     except (ValueError,TypeError) as exc:
         raise ValueError('ALPACA_INVALID_TIMESTAMP_'+symbol) from exc
     if date.tzinfo is None:raise ValueError('ALPACA_TIMESTAMP_WITHOUT_TZ_'+symbol)
-    clean['timestamp']=date.isoformat()
+    # Preserve the instant, not the source-offset calendar-date prefix.
+    clean['timestamp']=date.astimezone(dt.timezone.utc).isoformat()
     for f in ['open','high','low','close','volume']:
         value=clean[f]
         if type(value) not in (int,float) or not math.isfinite(value) or value<=0:
