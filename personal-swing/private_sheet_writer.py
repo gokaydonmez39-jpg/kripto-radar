@@ -86,6 +86,7 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'EXISTING_SCAN_INCOMPLETE',
     'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED',
     'EXISTING_SCAN_SOURCE_SHA_CONFLICT',
+    'EXISTING_SCAN_SOURCE_IDENTITY_CONFLICT',
     'SCAN_COUNT_READBACK_MISMATCH',
     'SCAN_EPOCH_COLLISION',
     'SCAN_READBACK_DUPLICATE_ASOF',
@@ -215,6 +216,18 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
                 'EXISTING_SCAN_EPOCH_CONFLICT')
         require(len(existing) >= 10,
                 'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED')
+        # A retry may read back ONLY the receipt of its OWN run and trigger.
+        # The same ASOF, 477 coverage and algorithm SHA cannot authorize
+        # a different workflow_dispatch/schedule run to borrow another
+        # producer's immutable EOD receipt. This is read-only on conflicts.
+        origin_fields = [
+            part.strip() for part in str(existing[9]).split(';')
+            if part.strip().startswith('source_event=')
+        ]
+        require(existing[1] == RUN_EVENT_LABELS[run_event] and
+                existing[8] == run_url and
+                origin_fields == ['source_event=' + run_event],
+                'EXISTING_SCAN_SOURCE_IDENTITY_CONFLICT')
         proof = scan_source_proof(existing[9])
         require(proof['scopeSHA'] == snapshot['scope_sha256'] and
                 proof['algorithmSHA'] == snapshot['analysis_fingerprint_sha256'],
