@@ -68,6 +68,23 @@ def append_signals(snap,journal):
     return created
 
 
+def utc_session_date(timestamp):
+    """UTC day of an aware Alpaca IEX daily bar; never source-offset prefix.
+
+    Mirrors engine.analyze's UTC session semantics for lifecycle readback.
+    This pure function never calls a provider or modifies any stored episode.
+    """
+    if type(timestamp) is not str:
+        raise ValueError('FOLLOWUP_TIMESTAMP_INVALID')
+    try:
+        stamp=datetime.fromisoformat(timestamp.replace('Z','+00:00'))
+    except (ValueError,TypeError) as exc:
+        raise ValueError('FOLLOWUP_TIMESTAMP_INVALID') from exc
+    if stamp.tzinfo is None or stamp.utcoffset() is None:
+        raise ValueError('FOLLOWUP_TIMESTAMP_WITHOUT_TZ')
+    return stamp.astimezone(timezone.utc).date().isoformat()
+
+
 def track_symbol(signal,bars,asof,expiry_sessions=15):
     """Consecutive-session, no-look-ahead, OHLC-only shadow follow-up.
 
@@ -82,7 +99,9 @@ def track_symbol(signal,bars,asof,expiry_sessions=15):
     start=signal['asof_et']; done=signal.get('processed_through',start)
     existing={}
     for bar in bars:
-        day=str(bar.get('timestamp',''))[:10]
+        if type(bar) is not dict:
+            raise ValueError('FOLLOWUP_TIMESTAMP_INVALID')
+        day=utc_session_date(bar.get('timestamp'))
         if not (start<day<=asof and day>done):continue
         if day in existing:raise ValueError('DUPLICATE_FOLLOWUP_BAR')
         vals=[bar.get(z) for z in ('open','high','low','close','volume')]
