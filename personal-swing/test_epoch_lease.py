@@ -2,7 +2,7 @@
 """Adversarial, IO-free tests for atomic 477 Git-tag epoch claim."""
 import copy
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from hashlib import sha1
 from threading import Barrier, Lock
 from urllib.error import HTTPError
@@ -31,6 +31,12 @@ def env(run="890123",event="schedule"):
 def natural(run="890123"):
     return lease.verified_natural_owner(
         env(run),ASOF,NOW,completed_session=lambda _:ASOF)
+
+
+def claim(owner, transport):
+    # Fixed source clock only for offline, no-I/O regression tests.
+    # Production acquire_first_claim uses its actual UTC clock.
+    return lease.acquire_first_claim(owner, transport, now=NOW)
 
 
 class MockGit:
@@ -161,7 +167,7 @@ class FirstClaimAndReadback(unittest.TestCase):
     def test_one_success_is_source_only_not_sheet_or_device(self):
         git=MockGit()
         owner=natural()
-        out=lease.acquire_first_claim(owner,git)
+        out=claim(owner,git)
         self.assertEqual(out["state"],"FIRST_CLAIM_READBACK_VERIFIED_NOT_EOD")
         self.assertFalse(out["ab_release_authorized"])
         self.assertEqual(out["sheet_writes"],0)
@@ -182,17 +188,17 @@ class FirstClaimAndReadback(unittest.TestCase):
 
     def test_idempotent_retry_cannot_repeat_first_claim(self):
         git=MockGit()
-        lease.acquire_first_claim(natural(),git)
+        claim(natural(),git)
         with self.assertRaisesRegex(lease.LeaseHold,
                                    "LEASE_REF_COLLISION_OR_PROVIDER_REJECTION"):
-            lease.acquire_first_claim(natural(),git)
+            claim(natural(),git)
         self.assertEqual(len(git.refs),1)
 
     def test_two_distinct_writers_race_one_wins(self):
         git=MockGit(rendezvous=2)
         def one(id):
             try:
-                return lease.acquire_first_claim(natural(id),git)
+                return claim(natural(id),git)
             except lease.LeaseHold as exc:
                 return str(exc)
         with ThreadPoolExecutor(max_workers=2) as executor:
@@ -210,7 +216,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 git=MockGit();git.tamper=mutation
                 with self.assertRaisesRegex(lease.LeaseHold,
                                             "LEASE_READBACK_CONFLICT"):
-                    lease.acquire_first_claim(natural(),git)
+                    claim(natural(),git)
 
     def test_ruleset_revoked_mid_claim_never_authorizes_writer(self):
         # The Git tag may already exist; a now-unprotected ref is NOT a
@@ -219,7 +225,7 @@ class FirstClaimAndReadback(unittest.TestCase):
         git.disable_after_ref=True
         with self.assertRaisesRegex(lease.LeaseHold,
                                     "LEASE_TAG_PROTECTION_UNVERIFIED"):
-            lease.acquire_first_claim(natural(),git)
+            claim(natural(),git)
         self.assertEqual(len(git.refs),1)
         self.assertEqual(len(git.tags),1)
         self.assertEqual(git.protection,"disabled")
@@ -235,7 +241,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                     return git(method,path,body)
                 with self.assertRaisesRegex(lease.LeaseHold,
                                             "LEASE_TAG_OBJECT_UNVERIFIED"):
-                    lease.acquire_first_claim(natural(),incomplete)
+                    claim(natural(),incomplete)
                 self.assertEqual(
                     [(m,p) for m,p,_ in git.calls],
                     [("GET","/rulesets"),("GET","/rulesets/11"),
@@ -251,7 +257,7 @@ class FirstClaimAndReadback(unittest.TestCase):
             return git(method,path,body)
         with self.assertRaisesRegex(lease.LeaseHold,
                                     "LEASE_GITHUB_TRANSPORT_UNCERTAIN"):
-            lease.acquire_first_claim(natural(),lost)
+            claim(natural(),lost)
         self.assertEqual(calls,[("POST","/git/tags")])
 
     def test_untrusted_mutated_owner_cannot_acquire(self):
@@ -263,7 +269,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 git=MockGit()
                 with self.assertRaisesRegex(lease.LeaseHold,
                                             "LEASE_OWNER_CONTRACT_INVALID"):
-                    lease.acquire_first_claim(owner,git)
+                    claim(owner,git)
                 self.assertEqual(git.calls,[])
 
     def test_absent_or_mutable_tag_namespace_blocks_before_any_post(self):
@@ -273,7 +279,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 git.protection=mode
                 with self.assertRaisesRegex(
                         lease.LeaseHold,"LEASE_TAG_PROTECTION_UNVERIFIED"):
-                    lease.acquire_first_claim(natural(),git)
+                    claim(natural(),git)
                 self.assertFalse(
                     any(method=="POST" for method,_,_ in git.calls))
 
@@ -287,7 +293,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 git=MockGit()
                 with self.assertRaisesRegex(
                     lease.LeaseHold,"LEASE_OWNER_CONTRACT_INVALID"):
-                    lease.acquire_first_claim(owner,git)
+                    claim(owner,git)
                 self.assertEqual(git.calls,[])
                 self.assertEqual(git.refs,{})
 
@@ -302,8 +308,17 @@ class FirstClaimAndReadback(unittest.TestCase):
                 git=MockGit()
                 with self.assertRaisesRegex(
                     lease.LeaseHold,"LEASE_OWNER_CONTRACT_INVALID"):
-                    lease.acquire_first_claim(owner,git)
+                    claim(owner,git)
                 self.assertEqual(git.calls,[])
+
+    def test_fresh_asof_with_stale_timestamp_is_denied_before_vendor(self):
+        owner=natural()
+        owner["observed_at"]=(NOW-timedelta(minutes=11)).isoformat().replace("+00:00","Z")
+        git=MockGit()
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                    "LEASE_OWNER_CONTRACT_INVALID"):
+            claim(owner,git)
+        self.assertEqual(git.calls,[])
 
     def test_http_transport_only_exact_lease_endpoints(self):
         def fail_on_network(*_args,**_kwargs):
