@@ -317,6 +317,17 @@ def inventory(files):
                     and "github.event.workflow_run.event != 'pull_request'" not in condition)
             if not all(safe_a14_origin(j) for j in guarded):
                 errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
+            one_time=a14_jobs["private-one-time-real-source-readback"]["if"]
+            recorder=a14_jobs["private-flight-recorder"]["if"]
+            if not (isinstance(one_time,str)
+                    and "github.event_name == 'workflow_dispatch'" in one_time
+                    and "github.event_name == 'push'" not in one_time
+                    and "github.ref == 'refs/heads/main'" in one_time
+                    and "github.ref_protected == true" in one_time
+                    and "vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true'" in one_time
+                    and isinstance(recorder,str)
+                    and "github.event_name == 'push'" not in recorder):
+                errors.append("PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
         except (KeyError,AttributeError,TypeError,ValueError,yaml.YAMLError):
             errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
     for n,expected in EXPECTED.items():
@@ -405,6 +416,16 @@ def selftest():
         "github.event.workflow_run.event == 'workflow_dispatch'",
         "github.event.workflow_run.event != 'pull_request'",1)}),
         "PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
+    # Neither protected-main workflow edit nor an offline EOD push may
+    # accidentally read private data or claim a ChatGPT delivery.
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "github.event_name == 'workflow_dispatch' &&",
+        "github.event_name == 'push' &&",1)}),
+        "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "      github.event_name == 'workflow_run' &&",
+        "      (github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
+        "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")

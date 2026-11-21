@@ -5,7 +5,7 @@ name: XRAY Personal NASDAQ A14 Private Evidence Shadow (No Trades)
 # immutable, allowlisted error-code vocabulary, no private-data exposure.
 # A26 2026-10-28 protected-main read-only diagnostic: emit ONLY allowlisted
 # blocker stage and exception class, never private symbol, price or credentials.
-# This comment-only workflow change triggers existing one-time protected push gate.
+# Private source readback is explicit manual-only; file pushes never read private evidence.
 # A22: existing A21 job now also compares SHA-verified candidate issuance against
 # exact AL outbox reservations, rejects missing prior-day alarms and missing
 # closed-session terminal event; current-day unreserved AL stays PENDING until
@@ -62,10 +62,10 @@ jobs:
           fi
           echo 'XRAY_A15_RESEARCH_SOURCE=GITHUB_EVENT_CONTEXT_NO_PRIVATE_API_NO_ORDERS'
   private-one-time-real-source-readback:
-    # One protected-main smoke, triggered ONLY by changes to THIS workflow file.
+    # Explicit manual-only diagnostic, not triggered by a protected-main push.
     # Completely separate from existing EOD and notification automations.
     if: >-
-      github.event_name == 'push' &&
+      github.event_name == 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
       github.ref_protected == true &&
       vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true'
@@ -115,19 +115,18 @@ jobs:
       - name: Explicit research-only evidence semantics
         run: echo 'XRAY_A16=PRIVATE_IEX_SHEETS_READ_ONLY_NO_PRIVATE_ARTIFACTS_NO_ORDERS_NO_DEVICE_DELIVERY'
   private-flight-recorder:
-    # A21: user-surprise reliability control. Runs only alongside the EXISTING
-    # one-time A14 workflow file push or already existing successful EOD event.
-    # OAuth grants google Sheets READONLY; never sends or marks any alert ACK.
+    # A21: read-only witness AFTER a successful genuine EOD producer only.
+    # A14 file pushes cannot access private data; no device ACK is inferred.
+    # OAuth grants Google Sheets READONLY; never sends or marks any alert ACK.
     if: >-
       github.ref_protected == true &&
       vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' &&
-      ((github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-       (github.event_name == 'workflow_run' &&
-        github.event.workflow_run.conclusion == 'success' &&
-        (github.event.workflow_run.event == 'schedule' ||
-        github.event.workflow_run.event == 'workflow_dispatch') &&
-        github.event.workflow_run.head_branch == 'main' &&
-        github.event.workflow_run.head_repository.full_name == github.repository))
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'schedule' ||
+       github.event.workflow_run.event == 'workflow_dispatch') &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     environment: private-nasdaq-research
     timeout-minutes: 10
