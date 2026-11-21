@@ -487,7 +487,8 @@ class ManualEodSourceIsolation(unittest.TestCase):
         import re
         source=(Path(__file__).resolve().parents[1] / '.github' /
                 'workflows' / 'xray-personal-477-eod.yml').read_text()
-        jobs=source.split('\n  ')[1:]
+        # Match top-level two-space job blocks only; a plain split would
+        # also break on nested four-space 'if' and 'needs' lines.
         names=(
             'daily-private-scan',
             'private-sheets-auth-preflight',
@@ -497,9 +498,11 @@ class ManualEodSourceIsolation(unittest.TestCase):
         )
         for name in names:
             with self.subTest(job=name):
-                block=next((s for s in jobs if s.startswith(name+':')),None)
-                self.assertIsNotNone(block)
-                found=re.search(r"(?m)^    if: (.*)$",block)
+                matched=re.search(r"(?ms)^  "+re.escape(name)+
+                                  r":\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
+                                  source)
+                self.assertIsNotNone(matched)
+                found=re.search(r"(?m)^    if: (.*)$",matched.group(1))
                 self.assertIsNotNone(found)
                 expr=found.group(1)
                 self.assertIn("github.event_name == 'schedule'",expr)
