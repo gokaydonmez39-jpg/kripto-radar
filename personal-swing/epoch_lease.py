@@ -190,6 +190,12 @@ def acquire_first_claim(owner, transport):
             observed_tag["object"].get("type")=="commit" and
             observed_tag["object"].get("sha")==owner["source_sha"],
             "LEASE_READBACK_CONFLICT")
+        # Ref and annotation may have been valid when read, but a ruleset
+        # can be disabled between the first preflight and creation.
+        # A previously created ref must NEVER confer write authority
+        # after its immutability guarantee disappeared. This is a
+        # post-readback GET-only check; no retry or compensating delete.
+        verify_live_tag_protection(transport)
     except LeaseHold:
         raise
     except HTTPError as error:
