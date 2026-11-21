@@ -64,7 +64,7 @@ class TestOosAudit(unittest.TestCase):
         def reader(symbols,asof):
             self.assertEqual(symbols,['AAPL'])
             self.assertEqual(asof,'2026-11-09')
-            return {'AAPL':[{'timestamp':'2026-11-09','close':103.0}]}
+            return {'AAPL':[{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
         evidence=o.score_matured(pairs,'2026-11-09',reader)
         outcome=o.summarize(evidence,2,0)
         self.assertEqual(outcome['horizons']['1']['model_mape_pct'],
@@ -74,6 +74,48 @@ class TestOosAudit(unittest.TestCase):
         self.assertEqual(outcome['horizons']['1']['direction_hit_rate'],1.0)
         self.assertFalse(outcome['sufficient_for_decision'])
         self.assertEqual(outcome['decision_influence'],'NO_GO')
+
+    def test_utc_nov20_target_from_offset_bar_is_scored_correctly(self):
+        row=forecast('AAPL','2026-11-19')[0]
+        pairs=[(row,'2026-11-20')]
+        bars={'AAPL':[{'timestamp':'2026-11-19T23:30:00-05:00',
+                       'close':103.0}]}
+        result=o.score_matured(pairs,'2026-11-20',lambda *args:bars)
+        self.assertEqual(len(result[1]),1)
+        self.assertEqual(result[1][0]['asof'],'2026-11-19')
+        self.assertAlmostEqual(result[1][0]['model_pct_error'],
+                               100*abs(float(row[5])-103)/103)
+
+    def test_utc_duplicate_offset_bars_are_rejected_before_oos_scoring(self):
+        row=forecast('AAPL','2026-11-19')[0]
+        bars={'AAPL':[
+            {'timestamp':'2026-11-19T23:30:00-05:00','close':102.0},
+            {'timestamp':'2026-11-20T04:30:00Z','close':103.0},
+        ]}
+        with self.assertRaisesRegex(k.ShadowHold,
+                                    'KRONOS_OOS_PROVIDER_DUPLICATE_DATE'):
+            o.score_matured([(row,'2026-11-20')],'2026-11-20',
+                            lambda *args:bars)
+
+    def test_source_offset_friday_utc_saturday_is_not_a_trading_session(self):
+        row=forecast('AAPL','2026-11-19')[0]
+        bogus={'AAPL':[{'timestamp':'2026-11-20T23:30:00-05:00',
+                        'close':103.0}]}
+        with self.assertRaisesRegex(k.ShadowHold,
+                                    'KRONOS_OOS_PROVIDER_NONSESSION_BAR'):
+            o.score_matured([(row,'2026-11-20')],'2026-11-23',
+                            lambda *args:bogus)
+
+    def test_naive_and_malformed_timestamp_never_create_oos_success(self):
+        row=forecast('AAPL','2026-11-19')[0]
+        for stamp in ('2026-11-20T05:00:00',
+                      '2026-11-20NOT_ISO'):
+            with self.subTest(timestamp_type=stamp[-5:]):
+                bars={'AAPL':[{'timestamp':stamp,'close':103.0}]}
+                with self.assertRaisesRegex(k.ShadowHold,
+                                            'KRONOS_OOS_PROVIDER_TIMESTAMP_INVALID'):
+                    o.score_matured([(row,'2026-11-20')],'2026-11-20',
+                                    lambda *args:bars)
 
     def test_missing_realized_price_is_not_zero_or_success(self):
         with self.assertRaisesRegex(k.ShadowHold,'MISSING_TARGET_CLOSE'):
@@ -102,7 +144,7 @@ class TestOosAudit(unittest.TestCase):
         def reader(symbols,asof):
             # No delisted issuer lookup or GNTX/FOXA proxy.
             self.assertEqual(symbols,['AAPL'])
-            return {'AAPL':[{'timestamp':'2026-11-09','close':103.0}]}
+            return {'AAPL':[{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
         future=['2026-11-09','2026-11-10','2026-11-11','2026-11-12',
                   '2026-11-13','2026-11-16','2026-11-17','2026-11-18',
                   '2026-11-19','2026-11-20','2026-11-23','2026-11-24']
@@ -119,7 +161,7 @@ class TestOosAudit(unittest.TestCase):
         matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-05')
         def reader(symbols,asof):
             self.assertEqual(symbols,['ROKU'])
-            return {'ROKU':[{'timestamp':'2026-11-06','close':103.0}]}
+            return {'ROKU':[{'timestamp':'2026-11-06T04:00:00Z','close':103.0}]}
         future=['2026-11-06','2026-11-09','2026-11-10','2026-11-11',
                   '2026-11-12','2026-11-13','2026-11-16','2026-11-17',
                   '2026-11-18','2026-11-19','2026-11-20','2026-11-23']

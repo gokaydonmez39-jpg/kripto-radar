@@ -14,6 +14,8 @@ import math
 import os
 import re
 
+import exchange_calendars as ec
+import tracker
 import kronos_shadow as k
 import kronos_v2 as v2
 
@@ -140,12 +142,23 @@ def score_matured(matured, completed_asof, read_batch):
     require(isinstance(bars, dict) and set(bars) == set(symbols),
             'KRONOS_OOS_PROVIDER_SCOPE_DRIFT')
     by_symbol_date = {}
+    cal = ec.get_calendar('XNAS')
     for symbol in symbols:
         seq = bars[symbol]
         require(isinstance(seq, list), 'KRONOS_OOS_PROVIDER_BARS_NOT_LIST')
         for bar in seq:
-            dt = str(bar.get('timestamp',''))[:10]
+            # An offset-aware market bar is identified by its UTC session day.
+            # String[:10] silently shifts an IEX Nov20 outcome to Nov19
+            # for non-UTC source offsets, corrupting benchmark error.
+            try:
+                dt = tracker.utc_session_date(
+                    bar.get('timestamp') if isinstance(bar, dict) else None)
+            except (ValueError, TypeError):
+                raise k.ShadowHold(
+                    'KRONOS_OOS_PROVIDER_TIMESTAMP_INVALID') from None
             if dt <= completed_asof:
+                require(cal.is_session(dt),
+                        'KRONOS_OOS_PROVIDER_NONSESSION_BAR')
                 key = (symbol, dt)
                 require(key not in by_symbol_date,
                         'KRONOS_OOS_PROVIDER_DUPLICATE_DATE')
