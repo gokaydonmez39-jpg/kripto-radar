@@ -6,8 +6,9 @@ name: XRAY Personal 477 EOD Daily Health (Research Only)
 # No extra cadence, generated alarms, trading or crypto-related modification.
 # XRAY 2026-10-28 after-close controlled START/FINAL activation: comment-only.
 # This protected main push is offline-only; no private EOD or Sheet writes.
-# Genuine schedule and separately authorized workflow_dispatch are the only
-# sources allowed to start the private EOD and lifecycle chain.
+# Only genuine schedule may start private EOD and lifecycle jobs.
+# workflow_dispatch remains an OFFLINE-ONLY diagnostic trigger without vendor
+# reads, Sheet writes, recovery epoch ownership or ChatGPT delivery.
 # Single cron refresh; EOD signal rules, source hashes and outbox unchanged.
 # A19 one-shot workflow_run integration acceptance:
 # A protected-main push to this FILE executes only the offline EOD guard;
@@ -100,7 +101,7 @@ jobs:
           python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
   daily-private-scan:
     needs: offline-guard
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 42
     # This job does not export signals, raw bars, or journal to public repo.
@@ -267,7 +268,7 @@ jobs:
 
   private-sheets-auth-preflight:
     needs: offline-guard
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
@@ -318,7 +319,7 @@ jobs:
     # Independent even when 477 full-universe producer fails.
     # The single private sheet is read after that job has stopped writing.
     needs: [offline-guard, daily-private-scan]
-    if: always() && needs.offline-guard.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    if: always() && needs.offline-guard.result == 'success' && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 16
     # Raw step outcome precedes continue-on-error (unlike conclusion).
@@ -373,7 +374,7 @@ jobs:
     # Second independent private readback after EOD/episode/PANEL writers.
     # No new cron, no extra ChatGPT task and no phone delivery claim.
     needs: [offline-guard, daily-private-scan, private-sheets-auth-preflight, private-episode-followups]
-    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.daily-private-scan.result == 'success' && needs.private-sheets-auth-preflight.result == 'success' && needs.private-episode-followups.result == 'success' }}
+    if: ${{ always() && github.event_name == 'schedule' && needs.daily-private-scan.result == 'success' && needs.private-sheets-auth-preflight.result == 'success' && needs.private-episode-followups.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
@@ -431,7 +432,7 @@ jobs:
     # No IEX, extra cron, orders or delivery here. The optional proof bridge only
     # annotates the verified current SUMMARY link cell. It cannot reserve a delivery.
     needs: [guardian-acceptance, private-episode-followups]
-    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.guardian-acceptance.result == 'success' }}
+    if: ${{ always() && github.event_name == 'schedule' && needs.guardian-acceptance.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:

@@ -402,12 +402,14 @@ class NaturalFallbackExitSemantics(unittest.TestCase):
                 sf.exit_code_for_result({'status':status},'schedule'),0)
 
     def test_manual_probe_is_not_scheduled_provenance(self):
-        for status in ('DRY_RUN_WOULD_DISPATCH',
-                       'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'):
-            self.assertEqual(
-                sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
-            self.assertEqual(
-                sf.exit_code_for_result({'status':status},'schedule'),3)
+        status='DRY_RUN_WOULD_DISPATCH'
+        self.assertEqual(
+            sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
+        self.assertEqual(
+            sf.exit_code_for_result({'status':status},'schedule'),3)
+        self.assertEqual(sf.exit_code_for_result({
+            'status':'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'},
+            'workflow_dispatch'),3)
 
     def test_thanksgiving_is_normal_safe_noop_not_false_incident(self):
         # 27 Nov 00:26Z is Thanksgiving evening ET. No new XNAS EOD
@@ -432,9 +434,12 @@ class AutomaticFallbackProvenanceGate(unittest.TestCase):
             with self.subTest(event=event):
                 self.assertFalse(sf.allow_dispatch_for_event(event))
 
-    def test_explicit_manual_recovery_is_not_silently_reclassified(self):
-        self.assertTrue(sf.allow_dispatch_for_event('workflow_dispatch'))
-        self.assertFalse(sf.allow_dispatch_for_event('schedule'))
+    def test_unverified_manual_recovery_cannot_dispatch_or_impersonate_schedule(self):
+        # Manual fallback does not have parent-child/CAS authority and
+        # cannot safely obtain a canonical private EOD receipt.
+        for event in ('workflow_dispatch', 'schedule', 'push', None):
+            with self.subTest(event=event):
+                self.assertFalse(sf.allow_dispatch_for_event(event))
 
 
 class PrimaryEodPendingIsolationTests(unittest.TestCase):
@@ -471,6 +476,43 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
 
 
+class ManualEodSourceIsolation(unittest.TestCase):
+    """Manual workflow invocations may run offline tests only.
+
+    With canonical writer failing closed on workflow_dispatch, allowing the
+    preceding 477-vendor scan is a partial side effect and no recovery.
+    """
+    def test_all_private_producers_require_natural_schedule(self):
+        from pathlib import Path
+        import re
+        source=(Path(__file__).resolve().parents[1] / '.github' /
+                'workflows' / 'xray-personal-477-eod.yml').read_text()
+        # Match top-level two-space job blocks only; a plain split would
+        # also break on nested four-space 'if' and 'needs' lines.
+        names=(
+            'daily-private-scan',
+            'private-sheets-auth-preflight',
+            'private-episode-followups',
+            'guardian-acceptance',
+            'daily-private-score-acceptance',
+        )
+        for name in names:
+            with self.subTest(job=name):
+                matched=re.search(r"(?ms)^  "+re.escape(name)+
+                                  r":\n(.*?)(?=^  [A-Za-z0-9_-]+:|\Z)",
+                                  source)
+                self.assertIsNotNone(matched)
+                found=re.search(r"(?m)^    if: (.*)$",matched.group(1))
+                self.assertIsNotNone(found)
+                expr=found.group(1)
+                self.assertIn("github.event_name == 'schedule'",expr)
+                self.assertNotIn("workflow_dispatch",expr)
+        self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"),1)
+        self.assertIn("  workflow_dispatch:",source)
+        self.assertIn("    needs: offline-guard",source)
+        self.assertIn("cancel-in-progress: false",source)
+
+
 class MissingEodFailureAttributionTests(unittest.TestCase):
     def test_natural_fallback_policy_lock_is_explicit_but_still_red(self):
         reads = []
@@ -490,13 +532,24 @@ class MissingEodFailureAttributionTests(unittest.TestCase):
         self.assertEqual(reads,[True,True])
         self.assertEqual(requests,['2026-10-26'])
 
+    def test_manual_recovery_policy_lock_is_explicit_and_nongreen(self):
+        def runs():
+            return {'total_count':0, 'workflow_runs':[]}
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+                      read_runs=runs,request_dispatch=lambda _asof:
+                      sf.allow_dispatch_for_event('workflow_dispatch'),
+                      trigger_event='workflow_dispatch')
+        self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
+        self.assertEqual(result['dispatch_requested'],False)
+        self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
+
     def test_unconfirmed_explicit_manual_request_never_fake_ack(self):
         def runs():
             return {'total_count':0,'workflow_runs':[]}
         result=sf.run(now=utc('2026-10-27T00:25:00Z'),
                       read_runs=runs,request_dispatch=lambda asof:False,
                       trigger_event='workflow_dispatch')
-        self.assertEqual(result['reason_code'],'DISPATCH_ACK_NOT_CONFIRMED')
+        self.assertEqual(result['reason_code'],'MANUAL_FALLBACK_POLICY_LOCKED')
         self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
         self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
 
