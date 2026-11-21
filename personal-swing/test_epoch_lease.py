@@ -285,5 +285,59 @@ class FirstClaimAndReadback(unittest.TestCase):
             lease.github_transport("redacted")("POST","/untrusted",{})
 
 
+class LiveTagReadonlyCanaryTests(unittest.TestCase):
+    def test_live_cli_requires_real_active_ruleset_and_never_posts(self):
+        import os
+        from unittest.mock import patch
+        git=MockGit()
+        with patch.dict(os.environ,{"GITHUB_REPOSITORY":lease.REPO,
+                                    "GITHUB_TOKEN":"masked-test-token"}):
+            with patch.object(lease,"github_transport",
+                              return_value=git) as transport:
+                rc=lease.main(["--verify-tag-protection"])
+        self.assertEqual(rc,0)
+        transport.assert_called_once_with("masked-test-token")
+        self.assertEqual([(x,y) for x,y,_ in git.calls],
+                         [("GET","/rulesets"),("GET","/rulesets/11")])
+        self.assertFalse(any(x=="POST" for x,_,_ in git.calls))
+
+    def test_live_cli_fails_closed_without_protection_and_cannot_post(self):
+        import os
+        from unittest.mock import patch
+        for mode in ("absent","disabled","bypass","no_update"):
+            with self.subTest(mode=mode):
+                git=MockGit();git.protection=mode
+                with patch.dict(os.environ,
+                    {"GITHUB_REPOSITORY":lease.REPO,
+                     "GITHUB_TOKEN":"masked-test-token"}):
+                    with patch.object(lease,"github_transport",return_value=git):
+                        self.assertEqual(lease.main(
+                            ["--verify-tag-protection"]),3)
+                self.assertFalse(any(x=="POST" for x,_,_ in git.calls))
+
+    def test_live_cli_rejects_missing_token_or_wrong_repository(self):
+        import os
+        from unittest.mock import patch
+        for repo,token in ((lease.REPO,""),("forged/repo","dummy")):
+            with self.subTest(repo=repo,token_present=bool(token)):
+                with patch.dict(os.environ,{"GITHUB_REPOSITORY":repo,
+                                             "GITHUB_TOKEN":token}):
+                    with patch.object(lease,"github_transport") as api:
+                        self.assertEqual(lease.main(
+                            ["--verify-tag-protection"]),3)
+                        api.assert_not_called()
+
+    def test_live_cli_has_no_other_actions(self):
+        import os
+        from unittest.mock import patch
+        with patch.dict(os.environ,{"GITHUB_REPOSITORY":lease.REPO,
+                                    "GITHUB_TOKEN":"masked-test-token"}):
+            with patch.object(lease,"github_transport") as api:
+                for args in ([],["--help-bypass"],["--claim","2026-11-23"]):
+                    with self.subTest(args=args):
+                        self.assertEqual(lease.main(args),3)
+                api.assert_not_called()
+
+
 if __name__=="__main__":
     unittest.main()
