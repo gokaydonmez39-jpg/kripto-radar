@@ -90,6 +90,35 @@ class SourceProvenanceAcceptance(unittest.TestCase):
                 r = verify(fixture(), cutoff=bogus)
                 self.assertEqual(r["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
 
+    def test_xnas_early_close_and_thanksgiving_session(self):
+        # Friday after Thanksgiving: XNAS ends at 13:00 ET = 18:00 UTC.
+        # No regular 16:00 ET close can be substituted as evidence.
+        p = fixture()
+        p[0]["created_at"] = "2026-11-28T00:50:00Z"
+        p[0]["updated_at"] = "2026-11-28T00:55:00Z"
+        p[2]["created_at"] = "2026-11-28T00:53:00Z"
+        p[2]["updated_at"] = "2026-11-28T01:50:00Z"
+        for job in p[4]:
+            for key in ("started_at", "completed_at"):
+                job[key] = job[key].replace("2026-11-24", "2026-11-28")
+        for item, field in ((p[1], "requested_asof_et"), (p[3], "asof_et"),
+                            (p[5], "asof_et"), (p[6], "asof_et")):
+            item[field] = "2026-11-27"
+        observed = "2026-11-28T02:00:00Z"
+        good = verify(p, asof="2026-11-27",
+                      cutoff="2026-11-27T18:45:00Z", now=observed)
+        self.assertEqual(good["state"], "RECOVERY_CHAIN_PROVEN_READ_ONLY")
+        wrong = verify(p, asof="2026-11-27",
+                       cutoff="2026-11-27T21:45:00Z", now=observed)
+        self.assertEqual(wrong["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+        # Thanksgiving itself is not an XNAS trading session.
+        for item, field in ((p[1], "requested_asof_et"), (p[3], "asof_et"),
+                            (p[5], "asof_et"), (p[6], "asof_et")):
+            item[field] = "2026-11-26"
+        holiday = verify(p, asof="2026-11-26",
+                         cutoff="2026-11-26T21:45:00Z", now=observed)
+        self.assertEqual(holiday["stage"], "XNAS_OFFICIAL_CUTOFF_UNVERIFIED")
+
     def test_parent_mutations_fail_closed(self):
         changes = [
             ("event", "workflow_dispatch"), ("path", f.CHILD_PATH),
