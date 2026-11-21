@@ -402,12 +402,14 @@ class NaturalFallbackExitSemantics(unittest.TestCase):
                 sf.exit_code_for_result({'status':status},'schedule'),0)
 
     def test_manual_probe_is_not_scheduled_provenance(self):
-        for status in ('DRY_RUN_WOULD_DISPATCH',
-                       'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'):
-            self.assertEqual(
-                sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
-            self.assertEqual(
-                sf.exit_code_for_result({'status':status},'schedule'),3)
+        status='DRY_RUN_WOULD_DISPATCH'
+        self.assertEqual(
+            sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
+        self.assertEqual(
+            sf.exit_code_for_result({'status':status},'schedule'),3)
+        self.assertEqual(sf.exit_code_for_result({
+            'status':'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED'},
+            'workflow_dispatch'),3)
 
     def test_thanksgiving_is_normal_safe_noop_not_false_incident(self):
         # 27 Nov 00:26Z is Thanksgiving evening ET. No new XNAS EOD
@@ -544,7 +546,7 @@ class MissingEodFailureAttributionTests(unittest.TestCase):
         result=sf.run(now=utc('2026-10-27T00:25:00Z'),
                       read_runs=runs,request_dispatch=lambda asof:False,
                       trigger_event='workflow_dispatch')
-        self.assertEqual(result['reason_code'],'DISPATCH_ACK_NOT_CONFIRMED')
+        self.assertEqual(result['reason_code'],'MANUAL_FALLBACK_POLICY_LOCKED')
         self.assertEqual(result['status'],'BLOCKED_DISPATCH_NOT_CONFIRMED')
         self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
 
