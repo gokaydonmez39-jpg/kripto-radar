@@ -63,6 +63,17 @@ class RestAdapterTests(unittest.TestCase):
         result=engine.analyze(SYMBOL,bars,"2026-11-19")
         self.assertEqual(result['decision'],"VERI_YETERSIZ")
         self.assertIn("MISSING_EXACT_ASOF_BAR",result['reasons'])
+        # Converse boundary: previous LOCAL date with matching UTC XNAS date
+        # must retain the original decision and avoid a false missing-day.
+        bars[-1]['timestamp']='2026-11-18T23:00:00-05:00'
+        valid=engine.analyze(SYMBOL,bars,'2026-11-19')
+        self.assertEqual(valid['decision'],original['decision'])
+        self.assertEqual(valid['asof_et'],'2026-11-19')
+        # Distinct local calendar dates that map to the same UTC XNAS
+        # session are duplicates, not 52 unique observations.
+        bars[-2]['timestamp']='2026-11-19T04:00:00Z'
+        with self.assertRaisesRegex(ValueError,'Duplicate daily bar'):
+            engine.analyze(SYMBOL,bars,'2026-11-19')
 
     def test_direct_engine_rejects_naive_bar_timestamp(self):
         row={"timestamp":"2026-11-19T04:00:00","open":100.0,
