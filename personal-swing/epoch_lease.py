@@ -9,7 +9,7 @@ necessary BEFORE this can guard a live producer.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import json
@@ -87,7 +87,7 @@ def verified_natural_owner(env, asof, now=None, *, completed_session=None):
     }
 
 
-def _manifest(owner):
+def _manifest(owner, *, now=None):
     keys=("schema","asof_et","ref","tag","source_event","workflow",
           "source_sha","run_id","run_attempt","observed_at")
     require(isinstance(owner, dict) and
@@ -102,6 +102,35 @@ def _manifest(owner):
             owner.get("run_attempt") == 1 and
             owner.get("workflow") == WORKFLOW and
             all(k in owner for k in keys), "LEASE_OWNER_CONTRACT_INVALID")
+    # This is a SECOND admission boundary. A caller passing a forged owner
+    # may never turn an invalid/stale ASOF into a PERMANENT protected tag.
+    # Do not trust a well-formed free-text ref alone.
+    try:
+        require(owner["tag"]==epoch_tag(owner["asof_et"]),
+                "LEASE_OWNER_CONTRACT_INVALID")
+        observed=owner["observed_at"]
+        require(isinstance(observed,str) and re.fullmatch(
+                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T"
+                    r"[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{6})?Z",
+                    observed) is not None,"LEASE_OWNER_CONTRACT_INVALID")
+        parsed=datetime.fromisoformat(observed.replace("Z","+00:00"))
+        require(parsed.tzinfo is not None and
+                parsed.utcoffset()==timedelta(0) and
+                parsed.isoformat().replace("+00:00","Z")==observed,
+                "LEASE_OWNER_CONTRACT_INVALID")
+        at=now if now is not None else datetime.now(timezone.utc)
+        require(isinstance(at,datetime) and at.tzinfo is not None and
+                at.utcoffset() is not None,"LEASE_OWNER_CONTRACT_INVALID")
+        at=at.astimezone(timezone.utc)
+        elapsed=at-parsed
+        require(-timedelta(seconds=5)<=elapsed<=timedelta(minutes=5),
+                "LEASE_OWNER_CONTRACT_INVALID")
+        import daily_job
+        require(daily_job.current_completed_session(at)==owner["asof_et"],
+                "LEASE_OWNER_CONTRACT_INVALID")
+    except Exception:
+        # Provider/calendar/time errors all DENY before the first GET/POST.
+        raise LeaseHold("LEASE_OWNER_CONTRACT_INVALID") from None
     return json.dumps({key:owner[key] for key in keys},
                       sort_keys=True,separators=(",",":"),ensure_ascii=True)
 
@@ -160,13 +189,13 @@ def verify_live_tag_protection(transport, *, probe_only=False):
     raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:EXACT_RULE_MISMATCH")
 
 
-def acquire_first_claim(owner, transport):
+def acquire_first_claim(owner, transport, *, now=None):
     """One unrepeatable claim, followed by two independent GET checks.
 
     Every uncertain/error/duplicate POST fails closed. No retries, even after
     a timeout. A lease alone NEVER constitutes an EOD or ChatGPT acceptance.
     """
-    message=_manifest(owner)
+    message=_manifest(owner,now=now)
     require(callable(transport), "LEASE_TRANSPORT_UNAVAILABLE")
     try:
         verify_live_tag_protection(transport)
@@ -240,13 +269,20 @@ def github_transport(token, *, opener=urlopen):
             "LEASE_GITHUB_TOKEN_NOT_CONFIGURED")
     prefix="https://api.github.com/repos/"+REPO
     def call(method,path,body=None):
-        allowed=(path.startswith("/git/") or
-                 (method=="GET" and
-                  (path=="/rulesets" or
-                   re.fullmatch(r"/rulesets/[1-9][0-9]*",path) is not None)))
-        require(method in ("POST","GET") and allowed and
-                ".." not in path and "?" not in path,
-                "LEASE_API_PATH_INVALID")
+        # Restrict BOTH HTTP method and path. A generic /git/* POST is an
+        # unauthorized mutation route, even if future code supplies it.
+        allowed=(
+            (method=="POST" and path in ("/git/tags","/git/refs"))
+            or (method=="GET" and (
+                path=="/rulesets"
+                or re.fullmatch(r"/rulesets/[1-9][0-9]*",path) is not None
+                or re.fullmatch(
+                    r"/git/ref/tags/xray-personal477-eod-epoch-"
+                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",path) is not None
+                or re.fullmatch(r"/git/tags/[0-9a-f]{40}",path) is not None
+            ))
+        )
+        require(allowed,"LEASE_API_PATH_INVALID")
         data=(json.dumps(body,separators=(",",":")).encode("utf-8")
               if body is not None else None)
         request=Request(prefix+path,data=data,method=method,headers={
