@@ -13,6 +13,7 @@ import os
 import random
 import re
 import time
+from datetime import date
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
@@ -82,6 +83,7 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'CONCURRENT_SHEET_EDIT_BLOCKED',
     'DUPLICATE_CANDIDATE_KEYS',
     'DUPLICATE_SCAN_ASOF',
+    'SCAN_DATE_ORDER_OR_STALE_ASOF',
     'EXISTING_SCAN_EPOCH_CONFLICT',
     'EXISTING_SCAN_INCOMPLETE',
     'EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED',
@@ -148,6 +150,16 @@ def scan_source_proof(note):
     return proof
 
 
+def canonical_scan_day(day):
+    """Reject malformed private ASOF keys before lexicographic ordering."""
+    if type(day) is not str or re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',day) is None:
+        return False
+    try:
+        return date.fromisoformat(day).isoformat() == day
+    except ValueError:
+        return False
+
+
 def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
     """Pure deterministic idempotent append plan; never changes prior cells.
 
@@ -171,6 +183,13 @@ def plan(snapshot, candidates, scans, run_url, run_event='schedule'):
     require(len(candidate_keys) == len(set(candidate_keys)),
             'DUPLICATE_CANDIDATE_KEYS')
     require(len(scan_keys) == len(set(scan_keys)), 'DUPLICATE_SCAN_ASOF')
+    # A successful historical receipt does NOT authorize a late manual
+    # workflow_dispatch or same-run retry to append/claim an older ASOF.
+    # The private ledger is monotonic; gaps remain explicit, never backfilled.
+    require(all(canonical_scan_day(day) for day in scan_keys) and
+            scan_keys == sorted(scan_keys) and
+            (not scan_keys or snapshot['asof_et'] >= scan_keys[-1]),
+            'SCAN_DATE_ORDER_OR_STALE_ASOF')
     require(len(old_candidates) < MAX_ROWS and len(old_scans) < MAX_ROWS,
             'SHEET_CAPACITY_REACHED')
 
