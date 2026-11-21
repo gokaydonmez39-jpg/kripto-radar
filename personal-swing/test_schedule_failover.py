@@ -324,6 +324,49 @@ class FallbackParentReceiptSafety(unittest.TestCase):
                          'DISPATCH_ONE_MISSING_SCHEDULE')
 
 
+class NaturalFallbackExitSemantics(unittest.TestCase):
+    """Never mark a missing official EOD as success just because no POST ran."""
+
+    def test_scheduled_gap_is_hard_failure_not_green(self):
+        for status in (
+            'DISPATCH_ONE_MISSING_SCHEDULE',
+            'BLOCKED_DISPATCH_NOT_CONFIRMED',
+            'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE',
+            'BLOCKED_UNTRUSTED_RUN_PAGINATION',
+            'BLOCKED_GITHUB_API_UNCERTAIN',
+            'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW',
+            'NOOP_SESSION_NOT_READY',
+            'DRY_RUN_WOULD_DISPATCH',
+            'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
+            None,
+        ):
+            with self.subTest(status=status):
+                self.assertEqual(
+                    sf.exit_code_for_result({'status':status},'schedule'),3)
+
+    def test_only_verified_primary_epoch_is_scheduled_success(self):
+        for status in ('NOOP_CURRENT_EPOCH_RUN_EXISTS',
+                       'NOOP_RECHECK_CURRENT_EPOCH_RUN_EXISTS'):
+            self.assertEqual(
+                sf.exit_code_for_result({'status':status},'schedule'),0)
+
+    def test_manual_probe_is_not_scheduled_provenance(self):
+        for status in ('DRY_RUN_WOULD_DISPATCH',
+                       'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
+                       'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW'):
+            self.assertEqual(
+                sf.exit_code_for_result({'status':status},'workflow_dispatch'),0)
+            self.assertEqual(
+                sf.exit_code_for_result({'status':status},'schedule'),3)
+
+    def test_missing_result_and_unknown_trigger_are_fail_closed(self):
+        for obj,event in ((None,'schedule'),({},'schedule'),
+                          ({'status':'NOOP_CURRENT_EPOCH_RUN_EXISTS'},'push'),
+                          ({'status':'NOOP_CURRENT_EPOCH_RUN_EXISTS'},None)):
+            with self.subTest(obj=obj,event=event):
+                self.assertEqual(sf.exit_code_for_result(obj,event),3)
+
+
 class AutomaticFallbackProvenanceGate(unittest.TestCase):
     def test_scheduler_must_not_dispatch_before_child_provenance_release(self):
         for event in ('schedule','push','pull_request','workflow_run',None,''):
