@@ -120,6 +120,10 @@ def verify_live_tag_protection(transport):
                 if isinstance(r,dict) and r.get("target")=="tag" and
                 r.get("enforcement")=="active" and
                 isinstance(r.get("id"),int) and r["id"]>0]
+    if not candidates:
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:ACTIVE_TAG_NOT_VISIBLE")
+    exact_rule_without_bypass=False
+    unavailable_bypass=False
     for item in candidates:
         detailed=transport("GET","/rulesets/"+str(item["id"]))
         if not isinstance(detailed,dict):
@@ -128,18 +132,28 @@ def verify_live_tag_protection(transport):
         if not isinstance(cond,dict):
             continue
         rules=detailed.get("rules")
-        if (detailed.get("id")==item["id"] and
-                detailed.get("target")=="tag" and
-                detailed.get("enforcement")=="active" and
-                cond.get("include")==[PROTECTED_PATTERN] and
-                cond.get("exclude")==[] and
-                detailed.get("bypass_actors")==[] and
-                isinstance(rules,list) and
-                {"update","deletion"}.issubset(
-                    {rule.get("type") for rule in rules
-                     if isinstance(rule,dict)})):
+        exact=(detailed.get("id")==item["id"] and
+               detailed.get("target")=="tag" and
+               detailed.get("enforcement")=="active" and
+               cond.get("include")==[PROTECTED_PATTERN] and
+               cond.get("exclude")==[] and
+               isinstance(rules,list) and
+               {"update","deletion"}.issubset(
+                   {rule.get("type") for rule in rules
+                    if isinstance(rule,dict)}))
+        if not exact:
+            continue
+        exact_rule_without_bypass=True
+        bypass=detailed.get("bypass_actors")
+        if bypass==[]:
             return True
-    raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED")
+        if not isinstance(bypass,list):
+            unavailable_bypass=True
+    if unavailable_bypass:
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_FIELD_UNAVAILABLE")
+    if exact_rule_without_bypass:
+        raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:BYPASS_ACTOR_PRESENT")
+    raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED:EXACT_RULE_MISMATCH")
 
 
 def acquire_first_claim(owner, transport):
@@ -277,7 +291,15 @@ def main(argv=None):
             reason = ("TAG_RULESET_HTTP_" + str(status)
                       if status else "TAG_RULESET_HTTP_OTHER")
         elif isinstance(exc, LeaseHold):
-            reason = "TAG_RULESET_CONTRACT_NOT_MATCHED"
+            # All subcodes are authored literals, never external strings.
+            code=str(exc)
+            kind=code.split(":",1)[1] if ":" in code else ""
+            allowed=frozenset(("ACTIVE_TAG_NOT_VISIBLE",
+                               "BYPASS_FIELD_UNAVAILABLE",
+                               "BYPASS_ACTOR_PRESENT",
+                               "EXACT_RULE_MISMATCH"))
+            reason=("TAG_RULESET_"+kind if kind in allowed
+                    else "TAG_RULESET_CONTRACT_NOT_MATCHED")
         elif isinstance(exc, URLError):
             reason = "TAG_RULESET_NETWORK_UNAVAILABLE"
         else:
