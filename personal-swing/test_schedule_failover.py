@@ -236,5 +236,77 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertFalse(result['dispatch_requested'])
 
 
+class FallbackParentReceiptSafety(unittest.TestCase):
+    """Evidence for later parent checks, never permission to emit A/B."""
+    def setUp(self):
+        self.env={
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'44850000001',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+        }
+        self.accepted={
+            'status':'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED',
+            'dispatch_requested':True,'no_execution':True,
+            'asof_et':'2026-11-20',
+        }
+
+    def test_genuine_scheduled_parent_request_emits_non_authoritative_witness(self):
+        receipt=sf.scheduler_parent_receipt(self.accepted,self.env)
+        self.assertEqual(receipt['schema'],'XRAY_477_FALLBACK_PARENT_RECEIPT_V1')
+        self.assertEqual(receipt['parent_run_id'],44850000001)
+        self.assertEqual(receipt['requested_asof_et'],'2026-11-20')
+        self.assertEqual(receipt['parent_source_event'],'schedule')
+        self.assertFalse(receipt['eod_completion_proven'])
+        self.assertFalse(receipt['ab_release_authorized'])
+        self.assertEqual((receipt['writes'],receipt['orders']),(0,0))
+
+    def test_refuse_all_non_scheduled_or_wrong_origin(self):
+        for key,value in (('GITHUB_EVENT_NAME','workflow_dispatch'),
+                          ('GITHUB_EVENT_NAME','push'),
+                          ('GITHUB_EVENT_NAME','pull_request'),
+                          ('GITHUB_REPOSITORY','other/repo'),
+                          ('GITHUB_REF','refs/heads/dev'),
+                          ('GITHUB_SHA','x'*40),
+                          ('GITHUB_SHA','a'*39),
+                          ('GITHUB_RUN_ID','0'),
+                          ('GITHUB_RUN_ID','not-an-id'),
+                          ('GITHUB_RUN_ID','12.5')):
+            with self.subTest(key=key,value=value):
+                env=dict(self.env);env[key]=value
+                self.assertIsNone(sf.scheduler_parent_receipt(self.accepted,env))
+
+    def test_refuse_incomplete_or_ambiguous_dispatch(self):
+        for key,value in (('status','BLOCKED_DISPATCH_NOT_CONFIRMED'),
+                          ('status','DRY_RUN_WOULD_DISPATCH'),
+                          ('status','NOOP_CURRENT_EPOCH_RUN_EXISTS'),
+                          ('dispatch_requested',False),
+                          ('dispatch_requested',1),
+                          ('no_execution',False),
+                          ('asof_et','2026-02-30'),
+                          ('asof_et','2026-11-20T00:00:00Z'),
+                          ('asof_et','2026-11-20-extra'),
+                          ('asof_et',None)):
+            with self.subTest(key=key,value=value):
+                item=dict(self.accepted);item[key]=value
+                self.assertIsNone(sf.scheduler_parent_receipt(item,self.env))
+
+    def test_no_witness_when_missing_context(self):
+        for key in self.env:
+            env=dict(self.env);del env[key]
+            with self.subTest(key=key):
+                self.assertIsNone(sf.scheduler_parent_receipt(self.accepted,env))
+        self.assertIsNone(sf.scheduler_parent_receipt(None,self.env))
+        self.assertIsNone(sf.scheduler_parent_receipt(self.accepted,None))
+
+    def test_witness_does_not_change_dispatch_decision(self):
+        before=dict(self.accepted)
+        _=sf.scheduler_parent_receipt(self.accepted,self.env)
+        self.assertEqual(self.accepted,before)
+        self.assertEqual(sf.decision(utc('2026-11-21T00:26:00Z'),[])[0],
+                         'DISPATCH_ONE_MISSING_SCHEDULE')
+
+
 if __name__=='__main__':
     unittest.main()
