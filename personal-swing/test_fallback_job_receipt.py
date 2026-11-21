@@ -85,5 +85,62 @@ class SixJobOnlyProof(unittest.TestCase):
         proof.validate(run,jobs,ASOF,NOW)
         self.assertEqual((run,jobs),copy_before)
 
+class ReadOnlyAuditSelection(unittest.TestCase):
+    def test_exact_valid_run_uses_three_get_calls_and_no_post(self):
+        run,jobs=fixture()
+        calls=[]
+        def get(url):
+            calls.append(url)
+            if "/actions/workflows/" in url:
+                return {"total_count":1,
+                        "workflow_runs":[{
+                            "id":RUN_ID,"created_at":run["created_at"],
+                            "head_branch":"main","event":"schedule",
+                            "status":"completed","conclusion":"success"}]}
+            if url.endswith("/jobs?per_page=100"):
+                return copy.deepcopy(jobs)
+            return copy.deepcopy(run)
+        out=proof.audit(ASOF,now=NOW,get=get)
+        self.assertEqual(out["run_id"],RUN_ID)
+        self.assertEqual(len(calls),3)
+        self.assertTrue(all("https://api.github.com/repos/"+REPO+"/actions/"
+                            in item for item in calls))
+        self.assertFalse(out["private_sheet_verified"])
+
+    def test_successful_workflow_without_jobs_is_hold(self):
+        run,jobs=fixture()
+        def get(url):
+            if "/actions/workflows/" in url:
+                return {"total_count":1,
+                        "workflow_runs":[{
+                            "id":RUN_ID,"created_at":run["created_at"],
+                            "head_branch":"main","event":"schedule",
+                            "status":"completed","conclusion":"success"}]}
+            if url.endswith("/jobs?per_page=100"):
+                return {"total_count":0,"jobs":[]}
+            return run
+        with self.assertRaisesRegex(proof.ReceiptHold,
+                                    "PRIMARY_JOB_RECEIPT_MISSING"):
+            proof.audit(ASOF,now=NOW,get=get)
+
+    def test_no_natural_run_never_accepted(self):
+        called=[]
+        def get(url):
+            called.append(url)
+            return {"total_count":0,"workflow_runs":[]}
+        with self.assertRaisesRegex(proof.ReceiptHold,
+                                    "PRIMARY_EOD_EPOCH_AMBIGUOUS"):
+            proof.audit(ASOF,now=NOW,get=get)
+        self.assertEqual(len(called),1)
+
+    def test_successful_run_after_freshness_window_is_hold(self):
+        run,jobs=fixture()
+        run["created_at"]="2026-11-20T10:01:00Z"
+        run["updated_at"]="2026-11-20T10:02:00Z"
+        with self.assertRaisesRegex(proof.ReceiptHold,
+                                    "PRIMARY_EOD_TIME_WINDOW_UNVERIFIED"):
+            proof.validate(run,jobs,ASOF,
+                           datetime(2026,11,20,11,tzinfo=timezone.utc))
+
 if __name__=="__main__":
     unittest.main()
