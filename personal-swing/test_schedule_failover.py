@@ -513,6 +513,33 @@ class ManualEodSourceIsolation(unittest.TestCase):
         self.assertIn("cancel-in-progress: false",source)
 
 
+class DispatchCallbackPolicyIsolation(unittest.TestCase):
+    """An injectable dispatch callback may never bypass release policy."""
+
+    def test_locked_natural_and_manual_cannot_invoke_callback(self):
+        for event in ("schedule", "workflow_dispatch"):
+            with self.subTest(event=event):
+                reads=[]
+                calls=[]
+                def runs():
+                    reads.append(1)
+                    return {"total_count":0,"workflow_runs":[]}
+                def forbidden(asof):
+                    calls.append(asof)
+                    raise AssertionError("POLICY_LOCK_BYPASSED_REQUEST_DISPATCH")
+                result=sf.run(now=utc("2026-10-27T00:25:00Z"),
+                              read_runs=runs,
+                              request_dispatch=forbidden,
+                              trigger_event=event)
+                self.assertEqual(len(reads),2)
+                self.assertEqual(calls,[])
+                self.assertEqual(result["status"],"BLOCKED_DISPATCH_NOT_CONFIRMED")
+                self.assertEqual(result["reason_code"],
+                    "NATURAL_FALLBACK_POLICY_LOCKED" if event=="schedule"
+                    else "MANUAL_FALLBACK_POLICY_LOCKED")
+                self.assertFalse(result["dispatch_requested"])
+                self.assertEqual(sf.exit_code_for_result(result,event),3)
+
 class MissingEodFailureAttributionTests(unittest.TestCase):
     def test_natural_fallback_policy_lock_is_explicit_but_still_red(self):
         reads = []
