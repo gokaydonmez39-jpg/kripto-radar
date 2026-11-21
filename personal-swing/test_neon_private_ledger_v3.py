@@ -159,10 +159,12 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         p=self.calculate(old=[list(ledger.HEADER)]+existing)
         self.assertEqual((p["rows"],p["scored"],p["na"]),([],0,477))
 
-    def test_same_asof_second_run_rejected(self):
+    def test_same_asof_changed_policy_rejected(self):
         existing=self.calculate()["rows"]
+        for row in existing:
+            row[21]="f"*64
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"SAME_ASOF_DIFFERENT_RUN_OR_POLICY"):
-            self.calculate(old=[list(ledger.HEADER)]+existing,url=RUN+"2")
+            self.calculate(old=[list(ledger.HEADER)]+existing)
 
     def test_partial_prior_asof_rejected(self):
         earlier=self.calculate()["rows"][:-1]
