@@ -20,6 +20,7 @@ WORKFLOW = ".github/workflows/xray-personal-477-eod.yml"
 REF_PREFIX = "refs/tags/xray-personal477-eod-epoch-"
 TAG_PREFIX = "xray-personal477-eod-epoch-"
 SCHEMA = "XRAY_PERSONAL_477_EPOCH_LEASE_V1"
+PROTECTED_PATTERN = "refs/tags/xray-personal477-eod-epoch-*"
 SHA40 = re.compile(r"[0-9a-f]{40}")
 RUN = re.compile(r"[1-9][0-9]*")
 
@@ -90,6 +91,7 @@ def _manifest(owner):
     keys=("schema","asof_et","ref","tag","source_event","workflow",
           "source_sha","run_id","run_attempt","observed_at")
     require(isinstance(owner, dict) and
+            isinstance(owner.get("asof_et"),str) and
             owner.get("schema") == SCHEMA and
             owner.get("source_event") == "schedule" and
             owner.get("ref") == REF_PREFIX + owner.get("asof_et","") and
@@ -104,6 +106,42 @@ def _manifest(owner):
                       sort_keys=True,separators=(",",":"),ensure_ascii=True)
 
 
+def verify_live_tag_protection(transport):
+    """Read ruleset list + exact tag-rule details before ANY write.
+
+    Neither branch rulesets nor unprotected tags are an immutable lease.
+    A matching rule must forbid updates/deletions and have no bypass actors.
+    An administrator can still alter repository rules: a later production
+    integration must recheck protection at every acquisition/readback.
+    """
+    summary=transport("GET","/rulesets")
+    require(isinstance(summary,list),"LEASE_TAG_PROTECTION_UNVERIFIED")
+    candidates=[r for r in summary
+                if isinstance(r,dict) and r.get("target")=="tag" and
+                r.get("enforcement")=="active" and
+                isinstance(r.get("id"),int) and r["id"]>0]
+    for item in candidates:
+        detailed=transport("GET","/rulesets/"+str(item["id"]))
+        if not isinstance(detailed,dict):
+            continue
+        cond=detailed.get("conditions",{}).get("ref_name",{})
+        if not isinstance(cond,dict):
+            continue
+        rules=detailed.get("rules")
+        if (detailed.get("id")==item["id"] and
+                detailed.get("target")=="tag" and
+                detailed.get("enforcement")=="active" and
+                cond.get("include")==[PROTECTED_PATTERN] and
+                cond.get("exclude")==[] and
+                detailed.get("bypass_actors")==[] and
+                isinstance(rules,list) and
+                {"update","deletion"}.issubset(
+                    {rule.get("type") for rule in rules
+                     if isinstance(rule,dict)})):
+            return True
+    raise LeaseHold("LEASE_TAG_PROTECTION_UNVERIFIED")
+
+
 def acquire_first_claim(owner, transport):
     """One unrepeatable claim, followed by two independent GET checks.
 
@@ -113,6 +151,7 @@ def acquire_first_claim(owner, transport):
     message=_manifest(owner)
     require(callable(transport), "LEASE_TRANSPORT_UNAVAILABLE")
     try:
+        verify_live_tag_protection(transport)
         tagged=transport("POST", "/git/tags", {
             "tag": owner["tag"], "message": message,
             "object": owner["source_sha"], "type": "commit",
@@ -177,7 +216,11 @@ def github_transport(token, *, opener=urlopen):
             "LEASE_GITHUB_TOKEN_NOT_CONFIGURED")
     prefix="https://api.github.com/repos/"+REPO
     def call(method,path,body=None):
-        require(method in ("POST","GET") and path.startswith("/git/") and
+        allowed=(path.startswith("/git/") or
+                 (method=="GET" and
+                  (path=="/rulesets" or
+                   re.fullmatch(r"/rulesets/[1-9][0-9]*",path) is not None)))
+        require(method in ("POST","GET") and allowed and
                 ".." not in path and "?" not in path,
                 "LEASE_API_PATH_INVALID")
         data=(json.dumps(body,separators=(",",":")).encode("utf-8")
