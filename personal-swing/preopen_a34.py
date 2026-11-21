@@ -14,6 +14,8 @@ from urllib.error import HTTPError, URLError
 EXPECTED_UNIVERSE = 477
 HEX = re.compile(r'^[0-9a-f]{64}$')
 SYMBOL = re.compile(r'^[A-Z0-9.]{1,16}$')
+SOURCE_RUN_URL = re.compile(r'^https://github[.]com/gokaydonmez39-jpg/'
+                            r'kripto-radar/actions/runs/[1-9][0-9]*$')
 CATEGORIES = {'AL', 'IZLE', 'ELE'}
 
 
@@ -34,6 +36,7 @@ _SAFE_PREOPEN_CODES = frozenset({
     'SCAN_NOT_FINAL_477',
     'SCAN_NEW_AL_COUNT_INVALID',
     'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT',
+    'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED',
     'IEX_PROVIDER_SCOPE_MISMATCH',
     'IEX_INCOMPLETE_OR_STALE_SESSION',
     'IEX_LIVE_AL_COUNT_VS_PRIVATE_SCAN_CONFLICT',
@@ -176,6 +179,18 @@ def validate_scope_and_scan(symbols, scans, asof, scope_sha, algorithm_sha):
     need(proof['scopeSHA'] == scope_sha and
          proof['algorithmSHA'] == algorithm_sha,
          'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT')
+    # A SHA match never authorizes a manual workflow_dispatch as a natural
+    # GitHub schedule. Fallback parent/child, one-writer Sheet proof and an
+    # explicit versioned release would be required; none is enabled.
+    origin_fields = [
+        part.strip() for part in latest[9].split(';')
+        if part.strip().startswith('source_event=')
+    ]
+    need(latest[1] == 'GitHub schedule VERIFIED IEX EOD' and
+         type(latest[8]) is str and
+         SOURCE_RUN_URL.fullmatch(latest[8]) is not None and
+         origin_fields == ['source_event=schedule'],
+         'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED')
     return int(count)
 
 
