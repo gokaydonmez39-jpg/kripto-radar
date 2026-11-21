@@ -59,6 +59,12 @@ jobs:
           python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
           python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
           python -m py_compile schedule_failover.py fallback_source_provenance.py epoch_lease.py
+      - name: Verify live immutable EOD tag ruleset (GitHub GET only)
+        working-directory: personal-swing
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python epoch_lease.py --verify-tag-protection
       - name: Enforce global NASDAQ workflow-schedule boundary contract
         run: |
           python -m pip install 'PyYAML==6.0.2'
