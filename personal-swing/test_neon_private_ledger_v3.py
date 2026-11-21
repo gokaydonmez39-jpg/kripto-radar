@@ -262,6 +262,40 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"LEDGER_PARTIAL_ASOF"):
             self.calculate(old=[list(ledger.HEADER)]+earlier)
 
+    def test_corrupt_archived_score_factor_math_is_hold(self):
+        # Immutable old 477 rows can silently distort the NEXT score delta.
+        rows=copy.deepcopy(self.calculate()["rows"])
+        rows[0][4]="99.00"
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_SCORE_FACTOR_DRIFT"):
+            self.calculate(old=[list(ledger.HEADER)]+rows)
+
+    def test_corrupt_archived_rank_permutation_is_hold(self):
+        rows=copy.deepcopy(self.calculate()["rows"])
+        rows[1][3]=rows[0][3]
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_RANK_IDENTITY_DRIFT"):
+            self.calculate(old=[list(ledger.HEADER)]+rows)
+
+    def test_corrupt_archived_score_rank_is_hold(self):
+        rows=copy.deepcopy(self.calculate()["rows"])
+        # Keep factor math consistent, but make rank 2 strictly beat rank 1.
+        rows[1][4]="90.00"
+        for i in range(7,12):
+            rows[1][i]="90.00"
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_RANK_SCORE_ORDER_DRIFT"):
+            self.calculate(old=[list(ledger.HEADER)]+rows)
+
+    def test_archived_na_and_numeric_mixed_day_is_hold(self):
+        scored=copy.deepcopy(self.calculate()["rows"])
+        missing=ledger.plan(ASOF,RUN,MASTER,POLICY,scans(),
+                 [list(ledger.HEADER)],None)["rows"][0]
+        scored[0]=missing
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,"LEDGER_MIXED_SCORE_STATUS"):
+            self.calculate(old=[list(ledger.HEADER)]+scored)
+
     def test_duplicate_prior_identity_rejected(self):
         earlier=self.calculate()["rows"]
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"LEDGER_IDENTITY_OR_DUPLICATE"):
