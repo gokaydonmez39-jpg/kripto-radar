@@ -538,6 +538,88 @@ class ExplicitSecondPolicyCutover20261106Tests(unittest.TestCase):
 
 
 
+class FutureUtcPolicyEpochTests(unittest.TestCase):
+    """Forward-only 23 Nov primary IEX UTC code-hash cutover; zero IO."""
+
+    FUTURE_PAIR=(
+        "3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060",
+        "cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c",
+    )
+
+    @staticmethod
+    def row(day,pair,count=0):
+        return [day,"GitHub schedule verified research-only","477","477",
+                "477","0","TRUE",str(count),"private",
+                "scopeSHA="+pair[0]+";algorithmSHA="+pair[1]]
+
+    def corpus(self,*,new_day=True):
+        b=data()
+        b[1][1]=self.row(DAY,g.PIT_PRE_CUTOVER_SHA,1)
+        for day,pair in (
+            ("2026-11-03",g.PIT_POST_CUTOVER_SHA),
+            ("2026-11-06",g.PIT_ASOF_PIN_SHA),
+            ("2026-11-10",g.PIT_ROKU_REPLACEMENT_SHA),
+            ("2026-11-19",g.PIT_ROKU_REPLACEMENT_SHA),
+        ):
+            b[1].append(self.row(day,pair))
+        if new_day:
+            b[1].append(self.row("2026-11-23",self.FUTURE_PAIR))
+        b[3][0][1]="2026-11-23" if new_day else "2026-11-19"
+        return b
+
+    def test_exact_new_engine_policy_digest_is_attested(self):
+        import runner
+        self.assertEqual(runner.analysis_fingerprint(),self.FUTURE_PAIR[1])
+        self.assertEqual(g.PIT_IEX_UTC_CODE_SHA,self.FUTURE_PAIR)
+        self.assertEqual(g.PIT_IEX_UTC_CODE_CUTOVER,"2026-11-23")
+
+    def test_valid_23_nov_477_accepts_missing_20_without_replay(self):
+        b=self.corpus()
+        frozen=deepcopy(b)
+        self.assertNotIn("2026-11-20",[r[0] for r in b[1][1:]])
+        out=g.inspect(*b,expected_asof="2026-11-23")
+        self.assertEqual(out["latest_verified_scan_asof"],"2026-11-23")
+        self.assertEqual(out["source_verified_issuance_days"],6)
+        self.assertEqual(out["unreserved_prior_eod_al"],0)
+        self.assertEqual(out["device_receipts_verified"],0)
+        self.assertEqual(b,frozen)
+
+    def test_old_19_nov_receipt_still_accepted_unchanged(self):
+        b=self.corpus(new_day=False)
+        out=g.inspect(*b,expected_asof="2026-11-19")
+        self.assertEqual(out["latest_verified_scan_asof"],"2026-11-19")
+        self.assertEqual(out["source_verified_issuance_days"],5)
+
+    def test_old_policy_is_not_valid_for_23_nov_eod(self):
+        b=self.corpus()
+        b[1][-1]=self.row("2026-11-23",g.PIT_ROKU_REPLACEMENT_SHA)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            g.inspect(*b,expected_asof="2026-11-23")
+
+    def test_new_code_policy_cannot_be_backdated_to_20_nov(self):
+        b=self.corpus()
+        b[1][-1]=self.row("2026-11-20",self.FUTURE_PAIR)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            g.inspect(*b,expected_asof="2026-11-20")
+
+    def test_original_19_nov_fingerprint_cannot_be_rewritten(self):
+        b=self.corpus()
+        b[1][-2]=self.row("2026-11-19",self.FUTURE_PAIR)
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            g.inspect(*b,expected_asof="2026-11-23")
+
+    def test_unreviewed_future_sha_remains_blocked(self):
+        b=self.corpus()
+        b[1][-1]=self.row("2026-11-23",
+                          (self.FUTURE_PAIR[0],"f"*64))
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    "FLIGHT_HISTORICAL_ISSUANCE_SHA_DRIFT"):
+            g.inspect(*b,expected_asof="2026-11-23")
+
+
 class FlightRecorderMandatoryReleaseGateTests(unittest.TestCase):
     def test_mandatory_ci_includes_second_sha_cutover_tests_in_both_modes(self):
         from pathlib import Path
