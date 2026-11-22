@@ -148,9 +148,16 @@ def api_json(url,token,method='GET',body=None):
         return json.load(response)
 
 
-def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
-    """Injectable vendor operations for offline, network-free negative tests."""
-    now=now or datetime.now(timezone.utc)
+def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None,
+        fresh_now=None):
+    """Injectable vendor operations for offline, network-free negative tests.
+
+    The scheduled CLI MUST capture a fresh real UTC timestamp just before
+    the last dispatch boundary. Explicit now injection preserves deterministic
+    old tests; fresh_now injection models an actual slow two-GET interval.
+    """
+    live_clock=now is None
+    now=now if now is not None else datetime.now(timezone.utc)
     if now.tzinfo is None:raise ValueError('AWARE_NOW_REQUIRED')
     # Calendar first: no GitHub API IO outside the actual completed-session
     # fallback window (including on weekends, holidays and delayed jobs).
@@ -215,6 +222,25 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None):
         return {'status':'BLOCKED_DISPATCH_NOT_CONFIRMED',
                 'asof_et':session, 'dispatch_requested':False,
                 'reason_code':reason}
+    # Bound the ACTUAL POST moment, not only the clock observed BEFORE two
+    # potentially slow GitHub GETs. An initially eligible scheduled fallback
+    # is not allowed to start a delayed child outside its immutable XNAS
+    # close+45m to close+10h window (NO_REPLAY / NO_BACKFILL).
+    try:
+        fresh=(fresh_now() if fresh_now is not None else
+               datetime.now(timezone.utc) if live_clock else now)
+        if (not isinstance(fresh,datetime) or fresh.tzinfo is None or
+                fresh.utcoffset() is None or
+                fresh.astimezone(timezone.utc)<
+                now.astimezone(timezone.utc)-timedelta(seconds=5)):
+            raise ValueError('INVALID_FRESH_FALLBACK_CLOCK')
+        last_verdict,last_asof=decision(fresh,[])
+    except Exception:
+        return {'status':'BLOCKED_DISPATCH_CLOCK_UNVERIFIED',
+                'asof_et':session,'dispatch_requested':False}
+    if (last_asof!=session or last_verdict!='DISPATCH_ONE_MISSING_SCHEDULE'):
+        return {'status':'BLOCKED_DISPATCH_WINDOW_EXPIRED',
+                'asof_et':session,'dispatch_requested':False}
     accepted=request_dispatch(session)
     if accepted is not True:
         # Distinguish intentional policy locks from uncertain dispatch
