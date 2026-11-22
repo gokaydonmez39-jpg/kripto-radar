@@ -136,6 +136,18 @@ jobs:
         run: |
           set -euo pipefail
           python personal-swing/fallback_incident_receipt.py --result "$RUNNER_TEMP/xray-fallback-result.json" --summary "$GITHUB_STEP_SUMMARY"
+      - name: Diagnose absent primary workflow state (GET only, no recovery)
+        if: ${{ always() && github.event_name == 'schedule' && steps.primary-detect.outcome == 'failure' }}
+        working-directory: personal-swing
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Two exact GitHub metadata GETs only when existing fallback
+          # observed a policy-locked missing natural primary. No extra cron.
+          # An ACTIVE state cannot prove historical scheduler health.
+          python fallback_incident_receipt.py --result "$RUNNER_TEMP/xray-fallback-result.json" --summary "$GITHUB_STEP_SUMMARY" --probe-source
       - name: Independent natural primary six-job source audit (GH GET only)
         if: ${{ github.event_name == 'schedule' && steps.primary-detect.outputs.primary_found == 'true' }}
         working-directory: personal-swing
