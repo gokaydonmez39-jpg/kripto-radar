@@ -45,6 +45,7 @@ class RedactedFallbackReceipt(unittest.TestCase):
     def test_provider_exception_has_no_claim_of_a_missing_asof(self):
         got = receipt.classify(payload(status="BLOCKED_GITHUB_API_UNCERTAIN", asof_et="2026-11-20"))
         self.assertEqual(got, {"category": "GITHUB_READ_UNCERTAIN", "asof": "UNKNOWN"})
+        self.assertIn("DISPATCH_STATE_UNVERIFIED", receipt.render(got))
 
     def test_adversarial_and_incomplete_input_never_echoed(self):
         attack = "TOP_SECRET\n<svg><script>steal()</script>"
