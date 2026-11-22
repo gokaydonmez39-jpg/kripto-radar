@@ -101,6 +101,9 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'UNTRUSTED_GITHUB_EVENT',
     'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED',
     'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED',
+    'EPOCH_CAS_ASOF_INVALID',
+    'EPOCH_CAS_POST_RECEIPT_UNVERIFIED',
+    'EPOCH_CAS_INDEPENDENT_GET_UNVERIFIED',
     'EPOCH_LEASE_MODE_UNRECOGNIZED',
     'EPOCH_LEASE_TOKEN_MISSING',
     'EPOCH_LEASE_CONSUMER_UNVERIFIED',
@@ -349,12 +352,57 @@ def as_cells(rows, sheet_id):
         'fields':'userEnteredValue'}}
 
 
+def epoch_marker(asof, scan_sheet_id):
+    """Deterministic per-ASOF Google-owned native named range for first writer.
+
+    A competing writer must attempt the SAME namedRangeId and name, so
+    at most one same-ASOF batch can insert the source scan plus AL rows.
+    A mutable named range is not an immutable Git provenance attestation.
+    """
+    try:
+        canonical=(type(asof) is str and
+                   re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',asof) is not None
+                   and date.fromisoformat(asof).isoformat()==asof)
+    except ValueError:
+        canonical=False
+    require(canonical and type(scan_sheet_id) is int
+            and 0 <= scan_sheet_id <= 2147483647,
+            'EPOCH_CAS_ASOF_INVALID')
+    compact=asof.replace('-','')
+    return {
+        'namedRangeId':'xray_p477_eod_epoch_'+compact,
+        'name':'XRAY_P477_EOD_EPOCH_'+compact,
+        'range':{'sheetId':scan_sheet_id,'startRowIndex':0,
+                 'endRowIndex':1,'startColumnIndex':0,'endColumnIndex':1},
+    }
+
+def _marker_matches(observed, expected):
+    """Accept protocol-default omission of startIndex=0; reject other drift."""
+    if not isinstance(observed,dict):
+        return False
+    if (observed.get('namedRangeId')!=expected['namedRangeId'] or
+            observed.get('name')!=expected['name']):
+        return False
+    actual_range=observed.get('range')
+    if not isinstance(actual_range,dict):
+        return False
+    exp=expected['range']
+    return (actual_range.get('sheetId')==exp['sheetId'] and
+            actual_range.get('startRowIndex',0)==0 and
+            actual_range.get('endRowIndex')==1 and
+            actual_range.get('startColumnIndex',0)==0 and
+            actual_range.get('endColumnIndex')==1)
+
+
 def payload_from_plan(p, sheet_ids=None):
-    # Tests use arbitrary dummy IDs; production resolves private IDs via
-    # authenticated metadata and never embeds them in the public repository.
+    # Resolve authenticated private sheet IDs from metadata. The epoch
+    # reservation and the 477 final scan + new AL candidates are submitted
+    # in ONE batchUpdate; no separate create-lease POST is authorized.
     ids=sheet_ids if sheet_ids is not None else {'scan':1,'candidate':2}
     req=[]
     if p['scan_rows']:
+        req.append({'addNamedRange':{'namedRange':epoch_marker(
+            p['asof_et'],ids['scan'])}})
         req.append(as_cells(p['scan_rows'], ids['scan']))
     if p['candidate_rows']:
         req.append(as_cells(p['candidate_rows'], ids['candidate']))
@@ -554,8 +602,31 @@ class SheetApi:
     def apply(self,p):
         require(isinstance(self.sheet_ids,dict),'MISSING_AUTHENTICATED_SHEET_METADATA')
         data=payload_from_plan(p,self.sheet_ids)
-        if data['requests']:
-            self.request(':batchUpdate',method='POST',body=data)
+        if not data['requests']:
+            return
+        # One POST only: a lost reply is uncertain commitment, NEVER retry.
+        result=self.request(':batchUpdate',method='POST',body=data)
+        if p['scan_rows']:
+            expected=data['requests'][0]['addNamedRange']['namedRange']
+            replies=result.get('replies') if isinstance(result,dict) else None
+            require(type(replies) is list and
+                    len(replies)==len(data['requests']) and
+                    isinstance(replies[0],dict) and
+                    isinstance(replies[0].get('addNamedRange'),dict) and
+                    _marker_matches(
+                        replies[0]['addNamedRange'].get('namedRange'),expected),
+                    'EPOCH_CAS_POST_RECEIPT_UNVERIFIED')
+            # Independent GET: don't equate a successful 200 POST with a
+            # permanently visible owner. This remains supplementary to
+            # exact Sheet scan + candidate readback in synchronize().
+            current=self.request('?fields=namedRanges(namedRangeId,name,range)')
+            named=current.get('namedRanges') if isinstance(current,dict) else None
+            require(type(named) is list and
+                    len([r for r in named if isinstance(r,dict) and
+                         (r.get('namedRangeId')==expected['namedRangeId'] or
+                          r.get('name')==expected['name'])])==1 and
+                    any(_marker_matches(r,expected) for r in named),
+                    'EPOCH_CAS_INDEPENDENT_GET_UNVERIFIED')
 
 
 def synchronize(snapshot, run_url, api, run_event='schedule'):

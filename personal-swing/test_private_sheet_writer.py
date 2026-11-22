@@ -819,5 +819,76 @@ class AtomicSheetWriteLeaseFence(unittest.TestCase):
         self.assertEqual(self.git.calls,[])
 
 
+
+class GoogleSheetsNativeEpochCASAcceptance(unittest.TestCase):
+    """No real Sheets I/O: production CAS contract from 5 live temp-sheet races."""
+
+    def epoch(self):
+        p=w.plan(snapshot(), [list(w.CANDIDATE_HEADER)],
+                 [list(w.SCAN_HEADER)], RUN, run_event="schedule")
+        ids={"scan":432001002,"candidate":432001003}
+        return p,ids
+
+    def test_new_canonical_epoch_claim_is_in_same_atomic_batch_as_all_rows(self):
+        p,ids=self.epoch()
+        requests=w.payload_from_plan(p,ids)["requests"]
+        self.assertEqual(len(requests),3)
+        named=requests[0]["addNamedRange"]["namedRange"]
+        self.assertEqual(named["name"],"XRAY_P477_EOD_EPOCH_20261026")
+        self.assertEqual(named["namedRangeId"],"xray_p477_eod_epoch_20261026")
+        self.assertEqual(named["range"],{
+            "sheetId":ids["scan"],"startRowIndex":0,"endRowIndex":1,
+            "startColumnIndex":0,"endColumnIndex":1})
+        self.assertEqual([x["appendCells"]["sheetId"] for x in requests[1:]],
+                         [ids["scan"],ids["candidate"]])
+
+    def test_same_run_idempotent_reuse_never_attempts_second_epoch_insert(self):
+        api=FakeApi()
+        w.synchronize(snapshot(),RUN,api,run_event="schedule")
+        p=w.plan(snapshot(),api.candidates,api.scans,RUN,run_event="schedule")
+        self.assertEqual(p["scan_rows"],[])
+        self.assertEqual(w.payload_from_plan(p,{"scan":1,"candidate":2})["requests"],[])
+
+    def test_bad_marker_post_receipt_is_never_readback_pass(self):
+        from unittest.mock import Mock
+        p,ids=self.epoch()
+        api=object.__new__(w.SheetApi)
+        api.sheet_ids=ids
+        api.request=Mock(return_value={"replies":[{}, {}, {}]})
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    "EPOCH_CAS_POST_RECEIPT_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(api.request.call_count,1)
+        self.assertEqual(api.request.call_args.args[0],":batchUpdate")
+        self.assertEqual(api.request.call_args.kwargs["method"],"POST")
+
+    def test_missing_marker_on_independent_google_get_blocks_acceptance(self):
+        from unittest.mock import Mock
+        p,ids=self.epoch()
+        first=w.payload_from_plan(p,ids)["requests"][0]["addNamedRange"]["namedRange"]
+        response={"replies":[{"addNamedRange":{"namedRange":first}}, {}, {}]}
+        api=object.__new__(w.SheetApi)
+        api.sheet_ids=ids
+        api.request=Mock(side_effect=[response,{"namedRanges":[]}])
+        with self.assertRaisesRegex(w.HandoffBlocked,
+                                    "EPOCH_CAS_INDEPENDENT_GET_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(api.request.call_count,2)
+        self.assertIn("namedRanges",api.request.call_args.args[0])
+        self.assertEqual(api.request.call_args.kwargs.get("method","GET"),"GET")
+
+    def test_exact_named_range_and_batch_receipt_pass_with_independent_get(self):
+        from unittest.mock import Mock
+        p,ids=self.epoch()
+        marker=w.payload_from_plan(p,ids)["requests"][0]["addNamedRange"]["namedRange"]
+        api=object.__new__(w.SheetApi)
+        api.sheet_ids=ids
+        api.request=Mock(side_effect=[
+            {"replies":[{"addNamedRange":{"namedRange":marker}}, {}, {}]},
+            {"namedRanges":[dict(marker)]},
+        ])
+        self.assertIsNone(api.apply(p))
+        self.assertEqual(api.request.call_count,2)
+
 if __name__=='__main__':
     unittest.main()
