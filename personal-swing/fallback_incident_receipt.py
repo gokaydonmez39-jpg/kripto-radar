@@ -191,15 +191,15 @@ def render_source_probe(proof):
             safe_asof(proof.get("asof")) != proof.get("asof")):
         proof = {"category": "GITHUB_METADATA_UNVERIFIED", "asof": "UNKNOWN"}
     return (
-        "### XRAY NASDAQ 477 — source workflow liveness (GET only)\\n"
-        f"- Category: \\x60{proof['category']}\\x60\\n"
-        f"- Missing-EOD observation ASOF: \\x60{proof['asof']}\\x60\\n"
+        "### XRAY NASDAQ 477 — source workflow liveness (GET only)\n"
+        f"- Category: \x60{proof['category']}\x60\n"
+        f"- Missing-EOD observation ASOF: \x60{proof['asof']}\x60\n"
         "- Provenance: current GitHub metadata snapshot only; does NOT establish "
-        "the cause or state of a past GitHub scheduler event.\\n"
-        "- Workflow actor health: \\x60UNKNOWN\\x60; "
-        "natural EOD completion: \\x60UNVERIFIED\\x60.\\n"
-        "- Recovery: \\x60HOLD\\x60; \\x60NO_DISPATCH\\x60; "
-        "\\x60NO_SHEETS_WRITE\\x60; \\x60NO_AL_OR_DEVICE_ACK\\x60.\\n"
+        "the cause or state of a past GitHub scheduler event.\n"
+        "- Workflow actor health: \x60UNKNOWN\x60; "
+        "natural EOD completion: \x60UNVERIFIED\x60.\n"
+        "- Recovery: \x60HOLD\x60; \x60NO_DISPATCH\x60; "
+        "\x60NO_SHEETS_WRITE\x60; \x60NO_AL_OR_DEVICE_ACK\x60.\n"
     )
 
 def main(argv=None):
