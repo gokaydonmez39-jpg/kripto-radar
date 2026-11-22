@@ -31,6 +31,7 @@ _SAFE_PREOPEN_CODES = frozenset({
     'SOURCE_PROOF_MISSING_DUPLICATE_OR_MALFORMED',
     'EXACT_477_SCOPE_MISMATCH',
     'SCANS_MISSING',
+    'SCAN_ROW_ASOF_INVALID',
     'SCAN_DUPLICATE_OR_NONMONOTONIC',
     'LATEST_COMPLETED_SCAN_NOT_READY',
     'SCAN_NOT_FINAL_477',
@@ -165,10 +166,25 @@ def validate_scope_and_scan(symbols, scans, asof, scope_sha, algorithm_sha):
          'EXACT_477_SCOPE_MISMATCH')
     need(type(scans) is list and len(scans) >= 2,
          'SCANS_MISSING')
-    days = [str(row[0]) for row in scans[1:] if row and row[0]]
+    # Never borrow the previous verified session when the actual last row
+    # (or an intervening row) has an empty or malformed ASOF. All rows are
+    # source evidence; silently filtering any of them can create false PASS.
+    days = []
+    for row in scans[1:]:
+        need(type(row) is list and len(row) > 0
+             and type(row[0]) is str
+             and re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}', row[0])
+             is not None, 'SCAN_ROW_ASOF_INVALID')
+        try:
+            valid = dt.date.fromisoformat(row[0]).isoformat() == row[0]
+        except ValueError:
+            valid = False
+        need(valid, 'SCAN_ROW_ASOF_INVALID')
+        days.append(row[0])
     need(days == sorted(set(days)), 'SCAN_DUPLICATE_OR_NONMONOTONIC')
     need(days[-1] == asof, 'LATEST_COMPLETED_SCAN_NOT_READY')
     latest = scans[-1]
+    need(latest[0] == asof, 'LATEST_COMPLETED_SCAN_NOT_READY')
     need(len(latest) >= 10 and latest[2:7] ==
          ['477', '477', '477', '0', 'TRUE'],
          'SCAN_NOT_FINAL_477')
