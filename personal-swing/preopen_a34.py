@@ -539,8 +539,14 @@ def live_entrypoint(stage=None):
     need(first == read_all(), 'CONCURRENT_PRIVATE_SHEET_CHANGE')
     summary['next_xnas_session'] = str(next_session.date())
     summary['open_episodes'] = flight['open_count']
-    summary['quarantined_research_events'] = flight['quarantined_events']
-    if flight['quarantined_events']:
+    # Preserve immutable historical quarantine counts separately from
+    # unresolved CURRENT release blockers; never emit the old event or infer
+    # delivery. Exact reviewed closure is admitted by flight recorder only.
+    summary['reviewed_historical_non_emitting_events'] = (
+        flight['reviewed_historical_non_emitting_events'])
+    summary['quarantined_research_events'] = (
+        flight['unresolved_quarantined_events'])
+    if flight['unresolved_quarantined_events']:
         summary['state'] = 'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'
     summary['pending_device_ack_events'] = flight['pending_device_ack']
     stage['current'] = 'SUMMARY'
