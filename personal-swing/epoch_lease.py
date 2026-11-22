@@ -249,6 +249,18 @@ def verify_live_natural_run_receipt(owner, receipt, *, now):
     return True
 
 
+def verify_live_unique_natural_epoch(owner, receipt, transport):
+    """Require the exact official-XNAS-window listing to contain THIS run only.
+
+    The earlier offline-guard admission is not transferable to a later
+    first-claim or Sheet POST. Lazy import avoids module import cycles;
+    every call is read-only and a missing/malformed/duplicate page is HOLD.
+    """
+    import natural_run_readonly_probe as source
+    source.verify_unique_natural_epoch(owner, receipt, transport)
+    return True
+
+
 def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
     """One unrepeatable claim, followed by two independent GET checks.
 
@@ -281,6 +293,7 @@ def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
         # a one-way protected epoch tag.
         current_run=transport("GET","/actions/runs/"+str(owner["run_id"]))
         verify_live_natural_run_receipt(owner,current_run,now=captured)
+        verify_live_unique_natural_epoch(owner,current_run,transport)
         verify_live_tag_protection(transport)
         tagged=transport("POST", "/git/tags", {
             "tag": owner["tag"], "message": message,
@@ -326,6 +339,10 @@ def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
         # after its immutability guarantee disappeared. This is a
         # post-readback GET-only check; no retry or compensating delete.
         verify_live_tag_protection(transport)
+        # A second schedule may appear between the first GET and the
+        # permanent ref POST. Do not return a usable lease to the Sheet
+        # writer if the source collection is now ambiguous.
+        verify_live_unique_natural_epoch(owner,current_run,transport)
     except LeaseHold:
         raise
     except HTTPError as error:
@@ -420,6 +437,7 @@ def verify_existing_tag_consumer(asof, transport, *, now=None,
                 "LEASE_CONSUMER_OWNER_MISMATCH")
         actual=transport("GET","/actions/runs/"+str(expected["run_id"]))
         verify_live_natural_run_receipt(manifest,actual,now=captured)
+        verify_live_unique_natural_epoch(manifest,actual,transport)
         # Repository protection might have been revoked during readback:
         # a previously valid tag is not sufficient if protection is gone.
         verify_live_tag_protection(transport)

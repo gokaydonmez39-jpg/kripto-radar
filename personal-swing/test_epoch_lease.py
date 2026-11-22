@@ -4,7 +4,7 @@ import copy
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone, timedelta
 from hashlib import sha1
-from threading import Barrier, Lock
+from threading import Barrier, Lock, local
 from urllib.error import HTTPError
 import json
 import unittest
@@ -52,6 +52,7 @@ class MockGit:
         self.protection="valid"
         self.disable_after_ref=False
         self.run_overrides={}
+        self.run_context=local()
 
     def __call__(self,method,path,body=None):
         with self.lock:
@@ -68,7 +69,20 @@ class MockGit:
                 "updated_at":"2026-11-23T22:04:00Z",
             }
             receipt.update(self.run_overrides)
+            self.run_context.receipt=copy.deepcopy(receipt)
             return receipt
+        if (method=="GET" and path.startswith(
+                "/actions/workflows/xray-personal-477-eod.yml/runs?")):
+            # Each isolated test writer sees its own exact natural run;
+            # thread-local state retains the CAS collision test's independent
+            # admission history without pretending there are no true races.
+            current=getattr(self.run_context,"receipt",None)
+            if current is None:
+                raise AssertionError("NATURAL_LIST_BEFORE_RUN_GET")
+            fields=("id","event","path","head_branch","head_sha",
+                    "run_attempt","repository","created_at")
+            return {"total_count":1,"workflow_runs":[
+                {key:copy.deepcopy(current.get(key)) for key in fields}]}
         if method=="GET" and path=="/rulesets":
             if self.protection=="absent":
                 return [{"id":1,"target":"branch","enforcement":"active"}]
@@ -193,11 +207,13 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(
             [(method,path) for method,path,_ in git.calls],
             [("GET","/actions/runs/"+str(owner["run_id"])),
+             ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF)),
              ("GET","/rulesets"),("GET","/rulesets/11"),
              ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
              ("GET","/git/tags/"+out["tag_sha"]),
-             ("GET","/rulesets"),("GET","/rulesets/11")])
+             ("GET","/rulesets"),("GET","/rulesets/11"),
+             ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF))])
         manifest=json.loads(git.tags[out["tag_sha"]]["message"])
         self.assertEqual(manifest["run_id"],owner["run_id"])
         self.assertEqual(manifest["asof_et"],ASOF)
@@ -299,6 +315,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 self.assertEqual(
                     [(m,p) for m,p,_ in git.calls],
                     [("GET","/actions/runs/"+str(natural()["run_id"])),
+                     ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF)),
                      ("GET","/rulesets"),("GET","/rulesets/11"),
                      ("POST","/git/tags")])
 
@@ -532,6 +549,88 @@ class ExistingLeaseConsumerReadback(unittest.TestCase):
         with self.assertRaises(lease.LeaseHold):
             self.consumed(git,now=NOW+timedelta(hours=11))
         self.assertFalse(any(m=="POST" for m,_,_ in git.calls[-4:]))
+
+
+
+class LiveNaturalEpochUniquenessBoundary(unittest.TestCase):
+    """The lease owner is never enough if GitHub exposes two natural runs.
+
+    These tests deliberately inject two canonical runs into the EXACT
+    XNAS-created-window collection; they do not create a GitHub tag.
+    """
+
+    @staticmethod
+    def duplicate_page(method,path,body=None):
+        if method=="GET" and path.startswith("/actions/workflows/"):
+            common={"event":"schedule","path":lease.WORKFLOW,
+                    "head_branch":"main","head_sha":"a"*40,
+                    "repository":{"full_name":lease.REPO},
+                    "run_attempt":1,
+                    "created_at":"2026-11-23T22:03:00Z"}
+            return {"total_count":2,"workflow_runs":[
+                {**common,"id":890123},
+                {**common,"id":890124}]}
+        return None
+
+    def test_claim_rejects_a_second_natural_run_before_any_tag_post(self):
+        git=MockGit()
+        def transport(method,path,body=None):
+            duplicate=self.duplicate_page(method,path,body)
+            return duplicate if duplicate is not None else git(method,path,body)
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            claim(natural(),transport)
+        self.assertEqual(git.refs,{})
+        self.assertEqual(git.tags,{})
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_existing_tag_owner_does_not_authorize_private_post_after_second_run(self):
+        git=MockGit()
+        claim(natural(),git)
+        git.calls.clear()
+        def transport(method,path,body=None):
+            duplicate=self.duplicate_page(method,path,body)
+            return duplicate if duplicate is not None else git(method,path,body)
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            lease.verify_existing_tag_consumer(
+                ASOF,transport,now=NOW,runtime_env=env(),
+                completed_session=lambda _:ASOF)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_late_duplicate_after_ref_fails_without_consumer_authority(self):
+        git=MockGit()
+        indexed=[0]
+        def transport(method,path,body=None):
+            response=git(method,path,body)
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                indexed[0]+=1
+                if indexed[0]==2:
+                    # A second natural run became visible AFTER first-claim
+                    # but BEFORE the owner may hand authority to Google.
+                    second={**response["workflow_runs"][0],"id":890124}
+                    return {"total_count":2,
+                            "workflow_runs":[*response["workflow_runs"],second]}
+            return response
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            claim(natural(),transport)
+        self.assertEqual(indexed,[2])
+        # The first irreversible tag cannot be deleted or retried safely.
+        # Never convert that uncertain first-claim into Sheet/AL permission.
+        self.assertEqual(len(git.refs),1)
+        self.assertEqual(len(git.tags),1)
+        self.assertFalse(any(m=="POST" and p.startswith("/sheets")
+                             for m,p,_ in git.calls))
+
+    def test_claim_missing_index_never_creates_permanent_tag(self):
+        git=MockGit()
+        def transport(method,path,body=None):
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                return {"total_count":0,"workflow_runs":[]}
+            return git(method,path,body)
+        with self.assertRaises(lease.LeaseHold):
+            claim(natural(),transport)
+        self.assertEqual(git.tags,{})
+        self.assertEqual(git.refs,{})
 
 
 class LiveTagReadonlyCanaryTests(unittest.TestCase):
