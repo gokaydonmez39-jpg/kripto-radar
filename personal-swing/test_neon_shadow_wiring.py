@@ -103,5 +103,51 @@ class NeonWiringTests(unittest.TestCase):
             self.exercise(shadow=True,provider=failing_source)
 
 
+
+class NeonArchiveRawOutcomeAcceptance(unittest.TestCase):
+    """A green scheduled EOD cannot erase a failed advisory NEON step."""
+
+    @staticmethod
+    def workflow():
+        return (Path(__file__).resolve().parent.parent/
+                ".github/workflows/xray-personal-477-eod.yml").read_text(
+                    encoding="utf-8")
+
+    def test_neon_advisory_has_raw_outcome_and_separate_redacted_summary(self):
+        w=self.workflow()
+        marker="- name: Private NEON 477 full-row archive (advisory; NEVER AL, order or push)"
+        summary="- name: Redacted NEON archive raw outcome (no private rows)"
+        self.assertEqual(w.count(marker),1)
+        self.assertEqual(w.count(summary),1)
+        neon=w.split(marker,1)[1].split(summary,1)[0]
+        self.assertIn("id: neon_private_archive",neon)
+        self.assertIn("continue-on-error: true",neon)
+        self.assertIn("archive_state=SKIPPED_NO_FINAL",neon)
+        self.assertIn("archive_state=PRIVATE_READBACK_RETURNED",neon)
+        after=w.split(summary,1)[1].split(
+            "- name: Optional official 477 PIT-aware shadow ledger",1)[0]
+        self.assertIn("always() && github.event_name == 'schedule'",after)
+        self.assertIn("steps.neon_private_archive.outcome",after)
+        self.assertIn("steps.neon_private_archive.outputs.archive_state",after)
+        self.assertIn("NEON_PRIVATE_ARCHIVE=FAILED_ADVISORY",after)
+        self.assertIn("NEON_PRIVATE_ARCHIVE=SKIPPED_NO_FINAL",after)
+        self.assertIn("NEON_PRIVATE_ARCHIVE=STEP_SUCCESS_READBACK_REPORTED",after)
+        self.assertIn("NEON_PRIVATE_ARCHIVE=HOLD_UNVERIFIED_OUTCOME",after)
+        self.assertIn("GITHUB_STEP_SUMMARY",after)
+        self.assertNotIn("source_event=workflow_dispatch",after)
+        self.assertNotIn("echo ${{",after)
+        self.assertNotIn("curl ",after)
+        self.assertNotIn("POST",after)
+
+    def test_neon_status_does_not_claim_card_device_or_change_parent_gate(self):
+        w=self.workflow()
+        neon=w.split(
+            "- name: Redacted NEON archive raw outcome (no private rows)",1)[1].split(
+            "- name: Optional official 477 PIT-aware shadow ledger",1)[0]
+        self.assertNotIn("NEON_PRIVATE_ARCHIVE=DELIVERED",neon)
+        self.assertNotIn("device_ack=true",neon)
+        self.assertNotIn("if: failure()",neon)
+        self.assertNotIn("exit 3",neon)
+
 if __name__=='__main__':
     unittest.main()
