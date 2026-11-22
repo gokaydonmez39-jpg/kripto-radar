@@ -47,6 +47,29 @@ class A34ContractTest(unittest.TestCase):
         with self.assertRaisesRegex(w.PreopenBlocked,'LATEST_COMPLETED_SCAN'):
             w.validate_scope_and_scan(SYMBOLS,SCAN,'2026-10-27',SCOPE,POLICY)
 
+    def test_undated_last_record_cannot_borrow_previous_valid_asof(self):
+        """A trailing row with no ASOF must never borrow the prior source proof."""
+        for bad_date in ('', None):
+            with self.subTest(bad_date=bad_date):
+                rows = copy.deepcopy(SCAN)
+                rogue = copy.deepcopy(rows[-1])
+                rogue[0] = bad_date
+                rows.append(rogue)
+                # Previously the empty date was silently omitted from 'days',
+                # while the forged final row supplied all other PASS fields.
+                with self.assertRaisesRegex(
+                        w.PreopenBlocked, 'SCAN_ROW_ASOF_INVALID'):
+                    w.validate_scope_and_scan(SYMBOLS, rows, ASOF, SCOPE, POLICY)
+
+    def test_undated_middle_record_cannot_be_silently_skipped(self):
+        rows = copy.deepcopy(SCAN)
+        rogue = copy.deepcopy(rows[-1])
+        rogue[0] = ''
+        rows.insert(1, rogue)
+        with self.assertRaisesRegex(
+                w.PreopenBlocked, 'SCAN_ROW_ASOF_INVALID'):
+            w.validate_scope_and_scan(SYMBOLS, rows, ASOF, SCOPE, POLICY)
+
     def test_duplicate_scan(self):
         with self.assertRaisesRegex(w.PreopenBlocked,'SCAN_DUPLICATE'):
             w.validate_scope_and_scan(SYMBOLS,SCAN+[SCAN[-1]],ASOF,SCOPE,POLICY)
