@@ -169,8 +169,18 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None,
         age=now.astimezone(timezone.utc)-cutoff
         # GitHub can create an existing scheduled fallback >10h late.
         # Failure must remain visible even though replay is prohibited.
-        # More than 24h means it is no longer the prior daily EOD epoch.
-        if MAX_FALLBACK_AGE < age <= timedelta(hours=24):
+        # A >24h delayed job MUST NOT silently become green if the previous
+        # UTC day was an official XNAS session, or if this schedule (Tue-Sat
+        # UTC) only materialized on a day outside its configured cron.
+        # Genuine preceding non-session holidays remain safe NOOPs.
+        expired = MAX_FALLBACK_AGE < age <= timedelta(hours=24)
+        if age > timedelta(hours=24):
+            observed_utc = now.astimezone(timezone.utc)
+            previous_utc_day = (observed_utc.date()-
+                                timedelta(days=1)).isoformat()
+            expired = (observed_utc.weekday() not in (1,2,3,4,5) or
+                       ec.get_calendar('XNAS').is_session(previous_utc_day))
+        if expired:
             return {'status':'BLOCKED_NATURAL_FALLBACK_EXPIRED',
                     'asof_et':session,'dispatch_requested':False}
     if preliminary!='DISPATCH_ONE_MISSING_SCHEDULE':
