@@ -5,6 +5,7 @@ on:
     paths:
       - 'personal-swing/schedule_failover.py'
       - 'personal-swing/test_schedule_failover.py'
+      - 'personal-swing/test_xnas_incident_boundaries_202611.py'
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'personal-swing/schedule_failover.py'
       - 'personal-swing/test_schedule_failover.py'
+      - 'personal-swing/test_xnas_incident_boundaries_202611.py'
       - 'personal-swing/fallback_source_provenance.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
@@ -57,8 +59,8 @@ jobs:
       - name: Fail-closed official session and CAS-like duplicate-suppression tests
         working-directory: personal-swing
         run: |
-          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
-          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt
+          python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt test_xnas_incident_boundaries_202611
+          python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt test_xnas_incident_boundaries_202611
           python -m py_compile schedule_failover.py fallback_source_provenance.py epoch_lease.py
       - name: Probe live tag rule projection (bypass UNKNOWN is not release)
         working-directory: personal-swing

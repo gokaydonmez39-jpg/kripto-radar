@@ -73,6 +73,8 @@ jobs:
           python -m unittest -q test_swing_score_daily
           python -m unittest discover -s ../tests -p test_publish_b_source_note.py
           python -O -m unittest -q test_swing_score_daily
+          python -m unittest -q test_xnas_incident_boundaries_202611
+          python -O -m unittest -q test_xnas_incident_boundaries_202611
           python -m unittest -q test_delivery_evidence_audit
           python -O -m unittest -q test_delivery_evidence_audit
           python -m unittest -q test_private_ledger_capacity
