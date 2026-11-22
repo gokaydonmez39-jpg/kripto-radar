@@ -964,7 +964,10 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         alert={'requests':[w.as_cells([['synthetic']*20],3)]}
         env={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET',
              'GITHUB_RUN_ID':'999001'}
+        import daily_job
         with patch.dict(w.os.environ,env,clear=True),patch.object(
+             daily_job,'current_completed_session',return_value='2026-11-23'
+        ),patch.object(
              w,'urlopen',return_value=Reply()) as http,patch.object(
              w,'require_source_lastmile_before_private_post') as source,patch.object(
              w,'require_epoch_lease_before_private_post') as lease:
