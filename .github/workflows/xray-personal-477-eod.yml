@@ -564,6 +564,8 @@ jobs:
         timeout-minutes: 1
         env:
           GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET
           XRAY_SCORE_ASOF: ${{ needs.private-episode-followups.outputs.swing_score_asof }}
           XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
           XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
