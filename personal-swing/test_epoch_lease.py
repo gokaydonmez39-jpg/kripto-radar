@@ -334,7 +334,8 @@ class FirstClaimAndReadback(unittest.TestCase):
 
     def test_untrusted_mutated_owner_cannot_acquire(self):
         for key,value in (("source_event","workflow_dispatch"),
-                          ("run_attempt",2),("tag","foreign"),
+                          ("run_attempt",2),("run_attempt",True),
+                           ("run_attempt",1.0),("tag","foreign"),
                           ("ref","refs/tags/forged"),("source_sha","g"*40)):
             with self.subTest(key=key):
                 owner=natural();owner[key]=value
