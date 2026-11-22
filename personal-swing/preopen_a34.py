@@ -39,6 +39,7 @@ _SAFE_PREOPEN_CODES = frozenset({
     'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT',
     'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED',
     'SOURCE_GITHUB_RUN_UNVERIFIED',
+    'SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED',
     'IEX_PROVIDER_SCOPE_MISMATCH',
     'IEX_INCOMPLETE_OR_STALE_SESSION',
     'IEX_LIVE_AL_COUNT_VS_PRIVATE_SCAN_CONFLICT',
@@ -114,6 +115,7 @@ _SAFE_STAGES = frozenset({
     'PRIVATE_FLIGHT_RECORDER',
     'SOURCE_SHA_SCOPE',
     'SOURCE_GITHUB_RUN_READ',
+    'SOURCE_GITHUB_JOB_READ',
     'IEX_RECOMPUTE',
     'AL_IDENTITY',
     'AL_LEVELS',
@@ -287,6 +289,94 @@ def verify_github_natural_eod_source(asof, run_url, *, fetch=None):
         raise PreopenBlocked('SOURCE_GITHUB_RUN_UNVERIFIED') from None
 
 
+
+def verify_github_eod_six_job_chain(asof, run_url, *, now=None, fetch=None):
+    """GET-only uniqueness and six-job proof scoped to *XNAS ASOF*, not now.
+
+    Monday A34 checks the Friday EOD; a fallback's 10h-from-now
+    lookback would incorrectly reject an authentic Friday run. The
+    source epoch window always starts at ASOF close+45m and ends +10h,
+    regardless of the current calendar date.
+    """
+    try:
+        import exchange_calendars as ec
+        from urllib.parse import urlencode
+        import fallback_job_receipt as receipt
+        if (type(asof) is not str or type(run_url) is not str or
+                SOURCE_RUN_URL.fullmatch(run_url) is None or
+                dt.date.fromisoformat(asof).isoformat()!=asof):
+            raise ValueError('SIX_JOB_SOURCE_INPUT_INVALID')
+        expected_run_id=int(run_url.rsplit('/',1)[1])
+        clock=now if now is not None else dt.datetime.now(dt.timezone.utc)
+        if (not isinstance(clock,dt.datetime) or
+                clock.tzinfo is None or clock.utcoffset() is None):
+            raise ValueError('SIX_JOB_CLOCK_UNVERIFIED')
+        clock=clock.astimezone(dt.timezone.utc)
+        calendar=ec.get_calendar('XNAS')
+        if not calendar.is_session(asof):
+            raise ValueError('SIX_JOB_NON_XNAS_SESSION')
+        cutoff=(calendar.session_close(asof).to_pydatetime()
+                .astimezone(dt.timezone.utc)+dt.timedelta(minutes=45))
+        end=cutoff+dt.timedelta(hours=10)
+        utc=lambda t:t.strftime('%Y-%m-%dT%H:%M:%SZ')
+        listing_url=receipt.WORKFLOW_RUN_BASE+'/runs?'+urlencode({
+            'event':'schedule', 'per_page':100,
+            'created':utc(cutoff)+'..'+utc(end)})
+        if fetch is None:
+            token=os.environ.get('GITHUB_TOKEN')
+            if type(token) is not str or not token:
+                raise ValueError('SIX_JOB_GITHUB_TOKEN_MISSING')
+            read=lambda url:receipt.github_get(url,token)
+        else:
+            read=fetch
+        collection=read(listing_url)
+        if (not isinstance(collection,dict) or
+                type(collection.get('total_count')) is not int or
+                collection['total_count']!=1 or
+                type(collection.get('workflow_runs')) is not list or
+                len(collection['workflow_runs'])!=1):
+            raise ValueError('SIX_JOB_NATURAL_EPOCH_NOT_UNIQUE')
+        listed=collection['workflow_runs'][0]
+        if (not isinstance(listed,dict) or
+                type(listed.get('id')) is not int or
+                listed['id']!=expected_run_id or
+                listed.get('event')!='schedule' or
+                listed.get('head_branch')!='main' or
+                listed.get('path')!=receipt.PATH or
+                not isinstance(listed.get('repository'),dict) or
+                listed['repository'].get('full_name')!=receipt.REPO or
+                type(listed.get('run_attempt')) is not int or
+                listed['run_attempt']!=1 or
+                listed.get('status')!='completed' or
+                listed.get('conclusion')!='success'):
+            raise ValueError('SIX_JOB_SOURCE_SELECTION_INVALID')
+        original=read(receipt.EOD_RUN_BASE+str(expected_run_id))
+        if (not isinstance(original,dict) or
+                original.get('created_at')!=listed.get('created_at') or
+                original.get('head_sha')!=listed.get('head_sha') or
+                original.get('id')!=expected_run_id):
+            raise ValueError('SIX_JOB_GITHUB_RUN_DRIFT')
+        jobs=read(receipt.EOD_RUN_BASE+str(expected_run_id)+
+                  '/jobs?per_page=100')
+        result=receipt.validate(original,jobs,asof,clock)
+        if not (type(result) is dict and
+                result.get('status')=='PRIMARY_EOD_SIX_JOB_PROVEN_GH_ONLY' and
+                result.get('asof_et')==asof and
+                type(result.get('run_id')) is int and
+                result['run_id']==expected_run_id and
+                result.get('source_event')=='schedule' and
+                result.get('private_sheet_verified') is False and
+                result.get('ab_release_authorized') is False and
+                result.get('orders') is False and
+                result.get('device_ack')=='UNKNOWN'):
+            raise ValueError('SIX_JOB_RECEIPT_INVALID')
+        return 'GITHUB_NATURAL_EOD_SIX_JOB_VERIFIED'
+    except Exception:
+        # Public A34 logs expose only this reviewed constant. No private
+        # rows, GitHub token, response/error text, or ticker identities.
+        raise PreopenBlocked('SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED') from None
+
+
 def validate_iex_result(symbols, asof, count, rows):
     need(type(rows) is dict and set(rows) == set(symbols),
          'IEX_PROVIDER_SCOPE_MISMATCH')
@@ -430,12 +520,16 @@ def live_entrypoint(stage=None):
     stage['current'] = 'SOURCE_GITHUB_RUN_READ'
     source_run_check = verify_github_natural_eod_source(
         asof, first[1][-1][8])
+    stage['current'] = 'SOURCE_GITHUB_JOB_READ'
+    six_job_check = verify_github_eod_six_job_chain(
+        asof, first[1][-1][8], now=now)
     stage['current'] = 'IEX_RECOMPUTE'
     bars = engine.live_read(symbols, asof)
     results = {sym: engine.analyze(sym, bars.get(sym, []), asof)
                for sym in symbols}
     summary = validate_iex_result(symbols, asof, expected, results)
     summary['github_run_check'] = source_run_check
+    summary['github_six_job_check'] = six_job_check
     stage['current'] = 'AL_IDENTITY'
     summary['al_identity_check'] = validate_al_identity(
         first[0], asof, expected, results)
