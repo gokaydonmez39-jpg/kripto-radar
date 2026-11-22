@@ -922,6 +922,35 @@ class SheetApi:
                 except Exception:
                     date_ok=False
                 require(date_ok,'GOOGLE_SHEETS_POST_SCOPE_INVALID')
+                # Source scope/policy SHA must be recomputed from THIS exact
+                # production checkout, not merely accepted as 64 hex chars.
+                # An alternate direct SheetApi caller cannot pair a current
+                # natural run URL with forged scope or algorithm provenance.
+                # Any filesystem, PIT or fingerprint uncertainty is HOLD
+                # before both GitHub admission GET and Google mutation POST.
+                try:
+                    symbols=runner.get_scope(
+                        watchlist_file=str(Path(__file__).resolve().with_name(
+                            'nasdaq_watchlist_477.json')),asof=current)
+                    expected_scope=runner.sha_symbols(symbols)
+                    expected_policy=runner.analysis_fingerprint()
+                    source_note=body['requests'][1]['appendCells']['rows'][0][
+                        'values'][9]['userEnteredValue']['stringValue']
+                    fingerprints_ok=(
+                        type(symbols) is list and len(symbols)==477 and
+                        len(set(symbols))==477 and
+                        type(expected_scope) is str and
+                        re.fullmatch(r'[0-9a-f]{64}',expected_scope) is not None and
+                        type(expected_policy) is str and
+                        re.fullmatch(r'[0-9a-f]{64}',expected_policy) is not None and
+                        source_note==(
+                            'scopeSHA='+expected_scope+
+                            ';algorithmSHA='+expected_policy+
+                            ';source_event=schedule;NO_ORDERS; '
+                            'SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'))
+                except Exception:
+                    fingerprints_ok=False
+                require(fingerprints_ok,'GOOGLE_SHEETS_POST_SCOPE_INVALID')
         else:
             require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
         # One central last-mile barrier: canonical EOD scan, outbox,
