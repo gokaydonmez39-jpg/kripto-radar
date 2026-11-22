@@ -60,6 +60,9 @@ jobs:
         run: |
           python -m unittest -q test_schedule_failover
           python -O -m unittest -q test_schedule_failover
+          # Missing natural EOD must have a GET-only source-state witness.
+          python -m unittest -q test_fallback_incident_receipt
+          python -O -m unittest -q test_fallback_incident_receipt
           python -m py_compile schedule_failover.py
           cd research_lab
           python -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
