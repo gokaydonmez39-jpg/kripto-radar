@@ -39,6 +39,7 @@ _SAFE_PREOPEN_CODES = frozenset({
     'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT',
     'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED',
     'SOURCE_GITHUB_RUN_UNVERIFIED',
+    'SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED',
     'IEX_PROVIDER_SCOPE_MISMATCH',
     'IEX_INCOMPLETE_OR_STALE_SESSION',
     'IEX_LIVE_AL_COUNT_VS_PRIVATE_SCAN_CONFLICT',
@@ -114,6 +115,7 @@ _SAFE_STAGES = frozenset({
     'PRIVATE_FLIGHT_RECORDER',
     'SOURCE_SHA_SCOPE',
     'SOURCE_GITHUB_RUN_READ',
+    'SOURCE_GITHUB_JOB_READ',
     'IEX_RECOMPUTE',
     'AL_IDENTITY',
     'AL_LEVELS',
@@ -287,6 +289,46 @@ def verify_github_natural_eod_source(asof, run_url, *, fetch=None):
         raise PreopenBlocked('SOURCE_GITHUB_RUN_UNVERIFIED') from None
 
 
+
+def verify_github_eod_six_job_chain(asof, run_url, *, now=None, fetch=None):
+    """GET-only unique natural EOD six-job and mandatory-step acceptance.
+
+    A green GitHub workflow banner can conceal skipped/failed jobs, an
+    incomplete private Sheet source, or a concurrent competing natural run.
+    Reuse the independently tested six-job DAG proof; do not claim private
+    Sheet, notifications, user delivery, tag owner, or executable signals.
+    """
+    try:
+        import fallback_job_receipt as receipt
+        if (type(asof) is not str or type(run_url) is not str or
+                SOURCE_RUN_URL.fullmatch(run_url) is None):
+            raise ValueError('GITHUB_SIX_JOB_SCOPE_INVALID')
+        expected_run_id = int(run_url.rsplit('/', 1)[1])
+        clock=now if now is not None else dt.datetime.now(dt.timezone.utc)
+        if fetch is None:
+            token=os.environ.get('GITHUB_TOKEN')
+            if type(token) is not str or not token:
+                raise ValueError('GITHUB_SIX_JOB_TOKEN_REQUIRED')
+            read=lambda url:receipt.github_get(url, token)
+        else:
+            read=fetch
+        result=receipt.audit(asof,now=clock,get=read)
+        if not (type(result) is dict and
+                result.get('status')=='PRIMARY_EOD_SIX_JOB_PROVEN_GH_ONLY' and
+                result.get('asof_et')==asof and
+                type(result.get('run_id')) is int and
+                result['run_id']==expected_run_id and
+                result.get('source_event')=='schedule' and
+                result.get('private_sheet_verified') is False and
+                result.get('ab_release_authorized') is False and
+                result.get('orders') is False and
+                result.get('device_ack')=='UNKNOWN'):
+            raise ValueError('GITHUB_SIX_JOB_RECEIPT_INVALID')
+        return 'GITHUB_NATURAL_EOD_SIX_JOB_VERIFIED'
+    except Exception:
+        raise PreopenBlocked('SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED') from None
+
+
 def validate_iex_result(symbols, asof, count, rows):
     need(type(rows) is dict and set(rows) == set(symbols),
          'IEX_PROVIDER_SCOPE_MISMATCH')
@@ -430,12 +472,16 @@ def live_entrypoint(stage=None):
     stage['current'] = 'SOURCE_GITHUB_RUN_READ'
     source_run_check = verify_github_natural_eod_source(
         asof, first[1][-1][8])
+    stage['current'] = 'SOURCE_GITHUB_JOB_READ'
+    six_job_check = verify_github_eod_six_job_chain(
+        asof, first[1][-1][8], now=now)
     stage['current'] = 'IEX_RECOMPUTE'
     bars = engine.live_read(symbols, asof)
     results = {sym: engine.analyze(sym, bars.get(sym, []), asof)
                for sym in symbols}
     summary = validate_iex_result(symbols, asof, expected, results)
     summary['github_run_check'] = source_run_check
+    summary['github_six_job_check'] = six_job_check
     stage['current'] = 'AL_IDENTITY'
     summary['al_identity_check'] = validate_al_identity(
         first[0], asof, expected, results)
