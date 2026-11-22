@@ -255,7 +255,12 @@ def inventory(files):
             valid=(
                 top_perm.get("contents")=="read"
                 and job_perm.get("contents")=="read"
-                and job_perm.get("actions")=="write"
+                and job_perm.get("actions")=="read"
+                and document["concurrency"].get("group") ==
+                    "${{ github.event_name == 'schedule' && github.run_attempt == 1 && "
+                    "'xray-personal-477-scheduler-fallback' || "
+                    "format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id) }}"
+                and document["concurrency"].get("cancel-in-progress")=="false"
                 and dispatch.get("needs")=="offline-negative-regression"
                 and offline.get("permissions",{}).get("contents")=="read"
                 and inputs["dry_run"].get("default")=="true"
