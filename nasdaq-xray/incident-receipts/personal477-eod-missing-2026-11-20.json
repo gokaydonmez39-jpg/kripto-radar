@@ -1,0 +1,102 @@
+{
+  "schema": "XRAY_PERSONAL477_NATURAL_EOD_MISSING_EVIDENCE_V1",
+  "recorded_on_utc_date": "2026-11-22",
+  "scope": "XRAY NASDAQ GODZILLA OMEGA PERSONAL 477 ONLY",
+  "purpose": "NON_AUTHORITATIVE_FORENSIC_DATA_AND_SCHEDULER_EVIDENCE",
+  "source_of_truth_note": "THIS IS NOT A NATURAL EOD, NOT A FINAL, NOT A NEW SIGNAL, NOT A DELIVERY RECEIPT.",
+  "canonical_final": false,
+  "new_signal_publishable": false,
+  "source_event": "NONE_OBSERVED",
+  "source_workflow": ".github/workflows/xray-personal-477-eod.yml",
+  "source_run_id": null,
+  "source_run_success": false,
+  "source_scan_readback": false,
+  "source_tag_owner": false,
+  "broker_orders": false,
+  "real_money": false,
+  "allows_backfill": false,
+  "allows_replay": false,
+  "allows_automatic_dispatch": false,
+  "chatgpt_delivery_ack": false,
+  "device_ack": false,
+  "observed_incident": {
+    "asof_et": "2026-11-20",
+    "expected_trigger_utc": "2026-11-20T23:15:00Z",
+    "expected_trigger_europe_istanbul": "2026-11-21T02:15:00+03:00",
+    "cron_at_trigger": "15 23 * * 1-5",
+    "default_branch_sha_at_trigger": "a7fb5825c0d29be9a12139a602a7884fe4e6c5a2",
+    "old_workflow_blob": "88d62ebdff5d29ca50f8a83855f75d4df326141c",
+    "current_cron_on_2026_11_22": "16 23 * * 1-5",
+    "evidence_query": "https://api.github.com/repos/gokaydonmez39-jpg/kripto-radar/actions/runs?event=schedule&created=2026-11-20T20:00:00Z..2026-11-22T19:00:00Z&per_page=100",
+    "total_schedule_runs_all_workflows": 84,
+    "exact_primary_workflow_matches": 0,
+    "fallback_workflow_run_id": 44880680620,
+    "fallback_outcome": "BLOCKED_DISPATCH_NOT_CONFIRMED",
+    "private_sheet_last_scan_asof": "2026-11-19",
+    "private_sheet_2026_11_20_final_count": 0,
+    "github_scheduler_inner_cause": "UNKNOWN_GITHUB_INTERNAL_EVENT_LOG_REQUIRED",
+    "github_official_docs": "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+  },
+  "independently_checked_market_data": {
+    "provider": "ALPACA_DATA_CONNECTED_READONLY",
+    "feed": "iex",
+    "timeframe": "1Day",
+    "asof": "2026-11-20",
+    "start_inclusive": "2026-09-10",
+    "end_inclusive": "2026-11-20",
+    "xnas_official_sessions": 52,
+    "pit_unique_symbols": 477,
+    "scope_blob_sha": "feb950d3679a66c28a4347a5a6ccf4583c716634",
+    "separate_pinned_bar_queries": 40,
+    "by_group": [
+      {
+        "symbol_indices": "0-119",
+        "symbols": 120,
+        "bars": 6240,
+        "failed_queries": 0
+      },
+      {
+        "symbol_indices": "120-239",
+        "symbols": 120,
+        "bars": 6240,
+        "failed_queries": 0
+      },
+      {
+        "symbol_indices": "240-359",
+        "symbols": 120,
+        "bars": 6240,
+        "failed_queries": 0
+      },
+      {
+        "symbol_indices": "360-476",
+        "symbols": 117,
+        "bars": 6084,
+        "failed_queries": 0
+      }
+    ],
+    "total_expected_bars": 24804,
+    "total_observed_bars": 24804,
+    "symbol_sets_with_exact_52_dates": 477,
+    "missing_days": 0,
+    "duplicate_days": 0,
+    "invalid_ohlcv_geometry": 0,
+    "invalid_session_timestamps": 0,
+    "zero_volume": 0,
+    "provider_asof_and_feed_echo_verified": true,
+    "adjustment_parameter_explicitly_exposed_by_connector": false,
+    "provider_rest_default_adjustment_raw_documentation": "https://docs.alpaca.markets/us/reference/stockbars",
+    "production_engine_analytical_recompute_verified": false
+  },
+  "forward_policy": {
+    "next_eligible_real_natural_asof": "2026-11-23",
+    "next_eod_nominal_utc": "2026-11-23T23:16:00Z",
+    "no_previous_epoch_reconstruction": true,
+    "current_private_scan_monotonic_and_gap_tolerant": true,
+    "strict_actual_scheduled_source_required": true,
+    "downstream_a34_requires_real_six_job_source": true,
+    "historical_gild_2026_10_30_event_still_quarantined_in_sheet": true,
+    "general_unresolved_quarantine_remains_hold": true,
+    "owner_tag_lease_real_canary_verified": false,
+    "full_final_release_authorized": false
+  }
+}
