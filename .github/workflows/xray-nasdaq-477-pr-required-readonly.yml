@@ -48,6 +48,11 @@ jobs:
           # A34 must fail required CI on a broken read-only preopen guard.
           python -m unittest -q test_preopen_a34
           python -O -m unittest -q test_preopen_a34
+          # NEON is advisory but writes 477 private rows: hold before POST
+          # on any source integrity drift, including empty/undated scan rows.
+          python -m unittest -q test_neon_private_ledger_v3
+          python -O -m unittest -q test_neon_private_ledger_v3
+          python -m py_compile neon_private_ledger_v3.py
           python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
       - name: Personal schedule fallback and official research-shadow negative acceptance

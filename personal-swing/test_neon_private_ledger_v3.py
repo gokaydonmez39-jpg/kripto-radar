@@ -342,6 +342,31 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"INVALID_NASDAQ_RUN_URL"):
             self.calculate(url="https://github.com/attacker/repo/actions/runs/100")
 
+    def test_neon_rejects_undated_last_row_before_private_post(self):
+        """A valid old scan must not hide a corrupted final source row."""
+        for bad_day in ('', None):
+            with self.subTest(bad_day=bad_day):
+                api=FakeApi()
+                rogue=copy.deepcopy(api.scans[-1])
+                rogue[0]=bad_day
+                api.scans.append(rogue)
+                # Previously this invalid row was silently filtered and
+                # a full 477-row append could be committed.
+                with self.assertRaisesRegex(
+                        ledger.NeonLedgerHold,'SCAN_ROW_ASOF_INVALID'):
+                    ledger.synchronize(api,ASOF,RUN,MASTER,POLICY,self.snap)
+                self.assertEqual(api.posts,0)
+
+    def test_neon_rejects_undated_middle_source_record(self):
+        api=FakeApi()
+        rogue=copy.deepcopy(api.scans[-1])
+        rogue[0]=''
+        api.scans.insert(1,rogue)
+        with self.assertRaisesRegex(
+                ledger.NeonLedgerHold,'SCAN_ROW_ASOF_INVALID'):
+            ledger.synchronize(api,ASOF,RUN,MASTER,POLICY,self.snap)
+        self.assertEqual(api.posts,0)
+
     def test_snapshot_reject_stale_scan(self):
         old=scans();old[1][0]="2026-11-18"
         with self.assertRaisesRegex(ledger.NeonLedgerHold,"LATEST_SCAN_ASOF_MISMATCH"):
