@@ -9,7 +9,7 @@ inactive; this proof is necessary but NOT sufficient for FULL_FINAL.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 import json
 import os
@@ -22,8 +22,50 @@ STATUS = "NATURAL_RUN_GITHUB_READ_ONLY_VERIFIED"
 HOLD = "NATURAL_RUN_GITHUB_READ_ONLY_HOLD"
 
 
+def schedule_runs_path(asof):
+    """One tightly scoped GitHub GET for this ASOF and next UTC date.
+
+    The scheduled EOD cannot be authoritative unless it is the sole
+    workflow-specific natural run in this bounded date window. In the 10h
+    post-close eligibility window, the following session's EOD cannot yet
+    have been scheduled. All collisions (including queued/failure) HOLD.
+    """
+    lease.epoch_tag(asof)
+    next_utc=(date.fromisoformat(asof)+timedelta(days=1)).isoformat()
+    return ("/actions/workflows/"+lease.WORKFLOW.rsplit("/",1)[-1]+
+            "/runs?event=schedule&per_page=100&created="+asof+".."+next_utc)
+
+
+def verify_unique_natural_epoch(owner, actual, transport):
+    """Fail closed if GitHub exposes any duplicate or incomplete run page."""
+    try:
+        page=transport("GET",schedule_runs_path(owner["asof_et"]))
+    except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
+    if not isinstance(page,dict):
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
+    rows=page.get("workflow_runs")
+    if (type(page.get("total_count")) is not int or
+            page["total_count"]!=1 or type(rows) is not list or len(rows)!=1):
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
+    listed=rows[0]
+    if (not isinstance(listed,dict) or
+            type(listed.get("id")) is not int or
+            listed["id"]!=owner["run_id"] or
+            listed.get("event")!="schedule" or
+            listed.get("path")!=lease.WORKFLOW or
+            listed.get("head_branch")!="main" or
+            listed.get("head_sha")!=owner["source_sha"] or
+            listed.get("run_attempt")!=1 or
+            not isinstance(listed.get("repository"),dict) or
+            listed["repository"].get("full_name")!=lease.REPO or
+            listed.get("created_at")!=actual.get("created_at")):
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
+    return True
+
+
 def verify_once(runtime, transport, *, now=None, completed_session=None):
-    """Validate actual GitHub run identity through exactly ONE GET.
+    """Validate actual GitHub run identity and epoch uniqueness by TWO GETs.
 
     Dependency injection is for offline tests; the scheduled CLI uses its
     actual UTC clock, GitHub runner environment and the official XNAS
@@ -52,6 +94,7 @@ def verify_once(runtime, transport, *, now=None, completed_session=None):
     except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
         raise lease.LeaseHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE") from None
     lease.verify_live_natural_run_receipt(owner,receipt,now=at)
+    verify_unique_natural_epoch(owner,receipt,transport)
     return {
         "status": STATUS, "asof_et": owner["asof_et"],
         "run_id":owner["run_id"], "source_event":"schedule",
