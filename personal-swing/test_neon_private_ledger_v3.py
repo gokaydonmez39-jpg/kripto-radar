@@ -132,6 +132,45 @@ class NeonNaturalCurrentAsOfGate(unittest.TestCase):
             api.assert_not_called()
 
 
+    def test_current_natural_asof_passes_fake_477_readback_without_signal(self):
+        # Positive control: the safety gate must not kill the next real EOD.
+        src={
+            "asof_et":ASOF,"scope_sha256":SCOPE,
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        api=FakeApi()
+        api.scans[1][8]=(
+            "https://github.com/gokaydonmez39-jpg/kripto-radar/"
+            "actions/runs/999001")
+        observation=datetime(2026,11,19,23,16,tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as folder:
+            snapshot_path=Path(folder)/"snapshot.json"
+            shadow_path=Path(folder)/"shadow.json"
+            snapshot_path.write_text(json.dumps(src),encoding="utf-8")
+            shadow_path.write_text(json.dumps(fixture()),encoding="utf-8")
+            with patch.dict(os.environ,self.live_env(),clear=True):
+                with patch("daily_job.current_completed_session",
+                           return_value=ASOF):
+                    with patch.object(
+                        ledger,"datetime",
+                        SimpleNamespace(now=lambda *_:observation)):
+                        with patch.object(
+                            ledger.original,"SheetApi",return_value=api):
+                            with contextlib.redirect_stdout(io.StringIO()) as output:
+                                rc=ledger.main([
+                                    "--snapshot",str(snapshot_path),
+                                    "--shadow",str(shadow_path)])
+        result=json.loads(output.getvalue())
+        self.assertEqual(rc,0,result)
+        self.assertEqual(result["status"],"NEON_PRIVATE_477_NEW_SOURCE_VERIFIED")
+        self.assertEqual((result["scored"],result["na"]),(477,0))
+        self.assertEqual((api.posts,len(api.tab)),(1,478))
+        self.assertFalse(result["notification_sent"])
+        self.assertEqual(result["orders_sent"],0)
+
+
 class NeonSourceIdentityIsolation(unittest.TestCase):
     def test_cross_workflow_schedule_never_reads_private_source(self):
         import private_sheet_writer as writer
