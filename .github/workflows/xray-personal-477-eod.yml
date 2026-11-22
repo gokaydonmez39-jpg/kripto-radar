@@ -46,7 +46,7 @@ concurrency:
   # Offline pull requests must not evict a queued scheduled private EOD.
   # Only genuine schedule is production: diagnostics use run-unique groups.
   # Manual workflow_dispatch must never replace a pending natural EOD.
-  group: ${{ github.event_name == 'schedule' && 'xray-personal-477-daily-eod' || format('xray-personal-477-daily-eod-test-{0}', github.run_id) }}
+  group: ${{ github.event_name == 'schedule' && github.run_attempt == 1 && 'xray-personal-477-daily-eod' || format('xray-personal-477-daily-eod-test-{0}', github.run_id) }}
   cancel-in-progress: false
 jobs:
   offline-guard:
