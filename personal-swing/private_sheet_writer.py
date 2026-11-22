@@ -728,9 +728,35 @@ def _valid_private_batch_targets(body, scope):
         source=requests[1]['appendCells']
         if (source['sheetId'] != scope['scan'] or
                 len(source['rows']) != 1 or
-                len(source['rows'][0]['values']) != len(SCAN_HEADER) or
-                source['rows'][0]['values'][0]['userEnteredValue']['stringValue']
-                    != asof):
+                len(source['rows'][0]['values']) != len(SCAN_HEADER)):
+            return False
+        source_fields=[
+            cell['userEnteredValue']['stringValue']
+            for cell in source['rows'][0]['values']
+        ]
+        # The EOD source is the canonical proof of 477 coverage and zero
+        # missing symbols. A syntactically valid Sheets append must never
+        # fabricate FINAL or silently diverge from the exact AL batch.
+        # These are transport-level shape invariants; actual 52-bar data,
+        # scope SHA and source owner still require the independent plan,
+        # GitHub source admission and Google readback.
+        candidate_rows=(requests[2]['appendCells']['rows']
+                        if len(requests)==3 and
+                           type(requests[2]) is dict and
+                           set(requests[2])=={'appendCells'} else [])
+        candidate_count=len(candidate_rows)
+        proof=source_fields[9]
+        if (source_fields[:7] != [
+                asof,RUN_EVENT_LABELS['schedule'],
+                '477','477','477','0','TRUE'] or
+                source_fields[7] != str(candidate_count) or
+                candidate_count > 477 or
+                VERIFIED_RUN_URL.fullmatch(source_fields[8]) is None or
+                re.fullmatch(
+                    r'scopeSHA=[0-9a-f]{64};algorithmSHA=[0-9a-f]{64};'
+                    r'source_event=schedule;NO_ORDERS;'
+                    r' SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK',
+                    proof) is None):
             return False
         if len(requests)==3:
             candidate=requests[2]
@@ -739,11 +765,22 @@ def _valid_private_batch_targets(body, scope):
             p=candidate['appendCells']
             if (p['sheetId'] != scope['candidate'] or
                     not _valid_private_string_rows(p['rows']) or
-                    any(len(r['values']) != len(CANDIDATE_HEADER) or
-                        r['values'][0]['userEnteredValue']['stringValue']
-                            .startswith(asof+'|') is False or
-                        r['values'][1]['userEnteredValue']['stringValue']
-                            != asof for r in p['rows'])):
+                    any(len(r['values']) != len(CANDIDATE_HEADER)
+                        for r in p['rows'])):
+                return False
+            observed_keys=[]
+            for row in p['rows']:
+                v=[c['userEnteredValue']['stringValue'] for c in row['values']]
+                if (not v[2] or v[0]!=asof+'|'+v[2] or v[1]!=asof or
+                        v[3]!='TEKNİK AL ADAYI' or
+                        v[7]!='AÇIK • 0/15 SEANS' or
+                        v[11]!='KAYDEDİLDİ_BİLDİRİM_AYRI' or
+                        'source_event=schedule' not in v[12] or
+                        'run='+source_fields[8] not in v[12] or
+                        'NO_BROKER_NO_ORDERS' not in v[12]):
+                    return False
+                observed_keys.append(v[0])
+            if len(set(observed_keys))!=candidate_count:
                 return False
         return True
 
