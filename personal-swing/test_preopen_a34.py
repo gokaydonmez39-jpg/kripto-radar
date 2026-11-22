@@ -461,6 +461,88 @@ class A34GitHubRunSourceProvenanceTest(unittest.TestCase):
         self.assertIn('GITHUB_TOKEN: ${{ github.token }}', section)
 
 
+
+class A34SixJobNaturalSourceTest(unittest.TestCase):
+    """A successful workflow banner cannot replace six verified real jobs."""
+
+    @staticmethod
+    def source_get(*, corrupt=None):
+        import copy
+        import fallback_job_receipt as receipt
+        import test_fallback_job_receipt as fixture
+        run,jobs=fixture.fixture()
+        if corrupt=='guardian_skipped':
+            jobs['jobs'][4]['conclusion']='skipped'
+        elif corrupt=='writer_missing':
+            jobs['jobs'][2]['steps']=[
+                step for step in jobs['jobs'][2]['steps']
+                if step.get('name') !=
+                'Private Google Sheets writer (authorized service account only)']
+        elif corrupt=='wrong_sha':
+            jobs['jobs'][1]['head_sha']='f'*40
+        origin={
+            'id':run['id'],'created_at':run['created_at'],
+            'head_branch':'main','event':'schedule',
+            'path':receipt.PATH,'repository':{'full_name':receipt.REPO},
+            'head_sha':run['head_sha'],'run_attempt':1,
+            'status':'completed','conclusion':'success',
+        }
+        calls=[]
+        def fetch(url):
+            calls.append(url)
+            if '/actions/workflows/' in url:
+                listed=[origin]
+                if corrupt=='duplicate_natural':
+                    second=copy.deepcopy(origin)
+                    second['id']+=1
+                    listed.append(second)
+                return {'total_count':len(listed),'workflow_runs':listed}
+            if url.endswith('/jobs?per_page=100'):
+                return copy.deepcopy(jobs)
+            return copy.deepcopy(run)
+        return fetch,calls,fixture.NOW,fixture.ASOF,receipt.EOD_RUN_BASE+str(run['id'])
+
+    def test_six_job_real_source_positive_get_only(self):
+        fetch,calls,now,asof,api_url=self.source_get()
+        run_url=api_url.replace('https://api.github.com/repos/','https://github.com/').replace('/actions/runs/','/actions/runs/')
+        self.assertEqual(
+            w.verify_github_eod_six_job_chain(asof,run_url,now=now,fetch=fetch),
+            'GITHUB_NATURAL_EOD_SIX_JOB_VERIFIED')
+        self.assertEqual(len(calls),3)
+        self.assertTrue(all(x.startswith('https://api.github.com/')
+                            for x in calls))
+
+    def test_skipped_guardian_missing_writer_or_bad_sha_are_hold(self):
+        for issue in ('guardian_skipped','writer_missing','wrong_sha',
+                      'duplicate_natural'):
+            with self.subTest(issue=issue):
+                fetch,calls,now,asof,api_url=self.source_get(corrupt=issue)
+                run_url=api_url.replace('https://api.github.com/repos/',
+                                        'https://github.com/')
+                with self.assertRaisesRegex(
+                        w.PreopenBlocked,'SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED'):
+                    w.verify_github_eod_six_job_chain(
+                        asof,run_url,now=now,fetch=fetch)
+
+    def test_fake_success_wrong_run_id_cannot_pass_six_jobs(self):
+        fetch,calls,now,asof,api_url=self.source_get()
+        fake_url=api_url.replace('https://api.github.com/repos/',
+                                 'https://github.com/').replace(
+                                 str(int(api_url.rsplit('/',1)[1])),
+                                 str(int(api_url.rsplit('/',1)[1])+7))
+        with self.assertRaisesRegex(
+                w.PreopenBlocked,'SOURCE_GITHUB_JOB_CHAIN_UNVERIFIED'):
+            w.verify_github_eod_six_job_chain(
+                asof,fake_url,now=now,fetch=fetch)
+
+    def test_live_entrypoint_requires_unique_six_job_proof_before_iex(self):
+        import inspect
+        code=inspect.getsource(w.live_entrypoint)
+        self.assertIn('verify_github_eod_six_job_chain(',code)
+        self.assertLess(code.index('verify_github_eod_six_job_chain('),
+                        code.index('engine.live_read('))
+
+
 class A34HoldExitCodeContract(unittest.TestCase):
     """GitHub job success may never attest a quarantined A34 HOLD."""
 
