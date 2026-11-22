@@ -714,6 +714,22 @@ class PrivateSheetHandoffTests(unittest.TestCase):
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
+    def test_real_private_destination_is_pinned_by_digest_not_syntax(self):
+        # No actual private spreadsheet ID is present in the public test.
+        import hashlib
+        expected_id="SYNTHETIC_NASDAQ_PRIVATE_0123456789_A"
+        wrong_id="SYNTHETIC_NASDAQ_PRIVATE_0123456789_B"
+        digest=hashlib.sha256(expected_id.encode("ascii")).hexdigest()
+        with patch.object(w,"EXPECTED_PRIVATE_SHEET_ID_SHA256",
+                          digest,create=True):
+            self.assertEqual(
+                w.require_original_private_sheet_id(expected_id),expected_id)
+            for supplied in (wrong_id,"",None,True,b"synthetic"):
+                with self.subTest(supplied_type=type(supplied).__name__):
+                    with self.assertRaisesRegex(
+                            w.HandoffBlocked,"PRIVATE_SHEET_ID_NOT_CONFIGURED"):
+                        w.require_original_private_sheet_id(supplied)
+
     @staticmethod
     def api():
         a=w.SheetApi.__new__(w.SheetApi)
