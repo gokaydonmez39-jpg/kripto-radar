@@ -455,6 +455,66 @@ def verify_existing_tag_consumer(asof, transport, *, now=None,
     }
 
 
+def verify_scoped_git_write_body(path, body):
+    """No generic Git writes: only canonical NASDAQ 477 epoch tag/ref bodies.
+
+    This checks the exact *payload* before the HTTP boundary. Existing
+    natural-producer, official XNAS-window, live ruleset, single-owner and
+    readback gates remain separately mandatory. This helper never grants a
+    live claim, Sheet POST or delivery.
+    """
+    try:
+        require(type(body) is dict, "LEASE_API_BODY_INVALID")
+        if path == "/git/refs":
+            require(set(body) == {"ref", "sha"} and
+                    isinstance(body.get("ref"), str) and
+                    isinstance(body.get("sha"), str) and
+                    SHA40.fullmatch(body["sha"]) is not None and
+                    body["ref"].startswith(REF_PREFIX),
+                    "LEASE_API_BODY_INVALID")
+            asof = body["ref"][len(REF_PREFIX):]
+            require(body["ref"] == REF_PREFIX + epoch_tag(asof),
+                    "LEASE_API_BODY_INVALID")
+            return True
+
+        require(path == "/git/tags" and
+                set(body) == {"tag", "message", "object",
+                              "type", "tagger"} and
+                isinstance(body.get("tag"), str) and
+                body["tag"].startswith(TAG_PREFIX) and
+                isinstance(body.get("message"), str) and
+                isinstance(body.get("object"), str) and
+                SHA40.fullmatch(body["object"]) is not None and
+                body.get("type") == "commit" and
+                type(body.get("tagger")) is dict,
+                "LEASE_API_BODY_INVALID")
+        asof = body["tag"][len(TAG_PREFIX):]
+        require(body["tag"] == epoch_tag(asof),
+                "LEASE_API_BODY_INVALID")
+        owner = json.loads(body["message"])
+        require(type(owner) is dict and
+                isinstance(owner.get("observed_at"), str) and
+                owner["observed_at"].endswith("Z"),
+                "LEASE_API_BODY_INVALID")
+        observed = datetime.fromisoformat(
+            owner["observed_at"].replace("Z", "+00:00"))
+        require(observed.tzinfo is not None and
+                observed.utcoffset() == timedelta(0) and
+                body["message"] == _manifest(owner, now=observed) and
+                body["tag"] == owner["tag"] and
+                body["object"] == owner["source_sha"] and
+                body["tagger"] == {
+                    "name": "github-actions[bot]",
+                    "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                    "date": owner["observed_at"],
+                },
+                "LEASE_API_BODY_INVALID")
+        return True
+    except (LeaseHold, ValueError, TypeError, KeyError,
+            OverflowError, ImportError, AttributeError):
+        raise LeaseHold("LEASE_API_BODY_INVALID") from None
+
+
 def github_transport(token, *, opener=urlopen):
     """Optional authenticated transport. NEVER log token, URL or HTTP body."""
     require(isinstance(token,str) and bool(token),
@@ -487,6 +547,10 @@ def github_transport(token, *, opener=urlopen):
             ))
         )
         require(allowed,"LEASE_API_PATH_INVALID")
+        if method == "POST":
+            verify_scoped_git_write_body(path, body)
+        else:
+            require(body is None, "LEASE_API_BODY_INVALID")
         data=(json.dumps(body,separators=(",",":")).encode("utf-8")
               if body is not None else None)
         request=Request(prefix+path,data=data,method=method,headers={
