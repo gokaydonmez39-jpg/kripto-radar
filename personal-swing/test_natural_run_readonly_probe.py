@@ -123,6 +123,25 @@ class NaturalReadOnlyCanary(unittest.TestCase):
                               completed_session=lambda _:ASOF)
         self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
 
+    def test_bounded_collection_get_transport_never_allows_broad_or_mutating_api(self):
+        def fail_if_authorized(*_args,**_kwargs):
+            raise AssertionError("EXACT_ALLOWED_NATURAL_GET")
+        tr=lease.github_transport("masked-offline-token",opener=fail_if_authorized)
+        exact=probe.schedule_runs_path(ASOF)
+        self.assertIn("event=schedule",exact)
+        with self.assertRaisesRegex(AssertionError,"EXACT_ALLOWED_NATURAL_GET"):
+            tr("GET",exact)
+        for method,path in (
+            ("POST",exact),
+            ("GET",exact.replace("event=schedule","event=workflow_dispatch")),
+            ("GET",exact.replace("per_page=100","per_page=1000")),
+            ("GET",exact+"&page=2"),
+            ("GET",exact.replace("xray-personal-477-eod.yml","other.yml")),
+        ):
+            with self.subTest(method=method,path=path):
+                with self.assertRaisesRegex(lease.LeaseHold,"LEASE_API_PATH_INVALID"):
+                    tr(method,path)
+
     def test_non_natural_runner_is_blocked_before_api_get(self):
         for field,value in (
             ("GITHUB_EVENT_NAME","workflow_dispatch"),
