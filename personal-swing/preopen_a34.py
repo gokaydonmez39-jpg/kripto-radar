@@ -55,6 +55,8 @@ _SAFE_PREOPEN_CODES = frozenset({
     'PRIVATE_SHEET_CREDENTIALS_MISSING',
     'OUTBOX_OR_PANEL_NOT_READY',
     'CONCURRENT_PRIVATE_SHEET_CHANGE',
+    'DISPUTED_RESEARCH_EVENT_HOLD',
+    'A34_PASS_RECEIPT_UNVERIFIED',
 })
 _SAFE_FLIGHT_CODES = frozenset({
     'FLIGHT_BAD_OPEN_STATUS',
@@ -376,6 +378,24 @@ def main():
     stage = {'current': 'START'}
     try:
         result = live_entrypoint(stage=stage)
+        # A job-level GREEN is a source authority. Disputed research events
+        # may be reported as HOLD but must NEVER exit 0 or be promoted into
+        # a verified C/A34 preopening card by a GitHub conclusion check.
+        if (type(result) is dict and
+                result.get('state') ==
+                'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'):
+            raise PreopenBlocked('DISPUTED_RESEARCH_EVENT_HOLD')
+        need(type(result) is dict and
+             result.get('state') == 'CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN' and
+             type(result.get('covered')) is int and
+             result['covered'] == EXPECTED_UNIVERSE and
+             result.get('device_ack') is False and
+             result.get('writes') is False and
+             result.get('orders') is False and
+             result.get('private_data_published') is False and
+             type(result.get('quarantined_research_events')) is int and
+             result['quarantined_research_events'] == 0,
+             'A34_PASS_RECEIPT_UNVERIFIED')
         print(json.dumps(result, sort_keys=True))
         return 0
     except Exception as exc:
