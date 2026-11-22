@@ -159,7 +159,8 @@ class NeonNaturalCurrentAsOfGate(unittest.TestCase):
                            return_value=ASOF):
                     with patch.object(
                         ledger,"datetime",
-                        SimpleNamespace(now=lambda *_:observation)):
+                        SimpleNamespace(now=lambda *_:observation,
+                                        fromisoformat=datetime.fromisoformat)):
                         with patch.object(
                             ledger.original,"SheetApi",return_value=api):
                             with contextlib.redirect_stdout(io.StringIO()) as output:
