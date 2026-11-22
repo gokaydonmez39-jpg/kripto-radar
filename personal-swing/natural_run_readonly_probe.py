@@ -32,7 +32,7 @@ def schedule_runs_path(asof):
     """
     lease.epoch_tag(asof)
     next_utc=(date.fromisoformat(asof)+timedelta(days=1)).isoformat()
-    return ("/actions/workflows/"+lease.WORKFLOW+
+    return ("/actions/workflows/"+lease.WORKFLOW.rsplit("/",1)[-1]+
             "/runs?event=schedule&per_page=100&created="+asof+".."+next_utc)
 
 
