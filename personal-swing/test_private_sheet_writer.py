@@ -711,6 +711,116 @@ class PrivateSheetHandoffTests(unittest.TestCase):
 
 
 
+class BSourceNoteSharedTransportContract(unittest.TestCase):
+    """The genuine B note bridge must be possible but never a generic write."""
+
+    @staticmethod
+    def receipt():
+        from emit_b_source_envelope import SCHEMA, NAMES
+        source={
+            "schema":SCHEMA,"asof":"2026-11-23","run":999001,
+            "head":"a"*40,
+            "proof":[{"jobId":i+1,"jobName":name,"lines":[
+                ["2026-11-23T23:20:00Z","SYNTHETIC_VERIFIED_RECEIPT"],
+                *([["2026-11-23T23:20:01Z","SYNTHETIC_SCAN_READBACK"]]
+                  if i==0 else [])]}
+                for i,name in enumerate(NAMES)],
+        }
+        note=SCHEMA+" "+json.dumps(
+            source,separators=(",",":"),ensure_ascii=True)
+        body={"requests":[{"updateCells":{
+            "range":{"sheetId":105,"startRowIndex":1,"endRowIndex":2,
+                     "startColumnIndex":26,"endColumnIndex":27},
+            "rows":[{"values":[{"note":note}]}],"fields":"note"}}]}
+        return body
+
+    def test_canonical_summary_note_reaches_shared_google_post_after_source_gate(self):
+        import daily_job
+        api=PrivateSheetDestinationContract.api()
+        api._authenticated_production_client=True
+        runtime={"GITHUB_RUN_ID":"999001","GITHUB_SHA":"a"*40,
+                 "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"ENFORCE_GET"}
+        body=self.receipt()
+        self.assertTrue(w._valid_private_batch_post(body))
+        self.assertTrue(w._valid_private_batch_targets(body,api._post_scope))
+        with patch.dict(os.environ,runtime,clear=True),patch.object(
+                daily_job,"current_completed_session",
+                return_value="2026-11-23"),patch.object(
+                w,"require_source_lastmile_before_private_post"
+                ) as source,patch.object(
+                w,"require_epoch_lease_before_private_post") as lease,patch.object(
+                w,"urlopen",return_value=io.BytesIO(b'{"replies":[{}]}')
+                ) as google:
+            self.assertEqual(api.request(
+                ":batchUpdate",method="POST",body=body)["replies"],[{}])
+            source.assert_called_once()
+            lease.assert_called_once()
+            google.assert_called_once()
+
+    def test_wrong_b_note_run_sha_asof_and_missing_mode_are_zero_post(self):
+        import daily_job
+        for changed in ("run","head","asof","mode"):
+            with self.subTest(changed=changed):
+                api=PrivateSheetDestinationContract.api()
+                api._authenticated_production_client=True
+                body=self.receipt()
+                runtime={"GITHUB_RUN_ID":"999001","GITHUB_SHA":"a"*40,
+                         "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"ENFORCE_GET"}
+                if changed=="run": runtime["GITHUB_RUN_ID"]="999002"
+                if changed=="head": runtime["GITHUB_SHA"]="b"*40
+                if changed=="asof":
+                    body["requests"][0]["updateCells"]["rows"][0]["values"][0]["note"] = (
+                        body["requests"][0]["updateCells"]["rows"][0]["values"][0]["note"]
+                        .replace("2026-11-23","2026-11-20"))
+                if changed=="mode": runtime.pop("XRAY_PERSONAL477_SOURCE_LASTMILE_MODE")
+                with patch.dict(os.environ,runtime,clear=True),patch.object(
+                        daily_job,"current_completed_session",
+                        return_value="2026-11-23"),patch.object(
+                        w,"require_source_lastmile_before_private_post"
+                        ) as source,patch.object(
+                        w,"require_epoch_lease_before_private_post"
+                        ) as lease,patch.object(
+                        w,"urlopen",side_effect=AssertionError("GOOGLE_NOTE_POST_SENT")
+                        ) as google:
+                    with self.assertRaises(w.HandoffBlocked):
+                        api.request(":batchUpdate",method="POST",body=body)
+                    google.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_score_note_cannot_be_retargeted_or_used_for_arbitrary_cell_change(self):
+        base=self.receipt()
+        cases=[]
+        def mutation(fn):
+            obj=copy.deepcopy(base)
+            fn(obj["requests"][0]["updateCells"])
+            cases.append(obj)
+        mutation(lambda u:u["range"].update(sheetId=999))
+        mutation(lambda u:u["range"].update(startColumnIndex=27,endColumnIndex=28))
+        mutation(lambda u:u["range"].update(startRowIndex=0,endRowIndex=1))
+        mutation(lambda u:u.update(fields="*"))
+        mutation(lambda u:u["rows"][0]["values"][0].update(
+                 userEnteredValue={"stringValue":"MUTATION"}))
+        mutation(lambda u:u["rows"][0]["values"][0].update(note="UNTRUSTED"))
+        mutation(lambda u:u["rows"].append(copy.deepcopy(u["rows"][0])))
+        cases.append({"requests":[base["requests"][0],base["requests"][0]]})
+        api=PrivateSheetDestinationContract.api()
+        for index,body in enumerate(cases):
+            with self.subTest(index=index):
+                self.assertFalse(w._valid_private_batch_post(body) and
+                                 w._valid_private_batch_targets(
+                                     body,api._post_scope))
+
+    def test_natural_score_note_yaml_must_enable_source_lastmile(self):
+        workflow=(Path(__file__).resolve().parents[1]/
+                  ".github/workflows/xray-personal-477-eod.yml"
+                  ).read_text(encoding="utf-8")
+        section=workflow.split(
+            "- name: Attach and verify current B evidence note (schedule only)",1)[1]
+        self.assertIn("XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET",section)
+        self.assertIn("GITHUB_TOKEN: ${{ github.token }}",section)
+
+
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
