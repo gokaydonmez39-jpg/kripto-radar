@@ -1692,18 +1692,23 @@ class GoogleSheetsNativeEpochCASAcceptance(unittest.TestCase):
         self.assertEqual(p["scan_rows"],[])
         self.assertEqual(w.payload_from_plan(p,{"scan":1,"candidate":2})["requests"],[])
 
-    def test_bad_marker_post_receipt_is_never_readback_pass(self):
+    def test_bad_marker_post_receipt_is_not_success_without_exact_get(self):
         from unittest.mock import Mock
         p,ids=self.epoch()
         api=object.__new__(w.SheetApi)
         api.sheet_ids=ids
-        api.request=Mock(return_value={"replies":[{}, {}, {}]})
-        with self.assertRaisesRegex(w.HandoffBlocked,
-                                    "EPOCH_CAS_POST_RECEIPT_UNVERIFIED"):
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[]},
+        ])
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
             api.apply(p)
-        self.assertEqual(api.request.call_count,1)
-        self.assertEqual(api.request.call_args.args[0],":batchUpdate")
-        self.assertEqual(api.request.call_args.kwargs["method"],"POST")
+        self.assertEqual(api.request.call_count,2)
+        self.assertEqual(api.request.call_args_list[0].args[0],":batchUpdate")
+        self.assertEqual(api.request.call_args_list[0].kwargs["method"],"POST")
+        self.assertIn("namedRanges",api.request.call_args_list[1].args[0])
+        self.assertEqual(api.request.call_args_list[1].kwargs.get("method","GET"),"GET")
 
     def test_missing_marker_on_independent_google_get_blocks_acceptance(self):
         from unittest.mock import Mock
