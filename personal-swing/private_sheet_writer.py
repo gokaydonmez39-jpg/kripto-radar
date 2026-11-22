@@ -108,6 +108,9 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'EPOCH_LEASE_MODE_UNRECOGNIZED',
     'EPOCH_LEASE_TOKEN_MISSING',
     'EPOCH_LEASE_CONSUMER_UNVERIFIED',
+    'SOURCE_LASTMILE_MODE_UNRECOGNIZED',
+    'SOURCE_LASTMILE_TOKEN_MISSING',
+    'SOURCE_LASTMILE_PROVENANCE_UNVERIFIED',
     'UNVERIFIED_RUN_ID',
     'MISSING_AUTHENTICATED_SHEET_METADATA',
     'INVALID_EXISTING_LEVEL',
@@ -470,6 +473,55 @@ def verify_readback(p, candidates, scans):
             'candidates':p['expected_count'],'device_ack':False}
 
 
+
+def require_source_lastmile_before_private_post(
+        environment, *, transport=None, now=None, completed_session=None):
+    """Recheck actual unique scheduled EOD at every private Sheet POST.
+
+    This is a READ-ONLY supplementary fence while immutable tag ownership
+    remains OFF. A successful GET does NOT provide atomic CAS authority,
+    does NOT prove a Google commit, and must never be used to unlock an
+    untrusted recovery or device notification.
+
+    The production EOD workflow explicitly sets ENFORCE_GET in each of
+    its four private writer jobs. OFF preserves isolated/offline tests.
+    """
+    require(isinstance(environment,Mapping),
+            'SOURCE_LASTMILE_MODE_UNRECOGNIZED')
+    mode=environment.get('XRAY_PERSONAL477_SOURCE_LASTMILE_MODE','OFF')
+    require(mode in ('OFF','ENFORCE_GET'),
+            'SOURCE_LASTMILE_MODE_UNRECOGNIZED')
+    if mode=='OFF':
+        return {'status':'LASTMILE_MODE_OFF_NOT_AUTHORITY',
+                'writes':0,'ab_release_authorized':False}
+    # Wrong event/branch/attempt must stop before contacting GitHub or Google.
+    verify_natural_eod_writer_identity(environment)
+    token=environment.get('GITHUB_TOKEN','')
+    require(isinstance(token,str) and bool(token),
+            'SOURCE_LASTMILE_TOKEN_MISSING')
+    try:
+        import natural_run_readonly_probe as source
+        import epoch_lease as lease
+        result=source.verify_bounded(
+            dict(environment),
+            transport if transport is not None else lease.github_transport(token),
+            now_factory=(lambda: now) if now is not None else None,
+            completed_session=completed_session)
+        require(isinstance(result,dict) and
+                result.get('status')==source.STATUS and
+                result.get('source_event')=='schedule' and
+                result.get('run_id')==int(environment['GITHUB_RUN_ID']) and
+                result.get('writes')==0 and
+                result.get('orders') is False and
+                result.get('ab_release_authorized') is False,
+                'SOURCE_LASTMILE_PROVENANCE_UNVERIFIED')
+        return result
+    except Exception:
+        # Prevent all provider exception text, private rows, run URL and
+        # bearer tokens from appearing in the public Actions logs.
+        raise HandoffBlocked('SOURCE_LASTMILE_PROVENANCE_UNVERIFIED') from None
+
+
 def require_epoch_lease_before_private_post(
         environment, *, transport=None, now=None, completed_session=None):
     """Staged, opt-in owner fence for ALL NASDAQ private Sheets POSTs.
@@ -558,6 +610,7 @@ class SheetApi:
         # In ENFORCE mode, a missing/competing protected tag owner denies
         # every private batch POST BEFORE Google network I/O.
         if method == 'POST':
+            require_source_lastmile_before_private_post(os.environ)
             require_epoch_lease_before_private_post(os.environ)
         url=self.base+path
         raw=json.dumps(body,ensure_ascii=False).encode('utf-8') if body is not None else None
