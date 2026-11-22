@@ -216,5 +216,125 @@ class NaturalReadOnlyCanary(unittest.TestCase):
                 transport.assert_not_called()
 
 
+class BoundedNaturalGetRecoveryTests(unittest.TestCase):
+    """Retry only transient read-side lag; never loosen source admission."""
+
+    def test_empty_index_then_exact_natural_page_recovers_with_get_only(self):
+        git=MockGit(); original=schedule_page(git)
+        pages=[{"total_count":0,"workflow_runs":[]}]
+        delays=[]
+        def transport(method,path,body=None):
+            if method=="GET" and path.startswith("/actions/workflows/") and pages:
+                git.calls.append((method,path,body))
+                return pages.pop(0)
+            return original(method,path,body)
+        result=probe.verify_bounded(
+            env(),transport,now_factory=lambda:NOW,
+            pause=lambda seconds:delays.append(seconds),
+            completed_session=lambda _:ASOF)
+        self.assertEqual(result["source_get_attempts"],2)
+        self.assertEqual(len(delays),1)
+        self.assertTrue(0<delays[0]<=5)
+        self.assertEqual([m for m,_,_ in git.calls],
+                         ["GET","GET","GET","GET"])
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_transient_run_receipt_timeout_can_recover(self):
+        git=MockGit(); original=schedule_page(git)
+        first=[True]; delays=[]
+        def transport(method,path,body=None):
+            if path=="/actions/runs/890123" and first[0]:
+                first[0]=False
+                git.calls.append((method,path,body))
+                raise TimeoutError("simulated transient GitHub read timeout")
+            return original(method,path,body)
+        result=probe.verify_bounded(
+            env(),transport,now_factory=lambda:NOW,
+            pause=lambda seconds:delays.append(seconds),
+            completed_session=lambda _:ASOF)
+        self.assertEqual(result["source_get_attempts"],2)
+        self.assertEqual(len(delays),1)
+        self.assertEqual([m for m,_,_ in git.calls],
+                         ["GET","GET","GET"])
+
+    def test_persistent_empty_index_fails_closed_after_exactly_three_gets(self):
+        git=MockGit(); calls=[]; pauses=[]
+        def transport(method,path,body=None):
+            calls.append((method,path))
+            if path.startswith("/actions/workflows/"):
+                return {"total_count":0,"workflow_runs":[]}
+            return git(method,path,body)
+        with self.assertRaises(lease.LeaseHold):
+            probe.verify_bounded(
+                env(),transport,now_factory=lambda:NOW,
+                pause=lambda seconds:pauses.append(seconds),
+                completed_session=lambda _:ASOF)
+        self.assertEqual(len(calls),6)
+        self.assertEqual(len(pauses),2)
+        self.assertEqual({m for m,_ in calls},{"GET"})
+
+    def test_two_natural_rows_never_retry_or_call_side_effects(self):
+        git=MockGit()
+        second={"id":890124,"event":"schedule","path":lease.WORKFLOW,
+                "head_branch":"main","head_sha":"a"*40,"run_attempt":1,
+                "repository":{"full_name":lease.REPO},
+                "created_at":"2026-11-23T23:01:00Z"}
+        delays=[]
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            probe.verify_bounded(
+                env(),schedule_page(git,extra=[second]),
+                now_factory=lambda:NOW,
+                pause=lambda seconds:delays.append(seconds),
+                completed_session=lambda _:ASOF)
+        self.assertEqual(delays,[])
+        self.assertEqual(len(git.calls),2)
+        self.assertTrue(all(m=="GET" for m,_,_ in git.calls))
+
+    def test_forged_first_run_never_retries(self):
+        git=MockGit(); git.run_overrides["head_sha"]="b"*40
+        pauses=[]
+        with self.assertRaisesRegex(lease.LeaseHold,
+                                    "LEASE_NATURAL_RUN_READBACK_UNVERIFIED"):
+            probe.verify_bounded(
+                env(),schedule_page(git),now_factory=lambda:NOW,
+                pause=lambda seconds:pauses.append(seconds),
+                completed_session=lambda _:ASOF)
+        self.assertEqual(pauses,[])
+        self.assertEqual(len(git.calls),1)
+
+    def test_http_403_is_not_a_transient_retry(self):
+        from urllib.error import HTTPError
+        calls=[]; delays=[]
+        def rejected(method,path,body=None):
+            calls.append(method)
+            raise HTTPError("https://api.github.com/",403,"FORBIDDEN",None,None)
+        with self.assertRaises(lease.LeaseHold):
+            probe.verify_bounded(
+                env(),rejected,now_factory=lambda:NOW,
+                pause=lambda seconds:delays.append(seconds),
+                completed_session=lambda _:ASOF)
+        self.assertEqual(calls,["GET"])
+        self.assertEqual(delays,[])
+
+    def test_freshness_window_expiration_stops_without_more_io(self):
+        from datetime import timedelta
+        git=MockGit(); calls=[]; delays=[]
+        later=NOW+timedelta(hours=20)
+        clocks=iter((NOW,later))
+        def empty_index(method,path,body=None):
+            calls.append((method,path))
+            if path.startswith("/actions/workflows/"):
+                return {"total_count":0,"workflow_runs":[]}
+            return git(method,path,body)
+        with self.assertRaises(lease.LeaseHold):
+            probe.verify_bounded(
+                env(),empty_index,now_factory=lambda:next(clocks),
+                pause=lambda seconds:delays.append(seconds),
+                completed_session=lambda instant:ASOF if instant==NOW else None)
+        self.assertEqual(len(calls),2)
+        self.assertEqual(len(delays),1)
+        self.assertTrue(all(m=="GET" for m,_ in calls))
+
+
 if __name__=="__main__":
     unittest.main()
