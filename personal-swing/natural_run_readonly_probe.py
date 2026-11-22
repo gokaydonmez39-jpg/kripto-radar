@@ -14,12 +14,30 @@ from urllib.error import HTTPError, URLError
 import json
 import os
 import sys
+import time
 
 import epoch_lease as lease
 
 
 STATUS = "NATURAL_RUN_GITHUB_READ_ONLY_VERIFIED"
 HOLD = "NATURAL_RUN_GITHUB_READ_ONLY_HOLD"
+SOURCE_GET_ATTEMPTS = 3
+SOURCE_GET_PAUSE_SECONDS = 3
+RETRYABLE_GITHUB_HTTP = frozenset((404, 408, 429, 500, 502, 503, 504))
+
+
+class TransientReadHold(lease.LeaseHold):
+    """Only a read-side transport outage or a provably empty indexed page.
+
+    Inherited HOLD classification remains fail-closed. This subclass alone
+    authorizes bounded, GET-only retries; never invalid source credentials,
+    duplicate natural runs or incomplete/forged provider payloads.
+    """
+
+
+def transient_http(error):
+    return type(error) is HTTPError and error.code in RETRYABLE_GITHUB_HTTP
+
 
 
 def schedule_runs_path(asof):
@@ -51,11 +69,22 @@ def verify_unique_natural_epoch(owner, actual, transport):
     """Fail closed if GitHub exposes any duplicate or incomplete run page."""
     try:
         page=transport("GET",schedule_runs_path(owner["asof_et"]))
-    except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
+    except HTTPError as error:
+        if transient_http(error):
+            raise TransientReadHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
+    except (URLError,TimeoutError,OSError):
+        raise TransientReadHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
+    except (ValueError,TypeError,KeyError):
         raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
     if not isinstance(page,dict):
         raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
     rows=page.get("workflow_runs")
+    # GitHub may index the new schedule after the exact run-ID endpoint.
+    # Retry only a fully formed, precisely EMPTY page, never incomplete or
+    # conflicting pagination, malformed fields or alternate run identity.
+    if type(page.get("total_count")) is int and page["total_count"]==0 and rows==[]:
+        raise TransientReadHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
     if (type(page.get("total_count")) is not int or
             page["total_count"]!=1 or type(rows) is not list or len(rows)!=1):
         raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS")
@@ -102,7 +131,13 @@ def verify_once(runtime, transport, *, now=None, completed_session=None):
 
     try:
         receipt=transport("GET","/actions/runs/"+str(owner["run_id"]))
-    except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
+    except HTTPError as error:
+        if transient_http(error):
+            raise TransientReadHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE") from None
+        raise lease.LeaseHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE") from None
+    except (URLError,TimeoutError,OSError):
+        raise TransientReadHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE") from None
+    except (ValueError,TypeError,KeyError):
         raise lease.LeaseHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE") from None
     lease.verify_live_natural_run_receipt(owner,receipt,now=at)
     verify_unique_natural_epoch(owner,receipt,transport)
@@ -113,6 +148,32 @@ def verify_once(runtime, transport, *, now=None, completed_session=None):
         "ab_release_authorized":False, "device_ack":"UNKNOWN",
     }
 
+
+
+def verify_bounded(runtime, transport, *, now_factory=None, pause=None,
+                   completed_session=None):
+    """Up to 3 bounded GET-only attempts inside the same natural EOD job.
+
+    No dispatch, tag mutation, provider scan, Sheet or card occurs here.
+    The source clock/session is independently rechecked every attempt.
+    Permanent identity/duplicate/status/freshness HOLDs never retry.
+    """
+    clock = now_factory if now_factory is not None else (
+        lambda: datetime.now(timezone.utc))
+    sleep = pause if pause is not None else time.sleep
+    lease.require(callable(clock) and callable(sleep),
+                  "NATURAL_RUN_READ_ONLY_INPUT_INVALID")
+    for number in range(1,SOURCE_GET_ATTEMPTS+1):
+        try:
+            result=verify_once(
+                runtime,transport,now=clock(),
+                completed_session=completed_session)
+            return {**result,"source_get_attempts":number}
+        except TransientReadHold:
+            if number==SOURCE_GET_ATTEMPTS:
+                raise
+            sleep(SOURCE_GET_PAUSE_SECONDS)
+    raise lease.LeaseHold("NATURAL_RUN_READ_ONLY_GET_UNAVAILABLE")
 
 def main(argv=None):
     """Only --verify is supported, and it performs no mutations."""
@@ -130,7 +191,7 @@ def main(argv=None):
                           "writes":0,"ab_release_authorized":False}))
         return 3
     try:
-        result=verify_once(runtime,lease.github_transport(token))
+        result=verify_bounded(runtime,lease.github_transport(token))
     except Exception:
         # Never log provider exceptions, token, private data or raw bodies.
         print(json.dumps({"status":HOLD,
