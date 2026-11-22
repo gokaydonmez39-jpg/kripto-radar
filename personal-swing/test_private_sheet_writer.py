@@ -821,6 +821,49 @@ class BSourceNoteSharedTransportContract(unittest.TestCase):
         self.assertIn("GITHUB_TOKEN: ${{ github.token }}",section)
 
 
+class BProofCarrierFailClosedWorkflowTest(unittest.TestCase):
+    """A successful six-job EOD MUST NOT hide a missing B source note."""
+
+    def test_b_evidence_attachment_is_mandatory_for_sixth_job_green(self):
+        yaml=(Path(__file__).resolve().parents[1]/
+              ".github/workflows/xray-personal-477-eod.yml"
+              ).read_text(encoding="utf-8")
+        self.assertEqual(yaml.count("  daily-private-score-acceptance:"),1)
+        job=yaml.split("  daily-private-score-acceptance:",1)[1]
+        self.assertIn("timeout-minutes: 8",job.split("    steps:",1)[0])
+        labels=(
+            "- name: Load NASDAQ source evidence bridge (schedule only)",
+            "- name: Prepare private Sheet proof bridge dependencies (schedule only)",
+            "- name: Attach and verify current B evidence note (schedule only)",
+        )
+        sections=[]
+        for pos,label in enumerate(labels):
+            self.assertEqual(job.count(label),1)
+            item=job.split(label,1)[1]
+            if pos+1<len(labels):
+                item=item.split(labels[pos+1],1)[0]
+            else:
+                item=item.split("- name: Publish redacted B evidence acceptance",1)[0]
+            sections.append(item)
+            self.assertNotIn("continue-on-error: true",item)
+        self.assertIn("id: source-note-attach",sections[2])
+        self.assertIn("GITHUB_TOKEN: ${{ github.token }}",sections[2])
+        self.assertIn(
+            "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET",
+            sections[2])
+
+    def test_b_source_note_failure_cannot_be_a_silent_green_receipt(self):
+        yaml=(Path(__file__).resolve().parents[1]/
+              ".github/workflows/xray-personal-477-eod.yml"
+              ).read_text(encoding="utf-8")
+        job=yaml.split("  daily-private-score-acceptance:",1)[1]
+        tail=job.split("- name: Publish redacted B evidence acceptance",1)[1]
+        self.assertIn("always()",tail)
+        self.assertIn("steps.source-note-attach.outcome",tail)
+        self.assertIn("XRAY_B_SOURCE_NOTE=PASS_READBACK_NOT_DEVICE_ACK",tail)
+        self.assertIn("XRAY_B_SOURCE_NOTE=HOLD_NO_READBACK",tail)
+
+
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
