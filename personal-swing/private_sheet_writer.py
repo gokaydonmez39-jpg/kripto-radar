@@ -101,6 +101,7 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'UNTRUSTED_GITHUB_EVENT',
     'NON_NATURAL_CANONICAL_EOD_WRITE_UNAUTHORIZED',
     'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED',
+    'NATURAL_EOD_SNAPSHOT_NONCURRENT_ASOF',
     'EPOCH_CAS_ASOF_INVALID',
     'EPOCH_CAS_POST_RECEIPT_UNVERIFIED',
     'EPOCH_CAS_INDEPENDENT_GET_UNVERIFIED',
@@ -142,6 +143,28 @@ def verify_natural_eod_writer_identity(environment):
         isinstance(environment.get('GITHUB_RUN_ID'),str) and
         RUN_ID_RE.fullmatch(environment['GITHUB_RUN_ID']) is not None,
         'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED')
+    return True
+
+
+def require_current_natural_eod_snapshot(snapshot):
+    """Final independent freshness fence BEFORE any private Google client.
+
+    An authenticated scheduled runner may still receive a substituted/stale
+    latest.json artifact. Exact current official XNAS close+45m..+10h
+    admission is re-evaluated here, not inherited from a prior scanner job.
+    If calendar/clock validation is unavailable, no private writes occur.
+    Historical recovery/backfill is never authorized.
+    """
+    code='NATURAL_EOD_SNAPSHOT_NONCURRENT_ASOF'
+    require(type(snapshot) is dict and
+            canonical_scan_day(snapshot.get('asof_et')),code)
+    try:
+        import daily_job
+        current=daily_job.current_completed_session()
+    except Exception:
+        raise HandoffBlocked(code) from None
+    require(type(current) is str and canonical_scan_day(current)
+            and current==snapshot['asof_et'],code)
     return True
 
 
@@ -667,6 +690,7 @@ def main(argv=None):
         # ALL agree before reading snapshot or opening any Google client.
         verify_natural_eod_writer_identity(os.environ)
         snapshot=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
+        require_current_natural_eod_snapshot(snapshot)
         api=SheetApi(credential)
         out=synchronize(snapshot,
             'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/'+run_id,
