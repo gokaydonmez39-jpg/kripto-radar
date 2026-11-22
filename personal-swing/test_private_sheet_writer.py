@@ -68,6 +68,29 @@ class FakeApi:
 
 
 class PrivateSheetHandoffTests(unittest.TestCase):
+    @staticmethod
+    def pit_fixture_asof(day):
+        """Produce exactly the reviewed 477 PIT aliases for synthetic ASOF."""
+        snap=snapshot()
+        current=runner.get_scope(
+            watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),
+            asof=day)
+        original={row['symbol']:row for row in snap['rows']}
+        aliases={'SUPN':'INDV','GNTX':'ROKU'}
+        rows=[]
+        for symbol in current:
+            seed=original.get(symbol)
+            if seed is None:
+                seed=original[aliases[symbol]]
+            row=copy.deepcopy(seed)
+            row['symbol']=symbol
+            row['asof_et']=day
+            rows.append(row)
+        snap['rows']=rows
+        snap['asof_et']=day
+        snap['scope_sha256']=runner.sha_symbols(current)
+        return snap
+
     def test_natural_scan_source_is_exact_single_field_not_substring(self):
         row=["2026-11-23",w.RUN_EVENT_LABELS["schedule"],
              "477","477","477","0","TRUE","0",RUN,
@@ -386,10 +409,7 @@ class PrivateSheetHandoffTests(unittest.TestCase):
              ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']
         api.scans.append(old)
         evidence=copy.deepcopy(old)
-        current=snapshot()
-        current['asof_et']='2026-11-23'
-        for entry in current['rows']:
-            entry['asof_et']='2026-11-23'
+        current=self.pit_fixture_asof('2026-11-23')
         result=w.synchronize(current,RUN,api,run_event='schedule')
         self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
         self.assertEqual(result['asof_et'],'2026-11-23')
@@ -410,10 +430,7 @@ class PrivateSheetHandoffTests(unittest.TestCase):
             '477','477','477','0','TRUE','0',RUN,
             'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
             ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'])
-        source=snapshot()
-        source['asof_et']='2026-11-20'
-        for entry in source['rows']:
-            entry['asof_et']='2026-11-20'
+        source=self.pit_fixture_asof('2026-11-20')
         old=copy.deepcopy(api.scans)
         with self.assertRaisesRegex(
                 w.HandoffBlocked,'SCAN_DATE_ORDER_OR_STALE_ASOF'):
