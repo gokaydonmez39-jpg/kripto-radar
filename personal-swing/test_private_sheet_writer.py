@@ -666,7 +666,9 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                    'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
                    'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'PRIVATE_TEST_TOKEN_MUST_NOT_APPEAR'}
-            with patch.dict(w.os.environ, env, clear=True):
+            # This test isolates public exception sanitization, not ASOF freshness.
+            with patch.dict(w.os.environ, env, clear=True), \
+                 patch.object(w,'require_current_natural_eod_snapshot',return_value=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
                     with patch.object(w, 'synchronize',
                                       side_effect=w.HandoffBlocked('GOOGLE_SHEETS_HTTP_429')):
@@ -690,7 +692,9 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                    'GITHUB_WORKFLOW_REF':w.EXPECTED_EOD_WORKFLOW_REF,
                    'GITHUB_SHA':'a'*40,
                    'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON': 'SENSITIVE_UNIT_TEST'}
-            with patch.dict(w.os.environ, env, clear=True):
+            # This test isolates public exception sanitization, not ASOF freshness.
+            with patch.dict(w.os.environ, env, clear=True), \
+                 patch.object(w,'require_current_natural_eod_snapshot',return_value=True):
                 with patch.object(w, 'SheetApi', return_value=object()):
                     with patch.object(w, 'synchronize',
                                       side_effect=ValueError('SENSITIVE_UNIT_TEST-private-url')):
