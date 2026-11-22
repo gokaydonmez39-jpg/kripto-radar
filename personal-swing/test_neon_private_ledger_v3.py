@@ -51,6 +51,48 @@ def scans():
     return [list(writer.SCAN_HEADER),row]
 
 
+class NeonNaturalCurrentAsOfGate(unittest.TestCase):
+    """Production NEON may not append a historic scanned ASOF as a new day."""
+
+    def live_env(self):
+        return {
+            "GITHUB_EVENT_NAME":"schedule",
+            "GITHUB_RUN_ID":"999001",
+            "GITHUB_RUN_ATTEMPT":"1",
+            "GITHUB_REPOSITORY":writer.EXPECTED_EOD_REPOSITORY,
+            "GITHUB_REF":"refs/heads/main",
+            "GITHUB_SHA":"a"*40,
+            "GITHUB_WORKFLOW_REF":writer.EXPECTED_EOD_WORKFLOW_REF,
+            "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"synthetic-test-token",
+        }
+
+    def test_old_snapshot_must_hold_before_google_even_when_natural(self):
+        src={
+            "asof_et":ASOF, "scope_sha256":SCOPE,
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        for current in ("2026-11-23",None,"2026-11-20"):
+            with self.subTest(current=current):
+                with tempfile.TemporaryDirectory() as folder:
+                    path=Path(folder)/"old.json"
+                    path.write_text(json.dumps(src),encoding="utf-8")
+                    with patch.dict(os.environ,self.live_env(),clear=True):
+                        with patch("daily_job.current_completed_session",
+                                   return_value=current):
+                            with patch.object(ledger.original,"SheetApi",
+                                  side_effect=AssertionError("OLD_NEON_GOOGLE_API_STARTED")
+                            ) as api, contextlib.redirect_stdout(io.StringIO()) as out:
+                                rc=ledger.main(["--snapshot",str(path),
+                                                "--shadow",str(path)])
+                    result=json.loads(out.getvalue())
+                    self.assertEqual(rc,3)
+                    self.assertEqual(result["status"],"NEON_PRIVATE_LEDGER_HOLD")
+                    self.assertEqual(
+                        result["reason_code"],"NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
+                    api.assert_not_called()
+
 class NeonSourceIdentityIsolation(unittest.TestCase):
     def test_cross_workflow_schedule_never_reads_private_source(self):
         import private_sheet_writer as writer
