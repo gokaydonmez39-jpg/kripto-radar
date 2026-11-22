@@ -421,6 +421,37 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         self.assertEqual(api.apply_count,0)
         self.assertEqual(api.scans,old)
 
+
+    def test_20_nov_forensic_data_receipt_is_explicitly_not_final_or_dispatch(self):
+        """An audited 477x52 bar set is evidence, not an absent natural run."""
+        file=(Path(__file__).resolve().parent.parent /
+              'nasdaq-xray/incident-receipts/'
+              'personal477-eod-missing-2026-11-20.json')
+        incident=json.loads(file.read_text(encoding='utf8'))
+        self.assertEqual(
+            incident['schema'],'XRAY_PERSONAL477_NATURAL_EOD_MISSING_EVIDENCE_V1')
+        self.assertFalse(incident['canonical_final'])
+        self.assertIsNone(incident['source_run_id'])
+        self.assertFalse(incident['source_run_success'])
+        self.assertFalse(incident['source_scan_readback'])
+        self.assertFalse(incident['allows_backfill'])
+        self.assertFalse(incident['allows_replay'])
+        self.assertFalse(incident['allows_automatic_dispatch'])
+        self.assertFalse(incident['new_signal_publishable'])
+        self.assertFalse(incident['chatgpt_delivery_ack'])
+        self.assertFalse(incident['device_ack'])
+        self.assertFalse(incident['forward_policy']['full_final_release_authorized'])
+        v=incident['independently_checked_market_data']
+        self.assertEqual(v['pit_unique_symbols'],477)
+        self.assertEqual(v['xnas_official_sessions'],52)
+        self.assertEqual(v['total_observed_bars'],477*52)
+        self.assertEqual(sum(g['bars'] for g in v['by_group']),477*52)
+        self.assertEqual(sum(g['symbols'] for g in v['by_group']),477)
+        self.assertEqual(v['symbol_sets_with_exact_52_dates'],477)
+        self.assertFalse(v['production_engine_analytical_recompute_verified'])
+        self.assertEqual(incident['observed_incident']['exact_primary_workflow_matches'],0)
+        self.assertEqual(incident['observed_incident']['private_sheet_2026_11_20_final_count'],0)
+
     def test_old_asof_manual_dispatch_must_never_append_behind_latest_scan(self):
         api = FakeApi()
         api.scans.append(['2026-10-27','GitHub schedule VERIFIED IEX EOD',
