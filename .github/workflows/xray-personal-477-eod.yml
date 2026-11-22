@@ -555,7 +555,20 @@ jobs:
         timeout-minutes: 3
         run: |
           python3 -m venv "$RUNNER_TEMP/xray-source-note"
-          "$RUNNER_TEMP/xray-source-note/bin/python" -m pip install --disable-pip-version-check 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+          # New venv does NOT inherit XNAS scanner packages from another job.
+          # The B proof transport authenticates its Google API POST only after
+          # daily_job/engine recompute the current official XNAS session.
+          "$RUNNER_TEMP/xray-source-note/bin/python" -m pip install --disable-pip-version-check -r personal-swing/requirements.txt 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+          # Pure import smoke: no token, provider request, broker or Sheet POST.
+          "$RUNNER_TEMP/xray-source-note/bin/python" - <<'PY'
+          import sys
+          import exchange_calendars
+          import google.oauth2.service_account
+          sys.path.insert(0, 'personal-swing')
+          import private_sheet_writer
+          import daily_job
+          import publish_b_source_note
+          PY
       - name: Attach and verify current B evidence note (schedule only)
         id: source-note-attach
         if: ${{ success() && steps.source-note-deps.outcome == 'success' && github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
