@@ -163,6 +163,8 @@ class NaturalReadOnlyCanary(unittest.TestCase):
             ("POST",exact),
             ("GET",exact.replace("event=schedule","event=workflow_dispatch")),
             ("GET",exact.replace("per_page=100","per_page=1000")),
+            ("GET",exact.split("created=",1)[0]+
+                     "created=2026-11-19..2026-11-20"),
             ("GET",exact+"&page=2"),
             ("GET",exact.replace("xray-personal-477-eod.yml","other.yml")),
         ):
