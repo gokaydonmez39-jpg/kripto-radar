@@ -450,13 +450,17 @@ def github_transport(token, *, opener=urlopen):
             or (method=="GET" and (
                 path=="/rulesets"
                 or re.fullmatch(r"/actions/runs/[1-9][0-9]*",path) is not None
-                # Read-only collection scoped to the one protected EOD workflow
-                # and two exact UTC dates; no generic Actions write or dispatch.
+                # Only the canonical EOD workflow's GET-only, fixed
+                # RFC3339 UTC creation range; no whole-day bucket, broadened
+                # event, pagination or dispatch route.
                 or re.fullmatch(
                     r"/actions/workflows/xray-personal-477-eod[.]yml/runs[?]"
                     r"event=schedule&per_page=100&created="
-                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}[.][.]"
-                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",path) is not None
+                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T"
+                    r"(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z[.][.]"
+                    r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T"
+                    r"(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z",
+                    path) is not None
                 or re.fullmatch(r"/rulesets/[1-9][0-9]*",path) is not None
                 or re.fullmatch(
                     r"/git/ref/tags/xray-personal477-eod-epoch-"
