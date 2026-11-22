@@ -78,5 +78,128 @@ class RedactedFallbackReceipt(unittest.TestCase):
             self.assertIn("UNVERIFIED_FAILURE", target.read_text(encoding="utf-8"))
 
 
+class SchedulerSourceStateDiagnostics(unittest.TestCase):
+    """Only an already-RED fallback may ask for two exact GitHub GETs."""
+
+    @staticmethod
+    def runtime():
+        return {"GITHUB_EVENT_NAME":"schedule",
+                "GITHUB_REPOSITORY":"gokaydonmez39-jpg/kripto-radar",
+                "GITHUB_REF":"refs/heads/main","GITHUB_RUN_ATTEMPT":"1",
+                "GITHUB_TOKEN":"TEST_ONLY_SECRET_NEVER_PRINT"}
+
+    @staticmethod
+    def trusted_pages(workflow_state="active",branch="main",
+                      workflow_path=".github/workflows/xray-personal-477-eod.yml"):
+        return {
+            receipt.REPO_META_PATH: {
+                "full_name":"gokaydonmez39-jpg/kripto-radar",
+                "default_branch":branch,
+            },
+            receipt.WORKFLOW_META_PATH: {
+                "path":workflow_path, "state":workflow_state,
+            },
+        }
+
+    def test_unobserved_natural_epoch_active_workflow_stays_unresolved(self):
+        calls=[]
+        pages=self.trusted_pages()
+        def fetch(path):
+            calls.append(("GET",path))
+            return pages[path]
+        out=receipt.probe_source_metadata(payload(),self.runtime(),fetch)
+        self.assertEqual(out,{"category":"WORKFLOW_ACTIVE_CAUSE_UNRESOLVED",
+                              "asof":"2026-11-20"})
+        self.assertEqual(calls,[("GET",receipt.REPO_META_PATH),
+                                ("GET",receipt.WORKFLOW_META_PATH)])
+        summary=receipt.render_source_probe(out)
+        self.assertIn("CAUSE_UNRESOLVED",summary)
+        self.assertIn("NO_DISPATCH",summary)
+        self.assertNotIn("SUCCESSFUL_EOD",summary)
+
+    def test_disabled_workflow_is_separate_from_unknown_scheduler_drop(self):
+        for state in ("disabled_manually","disabled_inactivity","disabled_fork"):
+            with self.subTest(state=state):
+                pages=self.trusted_pages(workflow_state=state)
+                out=receipt.probe_source_metadata(
+                    payload(),self.runtime(),lambda path:pages[path])
+                self.assertEqual(out["category"],"WORKFLOW_DISABLED_OBSERVED")
+                self.assertEqual(out["asof"],"2026-11-20")
+
+    def test_default_branch_drift_denied_without_second_api_get(self):
+        calls=[]
+        pages=self.trusted_pages(branch="other-branch")
+        out=receipt.probe_source_metadata(
+            payload(),self.runtime(),lambda path:
+            calls.append(path) or pages[path])
+        self.assertEqual(out["category"],"DEFAULT_BRANCH_NOT_MAIN")
+        self.assertEqual(calls,[receipt.REPO_META_PATH])
+
+    def test_wrong_workflow_identity_or_missing_state_stays_unverified(self):
+        for pages in (self.trusted_pages(workflow_path=".github/workflows/other.yml"),
+                      self.trusted_pages(workflow_state="unexpected"),
+                      {receipt.REPO_META_PATH:{"default_branch":"main"}}):
+            with self.subTest(pages=pages):
+                out=receipt.probe_source_metadata(
+                    payload(),self.runtime(),lambda path:pages[path])
+                self.assertEqual(out["category"],"GITHUB_METADATA_UNVERIFIED")
+
+    def test_unknown_or_tampered_fallback_never_contacts_metadata_provider(self):
+        for raw in (b"{}",payload(reason_code="FORGED"),
+                    payload(dispatch_requested=True),
+                    payload(status="BLOCKED_GITHUB_API_UNCERTAIN"),
+                    payload(asof_et="2026-11-31")):
+            with self.subTest(raw=raw):
+                calls=[]
+                out=receipt.probe_source_metadata(
+                    raw,self.runtime(),lambda path:calls.append(path))
+                self.assertEqual(out["category"],"SOURCE_EVENT_NOT_ESTABLISHED")
+                self.assertEqual(calls,[])
+
+    def test_wrong_runner_identity_does_not_send_get_or_reflection(self):
+        for k,v in (("GITHUB_EVENT_NAME","workflow_dispatch"),
+                    ("GITHUB_REF","refs/heads/other"),
+                    ("GITHUB_RUN_ATTEMPT","2"),
+                    ("GITHUB_TOKEN",""),
+                    ("GITHUB_REPOSITORY","attacker/repo")):
+            with self.subTest(k=k):
+                env={**self.runtime(),k:v}
+                calls=[]
+                out=receipt.probe_source_metadata(
+                    payload(),env,lambda path:calls.append(path))
+                self.assertEqual(out["category"],"SOURCE_RUNNER_UNVERIFIED")
+                self.assertEqual(calls,[])
+                self.assertNotIn("TEST_ONLY_SECRET",receipt.render_source_probe(out))
+
+    def test_provider_unavailable_never_claims_disabled_or_echoes_http(self):
+        def fail(_path):
+            raise RuntimeError("SENSITIVE_GOOGLE_TOKEN_private_location")
+        out=receipt.probe_source_metadata(payload(),self.runtime(),fail)
+        self.assertEqual(out["category"],"GITHUB_METADATA_UNVERIFIED")
+        self.assertNotIn("SENSITIVE_GOOGLE_TOKEN",receipt.render_source_probe(out))
+
+    def test_cli_source_probe_writes_fixed_category_only(self):
+        import contextlib,io
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as folder:
+            source=Path(folder,"incident.json")
+            target=Path(folder,"summary.md")
+            source.write_bytes(payload())
+            target.write_text("Earlier trusted summary\\n",encoding="utf-8")
+            pages=self.trusted_pages()
+            with patch.dict("os.environ",self.runtime(),clear=True):
+                with patch.object(receipt,"github_readonly_metadata",
+                                  side_effect=lambda path,token:pages[path]):
+                    with contextlib.redirect_stdout(io.StringIO()) as output:
+                        rc=receipt.main(["--result",str(source),
+                                         "--summary",str(target),"--probe-source"])
+            view=target.read_text(encoding="utf-8")
+            self.assertEqual(rc,0)
+            self.assertIn("WORKFLOW_ACTIVE_CAUSE_UNRESOLVED",view)
+            self.assertIn("NO_DISPATCH",view)
+            self.assertTrue(view.startswith("Earlier trusted summary"))
+            self.assertNotIn("TEST_ONLY_SECRET",view+output.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()
