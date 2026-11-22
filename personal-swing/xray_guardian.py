@@ -249,11 +249,19 @@ def main(argv=None):
     parser.add_argument("--no-panel-repair", action="store_true")
     args = parser.parse_args(argv)
     try:
-        asof = args.expected_asof or current_completed_session()
+        # PANEL repair is a private write; only the original natural
+        # production EOD may open its authenticated Google client.
+        sheets.verify_natural_eod_writer_identity(os.environ)
+        current=current_completed_session()
+        asof = args.expected_asof or current
         if asof is None:
             _emit({"status": "SKIPPED_NO_ELIGIBLE_XNAS_EOD"},
                   args.output)
             return 0
+        need(asof == current, "GUARDIAN_NONCURRENT_NATURAL_ASOF")
+        need(args.expected_run_id is None or
+             args.expected_run_id == os.environ.get("GITHUB_RUN_ID"),
+             "GUARDIAN_SOURCE_RUN_ID_MISMATCH")
         creds = os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON", "")
         need(bool(creds), "MISSING_PRIVATE_GOOGLE_AUTH")
         api = sheets.SheetApi(creds)
@@ -281,6 +289,7 @@ def main(argv=None):
             "CONCURRENT_SOURCE_CHANGE_NO_REPAIR",
             "SOURCES_CHANGED_DURING_PANEL_REPAIR",
             "PANEL_REPAIR_READBACK_FAILED", "MISSING_PRIVATE_GOOGLE_AUTH",
+            "GUARDIAN_NONCURRENT_NATURAL_ASOF",
             "INVALID_IMMUTABLE_PRICE"} else "PROVIDER_OR_CONTRACT_BLOCKED"
         _emit({"status": "GUARDIAN_FAIL_CLOSED_" + code}, args.output)
         return 3

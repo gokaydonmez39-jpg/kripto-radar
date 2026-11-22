@@ -346,6 +346,12 @@ def main(argv=None):
             publish_action_receipt(result)
             print(json.dumps(result,sort_keys=True))
             return 0
+        # The CLI --asof cannot override the current natural completed
+        # session to produce an old private score. Reject foreign workflows
+        # before Google auth or market bars can be accessed.
+        writer.verify_natural_eod_writer_identity(os.environ)
+        current=daily_job.current_completed_session()
+        writer.require(asof==current,"SWING_SCORE_NONCURRENT_NATURAL_ASOF")
         credential=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         writer.require(bool(credential),"SWING_SCORE_PRIVATE_AUTH_MISSING")
         api=writer.SheetApi(credential)

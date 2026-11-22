@@ -220,5 +220,54 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertEqual(api.writes,0)
 
 
+
+class PanelEntrypointNaturalEODSourceTests(unittest.TestCase):
+    def env(self,event="schedule"):
+        from private_sheet_writer import EXPECTED_EOD_REPOSITORY, EXPECTED_EOD_WORKFLOW_REF
+        return {"GITHUB_EVENT_NAME":event,
+                "GITHUB_REPOSITORY":EXPECTED_EOD_REPOSITORY,
+                "GITHUB_REF":"refs/heads/main",
+                "GITHUB_RUN_ATTEMPT":"1",
+                "GITHUB_RUN_ID":"999001",
+                "GITHUB_SHA":"a"*40,
+                "GITHUB_WORKFLOW_REF":EXPECTED_EOD_WORKFLOW_REF,
+                "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"OFFLINE_SYNTHETIC"}
+
+    def test_foreign_workflow_cannot_open_panel_sheet(self):
+        import os,io,contextlib
+        from unittest.mock import patch
+        for event in ("workflow_dispatch","push"):
+            with self.subTest(event=event):
+                with patch.dict(os.environ,self.env(event),clear=True):
+                    with patch.object(p,"SheetApi",
+                        side_effect=AssertionError("UNAUTHORIZED_PANEL_GOOGLE_STARTED")
+                    ) as client,contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(p.main(),3)
+                client.assert_not_called()
+
+    def test_no_current_session_cannot_open_panel_sheet(self):
+        import os,io,contextlib
+        from unittest.mock import patch
+        with patch.dict(os.environ,self.env(),clear=True):
+            with patch.object(p,"current_completed_session",return_value=None):
+                with patch.object(p,"SheetApi",
+                    side_effect=AssertionError("STALE_PANEL_GOOGLE_STARTED")
+                ) as client,contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(p.main(),3)
+        client.assert_not_called()
+
+    def test_current_natural_panel_requires_matching_scan_before_write(self):
+        import os,io,contextlib
+        from unittest.mock import patch
+        api=FakeApi()
+        api.scans[1][0]="2026-10-27"
+        with patch.dict(os.environ,self.env(),clear=True):
+            with patch.object(p,"current_completed_session",return_value="2026-10-28"):
+                with patch.object(p,"SheetApi",return_value=api):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(p.main(),3)
+        self.assertEqual(api.writes,0)
+
+
 if __name__=='__main__':
     unittest.main()

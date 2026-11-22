@@ -265,5 +265,49 @@ class GuardianTests(unittest.TestCase):
             src)
 
 
+
+class GuardianEntrypointNaturalEODSourceTests(unittest.TestCase):
+    def env(self,event="schedule"):
+        import private_sheet_writer as writer
+        return {"GITHUB_EVENT_NAME":event,
+                "GITHUB_REPOSITORY":writer.EXPECTED_EOD_REPOSITORY,
+                "GITHUB_REF":"refs/heads/main",
+                "GITHUB_RUN_ATTEMPT":"1",
+                "GITHUB_RUN_ID":"999001",
+                "GITHUB_SHA":"a"*40,
+                "GITHUB_WORKFLOW_REF":writer.EXPECTED_EOD_WORKFLOW_REF,
+                "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"OFFLINE_SYNTHETIC"}
+
+    def test_manual_guardian_must_not_repair_or_open_private_client(self):
+        import tempfile,os
+        from pathlib import Path
+        for event in ("workflow_dispatch","push"):
+            with self.subTest(event=event):
+                with tempfile.TemporaryDirectory() as folder:
+                    with patch.dict(os.environ,self.env(event),clear=True):
+                        with patch.object(guardian.sheets,"SheetApi",
+                            side_effect=AssertionError("UNAUTHORIZED_GUARDIAN_SHEET_STARTED")
+                        ) as client:
+                            rc=guardian.main(["--expected-asof","2026-11-04",
+                                              "--output",str(Path(folder)/"r.json")])
+                    self.assertEqual(rc,3)
+                    client.assert_not_called()
+
+    def test_stale_guardian_asof_is_denied_before_google_client(self):
+        import tempfile,os
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.dict(os.environ,self.env(),clear=True):
+                with patch.object(guardian,"current_completed_session",
+                                  return_value="2026-11-05"):
+                    with patch.object(guardian.sheets,"SheetApi",
+                        side_effect=AssertionError("HISTORICAL_GUARDIAN_STARTED")
+                    ) as client:
+                        rc=guardian.main(["--expected-asof","2026-11-04",
+                                          "--output",str(Path(folder)/"r.json")])
+            self.assertEqual(rc,3)
+            client.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
