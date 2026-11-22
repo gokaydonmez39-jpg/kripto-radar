@@ -1687,6 +1687,44 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
                 gh.assert_called_once()
                 google.assert_not_called()
 
+    def test_real_or_actions_google_post_never_accepts_off_lastmile(self):
+        # The real service-account client or an Actions job may not silently
+        # downgrade the source witness by omitting the environment flag.
+        # Synthetic objects are used: no Google request may be sent.
+        cases=(
+            (True,False,{}),
+            (True,False,{"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"}),
+            (False,True,{"GITHUB_ACTIONS":"true"}),
+            (False,True,{"GITHUB_ACTIONS":"true",
+                         "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"}),
+        )
+        for real_client,actions,runtime in cases:
+            with self.subTest(real_client=real_client,actions=actions,
+                              runtime=runtime):
+                api=object.__new__(w.SheetApi)
+                api.base="https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
+                api.token="OFFLINE"
+                api._post_scope={"scan":1,"candidate":2,"alerts":3,"panel":4}
+                if real_client:
+                    api._authenticated_production_client=True
+                with patch.dict(os.environ,runtime,clear=True):
+                    with patch.object(w,"urlopen",
+                                      side_effect=AssertionError("GOOGLE_POST_SENT")
+                                      ) as google,patch.object(
+                        w,"require_source_lastmile_before_private_post"
+                                      ) as source,patch.object(
+                        w,"require_epoch_lease_before_private_post"
+                                      ) as lease:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,
+                                "SOURCE_LASTMILE_MODE_UNRECOGNIZED"):
+                            api.request(":batchUpdate",method="POST",
+                                        body={"requests":[w.as_cells(
+                                            [["SYNTHETIC"]*20],3)]})
+                        google.assert_not_called()
+                        source.assert_not_called()
+                        lease.assert_not_called()
+
     def test_gate_off_in_local_legacy_does_not_authorize_delivery(self):
         import test_epoch_lease as cases
         git=cases.MockGit()
