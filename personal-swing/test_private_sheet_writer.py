@@ -953,6 +953,77 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             lease.assert_not_called()
             http.assert_not_called()
 
+
+    def test_enforced_lastmile_rejects_forged_scope_or_analysis_sha_before_io(self):
+        """Even current ASOF + genuine run ID may not write forged policy/SHA.
+
+        Before fix the generic transport admits both valid-looking SHA strings
+        and reaches mocked Google POST. No private data or real POST here.
+        """
+        import daily_job
+        import runner
+        api=self._api()
+        good=self.canonical_eod_payload()
+        env={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET',
+             'GITHUB_RUN_ID':'999001'}
+        for field in ('scope','analysis'):
+            with self.subTest(field=field):
+                body=copy.deepcopy(good)
+                note=body['requests'][1]['appendCells']['rows'][0]['values'][9][
+                    'userEnteredValue']['stringValue']
+                if field=='scope':
+                    note=note.replace('scopeSHA='+'a'*64, 'scopeSHA='+'f'*64)
+                else:
+                    note=note.replace('algorithmSHA='+'b'*64,
+                                      'algorithmSHA='+'f'*64)
+                body['requests'][1]['appendCells']['rows'][0]['values'][9][
+                    'userEnteredValue']['stringValue']=note
+                self.assertTrue(w._valid_private_batch_post(body))
+                self.assertTrue(w._valid_private_batch_targets(body,api._post_scope))
+                with patch.dict(w.os.environ,env,clear=True),patch.object(
+                    daily_job,'current_completed_session',return_value='2026-11-23'
+                ),patch.object(runner,'get_scope',return_value=SYMS
+                ),patch.object(runner,'sha_symbols',return_value='a'*64
+                ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
+                ),patch.object(
+                    w,'urlopen',side_effect=AssertionError('FORGED_SHA_REACHED_GOOGLE')
+                ) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post'
+                ) as lease:
+                    with self.assertRaisesRegex(
+                            w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',body=body)
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_enforced_lastmile_canonical_sha_still_allows_existing_real_source(self):
+        """Current code/policy fingerprints preserve authorized exact source."""
+        import daily_job
+        import runner
+        class Reply:
+            def __enter__(self):return self
+            def __exit__(self,*_):return False
+            def read(self):return b'{"replies":[]}'
+        api=self._api()
+        env={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET',
+             'GITHUB_RUN_ID':'999001'}
+        with patch.dict(w.os.environ,env,clear=True),patch.object(
+            daily_job,'current_completed_session',return_value='2026-11-23'
+        ),patch.object(runner,'get_scope',return_value=SYMS
+        ),patch.object(runner,'sha_symbols',return_value='a'*64
+        ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
+        ),patch.object(w,'urlopen',return_value=Reply()) as http,patch.object(
+            w,'require_source_lastmile_before_private_post') as source,patch.object(
+            w,'require_epoch_lease_before_private_post') as lease:
+            self.assertEqual(api.request(':batchUpdate',method='POST',
+                             body=self.canonical_eod_payload()),{'replies':[]})
+            http.assert_called_once()
+            source.assert_called_once()
+            lease.assert_called_once()
+
     def test_enforced_lastmile_same_run_keeps_real_final_and_other_producers(self):
         """Correct runner + canonical source may still pass existing guards."""
         class Reply:
@@ -967,6 +1038,8 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         import daily_job
         with patch.dict(w.os.environ,env,clear=True),patch.object(
              daily_job,'current_completed_session',return_value='2026-11-23'
+        ),patch.object(runner,'sha_symbols',return_value='a'*64
+        ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
         ),patch.object(
              w,'urlopen',return_value=Reply()) as http,patch.object(
              w,'require_source_lastmile_before_private_post') as source,patch.object(
