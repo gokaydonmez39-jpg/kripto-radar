@@ -64,6 +64,8 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'GOOGLE_SHEETS_TRANSPORT_URLError',
     'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
     'GOOGLE_SHEETS_READ_RETRY_EXHAUSTED',
+    'GOOGLE_SHEETS_METHOD_SCOPE_INVALID',
+    'GOOGLE_SHEETS_POST_SCOPE_INVALID',
     'GOOGLE_AUTH_CONFIGURATION_INVALID',
     'GOOGLE_TOKEN_NOT_AVAILABLE',
     'GOOGLE_SERVICE_ACCOUNT_NOT_CONFIGURED',
@@ -605,6 +607,26 @@ class SheetApi:
         self.sheet_ids=None
 
     def request(self, path, *, method='GET', body=None):
+        # One shared HTTP boundary for all private NASDAQ writers.
+        # No caller, even with a valid service account, can invoke generic
+        # Google mutation verbs or DELETE/PATCH/PUT through this transport.
+        # This is a safety allowlist, NOT an authorization to write.
+        require(type(method) is str and method in ('GET', 'POST'),
+                'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
+        if method == 'POST':
+            # All reviewed NASDAQ producers use the SAME spreadsheet
+            # batchUpdate path. Reject arbitrary endpoints and dangerous
+            # request types before *any* GitHub/Google I/O.
+            allowed = frozenset(('addNamedRange', 'appendCells', 'updateCells'))
+            require(type(path) is str and path == ':batchUpdate' and
+                    type(body) is dict and set(body) == {'requests'} and
+                    type(body['requests']) is list and
+                    all(type(request) is dict and len(request) == 1 and
+                        next(iter(request)) in allowed
+                        for request in body['requests']),
+                    'GOOGLE_SHEETS_POST_SCOPE_INVALID')
+        else:
+            require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
         # One central last-mile barrier: canonical EOD scan, outbox,
         # lifecycle, PANEL, score and NEON all use this Sheets client.
         # In ENFORCE mode, a missing/competing protected tag owner denies
