@@ -371,6 +371,56 @@ class PrivateSheetHandoffTests(unittest.TestCase):
             w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
 
+
+    def test_23_nov_forward_natural_eod_survives_missing_20_nov_without_backfill(self):
+        """Only a NEW verified natural epoch may append; missing 20 stays missing.
+
+        This is a fake offline Google API, never live market data, dispatch,
+        Sheet mutation, notification or an old-asof replay.
+        """
+        api=FakeApi()
+        old=['2026-11-19',w.RUN_EVENT_LABELS['schedule'],
+             '477','477','477','0','TRUE','0',
+             'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/44671232964',
+             'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+             ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']
+        api.scans.append(old)
+        evidence=copy.deepcopy(old)
+        current=snapshot()
+        current['asof_et']='2026-11-23'
+        for entry in current['rows']:
+            entry['asof_et']='2026-11-23'
+        result=w.synchronize(current,RUN,api,run_event='schedule')
+        self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
+        self.assertEqual(result['asof_et'],'2026-11-23')
+        self.assertEqual(api.apply_count,1)
+        self.assertEqual(api.scans[1],evidence)
+        self.assertEqual([x[0] for x in api.scans[1:]],
+                         ['2026-11-19','2026-11-23'])
+        self.assertNotIn('2026-11-20',[x[0] for x in api.scans[1:]])
+        self.assertFalse(result['device_ack'])
+        again=w.synchronize(current,RUN,api,run_event='schedule')
+        self.assertEqual(again['status'],'PRIVATE_SHEET_READBACK_PASS')
+        self.assertEqual(api.apply_count,1)
+
+    def test_late_20_nov_source_after_new_23_nov_eod_is_always_rejected(self):
+        api=FakeApi()
+        api.scans.append([
+            '2026-11-23',w.RUN_EVENT_LABELS['schedule'],
+            '477','477','477','0','TRUE','0',RUN,
+            'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+            ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'])
+        source=snapshot()
+        source['asof_et']='2026-11-20'
+        for entry in source['rows']:
+            entry['asof_et']='2026-11-20'
+        old=copy.deepcopy(api.scans)
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,'SCAN_DATE_ORDER_OR_STALE_ASOF'):
+            w.synchronize(source,RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,0)
+        self.assertEqual(api.scans,old)
+
     def test_old_asof_manual_dispatch_must_never_append_behind_latest_scan(self):
         api = FakeApi()
         api.scans.append(['2026-10-27','GitHub schedule VERIFIED IEX EOD',
