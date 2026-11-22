@@ -475,6 +475,9 @@ def verify_scoped_git_write_body(path, body):
             asof = body["ref"][len(REF_PREFIX):]
             require(body["ref"] == "refs/tags/" + epoch_tag(asof),
                     "LEASE_API_BODY_INVALID")
+            import exchange_calendars as ec
+            require(ec.get_calendar("XNAS").is_session(asof),
+                    "LEASE_API_BODY_INVALID")
             return True
 
         require(path == "/git/tags" and
