@@ -355,16 +355,18 @@ def as_cells(rows, sheet_id):
 def epoch_marker(asof, scan_sheet_id):
     """Deterministic per-ASOF Google-owned native named range for first writer.
 
-    The namedRangeId AND name are identical for every competing natural
-    producer of one XNAS session. Google rejects duplicate names/IDs;
-    an addNamedRange within the same batch as appendCells forces the
-    losing producer's entire canonical scan/AL append to fail atomically.
-    This is a provider-enforced single-insert, NOT undeletable immutability
-    and NOT authority to rerun or backfill a missing session.
+    A competing writer must attempt the SAME namedRangeId and name, so
+    at most one same-ASOF batch can insert the source scan plus AL rows.
+    A mutable named range is not an immutable Git provenance attestation.
     """
-    require(type(asof) is str and re.fullmatch(r'20\\d{2}-\\d{2}-\\d{2}',asof)
-            and date.fromisoformat(asof).isoformat()==asof and
-            type(scan_sheet_id) is int and 0 <= scan_sheet_id <= 2147483647,
+    try:
+        canonical=(type(asof) is str and
+                   re.fullmatch(r'20[0-9]{2}-[0-9]{2}-[0-9]{2}',asof) is not None
+                   and date.fromisoformat(asof).isoformat()==asof)
+    except ValueError:
+        canonical=False
+    require(canonical and type(scan_sheet_id) is int
+            and 0 <= scan_sheet_id <= 2147483647,
             'EPOCH_CAS_ASOF_INVALID')
     compact=asof.replace('-','')
     return {
@@ -373,7 +375,6 @@ def epoch_marker(asof, scan_sheet_id):
         'range':{'sheetId':scan_sheet_id,'startRowIndex':0,
                  'endRowIndex':1,'startColumnIndex':0,'endColumnIndex':1},
     }
-
 
 def _marker_matches(observed, expected):
     """Accept protocol-default omission of startIndex=0; reject other drift."""
