@@ -238,6 +238,7 @@ jobs:
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'
       - name: Private NEON 477 full-row archive (advisory; NEVER AL, order or push)
+        id: neon_private_archive
         if: github.event_name == 'schedule'
         continue-on-error: true
         working-directory: personal-swing
@@ -249,6 +250,7 @@ jobs:
           set -euo pipefail
           snapshot="$RUNNER_TEMP/xray-private-data/latest.json"
           if [[ ! -f "$snapshot" ]]; then
+            echo 'archive_state=SKIPPED_NO_FINAL' >> "$GITHUB_OUTPUT"
             echo 'NEON_LEDGER=SKIPPED_NO_FINAL; DELIVERY=UNKNOWN'
             exit 0
           fi
@@ -256,6 +258,28 @@ jobs:
           asof=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["asof_et"])' "$snapshot")
           shadow="$RUNNER_TEMP/xray-private-data/neon_shadow_v3_${asof}.json"
           python neon_private_ledger_v3.py --snapshot "$snapshot" --shadow "$shadow"
+          # Only after the private ledger executable exits zero; this is NOT
+          # a ChatGPT/iPhone delivery acknowledgment or a new AL authority.
+          echo 'archive_state=PRIVATE_READBACK_RETURNED' >> "$GITHUB_OUTPUT"
+      - name: Redacted NEON archive raw outcome (no private rows)
+        if: ${{ always() && github.event_name == 'schedule' }}
+        shell: bash
+        env:
+          NEON_RAW_OUTCOME: ${{ steps.neon_private_archive.outcome }}
+          NEON_ARCHIVE_STATE: ${{ steps.neon_private_archive.outputs.archive_state }}
+        run: |
+          set -euo pipefail
+          # Raw outcome (NOT conclusion) preserves failure under continue-on-error.
+          # Report only fixed literals; never echo private rows, symbols, or URLs.
+          if [[ "$NEON_RAW_OUTCOME" == "failure" ]]; then
+            echo 'NEON_PRIVATE_ARCHIVE=FAILED_ADVISORY; DELIVERY=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$NEON_RAW_OUTCOME" == "success" && "$NEON_ARCHIVE_STATE" == "SKIPPED_NO_FINAL" ]]; then
+            echo 'NEON_PRIVATE_ARCHIVE=SKIPPED_NO_FINAL; DELIVERY=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$NEON_RAW_OUTCOME" == "success" && "$NEON_ARCHIVE_STATE" == "PRIVATE_READBACK_RETURNED" ]]; then
+            echo 'NEON_PRIVATE_ARCHIVE=STEP_SUCCESS_READBACK_REPORTED; DELIVERY=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'NEON_PRIVATE_ARCHIVE=HOLD_UNVERIFIED_OUTCOME; DELIVERY=UNKNOWN' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Optional official 477 PIT-aware shadow ledger (NO AL, no market provider HTTP, no Sheet)
         # This sidecar is strictly after normal private Sheet readback.
         # No completed EOD => explicit SKIP, never a false 477-shadow PASS.
