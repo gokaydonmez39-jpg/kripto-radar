@@ -696,6 +696,82 @@ def _valid_private_batch_post(body):
     return True
 
 
+def _valid_private_batch_targets(body, scope):
+    """Bind approved cell shapes to authenticated, unique worksheet IDs.
+
+    A correct-looking source append without its exact same-ASOF namedRange
+    claim is NOT an authorized EOD. No single append may mutate source or
+    candidate tabs. Outbox, score and NEON remain independently append-only.
+    The real owner/lease and source checks remain separate prerequisites.
+    """
+    if type(scope) is not dict or not {'scan','candidate','alerts','panel'}.issubset(scope):
+        return False
+    ids=list(scope.values())
+    if (any(type(v) is not int or not 0<=v<=2147483647 for v in ids) or
+            len(set(ids)) != len(ids)):
+        return False
+    if type(body) is not dict or type(body.get('requests')) is not list:
+        return False
+    requests=body['requests']
+    if not requests:
+        return False
+    first=requests[0]
+    eod=type(first) is dict and set(first)=={'addNamedRange'}
+    if eod:
+        if len(requests) not in (2,3):
+            return False
+        marker=first['addNamedRange']['namedRange']
+        if marker['range']['sheetId'] != scope['scan']:
+            return False
+        compact=marker['name'][-8:]
+        asof=compact[:4]+'-'+compact[4:6]+'-'+compact[6:8]
+        source=requests[1]['appendCells']
+        if (source['sheetId'] != scope['scan'] or
+                len(source['rows']) != 1 or
+                len(source['rows'][0]['values']) != len(SCAN_HEADER) or
+                source['rows'][0]['values'][0]['userEnteredValue']['stringValue']
+                    != asof):
+            return False
+        if len(requests)==3:
+            candidate=requests[2]
+            if type(candidate) is not dict or set(candidate) != {'appendCells'}:
+                return False
+            p=candidate['appendCells']
+            if (p['sheetId'] != scope['candidate'] or
+                    not _valid_private_string_rows(p['rows']) or
+                    any(len(r['values']) != len(CANDIDATE_HEADER) or
+                        r['values'][0]['userEnteredValue']['stringValue']
+                            .startswith(asof+'|') is False or
+                        r['values'][1]['userEnteredValue']['stringValue']
+                            != asof for r in p['rows'])):
+                return False
+        return True
+
+    allowed_append={}
+    for name,width in (('alerts',20),('score',35),('neon',23)):
+        if name in scope:
+            allowed_append[scope[name]]=width
+    for request in requests:
+        verb,payload=next(iter(request.items()))
+        if verb=='addNamedRange':
+            return False
+        if verb=='appendCells':
+            sid=payload['sheetId']
+            width=allowed_append.get(sid)
+            if width is None or any(len(r['values']) != width for r in payload['rows']):
+                return False
+        elif verb=='updateCells':
+            if 'start' in payload:
+                if payload['start']['sheetId'] != scope['candidate']:
+                    return False
+            else:
+                if payload['range']['sheetId'] != scope['panel']:
+                    return False
+        else:
+            return False
+    return True
+
+
 class SheetApi:
     """Restrict HTTP calls to official Google Sheets API (credential is scoped)."""
 
@@ -721,6 +797,7 @@ class SheetApi:
                 'PRIVATE_SHEET_ID_NOT_CONFIGURED')
         self.base=BATCH_ENDPOINT+spreadsheet_id
         self.sheet_ids=None
+        self._post_scope=None
 
     def request(self, path, *, method='GET', body=None):
         # One shared HTTP boundary for all private NASDAQ writers.
@@ -734,7 +811,9 @@ class SheetApi:
             # batchUpdate path. Reject arbitrary endpoints and dangerous
             # request types before *any* GitHub/Google I/O.
             require(type(path) is str and path == ':batchUpdate' and
-                    _valid_private_batch_post(body),
+                    _valid_private_batch_post(body) and
+                    _valid_private_batch_targets(
+                        body,getattr(self,'_post_scope',None)),
                     'GOOGLE_SHEETS_POST_SCOPE_INVALID')
         else:
             require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
@@ -798,6 +877,23 @@ class SheetApi:
         self.sheet_ids={'candidate':sheets['ADAY_GECMISI'],
                         'scan':sheets['TARAMA_KAYITLARI'],
                         'alerts':sheets['UYARI_OLAYLARI']}
+        # Metadata is read from the original authenticated workbook.
+        # A duplicate optional tab or reused sheetId is ambiguous, not a
+        # legitimate destination for a mutation.
+        optional=('SWING_SKOR_GUNLUK','NEON_477_GUNLUK')
+        names=[item.get('properties',{}).get('title')
+               for item in data.get('sheets',[]) if isinstance(item,dict)]
+        require(all(names.count(name) <= 1 for name in optional),
+                'SHEET_TAB_OR_ID_DRIFT')
+        scope={**self.sheet_ids,'panel':sheets['PANEL']}
+        for name,role in (('SWING_SKOR_GUNLUK','score'),
+                          ('NEON_477_GUNLUK','neon')):
+            if name in sheets:
+                scope[role]=sheets[name]
+        require(all(type(v) is int for v in scope.values()) and
+                len(set(scope.values()))==len(scope),
+                'SHEET_TAB_OR_ID_DRIFT')
+        self._post_scope=scope
 
     def read(self, title, last_column):
         # Open-ended A1 is deliberate: never silently truncate identities at
