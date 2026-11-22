@@ -671,6 +671,53 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                             source.assert_not_called()
                             lease.assert_not_called()
 
+    def test_nested_batch_payload_cannot_clear_or_retarget_private_cells(self):
+        """Known POST method is not enough: shape and exact columns matter."""
+        cell={'userEnteredValue':{'stringValue':'safe'}}
+        row={'values':[cell]}
+        invalid=(
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,'columnIndex':0},
+                            'rows':[row],'fields':'*'}},
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,'columnIndex':0},
+                            'rows':[row],'fields':'userEnteredValue'}},
+            {'updateCells':{'range':{'sheetId':1,'startRowIndex':0,
+                            'endRowIndex':1,'startColumnIndex':0,
+                            'endColumnIndex':2},'rows':[row],
+                            'fields':'userEnteredValue'}},
+            {'appendCells':{'sheetId':1,'rows':[row],'fields':'*'}},
+            {'appendCells':{'sheetId':1,'rows':[{'values':[{
+                'userEnteredValue':{'formulaValue':'=HYPERLINK("unsafe")'}}]}],
+                'fields':'userEnteredValue'}},
+            {'appendCells':{'sheetId':1,'rows':[row],
+                            'fields':'userEnteredValue',
+                            'insertDataOption':'OVERWRITE'}},
+            {'appendCells':{'sheetId':'1','rows':[row],
+                            'fields':'userEnteredValue'}},
+            {'addNamedRange':{'namedRange':{'name':'FORGED_OWNER',
+                'namedRangeId':'forged','range':{'sheetId':1,
+                'startRowIndex':0,'endRowIndex':1,'startColumnIndex':0,
+                'endColumnIndex':1}}}},
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,
+                'columnIndex':7},'rows':[row],
+                'fields':'userEnteredValue','extra':True}},
+        )
+        api=self._api()
+        for request in invalid:
+            with self.subTest(verb=next(iter(request)),body=request):
+                with patch.object(w,'urlopen',
+                                  side_effect=AssertionError('GOOGLE_MUTATION_SENT')) as http:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                        ) as source,patch.object(
+                        w,'require_epoch_lease_before_private_post'
+                        ) as lease:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                            api.request(':batchUpdate',method='POST',
+                                        body={'requests':[request]})
+                        http.assert_not_called()
+                        source.assert_not_called()
+                        lease.assert_not_called()
+
     def test_existing_authorized_batchupdate_stays_compatible(self):
         """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
         class Reply:
