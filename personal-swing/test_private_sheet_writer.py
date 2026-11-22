@@ -401,7 +401,12 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         This is a fake offline Google API, never live market data, dispatch,
         Sheet mutation, notification or an old-asof replay.
         """
-        api=FakeApi()
+        class NoopAwareApi(FakeApi):
+            """Mirror real SheetApi.apply: do not POST an empty batch."""
+            def apply(self,p):
+                if p['scan_rows'] or p['candidate_rows']:
+                    super().apply(p)
+        api=NoopAwareApi()
         old=['2026-11-19',w.RUN_EVENT_LABELS['schedule'],
              '477','477','477','0','TRUE','0',
              'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/44671232964',
