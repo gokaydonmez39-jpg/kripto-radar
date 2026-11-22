@@ -249,6 +249,40 @@ class SourceProvenanceAcceptance(unittest.TestCase):
             with self.subTest(asof=asof,cut=cut,now=now):
                 self.assertEqual(verify(fixture(), asof=asof, cutoff=cut, now=now)["state"], "HOLD")
 
+    def test_delayed_child_created_after_recovery_window_fails_closed(self):
+        # Parent was timely, but late child launch must not backfill the EOD.
+        p = fixture()
+        p[2]["created_at"] = "2026-11-24T08:53:00Z"
+        p[2]["updated_at"] = "2026-11-24T09:50:00Z"
+        for j in p[4]:
+            j["started_at"] = j["started_at"].replace("T00:", "T08:").replace("T01:", "T09:")
+            j["completed_at"] = j["completed_at"].replace("T00:", "T08:").replace("T01:", "T09:")
+        r = verify(p, now="2026-11-24T10:00:00Z")
+        self.assertEqual(r["stage"], "RUN_WINDOW_OR_ORDER_INVALID")
+        self.assertFalse(r["parent_child_proven"])
+        self.assertFalse(r["ab_release_authorized"])
+
+    def test_child_finishes_after_10h_even_when_started_timely(self):
+        # A stalled child cannot finish the recovery after the safe window.
+        p = fixture()
+        p[2]["updated_at"] = "2026-11-24T08:50:00Z"
+        end = next(j for j in p[4] if j["name"] == "daily-private-score-acceptance")
+        end["started_at"] = "2026-11-24T08:11:00Z"
+        end["completed_at"] = "2026-11-24T08:13:00Z"
+        r = verify(p, now="2026-11-24T10:00:00Z")
+        self.assertEqual(r["stage"], "RUN_WINDOW_OR_ORDER_INVALID")
+        self.assertFalse(r["parent_child_proven"])
+
+    def test_malformed_repository_evidence_is_hold_not_uncaught_error(self):
+        for index in (0, 2):
+            for malformed in (None, "", [], "gokaydonmez39-jpg/kripto-radar"):
+                with self.subTest(index=index,malformed=repr(malformed)):
+                    p = fixture()
+                    p[index]["repository"] = malformed
+                    r = verify(p)
+                    self.assertEqual(r["stage"], "RUN_ORIGIN_NOT_VERIFIED")
+                    self.assertFalse(r["parent_child_proven"])
+
     def test_historical_run_is_not_replay_authority(self):
         p = fixture()
         p[0]["created_at"] = "2026-11-25T00:00:00Z"
