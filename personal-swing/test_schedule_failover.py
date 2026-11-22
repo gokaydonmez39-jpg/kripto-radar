@@ -462,8 +462,8 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
                   if line.lstrip().startswith('group:')]
         self.assertEqual(len(groups), 1)
         group = groups[0]
-        self.assertIn("(github.event_name == 'pull_request' || github.event_name == 'push')", group)
-        self.assertIn("format('xray-personal-477-daily-eod-test-{0}', github.run_id)", group)
+        self.assertIn("github.event_name == 'schedule' &&", group)
+        self.assertIn("|| format('xray-personal-477-daily-eod-test-{0}', github.run_id)", group)
         self.assertIn("|| 'xray-personal-477-daily-eod'", group)
         self.assertIn('cancel-in-progress: false', source)
         self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"), 1)
@@ -478,8 +478,8 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
                   if line.lstrip().startswith('group:')]
         self.assertEqual(len(groups), 1)
         group = groups[0]
-        self.assertIn("(github.event_name == 'pull_request' || github.event_name == 'push')", group)
-        self.assertIn("format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)", group)
+        self.assertIn("github.event_name == 'schedule' &&", group)
+        self.assertIn("|| format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)", group)
         self.assertIn("|| 'xray-personal-477-scheduler-fallback'", group)
         self.assertIn('cancel-in-progress: false', source)
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
@@ -612,6 +612,55 @@ class FallbackTokenPrivilegeIsolation(unittest.TestCase):
                        'pull_request', 'workflow_run', None):
             with self.subTest(origin=origin):
                 self.assertIs(sf.allow_dispatch_for_event(origin), False)
+
+
+class PendingNaturalSourceQueueIsolation(unittest.TestCase):
+    """Manual diagnostics must never evict a pending real scheduled EOD/A34."""
+
+    @staticmethod
+    def workflow(name):
+        from pathlib import Path
+        return (Path(__file__).resolve().parents[1] / '.github' /
+                'workflows' / name).read_text(encoding='utf-8')
+
+    def test_canonical_eod_only_natural_schedule_uses_production_group(self):
+        source=self.workflow('xray-personal-477-eod.yml')
+        line=next(line.strip() for line in source.splitlines()
+                  if line.lstrip().startswith('group:'))
+        self.assertIn("github.event_name == 'schedule' && 'xray-personal-477-daily-eod'",line)
+        self.assertIn("|| format('xray-personal-477-daily-eod-test-{0}', github.run_id)",line)
+        self.assertIn('cancel-in-progress: false',source)
+        self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"),1)
+
+    def test_manual_fallback_cannot_displace_pending_natural_fallback(self):
+        source=self.workflow('xray-personal-477-schedule-fallback.yml')
+        line=next(line.strip() for line in source.splitlines()
+                  if line.lstrip().startswith('group:'))
+        self.assertIn("github.event_name == 'schedule' && 'xray-personal-477-scheduler-fallback'",line)
+        self.assertIn("|| format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)",line)
+        self.assertIn('cancel-in-progress: false',source)
+        self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"),1)
+
+    def test_a34_only_genuine_natural_sources_share_private_queue(self):
+        source=self.workflow('xray-nasdaq-a34-preopen.yml')
+        line=next(line.strip() for line in source.splitlines()
+                  if line.lstrip().startswith('group:'))
+        for fragment in (
+            "github.event_name == 'schedule'",
+            "github.event_name == 'workflow_run'",
+            "github.event.workflow_run.event == 'schedule'",
+            "github.event.workflow_run.conclusion == 'success'",
+            "github.event.workflow_run.run_attempt == 1",
+            "github.event.workflow_run.head_branch == 'main'",
+            "github.event.workflow_run.path == '.github/workflows/xray-personal-477-eod.yml'",
+            "github.event.workflow_run.repository.full_name == github.repository",
+            "&& 'xray-nasdaq-a34-private-preopen'",
+            "|| format('xray-nasdaq-a34-test-{0}', github.run_id)",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment,line)
+        self.assertIn('cancel-in-progress: false',source)
+        self.assertEqual(source.count("    - cron: '17 3 * * 1-5'"),1)
 
 if __name__=='__main__':
     unittest.main()
