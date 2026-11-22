@@ -148,6 +148,7 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                         "workflow_runs":[{
                             "id":RUN_ID,"created_at":run["created_at"],
                             "head_branch":"main","event":"schedule",
+                            "path":PATH,"repository":{"full_name":REPO},"head_sha":"a"*40,
                             "run_attempt":1,
                             "status":"completed","conclusion":"success"}]}
             if url.endswith("/jobs?per_page=100"):
@@ -172,10 +173,12 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                 calls=[]
                 primary={"id":RUN_ID,"created_at":run["created_at"],
                          "head_branch":"main","event":"schedule",
+                            "path":PATH,"repository":{"full_name":REPO},"head_sha":"a"*40,
                          "run_attempt":1,
                          "status":"completed","conclusion":"success"}
                 competing={"id":RUN_ID+1,"created_at":"2026-11-19T23:52:00Z",
                            "head_branch":"main","event":"schedule",
+                            "path":PATH,"repository":{"full_name":REPO},"head_sha":"a"*40,
                            "run_attempt":1,
                            "status":status,"conclusion":conclusion}
                 def get(url):
@@ -203,6 +206,7 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                         return {"total_count":1,"workflow_runs":[{
                             "id":RUN_ID,"created_at":run["created_at"],
                             "head_branch":"main","event":"schedule",
+                            "path":PATH,"repository":{"full_name":REPO},"head_sha":"a"*40,
                             "run_attempt":attempt,
                             "status":"completed","conclusion":"success"}]}
                     self.fail('UNEXPECTED_READ_AFTER_INVALID_ATTEMPT')
@@ -219,6 +223,7 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                         "workflow_runs":[{
                             "id":RUN_ID,"created_at":run["created_at"],
                             "head_branch":"main","event":"schedule",
+                            "path":PATH,"repository":{"full_name":REPO},"head_sha":"a"*40,
                             "run_attempt":1,
                             "status":"completed","conclusion":"success"}]}
             if url.endswith("/jobs?per_page=100"):
@@ -227,6 +232,27 @@ class ReadOnlyAuditSelection(unittest.TestCase):
         with self.assertRaisesRegex(proof.ReceiptHold,
                                     "PRIMARY_JOB_RECEIPT_MISSING"):
             proof.audit(ASOF,now=NOW,get=get)
+
+    def test_unbound_success_list_record_cannot_reach_job_receipt(self):
+        run,_=fixture()
+        for missing in ("path","repository","head_sha","id"):
+            with self.subTest(missing=missing):
+                row={"id":RUN_ID,"created_at":run["created_at"],
+                     "head_branch":"main","event":"schedule","run_attempt":1,
+                     "path":PATH,"repository":{"full_name":REPO},
+                     "head_sha":"a"*40,"status":"completed",
+                     "conclusion":"success"}
+                row.pop(missing)
+                calls=[]
+                def get(url):
+                    calls.append(url)
+                    if "/actions/workflows/" in url:
+                        return {"total_count":1,"workflow_runs":[row]}
+                    self.fail('INVALID_RUN_MUST_NOT_REACH_JOB_GET')
+                with self.assertRaisesRegex(
+                        proof.ReceiptHold,"PRIMARY_EOD_EPOCH_AMBIGUOUS"):
+                    proof.audit(ASOF,now=NOW,get=get)
+                self.assertEqual(len(calls),1)
 
     def test_no_natural_run_never_accepted(self):
         called=[]
