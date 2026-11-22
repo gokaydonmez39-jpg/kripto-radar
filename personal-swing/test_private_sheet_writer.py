@@ -903,11 +903,17 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         api=self._api()
         cell=lambda value:{'userEnteredValue':{'stringValue':value}}
         eod=self.canonical_eod_payload()
+        # Also use the REAL 477-scoped handoff->plan->batch serializer,
+        # not only a handcrafted valid shape, to guard production EOD.
+        real_plan=w.plan(snapshot(),[list(w.CANDIDATE_HEADER)],
+                         [list(w.SCAN_HEADER)],RUN)
+        real_eod=w.payload_from_plan(real_plan,{'scan':1,'candidate':2})
         no_al=copy.deepcopy(eod)
         no_al['requests'].pop()
         no_al['requests'][1]['appendCells']['rows'][0]['values'][7][
             'userEnteredValue']['stringValue']='0'
         allowed_bodies=(
+            real_eod,
             eod,
             no_al,
             {'requests':[w.as_cells([['N/A']*23 for _ in range(477)],477300001)]},
