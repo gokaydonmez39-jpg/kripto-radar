@@ -224,7 +224,8 @@ class PrivateSheetHandoffTests(unittest.TestCase):
             file=Path(td)/'synthetic.json'
             file.write_text(json.dumps(snapshot()),encoding='utf-8')
             fake=FakeApi()
-            with patch.dict(os.environ,good,clear=True):
+            with patch.dict(os.environ,good,clear=True), \
+                 patch('daily_job.current_completed_session',return_value='2026-10-26'):
                 with patch.object(w,'SheetApi',return_value=fake) as provider:
                     with contextlib.redirect_stdout(io.StringIO()) as out:
                         rc=w.main(['--snapshot',str(file)])
