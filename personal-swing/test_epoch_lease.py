@@ -244,6 +244,24 @@ class FirstClaimAndReadback(unittest.TestCase):
                 self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
                 self.assertEqual(git.refs,{})
 
+    def test_untrusted_natural_listing_attempt_type_blocks_claim(self):
+        # The exact run-ID GET can be correct while a malformed list page
+        # tries to treat boolean True or float 1.0 as the integer attempt 1.
+        for forged_attempt in (True, 1.0):
+            with self.subTest(forged_attempt=forged_attempt):
+                git=MockGit()
+                def malformed(method, path, body=None):
+                    payload=git(method, path, body)
+                    if (method=="GET" and path.startswith(
+                            "/actions/workflows/xray-personal-477-eod.yml/runs?")):
+                        payload["workflow_runs"][0]["run_attempt"]=forged_attempt
+                    return payload
+                with self.assertRaisesRegex(
+                        lease.LeaseHold, "NATURAL_EOD_EPOCH_AMBIGUOUS"):
+                    claim(natural(), malformed)
+                self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
+                self.assertEqual(git.refs, {})
+
     def test_unavailable_real_run_receipt_is_never_authority(self):
         git=MockGit()
         def gone(method,path,body=None):
