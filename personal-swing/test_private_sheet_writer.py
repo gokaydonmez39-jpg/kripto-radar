@@ -942,5 +942,116 @@ class GoogleSheetsNativeEpochCASAcceptance(unittest.TestCase):
         self.assertIsNone(api.apply(p))
         self.assertEqual(api.request.call_count,2)
 
+
+class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
+    """P0: source may change AFTER offline-guard and BEFORE Google POST."""
+
+    def runtime(self, run="890123"):
+        import test_epoch_lease as cases
+        return {**cases.env(run),
+                "GITHUB_TOKEN":"offline-fake-readonly-token",
+                "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"ENFORCE_GET"}
+
+    def test_readonly_gate_checks_real_run_and_exact_unique_schedule_page(self):
+        import test_epoch_lease as cases
+        git=cases.MockGit()
+        output=w.require_source_lastmile_before_private_post(
+            self.runtime(),transport=git,now=cases.NOW,
+            completed_session=lambda _:cases.ASOF)
+        self.assertEqual(output["status"],
+                         "NATURAL_RUN_GITHUB_READ_ONLY_VERIFIED")
+        self.assertEqual(output["run_id"],890123)
+        self.assertEqual(output["asof_et"],cases.ASOF)
+        self.assertEqual([m for m,p,b in git.calls],["GET","GET"])
+        self.assertFalse(output["ab_release_authorized"])
+
+    def test_late_competing_schedule_denies_writer_before_google(self):
+        import test_epoch_lease as cases
+        import natural_run_readonly_probe as probe
+        git=cases.MockGit()
+        def duplicated(method,path,body=None):
+            response=git(method,path,body)
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                second={**response["workflow_runs"][0],"id":890124}
+                return {"total_count":2,
+                        "workflow_runs":[*response["workflow_runs"],second]}
+            return response
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,"SOURCE_LASTMILE_PROVENANCE_UNVERIFIED"):
+            w.require_source_lastmile_before_private_post(
+                self.runtime(),transport=duplicated,now=cases.NOW,
+                completed_session=lambda _:cases.ASOF)
+        self.assertEqual(len(git.calls),2)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_missing_token_and_wrong_origin_fail_closed_without_provider(self):
+        import test_epoch_lease as cases
+        git=cases.MockGit()
+        for overrides,reason in (
+            ({"GITHUB_TOKEN":""},"SOURCE_LASTMILE_TOKEN_MISSING"),
+            ({"GITHUB_EVENT_NAME":"workflow_dispatch"},
+             "NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED"),
+            ({"GITHUB_RUN_ATTEMPT":"2"},
+             "NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED"),
+            ({"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"BROKEN"},
+             "SOURCE_LASTMILE_MODE_UNRECOGNIZED"),
+        ):
+            with self.subTest(overrides=overrides):
+                with self.assertRaisesRegex(w.HandoffBlocked,reason):
+                    w.require_source_lastmile_before_private_post(
+                        {**self.runtime(),**overrides},transport=git,
+                        now=cases.NOW,
+                        completed_session=lambda _:cases.ASOF)
+        self.assertEqual(git.calls,[])
+
+    def test_actual_sheet_post_lastmile_refusal_prevents_google_network(self):
+        api=object.__new__(w.SheetApi)
+        api.base="https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
+        api.token="synthetic"
+        with patch.dict(os.environ,self.runtime(),clear=True):
+            with patch.object(
+                w,"require_source_lastmile_before_private_post",
+                side_effect=w.HandoffBlocked("SOURCE_LASTMILE_PROVENANCE_UNVERIFIED")
+            ) as gh, patch.object(w,"urlopen",
+                                  side_effect=AssertionError("GOOGLE_WRITTEN")
+            ) as google:
+                with self.assertRaisesRegex(
+                    w.HandoffBlocked,"SOURCE_LASTMILE_PROVENANCE_UNVERIFIED"):
+                    api.request(":batchUpdate",method="POST",body={"requests":[]})
+                gh.assert_called_once()
+                google.assert_not_called()
+
+    def test_gate_off_in_local_legacy_does_not_authorize_delivery(self):
+        import test_epoch_lease as cases
+        git=cases.MockGit()
+        output=w.require_source_lastmile_before_private_post(
+            cases.env(),transport=git,now=cases.NOW,
+            completed_session=lambda _:cases.ASOF)
+        self.assertEqual(output["status"],"LASTMILE_MODE_OFF_NOT_AUTHORITY")
+        self.assertFalse(output["ab_release_authorized"])
+        self.assertEqual(git.calls,[])
+
+    def test_every_production_sheet_writer_job_has_readonly_run_credential(self):
+        workflow=(Path(__file__).resolve().parent.parent/
+            ".github/workflows/xray-personal-477-eod.yml").read_text("utf8")
+        expected=(
+            ("daily-private-scan","private-sheets-auth-preflight"),
+            ("private-episode-followups","guardian-acceptance"),
+            ("guardian-acceptance","daily-private-score-acceptance"),
+            ("daily-private-score-acceptance",None),
+        )
+        for job,nxt in expected:
+            with self.subTest(job=job):
+                section=workflow.split("\n  "+job+":",1)[1]
+                if nxt:
+                    section=section.split("\n  "+nxt+":",1)[0]
+                self.assertIn("XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET",section)
+                self.assertIn("GITHUB_TOKEN: ${{ github.token }}",section)
+        self.assertIn("  actions: read\n",workflow)
+        guardian=workflow.split("\n  guardian-acceptance:",1)[1].split(
+            "\n  daily-private-score-acceptance:",1)[0]
+        self.assertIn("      actions: read",guardian)
+        self.assertNotIn("contents: write",workflow)
+
 if __name__=='__main__':
     unittest.main()
