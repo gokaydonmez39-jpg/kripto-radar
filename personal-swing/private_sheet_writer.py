@@ -7,6 +7,7 @@ Never emits rows, private identifiers or credentials to public Actions logs.
 No brokerage, trades, public artifacts, push messaging, or alarm send.
 """
 import argparse
+import hashlib
 from collections.abc import Mapping
 import json
 import math
@@ -29,6 +30,9 @@ CANDIDATE_HEADER = ('ALARM KİMLİĞİ','ASOF ET','SEMBOL','SINIF',
 SCAN_HEADER = ('ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ',
                'EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI')
 BATCH_ENDPOINT = 'https://sheets.googleapis.com/v4/spreadsheets/'
+# SHA-256 of the pre-approved original private workbook ID, never the ID itself.
+# Fail closed if a credential or environment points at any other workbook.
+EXPECTED_PRIVATE_SHEET_ID_SHA256 = '34cf1b4e577804bffc8d211e8c842ca9503b63c7c36363b5591fa199d650edc5'
 VERIFIED_RUN_URL = re.compile(
     r'^https://github[.]com/gokaydonmez39-jpg/kripto-radar/actions/runs/[1-9][0-9]*$')
 # Bound loaded private ledger entries, not the initial 1,000-row grid.
@@ -849,6 +853,21 @@ def _valid_private_batch_targets(body, scope):
     return True
 
 
+def require_original_private_sheet_id(spreadsheet_id):
+    """Allow exactly the approved private workbook without exposing its ID.
+
+    Syntax alone cannot prevent an otherwise valid credential from writing
+    NASDAQ private research into a wrong or externally shared spreadsheet.
+    The ID itself is kept only in the private runner's environment.
+    """
+    require(type(spreadsheet_id) is str and
+            re.fullmatch(r'[A-Za-z0-9_-]{20,128}', spreadsheet_id) is not None and
+            hashlib.sha256(spreadsheet_id.encode('ascii')).hexdigest()
+            == EXPECTED_PRIVATE_SHEET_ID_SHA256,
+            'PRIVATE_SHEET_ID_NOT_CONFIGURED')
+    return spreadsheet_id
+
+
 class SheetApi:
     """Restrict HTTP calls to official Google Sheets API (credential is scoped)."""
 
@@ -868,10 +887,8 @@ class SheetApi:
             # exception values or tracebacks in public Actions job output.
             raise HandoffBlocked('GOOGLE_AUTH_CONFIGURATION_INVALID') from None
         require(bool(self.token), 'GOOGLE_TOKEN_NOT_AVAILABLE')
-        spreadsheet_id=os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID','')
-        require(isinstance(spreadsheet_id,str) and
-                len(spreadsheet_id)>=20 and spreadsheet_id.replace('-','').replace('_','').isalnum(),
-                'PRIVATE_SHEET_ID_NOT_CONFIGURED')
+        spreadsheet_id=require_original_private_sheet_id(
+            os.environ.get('XRAY_PRIVATE_SPREADSHEET_ID',''))
         self.base=BATCH_ENDPOINT+spreadsheet_id
         self.sheet_ids=None
         self._post_scope=None
@@ -961,7 +978,7 @@ class SheetApi:
         # In ENFORCE mode, a missing/competing protected tag owner denies
         # every private batch POST BEFORE Google network I/O.
         if method == 'POST':
-            # A real authenticated client or GitHub Actions process must
+            # A real authenticated client must
             # NEVER downgrade the natural EOD source proof by omitting OFF.
             # Even valid append-only payloads are unsafe without the source
             # admission receipt. Do not contact GitHub or Google on failure.
