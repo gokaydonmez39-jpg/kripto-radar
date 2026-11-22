@@ -590,5 +590,28 @@ class MissingEodFailureAttributionTests(unittest.TestCase):
         self.assertEqual(sf.exit_code_for_result(result,'workflow_dispatch'),3)
 
 
+
+class FallbackTokenPrivilegeIsolation(unittest.TestCase):
+    """P0: detection-only fallback must not carry workflow-dispatch powers."""
+
+    def test_github_job_token_is_read_only_with_exact_original_schedule(self):
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / '.github' /
+                  'workflows' / 'xray-personal-477-schedule-fallback.yml').read_text(
+                      encoding='utf-8')
+        job_marker = '  dispatch-if-missing:\n'
+        self.assertEqual(source.count(job_marker), 1)
+        job = source.split(job_marker, 1)[1]
+        self.assertIn('    permissions:\n      contents: read\n      actions: read\n', job)
+        self.assertNotIn('actions: write', source)
+        self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
+        self.assertIn("  workflow_dispatch:\n", source)
+
+    def test_python_level_dispatch_remains_deny_by_default(self):
+        for origin in ('schedule', 'workflow_dispatch', 'push',
+                       'pull_request', 'workflow_run', None):
+            with self.subTest(origin=origin):
+                self.assertIs(sf.allow_dispatch_for_event(origin), False)
+
 if __name__=='__main__':
     unittest.main()
