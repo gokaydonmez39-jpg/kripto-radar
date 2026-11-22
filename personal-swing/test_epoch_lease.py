@@ -596,6 +596,31 @@ class LiveNaturalEpochUniquenessBoundary(unittest.TestCase):
                 completed_session=lambda _:ASOF)
         self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
 
+    def test_late_duplicate_after_ref_fails_without_consumer_authority(self):
+        git=MockGit()
+        indexed=[0]
+        def transport(method,path,body=None):
+            response=git(method,path,body)
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                indexed[0]+=1
+                if indexed[0]==2:
+                    # A second natural run became visible AFTER first-claim
+                    # but BEFORE the owner may hand authority to Google.
+                    second={**response["workflow_runs"][0],"id":890124}
+                    return {"total_count":2,
+                            "workflow_runs":[*response["workflow_runs"],second]}
+            return response
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            claim(natural(),transport)
+        self.assertEqual(indexed,[2])
+        # The first irreversible tag cannot be deleted or retried safely.
+        # Never convert that uncertain first-claim into Sheet/AL permission.
+        self.assertEqual(len(git.refs),1)
+        self.assertEqual(len(git.tags),1)
+        self.assertFalse(any(m=="POST" and p.startswith("/sheets")
+                             for m,p,_ in git.calls))
+
     def test_claim_missing_index_never_creates_permanent_tag(self):
         git=MockGit()
         def transport(method,path,body=None):
