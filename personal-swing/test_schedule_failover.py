@@ -1,5 +1,8 @@
 """No-IO adversarial tests for the personal 477 XNAS schedule fallback."""
 import unittest
+import io
+import os
+import contextlib
 from unittest.mock import patch
 from datetime import datetime,timezone
 import schedule_failover as sf
@@ -201,6 +204,21 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,['GET','GET','POST:2026-10-26'])
         self.assertEqual(result['asof_et'],'2026-10-26')
         self.assertTrue(result['dispatch_requested'])
+
+    def test_actual_cli_supplies_a_fresh_pre_dispatch_clock(self):
+        """Production main() must not silently reuse captured_now at POST."""
+        with patch.dict(os.environ,{
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+            'GITHUB_TOKEN':'offline-readonly-test-token',
+            'GITHUB_EVENT_NAME':'schedule',
+        },clear=True), patch.object(sf,'run',
+             return_value={'status':'NOOP_SESSION_NOT_READY',
+                           'dispatch_requested':False}) as invoked:
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc=sf.main([])
+        self.assertEqual(rc,0)
+        invoked.assert_called_once()
+        self.assertTrue(callable(invoked.call_args.kwargs['fresh_now']))
 
     def test_fallback_crosses_xnas_ten_hour_deadline_during_gets(self):
         """The first clock was legal; by the LAST moment it is too late."""
