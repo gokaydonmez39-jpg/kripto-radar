@@ -296,6 +296,30 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         self.assertIn("github.event_name != 'pull_request' &&",private_if)
         self.assertIn("github.event.workflow_run.head_branch == 'main'",private_if)
 
+    def test_only_genuine_main_schedule_or_natural_eod_can_reach_private_a34(self):
+        """P0: workflow_dispatch/manual invocation must never read private
+        Sheets or IEX, including when ref=main and offline tests succeed.
+        """
+        from pathlib import Path
+        workflow=(Path(__file__).resolve().parent.parent /
+                  '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text(
+                      encoding='utf-8')
+        private=workflow.split('  private-preopen:',1)[1].split(
+            '    runs-on:',1)[0]
+        # Do not rely on blacklist-only "not push, not pull_request";
+        # workflow_dispatch satisfies both and was implicitly authorized.
+        self.assertIn("github.event_name == 'schedule' ||",private)
+        self.assertIn("github.event_name == 'workflow_run' &&",private)
+        self.assertIn("github.run_attempt == 1",private)
+        self.assertNotIn("github.event_name != 'workflow_run' ||",private)
+        self.assertIn("github.event.workflow_run.event == 'schedule'",private)
+        self.assertIn("github.event.workflow_run.run_attempt == 1",private)
+        self.assertIn(
+            "github.event.workflow_run.path == '.github/workflows/xray-personal-477-eod.yml'",
+            private)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'",private)
+        self.assertIn("github.event.workflow_run.repository.full_name == github.repository",private)
+
     def test_eod_safe_preopen_schedule_with_delayed_dispatch(self):
         import re
         from datetime import datetime, timedelta, timezone

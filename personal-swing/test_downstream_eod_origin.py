@@ -62,9 +62,18 @@ class DownstreamOriginTests(unittest.TestCase):
     def test_cove_requires_natural_parent_not_dispatch_fallback(self):
         self.assert_origin_contract(COVE,"private-eod-research",schedule_only=True)
 
-    def test_a34_retains_independent_direct_preopen(self):
+    def test_a34_retains_independent_natural_direct_preopen(self):
         condition=job_condition(A34,"private-preopen")
-        self.assertIn("github.event_name != 'workflow_run' ||",condition)
+        # Direct A34 schedule stays supported, but manual dispatch or a
+        # rerun must never receive private Google/IEX read privileges.
+        self.assertIn("github.event_name == 'schedule' ||",condition)
+        self.assertIn("github.event_name == 'workflow_run' &&",condition)
+        self.assertIn("github.run_attempt == 1",condition)
+        self.assertIn("github.event.workflow_run.run_attempt == 1",condition)
+        self.assertIn(
+            "github.event.workflow_run.path == '.github/workflows/xray-personal-477-eod.yml'",
+            condition)
+        self.assertNotIn("github.event_name != 'workflow_run' ||",condition)
         self.assertIn("github.ref == 'refs/heads/main'",condition)
         self.assertIn("github.event_name != 'push'",condition)
         self.assertIn("github.event_name != 'pull_request'",condition)
