@@ -75,13 +75,16 @@ def render(receipt):
             (receipt.get("asof") != "UNKNOWN" and
              safe_asof(receipt.get("asof")) == "UNKNOWN")):
         receipt = {"category": "UNVERIFIED_FAILURE", "asof": "UNKNOWN"}
+    dispatch = ("NO_WORKFLOW_DISPATCH"
+                if receipt["category"] == "MISSING_PRIMARY_RECOVERY_POLICY_LOCKED"
+                else "DISPATCH_STATE_UNVERIFIED")
     return (
         "### XRAY NASDAQ 477 — scheduled fallback failure\n"
         f"- Receipt schema: \x60{SCHEMA}\x60\n"
         f"- Category: \x60{receipt['category']}\x60\n"
         f"- ASOF_ET: \x60{receipt['asof']}\x60\n"
         "- Source job: \x60FAILURE\x60 (original nonzero outcome preserved)\n"
-        "- Fallback effects: \x60NO_WORKFLOW_DISPATCH\x60, \x60NO_SHEET_POST\x60, \x60NO_TAG_CLAIM\x60, \x60NO_ORDER\x60\n"
+        f"- Fallback dispatch: \x60{dispatch}\x60; this parent job never directly posts to private Sheets or creates tags/orders.\n"
         "- Canonical EOD completion: \x60UNVERIFIED\x60; ChatGPT delivery: \x60UNKNOWN\x60; iPhone: \x60UNKNOWN\x60\n"
         "- Recovery: \x60HOLD\x60; no replay/backfill and no automatic policy bypass.\n"
     )
