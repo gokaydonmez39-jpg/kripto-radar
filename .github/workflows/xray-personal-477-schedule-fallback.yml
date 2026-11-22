@@ -7,6 +7,8 @@ on:
       - 'personal-swing/test_schedule_failover.py'
       - 'personal-swing/test_xnas_incident_boundaries_202611.py'
       - 'personal-swing/fallback_source_provenance.py'
+      - 'personal-swing/fallback_incident_receipt.py'
+      - 'personal-swing/test_fallback_incident_receipt.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
       - 'personal-swing/fallback_job_receipt.py'
@@ -20,6 +22,8 @@ on:
       - 'personal-swing/test_schedule_failover.py'
       - 'personal-swing/test_xnas_incident_boundaries_202611.py'
       - 'personal-swing/fallback_source_provenance.py'
+      - 'personal-swing/fallback_incident_receipt.py'
+      - 'personal-swing/test_fallback_incident_receipt.py'
       - 'personal-swing/epoch_lease.py'
       - 'personal-swing/test_epoch_lease.py'
       - 'personal-swing/fallback_job_receipt.py'
@@ -61,6 +65,9 @@ jobs:
         run: |
           python -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt test_xnas_incident_boundaries_202611
           python -O -m unittest -q test_schedule_failover test_fallback_source_provenance test_epoch_lease test_fallback_job_receipt test_xnas_incident_boundaries_202611
+          python -m unittest -q test_fallback_incident_receipt
+          python -O -m unittest -q test_fallback_incident_receipt
+          python -m py_compile fallback_incident_receipt.py test_fallback_incident_receipt.py
           python -m py_compile schedule_failover.py fallback_source_provenance.py epoch_lease.py
       - name: Probe live tag rule projection (bypass UNKNOWN is not release)
         working-directory: personal-swing
@@ -123,6 +130,12 @@ jobs:
               print('BLOCKED_FALLBACK_SOURCE_STATUS_PARSE')
               raise SystemExit(3)
           PY
+      - name: Redacted scheduled fallback failure receipt (no dispatch or delivery)
+        if: ${{ always() && github.event_name == 'schedule' && steps.primary-detect.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python personal-swing/fallback_incident_receipt.py --result "$RUNNER_TEMP/xray-fallback-result.json" --summary "$GITHUB_STEP_SUMMARY"
       - name: Independent natural primary six-job source audit (GH GET only)
         if: ${{ github.event_name == 'schedule' && steps.primary-detect.outputs.primary_found == 'true' }}
         working-directory: personal-swing
