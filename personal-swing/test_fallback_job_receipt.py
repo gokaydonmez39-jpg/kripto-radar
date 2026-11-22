@@ -148,6 +148,7 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                         "workflow_runs":[{
                             "id":RUN_ID,"created_at":run["created_at"],
                             "head_branch":"main","event":"schedule",
+                            "run_attempt":1,
                             "status":"completed","conclusion":"success"}]}
             if url.endswith("/jobs?per_page=100"):
                 return copy.deepcopy(jobs)
@@ -171,9 +172,11 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                 calls=[]
                 primary={"id":RUN_ID,"created_at":run["created_at"],
                          "head_branch":"main","event":"schedule",
+                         "run_attempt":1,
                          "status":"completed","conclusion":"success"}
                 competing={"id":RUN_ID+1,"created_at":"2026-11-19T23:52:00Z",
                            "head_branch":"main","event":"schedule",
+                           "run_attempt":1,
                            "status":status,"conclusion":conclusion}
                 def get(url):
                     calls.append(url)
@@ -189,6 +192,25 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                 # Ambiguous selection must stop before selecting job records.
                 self.assertEqual(len(calls),1)
 
+    def test_successful_rerun_or_missing_attempt_cannot_be_unique_eod(self):
+        run,jobs=fixture()
+        for attempt in (2,0,'1',None):
+            with self.subTest(attempt=attempt):
+                calls=[]
+                def get(url):
+                    calls.append(url)
+                    if "/actions/workflows/" in url:
+                        return {"total_count":1,"workflow_runs":[{
+                            "id":RUN_ID,"created_at":run["created_at"],
+                            "head_branch":"main","event":"schedule",
+                            "run_attempt":attempt,
+                            "status":"completed","conclusion":"success"}]}
+                    self.fail('UNEXPECTED_READ_AFTER_INVALID_ATTEMPT')
+                with self.assertRaisesRegex(
+                        proof.ReceiptHold,"PRIMARY_EOD_EPOCH_AMBIGUOUS"):
+                    proof.audit(ASOF,now=NOW,get=get)
+                self.assertEqual(len(calls),1)
+
     def test_successful_workflow_without_jobs_is_hold(self):
         run,jobs=fixture()
         def get(url):
@@ -197,6 +219,7 @@ class ReadOnlyAuditSelection(unittest.TestCase):
                         "workflow_runs":[{
                             "id":RUN_ID,"created_at":run["created_at"],
                             "head_branch":"main","event":"schedule",
+                            "run_attempt":1,
                             "status":"completed","conclusion":"success"}]}
             if url.endswith("/jobs?per_page=100"):
                 return {"total_count":0,"jobs":[]}
