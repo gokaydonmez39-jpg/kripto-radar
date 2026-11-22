@@ -907,6 +907,21 @@ class SheetApi:
                         == ('https://github.com/gokaydonmez39-jpg/'
                             'kripto-radar/actions/runs/'+run_id),
                         'GOOGLE_SHEETS_POST_SCOPE_INVALID')
+                # Last-mile date admission is independent from snapshot/plan.
+                # A valid CURRENT run URL may not be attached to an OLD EOD
+                # marker by an alternate caller of the shared Sheets client.
+                # XNAS calendar uncertainty denies before any GitHub/Google IO.
+                try:
+                    import daily_job
+                    current=daily_job.current_completed_session()
+                    marker=body['requests'][0]['addNamedRange']['namedRange']
+                    date_ok=(type(current) is str and
+                             canonical_scan_day(current) and
+                             marker['name']=='XRAY_P477_EOD_EPOCH_'+
+                               current.replace('-',''))
+                except Exception:
+                    date_ok=False
+                require(date_ok,'GOOGLE_SHEETS_POST_SCOPE_INVALID')
         else:
             require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
         # One central last-mile barrier: canonical EOD scan, outbox,
