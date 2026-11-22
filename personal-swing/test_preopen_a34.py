@@ -313,6 +313,10 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         self.assertIn("github.run_attempt == 1",private)
         self.assertNotIn("github.event_name != 'workflow_run' ||",private)
         self.assertIn("github.event.workflow_run.event == 'schedule'",private)
+        self.assertIn("github.event.workflow_run.run_attempt == 1",private)
+        self.assertIn(
+            "github.event.workflow_run.path == '.github/workflows/xray-personal-477-eod.yml'",
+            private)
         self.assertIn("github.event.workflow_run.conclusion == 'success'",private)
         self.assertIn("github.event.workflow_run.repository.full_name == github.repository",private)
 
