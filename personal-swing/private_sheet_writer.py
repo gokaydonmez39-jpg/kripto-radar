@@ -580,6 +580,122 @@ def require_epoch_lease_before_private_post(
         raise HandoffBlocked('EPOCH_LEASE_CONSUMER_UNVERIFIED') from None
 
 
+
+def _valid_private_string_rows(rows):
+    """Only bounded, literal string-valued research cells; no formulas or clears."""
+    return (type(rows) is list and 1 <= len(rows) <= MAX_ROWS and
+            all(type(row) is dict and set(row) == {'values'} and
+                type(row['values']) is list and
+                1 <= len(row['values']) <= 35 and
+                all(type(cell) is dict and set(cell) == {'userEnteredValue'} and
+                    type(cell['userEnteredValue']) is dict and
+                    set(cell['userEnteredValue']) == {'stringValue'} and
+                    type(cell['userEnteredValue']['stringValue']) is str
+                    for cell in row['values']) for row in rows))
+
+
+def _valid_private_batch_post(body):
+    """Allowlist the ACTUAL shape and sheet columns used by NASDAQ producers.
+
+    These pure limits are separate from the natural owner, source SHA, lease
+    and authenticated Sheet metadata; they grant NO new writing authority.
+    A known Google request name with 'fields=*', formulaValue, wrong source
+    column or a forged named range must never reach the network.
+    """
+    if (type(body) is not dict or set(body) != {'requests'} or
+            type(body['requests']) is not list or
+            not 1 <= len(body['requests']) <= MAX_ROWS):
+        return False
+    source_named_range_seen = False
+
+    def sheet_id(value):
+        return type(value) is int and 0 <= value <= 2147483647
+
+    for index, request in enumerate(body['requests']):
+        if type(request) is not dict or len(request) != 1:
+            return False
+        verb, payload = next(iter(request.items()))
+        if type(payload) is not dict:
+            return False
+        if verb == 'appendCells':
+            if (set(payload) != {'sheetId','rows','fields'} or
+                    not sheet_id(payload.get('sheetId')) or
+                    payload.get('fields') != 'userEnteredValue' or
+                    not _valid_private_string_rows(payload.get('rows'))):
+                return False
+        elif verb == 'updateCells':
+            if (set(payload) != {'start','rows','fields'} and
+                    set(payload) != {'range','rows','fields'}):
+                return False
+            if (payload.get('fields') != 'userEnteredValue' or
+                    not _valid_private_string_rows(payload.get('rows')) or
+                    len(payload['rows']) != 1):
+                return False
+            if 'start' in payload:
+                start = payload['start']
+                if (type(start) is not dict or
+                        set(start) != {'sheetId','rowIndex','columnIndex'} or
+                        not sheet_id(start.get('sheetId')) or
+                        type(start.get('rowIndex')) is not int or
+                        not 1 <= start['rowIndex'] < MAX_ROWS or
+                        start.get('columnIndex') != 7 or
+                        len(payload['rows'][0]['values']) != 4):
+                    return False
+            else:
+                area = payload['range']
+                if (type(area) is not dict or set(area) !=
+                        {'sheetId','startRowIndex','endRowIndex',
+                         'startColumnIndex','endColumnIndex'} or
+                        not sheet_id(area.get('sheetId')) or
+                        type(area.get('startRowIndex')) is not int or
+                        not 1 <= area['startRowIndex'] < MAX_ROWS or
+                        area.get('endRowIndex') != area['startRowIndex'] + 1 or
+                        area.get('startColumnIndex') != 1 or
+                        area.get('endColumnIndex') != 3 or
+                        len(payload['rows'][0]['values']) != 2):
+                    return False
+        elif verb == 'addNamedRange':
+            if (source_named_range_seen or index != 0 or
+                    len(body['requests']) < 2 or
+                    set(payload) != {'namedRange'}):
+                return False
+            tag = payload['namedRange']
+            if (type(tag) is not dict or
+                    set(tag) != {'namedRangeId','name','range'} or
+                    type(tag.get('name')) is not str or
+                    type(tag.get('range')) is not dict):
+                return False
+            match = re.fullmatch(r'XRAY_P477_EOD_EPOCH_(20[0-9]{6})',
+                                 tag['name'])
+            if match is None:
+                return False
+            compact = match.group(1)
+            asof = compact[:4]+'-'+compact[4:6]+'-'+compact[6:]
+            sid = tag['range'].get('sheetId')
+            if not sheet_id(sid):
+                return False
+            try:
+                if tag != epoch_marker(asof, sid):
+                    return False
+            except HandoffBlocked:
+                return False
+            following = body['requests'][1]
+            if (type(following) is not dict or
+                    set(following) != {'appendCells'} or
+                    type(following['appendCells']) is not dict or
+                    following['appendCells'].get('sheetId') != sid or
+                    not _valid_private_string_rows(
+                        following['appendCells'].get('rows')) or
+                    len(following['appendCells']['rows'][0]['values']) < 1 or
+                    following['appendCells']['rows'][0]['values'][0]
+                    ['userEnteredValue']['stringValue'] != asof):
+                return False
+            source_named_range_seen = True
+        else:
+            return False
+    return True
+
+
 class SheetApi:
     """Restrict HTTP calls to official Google Sheets API (credential is scoped)."""
 
@@ -617,13 +733,8 @@ class SheetApi:
             # All reviewed NASDAQ producers use the SAME spreadsheet
             # batchUpdate path. Reject arbitrary endpoints and dangerous
             # request types before *any* GitHub/Google I/O.
-            allowed = frozenset(('addNamedRange', 'appendCells', 'updateCells'))
             require(type(path) is str and path == ':batchUpdate' and
-                    type(body) is dict and set(body) == {'requests'} and
-                    type(body['requests']) is list and
-                    all(type(request) is dict and len(request) == 1 and
-                        next(iter(request)) in allowed
-                        for request in body['requests']),
+                    _valid_private_batch_post(body),
                     'GOOGLE_SHEETS_POST_SCOPE_INVALID')
         else:
             require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')

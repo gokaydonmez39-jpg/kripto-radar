@@ -671,6 +671,53 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                             source.assert_not_called()
                             lease.assert_not_called()
 
+    def test_nested_batch_payload_cannot_clear_or_retarget_private_cells(self):
+        """Known POST method is not enough: shape and exact columns matter."""
+        cell={'userEnteredValue':{'stringValue':'safe'}}
+        row={'values':[cell]}
+        invalid=(
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,'columnIndex':0},
+                            'rows':[row],'fields':'*'}},
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,'columnIndex':0},
+                            'rows':[row],'fields':'userEnteredValue'}},
+            {'updateCells':{'range':{'sheetId':1,'startRowIndex':0,
+                            'endRowIndex':1,'startColumnIndex':0,
+                            'endColumnIndex':2},'rows':[row],
+                            'fields':'userEnteredValue'}},
+            {'appendCells':{'sheetId':1,'rows':[row],'fields':'*'}},
+            {'appendCells':{'sheetId':1,'rows':[{'values':[{
+                'userEnteredValue':{'formulaValue':'=HYPERLINK("unsafe")'}}]}],
+                'fields':'userEnteredValue'}},
+            {'appendCells':{'sheetId':1,'rows':[row],
+                            'fields':'userEnteredValue',
+                            'insertDataOption':'OVERWRITE'}},
+            {'appendCells':{'sheetId':'1','rows':[row],
+                            'fields':'userEnteredValue'}},
+            {'addNamedRange':{'namedRange':{'name':'FORGED_OWNER',
+                'namedRangeId':'forged','range':{'sheetId':1,
+                'startRowIndex':0,'endRowIndex':1,'startColumnIndex':0,
+                'endColumnIndex':1}}}},
+            {'updateCells':{'start':{'sheetId':1,'rowIndex':1,
+                'columnIndex':7},'rows':[row],
+                'fields':'userEnteredValue','extra':True}},
+        )
+        api=self._api()
+        for request in invalid:
+            with self.subTest(verb=next(iter(request)),body=request):
+                with patch.object(w,'urlopen',
+                                  side_effect=AssertionError('GOOGLE_MUTATION_SENT')) as http:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                        ) as source,patch.object(
+                        w,'require_epoch_lease_before_private_post'
+                        ) as lease:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                            api.request(':batchUpdate',method='POST',
+                                        body={'requests':[request]})
+                        http.assert_not_called()
+                        source.assert_not_called()
+                        lease.assert_not_called()
+
     def test_existing_authorized_batchupdate_stays_compatible(self):
         """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
         class Reply:
@@ -678,19 +725,34 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             def __exit__(self,*_):return False
             def read(self):return b'{"replies":[]}'
         api=self._api()
-        authorized=('addNamedRange','appendCells','updateCells')
+        cell=lambda value:{'userEnteredValue':{'stringValue':value}}
+        named=w.epoch_marker('2026-11-23',1)
+        allowed_bodies=(
+            {'requests':[{'addNamedRange':{'namedRange':named}},
+                         w.as_cells([['2026-11-23','verified scan']],1),
+                         w.as_cells([['2026-11-23|AL','verified candidate']],2)]},
+            {'requests':[w.as_cells([['N/A']*23 for _ in range(477)],477300001)]},
+            {'requests':[{'updateCells':{
+                'start':{'sheetId':432001001,'rowIndex':2,'columnIndex':7},
+                'rows':[{'values':[cell('test') for _ in range(4)]}],
+                'fields':'userEnteredValue'}}]},
+            {'requests':[{'updateCells':{
+                'range':{'sheetId':1146954931,'startRowIndex':8,
+                         'endRowIndex':9,'startColumnIndex':1,'endColumnIndex':3},
+                'rows':[{'values':[cell('date'),cell('receipt')]}],
+                'fields':'userEnteredValue'}}]},
+        )
         with patch.object(w,'urlopen',return_value=Reply()) as http:
             with patch.object(w,'require_source_lastmile_before_private_post'
                 ) as source:
                 with patch.object(w,'require_epoch_lease_before_private_post'
                     ) as lease:
-                    for action in authorized:
-                        receipt=api.request(':batchUpdate',method='POST',
-                            body={'requests':[{action:{}}]})
+                    for body in allowed_bodies:
+                        receipt=api.request(':batchUpdate',method='POST',body=body)
                         self.assertEqual(receipt,{'replies':[]})
-                    self.assertEqual(http.call_count,len(authorized))
-                    self.assertEqual(source.call_count,len(authorized))
-                    self.assertEqual(lease.call_count,len(authorized))
+                    self.assertEqual(http.call_count,len(allowed_bodies))
+                    self.assertEqual(source.call_count,len(allowed_bodies))
+                    self.assertEqual(lease.call_count,len(allowed_bodies))
 
     @patch.object(w.time, 'sleep')
     @patch.object(w, 'urlopen')
@@ -721,7 +783,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         opener.side_effect = self._rate_limited()
         with self.assertRaisesRegex(w.HandoffBlocked, '^GOOGLE_SHEETS_HTTP_429$'):
             self._api().request(':batchUpdate', method='POST',
-                                body={'requests': [{'updateCells': {}}]})
+                                body={'requests': [w.as_cells([['synthetic']],1)]})
         self.assertEqual(opener.call_count, 1)
         sleep.assert_not_called()
 
@@ -845,7 +907,7 @@ class AtomicSheetWriteLeaseFence(unittest.TestCase):
             ) as net:
                 with self.assertRaisesRegex(w.HandoffBlocked,
                          "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
-                    api.request(":batchUpdate",method="POST",body={"requests":[]})
+                    api.request(":batchUpdate",method="POST",body={"requests":[w.as_cells([["OFFLINE"]],1)]})
                 guard.assert_called_once()
                 net.assert_not_called()
 
@@ -901,10 +963,10 @@ class AtomicSheetWriteLeaseFence(unittest.TestCase):
                                         w.HandoffBlocked,
                                         "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
                                         api.request(":batchUpdate",method="POST",
-                                                    body={"requests":[]})
+                                                    body={"requests":[w.as_cells([["OFFLINE"]],1)]})
                                 else:
                                     result=api.request(":batchUpdate",method="POST",
-                                                       body={"requests":[]})
+                                                       body={"requests":[w.as_cells([["OFFLINE"]],1)]})
                                     self.assertEqual(result,{"offline":True})
                         self.assertEqual(google.call_count,1)
         self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
@@ -930,7 +992,7 @@ class AtomicSheetWriteLeaseFence(unittest.TestCase):
                                     w.HandoffBlocked,
                                     "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
                                 api.request(":batchUpdate",method="POST",
-                                            body={"requests":[]})
+                                            body={"requests":[w.as_cells([["OFFLINE"]],1)]})
                             google.assert_not_called()
 
     def test_default_off_does_not_query_github_or_google(self):
@@ -1087,7 +1149,7 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
             ) as google:
                 with self.assertRaisesRegex(
                     w.HandoffBlocked,"SOURCE_LASTMILE_PROVENANCE_UNVERIFIED"):
-                    api.request(":batchUpdate",method="POST",body={"requests":[]})
+                    api.request(":batchUpdate",method="POST",body={"requests":[w.as_cells([["OFFLINE"]],1)]})
                 gh.assert_called_once()
                 google.assert_not_called()
 

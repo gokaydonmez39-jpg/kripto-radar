@@ -198,7 +198,7 @@ class ProductionFailureRegression(unittest.TestCase):
         with patch.object(writer, "urlopen",side_effect=err) as network:
             with self.assertRaises(writer.HandoffBlocked) as held:
                 client.request(":batchUpdate",method="POST",
-                               body={"requests":[]})
+                               body={"requests":[writer.as_cells([["synthetic"]],1)]})
         self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_400")
         self.assertEqual(writer.public_failure_code(held.exception),
                          "GOOGLE_SHEETS_HTTP_400")
@@ -217,7 +217,7 @@ class ProductionFailureRegression(unittest.TestCase):
         with patch.object(writer, "urlopen",side_effect=err) as network:
             with self.assertRaises(writer.HandoffBlocked) as held:
                 client.request(":batchUpdate",method="POST",
-                               body={"requests":[]})
+                               body={"requests":[writer.as_cells([["synthetic"]],1)]})
         self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_409")
         self.assertEqual(writer.public_failure_code(held.exception),
                          "GOOGLE_SHEETS_HTTP_409")
