@@ -1734,6 +1734,96 @@ class GoogleSheetsNativeEpochCASAcceptance(unittest.TestCase):
         self.assertEqual(api.request.call_count,2)
 
 
+class GoogleUncertainCommitReconciliationTests(unittest.TestCase):
+    """A lost Google POST reply permits only GET+exact-value confirmation.
+
+    There is NEVER a second POST, including when the result is unknown.
+    """
+
+    @staticmethod
+    def fixture():
+        from unittest.mock import Mock
+        p,ids=GoogleSheetsNativeEpochCASAcceptance().epoch()
+        marker=w.payload_from_plan(p,ids)["requests"][0][
+            "addNamedRange"]["namedRange"]
+        api=object.__new__(w.SheetApi)
+        api.sheet_ids=ids
+        candidate=[list(w.CANDIDATE_HEADER)]+copy.deepcopy(
+            p["candidate_rows"])
+        scans=[list(w.SCAN_HEADER)]+copy.deepcopy(p["scan_rows"])
+        return p,marker,api,candidate,scans
+
+    def test_ambiguous_timeout_or_http5xx_reconciles_exact_commit_by_get_only(self):
+        from unittest.mock import Mock
+        for code in ("GOOGLE_SHEETS_TRANSPORT_TimeoutError",
+                     "GOOGLE_SHEETS_TRANSPORT_URLError",
+                     "GOOGLE_SHEETS_HTTP_5XX"):
+            with self.subTest(code=code):
+                p,marker,api,candidates,scans=self.fixture()
+                api.request=Mock(side_effect=[
+                    w.HandoffBlocked(code),
+                    {"namedRanges":[marker]},
+                ])
+                api.read=Mock(side_effect=[candidates,scans])
+                self.assertIsNone(api.apply(p))
+                self.assertEqual(api.request.call_count,2)
+                self.assertEqual(
+                    [c.kwargs.get("method","GET") for c in
+                     api.request.call_args_list],["POST","GET"])
+                self.assertEqual(api.read.call_count,2)
+                self.assertEqual(api.read.call_args_list[0].args,
+                                 ("ADAY_GECMISI","M"))
+                self.assertEqual(api.read.call_args_list[1].args,
+                                 ("TARAMA_KAYITLARI","J"))
+
+    def test_ambiguous_timeout_with_missing_marker_is_hold_without_second_post(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        api.request=Mock(side_effect=[
+            w.HandoffBlocked("GOOGLE_SHEETS_TRANSPORT_TimeoutError"),
+            {"namedRanges":[]},
+        ])
+        api.read=Mock(side_effect=AssertionError("UNAUTHORIZED_LEDGER_READ"))
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(api.request.call_count,2)
+        self.assertEqual([c.kwargs.get("method","GET") for c in
+                          api.request.call_args_list],["POST","GET"])
+        api.read.assert_not_called()
+
+    def test_uncertain_reply_with_drifted_rows_is_hold_and_never_reposts(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        candidates[-1][5]="9999"
+        api.request=Mock(side_effect=[
+            w.HandoffBlocked("GOOGLE_SHEETS_HTTP_5XX"),
+            {"namedRanges":[marker]},
+        ])
+        api.read=Mock(side_effect=[candidates,scans])
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(api.request.call_count,2)
+        self.assertEqual(sum(c.kwargs.get("method")=="POST"
+                             for c in api.request.call_args_list),1)
+
+    def test_definitive_400_or_409_is_not_retried_or_treated_as_commit(self):
+        from unittest.mock import Mock
+        for code in ("GOOGLE_SHEETS_HTTP_400",
+                     "GOOGLE_SHEETS_HTTP_409"):
+            with self.subTest(code=code):
+                p,marker,api,candidates,scans=self.fixture()
+                api.request=Mock(side_effect=w.HandoffBlocked(code))
+                api.read=Mock(side_effect=AssertionError("UNAUTHORIZED_GET"))
+                with self.assertRaisesRegex(w.HandoffBlocked,code):
+                    api.apply(p)
+                self.assertEqual(api.request.call_count,1)
+                api.read.assert_not_called()
+
+
 class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
     """P0: source may change AFTER offline-guard and BEFORE Google POST."""
 
