@@ -10,9 +10,10 @@ def utc(s):
 
 
 def record(*,created='2026-10-26T22:57:18Z',event='schedule',
-           status='completed',conclusion='success',branch='main'):
+           status='completed',conclusion='success',branch='main',run_attempt=1):
     return {'created_at':created,'event':event,
-            'status':status,'conclusion':conclusion,'head_branch':branch}
+            'status':status,'conclusion':conclusion,'head_branch':branch,
+            'run_attempt':run_attempt}
 
 
 class OfficialXnasFailover(unittest.TestCase):
@@ -307,6 +308,55 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(result['status'],'BLOCKED_RECHECK_INVALID_GITHUB_RUN_RESPONSE')
         self.assertFalse(result['dispatch_requested'])
 
+
+
+class NaturalSourceAmbiguityNegativeAcceptance(unittest.TestCase):
+    """One successful schedule does not justify green health if another
+    natural run or a manual rerun competes for that XNAS session.
+    The fallback remains detection-only: never dispatch a child on HOLD.
+    """
+    NOW=utc('2026-10-27T00:25:00Z')
+
+    def test_two_natural_schedules_even_with_one_success_are_not_healthy(self):
+        for other in (
+            record(status='completed',conclusion='success'),
+            record(status='completed',conclusion='failure'),
+            record(status='queued',conclusion=None),
+            record(status='in_progress',conclusion=None),
+        ):
+            with self.subTest(other_status=other['status'],
+                              conclusion=other['conclusion']):
+                runs=[record(),other]
+                for order in (runs,list(reversed(runs))):
+                    status,day=sf.decision(self.NOW,order)
+                    self.assertEqual(day,'2026-10-26')
+                    self.assertEqual(status,
+                                     'BLOCKED_CURRENT_EPOCH_DUPLICATE_NATURAL_RUN')
+                    self.assertEqual(sf.exit_code_for_result(
+                        {'status':status},'schedule'),3)
+
+    def test_untrusted_attempt_cannot_masquerade_as_successful_natural_first(self):
+        for attempt in (2,3,0,'1',None):
+            with self.subTest(attempt=attempt):
+                status,_=sf.decision(self.NOW,[record(run_attempt=attempt)])
+                self.assertEqual(
+                    status,'BLOCKED_CURRENT_EPOCH_NATURAL_RUN_NOT_FIRST_ATTEMPT')
+                self.assertEqual(sf.exit_code_for_result(
+                    {'status':status},'schedule'),3)
+
+    def test_duplicate_schedule_never_calls_dispatch_callback(self):
+        calls=[]
+        items=[record(),record(status='queued',conclusion=None)]
+        result=sf.run(now=self.NOW,
+                      read_runs=lambda:calls.append('GET') or
+                        {'workflow_runs':items,'total_count':2},
+                      request_dispatch=lambda day:
+                        calls.append('POST:'+day) or True,
+                      trigger_event='schedule')
+        self.assertEqual(result['status'],
+                         'BLOCKED_CURRENT_EPOCH_DUPLICATE_NATURAL_RUN')
+        self.assertFalse(result['dispatch_requested'])
+        self.assertEqual(calls,['GET'])
 
 class FallbackParentReceiptSafety(unittest.TestCase):
     """Evidence for later parent checks, never permission to emit A/B."""
