@@ -415,6 +415,66 @@ class FirstClaimAndReadback(unittest.TestCase):
                     lease.LeaseHold,"LEASE_API_PATH_INVALID"):
                     tr(method,path,{} if method=="POST" else None)
 
+    def test_transport_rejects_unscoped_git_write_payload_before_network(self):
+        """An allowed endpoint is NOT permission to create any ref or tag."""
+        def forbidden_network(*_args, **_kwargs):
+            raise AssertionError("FORBIDDEN_GITHUB_WRITE_WAS_SENT")
+
+        transport=lease.github_transport(
+            "masked-test-token", opener=forbidden_network)
+        valid_day="2026-11-23"
+        valid_tag=lease.TAG_PREFIX+valid_day
+        valid_ref=lease.REF_PREFIX+valid_day
+        invalid=(
+            ("/git/refs", {"ref":"refs/heads/main","sha":"a"*40}),
+            ("/git/refs", {"ref":"refs/tags/xray-other-project","sha":"a"*40}),
+            ("/git/refs", {"ref":valid_ref,"sha":"not-a-sha"}),
+            ("/git/refs", {"ref":valid_ref,"sha":"a"*40,"force":True}),
+            ("/git/refs", {"ref":lease.REF_PREFIX+"2026-11-22","sha":"a"*40}),
+            ("/git/tags", {"tag":"xray-other-project","message":"{}",
+                           "object":"a"*40,"type":"commit",
+                           "tagger":{}}),
+            ("/git/tags", {"tag":valid_tag,"message":"{}",
+                           "object":"a"*40,"type":"commit",
+                           "tagger":{}}),
+            ("/git/tags", {"tag":valid_tag,"message":"{}",
+                           "object":"a"*40,"type":"tree",
+                           "tagger":{}}),
+        )
+        for path,body in invalid:
+            with self.subTest(path=path,body=str(body)[:70]):
+                with self.assertRaisesRegex(
+                        lease.LeaseHold,"LEASE_API_BODY_INVALID"):
+                    transport("POST",path,body)
+
+    def test_transport_accepts_only_canonical_lease_payload_shape(self):
+        """A valid scoped POST reaches the transport; no actual network."""
+        def intercepted(*_args,**_kwargs):
+            raise AssertionError("VALID_SCOPED_WRITE_REACHED_NETWORK_BOUNDARY")
+        transport=lease.github_transport(
+            "masked-test-token",opener=intercepted)
+        owner=natural()
+        tagger={
+            "name":"github-actions[bot]",
+            "email":"41898282+github-actions[bot]@users.noreply.github.com",
+            "date":owner["observed_at"],
+        }
+        inputs=(
+            ("/git/tags", {
+                "tag":owner["tag"],
+                "message":lease._manifest(owner,now=NOW),
+                "object":owner["source_sha"],"type":"commit",
+                "tagger":tagger}),
+            ("/git/refs", {
+                "ref":owner["ref"],"sha":"a"*40}),
+        )
+        for path,body in inputs:
+            with self.subTest(path=path):
+                with self.assertRaisesRegex(
+                        AssertionError,
+                        "VALID_SCOPED_WRITE_REACHED_NETWORK_BOUNDARY"):
+                    transport("POST",path,body)
+
     def test_only_exact_run_get_is_a_read_route(self):
         def fail_on_network(*_args,**_kwargs):
             raise AssertionError("EXACT_ALLOWED_GITHUB_GET_PATH")
