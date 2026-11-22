@@ -99,7 +99,8 @@ def _manifest(owner, *, now=None):
             isinstance(owner.get("source_sha"),str) and
             SHA40.fullmatch(owner["source_sha"]) is not None and
             type(owner.get("run_id")) is int and owner["run_id"] > 0 and
-            owner.get("run_attempt") == 1 and
+            type(owner.get("run_attempt")) is int and
+            owner["run_attempt"] == 1 and
             owner.get("workflow") == WORKFLOW and
             all(k in owner for k in keys), "LEASE_OWNER_CONTRACT_INVALID")
     # This is a SECOND admission boundary. A caller passing a forged owner
