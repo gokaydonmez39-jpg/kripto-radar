@@ -38,6 +38,7 @@ _SAFE_PREOPEN_CODES = frozenset({
     'SCAN_NEW_AL_COUNT_INVALID',
     'CURRENT_SOURCE_OR_POLICY_SHA_CONFLICT',
     'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED',
+    'SOURCE_GITHUB_RUN_UNVERIFIED',
     'IEX_PROVIDER_SCOPE_MISMATCH',
     'IEX_INCOMPLETE_OR_STALE_SESSION',
     'IEX_LIVE_AL_COUNT_VS_PRIVATE_SCAN_CONFLICT',
@@ -112,6 +113,7 @@ _SAFE_STAGES = frozenset({
     'SHEET_SOURCE_READ',
     'PRIVATE_FLIGHT_RECORDER',
     'SOURCE_SHA_SCOPE',
+    'SOURCE_GITHUB_RUN_READ',
     'IEX_RECOMPUTE',
     'AL_IDENTITY',
     'AL_LEVELS',
@@ -210,6 +212,79 @@ def validate_scope_and_scan(symbols, scans, asof, scope_sha, algorithm_sha):
          origin_fields == ['source_event=schedule'],
          'CURRENT_SCAN_SCHEDULE_ORIGIN_UNVERIFIED')
     return int(count)
+
+
+
+def verify_github_natural_eod_source(asof, run_url, *, fetch=None):
+    """READ-ONLY independent GitHub run admission for Sheet-sourced FINAL.
+
+    A formatted URL and a self-reported Sheet source_event are not a
+    trustworthy natural runner receipt. Fetch the exact run ID from GitHub
+    and bind it to the official completed XNAS session. All failures HOLD,
+    and tokens / provider bodies are never returned or printed.
+    """
+    try:
+        import exchange_calendars as ec
+        from urllib.request import Request, urlopen
+
+        if (type(asof) is not str or type(run_url) is not str or
+                SOURCE_RUN_URL.fullmatch(run_url) is None or
+                dt.date.fromisoformat(asof).isoformat() != asof):
+            raise ValueError('UNVERIFIED_GITHUB_SOURCE_INPUT')
+        run_id = int(run_url.rsplit('/', 1)[1])
+        calendar = ec.get_calendar('XNAS')
+        if not calendar.is_session(asof):
+            raise ValueError('GITHUB_SOURCE_NON_SESSION')
+        url = ('https://api.github.com/repos/gokaydonmez39-jpg/'
+               'kripto-radar/actions/runs/' + str(run_id))
+        if fetch is None:
+            token = os.environ.get('GITHUB_TOKEN')
+            if type(token) is not str or not token:
+                raise ValueError('GITHUB_SOURCE_READ_TOKEN_MISSING')
+            request = Request(url, method='GET', headers={
+                'Authorization': 'Bearer ' + token,
+                'Accept': 'application/vnd.github+json',
+                'User-Agent': 'XRAY-NASDAQ477-A34-readonly',
+            })
+            with urlopen(request, timeout=12) as response:
+                payload = json.load(response)
+        else:
+            payload = fetch(url)
+        if not isinstance(payload, dict) or not isinstance(
+                payload.get('repository'), dict):
+            raise ValueError('GITHUB_SOURCE_SCHEMA_INVALID')
+        if not (
+                type(payload.get('id')) is int and payload['id'] == run_id and
+                payload.get('html_url') == run_url and
+                payload.get('repository', {}).get('full_name') ==
+                    'gokaydonmez39-jpg/kripto-radar' and
+                payload.get('path') ==
+                    '.github/workflows/xray-personal-477-eod.yml' and
+                payload.get('head_branch') == 'main' and
+                payload.get('event') == 'schedule' and
+                payload.get('status') == 'completed' and
+                payload.get('conclusion') == 'success' and
+                type(payload.get('run_attempt')) is int and
+                payload['run_attempt'] == 1):
+            raise ValueError('GITHUB_SOURCE_NATURAL_RUN_INVALID')
+        stamp = payload.get('created_at')
+        if type(stamp) is not str:
+            raise ValueError('GITHUB_SOURCE_CREATED_MISSING')
+        created = dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
+        if created.tzinfo is None or created.utcoffset() is None:
+            raise ValueError('GITHUB_SOURCE_CREATED_NO_TZ')
+        created = created.astimezone(dt.timezone.utc)
+        closed = calendar.session_close(asof).to_pydatetime().astimezone(
+            dt.timezone.utc)
+        lower = closed + dt.timedelta(minutes=45)
+        upper = lower + dt.timedelta(hours=10)
+        if not lower <= created <= upper:
+            raise ValueError('GITHUB_SOURCE_WRONG_XNAS_EPOCH')
+        return 'GITHUB_NATURAL_EOD_SOURCE_VERIFIED'
+    except Exception:
+        # No GitHub response, run URL, provider exception or private data in
+        # the public CI log. Missing permission/network is HOLD, never PASS.
+        raise PreopenBlocked('SOURCE_GITHUB_RUN_UNVERIFIED') from None
 
 
 def validate_iex_result(symbols, asof, count, rows):
@@ -352,11 +427,15 @@ def live_entrypoint(stage=None):
     expected = validate_scope_and_scan(symbols, first[1], asof,
                                        runner.sha_symbols(symbols),
                                        runner.analysis_fingerprint())
+    stage['current'] = 'SOURCE_GITHUB_RUN_READ'
+    source_run_check = verify_github_natural_eod_source(
+        asof, first[1][-1][8])
     stage['current'] = 'IEX_RECOMPUTE'
     bars = engine.live_read(symbols, asof)
     results = {sym: engine.analyze(sym, bars.get(sym, []), asof)
                for sym in symbols}
     summary = validate_iex_result(symbols, asof, expected, results)
+    summary['github_run_check'] = source_run_check
     stage['current'] = 'AL_IDENTITY'
     summary['al_identity_check'] = validate_al_identity(
         first[0], asof, expected, results)

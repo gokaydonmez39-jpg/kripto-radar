@@ -62,6 +62,9 @@ jobs:
           python -O -m unittest -q test_private_flight_recorder
           python -m py_compile private_flight_recorder.py
   private-preopen:
+    permissions:
+      contents: read
+      actions: read
     needs: [offline-guard]
     if: >-
       github.ref == 'refs/heads/main' &&
@@ -79,6 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
+      GITHUB_TOKEN: ${{ github.token }}
       XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
       XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}

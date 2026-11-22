@@ -372,6 +372,95 @@ class A34ScheduleResilienceTest(unittest.TestCase):
 
 
 
+
+class A34GitHubRunSourceProvenanceTest(unittest.TestCase):
+    """An authentic-looking Sheet URL alone cannot certify a natural EOD."""
+
+    @staticmethod
+    def run_record():
+        return {
+            'id': 999001,
+            'html_url': SCAN[-1][8],
+            'path': '.github/workflows/xray-personal-477-eod.yml',
+            'repository': {'full_name': 'gokaydonmez39-jpg/kripto-radar'},
+            'event': 'schedule', 'status': 'completed',
+            'conclusion': 'success', 'head_branch': 'main',
+            'run_attempt': 1, 'created_at': '2026-10-29T00:00:00Z',
+        }
+
+    def test_forged_run_url_is_not_independent_source_proof(self):
+        forged = copy.deepcopy(SCAN)
+        forged[-1][8] = forged[-1][8].replace('999001', '999009')
+        # Old code accepts a fake numeric run ID because URL shape is valid.
+        self.assertEqual(
+            w.validate_scope_and_scan(SYMBOLS, forged, ASOF, SCOPE, POLICY), 2)
+        with self.assertRaisesRegex(
+                w.PreopenBlocked, 'SOURCE_GITHUB_RUN_UNVERIFIED'):
+            w.verify_github_natural_eod_source(
+                ASOF, forged[-1][8],
+                fetch=lambda _url: self.run_record())
+
+    def test_exact_natural_first_attempt_is_accepted(self):
+        receipt = w.verify_github_natural_eod_source(
+            ASOF, SCAN[-1][8], fetch=lambda _url: self.run_record())
+        self.assertEqual(receipt, 'GITHUB_NATURAL_EOD_SOURCE_VERIFIED')
+
+    def test_cross_repo_manual_failed_retry_stale_or_wrong_job_hold(self):
+        mutations = (
+            {'event': 'workflow_dispatch'},
+            {'status': 'in_progress', 'conclusion': None},
+            {'conclusion': 'failure'},
+            {'head_branch': 'test'},
+            {'run_attempt': 2},
+            {'run_attempt': True},
+            {'run_attempt': 1.0},
+            {'path': '.github/workflows/another.yml'},
+            {'repository': {'full_name': 'another/repo'}},
+            {'created_at': '2026-10-27T23:00:00Z'},
+            {'created_at': '2026-10-30T12:00:00Z'},
+            {'created_at': 'NOT_A_DATE'},
+            {'html_url': 'https://github.com/another/repo/actions/runs/999001'},
+            {'id': 999002},
+        )
+        for change in mutations:
+            with self.subTest(change=change):
+                row = self.run_record()
+                row.update(change)
+                with self.assertRaisesRegex(
+                        w.PreopenBlocked, 'SOURCE_GITHUB_RUN_UNVERIFIED'):
+                    w.verify_github_natural_eod_source(
+                        ASOF, SCAN[-1][8], fetch=lambda _url, row=row: row)
+
+    def test_network_error_and_untrusted_payload_fail_closed(self):
+        for bad in (None, [], 'PRIVATE_TOKEN', {'id': 999001}):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(
+                        w.PreopenBlocked, 'SOURCE_GITHUB_RUN_UNVERIFIED'):
+                    w.verify_github_natural_eod_source(
+                        ASOF, SCAN[-1][8], fetch=lambda _url, bad=bad: bad)
+        def broken(_url):
+            raise RuntimeError('PRIVATE_UNTRUSTED_TOKEN')
+        with self.assertRaisesRegex(
+                w.PreopenBlocked, 'SOURCE_GITHUB_RUN_UNVERIFIED'):
+            w.verify_github_natural_eod_source(
+                ASOF, SCAN[-1][8], fetch=broken)
+
+    def test_live_entrypoint_must_call_real_source_gate_before_iex(self):
+        import inspect
+        code = inspect.getsource(w.live_entrypoint)
+        self.assertIn('verify_github_natural_eod_source(', code)
+        self.assertLess(code.index('verify_github_natural_eod_source('),
+                        code.index('engine.live_read('))
+
+    def test_real_private_runner_get_permissions_are_readonly(self):
+        from pathlib import Path
+        text = (Path(__file__).resolve().parent.parent /
+                '.github/workflows/xray-nasdaq-a34-preopen.yml').read_text()
+        section = text.split('  private-preopen:', 1)[1]
+        self.assertIn('actions: read', section)
+        self.assertIn('GITHUB_TOKEN: ${{ github.token }}', section)
+
+
 class A34HoldExitCodeContract(unittest.TestCase):
     """GitHub job success may never attest a quarantined A34 HOLD."""
 
