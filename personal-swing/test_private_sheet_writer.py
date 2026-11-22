@@ -827,7 +827,8 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         candidate=[asof+'|SYNA',asof,'SYNA','TEKNİK AL ADAYI',
                    '100','95','110','AÇIK • 0/15 SEANS','','','',
                    'KAYDEDİLDİ_BİLDİRİM_AYRI',
-                   'source_event=schedule; run=999001; NO_BROKER_NO_ORDERS']
+                   'source_event=schedule; run='+
+                   scan[8]+'; NO_BROKER_NO_ORDERS']
         return {'requests':[{'addNamedRange':{'namedRange':w.epoch_marker(asof,1)}},
                             w.as_cells([scan],1),w.as_cells([candidate],2)]}
 
@@ -901,12 +902,14 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             def read(self):return b'{"replies":[]}'
         api=self._api()
         cell=lambda value:{'userEnteredValue':{'stringValue':value}}
-        named=w.epoch_marker('2026-11-23',1)
+        eod=self.canonical_eod_payload()
+        no_al=copy.deepcopy(eod)
+        no_al['requests'].pop()
+        no_al['requests'][1]['appendCells']['rows'][0]['values'][7][
+            'userEnteredValue']['stringValue']='0'
         allowed_bodies=(
-            {'requests':[{'addNamedRange':{'namedRange':named}},
-                         w.as_cells([['2026-11-23']+['verified scan']*9],1),
-                         w.as_cells([['2026-11-23|AL','2026-11-23']+
-                                     ['verified candidate']*11],2)]},
+            eod,
+            no_al,
             {'requests':[w.as_cells([['N/A']*23 for _ in range(477)],477300001)]},
             {'requests':[{'updateCells':{
                 'start':{'sheetId':2,'rowIndex':2,'columnIndex':7},
