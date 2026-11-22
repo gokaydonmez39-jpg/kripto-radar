@@ -727,6 +727,90 @@ class AtomicSheetWriteLeaseFence(unittest.TestCase):
                 guard.assert_called_once()
                 net.assert_not_called()
 
+    def test_two_natural_writers_only_one_can_reach_fake_google_post(self):
+        """End-to-end offline race: one immutable tag and one POST at most."""
+        import test_epoch_lease as cases
+        import epoch_lease as lease
+        import daily_job
+        from concurrent.futures import ThreadPoolExecutor
+        from types import SimpleNamespace
+
+        git=cases.MockGit(rendezvous=2)
+        def try_claim(number):
+            try:
+                cases.claim(cases.natural(number),git)
+                return number
+            except lease.LeaseHold:
+                return None
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            outcome=list(pool.map(try_claim,("890123","890124")))
+        winners=[x for x in outcome if x is not None]
+        self.assertEqual(len(winners),1,outcome)
+        self.assertEqual(len(git.refs),1)
+        self.assertEqual(len(git.tags),2)
+        losers=[x for x in ("890123","890124") if x not in winners]
+        self.assertEqual(len(losers),1)
+        git.calls.clear()
+
+        class FakeResponse:
+            def __enter__(self):
+                return self
+            def __exit__(self,*_):
+                return False
+            def read(self):
+                return b'{"offline":true}'
+
+        api=object.__new__(w.SheetApi)
+        api.base="https://sheets.googleapis.com/v4/spreadsheets/OFFLINE"
+        api.token="offline-google-token"
+        with patch.object(lease,"github_transport",return_value=git):
+            with patch.object(w,"datetime",
+                    SimpleNamespace(now=lambda _:cases.NOW)):
+                with patch.object(daily_job,"current_completed_session",
+                                  return_value=cases.ASOF):
+                    with patch.object(w,"urlopen",return_value=FakeResponse()
+                    ) as google:
+                        for candidate in losers+winners:
+                            runtime=self.runtime(candidate)
+                            with patch.dict(os.environ,runtime,clear=True):
+                                if candidate in losers:
+                                    with self.assertRaisesRegex(
+                                        w.HandoffBlocked,
+                                        "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
+                                        api.request(":batchUpdate",method="POST",
+                                                    body={"requests":[]})
+                                else:
+                                    result=api.request(":batchUpdate",method="POST",
+                                                       body={"requests":[]})
+                                    self.assertEqual(result,{"offline":True})
+                        self.assertEqual(google.call_count,1)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_live_owner_revocation_blocks_before_fake_google_post(self):
+        import epoch_lease as lease
+        import daily_job
+        from types import SimpleNamespace
+        self.git.protection="disabled"
+        api=object.__new__(w.SheetApi)
+        api.base="https://sheets.googleapis.com/v4/spreadsheets/OFFLINE"
+        api.token="offline-google-token"
+        with patch.dict(os.environ,self.runtime(),clear=True):
+            with patch.object(lease,"github_transport",return_value=self.git):
+                with patch.object(w,"datetime",
+                        SimpleNamespace(now=lambda _:self.cases.NOW)):
+                    with patch.object(daily_job,"current_completed_session",
+                                      return_value=self.cases.ASOF):
+                        with patch.object(w,"urlopen",
+                             side_effect=AssertionError("NO_GOOGLE_POST")
+                        ) as google:
+                            with self.assertRaisesRegex(
+                                    w.HandoffBlocked,
+                                    "EPOCH_LEASE_CONSUMER_UNVERIFIED"):
+                                api.request(":batchUpdate",method="POST",
+                                            body={"requests":[]})
+                            google.assert_not_called()
+
     def test_default_off_does_not_query_github_or_google(self):
         out=w.require_epoch_lease_before_private_post(
             self.cases.env(),transport=self.git,now=self.cases.NOW,
