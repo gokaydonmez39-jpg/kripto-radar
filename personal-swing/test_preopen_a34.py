@@ -159,6 +159,96 @@ class A34ContractTest(unittest.TestCase):
             w.validate_scope_and_scan(SYMBOLS,arr,ASOF,SCOPE,POLICY)
 
 
+class A34MondayNovember23RealBoundaryAcceptance(unittest.TestCase):
+    """No Friday 20 Nov FINAL means Monday 23 Nov preopen MUST HOLD.
+
+    Offline reproduction of the recorded 19 Nov last FINAL; no producer
+    replay, private Sheet write, external market call, or false opening PASS.
+    """
+
+    def test_20261123_0617_istanbul_uses_friday_20_xnas_not_thursday_19(self):
+        import datetime as dt
+        import engine
+        import exchange_calendars as ec
+        now=dt.datetime(2026,11,23,3,17,0,tzinfo=dt.timezone.utc)
+        asof=engine.trading_asof(now).isoformat()
+        self.assertEqual(asof,"2026-11-20")
+        calendar=ec.get_calendar("XNAS")
+        next_session=calendar.next_session(asof)
+        self.assertEqual(str(next_session.date()),"2026-11-23")
+        self.assertLess(now,calendar.session_open(next_session).to_pydatetime())
+
+    def test_missing_friday_natural_source_blocks_a34_before_iex_or_github(self):
+        import os
+        import datetime as dt
+        import engine
+        from types import SimpleNamespace
+        from performance_lab import private_performance_adapter as adapter
+        from performance_lab import private_flight_recorder as flight
+
+        current=dt.datetime(2026,11,23,3,17,0,tzinfo=dt.timezone.utc)
+        class FixedClock:
+            @staticmethod
+            def now(tz=None):
+                return current if tz is None else current.astimezone(tz)
+        class FakePrivateSheet:
+            def verify_metadata(self):
+                return True
+            def read(self,title,col):
+                if title=="TARAMA_KAYITLARI":
+                    missing=copy.deepcopy(SCAN)
+                    missing[-1][0]="2026-11-19"
+                    return missing
+                return [["SYNTHETIC_HEADER"]]
+
+        healthy_flight={
+            "unreserved_current_eod_al":0,
+            "unreserved_prior_eod_al":0,
+            "panel_non_authoritative_stale":False,
+            "panel_missing_asof":False,
+        }
+        stage={}
+        with patch.object(w,"dt",SimpleNamespace(
+                    datetime=FixedClock,date=dt.date,timezone=dt.timezone,
+                    timedelta=dt.timedelta)),patch.object(
+                    engine,"trading_asof",return_value=dt.date(2026,11,20)
+                    ),patch.object(
+                    adapter,"PrivateSheetReadOnly",
+                    return_value=FakePrivateSheet()) as private,patch.object(
+                    flight,"inspect",return_value=healthy_flight
+                    ),patch.object(
+                    engine,"live_read",
+                    side_effect=AssertionError("IEX_NETWORK_MUST_NOT_RUN")
+                    ) as iex,patch.object(
+                    w,"verify_github_natural_eod_source",
+                    side_effect=AssertionError("GITHUB_PROOF_MUST_NOT_RUN")
+                    ) as github,patch.dict(os.environ,{
+                        "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"SYNTHETIC",
+                        "XRAY_PRIVATE_SPREADSHEET_ID":"SYNTHETIC",
+                    },clear=True):
+            with self.assertRaisesRegex(w.PreopenBlocked,
+                                        "LATEST_COMPLETED_SCAN_NOT_READY"):
+                w.live_entrypoint(stage)
+            private.assert_called_once()
+            iex.assert_not_called()
+            github.assert_not_called()
+        self.assertEqual(stage["current"],"SOURCE_SHA_SCOPE")
+
+    def test_missing_friday_diagnostic_is_nonzero_and_never_claims_delivery(self):
+        with patch.object(w,"live_entrypoint",side_effect=w.PreopenBlocked(
+                "LATEST_COMPLETED_SCAN_NOT_READY")):
+            with patch("builtins.print") as printed:
+                self.assertEqual(w.main(),3)
+        diagnostic=json.loads(printed.call_args_list[-1].args[0])
+        self.assertEqual(diagnostic["status"],"A34_PREOPEN_BLOCKED")
+        self.assertEqual(diagnostic["reason_code"],
+                         "LATEST_COMPLETED_SCAN_NOT_READY")
+        self.assertFalse(diagnostic["orders"])
+        self.assertFalse(diagnostic["writes"])
+        self.assertEqual(diagnostic["device_ack"],"UNKNOWN")
+        self.assertEqual(printed.call_count,2)
+
+
 class A34ExactAlIdentityTest(unittest.TestCase):
     """Same AL count must never hide a wrong ASOF|SYMBOL identity."""
 
