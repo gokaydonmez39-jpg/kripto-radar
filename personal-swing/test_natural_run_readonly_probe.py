@@ -63,6 +63,34 @@ class NaturalReadOnlyCanary(unittest.TestCase):
                 self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
 
 
+    def test_schedule_collection_query_is_exact_official_xnas_close_window(self):
+        """Real dated evidence: 18 Nov EOD created 19 Nov UTC; do not count
+        it as a competing 19 Nov source which was created on 20 Nov UTC.
+        GitHub action receipts: 44456649926 and 44671232964.
+        """
+        stem="/actions/workflows/xray-personal-477-eod.yml/runs?"
+        prefix=stem+"event=schedule&per_page=100&created="
+        self.assertEqual(
+            probe.schedule_runs_path("2026-11-19"),
+            prefix+"2026-11-19T21:45:00Z..2026-11-20T07:45:00Z")
+        self.assertEqual(
+            probe.schedule_runs_path("2026-11-23"),
+            prefix+"2026-11-23T21:45:00Z..2026-11-24T07:45:00Z")
+        # Official Black Friday XNAS 13:00 NY early close => 18:45 UTC.
+        self.assertEqual(
+            probe.schedule_runs_path("2026-11-27"),
+            prefix+"2026-11-27T18:45:00Z..2026-11-28T04:45:00Z")
+        from datetime import datetime
+        start=datetime.fromisoformat("2026-11-19T21:45:00+00:00")
+        end=datetime.fromisoformat("2026-11-20T07:45:00+00:00")
+        previous=datetime.fromisoformat("2026-11-19T04:11:58+00:00")
+        current=datetime.fromisoformat("2026-11-20T03:58:10+00:00")
+        self.assertFalse(start<=previous<=end)
+        self.assertTrue(start<=current<=end)
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            probe.schedule_runs_path("2026-11-22")
+
     def test_competing_natural_run_any_status_is_blocked_before_private_scan(self):
         for state in ("queued","in_progress","completed"):
             with self.subTest(state=state):
