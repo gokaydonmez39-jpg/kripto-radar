@@ -7,6 +7,8 @@ import os
 import tempfile
 import unittest
 from decimal import Decimal
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -49,6 +51,129 @@ def scans():
         row[index]=value
     row[9]="scopeSHA="+SCOPE+";algorithmSHA="+POLICY+";source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK"
     return [list(writer.SCAN_HEADER),row]
+
+
+class NeonNaturalCurrentAsOfGate(unittest.TestCase):
+    """Production NEON may not append a historic scanned ASOF as a new day."""
+
+    def live_env(self):
+        return {
+            "GITHUB_EVENT_NAME":"schedule",
+            "GITHUB_RUN_ID":"999001",
+            "GITHUB_RUN_ATTEMPT":"1",
+            "GITHUB_REPOSITORY":writer.EXPECTED_EOD_REPOSITORY,
+            "GITHUB_REF":"refs/heads/main",
+            "GITHUB_SHA":"a"*40,
+            "GITHUB_WORKFLOW_REF":writer.EXPECTED_EOD_WORKFLOW_REF,
+            "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"synthetic-test-token",
+        }
+
+    def test_old_snapshot_must_hold_before_google_even_when_natural(self):
+        src={
+            "asof_et":ASOF, "scope_sha256":SCOPE,
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        for current in ("2026-11-23",None,"2026-11-20"):
+            with self.subTest(current=current):
+                with tempfile.TemporaryDirectory() as folder:
+                    path=Path(folder)/"old.json"
+                    path.write_text(json.dumps(src),encoding="utf-8")
+                    with patch.dict(os.environ,self.live_env(),clear=True):
+                        with patch("daily_job.current_completed_session",
+                                   return_value=current):
+                            with patch.object(ledger.original,"SheetApi",
+                                  side_effect=AssertionError("OLD_NEON_GOOGLE_API_STARTED")
+                            ) as api, contextlib.redirect_stdout(io.StringIO()) as out:
+                                rc=ledger.main(["--snapshot",str(path),
+                                                "--shadow",str(path)])
+                    result=json.loads(out.getvalue())
+                    self.assertEqual(rc,3)
+                    self.assertEqual(result["status"],"NEON_PRIVATE_LEDGER_HOLD")
+                    self.assertEqual(
+                        result["reason_code"],"NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
+                    api.assert_not_called()
+
+    def test_weekend_late_same_asof_cannot_backfill_neon(self):
+        # Even when Friday remains the most recent official session on
+        # Saturday, a run after its XNAS close+45m+10h is stale.
+        friday="2026-11-20"
+        master=runner.get_scope(
+            watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
+            asof=friday)
+        src={
+            "asof_et":friday,
+            "scope_sha256":neon.scope_digest(master),
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        late=datetime(2026,11,21,12,0,tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/"friday.json"
+            path.write_text(json.dumps(src),encoding="utf-8")
+            with patch.dict(os.environ,self.live_env(),clear=True):
+                with patch("daily_job.current_completed_session",
+                           return_value=friday):
+                    with patch.object(
+                        ledger,"datetime",
+                        SimpleNamespace(now=lambda *_:late)):
+                        with patch.object(
+                            ledger.original,"SheetApi",
+                            side_effect=AssertionError("STALE_NEON_GOOGLE_STARTED")
+                        ) as api,contextlib.redirect_stdout(io.StringIO()) as out:
+                            rc=ledger.main(["--snapshot",str(path),
+                                            "--shadow",str(path)])
+            result=json.loads(out.getvalue())
+            self.assertEqual(rc,3)
+            self.assertEqual(result["reason_code"],
+                             "NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
+            api.assert_not_called()
+
+
+    def test_current_natural_asof_passes_fake_477_readback_without_signal(self):
+        # Positive control: the safety gate must not kill the next real EOD.
+        src={
+            "asof_et":ASOF,"scope_sha256":SCOPE,
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        api=FakeApi()
+        api.scans[1][8]=(
+            "https://github.com/gokaydonmez39-jpg/kripto-radar/"
+            "actions/runs/999001")
+        current_policy=runner.analysis_fingerprint()
+        api.scans[1][9]=api.scans[1][9].replace(POLICY,current_policy)
+        shadow=fixture()
+        shadow["policy_sha256"]=current_policy
+        observation=datetime(2026,11,19,23,16,tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as folder:
+            snapshot_path=Path(folder)/"snapshot.json"
+            shadow_path=Path(folder)/"shadow.json"
+            snapshot_path.write_text(json.dumps(src),encoding="utf-8")
+            shadow_path.write_text(json.dumps(shadow),encoding="utf-8")
+            with patch.dict(os.environ,self.live_env(),clear=True):
+                with patch("daily_job.current_completed_session",
+                           return_value=ASOF):
+                    with patch.object(
+                        ledger,"datetime",
+                        SimpleNamespace(now=lambda *_:observation,
+                                        fromisoformat=datetime.fromisoformat)):
+                        with patch.object(
+                            ledger.original,"SheetApi",return_value=api):
+                            with contextlib.redirect_stdout(io.StringIO()) as output:
+                                rc=ledger.main([
+                                    "--snapshot",str(snapshot_path),
+                                    "--shadow",str(shadow_path)])
+        result=json.loads(output.getvalue())
+        self.assertEqual(rc,0,result)
+        self.assertEqual(result["status"],"NEON_PRIVATE_477_NEW_SOURCE_VERIFIED")
+        self.assertEqual((result["scored"],result["na"]),(477,0))
+        self.assertEqual((api.posts,len(api.tab)),(1,478))
+        self.assertFalse(result["notification_sent"])
+        self.assertEqual(result["orders_sent"],0)
 
 
 class NeonSourceIdentityIsolation(unittest.TestCase):

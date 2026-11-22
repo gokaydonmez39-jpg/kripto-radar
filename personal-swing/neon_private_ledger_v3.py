@@ -16,6 +16,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 
 import runner
+import daily_job
 import neon_shadow_v3 as neon
 import private_sheet_writer as original
 
@@ -338,6 +339,19 @@ def main(argv=None):
         need(bool(credential),"PRIVATE_SHEET_AUTH_MISSING")
         snapshot=json.loads(Path(args.snapshot).read_text(encoding="utf-8"))
         asof=snapshot.get("asof_et")
+        # A valid historic private scan is NOT authority for a scheduled
+        # runner to append a stale NEON day. Bind the source snapshot to
+        # the CURRENT official completed XNAS session and the strict
+        # close+45m .. close+45m+10h production window BEFORE Google auth.
+        try:
+            observed=datetime.now(timezone.utc)
+            natural_day=daily_job.current_completed_session(observed)
+            need(type(asof) is str and asof==natural_day,
+                 "NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
+            neon.session_dates(asof,observed)
+        except Exception:
+            raise NeonLedgerHold(
+                "NEON_ASOF_NOT_CURRENT_NATURAL_SESSION") from None
         master=runner.get_scope(watchlist_file=str(Path(__file__).with_name(
             "nasdaq_watchlist_477.json")),asof=asof)
         need(snapshot.get("scope_sha256")==neon.scope_digest(master) and
