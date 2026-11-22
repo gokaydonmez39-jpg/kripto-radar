@@ -81,7 +81,8 @@ def decision(now, runs, *, calendar=None):
     # recovery for an ambiguous epoch either.
     if len(natural)>1:
         return 'BLOCKED_CURRENT_EPOCH_DUPLICATE_NATURAL_RUN',candidate_date
-    if natural and type(natural[0].get('run_attempt')) is not int or (natural and natural[0].get('run_attempt')!=1):
+    if natural and (type(natural[0].get('run_attempt')) is not int
+                    or natural[0]['run_attempt']!=1):
         return 'BLOCKED_CURRENT_EPOCH_NATURAL_RUN_NOT_FIRST_ATTEMPT',candidate_date
     if any(item['status']=='completed' and item.get('conclusion')=='success'
            for item in natural):
