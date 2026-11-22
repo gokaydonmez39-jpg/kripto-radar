@@ -65,6 +65,25 @@ jobs:
           python-version: '3.12'
       - name: Calendar and regression dependencies
         run: python -m pip install -r personal-swing/requirements.txt
+      - name: Independently run clean B note venv import canary (PR only)
+        if: ${{ github.event_name == 'pull_request' }}
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Never borrow installed modules or secrets from another CI job.
+          # The same package set and imports are required by natural B proof.
+          python3 -m venv "$RUNNER_TEMP/xray-source-note-offline"
+          "$RUNNER_TEMP/xray-source-note-offline/bin/python" -m pip install --disable-pip-version-check -r personal-swing/requirements.txt 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+          "$RUNNER_TEMP/xray-source-note-offline/bin/python" - <<'PY'
+          import sys
+          import exchange_calendars
+          import google.oauth2.service_account
+          sys.path.insert(0, 'personal-swing')
+          import private_sheet_writer
+          import daily_job
+          import publish_b_source_note
+          PY
       - name: Static tests before any data API access
         working-directory: personal-swing
         run: |
