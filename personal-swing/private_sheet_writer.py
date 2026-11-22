@@ -1199,20 +1199,9 @@ class SheetApi:
         data=payload_from_plan(p,self.sheet_ids)
         if not data['requests']:
             return
-        # Exactly one POST. Lost replies may describe already-committed
-        # atomic Google batches: reconcile by independent GETs ONLY.
-        # Never make a second POST, even for 5XX or a socket timeout.
-        try:
-            result=self.request(':batchUpdate',method='POST',body=data)
-        except HandoffBlocked as error:
-            ambiguous=frozenset((
-                'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
-                'GOOGLE_SHEETS_TRANSPORT_URLError',
-                'GOOGLE_SHEETS_HTTP_5XX',
-            ))
-            if (not p['scan_rows'] or type(error) is not HandoffBlocked
-                    or str(error) not in ambiguous):
-                raise
+        # A malformed 200 response and a lost transport response are both
+        # uncertain commit outcomes. Neither licenses a second POST.
+        def readback_uncertain_epoch():
             expected=data['requests'][0]['addNamedRange']['namedRange']
             try:
                 marker_response=self.request(
@@ -1227,29 +1216,46 @@ class SheetApi:
                 verify_readback(
                     p,self.read('ADAY_GECMISI','M'),
                     self.read('TARAMA_KAYITLARI','J'))
-                # Another natural writer may have appeared during provider
-                # uncertainty. Recheck before granting any real-run success.
+                # Provider might have accepted a stale competing producer:
+                # the current natural run must still be uniquely authorized.
                 if getattr(self,'_authenticated_production_client',False) is True:
                     require_source_lastmile_before_private_post(os.environ)
                     require_epoch_lease_before_private_post(os.environ)
             except Exception:
-                # No raw Google response, URL, private rows, or uncertainty
-                # may be transformed into an optimistic FINAL success.
                 raise HandoffBlocked(
                     'EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED') from None
-            # A subsequent synchronize() readback independently checks the
-            # candidate and scan sets AGAIN. No retry and no device ACK.
+
+        # Exactly ONE POST; no retry for transport, malformed 200 or provider.
+        try:
+            result=self.request(':batchUpdate',method='POST',body=data)
+        except HandoffBlocked as error:
+            ambiguous=frozenset((
+                'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
+                'GOOGLE_SHEETS_TRANSPORT_URLError',
+                'GOOGLE_SHEETS_HTTP_5XX',
+            ))
+            if (not p['scan_rows'] or type(error) is not HandoffBlocked
+                    or str(error) not in ambiguous):
+                raise
+            readback_uncertain_epoch()
+            # synchronize() independently repeats full ledger verification.
             return
         if p['scan_rows']:
             expected=data['requests'][0]['addNamedRange']['namedRange']
             replies=result.get('replies') if isinstance(result,dict) else None
-            require(type(replies) is list and
-                    len(replies)==len(data['requests']) and
-                    isinstance(replies[0],dict) and
-                    isinstance(replies[0].get('addNamedRange'),dict) and
-                    _marker_matches(
-                        replies[0]['addNamedRange'].get('namedRange'),expected),
-                    'EPOCH_CAS_POST_RECEIPT_UNVERIFIED')
+            acknowledged=(type(replies) is list and
+                          len(replies)==len(data['requests']) and
+                          isinstance(replies[0],dict) and
+                          isinstance(replies[0].get('addNamedRange'),dict) and
+                          _marker_matches(
+                              replies[0]['addNamedRange'].get('namedRange'),
+                              expected))
+            if not acknowledged:
+                # A 200 alone does not prove that this run owns the FINAL.
+                # Only exact Google marker + complete ledger readback can
+                # resolve a broken response body; never submit another POST.
+                readback_uncertain_epoch()
+                return
             # Independent GET: don't equate a successful 200 POST with a
             # permanently visible owner. This remains supplementary to
             # exact Sheet scan + candidate readback in synchronize().
