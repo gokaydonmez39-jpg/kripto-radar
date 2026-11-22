@@ -875,6 +875,9 @@ class SheetApi:
         self.base=BATCH_ENDPOINT+spreadsheet_id
         self.sheet_ids=None
         self._post_scope=None
+        # Only genuine service-account construction authorizes a live client.
+        # __new__-created fixtures have no such marker and remain offline.
+        self._authenticated_production_client=True
 
     def request(self, path, *, method='GET', body=None):
         # One shared HTTP boundary for all private NASDAQ writers.
@@ -958,6 +961,15 @@ class SheetApi:
         # In ENFORCE mode, a missing/competing protected tag owner denies
         # every private batch POST BEFORE Google network I/O.
         if method == 'POST':
+            # A real authenticated client or GitHub Actions process must
+            # NEVER downgrade the natural EOD source proof by omitting OFF.
+            # Even valid append-only payloads are unsafe without the source
+            # admission receipt. Do not contact GitHub or Google on failure.
+            if getattr(self,'_authenticated_production_client',False) is True:
+                require(
+                    os.environ.get('XRAY_PERSONAL477_SOURCE_LASTMILE_MODE')
+                    == 'ENFORCE_GET',
+                    'SOURCE_LASTMILE_MODE_UNRECOGNIZED')
             require_source_lastmile_before_private_post(os.environ)
             require_epoch_lease_before_private_post(os.environ)
         url=self.base+path

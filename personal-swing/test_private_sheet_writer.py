@@ -1687,6 +1687,39 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
                 gh.assert_called_once()
                 google.assert_not_called()
 
+    def test_authenticated_google_post_never_accepts_off_lastmile(self):
+        # A real service-account client must not silently disable source
+        # checks when the job omits or sets the last-mile mode to OFF.
+        # __new__ is solely used to emulate a constructed client offline.
+        cases=(
+            {},
+            {"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"},
+        )
+        for runtime in cases:
+            with self.subTest(runtime=runtime):
+                api=object.__new__(w.SheetApi)
+                api.base="https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
+                api.token="OFFLINE"
+                api._post_scope={"scan":1,"candidate":2,"alerts":3,"panel":4}
+                api._authenticated_production_client=True
+                with patch.dict(os.environ,runtime,clear=True):
+                    with patch.object(w,"urlopen",
+                                      side_effect=AssertionError("GOOGLE_POST_SENT")
+                                      ) as google,patch.object(
+                        w,"require_source_lastmile_before_private_post"
+                                      ) as source,patch.object(
+                        w,"require_epoch_lease_before_private_post"
+                                      ) as lease:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,
+                                "SOURCE_LASTMILE_MODE_UNRECOGNIZED"):
+                            api.request(":batchUpdate",method="POST",
+                                        body={"requests":[w.as_cells(
+                                            [["SYNTHETIC"]*20],3)]})
+                        google.assert_not_called()
+                        source.assert_not_called()
+                        lease.assert_not_called()
+
     def test_gate_off_in_local_legacy_does_not_authorize_delivery(self):
         import test_epoch_lease as cases
         git=cases.MockGit()
