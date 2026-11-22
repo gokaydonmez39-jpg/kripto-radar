@@ -4,7 +4,7 @@ import copy
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone, timedelta
 from hashlib import sha1
-from threading import Barrier, Lock
+from threading import Barrier, Lock, local
 from urllib.error import HTTPError
 import json
 import unittest
@@ -52,6 +52,7 @@ class MockGit:
         self.protection="valid"
         self.disable_after_ref=False
         self.run_overrides={}
+        self.run_context=local()
 
     def __call__(self,method,path,body=None):
         with self.lock:
@@ -68,7 +69,20 @@ class MockGit:
                 "updated_at":"2026-11-23T22:04:00Z",
             }
             receipt.update(self.run_overrides)
+            self.run_context.receipt=copy.deepcopy(receipt)
             return receipt
+        if (method=="GET" and path.startswith(
+                "/actions/workflows/xray-personal-477-eod.yml/runs?")):
+            # Each isolated test writer sees its own exact natural run;
+            # thread-local state retains the CAS collision test's independent
+            # admission history without pretending there are no true races.
+            current=getattr(self.run_context,"receipt",None)
+            if current is None:
+                raise AssertionError("NATURAL_LIST_BEFORE_RUN_GET")
+            fields=("id","event","path","head_branch","head_sha",
+                    "run_attempt","repository","created_at")
+            return {"total_count":1,"workflow_runs":[
+                {key:copy.deepcopy(current.get(key)) for key in fields}]}
         if method=="GET" and path=="/rulesets":
             if self.protection=="absent":
                 return [{"id":1,"target":"branch","enforcement":"active"}]
@@ -193,11 +207,13 @@ class FirstClaimAndReadback(unittest.TestCase):
         self.assertEqual(
             [(method,path) for method,path,_ in git.calls],
             [("GET","/actions/runs/"+str(owner["run_id"])),
+             ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF)),
              ("GET","/rulesets"),("GET","/rulesets/11"),
              ("POST","/git/tags"),("POST","/git/refs"),
              ("GET","/git/ref/tags/"+owner["tag"]),
              ("GET","/git/tags/"+out["tag_sha"]),
-             ("GET","/rulesets"),("GET","/rulesets/11")])
+             ("GET","/rulesets"),("GET","/rulesets/11"),
+             ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF))])
         manifest=json.loads(git.tags[out["tag_sha"]]["message"])
         self.assertEqual(manifest["run_id"],owner["run_id"])
         self.assertEqual(manifest["asof_et"],ASOF)
@@ -299,6 +315,7 @@ class FirstClaimAndReadback(unittest.TestCase):
                 self.assertEqual(
                     [(m,p) for m,p,_ in git.calls],
                     [("GET","/actions/runs/"+str(natural()["run_id"])),
+                     ("GET",__import__("natural_run_readonly_probe").schedule_runs_path(ASOF)),
                      ("GET","/rulesets"),("GET","/rulesets/11"),
                      ("POST","/git/tags")])
 
