@@ -10,8 +10,11 @@ def utc(s):
 
 
 def record(*,created='2026-10-26T22:57:18Z',event='schedule',
-           status='completed',conclusion='success',branch='main',run_attempt=1):
-    return {'created_at':created,'event':event,
+           status='completed',conclusion='success',branch='main',run_attempt=1,
+           id=890123):
+    return {'id':id, 'path':'.github/workflows/xray-personal-477-eod.yml',
+            'repository':{'full_name':'gokaydonmez39-jpg/kripto-radar'},
+            'head_sha':'a'*40, 'created_at':created,'event':event,
             'status':status,'conclusion':conclusion,'head_branch':branch,
             'run_attempt':run_attempt}
 
