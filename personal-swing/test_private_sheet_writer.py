@@ -1701,8 +1701,7 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
                 api.base="https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
                 api.token="OFFLINE"
                 api._post_scope={"scan":1,"candidate":2,"alerts":3,"panel":4}
-                if real_client:
-                    api._authenticated_production_client=True
+                api._authenticated_production_client=True
                 with patch.dict(os.environ,runtime,clear=True):
                     with patch.object(w,"urlopen",
                                       side_effect=AssertionError("GOOGLE_POST_SENT")
