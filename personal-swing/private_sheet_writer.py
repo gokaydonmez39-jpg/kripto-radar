@@ -696,6 +696,52 @@ def _valid_private_batch_post(body):
     return True
 
 
+
+
+def _valid_canonical_new_al(v, asof, run_url):
+    """Check initial AL provenance and rounded 2R before any Google POST.
+
+    This is an independent *necessary* transport fence; upstream snapshot
+    validation, PIT 477 membership, XNAS timing and true protected tag owner
+    remain separate requirements. No market/provider calls are made here.
+    """
+    if (type(v) is not list or len(v) != len(CANDIDATE_HEADER) or
+            not v[2] or v[0] != asof+'|'+v[2] or v[1] != asof or
+            v[3] != 'TEKNİK AL ADAYI' or
+            v[7] != 'AÇIK • 0/15 SEANS' or
+            v[8:11] != ['', '', ''] or
+            v[11] != 'KAYDEDİLDİ_BİLDİRİM_AYRI'):
+        return False
+    number = r'[0-9]+(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?'
+    note_pattern = (
+        r'GitHub private handoff; source_event=schedule; '
+        r'IEX single exchange; RSI14=('+number+r') RVOL=('+number+
+        r'); run='+re.escape(run_url)+r'; NO_BROKER_NO_ORDERS'
+    )
+    match = re.fullmatch(note_pattern, v[12])
+    if match is None:
+        return False
+    rsi, rvol = (float(raw) for raw in match.groups())
+    if (not math.isfinite(rsi) or not math.isfinite(rvol) or
+            not 0 <= rsi <= 100 or rvol < 0):
+        return False
+
+    # Exactly the locale and maximum three decimals produced by money().
+    # Stop and 2R are RESEARCH-ONLY: never a promise of a fill price.
+    price_cell = r'(?:0|[1-9][0-9]*)(?:,[0-9]{1,3})?'
+    if any(re.fullmatch(price_cell, value) is None for value in v[4:7]):
+        return False
+    close, stop, target = (float(x.replace(',', '.')) for x in v[4:7])
+    if (not all(math.isfinite(x) for x in (close, stop, target)) or
+            not 0 < stop < close < target):
+        return False
+    # Rounding each of the three values to .001 can cause <=.002 error
+    # in (target-close) - 2*(close-stop): 1+1+2 half-ticks.
+    if abs((target-close) - 2*(close-stop)) > 0.00201:
+        return False
+    return True
+
+
 def _valid_private_batch_targets(body, scope):
     """Bind approved cell shapes to authenticated, unique worksheet IDs.
 
@@ -771,13 +817,7 @@ def _valid_private_batch_targets(body, scope):
             observed_keys=[]
             for row in p['rows']:
                 v=[c['userEnteredValue']['stringValue'] for c in row['values']]
-                if (not v[2] or v[0]!=asof+'|'+v[2] or v[1]!=asof or
-                        v[3]!='TEKNİK AL ADAYI' or
-                        v[7]!='AÇIK • 0/15 SEANS' or
-                        v[11]!='KAYDEDİLDİ_BİLDİRİM_AYRI' or
-                        'source_event=schedule' not in v[12] or
-                        'run='+source_fields[8] not in v[12] or
-                        'NO_BROKER_NO_ORDERS' not in v[12]):
+                if not _valid_canonical_new_al(v, asof, source_fields[8]):
                     return False
                 observed_keys.append(v[0])
             if len(set(observed_keys))!=candidate_count:
