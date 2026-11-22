@@ -8,10 +8,28 @@ from test_epoch_lease import MockGit, env, ASOF, NOW
 import natural_run_readonly_probe as probe
 
 
+def schedule_page(git, *, extra=(), total=None, rows=None):
+    """Test-only GET response for the exact natural schedule collection."""
+    current={
+        "id":890123,"event":"schedule","path":lease.WORKFLOW,
+        "head_branch":"main","head_sha":"a"*40,"run_attempt":1,
+        "repository":{"full_name":lease.REPO},
+        "created_at":"2026-11-23T22:03:00Z",
+    }
+    records=[current,*extra] if rows is None else rows
+    def request(method,path,body=None):
+        if method=="GET" and path.startswith("/actions/workflows/"):
+            git.calls.append((method,path,body))
+            return {"total_count":len(records) if total is None else total,
+                    "workflow_runs":records}
+        return git(method,path,body)
+    return request
+
+
 class NaturalReadOnlyCanary(unittest.TestCase):
     def test_exact_current_producer_requires_one_get_and_no_mutations(self):
         git=MockGit()
-        out=probe.verify_once(env(),git,now=NOW,
+        out=probe.verify_once(env(),schedule_page(git),now=NOW,
                               completed_session=lambda _:ASOF)
         self.assertEqual(out["status"],"NATURAL_RUN_GITHUB_READ_ONLY_VERIFIED")
         self.assertEqual(out["asof_et"],ASOF)
@@ -21,7 +39,8 @@ class NaturalReadOnlyCanary(unittest.TestCase):
         self.assertFalse(out["ab_release_authorized"])
         self.assertEqual(out["device_ack"],"UNKNOWN")
         self.assertEqual([(m,p) for m,p,_ in git.calls],
-                         [("GET","/actions/runs/890123")])
+                         [("GET","/actions/runs/890123"),
+                          ("GET",probe.schedule_runs_path(ASOF))])
 
     def test_forged_provider_cannot_promote_event_branch_sha_or_clock(self):
         variants=(
@@ -42,6 +61,67 @@ class NaturalReadOnlyCanary(unittest.TestCase):
                     probe.verify_once(env(),git,now=NOW,
                                       completed_session=lambda _:ASOF)
                 self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+
+    def test_competing_natural_run_any_status_is_blocked_before_private_scan(self):
+        for state in ("queued","in_progress","completed"):
+            with self.subTest(state=state):
+                git=MockGit()
+                duplicate={
+                    "id":890124,"event":"schedule","path":lease.WORKFLOW,
+                    "head_branch":"main","head_sha":"a"*40,
+                    "run_attempt":1,"repository":{"full_name":lease.REPO},
+                    "created_at":"2026-11-23T23:00:00Z","status":state,
+                }
+                with self.assertRaisesRegex(
+                        lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+                    probe.verify_once(env(),schedule_page(git,extra=[duplicate]),
+                                      now=NOW,completed_session=lambda _:ASOF)
+                self.assertEqual(len(git.calls),2)
+                self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_missing_hidden_or_forged_collection_never_passes(self):
+        valid={
+            "id":890123,"event":"schedule","path":lease.WORKFLOW,
+            "head_branch":"main","head_sha":"a"*40,"run_attempt":1,
+            "repository":{"full_name":lease.REPO},
+            "created_at":"2026-11-23T22:03:00Z",
+        }
+        cases=(
+            ("missing_current",[],0),
+            ("hidden_second",[valid],2),
+            ("truncated_page",[valid]*100,101),
+            ("wrong_origin",[{**valid,"event":"workflow_dispatch"}],1),
+            ("wrong_id",[{**valid,"id":890124}],1),
+            ("created_drift",[{**valid,"created_at":"2026-11-23T22:04:00Z"}],1),
+            ("missing_count",[valid],None),
+        )
+        for label,records,total in cases:
+            with self.subTest(label=label):
+                git=MockGit()
+                def reply(method,path,body=None):
+                    if method=="GET" and path.startswith("/actions/workflows/"):
+                        git.calls.append((method,path,body))
+                        return {"workflow_runs":records,
+                                **({"total_count":total} if total is not None else {})}
+                    return git(method,path,body)
+                with self.assertRaisesRegex(
+                        lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+                    probe.verify_once(env(),reply,now=NOW,
+                                      completed_session=lambda _:ASOF)
+                self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_schedule_collection_http_error_fails_closed(self):
+        git=MockGit()
+        def unavailable(method,path,body=None):
+            if path.startswith("/actions/workflows/"):
+                raise TimeoutError("simulated natural run list failure")
+            return git(method,path,body)
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            probe.verify_once(env(),unavailable,now=NOW,
+                              completed_session=lambda _:ASOF)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
 
     def test_non_natural_runner_is_blocked_before_api_get(self):
         for field,value in (
