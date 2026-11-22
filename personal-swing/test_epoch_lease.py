@@ -74,9 +74,11 @@ class MockGit:
                 return [{"id":1,"target":"branch","enforcement":"active"}]
             return [{"id":11,"target":"tag","enforcement":"active"}]
         if method=="GET" and path=="/rulesets/11":
-            types=["update","deletion"]
+            types=["update","deletion","non_fast_forward"]
             if self.protection=="no_update":
-                types=["deletion"]
+                types=["deletion","non_fast_forward"]
+            if self.protection=="no_non_fast_forward":
+                types=["update","deletion"]
             return {
                 "id":11,"target":"tag",
                 "enforcement":"disabled" if self.protection=="disabled" else "active",
