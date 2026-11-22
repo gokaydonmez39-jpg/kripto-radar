@@ -420,5 +420,64 @@ class ZeroSessionReceiptFailClosedTests(unittest.TestCase):
                 self.assertIn(marker,result.stdout+result.stderr)
 
 
+
+class ScoreEntrypointNaturalEODSourceTests(unittest.TestCase):
+    """No manually sourced / stale score Sheets access, even with credentials."""
+
+    def env(self,event="schedule"):
+        return {
+            "GITHUB_EVENT_NAME":event,"GITHUB_REPOSITORY":writer.EXPECTED_EOD_REPOSITORY,
+            "GITHUB_REF":"refs/heads/main","GITHUB_RUN_ATTEMPT":"1",
+            "GITHUB_RUN_ID":"999001","GITHUB_SHA":"a"*40,
+            "GITHUB_WORKFLOW_REF":writer.EXPECTED_EOD_WORKFLOW_REF,
+            "XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"OFFLINE_SYNTHETIC",
+        }
+
+    def test_non_natural_score_run_denied_before_private_client(self):
+        import io,contextlib,os,json
+        for event in ("workflow_dispatch","push"):
+            with self.subTest(event=event):
+                with patch.dict(os.environ,self.env(event),clear=True):
+                    with patch.object(score.daily_job,"current_completed_session",
+                                      return_value=ASOF):
+                        with patch.object(score.writer,"SheetApi",
+                            side_effect=AssertionError("SCORE_GOOGLE_CLIENT_MUST_NOT_START")
+                        ) as client,contextlib.redirect_stdout(io.StringIO()) as output:
+                            rc=score.main(["--asof",ASOF])
+                self.assertEqual(rc,3)
+                self.assertEqual(json.loads(output.getvalue())["status"],"SWING_SCORE_HOLD")
+                client.assert_not_called()
+
+    def test_stale_cli_asof_denied_before_private_client(self):
+        import io,contextlib,os,json
+        with patch.dict(os.environ,self.env(),clear=True):
+            with patch.object(score.daily_job,"current_completed_session",
+                              return_value="2026-11-05"):
+                with patch.object(score.writer,"SheetApi",
+                      side_effect=AssertionError("HISTORICAL_SCORE_GOOGLE_CLIENT_STARTED")
+                ) as client,contextlib.redirect_stdout(io.StringIO()) as output:
+                    rc=score.main(["--asof",ASOF])
+        self.assertEqual(rc,3)
+        self.assertEqual(json.loads(output.getvalue())["status"],"SWING_SCORE_HOLD")
+        client.assert_not_called()
+
+    def test_current_natural_score_can_reach_mock_client(self):
+        import io,contextlib,os,json
+        mock_result={"status":"SWING_SCORE_IDEMPOTENT_READBACK_PASS","asof_et":ASOF,
+                     "active_episodes":2,"scoreable":2,"new_rows":0,"execution":"NONE"}
+        with patch.dict(os.environ,self.env(),clear=True):
+            with patch.object(score.daily_job,"current_completed_session",
+                              return_value=ASOF):
+                with patch.object(score.writer,"SheetApi",return_value=self) as client:
+                    with patch.object(score,"synchronize",return_value=mock_result) as sync:
+                        with contextlib.redirect_stdout(io.StringIO()) as output:
+                            rc=score.main(["--asof",ASOF])
+        self.assertEqual(rc,0)
+        client.assert_called_once_with("OFFLINE_SYNTHETIC")
+        sync.assert_called_once()
+        self.assertEqual(json.loads(output.getvalue())["status"],
+                         "SWING_SCORE_IDEMPOTENT_READBACK_PASS")
+
+
 if __name__=="__main__":
     unittest.main()
