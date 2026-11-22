@@ -598,6 +598,104 @@ def _valid_private_string_rows(rows):
                     for cell in row['values']) for row in rows))
 
 
+def _b_source_note_payload(body):
+    """Only the fixed natural-EOD B SUMMARY evidence note may use fields=note.
+
+    This is a literal note-only, one-cell Google Sheets exception. It is NOT a
+    generic updateCells permission, source admission, atomic CAS or delivery.
+    All live clients still require the independent natural-source GET fence.
+    """
+    try:
+        if (type(body) is not dict or set(body)!={'requests'} or
+                type(body['requests']) is not list or
+                len(body['requests'])!=1):
+            return None
+        wrapper=body['requests'][0]
+        if type(wrapper) is not dict or set(wrapper)!={'updateCells'}:
+            return None
+        update=wrapper['updateCells']
+        if (type(update) is not dict or
+                set(update)!={'range','rows','fields'} or
+                update.get('fields')!='note'):
+            return None
+        area=update['range']
+        if (type(area) is not dict or
+                set(area)!={'sheetId','startRowIndex','endRowIndex',
+                            'startColumnIndex','endColumnIndex'} or
+                type(area['sheetId']) is not int or
+                not 0<=area['sheetId']<=2147483647 or
+                type(area['startRowIndex']) is not int or
+                not 1<=area['startRowIndex']<MAX_ROWS or
+                area['endRowIndex']!=area['startRowIndex']+1 or
+                area['startColumnIndex']!=26 or area['endColumnIndex']!=27):
+            return None
+        rows=update['rows']
+        if (type(rows) is not list or len(rows)!=1 or
+                type(rows[0]) is not dict or set(rows[0])!={'values'} or
+                type(rows[0]['values']) is not list or
+                len(rows[0]['values'])!=1 or
+                type(rows[0]['values'][0]) is not dict or
+                set(rows[0]['values'][0])!={'note'}):
+            return None
+        note=rows[0]['values'][0]['note']
+        prefix='XRAY_477_B_SOURCE_ENVELOPE_V1 '
+        if (type(note) is not str or not note.startswith(prefix) or
+                not 100<=len(note)<=2700 or not note.isascii() or
+                '\\n' in note or '\\r' in note):
+            return None
+        def unique_pairs(pairs):
+            data={}
+            for key,value in pairs:
+                if key in data:
+                    raise ValueError('DUPLICATE_KEY')
+                data[key]=value
+            return data
+        obj=json.loads(note[len(prefix):],object_pairs_hook=unique_pairs)
+        if (type(obj) is not dict or
+                set(obj) not in ({'schema','asof','run','head','proof'},
+                                 {'schema','asof','run','head','proof','a'}) or
+                obj['schema']!='XRAY_477_B_SOURCE_ENVELOPE_V1' or
+                not canonical_scan_day(obj['asof']) or
+                type(obj['run']) is not int or obj['run']<=0 or
+                type(obj['head']) is not str or
+                GIT_COMMIT_RE.fullmatch(obj['head']) is None or
+                note!=prefix+json.dumps(
+                    obj,separators=(',',':'),ensure_ascii=True)):
+            return None
+        names=('daily-private-scan','private-episode-followups',
+               'guardian-acceptance','daily-private-score-acceptance')
+        proof=obj['proof']
+        if type(proof) is not list or len(proof)!=4:
+            return None
+        seen=set()
+        for index,(entry,name) in enumerate(zip(proof,names)):
+            if (type(entry) is not dict or
+                    set(entry)!={'jobId','jobName','lines'} or
+                    entry['jobName']!=name or
+                    type(entry['jobId']) is not int or entry['jobId']<=0 or
+                    entry['jobId'] in seen or
+                    type(entry['lines']) is not list or
+                    len(entry['lines'])!=(2 if index==0 else 1)):
+                return None
+            seen.add(entry['jobId'])
+            for line in entry['lines']:
+                if (type(line) is not list or len(line)!=2 or
+                        any(type(s) is not str or not s.isascii() or
+                            not 1<=len(s)<=1000 or '\\n' in s or '\\r' in s
+                            for s in line)):
+                    return None
+        if 'a' in obj:
+            extra=obj['a']
+            if (type(extra) is not dict or
+                    set(extra)!={'schema','scan','outbox',
+                                 'panel','life','guard'} or
+                    extra['schema']!='XRAY_477_A_SOURCE_ENVELOPE_V1'):
+                return None
+        return obj
+    except (TypeError,ValueError,KeyError,AttributeError):
+        return None
+
+
 def _valid_private_batch_post(body):
     """Allowlist the ACTUAL shape and sheet columns used by NASDAQ producers.
 
@@ -610,6 +708,9 @@ def _valid_private_batch_post(body):
             type(body['requests']) is not list or
             not 1 <= len(body['requests']) <= MAX_ROWS):
         return False
+    # Exact B evidence note is permitted only as a single AA note update.
+    if _b_source_note_payload(body) is not None:
+        return True
     source_named_range_seen = False
 
     def sheet_id(value):
@@ -765,6 +866,11 @@ def _valid_private_batch_targets(body, scope):
     requests=body['requests']
     if not requests:
         return False
+    # Only the existing SWING_SKOR_GUNLUK sheetId may receive the
+    # all-or-nothing B source note. Never retarget PANEL, alert or candidates.
+    if _b_source_note_payload(body) is not None:
+        return ('score' in scope and
+                requests[0]['updateCells']['range']['sheetId']==scope['score'])
     first=requests[0]
     eod=type(first) is dict and set(first)=={'addNamedRange'}
     if eod:
@@ -912,6 +1018,24 @@ class SheetApi:
                     _valid_private_batch_targets(
                         body,getattr(self,'_post_scope',None)),
                     'GOOGLE_SHEETS_POST_SCOPE_INVALID')
+            b_note=_b_source_note_payload(body)
+            if b_note is not None:
+                # Do not let a note from another runner or previous ASOF be
+                # attached to an otherwise valid score SUMMARY row.
+                try:
+                    import daily_job
+                    live_asof=daily_job.current_completed_session()
+                    note_identity_ok=(
+                        type(live_asof) is str and
+                        b_note['asof']==live_asof and
+                        type(os.environ.get('GITHUB_RUN_ID')) is str and
+                        RUN_ID_RE.fullmatch(os.environ['GITHUB_RUN_ID'])
+                        is not None and
+                        b_note['run']==int(os.environ['GITHUB_RUN_ID']) and
+                        b_note['head']==os.environ.get('GITHUB_SHA'))
+                except Exception:
+                    note_identity_ok=False
+                require(note_identity_ok,'GOOGLE_SHEETS_POST_SCOPE_INVALID')
             # In live source-lastmile ENFORCE mode the immutable FINAL row
             # must cite THIS scheduled GitHub run, not merely a correctly
             # formatted URL borrowed from another historical or competing
