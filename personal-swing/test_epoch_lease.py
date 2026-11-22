@@ -74,9 +74,11 @@ class MockGit:
                 return [{"id":1,"target":"branch","enforcement":"active"}]
             return [{"id":11,"target":"tag","enforcement":"active"}]
         if method=="GET" and path=="/rulesets/11":
-            types=["update","deletion"]
+            types=["update","deletion","non_fast_forward"]
             if self.protection=="no_update":
-                types=["deletion"]
+                types=["deletion","non_fast_forward"]
+            if self.protection=="no_non_fast_forward":
+                types=["update","deletion"]
             return {
                 "id":11,"target":"tag",
                 "enforcement":"disabled" if self.protection=="disabled" else "active",
@@ -533,6 +535,15 @@ class ExistingLeaseConsumerReadback(unittest.TestCase):
 
 
 class LiveTagReadonlyCanaryTests(unittest.TestCase):
+    def test_missing_non_fast_forward_rule_cannot_authorize_tag_claim(self):
+        git=MockGit()
+        git.protection="no_non_fast_forward"
+        with self.assertRaisesRegex(
+                lease.LeaseHold,"LEASE_TAG_PROTECTION_UNVERIFIED"):
+            claim(natural(),git)
+        self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
+        self.assertEqual(git.refs,{})
+
     def test_live_cli_requires_real_active_ruleset_and_never_posts(self):
         import os
         from unittest.mock import patch

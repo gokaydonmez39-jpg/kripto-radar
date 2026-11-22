@@ -407,6 +407,41 @@ class NaturalRunIdentityNegativeTests(unittest.TestCase):
         self.assertEqual((status,asof),
                          ("NOOP_CURRENT_EPOCH_RUN_EXISTS","2026-10-26"))
 
+
+class NaturalRunClockSanityTests(unittest.TestCase):
+    """GitHub source created after the observer's clock cannot be green."""
+
+    def test_future_natural_timestamp_over_five_second_skew_is_hold(self):
+        now=utc('2026-10-27T00:25:00Z')
+        for stamp in ('2026-10-27T00:25:06Z',
+                      '2026-10-27T05:20:00Z'):
+            with self.subTest(stamp=stamp):
+                v,day=sf.decision(now,[record(created=stamp)])
+                self.assertEqual(day,'2026-10-26')
+                self.assertEqual(v,'BLOCKED_RUN_TIMESTAMP_IN_FUTURE')
+                self.assertEqual(sf.exit_code_for_result(
+                    {'status':v},'schedule'),3)
+
+    def test_five_second_clock_skew_keeps_existing_provenance(self):
+        status,asof=sf.decision(
+            utc('2026-10-27T00:25:00Z'),
+            [record(created='2026-10-27T00:25:05Z')])
+        self.assertEqual((status,asof),
+                         ('NOOP_CURRENT_EPOCH_RUN_EXISTS','2026-10-26'))
+
+    def test_future_dated_source_never_calls_dispatch(self):
+        calls=[]
+        fake=record(created='2026-10-27T00:25:06Z')
+        result=sf.run(now=utc('2026-10-27T00:25:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GET') or
+                {'workflow_runs':[fake],'total_count':1},
+            request_dispatch=lambda asof:calls.append('POST:'+asof))
+        self.assertEqual(result['status'],'BLOCKED_RUN_TIMESTAMP_IN_FUTURE')
+        self.assertFalse(result['dispatch_requested'])
+        self.assertEqual(calls,['GET'])
+
+
 class FallbackParentReceiptSafety(unittest.TestCase):
     """Evidence for later parent checks, never permission to emit A/B."""
     def setUp(self):

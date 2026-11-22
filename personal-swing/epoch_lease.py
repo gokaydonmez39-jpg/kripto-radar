@@ -167,7 +167,7 @@ def verify_live_tag_protection(transport, *, probe_only=False):
                cond.get("include")==[PROTECTED_PATTERN] and
                cond.get("exclude")==[] and
                isinstance(rules,list) and
-               {"update","deletion"}.issubset(
+               {"update","deletion","non_fast_forward"}.issubset(
                    {rule.get("type") for rule in rules
                     if isinstance(rule,dict)}))
         if not exact:
