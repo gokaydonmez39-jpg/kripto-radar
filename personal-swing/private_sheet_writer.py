@@ -111,6 +111,7 @@ _PUBLIC_BLOCK_CODES = frozenset({
     'EPOCH_CAS_ASOF_INVALID',
     'EPOCH_CAS_POST_RECEIPT_UNVERIFIED',
     'EPOCH_CAS_INDEPENDENT_GET_UNVERIFIED',
+    'EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED',
     'EPOCH_LEASE_MODE_UNRECOGNIZED',
     'EPOCH_LEASE_TOKEN_MISSING',
     'EPOCH_LEASE_CONSUMER_UNVERIFIED',
@@ -1198,8 +1199,47 @@ class SheetApi:
         data=payload_from_plan(p,self.sheet_ids)
         if not data['requests']:
             return
-        # One POST only: a lost reply is uncertain commitment, NEVER retry.
-        result=self.request(':batchUpdate',method='POST',body=data)
+        # Exactly one POST. Lost replies may describe already-committed
+        # atomic Google batches: reconcile by independent GETs ONLY.
+        # Never make a second POST, even for 5XX or a socket timeout.
+        try:
+            result=self.request(':batchUpdate',method='POST',body=data)
+        except HandoffBlocked as error:
+            ambiguous=frozenset((
+                'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
+                'GOOGLE_SHEETS_TRANSPORT_URLError',
+                'GOOGLE_SHEETS_HTTP_5XX',
+            ))
+            if (not p['scan_rows'] or type(error) is not HandoffBlocked
+                    or str(error) not in ambiguous):
+                raise
+            expected=data['requests'][0]['addNamedRange']['namedRange']
+            try:
+                marker_response=self.request(
+                    '?fields=namedRanges(namedRangeId,name,range)')
+                named=marker_response.get('namedRanges')
+                require(type(named) is list and
+                        len([v for v in named if type(v) is dict and
+                             (v.get('namedRangeId')==expected['namedRangeId'] or
+                              v.get('name')==expected['name'])])==1 and
+                        any(_marker_matches(v,expected) for v in named),
+                        'EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED')
+                verify_readback(
+                    p,self.read('ADAY_GECMISI','M'),
+                    self.read('TARAMA_KAYITLARI','J'))
+                # Another natural writer may have appeared during provider
+                # uncertainty. Recheck before granting any real-run success.
+                if getattr(self,'_authenticated_production_client',False) is True:
+                    require_source_lastmile_before_private_post(os.environ)
+                    require_epoch_lease_before_private_post(os.environ)
+            except Exception:
+                # No raw Google response, URL, private rows, or uncertainty
+                # may be transformed into an optimistic FINAL success.
+                raise HandoffBlocked(
+                    'EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED') from None
+            # A subsequent synchronize() readback independently checks the
+            # candidate and scan sets AGAIN. No retry and no device ACK.
+            return
         if p['scan_rows']:
             expected=data['requests'][0]['addNamedRange']['namedRange']
             replies=result.get('replies') if isinstance(result,dict) else None
