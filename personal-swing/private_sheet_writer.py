@@ -379,8 +379,8 @@ def _marker_matches(observed, expected):
     """Accept protocol-default omission of startIndex=0; reject other drift."""
     if not isinstance(observed,dict):
         return False
-    if observed.get('namedRangeId')!=expected['namedRangeId'] or
-            observed.get('name')!=expected['name']:
+    if (observed.get('namedRangeId')!=expected['namedRangeId'] or
+            observed.get('name')!=expected['name']):
         return False
     actual_range=observed.get('range')
     if not isinstance(actual_range,dict):
