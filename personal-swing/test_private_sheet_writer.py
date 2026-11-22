@@ -917,6 +917,42 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                     source.assert_not_called()
                     lease.assert_not_called()
 
+    def test_enforced_lastmile_rejects_stale_final_even_with_current_run_url(self):
+        """An old ASOF must never borrow a currently valid scheduled run ID.
+
+        This covers the last HTTP mutation boundary, independent from the
+        earlier snapshot validation. No GitHub or Google access is permitted.
+        """
+        import daily_job
+        api=self._api()
+        body=self.canonical_eod_payload()
+        old="2026-11-20"
+        body["requests"][0]["addNamedRange"]["namedRange"]=w.epoch_marker(old,1)
+        body["requests"][1]["appendCells"]["rows"][0]["values"][0][
+            "userEnteredValue"]["stringValue"]=old
+        row=body["requests"][2]["appendCells"]["rows"][0]["values"]
+        row[0]["userEnteredValue"]["stringValue"]=old+"|SYNA"
+        row[1]["userEnteredValue"]["stringValue"]=old
+        self.assertTrue(w._valid_private_batch_post(body))
+        self.assertTrue(w._valid_private_batch_targets(body,api._post_scope))
+        env={"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"ENFORCE_GET",
+             "GITHUB_RUN_ID":"999001"}
+        with patch.dict(w.os.environ,env,clear=True),patch.object(
+             daily_job,"current_completed_session",return_value="2026-11-23"
+        ),patch.object(
+             w,"urlopen",side_effect=AssertionError("STALE_EOD_REACHED_GOOGLE")
+        ) as http,patch.object(
+             w,"require_source_lastmile_before_private_post"
+        ) as source,patch.object(
+             w,"require_epoch_lease_before_private_post"
+        ) as lease:
+            with self.assertRaisesRegex(
+                    w.HandoffBlocked,"GOOGLE_SHEETS_POST_SCOPE_INVALID"):
+                api.request(":batchUpdate",method="POST",body=body)
+            source.assert_not_called()
+            lease.assert_not_called()
+            http.assert_not_called()
+
     def test_enforced_lastmile_same_run_keeps_real_final_and_other_producers(self):
         """Correct runner + canonical source may still pass existing guards."""
         class Reply:
@@ -928,7 +964,10 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         alert={'requests':[w.as_cells([['synthetic']*20],3)]}
         env={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET',
              'GITHUB_RUN_ID':'999001'}
+        import daily_job
         with patch.dict(w.os.environ,env,clear=True),patch.object(
+             daily_job,'current_completed_session',return_value='2026-11-23'
+        ),patch.object(
              w,'urlopen',return_value=Reply()) as http,patch.object(
              w,'require_source_lastmile_before_private_post') as source,patch.object(
              w,'require_epoch_lease_before_private_post') as lease:
