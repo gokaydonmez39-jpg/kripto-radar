@@ -982,7 +982,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                 self.assertTrue(w._valid_private_batch_targets(body,api._post_scope))
                 with patch.dict(w.os.environ,env,clear=True),patch.object(
                     daily_job,'current_completed_session',return_value='2026-11-23'
-                ),patch.object(runner,'get_scope',return_value=['SYNA']
+                ),patch.object(runner,'get_scope',return_value=SYMS
                 ),patch.object(runner,'sha_symbols',return_value='a'*64
                 ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
                 ),patch.object(
@@ -1012,7 +1012,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
              'GITHUB_RUN_ID':'999001'}
         with patch.dict(w.os.environ,env,clear=True),patch.object(
             daily_job,'current_completed_session',return_value='2026-11-23'
-        ),patch.object(runner,'get_scope',return_value=['SYNA']
+        ),patch.object(runner,'get_scope',return_value=SYMS
         ),patch.object(runner,'sha_symbols',return_value='a'*64
         ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
         ),patch.object(w,'urlopen',return_value=Reply()) as http,patch.object(
@@ -1038,6 +1038,8 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         import daily_job
         with patch.dict(w.os.environ,env,clear=True),patch.object(
              daily_job,'current_completed_session',return_value='2026-11-23'
+        ),patch.object(runner,'sha_symbols',return_value='a'*64
+        ),patch.object(runner,'analysis_fingerprint',return_value='b'*64
         ),patch.object(
              w,'urlopen',return_value=Reply()) as http,patch.object(
              w,'require_source_lastmile_before_private_post') as source,patch.object(
