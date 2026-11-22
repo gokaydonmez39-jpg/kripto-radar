@@ -144,12 +144,16 @@ class NeonNaturalCurrentAsOfGate(unittest.TestCase):
         api.scans[1][8]=(
             "https://github.com/gokaydonmez39-jpg/kripto-radar/"
             "actions/runs/999001")
+        current_policy=runner.analysis_fingerprint()
+        api.scans[1][9]=api.scans[1][9].replace(POLICY,current_policy)
+        shadow=fixture()
+        shadow["policy_sha256"]=current_policy
         observation=datetime(2026,11,19,23,16,tzinfo=timezone.utc)
         with tempfile.TemporaryDirectory() as folder:
             snapshot_path=Path(folder)/"snapshot.json"
             shadow_path=Path(folder)/"shadow.json"
             snapshot_path.write_text(json.dumps(src),encoding="utf-8")
-            shadow_path.write_text(json.dumps(fixture()),encoding="utf-8")
+            shadow_path.write_text(json.dumps(shadow),encoding="utf-8")
             with patch.dict(os.environ,self.live_env(),clear=True):
                 with patch("daily_job.current_completed_session",
                            return_value=ASOF):
