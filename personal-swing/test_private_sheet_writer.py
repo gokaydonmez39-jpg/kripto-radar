@@ -864,6 +864,40 @@ class BProofCarrierFailClosedWorkflowTest(unittest.TestCase):
         self.assertIn("XRAY_B_SOURCE_NOTE=HOLD_NO_READBACK",tail)
 
 
+class BNoteLateCommitEODOfflineIntegration(unittest.TestCase):
+    """Exercise the B proof bridge in both mandatory NASDAQ CI suites."""
+
+    @staticmethod
+    def source_test_fixtures():
+        import sys
+        tests_path=str(Path(__file__).resolve().parents[1]/"tests")
+        if tests_path not in sys.path:
+            sys.path.insert(0,tests_path)
+        import test_publish_b_source_note as proof
+        return proof
+
+    def test_lost_google_reply_with_committed_b_note_needs_exact_get_only(self):
+        proof=self.source_test_fixtures()
+        api=proof.FakeApi()
+        api.post_error="GOOGLE_SHEETS_TRANSPORT_TimeoutError"
+        self.assertEqual(
+            proof.writer.synchronize_note(api,proof.SOURCE),
+            "ATTACHED_AND_VERIFIED")
+        self.assertEqual(len(api.posts),1)
+        self.assertEqual(
+            proof.writer.synchronize_note(api,proof.SOURCE),
+            "ALREADY_VERIFIED")
+        self.assertEqual(len(api.posts),1)
+
+    def test_b_note_bad_http200_ack_with_exact_get_needs_no_second_post(self):
+        proof=self.source_test_fixtures()
+        api=proof.FakeApi()
+        api.ack=False
+        self.assertEqual(
+            proof.writer.synchronize_note(api,proof.SOURCE),
+            "ATTACHED_AND_VERIFIED")
+        self.assertEqual(len(api.posts),1)
+
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
