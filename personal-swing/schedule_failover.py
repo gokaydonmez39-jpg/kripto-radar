@@ -357,7 +357,8 @@ def main(argv=None):
                         body={'ref':'main','inputs':{'asof_et':session}})['dispatch_accepted']
     try:
         result=run(now=captured_now,read_runs=get_runs,request_dispatch=dispatch,
-                   trigger_event=os.environ.get('GITHUB_EVENT_NAME'))
+                   trigger_event=os.environ.get('GITHUB_EVENT_NAME'),
+                   fresh_now=lambda:datetime.now(timezone.utc))
         if args.dry_run and result.get('dispatch_requested'):
             result['status']='DRY_RUN_WOULD_DISPATCH'
             result['dispatch_requested']=False
