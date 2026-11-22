@@ -965,8 +965,7 @@ class SheetApi:
             # NEVER downgrade the natural EOD source proof by omitting OFF.
             # Even valid append-only payloads are unsafe without the source
             # admission receipt. Do not contact GitHub or Google on failure.
-            if (getattr(self,'_authenticated_production_client',False) is True
-                    or os.environ.get('GITHUB_ACTIONS')=='true'):
+            if getattr(self,'_authenticated_production_client',False) is True:
                 require(
                     os.environ.get('XRAY_PERSONAL477_SOURCE_LASTMILE_MODE')
                     == 'ENFORCE_GET',
