@@ -178,8 +178,17 @@ def run(*,now=None,read_runs=None,request_dispatch=None,trigger_event=None,
             observed_utc = now.astimezone(timezone.utc)
             previous_utc_day = (observed_utc.date()-
                                 timedelta(days=1)).isoformat()
+            # A holiday in the preceding UTC day is genuinely benign
+            # ONLY within the existing fallback's own scheduled 00:26Z
+            # slot + MAX_FALLBACK_AGE (10h). A very late runner cannot
+            # identify which scheduled event it belonged to, so it must
+            # be RED/HOLD rather than silently green. No GitHub I/O.
+            nominal=observed_utc.replace(hour=0,minute=26,second=0,
+                                         microsecond=0)
+            slot_lag=observed_utc-nominal
             expired = (observed_utc.weekday() not in (1,2,3,4,5) or
-                       ec.get_calendar('XNAS').is_session(previous_utc_day))
+                       ec.get_calendar('XNAS').is_session(previous_utc_day) or
+                       not timedelta(0)<=slot_lag<=MAX_FALLBACK_AGE)
         if expired:
             return {'status':'BLOCKED_NATURAL_FALLBACK_EXPIRED',
                     'asof_et':session,'dispatch_requested':False}
