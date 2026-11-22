@@ -462,7 +462,7 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
                   if line.lstrip().startswith('group:')]
         self.assertEqual(len(groups), 1)
         group = groups[0]
-        self.assertIn("github.event_name == 'schedule' &&", group)
+        self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 &&", group)
         self.assertIn("|| format('xray-personal-477-daily-eod-test-{0}', github.run_id)", group)
         self.assertIn("|| 'xray-personal-477-daily-eod'", group)
         self.assertIn('cancel-in-progress: false', source)
@@ -478,7 +478,7 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
                   if line.lstrip().startswith('group:')]
         self.assertEqual(len(groups), 1)
         group = groups[0]
-        self.assertIn("github.event_name == 'schedule' &&", group)
+        self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 &&", group)
         self.assertIn("|| format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)", group)
         self.assertIn("|| 'xray-personal-477-scheduler-fallback'", group)
         self.assertIn('cancel-in-progress: false', source)
@@ -627,7 +627,7 @@ class PendingNaturalSourceQueueIsolation(unittest.TestCase):
         source=self.workflow('xray-personal-477-eod.yml')
         line=next(line.strip() for line in source.splitlines()
                   if line.lstrip().startswith('group:'))
-        self.assertIn("github.event_name == 'schedule' && 'xray-personal-477-daily-eod'",line)
+        self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 && 'xray-personal-477-daily-eod'",line)
         self.assertIn("|| format('xray-personal-477-daily-eod-test-{0}', github.run_id)",line)
         self.assertIn('cancel-in-progress: false',source)
         self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"),1)
@@ -636,7 +636,7 @@ class PendingNaturalSourceQueueIsolation(unittest.TestCase):
         source=self.workflow('xray-personal-477-schedule-fallback.yml')
         line=next(line.strip() for line in source.splitlines()
                   if line.lstrip().startswith('group:'))
-        self.assertIn("github.event_name == 'schedule' && 'xray-personal-477-scheduler-fallback'",line)
+        self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 && 'xray-personal-477-scheduler-fallback'",line)
         self.assertIn("|| format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)",line)
         self.assertIn('cancel-in-progress: false',source)
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"),1)
@@ -646,7 +646,7 @@ class PendingNaturalSourceQueueIsolation(unittest.TestCase):
         line=next(line.strip() for line in source.splitlines()
                   if line.lstrip().startswith('group:'))
         for fragment in (
-            "github.event_name == 'schedule'",
+            "github.run_attempt == 1 && (github.event_name == 'schedule'",
             "github.event_name == 'workflow_run'",
             "github.event.workflow_run.event == 'schedule'",
             "github.event.workflow_run.conclusion == 'success'",
