@@ -898,6 +898,30 @@ class BNoteLateCommitEODOfflineIntegration(unittest.TestCase):
             "ATTACHED_AND_VERIFIED")
         self.assertEqual(len(api.posts),1)
 
+class BNoteIsolatedRunnerDependencyContract(unittest.TestCase):
+    """A clean venv cannot borrow scan-job XNAS dependencies from another job."""
+
+    def test_clean_b_note_venv_installs_xnas_deps_and_proves_import_before_post(self):
+        workflow=(Path(__file__).resolve().parents[1]/
+                  ".github/workflows/xray-personal-477-eod.yml"
+                  ).read_text(encoding="utf-8")
+        start=workflow.index(
+            "- name: Prepare private Sheet proof bridge dependencies (schedule only)")
+        end=workflow.index(
+            "- name: Attach and verify current B evidence note (schedule only)",start)
+        step=workflow[start:end]
+        self.assertIn('python3 -m venv "$RUNNER_TEMP/xray-source-note"',step)
+        self.assertIn(
+            '-m pip install --disable-pip-version-check -r personal-swing/requirements.txt',
+            step)
+        self.assertIn("import exchange_calendars",step)
+        self.assertIn("import private_sheet_writer",step)
+        self.assertIn("import daily_job",step)
+        self.assertIn("import publish_b_source_note",step)
+        self.assertIn("google.oauth2.service_account",step)
+        self.assertNotIn("continue-on-error: true",step)
+        self.assertIn("timeout-minutes: 3",step)
+
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
