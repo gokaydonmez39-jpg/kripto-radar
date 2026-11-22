@@ -72,6 +72,28 @@ class SixJobOnlyProof(unittest.TestCase):
                                             "PRIMARY_RUN_ORIGIN_NOT_VERIFIED"):
                     proof.validate(run,jobs,ASOF,NOW)
 
+    def test_noninteger_attempt_or_job_source_ids_must_hold(self):
+        # Python True == 1 and 1.0 == 1. GitHub source provenance
+        # requires exact integer types, not merely numeric equality.
+        for forged in (True, 1.0):
+            with self.subTest(field="run_attempt", forged=forged):
+                run,jobs=fixture()
+                run["run_attempt"]=forged
+                with self.assertRaisesRegex(
+                        proof.ReceiptHold,"PRIMARY_RUN_ORIGIN_NOT_VERIFIED"):
+                    proof.validate(run,jobs,ASOF,NOW)
+            with self.subTest(field="job_attempt", forged=forged):
+                run,jobs=fixture()
+                jobs["jobs"][0]["run_attempt"]=forged
+                with self.assertRaisesRegex(
+                        proof.ReceiptHold,"PRIMARY_JOB_RECEIPT_MISSING"):
+                    proof.validate(run,jobs,ASOF,NOW)
+        run,jobs=fixture()
+        jobs["jobs"][0]["run_id"]=float(RUN_ID)
+        with self.assertRaisesRegex(
+                proof.ReceiptHold,"PRIMARY_JOB_RECEIPT_MISSING"):
+            proof.validate(run,jobs,ASOF,NOW)
+
     def test_missing_or_duplicate_jobs_never_count_as_six(self):
         for change in ("short","duplicate","wrong_run_id","unknown_job"):
             with self.subTest(change=change):
