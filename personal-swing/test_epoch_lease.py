@@ -620,5 +620,36 @@ class LiveTagReadonlyCanaryTests(unittest.TestCase):
                 api.assert_not_called()
 
 
+
+class NaturalEodTagRuleReadinessWiring(unittest.TestCase):
+    """Deployment observation, not permission to create a permanent tag."""
+
+    def test_existing_natural_eod_advisory_ruleset_witness_is_get_only(self):
+        from pathlib import Path
+        root=Path(__file__).resolve().parent.parent
+        workflow=(root/".github/workflows/xray-personal-477-eod.yml").read_text(
+            encoding="utf-8")
+        marker="- name: Read-only immutable epoch lease credential witness (no tag writes)"
+        self.assertEqual(workflow.count(marker),1)
+        step=workflow.split(marker,1)[1].split("\n  daily-private-scan:",1)[0]
+        self.assertIn("github.event_name == 'schedule'",step)
+        self.assertIn("github.ref == 'refs/heads/main'",step)
+        self.assertIn("github.run_attempt == 1",step)
+        self.assertIn("GITHUB_TOKEN: ${{ github.token }}",step)
+        self.assertIn("if python epoch_lease.py --verify-tag-protection; then",step)
+        self.assertIn("EPOCH_LEASE_READINESS=TAG_RULESET_GET_VERIFIED_NOT_ACQUIRED",step)
+        self.assertIn("EPOCH_LEASE_READINESS=HOLD_TAG_RULESET_CREDENTIAL_UNVERIFIED",step)
+        self.assertNotIn("--claim",step)
+        self.assertNotIn("POST",step)
+        self.assertNotIn("contents: write",workflow.split("\n  daily-private-scan:",1)[0])
+
+    def test_ruleset_only_live_canary_does_not_claim_producer(self):
+        git=MockGit()
+        out=lease.verify_live_tag_protection(git)
+        self.assertTrue(out)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+        self.assertEqual(git.refs,{})
+
+
 if __name__=="__main__":
     unittest.main()

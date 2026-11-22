@@ -117,6 +117,21 @@ jobs:
         run: |
           set -euo pipefail
           python natural_run_readonly_probe.py --verify
+      - name: Read-only immutable epoch lease credential witness (no tag writes)
+        if: ${{ github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        working-directory: personal-swing
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Advisory readiness only. Never create tag/ref or permit Sheet/AL.
+          # GitHub may hide bypass metadata from this scoped credential;
+          # an inconclusive GET must not suppress a valid natural EOD scan.
+          if python epoch_lease.py --verify-tag-protection; then
+            echo 'EPOCH_LEASE_READINESS=TAG_RULESET_GET_VERIFIED_NOT_ACQUIRED'
+          else
+            echo 'EPOCH_LEASE_READINESS=HOLD_TAG_RULESET_CREDENTIAL_UNVERIFIED'
+          fi
   daily-private-scan:
     needs: offline-guard
     if: github.event_name == 'schedule'
