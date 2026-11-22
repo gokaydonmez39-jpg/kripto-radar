@@ -14,6 +14,7 @@ from collections import Counter
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
+from urllib.parse import quote
 
 import runner
 import daily_job
@@ -22,6 +23,12 @@ import private_sheet_writer as original
 
 TAB = "NEON_477_GUNLUK"
 LAST_COL = "W"
+# The shared AL/STOP/outbox read cap is 20,000 rows and must NOT change.
+# NEON appends 477 research rows every natural XNAS session, so it needs
+# its own bounded, paginated authenticated reader. This limit is a finite
+# per-tab safety bound, not a claim of unlimited Google Sheets capacity.
+NEON_PAGE_ROWS = 8000
+MAX_NEON_ARCHIVE_ROWS = 200000
 VERSION = "NEON_V3_PRIVATE_RESEARCH_ONLY_V1"
 HEADER = (
     "KAYIT_ID", "ASOF_ET", "SEMBOL", "SIRA", "SKOR_100",
@@ -292,6 +299,50 @@ def plan(asof, url, master, policy_sha, scans, existing, shadow):
             "na":sum(r[4]=="N/A" for r in rows),"asof":asof}
 
 
+def read_archive(api):
+    """Read EVERY allocated NEON grid row in bounded GET pages.
+
+    Never use the 20,000-row scan/outbox cap for a 477-per-session archive.
+    Grid rowCount comes from a fresh provider GET each time (including after
+    an append that may have expanded the sheet). Pad omitted trailing blank
+    cells to preserve row positions, then trim only final unused grid rows.
+    Interior holes are left visible for previous_archive() to reject.
+    """
+    fields="?fields=sheets.properties(sheetId,title,gridProperties(rowCount))"
+    meta=api.request(fields)
+    need(isinstance(meta,dict) and isinstance(meta.get("sheets"),list),
+         "NEON_ARCHIVE_METADATA_INVALID")
+    matches=[x.get("properties",{}) for x in meta["sheets"]
+             if isinstance(x,dict) and isinstance(x.get("properties"),dict)
+             and x["properties"].get("title")==TAB]
+    need(len(matches)==1 and
+         type(matches[0].get("gridProperties",{}).get("rowCount")) is int,
+         "NEON_ARCHIVE_METADATA_INVALID")
+    allocated=matches[0]["gridProperties"]["rowCount"]
+    need(1<=allocated<=MAX_NEON_ARCHIVE_ROWS,
+         "NEON_ARCHIVE_CAPACITY_HOLD")
+    occupied=[]
+    for first in range(1,allocated+1,NEON_PAGE_ROWS):
+        last=min(allocated,first+NEON_PAGE_ROWS-1)
+        address=quote("'{}'!A{}:{}{}".format(TAB,first,LAST_COL,last),safe="")
+        response=api.request(
+            "/values/"+address+"?valueRenderOption=FORMATTED_VALUE")
+        need(isinstance(response,dict) and
+             isinstance(response.get("values",[]),list),
+             "NEON_ARCHIVE_PAGE_INVALID")
+        page=response.get("values",[])
+        width=last-first+1
+        need(len(page)<=width and all(isinstance(r,list) for r in page),
+             "NEON_ARCHIVE_PAGE_INVALID")
+        occupied.extend(page)
+        occupied.extend([[] for _ in range(width-len(page))])
+    while occupied and not occupied[-1]:
+        occupied.pop()
+    need(bool(occupied) and len(occupied)<=MAX_NEON_ARCHIVE_ROWS,
+         "NEON_ARCHIVE_CAPACITY_HOLD")
+    return occupied
+
+
 def synchronize(api, asof, run_url, master, policy_sha, shadow):
     api.check_metadata()
     meta=api.request("?fields=properties(timeZone),sheets.properties(sheetId,title)")
@@ -303,20 +354,23 @@ def synchronize(api, asof, run_url, master, policy_sha, shadow):
     sheet_id=next(s["properties"]["sheetId"] for s in meta["sheets"]
                   if s.get("properties",{}).get("title")==TAB)
     scans=api.read("TARAMA_KAYITLARI","J")
-    old=api.read(TAB,LAST_COL)
+    old=read_archive(api)
     p=plan(asof,run_url,master,policy_sha,scans,old,shadow)
     if not p["rows"]:
         return {k:p[k] for k in ("status","asof","scored","na")}
-    need(api.read(TAB,LAST_COL)==old and
+    need(read_archive(api)==old and
          api.read("TARAMA_KAYITLARI","J")==scans,
          "CONCURRENT_NEON_OR_SCAN_EDIT")
+    # Reserve the entire 477-row next epoch BEFORE a possibly committing POST.
+    need(len(old)+len(p["rows"])<=MAX_NEON_ARCHIVE_ROWS,
+         "NEON_ARCHIVE_CAPACITY_HOLD")
     payload={"requests":[{"appendCells":{
         "sheetId":sheet_id,
         "rows":[{"values":[{"userEnteredValue":{"stringValue":v}} for v in row]}
                 for row in p["rows"]],
         "fields":"userEnteredValue"}}]}
     api.request(":batchUpdate",method="POST",body=payload)
-    after=api.read(TAB,LAST_COL)
+    after=read_archive(api)
     need(after==old+p["rows"],"NEON_477_PRIVATE_READBACK_FAILED")
     return {"status":p["status"],"asof":asof,
             "scored":p["scored"],"na":p["na"]}

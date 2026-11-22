@@ -215,6 +215,8 @@ class FakeApi:
         return None
     def read(self, name, col):
         self.assert_known(name, col)
+        if name==ledger.TAB and len(self.tab)>writer.MAX_ROWS:
+            raise writer.HandoffBlocked("SHEET_READ_CAPACITY_REACHED")
         return copy.deepcopy(self.tab if name==ledger.TAB else self.scans)
     def assert_known(self,name,col):
         if name==ledger.TAB:
@@ -223,9 +225,22 @@ class FakeApi:
             if col!="J":raise AssertionError("wrong column")
         else:raise AssertionError("wrong tab")
     def request(self,path,*,method="GET",body=None):
+        if path.startswith("/values/") and method=="GET":
+            from urllib.parse import unquote
+            import re
+            encoded=path.partition("?valueRenderOption=FORMATTED_VALUE")[0]
+            name=unquote(encoded.removeprefix("/values/"))
+            match=re.fullmatch(r"'NEON_477_GUNLUK'!A([1-9][0-9]*):W([1-9][0-9]*)",name)
+            if match is None:raise AssertionError("UNAPPROVED_NEON_RANGE")
+            lo,hi=map(int,match.groups())
+            if hi<lo or hi-lo>10000:raise AssertionError("NEON_PAGE_UNBOUNDED")
+            return {"values":copy.deepcopy(self.tab[lo-1:hi])}
         if path.startswith("?fields="):
             return {"properties":{"timeZone":"Europe/Istanbul"},
-                    "sheets":[{"properties":{"title":ledger.TAB,"sheetId":903477}}]}
+                    "sheets":[{"properties":{
+                        "title":ledger.TAB,"sheetId":903477,
+                        "gridProperties":{"rowCount":max(1000,len(self.tab))}
+                    }}]}
         if path==":batchUpdate" and method=="POST":
             self.posts+=1
             req=body["requests"]
@@ -273,6 +288,46 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         again=ledger.synchronize(self.api,ASOF,RUN,MASTER,POLICY,self.snap)
         self.assertEqual(again["status"],"NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY")
         self.assertEqual(self.api.posts,1)
+
+    def test_neon_full_history_over_20000_rows_is_read_by_bounded_pages(self):
+        """42 x 477 rows exceed the shared scan/outbox safety cap.
+        No premature Sheet POST, no silently truncated historical proof.
+        """
+        api=FakeApi()
+        api.tab=[list(ledger.HEADER)]+[["historical"]*23 for _ in range(42*477)]
+        observed=[]
+        def inspect(asof,url,master,policy,scans,old,shadow):
+            observed.append(len(old))
+            self.assertEqual(len(old),42*477+1)
+            self.assertEqual(old[0],list(ledger.HEADER))
+            self.assertEqual(old[-1],["historical"]*23)
+            return {"status":"NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY",
+                    "asof":asof,"rows":[],"scored":0,"na":477}
+        with patch.object(ledger,"plan",side_effect=inspect):
+            result=ledger.synchronize(api,ASOF,RUN,MASTER,POLICY,self.snap)
+        self.assertEqual(result["status"],"NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY")
+        self.assertEqual(observed,[42*477+1])
+        self.assertEqual(api.posts,0)
+
+    def test_neon_read_malformed_provider_page_fails_closed_before_post(self):
+        api=FakeApi()
+        original=api.request
+        def malformed(path,*,method="GET",body=None):
+            if path.startswith("/values/"):
+                return {"values":"TRUNCATED_NOT_A_LIST"}
+            return original(path,method=method,body=body)
+        api.request=malformed
+        with self.assertRaisesRegex(ledger.NeonLedgerHold,"NEON_ARCHIVE_PAGE_INVALID"):
+            ledger.synchronize(api,ASOF,RUN,MASTER,POLICY,self.snap)
+        self.assertEqual(api.posts,0)
+
+    def test_neon_archive_capacity_limit_is_checked_before_atomic_post(self):
+        api=FakeApi()
+        with patch.object(ledger,"MAX_NEON_ARCHIVE_ROWS",477):
+            with self.assertRaisesRegex(
+                    ledger.NeonLedgerHold,"NEON_ARCHIVE_CAPACITY_HOLD"):
+                ledger.synchronize(api,ASOF,RUN,MASTER,POLICY,self.snap)
+        self.assertEqual(api.posts,0)
 
     def test_row_source_run_matches_authenticated_sheet(self):
         r=self.calculate()
