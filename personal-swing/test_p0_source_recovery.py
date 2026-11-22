@@ -194,11 +194,12 @@ class ProductionFailureRegression(unittest.TestCase):
         client=writer.SheetApi.__new__(writer.SheetApi)
         client.base="https://sheets.googleapis.com/v4/spreadsheets/test-id"
         client.token="DUMMY_OFFLINE_TOKEN"
+        client._post_scope={'scan':1,'candidate':2,'alerts':3,'panel':4}
         err=HTTPError("https://provider.invalid/",400,"Bad Request",{},None)
         with patch.object(writer, "urlopen",side_effect=err) as network:
             with self.assertRaises(writer.HandoffBlocked) as held:
                 client.request(":batchUpdate",method="POST",
-                               body={"requests":[writer.as_cells([["synthetic"]],1)]})
+                               body={"requests":[writer.as_cells([["synthetic"]*20],3)]})
         self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_400")
         self.assertEqual(writer.public_failure_code(held.exception),
                          "GOOGLE_SHEETS_HTTP_400")
@@ -213,11 +214,12 @@ class ProductionFailureRegression(unittest.TestCase):
         client=writer.SheetApi.__new__(writer.SheetApi)
         client.base="https://sheets.googleapis.com/v4/spreadsheets/test-id"
         client.token="DUMMY_OFFLINE_TOKEN"
+        client._post_scope={'scan':1,'candidate':2,'alerts':3,'panel':4}
         err=HTTPError("https://provider.invalid/",409,"Conflict",{},None)
         with patch.object(writer, "urlopen",side_effect=err) as network:
             with self.assertRaises(writer.HandoffBlocked) as held:
                 client.request(":batchUpdate",method="POST",
-                               body={"requests":[writer.as_cells([["synthetic"]],1)]})
+                               body={"requests":[writer.as_cells([["synthetic"]*20],3)]})
         self.assertEqual(str(held.exception),"GOOGLE_SHEETS_HTTP_409")
         self.assertEqual(writer.public_failure_code(held.exception),
                          "GOOGLE_SHEETS_HTTP_409")
