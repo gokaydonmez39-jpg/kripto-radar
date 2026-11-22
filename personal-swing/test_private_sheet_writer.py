@@ -1692,18 +1692,23 @@ class GoogleSheetsNativeEpochCASAcceptance(unittest.TestCase):
         self.assertEqual(p["scan_rows"],[])
         self.assertEqual(w.payload_from_plan(p,{"scan":1,"candidate":2})["requests"],[])
 
-    def test_bad_marker_post_receipt_is_never_readback_pass(self):
+    def test_bad_marker_post_receipt_is_not_success_without_exact_get(self):
         from unittest.mock import Mock
         p,ids=self.epoch()
         api=object.__new__(w.SheetApi)
         api.sheet_ids=ids
-        api.request=Mock(return_value={"replies":[{}, {}, {}]})
-        with self.assertRaisesRegex(w.HandoffBlocked,
-                                    "EPOCH_CAS_POST_RECEIPT_UNVERIFIED"):
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[]},
+        ])
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
             api.apply(p)
-        self.assertEqual(api.request.call_count,1)
-        self.assertEqual(api.request.call_args.args[0],":batchUpdate")
-        self.assertEqual(api.request.call_args.kwargs["method"],"POST")
+        self.assertEqual(api.request.call_count,2)
+        self.assertEqual(api.request.call_args_list[0].args[0],":batchUpdate")
+        self.assertEqual(api.request.call_args_list[0].kwargs["method"],"POST")
+        self.assertIn("namedRanges",api.request.call_args_list[1].args[0])
+        self.assertEqual(api.request.call_args_list[1].kwargs.get("method","GET"),"GET")
 
     def test_missing_marker_on_independent_google_get_blocks_acceptance(self):
         from unittest.mock import Mock
@@ -1807,6 +1812,57 @@ class GoogleUncertainCommitReconciliationTests(unittest.TestCase):
                 "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
             api.apply(p)
         self.assertEqual(api.request.call_count,2)
+        self.assertEqual(sum(c.kwargs.get("method")=="POST"
+                             for c in api.request.call_args_list),1)
+
+    def test_http200_corrupt_ack_may_reconcile_only_full_exact_google_state(self):
+        from unittest.mock import Mock
+        for invalid in ({"replies":[{}, {}, {}]},
+                        {"replies":[]},
+                        {"replies":[{"addNamedRange":{"namedRange":{
+                            "name":"WRONG","namedRangeId":"FOREIGN",
+                            "range":{"sheetId":1}}}}, {}, {}]},
+                        {"status":"HTTP_200_MISSING_REPLIES"}):
+            with self.subTest(response=repr(invalid)[:95]):
+                p,marker,api,candidates,scans=self.fixture()
+                api.request=Mock(side_effect=[
+                    invalid,{"namedRanges":[marker]},
+                ])
+                api.read=Mock(side_effect=[candidates,scans])
+                self.assertIsNone(api.apply(p))
+                self.assertEqual(
+                    [c.kwargs.get("method","GET")
+                     for c in api.request.call_args_list],["POST","GET"])
+                self.assertEqual(api.read.call_count,2)
+
+    def test_http200_corrupt_ack_without_exact_marker_never_promotes_final(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[]},
+        ])
+        api.read=Mock(side_effect=AssertionError("NO_LEDGER_READ"))
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(
+            [c.kwargs.get("method","GET")
+             for c in api.request.call_args_list],["POST","GET"])
+        api.read.assert_not_called()
+
+    def test_http200_corrupt_ack_with_altered_price_is_hold_without_retry(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        scans[-1][8]="https://github.com/WRONG/run"
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[marker]},
+        ])
+        api.read=Mock(side_effect=[candidates,scans])
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
         self.assertEqual(sum(c.kwargs.get("method")=="POST"
                              for c in api.request.call_args_list),1)
 
