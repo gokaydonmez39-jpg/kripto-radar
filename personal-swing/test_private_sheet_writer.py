@@ -827,7 +827,8 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         candidate=[asof+'|SYNA',asof,'SYNA','TEKNİK AL ADAYI',
                    '100','95','110','AÇIK • 0/15 SEANS','','','',
                    'KAYDEDİLDİ_BİLDİRİM_AYRI',
-                   'source_event=schedule; run='+
+                   'GitHub private handoff; source_event=schedule; '
+                   'IEX single exchange; RSI14=60.0 RVOL=1.7; run='+
                    scan[8]+'; NO_BROKER_NO_ORDERS']
         return {'requests':[{'addNamedRange':{'namedRange':w.epoch_marker(asof,1)}},
                             w.as_cells([scan],1),w.as_cells([candidate],2)]}
@@ -937,6 +938,91 @@ class SheetsTransportRegressionTests(unittest.TestCase):
             self.assertEqual(http.call_count,2)
             self.assertEqual(source.call_count,2)
             self.assertEqual(lease.call_count,2)
+
+    def test_candidate_notes_reject_conflicting_or_forged_origin(self):
+        """An exact source marker cannot bless a contradictory AL note."""
+        raw=self.canonical_eod_payload()
+        base=(raw['requests'][2]['appendCells']['rows'][0]['values'][12]
+              ['userEnteredValue']['stringValue'])
+        url='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001'
+        bad=(
+            base.replace('source_event=schedule;',
+                         'source_event=workflow_dispatch; source_event=schedule;'),
+            base.replace('source_event=schedule;',
+                         'source_event=schedule; source_event=push;'),
+            base.replace('run='+url+';', 'run='+url+'; run='+
+                         'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999002;'),
+            base.replace('run='+url+';', 'run='+url+'-FORGED;'),
+            base+'; ORDER_EXECUTED=true',
+            base.replace('RSI14=60.0', 'RSI14=nan'),
+            base.replace('RSI14=60.0', 'RSI14=110.0'),
+            base.replace('RVOL=1.7', 'RVOL=-1'),
+            base.replace('IEX single exchange; ', ''),
+            base.replace('GitHub private handoff; ', ''),
+        )
+        api=self._api()
+        for item in bad:
+            with self.subTest(note=item[:95]):
+                candidate=copy.deepcopy(raw)
+                candidate['requests'][2]['appendCells']['rows'][0]['values'][12][
+                    'userEnteredValue']['stringValue']=item
+                with patch.object(w,'urlopen',side_effect=AssertionError(
+                    'FORGED_AL_NOTE_REACHED_GOOGLE')) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                    ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post') as lease:
+                    with self.assertRaisesRegex(
+                        w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',body=candidate)
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_candidate_levels_reject_nan_unsafe_stop_and_non_2r(self):
+        """Literal cells must respect close > stop > 0 and the 2R target."""
+        cases=(
+            (4,'nan'),(4,'inf'),(4,'0'),
+            (5,'nan'),(5,'101'),(5,'0'),
+            (6,'nan'),(6,'99'),(6,'105'),
+            (4,'not-a-price'),(5,'100'),(6,'100'),
+        )
+        api=self._api()
+        for field,value in cases:
+            with self.subTest(field=field,value=value):
+                body=self.canonical_eod_payload()
+                body['requests'][2]['appendCells']['rows'][0]['values'][field][
+                    'userEnteredValue']['stringValue']=value
+                with patch.object(w,'urlopen',side_effect=AssertionError(
+                    'MALFORMED_AL_LEVEL_REACHED_GOOGLE')) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                    ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post') as lease:
+                    with self.assertRaisesRegex(
+                        w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',body=body)
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_candidate_three_decimal_rounded_2r_remains_valid(self):
+        """False rejection of a legitimate 0.001 rounding delta is a bug."""
+        class Reply:
+            def __enter__(self): return self
+            def __exit__(self,*_): return False
+            def read(self): return b'{"replies":[]}'
+        api=self._api()
+        body=self.canonical_eod_payload()
+        levels=body['requests'][2]['appendCells']['rows'][0]['values']
+        for idx,value in ((4,'100,001'),(5,'95,002'),(6,'109,998')):
+            levels[idx]['userEnteredValue']['stringValue']=value
+        with patch.object(w,'urlopen',return_value=Reply()) as http,patch.object(
+            w,'require_source_lastmile_before_private_post') as source,patch.object(
+            w,'require_epoch_lease_before_private_post') as lease:
+            self.assertEqual(api.request(':batchUpdate',method='POST',body=body),
+                             {'replies':[]})
+            http.assert_called_once()
+            source.assert_called_once()
+            lease.assert_called_once()
 
     def test_existing_authorized_batchupdate_stays_compatible(self):
         """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
