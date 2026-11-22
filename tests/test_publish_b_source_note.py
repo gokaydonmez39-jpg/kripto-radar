@@ -7,6 +7,7 @@ from urllib.parse import parse_qs
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "personal-swing"))
 import publish_b_source_note as writer
+from private_sheet_writer import HandoffBlocked
 
 ASOF = "2026-01-06"
 SOURCE = {"schema": writer.SCHEMA, "asof": ASOF, "run": 101, "head": "a"*40,
@@ -25,6 +26,8 @@ class FakeApi:
         self.note = ""
         self.posts = []
         self.ack = True
+        self.post_commits = True
+        self.post_error = None
         self.preflight_drift = False
         self.readback_drift = False
         self.reads = 0
@@ -49,7 +52,10 @@ class FakeApi:
             assert change["range"] == {"sheetId": 7, "startRowIndex": 1, "endRowIndex": 2,
                                        "startColumnIndex": 26, "endColumnIndex": 27}
             assert change["fields"] == "note" and set(change["rows"][0]["values"][0]) == {"note"}
-            self.note = change["rows"][0]["values"][0]["note"]
+            if self.post_commits:
+                self.note = change["rows"][0]["values"][0]["note"]
+            if self.post_error is not None:
+                raise HandoffBlocked(self.post_error)
             return {"replies": [{}]} if self.ack else {}
         assert method == "GET" and body is None
         q = parse_qs(path[1:])
@@ -108,9 +114,50 @@ class NotePublisherTests(unittest.TestCase):
         self.api.preflight_drift = True
         self.deny("SCORE_NOTE_PREWRITE_DRIFT")
 
-    def test_ambiguous_ack_never_reposts(self):
+    def test_ambiguous_ack_with_exact_note_get_is_success_without_repost(self):
         self.api.ack = False
-        self.deny("SCORE_NOTE_ACK_UNVERIFIED", 1)
+        self.assertEqual(writer.synchronize_note(self.api,SOURCE),
+                         "ATTACHED_AND_VERIFIED")
+        self.assertEqual(writer.synchronize_note(self.api,SOURCE),
+                         "ALREADY_VERIFIED")
+        self.assertEqual(len(self.api.posts),1)
+
+    def test_transport_lost_reply_after_commit_recovers_using_exact_get_only(self):
+        for reason in ("GOOGLE_SHEETS_TRANSPORT_TimeoutError",
+                       "GOOGLE_SHEETS_TRANSPORT_URLError",
+                       "GOOGLE_SHEETS_HTTP_5XX"):
+            with self.subTest(reason=reason):
+                api=FakeApi()
+                api.post_error=reason
+                self.assertEqual(writer.synchronize_note(api,SOURCE),
+                                 "ATTACHED_AND_VERIFIED")
+                self.assertEqual(len(api.posts),1)
+                self.assertEqual(writer.synchronize_note(api,SOURCE),
+                                 "ALREADY_VERIFIED")
+                self.assertEqual(len(api.posts),1)
+
+    def test_ambiguous_commit_missing_note_is_hold_no_repost(self):
+        self.api.post_commits=False
+        self.api.post_error="GOOGLE_SHEETS_TRANSPORT_TimeoutError"
+        self.deny("SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED",1)
+
+    def test_ambiguous_ack_without_note_is_hold_no_repost(self):
+        self.api.ack=False
+        self.api.post_commits=False
+        self.deny("SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED",1)
+
+    def test_unreconcilable_note_or_ledger_drift_is_hold_no_repost(self):
+        self.api.post_error="GOOGLE_SHEETS_HTTP_5XX"
+        self.api.readback_drift=True
+        self.deny("SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED",1)
+
+    def test_definitive_auth_failure_has_no_commit_or_extra_get(self):
+        self.api.post_error="GOOGLE_SHEETS_HTTP_403"
+        self.api.post_commits=False
+        with self.assertRaisesRegex(HandoffBlocked,"GOOGLE_SHEETS_HTTP_403"):
+            writer.synchronize_note(self.api,SOURCE)
+        self.assertEqual(len(self.api.posts),1)
+        self.assertEqual(self.api.reads,2)
 
     def test_drift_after_post_never_reposts(self):
         self.api.readback_drift = True
