@@ -160,6 +160,53 @@ class PrivateSheetHandoffTests(unittest.TestCase):
                                      'NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED')
                     provider.assert_not_called()
 
+    def test_canonical_sheet_writer_rejects_stale_or_unverifiable_asof_before_google(self):
+        # RED-first: syntactically genuine natural run metadata cannot promote
+        # a stale snapshot. No private Google client may be instantiated.
+        import daily_job
+        good={
+            'GITHUB_EVENT_NAME':'schedule',
+            'GITHUB_RUN_ID':'999001',
+            'GITHUB_RUN_ATTEMPT':'1',
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+            'GITHUB_REF':'refs/heads/main',
+            'GITHUB_SHA':'a'*40,
+            'GITHUB_WORKFLOW_REF':
+                'gokaydonmez39-jpg/kripto-radar/'
+                '.github/workflows/xray-personal-477-eod.yml@refs/heads/main',
+            'XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON':'synthetic-offline-token',
+        }
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'stale_private_snapshot.json'
+            path.write_text(json.dumps(snapshot()),encoding='utf-8')
+            for latest in ('2026-11-23',None):
+                with self.subTest(latest=latest):
+                    output=io.StringIO()
+                    with patch.dict(os.environ,good,clear=True), \
+                         patch.object(daily_job,'current_completed_session',
+                                      return_value=latest), \
+                         patch.object(w,'SheetApi',
+                                      side_effect=AssertionError('NO_GOOGLE_ALLOWED')) as client, \
+                         contextlib.redirect_stdout(output):
+                        code=w.main(['--snapshot',str(path)])
+                    receipt=json.loads(output.getvalue())
+                    self.assertEqual(code,3)
+                    self.assertEqual(receipt['reason_code'],
+                                     'NATURAL_EOD_SNAPSHOT_NONCURRENT_ASOF')
+                    client.assert_not_called()
+            output=io.StringIO()
+            with patch.dict(os.environ,good,clear=True), \
+                 patch.object(daily_job,'current_completed_session',
+                              side_effect=RuntimeError('calendar unavailable')), \
+                 patch.object(w,'SheetApi',
+                              side_effect=AssertionError('NO_GOOGLE_ALLOWED')) as client, \
+                 contextlib.redirect_stdout(output):
+                code=w.main(['--snapshot',str(path)])
+            self.assertEqual(code,3)
+            self.assertEqual(json.loads(output.getvalue())['reason_code'],
+                             'NATURAL_EOD_SNAPSHOT_NONCURRENT_ASOF')
+            client.assert_not_called()
+
     def test_canonical_writer_complete_scheduled_identity_accepts_fake_api(self):
         good={
             'GITHUB_EVENT_NAME':'schedule',
