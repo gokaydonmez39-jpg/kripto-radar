@@ -7,6 +7,7 @@ Runs only inside the existing private EOD follow-up job with existing secrets.
 from datetime import date
 from pathlib import Path
 import runner
+from daily_job import current_completed_session
 import json
 import os
 import re
@@ -122,12 +123,15 @@ def plan(panel, candidate_table, scan_table):
             'candidate_count': len(candidates), 'new_count': matches}
 
 
-def synchronize(api):
+def synchronize(api, expected_asof=None):
     api.check_metadata()
     original_panel = api.read('PANEL', 'C')
     original_candidates = api.read('ADAY_GECMISI', 'M')
     original_scans = api.read('TARAMA_KAYITLARI', 'J')
     p = plan(original_panel, original_candidates, original_scans)
+    # A prior valid Sheet row cannot promote itself to this natural epoch.
+    if expected_asof is not None:
+        require(p['asof_et'] == expected_asof,'PANEL_NONCURRENT_NATURAL_ASOF')
     if not p['changes']:
         return {'status':'PANEL_READBACK_PASS', 'changed':False,
                 'asof_et':p['asof_et'], 'device_ack':False}
@@ -167,10 +171,15 @@ def synchronize(api):
 
 def main():
     try:
+        from private_sheet_writer import verify_natural_eod_writer_identity
+        verify_natural_eod_writer_identity(os.environ)
+        current=current_completed_session()
+        require(isinstance(current,str) and bool(current),
+                'PANEL_NO_CURRENT_NATURAL_ASOF')
         secret = os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON','')
         require(bool(secret),'PANEL_PRIVATE_AUTH_REQUIRED')
         api = SheetApi(secret)
-        out = synchronize(api)
+        out = synchronize(api, expected_asof=current)
         # Public GitHub logs: aggregate status only; no symbols, prices or PII.
         print(json.dumps(out,sort_keys=True))
         return 0
