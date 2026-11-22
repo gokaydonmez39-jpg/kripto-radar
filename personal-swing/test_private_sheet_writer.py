@@ -622,6 +622,76 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         return HTTPError('https://sheets.googleapis.com/v4/spreadsheets/TEST_ONLY',
                          429, 'synthetic quota', {}, None)
 
+    def test_unapproved_mutating_http_verbs_never_reach_google(self):
+        """No DELETE/PATCH/PUT from the shared private Sheets transport."""
+        api=self._api()
+        for method in ('DELETE','PATCH','PUT','HEAD'):
+            with self.subTest(method=method):
+                with patch.object(w,'urlopen',
+                    side_effect=AssertionError('UNAUTHORIZED_HTTP_SENT')) as http:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                        ) as source:
+                        with patch.object(w,'require_epoch_lease_before_private_post'
+                            ) as lease:
+                            with self.assertRaisesRegex(
+                                w.HandoffBlocked,'GOOGLE_SHEETS_METHOD_SCOPE_INVALID'):
+                                api.request(':batchUpdate',method=method,
+                                            body={'requests':[]})
+                            http.assert_not_called()
+                            source.assert_not_called()
+                            lease.assert_not_called()
+
+    def test_unapproved_post_paths_and_destructive_batch_requests_denied(self):
+        """Prevent caller drift into unauthorized Google Sheet mutations."""
+        api=self._api()
+        invalid=(
+            ('/values/PRIVATE:clear',{'requests':[]}),
+            ('/values/PRIVATE:append',{'requests':[]}),
+            (':batchUpdate',{'requests':[{'deleteSheet':{'sheetId':1}}]}),
+            (':batchUpdate',{'requests':[{'deleteDimension':{}}]}),
+            (':batchUpdate',{'requests':[{'deleteNamedRange':{}}]}),
+            (':batchUpdate',{'requests':[{'updateSpreadsheetProperties':{}}]}),
+            (':batchUpdate',{'requests':[{'appendCells':{}},
+                                        {'deleteSheet':{}}]}),
+            (':batchUpdate',{'requests':[], 'includeSpreadsheetInResponse':True}),
+            (':batchUpdate',None),
+        )
+        for path,body in invalid:
+            with self.subTest(path=path,body=body):
+                with patch.object(w,'urlopen',
+                    side_effect=AssertionError('UNAUTHORIZED_POST_SENT')) as http:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                        ) as source:
+                        with patch.object(w,'require_epoch_lease_before_private_post'
+                            ) as lease:
+                            with self.assertRaisesRegex(
+                                w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                                api.request(path,method='POST',body=body)
+                            http.assert_not_called()
+                            source.assert_not_called()
+                            lease.assert_not_called()
+
+    def test_existing_authorized_batchupdate_stays_compatible(self):
+        """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
+        class Reply:
+            def __enter__(self):return self
+            def __exit__(self,*_):return False
+            def read(self):return b'{"replies":[]}'
+        api=self._api()
+        authorized=('addNamedRange','appendCells','updateCells')
+        with patch.object(w,'urlopen',return_value=Reply()) as http:
+            with patch.object(w,'require_source_lastmile_before_private_post'
+                ) as source:
+                with patch.object(w,'require_epoch_lease_before_private_post'
+                    ) as lease:
+                    for action in authorized:
+                        receipt=api.request(':batchUpdate',method='POST',
+                            body={'requests':[{action:{}}]})
+                        self.assertEqual(receipt,{'replies':[]})
+                    self.assertEqual(http.call_count,len(authorized))
+                    self.assertEqual(source.call_count,len(authorized))
+                    self.assertEqual(lease.call_count,len(authorized))
+
     @patch.object(w.time, 'sleep')
     @patch.object(w, 'urlopen')
     def test_get_quota_exhaustion_has_four_bounded_backoffs_and_safe_code(self, opener, sleep):
