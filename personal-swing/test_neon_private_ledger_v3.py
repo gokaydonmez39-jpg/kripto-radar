@@ -7,6 +7,8 @@ import os
 import tempfile
 import unittest
 from decimal import Decimal
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -92,6 +94,43 @@ class NeonNaturalCurrentAsOfGate(unittest.TestCase):
                     self.assertEqual(
                         result["reason_code"],"NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
                     api.assert_not_called()
+
+    def test_weekend_late_same_asof_cannot_backfill_neon(self):
+        # Even when Friday remains the most recent official session on
+        # Saturday, a run after its XNAS close+45m+10h is stale.
+        friday="2026-11-20"
+        master=runner.get_scope(
+            watchlist_file=str(Path(__file__).with_name("nasdaq_watchlist_477.json")),
+            asof=friday)
+        src={
+            "asof_et":friday,
+            "scope_sha256":neon.scope_digest(master),
+            "valid_data_coverage_complete":True,
+            "new_signal_publishable":True,
+            "analysis_fingerprint_sha256":runner.analysis_fingerprint(),
+        }
+        late=datetime(2026,11,21,12,0,tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/"friday.json"
+            path.write_text(json.dumps(src),encoding="utf-8")
+            with patch.dict(os.environ,self.live_env(),clear=True):
+                with patch("daily_job.current_completed_session",
+                           return_value=friday):
+                    with patch.object(
+                        ledger,"datetime",
+                        SimpleNamespace(now=lambda *_:late)):
+                        with patch.object(
+                            ledger.original,"SheetApi",
+                            side_effect=AssertionError("STALE_NEON_GOOGLE_STARTED")
+                        ) as api,contextlib.redirect_stdout(io.StringIO()) as out:
+                            rc=ledger.main(["--snapshot",str(path),
+                                            "--shadow",str(path)])
+            result=json.loads(out.getvalue())
+            self.assertEqual(rc,3)
+            self.assertEqual(result["reason_code"],
+                             "NEON_ASOF_NOT_CURRENT_NATURAL_SESSION")
+            api.assert_not_called()
+
 
 class NeonSourceIdentityIsolation(unittest.TestCase):
     def test_cross_workflow_schedule_never_reads_private_source(self):
