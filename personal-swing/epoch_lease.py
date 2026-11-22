@@ -473,7 +473,7 @@ def verify_scoped_git_write_body(path, body):
                     body["ref"].startswith(REF_PREFIX),
                     "LEASE_API_BODY_INVALID")
             asof = body["ref"][len(REF_PREFIX):]
-            require(body["ref"] == REF_PREFIX + epoch_tag(asof),
+            require(body["ref"] == "refs/tags/" + epoch_tag(asof),
                     "LEASE_API_BODY_INVALID")
             return True
 
