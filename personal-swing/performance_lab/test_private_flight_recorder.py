@@ -21,6 +21,124 @@ def data():
     p=[['Son doğrulanmış tarama seansı',DAY]]
     return [c,s,e,p]
 
+
+def reviewed_gild_forward_fixture():
+    """All fixtures synthetic except reviewed public dates, price levels and status.
+
+    20 Nov natural FINAL is intentionally absent. 23 Nov is a NEW natural
+    forward day; this fixture never inserts/replays or retroactively attests
+    a 20 Nov schedule, and it creates no notification or device ACK.
+    """
+    owner='2026-10-29|GILD'
+    first='2026-10-29'
+    final='2026-11-23'
+    def scan(day,sha,new):
+        return [day,'GitHub schedule VERIFIED IEX EOD',
+                '477','477','477','0','TRUE',str(new),
+                'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001',
+                'scopeSHA='+sha[0]+';algorithmSHA='+sha[1]+
+                ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']
+    c=[list(g.CANDIDATE_HEADER),
+       [owner,first,'GILD','TEKNİK AL ADAYI',
+        '165,58','157,447','181,846',
+        'KAPALI • TIME_EXIT_AT_CLOSE • 15/15 SEANS',
+        '2026-11-19','TIME_EXIT_AT_CLOSE','0,607',
+        'KAYDEDİLDİ_BİLDİRİM_AYRI','NON_EXECUTABLE_PUBLIC_RESEARCH']]
+    s=[list(g.SCAN_HEADER),
+       scan(first,g.PIT_PRE_CUTOVER_SHA,1),
+       scan('2026-11-19',g.PIT_ROKU_REPLACEMENT_SHA,0),
+       scan(final,g.PIT_IEX_UTC_CODE_SHA,0)]
+    def event(day,code,status,close,rank):
+        return [
+            owner+'|'+day+'|'+code+'|1',owner,first,'GILD',day,
+            code,rank,close,'157.447','181.846',
+            '', '', '', '', '', '0/15','',status,'',''
+        ]
+    initial=event(first,'AL_NEW_EPISODE',
+                  'ALERT_REQUESTED_NOT_DEVICE_ACK','165.58','YENİ AL')
+    quarantined=event('2026-10-30','NEW_52_SESSION_HIGH',
+                      'DATA_DISPUTE_REVIEW_REQUIRED','170.95','ÖNEMLİ')
+    quarantined[18]='2026-10-31 00:00:11 TRT'
+    quarantined[19]=(
+        '30 Ekim Alpaca IEX raw O/H/L/C 169.82/175.55/169.06/170.95; '
+        'kapanış 170.95 > önceki52 tepe 165.62; '
+        'hacim 691827 >= önceki20 ortalama 258653.95; 52/52 XNAS, teorik takip. '
+        '| 31 Ekim denetim düzeltmesi: '
+        '29 Ekim AL barında GILD close 165.58 > önceki52 tepe 160.83; '
+        '30 Ekim de eşik üzerinde devam ediyor. '
+        'İlk eşik geçişi değil; NEW_52_SESSION_HIGH kullanıcı alarmı FAIL_CLOSED, '
+        'DATA_DISPUTE_REVIEW_REQUIRED. Mesaj oluşturulmadı.'
+    )
+    terminal=event('2026-11-19','TIME_EXIT_AT_CLOSE',
+                   'ALERT_REQUESTED_NOT_DEVICE_ACK','166.585','SURE_SONU')
+    e=[list(g.ALERT_HEADER),initial,quarantined,terminal]
+    panel=[['Son doğrulanmış tarama seansı',final]]
+    return [c,s,e,panel]
+
+
+class ReviewedClosedGildHistoricalQuarantineRegression(unittest.TestCase):
+    def test_verified_historical_non_emitting_event_does_not_block_future_day(self):
+        b=reviewed_gild_forward_fixture()
+        report=g.inspect(*b,expected_asof='2026-11-23')
+        self.assertEqual(report['state'],'PASS_PENDING_DEVICE_ACK')
+        self.assertEqual(report['quarantined_events'],1)
+        self.assertEqual(report['reviewed_historical_non_emitting_events'],1)
+        self.assertEqual(report['unresolved_quarantined_events'],0)
+        self.assertEqual(report['device_receipts_verified'],0)
+        self.assertFalse(report['writes'])
+        self.assertFalse(report['orders'])
+        self.assertNotIn('GILD',str(report))
+        self.assertNotIn('157.447',str(report))
+
+    def test_20_nov_missing_natural_final_is_never_retrospectively_invented(self):
+        b=reviewed_gild_forward_fixture()
+        self.assertNotIn('2026-11-20',[row[0] for row in b[1][1:]])
+        with self.assertRaisesRegex(
+                g.FlightRecorderBlocked,'FLIGHT_EXPECTED_COMPLETED_EOD_MISSING'):
+            g.inspect(*b,expected_asof='2026-11-20')
+
+    def test_tampered_historical_review_or_missing_terminal_remains_hold(self):
+        for changed in ('wrong_note','missing_note','wrong_time',
+                        'unclosed_episode','different_stop','different_status'):
+            with self.subTest(change=changed):
+                b=reviewed_gild_forward_fixture()
+                if changed=='wrong_note':
+                    b[2][2][19]=b[2][2][19].replace(
+                        'İlk eşik geçişi değil','YENİ İLK EŞİK')
+                elif changed=='missing_note':
+                    b[2][2][19]=''
+                elif changed=='wrong_time':
+                    b[2][2][18]='2026-11-01 00:00:11 TRT'
+                elif changed=='unclosed_episode':
+                    b[0][1][7]='AÇIK • 0/15 SEANS'
+                    b[0][1][8:10]=['','']
+                    b[2]=b[2][:3]
+                elif changed=='different_stop':
+                    b[2][2][8]='157.448'
+                elif changed=='different_status':
+                    b[2][2][17]='ALERT_REQUESTED_NOT_DEVICE_ACK'
+                try:
+                    report=g.inspect(*b,expected_asof='2026-11-23')
+                except g.FlightRecorderBlocked:
+                    continue
+                self.assertNotEqual(report['state'],'PASS_PENDING_DEVICE_ACK')
+                self.assertNotEqual(report.get('unresolved_quarantined_events'),0)
+
+    def test_second_unrelated_quarantine_is_not_waived(self):
+        b=reviewed_gild_forward_fixture()
+        second=list(b[2][2])
+        second[0]='2026-10-29|GILD|2026-11-01|NEW_52_SESSION_HIGH|1'
+        second[4]='2026-11-01'
+        second[18]=''
+        second[19]='UNREVIEWED'
+        b[2].append(second)
+        report=g.inspect(*b,expected_asof='2026-11-23')
+        self.assertEqual(report['state'],'HOLD_DISPUTED_EVENT_NON_EMITTING')
+        self.assertEqual(report['quarantined_events'],2)
+        self.assertEqual(report['unresolved_quarantined_events'],1)
+        self.assertEqual(report['reviewed_historical_non_emitting_events'],1)
+
+
 class FlightNegativeTests(unittest.TestCase):
     def test_approved_2026_11_03_pit_provenance_switch(self):
         b=data()

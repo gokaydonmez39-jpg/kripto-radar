@@ -589,6 +589,31 @@ class A34SixJobNaturalSourceTest(unittest.TestCase):
                         code.index('engine.live_read('))
 
 
+
+class A34ReviewedHistoricalQuarantineWiring(unittest.TestCase):
+    def test_a34_future_research_only_count_uses_unresolved_not_raw_history(self):
+        import inspect
+        body=inspect.getsource(w.live_entrypoint)
+        self.assertIn("flight['unresolved_quarantined_events']",body)
+        self.assertIn("flight['reviewed_historical_non_emitting_events']",body)
+        self.assertNotIn(
+            "summary['quarantined_research_events'] = flight['quarantined_events']",
+            body)
+
+    def test_a34_any_other_unresolved_dispute_still_nonzero_exit(self):
+        with patch.object(w,'live_entrypoint',return_value={
+            'state':'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN',
+            'quarantined_research_events':1,
+            'reviewed_historical_non_emitting_events':1,
+            'private_data_published':False,'orders':False,
+            'writes':False,'device_ack':False,
+        }):
+            with patch('builtins.print') as logs:
+                self.assertEqual(w.main(),3)
+            self.assertIn('DISPUTED_RESEARCH_EVENT_HOLD',
+                          logs.call_args_list[-1].args[0])
+
+
 class A34HoldExitCodeContract(unittest.TestCase):
     """GitHub job success may never attest a quarantined A34 HOLD."""
 

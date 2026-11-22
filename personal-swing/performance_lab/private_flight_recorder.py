@@ -108,6 +108,46 @@ def price(text):
     return v
 
 
+
+def _is_reviewed_closed_gild_non_emitting(row, owner, start, symbol,
+                                         event_day, cutoff, terminal):
+    """Exact historic GILD 30 Oct non-emitting warning; NEVER an alert release.
+
+    Independent pinned IEX 52-session checks verified 29 Oct first breakout
+    close 165.58 > prior52 high 160.83. The 30 Oct higher high was a
+    continuation of the SAME open episode, not a new first-breakout alert.
+    This exception applies ONLY to a fully closed episode and to an
+    unchanged, explicitly non-emitted original Sheet quarantine. Missing
+    or modified evidence stays unresolved HOLD. No Sheets mutation.
+    """
+    if (cutoff < '2026-11-23' or
+            owner != '2026-10-29|GILD' or
+            start != '2026-10-29' or symbol != 'GILD' or
+            event_day != '2026-10-30' or
+            value(row,0) !=
+                '2026-10-29|GILD|2026-10-30|NEW_52_SESSION_HIGH|1' or
+            value(row,5) != 'NEW_52_SESSION_HIGH' or
+            value(row,6) != 'ÖNEMLİ' or
+            value(row,17) != QUARANTINED or
+            value(row,18) != '2026-10-31 00:00:11 TRT' or
+            value(row,16) != '' or
+            terminal !=
+                '2026-10-29|GILD|2026-11-19|TIME_EXIT_AT_CLOSE|1'):
+        return False
+    if (value(row,7) != '170.95' or
+            value(row,8) != '157.447' or
+            value(row,9) != '181.846'):
+        return False
+    note=value(row,19)
+    return (
+        '29 Ekim AL barında GILD close 165.58 > önceki52 tepe 160.83' in note and
+        '30 Ekim de eşik üzerinde devam ediyor' in note and
+        'İlk eşik geçişi değil' in note and
+        'NEW_52_SESSION_HIGH kullanıcı alarmı FAIL_CLOSED' in note and
+        'DATA_DISPUTE_REVIEW_REQUIRED. Mesaj oluşturulmadı.' in note
+    )
+
+
 def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_asof=None):
     """No writes. Delivery ACK is NEVER accepted from a Sheet status."""
     candidates = rows(candidate_table, CANDIDATE_HEADER)
@@ -259,6 +299,7 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
     user_attested_status_rows = 0
     explicit_unknown_status_rows = 0
     quarantined_events = 0
+    reviewed_historical_non_emitting_events = 0
     suppressed_active_al = 0
     for row in alerts:
         need(len(row) >= 18, 'FLIGHT_EVENT_INCOMPLETE')
@@ -284,6 +325,12 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
                  in value(row,19),
                  'FLIGHT_CORPORATE_ACTION_EVENT_INVALID')
         status = value(row,17)
+        # A reviewed immutable quarantine must never be transformed into
+        # an ordinary PENDING/REQUESTED delivery status by a Sheet edit.
+        if (eventkey ==
+                '2026-10-29|GILD|2026-10-30|NEW_52_SESSION_HIGH|1' and
+                status != QUARANTINED):
+            raise FlightRecorderBlocked('FLIGHT_REVIEWED_GILD_STATUS_DRIFT')
         if status in PENDING:
             pending += 1
         elif status == USER_ATTESTED:
@@ -294,8 +341,15 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             explicit_unknown_status_rows += 1
             pending += 1
         elif status == QUARANTINED and code == 'NEW_52_SESSION_HIGH':
-            # No delivery claim or new signal may follow from a disputed row.
+            # ALL original quarantines remain recorded as quarantines.
+            # One exact independently reviewed closed historical GILD
+            # continuation is non-emitting but no longer blocks all FUTURE
+            # genuine EODs. Nothing changes the original private Sheet row.
             quarantined_events += 1
+            if _is_reviewed_closed_gild_non_emitting(
+                    row,owner,start,symbol,event_day,cutoff,
+                    closed_terminal_by_owner.get(owner)):
+                reviewed_historical_non_emitting_events += 1
         elif status == SUPPRESSED and code == 'AL_NEW_EPISODE':
             # An older episode can have closed AFTER this AL, yet still was
             # live at the decision date. Do not demand a second STOP alert
@@ -353,10 +407,13 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
                 panel_last = value(row,1)
                 break
     panel_stale = bool(panel_last) and panel_last != cutoff
+    unresolved_quarantined = (
+        quarantined_events - reviewed_historical_non_emitting_events)
+    need(unresolved_quarantined >= 0,'FLIGHT_QUARANTINE_COUNTER_CONFLICT')
     return {
         'schema':'XRAY_PRIVATE_A22_ZERO_LOSS_SENTINEL_V1',
         'state':('PENDING_CURRENT_EOD_OUTBOX_RESERVATION' if missing_current
-                 else 'HOLD_DISPUTED_EVENT_NON_EMITTING' if quarantined_events
+                 else 'HOLD_DISPUTED_EVENT_NON_EMITTING' if unresolved_quarantined
                  else 'PASS_PENDING_DEVICE_ACK' if pending
                  else 'PASS_NO_PENDING_EVENTS'),
         'latest_verified_scan_asof':cutoff,
@@ -374,6 +431,9 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
         'paired_gap_below_stop_annotations':len(gap_event_owner_days),
         'pending_device_ack':pending,
         'quarantined_events':quarantined_events,
+        'reviewed_historical_non_emitting_events':
+            reviewed_historical_non_emitting_events,
+        'unresolved_quarantined_events':unresolved_quarantined,
         'suppressed_active_al':suppressed_active_al,
         'user_attested_status_rows':user_attested_status_rows,
         'explicit_unknown_status_rows':explicit_unknown_status_rows,
