@@ -13,6 +13,7 @@ import argparse
 from datetime import datetime, timedelta, timezone
 import json
 import os
+import re
 import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -75,6 +76,18 @@ def decision(now, runs, *, calendar=None):
                 return 'BLOCKED_RUN_STATUS_UNKNOWN',candidate_date
             matched.append(item)
     natural=[item for item in matched if item['event']=='schedule']
+    # A green run-status alone cannot prove that the canonical, first-attempt
+    # natural producer exists. GitHub's workflow runs REST response supplies
+    # these fields. Partial, cross-repo or wrong-workflow records are HOLD.
+    for item in natural:
+        repo=item.get('repository')
+        if (type(item.get('id')) is not int or item['id']<=0 or
+                item.get('path')!='.github/workflows/'+WORKFLOW or
+                not isinstance(repo,dict) or
+                repo.get('full_name')!='gokaydonmez39-jpg/kripto-radar' or
+                not isinstance(item.get('head_sha'),str) or
+                re.fullmatch('[0-9a-f]{40}',item['head_sha']) is None):
+            return 'BLOCKED_CURRENT_EPOCH_NATURAL_PROVENANCE_UNVERIFIED',candidate_date
     # Health must be uniquely attributable to ONE first-attempt natural run.
     # A success beside a second queued, failed, or successful schedule is
     # ambiguous, not proof of a healthy single-producer epoch. Never trigger

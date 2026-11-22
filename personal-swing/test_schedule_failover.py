@@ -10,8 +10,11 @@ def utc(s):
 
 
 def record(*,created='2026-10-26T22:57:18Z',event='schedule',
-           status='completed',conclusion='success',branch='main',run_attempt=1):
-    return {'created_at':created,'event':event,
+           status='completed',conclusion='success',branch='main',run_attempt=1,
+           id=890123):
+    return {'id':id, 'path':'.github/workflows/xray-personal-477-eod.yml',
+            'repository':{'full_name':'gokaydonmez39-jpg/kripto-radar'},
+            'head_sha':'a'*40, 'created_at':created,'event':event,
             'status':status,'conclusion':conclusion,'head_branch':branch,
             'run_attempt':run_attempt}
 
@@ -357,6 +360,52 @@ class NaturalSourceAmbiguityNegativeAcceptance(unittest.TestCase):
                          'BLOCKED_CURRENT_EPOCH_DUPLICATE_NATURAL_RUN')
         self.assertFalse(result['dispatch_requested'])
         self.assertEqual(calls,['GET'])
+
+
+class NaturalRunIdentityNegativeTests(unittest.TestCase):
+    """An unbound GitHub status row cannot prove the canonical EOD source."""
+
+    def test_missing_or_wrong_primary_source_identity_is_always_hold(self):
+        good=record()
+        invalid=(
+            ("missing_id",{k:v for k,v in good.items() if k!="id"}),
+            ("zero_id",{**good,"id":0}),
+            ("bool_id",{**good,"id":True}),
+            ("wrong_path",{**good,"path":".github/workflows/another.yml"}),
+            ("missing_path",{k:v for k,v in good.items() if k!="path"}),
+            ("other_repo",{**good,"repository":{"full_name":"evil/other"}}),
+            ("missing_repo",{k:v for k,v in good.items() if k!="repository"}),
+            ("unbound_sha",{**good,"head_sha":"Z"*40}),
+            ("missing_sha",{k:v for k,v in good.items() if k!="head_sha"}),
+        )
+        for name,row in invalid:
+            with self.subTest(name=name):
+                status,asof=sf.decision(utc("2026-10-27T00:25:00Z"),[row])
+                self.assertEqual(asof,"2026-10-26")
+                self.assertEqual(status,
+                                 "BLOCKED_CURRENT_EPOCH_NATURAL_PROVENANCE_UNVERIFIED")
+                self.assertEqual(sf.exit_code_for_result(
+                    {"status":status},"schedule"),3)
+
+    def test_fake_source_never_suppresses_missing_canonical_eod(self):
+        fake=record(id=42)
+        fake["path"]=".github/workflows/xray-something-else.yml"
+        calls=[]
+        out=sf.run(
+            now=utc("2026-10-27T00:25:00Z"),
+            trigger_event="schedule",
+            read_runs=lambda:calls.append("GET") or
+                {"total_count":1,"workflow_runs":[fake]},
+            request_dispatch=lambda day:calls.append("POST:"+day) or True)
+        self.assertEqual(out["status"],
+                         "BLOCKED_CURRENT_EPOCH_NATURAL_PROVENANCE_UNVERIFIED")
+        self.assertEqual(calls,["GET"])
+        self.assertFalse(out["dispatch_requested"])
+
+    def test_current_real_github_shape_is_green_scheduler_only(self):
+        status,asof=sf.decision(utc("2026-10-27T00:25:00Z"),[record()])
+        self.assertEqual((status,asof),
+                         ("NOOP_CURRENT_EPOCH_RUN_EXISTS","2026-10-26"))
 
 class FallbackParentReceiptSafety(unittest.TestCase):
     """Evidence for later parent checks, never permission to emit A/B."""
