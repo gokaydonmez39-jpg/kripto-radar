@@ -38,7 +38,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id) || 'xray-personal-477-scheduler-fallback' }}
+  # Pending natural fallback cannot be evicted by manual diagnostics.
+  group: ${{ github.event_name == 'schedule' && 'xray-personal-477-scheduler-fallback' || format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id) }}
   cancel-in-progress: false
 jobs:
   offline-negative-regression:
