@@ -12,6 +12,7 @@ def client():
     api.base = "https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
     api.token = "SYNTHETIC_TOKEN"
     api.sheet_ids = {}
+    api._post_scope={'scan':1,'candidate':2,'alerts':3,'panel':4}
     return api
 
 
@@ -46,7 +47,7 @@ class ReadOnlyRetryTests(unittest.TestCase):
         with patch.object(mod, "urlopen", side_effect=URLError("ambiguous write")) as req:
             with self.assertRaises(mod.HandoffBlocked):
                 client().request(":batchUpdate", method="POST", body={
-                    "requests":[mod.as_cells([["synthetic"]],1)]})
+                    "requests":[mod.as_cells([["synthetic"]*20],3)]})
         self.assertEqual(req.call_count, 1)
 
     def test_get_four_failures_stop_and_do_not_leak_response(self):
@@ -65,7 +66,7 @@ class ReadOnlyRetryTests(unittest.TestCase):
                 "synthetic", 503, "ambiguous", None, None)) as req:
             with self.assertRaises(mod.HandoffBlocked):
                 client().request(":batchUpdate", method="POST", body={
-                    "requests":[mod.as_cells([["synthetic"]],1)]})
+                    "requests":[mod.as_cells([["synthetic"]*20],3)]})
         self.assertEqual(req.call_count, 1)
 
 
