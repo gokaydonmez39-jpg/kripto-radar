@@ -42,6 +42,7 @@ on:
     - cron: '16 23 * * 1-5'
 permissions:
   contents: read
+  actions: read
 concurrency:
   # Offline pull requests must not evict a queued scheduled private EOD.
   # Only genuine schedule is production: diagnostics use run-unique groups.
@@ -139,6 +140,8 @@ jobs:
     timeout-minutes: 42
     # This job does not export signals, raw bars, or journal to public repo.
     env:
+      GITHUB_TOKEN: ${{ github.token }}
+      XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET
       XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
     steps:
@@ -385,6 +388,8 @@ jobs:
       swing_score_status: ${{ steps.daily_swing_score.outputs.score_status }}
       swing_score_asof: ${{ steps.daily_swing_score.outputs.score_asof_et }}
     env:
+      GITHUB_TOKEN: ${{ github.token }}
+      XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET
       XRAY_ALPACA_DATA_KEY_ID: ${{ secrets.XRAY_ALPACA_DATA_KEY_ID || secrets.XRAY_ALPACA_API_KEY_ID }}
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
       XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
@@ -436,7 +441,10 @@ jobs:
     timeout-minutes: 12
     permissions:
       contents: read
+      actions: read
     env:
+      GITHUB_TOKEN: ${{ github.token }}
+      XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET
       XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
       XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
       REQUESTED_ASOF: ${{ inputs.asof_et }}
@@ -495,6 +503,9 @@ jobs:
     permissions:
       contents: read
       actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET
     steps:
       - name: Gate raw score outcome after Guardian (fail closed)
         shell: bash
