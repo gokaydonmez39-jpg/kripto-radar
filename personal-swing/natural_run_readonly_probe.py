@@ -9,7 +9,7 @@ inactive; this proof is necessary but NOT sufficient for FULL_FINAL.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 import json
 import os
@@ -23,17 +23,28 @@ HOLD = "NATURAL_RUN_GITHUB_READ_ONLY_HOLD"
 
 
 def schedule_runs_path(asof):
-    """One tightly scoped GitHub GET for this ASOF and next UTC date.
+    """GET-only scheduled EOD collection in the actual XNAS source window.
 
-    The scheduled EOD cannot be authoritative unless it is the sole
-    workflow-specific natural run in this bounded date window. In the 10h
-    post-close eligibility window, the following session's EOD cannot yet
-    have been scheduled. All collisions (including queued/failure) HOLD.
+    UTC calendar-day buckets accidentally include the preceding session's
+    overnight scheduled run. Count ONLY runs created after this session's
+    OFFICIAL close+45m, through the immutable following 10h. An early close
+    changes these boundaries. Bad/unavailable calendar => HOLD before I/O.
     """
-    lease.epoch_tag(asof)
-    next_utc=(date.fromisoformat(asof)+timedelta(days=1)).isoformat()
+    try:
+        import exchange_calendars as ec
+        lease.epoch_tag(asof)
+        calendar=ec.get_calendar("XNAS")
+        lease.require(calendar.is_session(asof),
+                      "NATURAL_EOD_EPOCH_AMBIGUOUS")
+        cutoff=(calendar.session_close(asof).to_pydatetime()
+                .astimezone(timezone.utc)+timedelta(minutes=45))
+        end=cutoff+timedelta(hours=10)
+        utc=lambda value: value.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        raise lease.LeaseHold("NATURAL_EOD_EPOCH_AMBIGUOUS") from None
     return ("/actions/workflows/"+lease.WORKFLOW.rsplit("/",1)[-1]+
-            "/runs?event=schedule&per_page=100&created="+asof+".."+next_utc)
+            "/runs?event=schedule&per_page=100&created="+
+            utc(cutoff)+".."+utc(end))
 
 
 def verify_unique_natural_epoch(owner, actual, transport):
