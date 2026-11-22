@@ -237,7 +237,10 @@ class FakeApi:
             return {"values":copy.deepcopy(self.tab[lo-1:hi])}
         if path.startswith("?fields="):
             return {"properties":{"timeZone":"Europe/Istanbul"},
-                    "sheets":[{"properties":{"title":ledger.TAB,"sheetId":903477}}]}
+                    "sheets":[{"properties":{
+                        "title":ledger.TAB,"sheetId":903477,
+                        "gridProperties":{"rowCount":max(1000,len(self.tab))}
+                    }}]}
         if path==":batchUpdate" and method=="POST":
             self.posts+=1
             req=body["requests"]
