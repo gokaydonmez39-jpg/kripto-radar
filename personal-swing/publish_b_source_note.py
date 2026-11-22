@@ -14,6 +14,7 @@ import sys
 from urllib.parse import urlencode
 
 from emit_b_source_envelope import EvidenceError, SCHEMA, collect
+from private_sheet_writer import HandoffBlocked
 
 TAB = "SWING_SKOR_GUNLUK"
 RUN_PREFIX = "https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/"
@@ -109,9 +110,37 @@ def synchronize_note(api, source):
                                   "startColumnIndex":26,"endColumnIndex":27},
                            "rows":[{"values":[{"note":note}]}],
                            "fields":"note"}}
-    response=api.request(":batchUpdate",method="POST",body={"requests":[change]})
-    demand(response.get("replies")==[{}],"SCORE_NOTE_ACK_UNVERIFIED")
-    demand(inspect_target(api,row,current[26])==(sheet_id,note),"SCORE_NOTE_READBACK_UNVERIFIED")
+    # One POST only. A lost or malformed ACK may follow a fully committed
+    # note, but neither permits a blind second write or an optimistic PASS.
+    def reconcile_exact_note_by_get():
+        try:
+            final_rows=api.read(TAB,"AI")
+            final_index,final_row=latest_summary(final_rows,source)
+            demand(final_index==row and final_row==current,
+                   "SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED")
+            demand(inspect_target(api,row,current[26])==(sheet_id,note),
+                   "SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED")
+        except Exception:
+            # Provider diagnostics, URLs, private cells and HTTP bodies may
+            # never enter public GitHub Actions logs or delivery receipts.
+            raise EvidenceError("SCORE_NOTE_UNCERTAIN_COMMIT_UNVERIFIED") from None
+
+    try:
+        response=api.request(":batchUpdate",method="POST",
+                             body={"requests":[change]})
+    except HandoffBlocked as error:
+        if str(error) not in (
+                "GOOGLE_SHEETS_TRANSPORT_TimeoutError",
+                "GOOGLE_SHEETS_TRANSPORT_URLError",
+                "GOOGLE_SHEETS_HTTP_5XX"):
+            raise
+        reconcile_exact_note_by_get()
+        return "ATTACHED_AND_VERIFIED"
+    if not isinstance(response,dict) or response.get("replies")!=[{}]:
+        reconcile_exact_note_by_get()
+        return "ATTACHED_AND_VERIFIED"
+    demand(inspect_target(api,row,current[26])==(sheet_id,note),
+           "SCORE_NOTE_READBACK_UNVERIFIED")
     return "ATTACHED_AND_VERIFIED"
 
 
