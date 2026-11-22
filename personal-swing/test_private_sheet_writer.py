@@ -894,6 +894,50 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                     source.assert_not_called()
                     lease.assert_not_called()
 
+    def test_enforced_lastmile_final_source_url_must_match_actual_runner(self):
+        """A canonical-looking EOD receipt cannot borrow another run ID."""
+        api=self._api()
+        for runner_id in ('999002','999010','0','000999001','',None):
+            with self.subTest(runner_id=runner_id):
+                runtime={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET'}
+                if runner_id is not None:
+                    runtime['GITHUB_RUN_ID']=runner_id
+                with patch.dict(w.os.environ,runtime,clear=True),patch.object(
+                    w,'urlopen',side_effect=AssertionError(
+                    'WRONG_RUN_REACHED_GOOGLE')) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                    ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post') as lease:
+                    with self.assertRaisesRegex(
+                            w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',
+                                    body=self.canonical_eod_payload())
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_enforced_lastmile_same_run_keeps_real_final_and_other_producers(self):
+        """Correct runner + canonical source may still pass existing guards."""
+        class Reply:
+            def __enter__(self):return self
+            def __exit__(self,*_):return False
+            def read(self):return b'{"replies":[]}'
+        api=self._api()
+        canonical=self.canonical_eod_payload()
+        alert={'requests':[w.as_cells([['synthetic']*20],3)]}
+        env={'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'ENFORCE_GET',
+             'GITHUB_RUN_ID':'999001'}
+        with patch.dict(w.os.environ,env,clear=True),patch.object(
+             w,'urlopen',return_value=Reply()) as http,patch.object(
+             w,'require_source_lastmile_before_private_post') as source,patch.object(
+             w,'require_epoch_lease_before_private_post') as lease:
+            for body in (canonical,alert):
+                self.assertEqual(api.request(':batchUpdate',method='POST',
+                                             body=body),{'replies':[]})
+            self.assertEqual(http.call_count,2)
+            self.assertEqual(source.call_count,2)
+            self.assertEqual(lease.call_count,2)
+
     def test_existing_authorized_batchupdate_stays_compatible(self):
         """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
         class Reply:
