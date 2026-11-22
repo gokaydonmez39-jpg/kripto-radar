@@ -88,7 +88,9 @@ def attest(parent, parent_receipt, child, child_receipt, jobs, scan,
         return _blocked("PARENT_CHILD_ID_INVALID")
     for item, path, event in ((parent, PARENT_PATH, "schedule"),
                               (child, CHILD_PATH, "workflow_dispatch")):
-        if (item.get("repository", {}).get("full_name") != REPO or
+        repository=item.get("repository")
+        if (not isinstance(repository,dict) or
+                repository.get("full_name") != REPO or
                 item.get("path") != path or item.get("event") != event or
                 item.get("head_branch") != "main" or
                 item.get("run_attempt") != 1 or
@@ -103,9 +105,14 @@ def attest(parent, parent_receipt, child, child_receipt, jobs, scan,
         return _blocked("PARENT_CHILD_SOURCE_SHA_DRIFT")
     p_created, p_end = _utc(parent.get("created_at")), _utc(parent.get("updated_at"))
     c_created, c_end = _utc(child.get("created_at")), _utc(child.get("updated_at"))
+    # An on-time parent does not entitle an arbitrarily late child to
+    # publish the prior XNAS session. The child must START and COMPLETE
+    # before this same immutable recovery deadline; otherwise NO_BACKFILL.
+    deadline=cutoff+MAX_DISPATCH_AGE
     if (None in (p_created, p_end, c_created, c_end) or
-            not cutoff <= p_created <= cutoff + MAX_DISPATCH_AGE or
-            not p_created <= c_created <= c_end <= now or not p_created <= p_end <= now):
+            not cutoff <= p_created <= deadline or
+            not p_created <= c_created <= c_end <= min(now,deadline) or
+            not p_created <= p_end <= now):
         return _blocked("RUN_WINDOW_OR_ORDER_INVALID")
     if not isinstance(parent_receipt, dict) or (
         parent_receipt.get("schema") != "XRAY_477_FALLBACK_PARENT_RECEIPT_V1" or
