@@ -71,6 +71,11 @@ def decision(now, runs, *, calendar=None):
             return 'BLOCKED_RUN_TIMESTAMP_UNKNOWN',candidate_date
         if created.tzinfo is None:
             return 'BLOCKED_RUN_TIMESTAMP_NAIVE',candidate_date
+        # GitHub cannot establish EOD completion from a future-dated run.
+        # Allow only 5s for UTC clock skew; never grant NOOP success based
+        # on an impossible source timestamp or a fabricated future epoch.
+        if created.astimezone(timezone.utc)>instant+timedelta(seconds=5):
+            return 'BLOCKED_RUN_TIMESTAMP_IN_FUTURE',candidate_date
         if created>=cutoff:
             if item.get('status') not in VALID_STATUSES:
                 return 'BLOCKED_RUN_STATUS_UNKNOWN',candidate_date
