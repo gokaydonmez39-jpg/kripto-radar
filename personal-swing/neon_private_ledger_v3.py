@@ -66,7 +66,14 @@ def number(x, lo=0, hi=100):
 def source_proof(scans, asof, url, master_sha, policy_sha):
     need(isinstance(scans,list) and scans and tuple(scans[0]) == original.SCAN_HEADER,
          "SCAN_HEADER_DRIFT")
-    existing = [r for r in scans[1:] if r and r[0]]
+    # A malformed data row may NOT be skipped and let an earlier valid
+    # 477/477 proof impersonate the ledger's latest authoritative source.
+    # Google returns trailing unused grid cells trimmed; every returned
+    # source record must contain a canonical, validated ASOF before POST.
+    existing = scans[1:]
+    need(all(isinstance(r, list) and len(r) > 0 and
+             original.canonical_scan_day(r[0]) for r in existing),
+         "SCAN_ROW_ASOF_INVALID")
     need(all(len(r) >= 10 for r in existing), "SCAN_PARTIAL_ROW")
     # Do not let a valid last row hide an out-of-order/future scan epoch.
     # Gaps remain legal; an old session may NEVER be appended after a new one.
