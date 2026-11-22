@@ -150,6 +150,54 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,[])
         self.assertEqual(sf.exit_code_for_result(actual,'schedule'),3)
 
+    def test_delayed_holiday_fallback_past_original_ten_hour_slot_is_red(self):
+        """Holiday is not permission to green a stale scheduled run.
+
+        27 Nov Friday follows Thanksgiving; XNAS reopens on a half-day.
+        If the Thu-holiday fallback starts at 15:00Z on Friday, the
+        00:26Z cron slot is >10h old and the intended slot is unproven.
+        Likewise the Tuesday following Labor Day, September 7.
+        """
+        for observed in ('2026-11-27T15:00:00Z',
+                         '2026-09-08T15:00:00Z'):
+            with self.subTest(observed=observed):
+                calls=[]
+                result=sf.run(
+                    now=utc(observed), trigger_event='schedule',
+                    read_runs=lambda:calls.append('GET'),
+                    request_dispatch=lambda day:calls.append('POST'))
+                self.assertEqual(result['status'],
+                                 'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+                self.assertFalse(result['dispatch_requested'])
+                self.assertEqual(calls,[])
+                self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
+
+    def test_holiday_fallback_nominal_and_ten_hour_boundary_remain_noop(self):
+        """Retain real holiday no-op; use an explicit predetermined 10h bound."""
+        for observed in ('2026-11-27T00:26:00Z',
+                         '2026-11-27T10:26:00Z',
+                         '2026-09-08T00:26:00Z'):
+            with self.subTest(observed=observed):
+                calls=[]
+                result=sf.run(now=utc(observed),trigger_event='schedule',
+                    read_runs=lambda:calls.append('GET'),
+                    request_dispatch=lambda day:calls.append('POST'))
+                self.assertEqual(result['status'],
+                                 'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
+                self.assertEqual(sf.exit_code_for_result(result,'schedule'),0)
+                self.assertEqual(calls,[])
+
+    def test_holiday_fallback_ten_hours_plus_one_second_is_red(self):
+        """Exact clock boundary must not quietly extend a stale slot."""
+        calls=[]
+        out=sf.run(now=utc('2026-11-27T10:26:01Z'),
+                   trigger_event='schedule',
+                   read_runs=lambda:calls.append('GET'),
+                   request_dispatch=lambda day:calls.append('POST'))
+        self.assertEqual(out['status'],'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+        self.assertEqual(sf.exit_code_for_result(out,'schedule'),3)
+        self.assertEqual(calls,[])
+
     def test_real_thanksgiving_non_session_remains_safe_noop(self):
         # The Thu 26 Nov XNAS holiday is NOT a missing Thursday EOD.
         calls=[]
