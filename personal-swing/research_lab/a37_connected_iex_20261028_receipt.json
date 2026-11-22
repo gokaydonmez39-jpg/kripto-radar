@@ -1,0 +1,101 @@
+{
+  "schema": "XRAY_PERSONAL_A37_CONNECTED_IEX_SNAPSHOT_AUDIT_V1",
+  "asof_et": "2026-10-28",
+  "observed_date_utc": "2026-10-29",
+  "first_required_xnas_session": "2026-07-30",
+  "last_required_xnas_session": "2026-10-28",
+  "official_xnas_sessions": 64,
+  "universe": 477,
+  "benchmark": "QQQ",
+  "series_count": 478,
+  "expected_bars_per_series": 64,
+  "observed_required_bar_cells": 30592,
+  "source": "Alpaca connected-app daily IEX",
+  "feed": "iex",
+  "basis": "raw",
+  "scope_sha256": "420025dd5b83b59fedd3d9af4332471fee731aedfaacb616ce80ca473bef6745",
+  "include_partial_2026_10_29": false,
+  "groups": [
+    {
+      "first_index": 0,
+      "last_index": 119,
+      "series": 120,
+      "above_sma20": 66,
+      "above_sma50": 61,
+      "positive_relative_to_qqq_63": 44,
+      "missing_official_sessions": 0
+    },
+    {
+      "first_index": 120,
+      "last_index": 239,
+      "series": 120,
+      "above_sma20": 71,
+      "above_sma50": 57,
+      "positive_relative_to_qqq_63": 39,
+      "missing_official_sessions": 0
+    },
+    {
+      "first_index": 240,
+      "last_index": 359,
+      "series": 120,
+      "above_sma20": 75,
+      "above_sma50": 52,
+      "positive_relative_to_qqq_63": 43,
+      "missing_official_sessions": 0
+    },
+    {
+      "first_index": 360,
+      "last_index": 476,
+      "series": 117,
+      "above_sma20": 70,
+      "above_sma50": 49,
+      "positive_relative_to_qqq_63": 39,
+      "missing_official_sessions": 0
+    }
+  ],
+  "totals": {
+    "scanned_symbols": 477,
+    "above_sma20": 282,
+    "above_sma50": 219,
+    "positive_relative_to_qqq_63": 165
+  },
+  "benchmark_return_63_pct_approx": 6.14248,
+  "research_only": true,
+  "raw_market_bars_persisted": false,
+  "historical_point_in_time_provenance_verified": false,
+  "corporate_actions_coverage_verified": false,
+  "historical_universe_membership_verified": false,
+  "cross_provider_reconciled": false,
+  "license_redistribution_verified": false,
+  "backtest_oos_completed": false,
+  "performance_lift_verified": false,
+  "production_al_enabled": false,
+  "new_alerts_emitted": false,
+  "notes": "Aggregate only. Read-only 48 batched connected-app IEX requests for the ordered 477-watchlist, and QQQ separately. Validated exact official XNAS day presence and finite positive closes per symbol. Current-day incomplete 29-Oct bar excluded. No complete OHLCV/CA/PIT evidence persisted; no historical alpha claim. Percentages computed on fixed current 477 scope, not total NASDAQ. Two 2:1 splits were verified in the window; connected daily bars show unadjusted discontinuities. Reported SMA/breadth and RS aggregates are historical raw-data diagnostics, NOT CA-cleared, not approved predictive factors. Adjustment parameter is not explicit in connected tool API.",
+  "adjustment_parameter_explicitly_set": false,
+  "known_unadjusted_split_conflicts": [
+    "IESC",
+    "MNST"
+  ],
+  "known_split_events": [
+    {
+      "symbol": "IESC",
+      "ex_date": "2026-08-24",
+      "type": "forward_split",
+      "old_rate": 1,
+      "new_rate": 2,
+      "alpaca_action_id": "6be13843-233a-469f-91be-b139fe4738f7"
+    },
+    {
+      "symbol": "MNST",
+      "ex_date": "2026-08-11",
+      "type": "forward_split",
+      "old_rate": 1,
+      "new_rate": 2,
+      "alpaca_action_id": "e639b77a-af3f-411a-878b-fe2b40cff68a"
+    }
+  ],
+  "ca_cleared_aggregate_metrics": false,
+  "cross_date_raw_relative_returns_safe": false,
+  "research_release_status": "BLOCKED_UNVERIFIED_CA_ADJUSTMENT_AND_PIT"
+}
