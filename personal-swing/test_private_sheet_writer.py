@@ -721,7 +721,9 @@ class BSourceNoteSharedTransportContract(unittest.TestCase):
             "schema":SCHEMA,"asof":"2026-11-23","run":999001,
             "head":"a"*40,
             "proof":[{"jobId":i+1,"jobName":name,"lines":[
-                ["2026-11-23T23:20:00Z","SYNTHETIC_VERIFIED_RECEIPT"]]}
+                ["2026-11-23T23:20:00Z","SYNTHETIC_VERIFIED_RECEIPT"],
+                *([["2026-11-23T23:20:01Z","SYNTHETIC_SCAN_READBACK"]]
+                  if i==0 else [])]}
                 for i,name in enumerate(NAMES)],
         }
         note=SCHEMA+" "+json.dumps(
@@ -816,6 +818,7 @@ class BSourceNoteSharedTransportContract(unittest.TestCase):
         section=workflow.split(
             "- name: Attach and verify current B evidence note (schedule only)",1)[1]
         self.assertIn("XRAY_PERSONAL477_SOURCE_LASTMILE_MODE: ENFORCE_GET",section)
+        self.assertIn("GITHUB_TOKEN: ${{ github.token }}",section)
 
 
 class PrivateSheetDestinationContract(unittest.TestCase):
