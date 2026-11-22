@@ -96,7 +96,8 @@ def verify_unique_natural_epoch(owner, actual, transport):
             listed.get("path")!=lease.WORKFLOW or
             listed.get("head_branch")!="main" or
             listed.get("head_sha")!=owner["source_sha"] or
-            listed.get("run_attempt")!=1 or
+            type(listed.get("run_attempt")) is not int or
+            listed["run_attempt"]!=1 or
             not isinstance(listed.get("repository"),dict) or
             listed["repository"].get("full_name")!=lease.REPO or
             listed.get("created_at")!=actual.get("created_at")):
