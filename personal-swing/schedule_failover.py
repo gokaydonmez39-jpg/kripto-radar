@@ -75,6 +75,14 @@ def decision(now, runs, *, calendar=None):
                 return 'BLOCKED_RUN_STATUS_UNKNOWN',candidate_date
             matched.append(item)
     natural=[item for item in matched if item['event']=='schedule']
+    # Health must be uniquely attributable to ONE first-attempt natural run.
+    # A success beside a second queued, failed, or successful schedule is
+    # ambiguous, not proof of a healthy single-producer epoch. Never trigger
+    # recovery for an ambiguous epoch either.
+    if len(natural)>1:
+        return 'BLOCKED_CURRENT_EPOCH_DUPLICATE_NATURAL_RUN',candidate_date
+    if natural and type(natural[0].get('run_attempt')) is not int or (natural and natural[0].get('run_attempt')!=1):
+        return 'BLOCKED_CURRENT_EPOCH_NATURAL_RUN_NOT_FIRST_ATTEMPT',candidate_date
     if any(item['status']=='completed' and item.get('conclusion')=='success'
            for item in natural):
         return 'NOOP_CURRENT_EPOCH_RUN_EXISTS',candidate_date
