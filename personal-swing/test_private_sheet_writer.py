@@ -68,6 +68,29 @@ class FakeApi:
 
 
 class PrivateSheetHandoffTests(unittest.TestCase):
+    @staticmethod
+    def pit_fixture_asof(day):
+        """Produce exactly the reviewed 477 PIT aliases for synthetic ASOF."""
+        snap=snapshot()
+        current=runner.get_scope(
+            watchlist_file=str(Path(__file__).with_name('nasdaq_watchlist_477.json')),
+            asof=day)
+        original={row['symbol']:row for row in snap['rows']}
+        aliases={'SUPN':'INDV','GNTX':'ROKU'}
+        rows=[]
+        for symbol in current:
+            seed=original.get(symbol)
+            if seed is None:
+                seed=original[aliases[symbol]]
+            row=copy.deepcopy(seed)
+            row['symbol']=symbol
+            row['asof_et']=day
+            rows.append(row)
+        snap['rows']=rows
+        snap['asof_et']=day
+        snap['scope_sha256']=runner.sha_symbols(current)
+        return snap
+
     def test_natural_scan_source_is_exact_single_field_not_substring(self):
         row=["2026-11-23",w.RUN_EVENT_LABELS["schedule"],
              "477","477","477","0","TRUE","0",RUN,
@@ -370,6 +393,86 @@ class PrivateSheetHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(w.HandoffBlocked,'CANDIDATE_ORIGINAL_LEVEL_CONFLICT'):
             w.synchronize(snapshot(),RUN,api,run_event='schedule')
         self.assertEqual(api.apply_count,0)
+
+
+    def test_23_nov_forward_natural_eod_survives_missing_20_nov_without_backfill(self):
+        """Only a NEW verified natural epoch may append; missing 20 stays missing.
+
+        This is a fake offline Google API, never live market data, dispatch,
+        Sheet mutation, notification or an old-asof replay.
+        """
+        class NoopAwareApi(FakeApi):
+            """Mirror real SheetApi.apply: do not POST an empty batch."""
+            def apply(self,p):
+                if p['scan_rows'] or p['candidate_rows']:
+                    super().apply(p)
+        api=NoopAwareApi()
+        old=['2026-11-19',w.RUN_EVENT_LABELS['schedule'],
+             '477','477','477','0','TRUE','0',
+             'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/44671232964',
+             'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+             ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']
+        api.scans.append(old)
+        evidence=copy.deepcopy(old)
+        current=self.pit_fixture_asof('2026-11-23')
+        result=w.synchronize(current,RUN,api,run_event='schedule')
+        self.assertEqual(result['status'],'PRIVATE_SHEET_READBACK_PASS')
+        self.assertEqual(result['asof_et'],'2026-11-23')
+        self.assertEqual(api.apply_count,1)
+        self.assertEqual(api.scans[1],evidence)
+        self.assertEqual([x[0] for x in api.scans[1:]],
+                         ['2026-11-19','2026-11-23'])
+        self.assertNotIn('2026-11-20',[x[0] for x in api.scans[1:]])
+        self.assertFalse(result['device_ack'])
+        again=w.synchronize(current,RUN,api,run_event='schedule')
+        self.assertEqual(again['status'],'PRIVATE_SHEET_READBACK_PASS')
+        self.assertEqual(api.apply_count,1)
+
+    def test_late_20_nov_source_after_new_23_nov_eod_is_always_rejected(self):
+        api=FakeApi()
+        api.scans.append([
+            '2026-11-23',w.RUN_EVENT_LABELS['schedule'],
+            '477','477','477','0','TRUE','0',RUN,
+            'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+            ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'])
+        source=self.pit_fixture_asof('2026-11-20')
+        old=copy.deepcopy(api.scans)
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,'SCAN_DATE_ORDER_OR_STALE_ASOF'):
+            w.synchronize(source,RUN,api,run_event='schedule')
+        self.assertEqual(api.apply_count,0)
+        self.assertEqual(api.scans,old)
+
+
+    def test_20_nov_forensic_data_receipt_is_explicitly_not_final_or_dispatch(self):
+        """An audited 477x52 bar set is evidence, not an absent natural run."""
+        file=(Path(__file__).resolve().parent.parent /
+              'nasdaq-xray/incident-receipts/'
+              'personal477-eod-missing-2026-11-20.json')
+        incident=json.loads(file.read_text(encoding='utf8'))
+        self.assertEqual(
+            incident['schema'],'XRAY_PERSONAL477_NATURAL_EOD_MISSING_EVIDENCE_V1')
+        self.assertFalse(incident['canonical_final'])
+        self.assertIsNone(incident['source_run_id'])
+        self.assertFalse(incident['source_run_success'])
+        self.assertFalse(incident['source_scan_readback'])
+        self.assertFalse(incident['allows_backfill'])
+        self.assertFalse(incident['allows_replay'])
+        self.assertFalse(incident['allows_automatic_dispatch'])
+        self.assertFalse(incident['new_signal_publishable'])
+        self.assertFalse(incident['chatgpt_delivery_ack'])
+        self.assertFalse(incident['device_ack'])
+        self.assertFalse(incident['forward_policy']['full_final_release_authorized'])
+        v=incident['independently_checked_market_data']
+        self.assertEqual(v['pit_unique_symbols'],477)
+        self.assertEqual(v['xnas_official_sessions'],52)
+        self.assertEqual(v['total_observed_bars'],477*52)
+        self.assertEqual(sum(g['bars'] for g in v['by_group']),477*52)
+        self.assertEqual(sum(g['symbols'] for g in v['by_group']),477)
+        self.assertEqual(v['symbol_sets_with_exact_52_dates'],477)
+        self.assertFalse(v['production_engine_analytical_recompute_verified'])
+        self.assertEqual(incident['observed_incident']['exact_primary_workflow_matches'],0)
+        self.assertEqual(incident['observed_incident']['private_sheet_2026_11_20_final_count'],0)
 
     def test_old_asof_manual_dispatch_must_never_append_behind_latest_scan(self):
         api = FakeApi()
