@@ -464,7 +464,7 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
         group = groups[0]
         self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 &&", group)
         self.assertIn("|| format('xray-personal-477-daily-eod-test-{0}', github.run_id)", group)
-        self.assertIn("|| 'xray-personal-477-daily-eod'", group)
+        self.assertIn("&& 'xray-personal-477-daily-eod' ||", group)
         self.assertIn('cancel-in-progress: false', source)
         self.assertEqual(source.count("    - cron: '16 23 * * 1-5'"), 1)
 
@@ -480,7 +480,7 @@ class PrimaryEodPendingIsolationTests(unittest.TestCase):
         group = groups[0]
         self.assertIn("github.event_name == 'schedule' && github.run_attempt == 1 &&", group)
         self.assertIn("|| format('xray-personal-477-scheduler-fallback-test-{0}', github.run_id)", group)
-        self.assertIn("|| 'xray-personal-477-scheduler-fallback'", group)
+        self.assertIn("&& 'xray-personal-477-scheduler-fallback' ||", group)
         self.assertIn('cancel-in-progress: false', source)
         self.assertEqual(source.count("    - cron: '26 0 * * 2-6'"), 1)
 
