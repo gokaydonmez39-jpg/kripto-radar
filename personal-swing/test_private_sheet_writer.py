@@ -816,6 +816,83 @@ class SheetsTransportRegressionTests(unittest.TestCase):
                         source.assert_not_called()
                         lease.assert_not_called()
 
+    @staticmethod
+    def canonical_eod_payload():
+        asof='2026-11-23'
+        scan=[asof,w.RUN_EVENT_LABELS['schedule'],'477','477','477',
+              '0','TRUE','1',
+              'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/999001',
+              'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+              ';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK']
+        candidate=[asof+'|SYNA',asof,'SYNA','TEKNİK AL ADAYI',
+                   '100','95','110','AÇIK • 0/15 SEANS','','','',
+                   'KAYDEDİLDİ_BİLDİRİM_AYRI',
+                   'source_event=schedule; run=999001; NO_BROKER_NO_ORDERS']
+        return {'requests':[{'addNamedRange':{'namedRange':w.epoch_marker(asof,1)}},
+                            w.as_cells([scan],1),w.as_cells([candidate],2)]}
+
+    def test_invalid_canonical_final_scan_is_denied_before_any_network(self):
+        """A correctly shaped source row cannot fabricate 477 FINAL authority."""
+        cases=(
+            (1,'GitHub workflow_dispatch VERIFIED IEX EOD'),
+            (2,'476'),(3,'476'),(4,'476'),(5,'1'),
+            (6,'FALSE'),(7,'2'),
+            (8,'https://github.com/other/repo/actions/runs/999001'),
+            (8,'https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/0'),
+            (9,'scopeSHA=INVALID;algorithmSHA='+'b'*64+
+                ';source_event=schedule;NO_ORDERS'),
+            (9,'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+                ';source_event=workflow_dispatch;NO_ORDERS'),
+            (9,'scopeSHA='+'a'*64+';algorithmSHA='+'b'*64+
+                ';source_event=schedule;source_event=push;NO_ORDERS'),
+        )
+        api=self._api()
+        for field,value in cases:
+            with self.subTest(field=field,value=value[:35]):
+                data=self.canonical_eod_payload()
+                data['requests'][1]['appendCells']['rows'][0]['values'][field][
+                    'userEnteredValue']['stringValue']=value
+                with patch.object(w,'urlopen',side_effect=AssertionError(
+                    'UNAUTHORIZED_FINAL_REACHED_GOOGLE')) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                    ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post') as lease:
+                    with self.assertRaisesRegex(
+                        w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',body=data)
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
+    def test_canonical_candidate_epoch_set_must_match_final_al_count(self):
+        """No false AL count, wrong key, or duplicate AL in the atomic batch."""
+        original=self.canonical_eod_payload()
+        duplicate=copy.deepcopy(original)
+        duplicate['requests'][2]['appendCells']['rows'].append(
+            copy.deepcopy(duplicate['requests'][2]['appendCells']['rows'][0]))
+        duplicate['requests'][1]['appendCells']['rows'][0]['values'][7][
+            'userEnteredValue']['stringValue']='2'
+        wrong_key=copy.deepcopy(original)
+        wrong_key['requests'][2]['appendCells']['rows'][0]['values'][0][
+            'userEnteredValue']['stringValue']='2026-11-23|DIFFERENT'
+        no_candidate=copy.deepcopy(original)
+        no_candidate['requests'].pop()
+        api=self._api()
+        for label,data in (('duplicate',duplicate),('bad-key',wrong_key),
+                           ('count-mismatch',no_candidate)):
+            with self.subTest(case=label):
+                with patch.object(w,'urlopen',side_effect=AssertionError(
+                    'UNAUTHORIZED_EPOCH_REACHED_GOOGLE')) as http,patch.object(
+                    w,'require_source_lastmile_before_private_post'
+                    ) as source,patch.object(
+                    w,'require_epoch_lease_before_private_post') as lease:
+                    with self.assertRaisesRegex(
+                        w.HandoffBlocked,'GOOGLE_SHEETS_POST_SCOPE_INVALID'):
+                        api.request(':batchUpdate',method='POST',body=data)
+                    http.assert_not_called()
+                    source.assert_not_called()
+                    lease.assert_not_called()
+
     def test_existing_authorized_batchupdate_stays_compatible(self):
         """Legitimate source/episode/PANEL/NEON verbs stay permitted."""
         class Reply:
