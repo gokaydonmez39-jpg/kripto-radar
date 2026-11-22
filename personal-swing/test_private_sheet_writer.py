@@ -1810,6 +1810,57 @@ class GoogleUncertainCommitReconciliationTests(unittest.TestCase):
         self.assertEqual(sum(c.kwargs.get("method")=="POST"
                              for c in api.request.call_args_list),1)
 
+    def test_http200_corrupt_ack_may_reconcile_only_full_exact_google_state(self):
+        from unittest.mock import Mock
+        for invalid in ({"replies":[{}, {}, {}]},
+                        {"replies":[]},
+                        {"replies":[{"addNamedRange":{"namedRange":{
+                            "name":"WRONG","namedRangeId":"FOREIGN",
+                            "range":{"sheetId":1}}}}, {}, {}]},
+                        {"status":"HTTP_200_MISSING_REPLIES"}):
+            with self.subTest(response=repr(invalid)[:95]):
+                p,marker,api,candidates,scans=self.fixture()
+                api.request=Mock(side_effect=[
+                    invalid,{"namedRanges":[marker]},
+                ])
+                api.read=Mock(side_effect=[candidates,scans])
+                self.assertIsNone(api.apply(p))
+                self.assertEqual(
+                    [c.kwargs.get("method","GET")
+                     for c in api.request.call_args_list],["POST","GET"])
+                self.assertEqual(api.read.call_count,2)
+
+    def test_http200_corrupt_ack_without_exact_marker_never_promotes_final(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[]},
+        ])
+        api.read=Mock(side_effect=AssertionError("NO_LEDGER_READ"))
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(
+            [c.kwargs.get("method","GET")
+             for c in api.request.call_args_list],["POST","GET"])
+        api.read.assert_not_called()
+
+    def test_http200_corrupt_ack_with_altered_price_is_hold_without_retry(self):
+        from unittest.mock import Mock
+        p,marker,api,candidates,scans=self.fixture()
+        scans[-1][8]="https://github.com/WRONG/run"
+        api.request=Mock(side_effect=[
+            {"replies":[{}, {}, {}]}, {"namedRanges":[marker]},
+        ])
+        api.read=Mock(side_effect=[candidates,scans])
+        with self.assertRaisesRegex(
+                w.HandoffBlocked,
+                "EPOCH_CAS_UNCERTAIN_COMMIT_READBACK_UNVERIFIED"):
+            api.apply(p)
+        self.assertEqual(sum(c.kwargs.get("method")=="POST"
+                             for c in api.request.call_args_list),1)
+
     def test_definitive_400_or_409_is_not_retried_or_treated_as_commit(self):
         from unittest.mock import Mock
         for code in ("GOOGLE_SHEETS_HTTP_400",
