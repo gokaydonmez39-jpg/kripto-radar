@@ -534,6 +534,63 @@ class ExistingLeaseConsumerReadback(unittest.TestCase):
         self.assertFalse(any(m=="POST" for m,_,_ in git.calls[-4:]))
 
 
+
+class LiveNaturalEpochUniquenessBoundary(unittest.TestCase):
+    """The lease owner is never enough if GitHub exposes two natural runs.
+
+    These tests deliberately inject two canonical runs into the EXACT
+    XNAS-created-window collection; they do not create a GitHub tag.
+    """
+
+    @staticmethod
+    def duplicate_page(method,path,body=None):
+        if method=="GET" and path.startswith("/actions/workflows/"):
+            common={"event":"schedule","path":lease.WORKFLOW,
+                    "head_branch":"main","head_sha":"a"*40,
+                    "repository":{"full_name":lease.REPO},
+                    "run_attempt":1,
+                    "created_at":"2026-11-23T22:03:00Z"}
+            return {"total_count":2,"workflow_runs":[
+                {**common,"id":890123},
+                {**common,"id":890124}]}
+        return None
+
+    def test_claim_rejects_a_second_natural_run_before_any_tag_post(self):
+        git=MockGit()
+        def transport(method,path,body=None):
+            duplicate=self.duplicate_page(method,path,body)
+            return duplicate if duplicate is not None else git(method,path,body)
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            claim(natural(),transport)
+        self.assertEqual(git.refs,{})
+        self.assertEqual(git.tags,{})
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_existing_tag_owner_does_not_authorize_private_post_after_second_run(self):
+        git=MockGit()
+        claim(natural(),git)
+        git.calls.clear()
+        def transport(method,path,body=None):
+            duplicate=self.duplicate_page(method,path,body)
+            return duplicate if duplicate is not None else git(method,path,body)
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            lease.verify_existing_tag_consumer(
+                ASOF,transport,now=NOW,runtime_env=env(),
+                completed_session=lambda _:ASOF)
+        self.assertFalse(any(m=="POST" for m,_,_ in git.calls))
+
+    def test_claim_missing_index_never_creates_permanent_tag(self):
+        git=MockGit()
+        def transport(method,path,body=None):
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                return {"total_count":0,"workflow_runs":[]}
+            return git(method,path,body)
+        with self.assertRaises(lease.LeaseHold):
+            claim(natural(),transport)
+        self.assertEqual(git.tags,{})
+        self.assertEqual(git.refs,{})
+
+
 class LiveTagReadonlyCanaryTests(unittest.TestCase):
     def test_missing_non_fast_forward_rule_cannot_authorize_tag_claim(self):
         git=MockGit()
