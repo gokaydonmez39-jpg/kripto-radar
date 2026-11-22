@@ -922,6 +922,47 @@ class BNoteIsolatedRunnerDependencyContract(unittest.TestCase):
         self.assertNotIn("continue-on-error: true",step)
         self.assertIn("timeout-minutes: 3",step)
 
+class BNoteIsolatedCIExecutionContract(unittest.TestCase):
+    """Require an ACTUAL clean-venv import check on PR, not syntax-only claims."""
+
+    def test_pr_ci_runs_same_venv_install_and_imports_as_natural_b_note(self):
+        text=(Path(__file__).resolve().parents[1]/
+              ".github/workflows/xray-personal-477-eod.yml"
+              ).read_text(encoding="utf-8")
+        guard=text.split("  offline-guard:",1)[1].split(
+            "  daily-private-scan:",1)[0]
+        title="- name: Independently run clean B note venv import canary (PR only)"
+        self.assertEqual(guard.count(title),1)
+        canary=guard.split(title,1)[1].split(
+            "      - name: Static tests before any data API access",1)[0]
+        production=text.split(
+            "- name: Prepare private Sheet proof bridge dependencies (schedule only)",1
+            )[1].split(
+            "- name: Attach and verify current B evidence note (schedule only)",1
+            )[0]
+        self.assertIn("github.event_name == 'pull_request'",canary)
+        self.assertIn("timeout-minutes: 4",canary)
+        self.assertIn('python3 -m venv "$RUNNER_TEMP/xray-source-note-offline"',canary)
+        required=(
+            "-r personal-swing/requirements.txt",
+            "'google-auth>=2.35,<3'",
+            "'requests>=2.31,<3'",
+            "import exchange_calendars",
+            "import google.oauth2.service_account",
+            "import private_sheet_writer",
+            "import daily_job",
+            "import publish_b_source_note",
+        )
+        for exact in required:
+            with self.subTest(exact=exact):
+                self.assertIn(exact,canary)
+                self.assertIn(exact,production)
+        self.assertNotIn("continue-on-error: true",canary)
+        self.assertNotIn("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON",canary)
+        self.assertNotIn("XRAY_PRIVATE_SPREADSHEET_ID",canary)
+        self.assertNotIn("workflow_dispatch",canary)
+
+
 class PrivateSheetDestinationContract(unittest.TestCase):
     """Real runner uses authenticated metadata; these are network-free negatives."""
 
