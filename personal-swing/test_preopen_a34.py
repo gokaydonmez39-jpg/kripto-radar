@@ -372,6 +372,58 @@ class A34ScheduleResilienceTest(unittest.TestCase):
 
 
 
+class A34HoldExitCodeContract(unittest.TestCase):
+    """GitHub job success may never attest a quarantined A34 HOLD."""
+
+    @staticmethod
+    def legal():
+        return {
+            'state': 'CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN',
+            'asof_et': ASOF, 'covered': 477, 'device_ack': False,
+            'writes': False, 'orders': False,
+            'private_data_published': False,
+            'quarantined_research_events': 0,
+            'pending_device_ack_events': 74,
+        }
+
+    def test_disputed_research_event_hold_must_not_exit_zero(self):
+        held = self.legal()
+        held.update(
+            state='CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN',
+            quarantined_research_events=1)
+        with patch.object(w, 'live_entrypoint', return_value=held):
+            with patch('builtins.print') as output:
+                self.assertEqual(w.main(), 3)
+        self.assertEqual(output.call_count, 2)
+        self.assertIn('BLOCKED_NO_DATA_PUBLISHED_NO_WRITES',
+                      output.call_args_list[0].args[0])
+        redacted = json.loads(output.call_args_list[1].args[0])
+        self.assertEqual(redacted['reason_code'],
+                         'DISPUTED_RESEARCH_EVENT_HOLD')
+        self.assertFalse(redacted['writes'])
+        self.assertEqual(redacted['device_ack'], 'UNKNOWN')
+        self.assertNotIn('quarantined_research_events',
+                         str(output.call_args_list))
+
+    def test_untrusted_receipt_cannot_turn_hold_into_success(self):
+        forged = self.legal()
+        forged['state'] = 'CORE_PREOPEN_PASS_PRIVATE_TICKER_TOKEN'
+        with patch.object(w, 'live_entrypoint', return_value=forged):
+            with patch('builtins.print') as output:
+                self.assertEqual(w.main(), 3)
+        code = json.loads(output.call_args_list[-1].args[0])
+        self.assertEqual(code['reason_code'], 'A34_PASS_RECEIPT_UNVERIFIED')
+        self.assertNotIn('PRIVATE_TICKER_TOKEN', str(output.call_args_list))
+
+    def test_normal_readonly_pass_still_exits_zero(self):
+        with patch.object(w, 'live_entrypoint', return_value=self.legal()):
+            with patch('builtins.print') as output:
+                self.assertEqual(w.main(), 0)
+        self.assertEqual(output.call_count, 1)
+        self.assertEqual(json.loads(output.call_args.args[0])['state'],
+                         'CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN')
+
+
 class A34LiveFailureDiagnosticsRegression(unittest.TestCase):
     """No private values, URLs, bars, credentials, or ticker names in public stdout."""
 
