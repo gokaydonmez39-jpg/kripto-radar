@@ -275,25 +275,37 @@ class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
         self.assertNotIn("continue-on-error", hard)
         self.assertNotIn("method: POST",gate)
 
-    def test_optional_summary_note_is_schedule_only_after_the_mandatory_gate(self):
+    def test_required_summary_note_is_schedule_only_after_the_mandatory_gate(self):
+        """A missing B note makes the sixth EOD job RED, not false-GREEN."""
         job = self.job(self.workflow(), "daily-private-score-acceptance")
         hard = "Gate raw score outcome after Guardian (fail closed)"
         names = ("Load NASDAQ source evidence bridge (schedule only)",
                  "Prepare private Sheet proof bridge dependencies (schedule only)",
-                 "Attach and verify current B evidence note (schedule only)")
-        self.assertEqual(re.findall(r"(?m)^      - name: (.*)$", job), [hard, *names])
-        for index, name in enumerate(names):
-            step = self.step(job, name)
+                 "Attach and verify current B evidence note (schedule only)",
+                 "Publish redacted B evidence acceptance")
+        self.assertEqual(re.findall(r"(?m)^      - name: (.*)$",job),
+                         [hard,*names])
+        header=job.split("    steps:",1)[0]
+        self.assertIn("timeout-minutes: 8",header)
+        for index,name in enumerate(names[:3]):
+            step=self.step(job,name)
             for predicate in ("success()", "github.event_name == 'schedule'",
-                              "github.ref == 'refs/heads/main'", "github.run_attempt == 1"):
-                self.assertIn(predicate, step)
-            self.assertIn("continue-on-error: true", step)
-            if index < 2:
+                              "github.ref == 'refs/heads/main'",
+                              "github.run_attempt == 1"):
+                self.assertIn(predicate,step)
+            self.assertNotIn("continue-on-error: true",step)
+            if index<2:
                 self.assertNotIn("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON",step)
-        prepare, publish = (self.step(job, name) for name in names[1:])
-        self.assertIn("steps.source-note-checkout.outcome == 'success'", prepare)
-        self.assertIn("steps.source-note-deps.outcome == 'success'", publish)
+        prepare,publish=(self.step(job,name) for name in names[1:3])
+        self.assertIn("steps.source-note-checkout.outcome == 'success'",prepare)
+        self.assertIn("steps.source-note-deps.outcome == 'success'",publish)
+        self.assertIn("id: source-note-attach",publish)
         self.assertIn("publish_b_source_note.py",publish)
+        result=self.step(job,names[3])
+        self.assertIn("always()",result)
+        self.assertIn("steps.source-note-attach.outcome",result)
+        self.assertIn("XRAY_B_SOURCE_NOTE=PASS_READBACK_NOT_DEVICE_ACK",result)
+        self.assertIn("XRAY_B_SOURCE_NOTE=HOLD_NO_READBACK",result)
 
     def test_no_second_provider_score_run_or_new_schedule(self):
         content = self.workflow()
