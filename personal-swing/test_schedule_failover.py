@@ -111,6 +111,56 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,[])
         self.assertEqual(sf.exit_code_for_result(result,'schedule'),3)
 
+    def test_saturday_fallback_over_24h_late_cannot_silently_succeed(self):
+        # Friday 20 Nov XNAS completed at 21:45 UTC; a Saturday fallback
+        # which starts 26h later is stale even if there was no GitHub run.
+        calls=[]
+        actual=sf.run(now=utc('2026-11-21T23:59:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GITHUB_GET'),
+            request_dispatch=lambda asof:calls.append('GITHUB_POST'))
+        self.assertEqual(actual['status'],'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+        self.assertEqual(actual['asof_et'],'2026-11-20')
+        self.assertFalse(actual['dispatch_requested'])
+        self.assertEqual(calls,[])
+        self.assertEqual(sf.exit_code_for_result(actual,'schedule'),3)
+
+    def test_sunday_delay_is_untrusted_scheduled_runner_not_green(self):
+        # Cron is Tue-Sat UTC. A Sunday schedule run is necessarily late.
+        calls=[]
+        actual=sf.run(now=utc('2026-11-22T08:00:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GITHUB_GET'),
+            request_dispatch=lambda asof:calls.append('GITHUB_POST'))
+        self.assertEqual(actual['status'],'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+        self.assertEqual(actual['asof_et'],'2026-11-20')
+        self.assertEqual(calls,[])
+        self.assertEqual(sf.exit_code_for_result(actual,'schedule'),3)
+
+    def test_friday_early_close_stale_saturday_fallback_is_red(self):
+        # Nov 27 Fri XNAS early close 13 ET +45m; a delayed Saturday
+        # fallback must not turn an unobserved primary into a clean NOOP.
+        calls=[]
+        actual=sf.run(now=utc('2026-11-28T23:59:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GITHUB_GET'),
+            request_dispatch=lambda asof:calls.append('GITHUB_POST'))
+        self.assertEqual(actual['status'],'BLOCKED_NATURAL_FALLBACK_EXPIRED')
+        self.assertEqual(actual['asof_et'],'2026-11-27')
+        self.assertEqual(calls,[])
+        self.assertEqual(sf.exit_code_for_result(actual,'schedule'),3)
+
+    def test_real_thanksgiving_non_session_remains_safe_noop(self):
+        # The Thu 26 Nov XNAS holiday is NOT a missing Thursday EOD.
+        calls=[]
+        actual=sf.run(now=utc('2026-11-27T00:26:00Z'),
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GITHUB_GET'),
+            request_dispatch=lambda asof:calls.append('GITHUB_POST'))
+        self.assertEqual(actual['status'],'NOOP_OUTSIDE_SAFE_FALLBACK_WINDOW')
+        self.assertEqual(calls,[])
+        self.assertEqual(sf.exit_code_for_result(actual,'schedule'),0)
+
     def test_scheduled_thanksgiving_noop_stays_green(self):
         x=sf.run(now=utc('2026-11-27T00:26:00Z'),
             trigger_event='schedule',
