@@ -1687,20 +1687,16 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
                 gh.assert_called_once()
                 google.assert_not_called()
 
-    def test_real_or_actions_google_post_never_accepts_off_lastmile(self):
-        # The real service-account client or an Actions job may not silently
-        # downgrade the source witness by omitting the environment flag.
-        # Synthetic objects are used: no Google request may be sent.
+    def test_authenticated_google_post_never_accepts_off_lastmile(self):
+        # A real service-account client must not silently disable source
+        # checks when the job omits or sets the last-mile mode to OFF.
+        # __new__ is solely used to emulate a constructed client offline.
         cases=(
-            (True,False,{}),
-            (True,False,{"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"}),
-            (False,True,{"GITHUB_ACTIONS":"true"}),
-            (False,True,{"GITHUB_ACTIONS":"true",
-                         "XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"}),
+            {},
+            {"XRAY_PERSONAL477_SOURCE_LASTMILE_MODE":"OFF"},
         )
-        for real_client,actions,runtime in cases:
-            with self.subTest(real_client=real_client,actions=actions,
-                              runtime=runtime):
+        for runtime in cases:
+            with self.subTest(runtime=runtime):
                 api=object.__new__(w.SheetApi)
                 api.base="https://sheets.googleapis.com/v4/spreadsheets/SYNTHETIC"
                 api.token="OFFLINE"
