@@ -1,5 +1,8 @@
 """No-IO adversarial tests for the personal 477 XNAS schedule fallback."""
 import unittest
+import io
+import os
+import contextlib
 from unittest.mock import patch
 from datetime import datetime,timezone
 import schedule_failover as sf
@@ -201,6 +204,69 @@ class OfficialXnasFailover(unittest.TestCase):
         self.assertEqual(calls,['GET','GET','POST:2026-10-26'])
         self.assertEqual(result['asof_et'],'2026-10-26')
         self.assertTrue(result['dispatch_requested'])
+
+    def test_actual_cli_supplies_a_fresh_pre_dispatch_clock(self):
+        """Production main() must not silently reuse captured_now at POST."""
+        with patch.dict(os.environ,{
+            'GITHUB_REPOSITORY':'gokaydonmez39-jpg/kripto-radar',
+            'GITHUB_TOKEN':'offline-readonly-test-token',
+            'GITHUB_EVENT_NAME':'schedule',
+        },clear=True), patch.object(sf,'run',
+             return_value={'status':'NOOP_SESSION_NOT_READY',
+                           'dispatch_requested':False}) as invoked:
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc=sf.main([])
+        self.assertEqual(rc,0)
+        invoked.assert_called_once()
+        self.assertTrue(callable(invoked.call_args.kwargs['fresh_now']))
+
+    def test_fallback_crosses_xnas_ten_hour_deadline_during_gets(self):
+        """The first clock was legal; by the LAST moment it is too late."""
+        calls=[]
+        old=utc('2026-11-21T07:44:58Z')
+        late=utc('2026-11-21T07:45:01Z')
+        result=sf.run(now=old,
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GET') or
+                {'workflow_runs':[],'total_count':0},
+            request_dispatch=lambda asof:calls.append('POST:'+asof) or True,
+            fresh_now=lambda:late)
+        self.assertEqual(result['status'],
+                         'BLOCKED_DISPATCH_WINDOW_EXPIRED')
+        self.assertEqual(result['asof_et'],'2026-11-20')
+        self.assertFalse(result['dispatch_requested'])
+        self.assertEqual(calls,['GET','GET'])
+
+    def test_exact_last_second_of_xnas_window_still_allowed(self):
+        calls=[]
+        old=utc('2026-11-21T07:44:58Z')
+        edge=utc('2026-11-21T07:45:00Z')
+        result=sf.run(now=old,
+            trigger_event='schedule',
+            read_runs=lambda:calls.append('GET') or
+                {'workflow_runs':[],'total_count':0},
+            request_dispatch=lambda asof:calls.append('POST:'+asof) or True,
+            fresh_now=lambda:edge)
+        self.assertEqual(result['status'],
+                         'DISPATCH_REQUEST_ACCEPTED_NOT_COMPLETED')
+        self.assertEqual(calls,['GET','GET','POST:2026-11-20'])
+
+    def test_bad_or_backward_clock_never_authorizes_dispatch(self):
+        old=utc('2026-11-21T07:44:58Z')
+        cases=(None,utc('2026-11-21T07:44:50Z'),
+               utc('2026-11-21T07:46:00Z').replace(tzinfo=None))
+        for candidate in cases:
+            with self.subTest(candidate=candidate):
+                calls=[]
+                result=sf.run(now=old,trigger_event='schedule',
+                    read_runs=lambda:calls.append('GET') or
+                        {'workflow_runs':[],'total_count':0},
+                    request_dispatch=lambda asof:calls.append('POST:'+asof) or True,
+                    fresh_now=lambda:candidate)
+                self.assertEqual(result['status'],
+                                 'BLOCKED_DISPATCH_CLOCK_UNVERIFIED')
+                self.assertFalse(result['dispatch_requested'])
+                self.assertEqual(calls,['GET','GET'])
 
     def test_invalid_github_collection_blocks_dispatch(self):
         calls=[]
