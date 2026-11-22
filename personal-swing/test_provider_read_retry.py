@@ -45,7 +45,8 @@ class ReadOnlyRetryTests(unittest.TestCase):
     def test_post_timeout_never_retried(self):
         with patch.object(mod, "urlopen", side_effect=URLError("ambiguous write")) as req:
             with self.assertRaises(mod.HandoffBlocked):
-                client().request(":batchUpdate", method="POST", body={"requests": []})
+                client().request(":batchUpdate", method="POST", body={
+                    "requests":[mod.as_cells([["synthetic"]],1)]})
         self.assertEqual(req.call_count, 1)
 
     def test_get_four_failures_stop_and_do_not_leak_response(self):
@@ -63,7 +64,8 @@ class ReadOnlyRetryTests(unittest.TestCase):
         with patch.object(mod, "urlopen", side_effect=HTTPError(
                 "synthetic", 503, "ambiguous", None, None)) as req:
             with self.assertRaises(mod.HandoffBlocked):
-                client().request(":batchUpdate", method="POST", body={"requests": []})
+                client().request(":batchUpdate", method="POST", body={
+                    "requests":[mod.as_cells([["synthetic"]],1)]})
         self.assertEqual(req.call_count, 1)
 
 
