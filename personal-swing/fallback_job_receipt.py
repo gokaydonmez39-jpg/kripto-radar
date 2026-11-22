@@ -99,12 +99,12 @@ def validate(run,jobs,asof,observed_at):
          observed_at.utcoffset() is not None,"PRIMARY_EOD_TIME_WINDOW_UNVERIFIED")
     now=observed_at.astimezone(timezone.utc)
     need(isinstance(run,dict) and
-         isinstance(run.get("id"),int) and run["id"]>0 and
+         type(run.get("id")) is int and run["id"]>0 and
          run.get("repository",{}).get("full_name")==REPO and
          run.get("path")==PATH and
          run.get("event")=="schedule" and
          run.get("head_branch")=="main" and
-         run.get("run_attempt")==1 and
+         type(run.get("run_attempt")) is int and run["run_attempt"]==1 and
          run.get("status")=="completed" and
          run.get("conclusion")=="success" and
          isinstance(run.get("head_sha"),str) and
@@ -135,7 +135,7 @@ def validate(run,jobs,asof,observed_at):
     entries=jobs["jobs"]
     need(all(isinstance(j,dict) and
              type(j.get("id")) is int and j["id"]>0 and
-             j.get("run_id")==run["id"] and
+             type(j.get("run_id")) is int and j["run_id"]==run["id"] and
              j.get("status")=="completed" and
              j.get("conclusion")=="success" for j in entries) and
          len({j["id"] for j in entries})==len(NAMES) and
