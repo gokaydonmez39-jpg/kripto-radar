@@ -435,11 +435,14 @@ def verify_readback(plan, after):
 
 def synchronize(api, asof, read_batch):
     api.check_metadata()
-    before=api.read('ADAY_GECMISI','M')
-    plan=build_updates(before,asof,read_batch)
-    alert_before=api.read('UYARI_OLAYLARI','T')
+    # P0: source-first admission. No IEX/vendor market-data request may
+    # occur until the sole current natural, final 477/477 EOD receipt,
+    # source SHA and immutable ledger chronology have been validated.
     scans=api.read('TARAMA_KAYITLARI','J')
     source_url=verified_terminal_eod_run(scans,asof)
+    before=api.read('ADAY_GECMISI','M')
+    alert_before=api.read('UYARI_OLAYLARI','T')
+    plan=build_updates(before,asof,read_batch)
     outbox=plan_outbox_events(plan,alert_before,source_url)
     require(api.read('ADAY_GECMISI','M')==before and
             api.read('UYARI_OLAYLARI','T')==alert_before and

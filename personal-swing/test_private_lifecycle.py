@@ -304,6 +304,37 @@ class LifecycleTruthTests(unittest.TestCase):
                     life.synchronize(api,'2026-10-26',fetch)
                 self.assertEqual(api.writes,0)
 
+    def test_invalid_canonical_eod_never_calls_price_provider(self):
+        """P0: verify current scan before fetching any new IEX market bars."""
+        for kind in ("missing", "stale", "non_final", "wrong_origin",
+                     "broken_scope", "duplicate"):
+            with self.subTest(kind=kind):
+                api=FakeApi()
+                if kind=="missing":
+                    api.scans=[list(SCAN_HEADER)]
+                elif kind=="stale":
+                    api.scans[1][0]="2026-10-23"
+                elif kind=="non_final":
+                    api.scans[1][4]="476"
+                elif kind=="wrong_origin":
+                    api.scans[1][1]=life.RUN_EVENT_LABELS["workflow_dispatch"]
+                    api.scans[1][9]=api.scans[1][9].replace(
+                        "source_event=schedule",
+                        "source_event=workflow_dispatch")
+                elif kind=="broken_scope":
+                    api.scans[1][9]="scopeSHA=BAD;algorithmSHA=BAD"
+                elif kind=="duplicate":
+                    api.scans.append(copy.deepcopy(api.scans[1]))
+                calls=[]
+                def observed_provider(symbols,day):
+                    calls.append((symbols,day))
+                    return fetch(symbols,day)
+                with self.assertRaises((HandoffBlocked,ValueError)):
+                    life.synchronize(api,"2026-10-26",observed_provider)
+                self.assertEqual(calls,[],
+                                 "IEX provider touched before source proof")
+                self.assertEqual(api.writes,0)
+
     def test_non_natural_eod_cannot_reserve_terminal_stop_or_target(self):
         # EOD workflow push is offline only; manual dispatch has no
         # certified parent-child/Sheet single-writer fallback authority.
