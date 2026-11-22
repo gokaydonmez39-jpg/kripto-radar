@@ -712,7 +712,7 @@ def _valid_canonical_new_al(v, asof, run_url):
             v[8:11] != ['', '', ''] or
             v[11] != 'KAYDEDİLDİ_BİLDİRİM_AYRI'):
         return False
-    number = r'[0-9]+(?:\\.[0-9]+)?(?:e[+-]?[0-9]+)?'
+    number = r'[0-9]+(?:\.[0-9]+)?(?:e[+-]?[0-9]+)?'
     note_pattern = (
         r'GitHub private handoff; source_event=schedule; '
         r'IEX single exchange; RSI14=('+number+r') RVOL=('+number+
