@@ -852,6 +852,21 @@ class SheetApi:
                     _valid_private_batch_targets(
                         body,getattr(self,'_post_scope',None)),
                     'GOOGLE_SHEETS_POST_SCOPE_INVALID')
+            # In live source-lastmile ENFORCE mode the immutable FINAL row
+            # must cite THIS scheduled GitHub run, not merely a correctly
+            # formatted URL borrowed from another historical or competing
+            # EOD. Deny before any GitHub source/lease GET or Google POST.
+            if (os.environ.get('XRAY_PERSONAL477_SOURCE_LASTMILE_MODE')
+                    == 'ENFORCE_GET' and
+                    'addNamedRange' in body['requests'][0]):
+                run_id=os.environ.get('GITHUB_RUN_ID')
+                require(type(run_id) is str and
+                        re.fullmatch(r'[1-9][0-9]*',run_id) is not None and
+                        body['requests'][1]['appendCells']['rows'][0]
+                            ['values'][8]['userEnteredValue']['stringValue']
+                        == ('https://github.com/gokaydonmez39-jpg/'
+                            'kripto-radar/actions/runs/'+run_id),
+                        'GOOGLE_SHEETS_POST_SCOPE_INVALID')
         else:
             require(body is None, 'GOOGLE_SHEETS_METHOD_SCOPE_INVALID')
         # One central last-mile barrier: canonical EOD scan, outbox,
