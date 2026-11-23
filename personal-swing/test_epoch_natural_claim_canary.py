@@ -174,5 +174,46 @@ class NaturalScheduleOnlyClaim(unittest.TestCase):
         self.assertNotIn("contents: write",after)
 
 
+
+class NaturalScheduleSummaryWitness(unittest.TestCase):
+    """Advisory GitHub step summary must expose claim HOLD distinct from job success."""
+
+    def test_failed_claim_prints_redacted_explicit_hold_in_step_summary(self):
+        import os
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as folder:
+            summary=Path(folder)/"gh_summary"
+            with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY":str(summary)}):
+                with patch.object(canary, "run", side_effect=RuntimeError(
+                        "SECRET_PROVIDER_DETAIL_MUST_NOT_LEAK")):
+                    with redirect_stdout(io.StringIO()):
+                        self.assertEqual(canary.main(["--schedule-canary"]),0)
+            content=summary.read_text()
+            self.assertTrue(content.endswith("\n"))
+            self.assertIn("FULL_FINAL=HOLD",content)
+            self.assertIn("XRAY_NASDAQ_EPOCH_CANARY=HOLD_NO_TAG_AUTHORITY",content)
+            self.assertNotIn("SECRET_PROVIDER_DETAIL_MUST_NOT_LEAK",content)
+            self.assertNotIn("PASS_GITHUB_TAG",content)
+
+    def test_successful_claim_only_summary_reports_tag_not_eod_or_device(self):
+        import os
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as folder:
+            summary=Path(folder)/"gh_summary"
+            with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY":str(summary)}):
+                with patch.object(canary, "run",
+                                  return_value={"status":canary.PASS}):
+                    with redirect_stdout(io.StringIO()):
+                        self.assertEqual(canary.main(["--schedule-canary"]),0)
+            content=summary.read_text()
+            self.assertTrue(content.endswith("\n"))
+            self.assertIn("FULL_FINAL=HOLD",content)
+            self.assertIn("XRAY_NASDAQ_EPOCH_CANARY=PASS_GITHUB_TAG_READBACK_ONLY",content)
+            self.assertIn("NOT_EOD_NOT_SHEET_NOT_DEVICE_ACK",content)
+            self.assertNotIn("FULL_FINAL=PASS",content)
+
+
 if __name__=="__main__":
     unittest.main()
