@@ -244,6 +244,41 @@ class FirstClaimAndReadback(unittest.TestCase):
                 self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
                 self.assertEqual(git.refs,{})
 
+    def test_natural_run_created_after_ten_hour_epoch_must_hold_at_source_gate(self):
+        """Independent run-ID admission must enforce the SAME XNAS window.
+
+        Last-mile listing already bounds the window, but a direct consumer
+        must not accept a run GitHub created after close+45m+10h.
+        Source receipt is a necessary, independently testable precondition.
+        """
+        owner=natural()
+        git=MockGit()
+        cases=(
+            ("2026-11-24T07:45:00Z","2026-11-24T07:45:01Z",
+             "2026-11-24T07:46:00Z",True),
+            ("2026-11-24T07:45:01Z","2026-11-24T07:46:00Z",
+             "2026-11-24T07:47:00Z",False),
+            ("2026-11-24T09:48:00Z","2026-11-24T09:49:00Z",
+             "2026-11-24T09:50:00Z",False),
+        )
+        for created,updated,instant,allowed in cases:
+            with self.subTest(created=created):
+                git.run_overrides={
+                    "created_at":created,"updated_at":updated,
+                }
+                receipt=git("GET","/actions/runs/890123")
+                at=datetime.fromisoformat(instant.replace("Z","+00:00"))
+                if allowed:
+                    self.assertTrue(lease.verify_live_natural_run_receipt(
+                        owner,receipt,now=at))
+                else:
+                    with self.assertRaisesRegex(
+                            lease.LeaseHold,
+                            "LEASE_NATURAL_RUN_READBACK_UNVERIFIED"):
+                        lease.verify_live_natural_run_receipt(
+                            owner,receipt,now=at)
+        self.assertFalse(any(method=="POST" for method,_,_ in git.calls))
+
     def test_untrusted_natural_listing_attempt_type_blocks_claim(self):
         # The exact run-ID GET can be correct while a malformed list page
         # tries to treat boolean True or float 1.0 as the integer attempt 1.
