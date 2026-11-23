@@ -13,7 +13,7 @@ const B=Function(version.portable.code+'\n'+version.blocks[3].replaceAll('XRAY_C
 const A=Function(version.blocks[10]+'\nreturn XRAY_A_IMPL;')();
 const ASOF='2026-11-23', RUN='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/123456789';
 const SCOPE='3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060';
-const ALGO='0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523';
+const ALGO='cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c'; // Reviewed forward-only 2026-11-23 epoch
 const SCAN_HEAD=['ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ','EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'];
 const SCAN_ROW=[ASOF,'GitHub schedule VERIFIED IEX EOD','477','477','477','0','TRUE','1',RUN,
   'scopeSHA='+SCOPE+';algorithmSHA='+ALGO+';source_event=schedule;NO_ORDERS'];
