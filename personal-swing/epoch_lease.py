@@ -246,7 +246,13 @@ def verify_live_natural_run_receipt(owner, receipt, *, now):
         raise
     except Exception:
         raise LeaseHold("LEASE_NATURAL_RUN_READBACK_UNVERIFIED") from None
-    require(created >= cutoff,"LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
+    # The immutable source collection is scoped to the EXACT same
+    # official XNAS close+45m through +10h epoch. The direct run-ID GET
+    # must enforce that upper bound independently: a late natural run
+    # cannot be trusted merely because it is still "in_progress".
+    # Inclusive at the cutoff and +10h boundary; +1 second is HOLD.
+    require(cutoff <= created <= cutoff + timedelta(hours=10),
+            "LEASE_NATURAL_RUN_READBACK_UNVERIFIED")
     return True
 
 
