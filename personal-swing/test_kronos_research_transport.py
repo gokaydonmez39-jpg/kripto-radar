@@ -147,6 +147,50 @@ class NarrowKronosWriterTest(unittest.TestCase):
             with self.assertRaisesRegex(w.HandoffBlocked,t.ERR):
                 a._last_mile()
 
+    def test_exact_authenticated_parent_passes_get_only_research_gate(self):
+        a=fixture()
+        with (patch.object(binding,"scheduled_parent",return_value=PARENT),
+              patch.object(k,"eligible_shadow_asof",return_value=ASOF),
+              patch.object(v,"private_authority",
+                           return_value=(["SYNA"],SCOPE,POLICY,ASOF)),
+              patch("preopen_a34.verify_github_natural_eod_source",
+                    return_value="GITHUB_NATURAL_EOD_SOURCE_VERIFIED") as identity,
+              patch("preopen_a34.verify_github_eod_six_job_chain",
+                    return_value="GITHUB_NATURAL_EOD_SIX_JOB_VERIFIED") as six,
+              patch.object(t,"urlopen",side_effect=AssertionError("NO_GOOGLE_POST")) as post):
+            self.assertEqual(a._last_mile(),a._research_scope)
+            self.assertEqual(identity.call_count,1)
+            self.assertEqual(six.call_count,1)
+            post.assert_not_called()
+
+    def test_metadata_corruption_denied_as_fixed_code_before_post(self):
+        a=fixture()
+        payload={"requests":[w.as_cells(rows(),SID)]}
+        invalid=meta()
+        invalid["sheets"]=None
+        with (patch.object(a,"_last_mile",return_value=a._research_scope),
+              patch.object(w,"urlopen",return_value=fake_response(invalid)),
+              patch.object(t,"urlopen",side_effect=AssertionError("POST_ESCAPE")) as post):
+            with self.assertRaisesRegex(w.HandoffBlocked,t.ERR):
+                a.request(":batchUpdate",method="POST",body=payload)
+            post.assert_not_called()
+
+    def test_natural_parent_arm_strict_event_and_477_scope(self):
+        a=fixture()
+        universe=[f"SY{i:03d}" for i in range(477)]
+        with (patch.object(binding,"scheduled_parent",return_value=PARENT),
+              patch.object(k,"eligible_shadow_asof",return_value=ASOF),
+              patch.dict(t.os.environ,{
+                  "GITHUB_REF":"refs/heads/main",
+                  "GITHUB_WORKFLOW_REF":t.WORKFLOW_REF,
+                  "GITHUB_RUN_ATTEMPT":"1",
+                  "GITHUB_EVENT_NAME":"workflow_run"})):
+            a.arm(ASOF,universe,SCOPE,POLICY,ASOF)
+            self.assertEqual(len(a._research_scope[1]),477)
+            with self.assertRaises(w.HandoffBlocked):
+                a.arm(ASOF,universe[:-1]+[universe[-2]],SCOPE,POLICY,ASOF)
+            self.assertEqual(len(a._research_scope[1]),477)
+
 
 if __name__=="__main__":
     unittest.main()
