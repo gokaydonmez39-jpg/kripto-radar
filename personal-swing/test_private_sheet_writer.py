@@ -2252,7 +2252,25 @@ class CanonicalSheetPostReadOnlyNaturalFence(unittest.TestCase):
         guardian=workflow.split("\n  guardian-acceptance:",1)[1].split(
             "\n  daily-private-score-acceptance:",1)[0]
         self.assertIn("      actions: read",guardian)
-        self.assertNotIn("contents: write",workflow)
+        # Least privilege after the user-authorized natural-source canary:
+        # one schedule-only data job may create only its protected Git lease.
+        # PR/push/manual entry and the five other EOD jobs keep read-only
+        # source admission and no generic repository write permission.
+        self.assertEqual(workflow.count("contents: write"),1)
+        before,scan_and_rest=workflow.split("\n  daily-private-scan:",1)
+        scan,remaining=scan_and_rest.split(
+            "\n  private-sheets-auth-preflight:",1)
+        self.assertNotIn("contents: write",before)
+        self.assertIn("    if: github.event_name == 'schedule'",scan)
+        self.assertIn("    permissions:\n      contents: write\n      actions: read",scan)
+        self.assertIn("persist-credentials: false",scan)
+        self.assertEqual(scan.count(
+            "python epoch_natural_claim_canary.py --schedule-canary"),1)
+        self.assertIn(
+            "github.event_name == 'schedule' && github.ref == 'refs/heads/main'"
+            " && github.run_attempt == 1",scan)
+        self.assertNotIn("contents: write",remaining)
+        self.assertIn("  contents: read\n  actions: read",before)
 
 if __name__=='__main__':
     unittest.main()
