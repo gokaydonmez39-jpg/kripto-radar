@@ -16,7 +16,7 @@ function fixture(asof,algo,opts={}){
  const channel=opts.channel||'GitHub schedule VERIFIED IEX EOD',noteExtra=opts.noteExtra||'';
  const scan=[['ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ','EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'],
  [asof,channel,'477','477','477','0','TRUE','1',WEB,
-  'scopeSHA='+SCOPE+';algorithmSHA='+algo+';source_event=schedule;NO_ORDERS'+noteExtra]];
+  'scopeSHA='+SCOPE+';algorithmSHA='+algo+';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'+noteExtra]];
  const history=[['ALARM KİMLİĞİ','ASOF ET','SEMBOL','SINIF','IEX KAPANIŞ USD','STOP 2ATR','HEDEF 2R','TAKİP DURUMU','KAPANIŞ SEANSI','SONUÇ'],
  [asof+'|TEST',asof,'TEST','TEKNİK AL ADAYI','100','90','120','AÇIK • 0/15 SEANS','','']];
  const e=Array(20).fill('');
