@@ -683,5 +683,93 @@ class LifecyclePublicDiagnosticsTests(unittest.TestCase):
         self.assertNotIn('private row', message)
 
 
+
+class UncertainGooglePrivateLifecyclePost(unittest.TestCase):
+    """Production-shape no-network negative acceptance for uncertain Google POST.
+
+    Readback is NOT a receipt. A lost 200/timeout may follow a full,
+    zero or partial vendor commit: no retry, duplicate event or false PASS.
+    """
+
+    class UncertainApi(FakeApi):
+        def __init__(self, mode):
+            super().__init__()
+            self.mode=mode
+
+        def request(self, path, *, method='GET', body=None):
+            if self.mode=='committed_then_lost_receipt':
+                # Emulate one successfully applied atomic batch whose HTTP
+                # response disappears. The caller cannot assume delivery.
+                super().request(path,method=method,body=body)
+            elif self.mode=='not_committed_then_timeout':
+                self.writes+=1
+            elif self.mode=='partial_commit_fault_injection':
+                # Adversarial model, not a claim Google normally applies a
+                # partial atomic batch. Never re-enter the write path.
+                self.writes+=1
+                first=body['requests'][0]['updateCells']
+                i=first['start']['rowIndex']
+                self.rows[i][7]=first['rows'][0]['values'][0][
+                    'userEnteredValue']['stringValue']
+            else:
+                raise AssertionError('UNSUPPORTED_TEST_SCENARIO')
+            raise HandoffBlocked('GOOGLE_SHEETS_TRANSPORT_TimeoutError')
+
+    def test_lost_google_post_receipt_never_retries_or_reports_delivery(self):
+        for mode in ('committed_then_lost_receipt',
+                     'not_committed_then_timeout',
+                     'partial_commit_fault_injection'):
+            with self.subTest(mode=mode):
+                api=self.UncertainApi(mode)
+                before_rows=copy.deepcopy(api.rows)
+                before_alerts=copy.deepcopy(api.alert_rows)
+                with self.assertRaisesRegex(
+                    HandoffBlocked,'GOOGLE_SHEETS_TRANSPORT_TimeoutError'):
+                    life.synchronize(api,'2026-10-26',fetch)
+                self.assertEqual(api.writes,1)
+                self.assertEqual(api.rows[1][:7],before_rows[1][:7])
+                self.assertEqual(api.rows[2][:7],before_rows[2][:7])
+                self.assertEqual(api.rows[1][11:],before_rows[1][11:])
+                if mode=='committed_then_lost_receipt':
+                    self.assertNotEqual(api.rows,before_rows)
+                    self.assertEqual(len(api.alert_rows),
+                                     len(before_alerts)+1)
+                    self.assertEqual(api.alert_rows[-1][17],life.EVENT_PENDING)
+                elif mode=='not_committed_then_timeout':
+                    self.assertEqual(api.rows,before_rows)
+                    self.assertEqual(api.alert_rows,before_alerts)
+                else:
+                    self.assertNotEqual(api.rows,before_rows)
+                    self.assertEqual(api.alert_rows,before_alerts)
+
+    def test_absent_20_nov_scan_cannot_collapse_two_same_symbol_episodes(self):
+        # Synthetic current-day read-only plan only; NO Sheet mutation,
+        # backfill, replay, alarm reservation or market provider HTTP.
+        rows=[list(CANDIDATE_HEADER),
+              row('2026-10-30',100.,95.,110.,14,symbol='AAA'),
+              row('2026-11-19',101.,96.,111.,0,symbol='AAA')]
+        original=copy.deepcopy(rows)
+        called=[]
+        def offline_read(symbols,asof):
+            called.append((list(symbols),asof))
+            return {'AAA':[
+                bar('2026-11-20',o=101.,h=103.,l=100.,c=102.),
+                bar('2026-11-23',o=102.,h=104.,l=101.,c=103.)
+            ]}
+        result=life.build_updates(rows,'2026-11-23',offline_read)
+        self.assertEqual((result['evaluated'],result['closed']),(2,1))
+        self.assertEqual(called,[(['AAA'],'2026-11-23')])
+        old,new=result['updates']
+        self.assertEqual(old['event']['event_day'],'2026-11-20')
+        self.assertEqual(old['event']['event_code'],'TIME_EXIT_AT_CLOSE')
+        self.assertEqual(old['new_cells'][0],
+                         'KAPALI • TIME_EXIT_AT_CLOSE • 15/15 SEANS')
+        self.assertEqual(new['new_cells'][0],'AÇIK • 2/15 SEANS')
+        self.assertFalse(new['terminal'])
+        self.assertIsNone(new['event'])
+        self.assertEqual(rows,original)
+
+
+
 if __name__=='__main__':
     unittest.main()
