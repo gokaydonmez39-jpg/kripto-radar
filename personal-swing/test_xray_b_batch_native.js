@@ -58,7 +58,8 @@ function fixture(){
  const scoreTab=grid('SWING_SKOR_GUNLUK',11,35,[header,summary,row]);
  scoreTab.data[0].rowData[1].values[26].note=note;
  const scan=grid('TARAMA_KAYITLARI',12,26,[['ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ','EKSİK',
-   'FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'],[asof,'schedule','477','477','477','0','TRUE','0',webURL,'synthetic']]);
+   'FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'],[asof,'GitHub schedule VERIFIED IEX EOD','477','477','477','0','TRUE','0',webURL,
+    'scopeSHA='+scope+';algorithmSHA='+policy+';source_event=schedule;NO_ORDERS']]);
  const history=grid('ADAY_GECMISI',13,26,[['ALARM KİMLİĞİ','ASOF ET','SEMBOL','IEX KAPANIŞ USD','STOP 2ATR',
    'HEDEF 2R','TAKİP DURUMU'],[episode,opened,symbol,'100','90','120','AÇIK • 1/15 SEANS']]);
  const event=grid('UYARI_OLAYLARI',14,20,[['OLAY_ANAHTARI'],['synthetic-pending-STOP']]);
