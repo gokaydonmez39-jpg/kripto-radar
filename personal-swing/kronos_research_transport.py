@@ -29,6 +29,7 @@ def gate(ok):
 
 
 class KronosV2ResearchApi(writer.SheetApi):
+    _kronos_v2_writer = True
     """Authenticated GET reuse; POST is restricted to one Kronos monthly tab.
 
     Never use this class for EOD, candidate, alert, PANEL, score or NEON
@@ -146,6 +147,14 @@ class KronosV2ResearchApi(writer.SheetApi):
         gate(all({r[3] for r in rows if r[2]==symbol}=={"1","5","12"}
                  for _,symbol in pairs))
         gate(rows==sorted(rows,key=lambda r:(r[2],int(r[3]))))
+        # Reuse the independent *research* ledger validator: the source
+        # transport cannot accept arbitrary invented numeric forecasts,
+        # model identities, unknown QC states or a partial H1/H5/H12 group.
+        try:
+            import kronos_oos_audit as oos
+            oos.validate_ledger([list(k.HEADERS)]+rows)
+        except Exception:
+            raise writer.HandoffBlocked(ERR) from None
 
     def request(self,path,*,method="GET",body=None):
         if method!="POST":
