@@ -1101,7 +1101,7 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         cases=(
             ("invalid_json",
              b'{"replies": PRIVATE_TEST_JSON_CONTENT_MUST_NOT_APPEAR}'),
-            ("invalid_utf8", b'\\xffPRIVATE_TEST_UTF8_CONTENT_MUST_NOT_APPEAR'),
+             bytes([255])+b'PRIVATE_TEST_UTF8_CONTENT_MUST_NOT_APPEAR'),
         )
         for label,data in cases:
             with self.subTest(provider_reply=label):
