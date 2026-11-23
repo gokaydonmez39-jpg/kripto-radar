@@ -382,6 +382,11 @@ def synchronize(api, asof, read_batch, predictor_factory=k.load_predictor,
     mark("SOURCE_AUTHORITY")
     authority_args={"parent":parent} if parent is not None else {}
     symbols,scope_sha,policy_sha,scan_id=private_authority(api,asof,**authority_args)
+    # The canonical EOD SheetApi intentionally rejects workflow_run and
+    # KRONOS2 monthly writes. Only the separately scoped research client
+    # may arm a post-EOD monthly writer; offline FakeApi stays read-only.
+    if getattr(api,"_kronos_v2_writer",False) is True:
+        api.arm(asof,symbols,scope_sha,policy_sha,scan_id)
     mark("PARTITION_METADATA")
     name,sid,used=metadata_and_sheet(api,asof)
     assert name==month
@@ -507,7 +512,8 @@ def main():
         phase="SHEET_AUTH"
         secret=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         k.require(bool(secret),"KRONOS2_AUTH_MISSING")
-        api=writer.SheetApi(secret)
+        from kronos_research_transport import KronosV2ResearchApi
+        api=KronosV2ResearchApi(secret,parent=parent)
         def mark(label):
             nonlocal phase
             phase=label
