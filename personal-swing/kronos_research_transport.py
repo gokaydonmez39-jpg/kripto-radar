@@ -161,7 +161,14 @@ class KronosV2ResearchApi(writer.SheetApi):
             return super().request(path,method=method,body=body)
         gate(type(path) is str and path==":batchUpdate")
         scope=self._last_mile()
-        self._allow_payload(body,scope)
+        try:
+            self._allow_payload(body,scope)
+        except writer.HandoffBlocked:
+            raise
+        except Exception:
+            # An unexpected/malformed metadata or nested batch response is
+            # HOLD, never an unredacted Python/provider diagnostic.
+            raise writer.HandoffBlocked(ERR) from None
         # One HTTP POST only. Malformed ack, 4xx/5xx, socket reset or timeouts
         # all become a fixed HOLD. v2 performs immutable prefix readback by GET;
         # it NEVER replays a possibly committed batch automatically.
