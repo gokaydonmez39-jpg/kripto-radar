@@ -65,6 +65,29 @@ def run(environment, *, transport=None, now=None, completed_session=None):
     }
 
 
+def _publish_step_summary(is_verified):
+    """Fixed, redacted advisory status. GitHub job success is NOT tag success.
+
+    This witness is deliberately distinct from EOD, Sheet CAS, A/B cards
+    and iPhone delivery. Failure to write an optional GitHub summary must
+    never retry a permanent Git tag or suppress the original EOD path.
+    """
+    path=os.environ.get("GITHUB_STEP_SUMMARY")
+    if not isinstance(path,str) or not os.path.isabs(path):
+        return
+    literal=("XRAY_NASDAQ_EPOCH_CANARY=PASS_GITHUB_TAG_READBACK_ONLY"
+             if is_verified else
+             "XRAY_NASDAQ_EPOCH_CANARY=HOLD_NO_TAG_AUTHORITY")
+    try:
+        with open(path,"a",encoding="utf-8") as summary:
+            summary.write(literal+
+                ";NOT_EOD_NOT_SHEET_NOT_DEVICE_ACK;FULL_FINAL=HOLD\\n")
+    except OSError:
+        # The canary is advisory, and a summary IO failure is not a license
+        # for another Git ref POST or a silent production lease release.
+        pass
+
+
 def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
     # A runner may not choose an ASOF, enter replay mode or invoke a
@@ -79,6 +102,7 @@ def main(argv=None):
     try:
         result = run(dict(os.environ))
         print(json.dumps(result, sort_keys=True))
+        _publish_step_summary(result.get("status") == PASS)
     except Exception:
         # Run this advisory canary once, never retry. A failed canary does
         # not conceal/mutate source data or suppress canonical Google CAS.
@@ -88,6 +112,7 @@ def main(argv=None):
                           "sheet_writes": 0, "orders": False,
                           "ab_release_authorized": False,
                           "device_ack": "UNKNOWN"}, sort_keys=True))
+        _publish_step_summary(False)
     # Advisory-only experimental witness: preserve the original six-job
     # EOD production source and its own mandatory fail-closed validation.
     return 0
