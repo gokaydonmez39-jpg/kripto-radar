@@ -10,7 +10,7 @@ assert.equal(version.schema,'XRAY_NASDAQ_477_RUNTIME_V3');
 assert.equal(version.blocks.length,12);
 const C=Function(version.blocks[9]+'\nreturn XRAY_C_OPEN')();
 const REPO='gokaydonmez39-jpg/kripto-radar',URL='https://api.github.com/repos/'+REPO+'/actions/runs/';
-function receipt(asof,session,{event='schedule',quarantined=0}={}){
+function receipt(asof,session,{event='schedule',quarantined=0,producer_state='CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN'}={}){
  const id=123450987,root=URL+id,head='a'.repeat(40);
  const run={id,url:root,repository:{full_name:REPO},head_branch:'main',
   path:'.github/workflows/xray-nasdaq-a34-preopen.yml',run_attempt:1,
@@ -22,7 +22,7 @@ function receipt(asof,session,{event='schedule',quarantined=0}={}){
   head_sha:head,status:'completed',conclusion:'success',
   started_at:session+'T10:0'+i+':00Z',
   completed_at:session+'T10:0'+(i+1)+':00Z'}));
- const payload={state:'CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN',asof_et:asof,
+ const payload={state:producer_state,asof_et:asof,
   next_xnas_session:session,covered:477,source:'ALPACA_IEX_RAW_1DAY',
   al_identity_check:'EXACT_AL_IDENTITY_PASS',al_level_check:'EXACT_AL_LEVELS_PASS',
   orders:false,writes:false,private_data_published:false,open_episodes:18,
@@ -90,4 +90,51 @@ test('C render: wrong natural slot never produces an opening card',()=>{
 test('No injected provider/Sheet/order methods are necessary',()=>{
  assert.equal(typeof C.proof,'function');
  assert.equal(typeof C.render,'function');
+});
+
+
+test('C: clean A34 with 0 quarantined rows is the only green source',()=>{
+ const v=C.proof(receipt('2026-11-20','2026-11-23'));
+ assert.equal(v.state,'NATURAL_A34_VERIFIED');
+ assert.equal(v.producer_state,'CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN');
+ assert.equal(v.quarantined,0);
+ const card=C.render({...context(),natural:v});
+ assert.match(card.text,/Planlı doğal A34 doğrulandı/);
+});
+for(const [name,producer_state,quarantined] of [
+ ['disputed but zero quarantined','CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN',0],
+ ['disputed and one quarantined','CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN',1],
+ ['claimed healthy yet one quarantined','CORE_PREOPEN_PASS_DEVICE_ACK_UNKNOWN',1]
+]){
+ test('C: cannot promote '+name+' to VERIFIED',()=>{
+  const v=C.proof(receipt('2026-11-20','2026-11-23',{producer_state,quarantined}));
+  assert.equal(v.state,'HOLD');
+  assert.equal(v.stage,'A34_DISPUTED_OR_QUARANTINED');
+  const card=C.render({...context(),natural:v});
+  assert.equal(card.state,'C_BODY_READY');
+  assert.match(card.text,/Planlı doğal A34 doğrulanmadı/);
+ });
+}
+test('C: conflicting healthy and disputed receipts are HOLD',()=>{
+ const x=receipt('2026-11-20','2026-11-23');
+ const bad=receipt('2026-11-20','2026-11-23',{producer_state:'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'});
+ x.preopen_log.structuredContent.content+='\n'+bad.preopen_log.structuredContent.content.replace('10:01:30Z','10:01:40Z');
+ const out=C.proof(x);
+ assert.equal(out.state,'HOLD');
+ assert.equal(out.stage,'A34_CURRENT_RECEIPT_UNVERIFIED');
+});
+test('C: render rejects an unbound source-state claim even with 0 quarantined',()=>{
+ const valid=C.proof(receipt('2026-11-20','2026-11-23'));
+ const disputed={...valid,producer_state:'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN'};
+ const noSource={...valid};delete noSource.producer_state;
+ for(const natural of [disputed,noSource]){
+  const x=C.render({...context(),natural});
+  assert.match(x.text,/Planlı doğal A34 doğrulanmadı/);
+ }
+});
+test('C: workflow_run disputed source also remains HOLD',()=>{
+ const x=receipt('2026-11-20','2026-11-23',{event:'workflow_run',producer_state:'CORE_PREOPEN_PASS_DISPUTED_EVENT_HOLD_DEVICE_ACK_UNKNOWN',quarantined:0});
+ const v=C.proof(x);
+ assert.equal(v.state,'HOLD');
+ assert.equal(v.stage,'A34_DISPUTED_OR_QUARANTINED');
 });
