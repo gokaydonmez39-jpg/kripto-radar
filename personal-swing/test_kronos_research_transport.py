@@ -36,6 +36,7 @@ def fixture():
     a=t.KronosV2ResearchApi.__new__(t.KronosV2ResearchApi)
     a._authenticated_production_client=True
     a._research_parent=PARENT
+    a._research_run_id=890124
     a._research_scope=(ASOF,frozenset(("SYNA",)),SCOPE,POLICY,ASOF)
     a._post_scope={"scan":1,"candidate":2,"alerts":3,"panel":4,"score":5,"neon":6}
     a.base="https://sheets.googleapis.com/v4/spreadsheets/TEST_NOT_REAL"
@@ -47,7 +48,10 @@ def meta(month=True):
     sheets=[{"properties":{"sheetId":1,"title":"PANEL"}}]
     if month:
         sheets.append({"properties":{"sheetId":SID,"title":"KRONOS2_2026_11"}})
-    return {"properties":{"timeZone":"Europe/Istanbul"},"sheets":sheets}
+    out={"properties":{"timeZone":"Europe/Istanbul"},"sheets":sheets}
+    if month:
+        out["namedRanges"]=[t.research_epoch_marker(ASOF,SID,890124)]
+    return out
 
 
 def fake_response(value):
@@ -149,7 +153,13 @@ class NarrowKronosWriterTest(unittest.TestCase):
 
     def test_exact_authenticated_parent_passes_get_only_research_gate(self):
         a=fixture()
-        with (patch.object(binding,"scheduled_parent",return_value=PARENT),
+        with (patch.dict(t.os.environ,{
+                  "GITHUB_REF":"refs/heads/main",
+                  "GITHUB_WORKFLOW_REF":t.WORKFLOW_REF,
+                  "GITHUB_RUN_ATTEMPT":"1",
+                  "GITHUB_EVENT_NAME":"workflow_run",
+                  "GITHUB_RUN_ID":"890124"}),
+              patch.object(binding,"scheduled_parent",return_value=PARENT),
               patch.object(k,"eligible_shadow_asof",return_value=ASOF),
               patch.object(v,"private_authority",
                            return_value=(["SYNA"],SCOPE,POLICY,ASOF)),
@@ -184,7 +194,8 @@ class NarrowKronosWriterTest(unittest.TestCase):
                   "GITHUB_REF":"refs/heads/main",
                   "GITHUB_WORKFLOW_REF":t.WORKFLOW_REF,
                   "GITHUB_RUN_ATTEMPT":"1",
-                  "GITHUB_EVENT_NAME":"workflow_run"})):
+                  "GITHUB_EVENT_NAME":"workflow_run",
+                  "GITHUB_RUN_ID":"890124"})):
             a.arm(ASOF,universe,SCOPE,POLICY,ASOF)
             self.assertEqual(len(a._research_scope[1]),477)
             with self.assertRaises(w.HandoffBlocked):
