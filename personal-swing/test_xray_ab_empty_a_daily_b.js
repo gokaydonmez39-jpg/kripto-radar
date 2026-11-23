@@ -79,3 +79,45 @@ test('synthetic record has exactly the immutable same task and no external effec
   assert.equal(TASK.length,32);
   assert.equal(SEAL.length,64);
 });
+
+
+const REAL_A=Function(runtime.blocks[10]+'\nreturn XRAY_A_IMPL')();
+function checkedQueue(source,a={state:'EMIT_NOW',post_calls:1},b={state:'EMIT_NOW',post_calls:1}){
+ const calls={A:0,B:0,riskOnly:[]};
+ return {calls,go:()=>REAL_A.coordinate({
+  checkCurrentRisk:async()=>source,
+  runA:async riskOnly=>{calls.A++;calls.riskOnly.push(riskOnly);return a},
+  runB:async()=>{calls.B++;return b}
+ })};
+}
+for(const [name,queue,aState,expected,aCount,bCount,risk] of [
+ ['current AL precedes B',{pending:true,risk:false},{state:'EMIT_NOW',post_calls:1},'EMIT_NOW',1,0,false],
+ ['current STOP precedes B',{pending:true,risk:true},{state:'EMIT_NOW',post_calls:1},'EMIT_NOW',1,0,true],
+ ['uncertain AL evidence blocks B',{pending:true,risk:false},{state:'HOLD',post_calls:0},'HOLD',1,0,false],
+ ['uncertain STOP POST never causes B fallback',{pending:true,risk:true},{state:'HOLD',post_calls:1},'HOLD',1,0,true],
+ ['contradictory empty event never permits B',{pending:true,risk:false},{state:'NO_CURRENT_A',post_calls:0},'HOLD',1,0,false],
+ ['risk detector inconsistent never permits B',{pending:true,risk:true},{state:'A_NO_RISK_PENDING',post_calls:0},'HOLD',1,0,true],
+ ['dry A proof never counts as emitted',{pending:true,risk:false},{state:'A_READY_DRY',post_calls:0},'HOLD',1,0,false],
+ ['proven empty queue permits B',{pending:false,risk:false},{state:'EMIT_NOW',post_calls:1},'EMIT_NOW',0,1,null],
+ ['legacy risk true',true,{state:'EMIT_NOW',post_calls:1},'EMIT_NOW',1,0,true],
+ ['legacy risk false',false,{state:'EMIT_NOW',post_calls:1},'EMIT_NOW',0,1,null],
+]){
+ test('A-before-B forward-only: '+name,async()=>{
+  const h=checkedQueue(queue,aState),out=await h.go();
+  assert.equal(out.state,expected);assert.equal(h.calls.A,aCount);assert.equal(h.calls.B,bCount);
+  if(aCount)assert.equal(h.calls.riskOnly[0],risk);
+ });
+}
+test('A-before-B verified empty queue with B HOLD causes no extra A read',async()=>{
+ const h=checkedQueue({pending:false,risk:false},undefined,{state:'HOLD',post_calls:0});
+ const o=await h.go();assert.equal(o.state,'NO_EMIT');assert.equal(h.calls.A,0);assert.equal(h.calls.B,1);
+});
+for(const [name,source] of [
+ ['unknown collection','UNVERIFIED'],['null',null],['bad pending',{pending:'true',risk:false}],
+ ['contradictory flags',{pending:false,risk:true}],['unknown label','READY']
+]){
+ test('A-before-B fail closed: '+name,async()=>{
+  const h=checkedQueue(source),o=await h.go();
+  assert.equal(o.state,'HOLD');assert.equal(h.calls.A,0);assert.equal(h.calls.B,0);
+ });
+}
