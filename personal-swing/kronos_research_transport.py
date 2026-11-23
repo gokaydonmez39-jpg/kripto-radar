@@ -37,7 +37,10 @@ def research_epoch_marker(asof, sid, child_run_id):
     commit its FIRST 180-row chunk atomically with addNamedRange.
     """
     import kronos_v2 as v2
-    v2.month_sheet(asof)
+    try:
+        v2.month_sheet(asof)
+    except Exception:
+        raise writer.HandoffBlocked(ERR) from None
     gate(type(sid) is int and 0 <= sid <= 2147483647 and
          type(child_run_id) is int and 0 < child_run_id <= 2**53-1)
     day=asof.replace("-","")
