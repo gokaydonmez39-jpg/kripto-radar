@@ -21,6 +21,8 @@ on:
       - 'personal-swing/kronos_real_477_probe.py'
       - 'personal-swing/test_kronos_real_477_probe.py'
       - 'personal-swing/kronos_v2.py'
+      - 'personal-swing/kronos_research_transport.py'
+      - 'personal-swing/test_kronos_research_transport.py'
       - 'personal-swing/test_kronos_v2.py'
       - 'personal-swing/research_epoch_binding.py'
       - 'personal-swing/test_research_epoch_binding.py'
@@ -59,8 +61,9 @@ jobs:
           python -O -m unittest -q test_kronos_capacity_probe
           python -m unittest -q test_kronos_real_477_probe
           python -O -m unittest -q test_kronos_real_477_probe
-          python -m unittest -q test_kronos_v2 test_research_epoch_binding
-          python -O -m unittest -q test_kronos_v2 test_research_epoch_binding
+          python -m unittest -q test_kronos_v2 test_research_epoch_binding test_kronos_research_transport
+          python -O -m unittest -q test_kronos_v2 test_research_epoch_binding test_kronos_research_transport
+          python -m py_compile kronos_research_transport.py test_kronos_research_transport.py
           python -m py_compile kronos_shadow.py test_kronos_shadow.py kronos_oos_audit.py test_kronos_oos_audit.py kronos_capacity_probe.py test_kronos_capacity_probe.py kronos_real_477_probe.py test_kronos_real_477_probe.py kronos_v2.py test_kronos_v2.py
   actual-model-smoke:
     if: github.event_name == 'pull_request'
@@ -302,6 +305,11 @@ jobs:
 
   kronos-v2-full-477-research:
     # Once per successful protected personal EOD; disjoint research Sheet.
+    # Read-only GitHub parent verification; NO tag/ref, workflow dispatch,
+    # EOD, signal or core Sheet mutation permissions.
+    permissions:
+      contents: read
+      actions: read
     # Only successful current-epoch schedule or dispatch EOD; never PR/push NOOP.
     if: >-
       github.event_name == 'workflow_run' &&
@@ -317,6 +325,7 @@ jobs:
       XRAY_ALPACA_DATA_SECRET_KEY: ${{ secrets.XRAY_ALPACA_DATA_SECRET_KEY || secrets.XRAY_ALPACA_API_SECRET_KEY }}
       XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON: ${{ secrets.XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON }}
       XRAY_PRIVATE_SPREADSHEET_ID: ${{ secrets.XRAY_PRIVATE_SPREADSHEET_ID }}
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
