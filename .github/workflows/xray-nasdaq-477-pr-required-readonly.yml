@@ -86,6 +86,11 @@ jobs:
           python -O -m unittest -q test_kronos_v2
           python -m unittest -q test_kronos_eod_scope_order
           python -O -m unittest -q test_kronos_eod_scope_order
+          # Required merge gate: real-Google-shaped CAS, 2-child owner
+          # exclusion, exact post-EOD source and 1-POST-only guards.
+          python -m unittest -q test_kronos_research_transport test_kronos_research_epoch_cas
+          python -O -m unittest -q test_kronos_research_transport test_kronos_research_epoch_cas
+          python -m py_compile kronos_research_transport.py test_kronos_research_transport.py test_kronos_research_epoch_cas.py
           python -m py_compile kronos_shadow.py kronos_oos_audit.py kronos_capacity_probe.py kronos_real_477_probe.py kronos_v2.py
       - name: Cove-method personal research shadow strict contract (offline only)
         working-directory: personal-swing
@@ -99,6 +104,11 @@ jobs:
         run: |
           python -m unittest -q test_p0_source_recovery
           python -O -m unittest -q test_p0_source_recovery
+          # Every PR must prove GitHub source-only protected-tag protocol
+          # remains READ ONLY in production; no extra cron, no tag POST.
+          python -m unittest -q test_epoch_lease test_natural_run_readonly_probe test_fallback_job_receipt
+          python -O -m unittest -q test_epoch_lease test_natural_run_readonly_probe test_fallback_job_receipt
+          python -m py_compile epoch_lease.py natural_run_readonly_probe.py fallback_job_receipt.py
           python -m py_compile test_p0_source_recovery.py
       - name: Independent A14 PIT regression normal and optimized
         working-directory: personal-swing/performance_lab
