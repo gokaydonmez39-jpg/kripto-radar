@@ -108,6 +108,11 @@ jobs:
           # remains READ ONLY in production; no extra cron, no tag POST.
           python -m unittest -q test_epoch_lease test_natural_run_readonly_probe test_fallback_job_receipt
           python -O -m unittest -q test_epoch_lease test_natural_run_readonly_probe test_fallback_job_receipt
+          # Live canary executes only after natural 477 data proof; CI itself
+          # is IO-free and cannot create a tag/ref or enable Sheet lease.
+          python -m unittest -q test_epoch_natural_claim_canary
+          python -O -m unittest -q test_epoch_natural_claim_canary
+          python -m py_compile epoch_natural_claim_canary.py test_epoch_natural_claim_canary.py
           python -m py_compile epoch_lease.py natural_run_readonly_probe.py fallback_job_receipt.py
           python -m py_compile test_p0_source_recovery.py
       - name: Independent A14 PIT regression normal and optimized
