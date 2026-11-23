@@ -81,7 +81,7 @@ def _publish_step_summary(is_verified):
     try:
         with open(path,"a",encoding="utf-8") as summary:
             summary.write(literal+
-                ";NOT_EOD_NOT_SHEET_NOT_DEVICE_ACK;FULL_FINAL=HOLD\\n")
+                ";NOT_EOD_NOT_SHEET_NOT_DEVICE_ACK;FULL_FINAL=HOLD\n")
     except OSError:
         # The canary is advisory, and a summary IO failure is not a license
         # for another Git ref POST or a silent production lease release.

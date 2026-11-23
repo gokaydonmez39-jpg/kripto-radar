@@ -190,6 +190,8 @@ class NaturalScheduleSummaryWitness(unittest.TestCase):
                     with redirect_stdout(io.StringIO()):
                         self.assertEqual(canary.main(["--schedule-canary"]),0)
             content=summary.read_text()
+            self.assertTrue(content.endswith("\n"))
+            self.assertIn("FULL_FINAL=HOLD",content)
             self.assertIn("XRAY_NASDAQ_EPOCH_CANARY=HOLD_NO_TAG_AUTHORITY",content)
             self.assertNotIn("SECRET_PROVIDER_DETAIL_MUST_NOT_LEAK",content)
             self.assertNotIn("PASS_GITHUB_TAG",content)
@@ -206,6 +208,8 @@ class NaturalScheduleSummaryWitness(unittest.TestCase):
                     with redirect_stdout(io.StringIO()):
                         self.assertEqual(canary.main(["--schedule-canary"]),0)
             content=summary.read_text()
+            self.assertTrue(content.endswith("\n"))
+            self.assertIn("FULL_FINAL=HOLD",content)
             self.assertIn("XRAY_NASDAQ_EPOCH_CANARY=PASS_GITHUB_TAG_READBACK_ONLY",content)
             self.assertIn("NOT_EOD_NOT_SHEET_NOT_DEVICE_ACK",content)
             self.assertNotIn("FULL_FINAL=PASS",content)
