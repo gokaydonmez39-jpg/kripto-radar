@@ -127,7 +127,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-23T03:53:42.031984+00:00",
+  "generated_at_utc": "2026-11-23T08:14:13.316449+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -138,7 +138,7 @@
   "sources": {
     "security_status": {
       "historical_event_rows_considered": 122,
-      "query_end": "2026-11-22",
+      "query_end": "2026-11-23",
       "query_start": "2026-10-07",
       "row_count": 50,
       "rows": [
@@ -774,7 +774,7 @@
         "WBD"
       ],
       "symbol_change_mapping_rule": "UNKNOWN_UNLESS_CORROBORATED",
-      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=11/22/2026"
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=11/23/2026"
     },
     "system_status_ipo": {
       "item_count": 0,
@@ -1248,7 +1248,7 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 28,
+      "row_count": 29,
       "rows": [
         {
           "BX Action": "Add",
@@ -1395,6 +1395,15 @@
           "Symbol": "BIP"
         },
         {
+          "BX Action": "Add",
+          "Company Name": "Brookfield Infrastructure Partners Inc.",
+          "Effective Date": "11/23/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "BIP"
+        },
+        {
           "BX Action": "Delete",
           "Company Name": "Brookfield Infrastructure Corporation",
           "Effective Date": "11/23/2026",
@@ -1405,7 +1414,7 @@
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Black Hawk Acquisition Corporation",
+          "Company Name": "Vesicor Therapeutics Holdings, Inc.",
           "Effective Date": "11/23/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
@@ -1414,7 +1423,7 @@
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Black Hawk Acquisition Corporation",
+          "Company Name": "Vesicor Therapeutics Holdings, Inc.",
           "Effective Date": "11/23/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
@@ -1459,7 +1468,7 @@
         },
         {
           "BX Action": "Delete",
-          "Company Name": "Melar Acquisition Corp. I",
+          "Company Name": "Everli Global Holdings",
           "Effective Date": "11/23/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
