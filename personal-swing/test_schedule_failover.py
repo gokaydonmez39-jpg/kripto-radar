@@ -80,6 +80,37 @@ class OfficialXnasFailover(unittest.TestCase):
                         [record(created='2026-10-23T21:30:00Z')])
         self.assertEqual(v,'DISPATCH_ONE_MISSING_SCHEDULE')
 
+    def test_p0_untrusted_run_identity_cannot_trigger_missing_schedule(self):
+        """A partial GitHub workflow-run envelope is not proof of absence.
+
+        The listing is scoped to this workflow. A missing source event, a
+        boolean event, or a natural event on the wrong/missing branch must
+        never be treated as an empty production epoch.
+        """
+        instant=utc('2026-10-27T00:25:00Z')
+        cases=(
+            {'head_branch':'main','created_at':'2026-10-27T00:20:00Z'},
+            record(event=None),
+            record(event=True),
+            record(event='schedule',branch=None),
+            record(event='schedule',branch='unexpected-branch'),
+            record(event='workflow_dispatch',branch=None),
+        )
+        for malformed in cases:
+            with self.subTest(case=repr(malformed)[:120]):
+                status,day=sf.decision(instant,[malformed])
+                self.assertEqual(day,'2026-10-26')
+                self.assertTrue(status.startswith('BLOCKED_'),status)
+                posts=[]
+                result=sf.run(now=instant,trigger_event='schedule',
+                    read_runs=lambda:{'workflow_runs':[malformed],
+                                      'total_count':1},
+                    request_dispatch=lambda day:posts.append(day))
+                self.assertTrue(result['status'].startswith('BLOCKED_'),
+                                result['status'])
+                self.assertFalse(result['dispatch_requested'])
+                self.assertEqual(posts,[])
+
     def test_untrusted_pr_only_is_not_production_run(self):
         v,_=sf.decision(utc('2026-10-27T00:25:00Z'),
                         [record(event='pull_request',branch='some-branch')])

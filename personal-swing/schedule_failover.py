@@ -63,7 +63,24 @@ def decision(now, runs, *, calendar=None):
     for item in runs:
         if not isinstance(item,dict):
             return 'BLOCKED_MALFORMED_RUN',candidate_date
-        if item.get('event') not in VALID_EVENTS or item.get('head_branch')!='main':
+        event=item.get('event')
+        # This is a workflow-specific GitHub listing. Its configured events
+        # are exactly schedule, workflow_dispatch, push and pull_request.
+        # Unknown/malformed identities must never look like an absent
+        # natural EOD and unlock the (currently policy-locked) recovery path.
+        if type(event) is not str or event not in (
+                'schedule','workflow_dispatch','push','pull_request'):
+            return 'BLOCKED_RUN_EVENT_UNKNOWN',candidate_date
+        if event not in VALID_EVENTS:
+            # Known offline-only PR/push events cannot prove a natural EOD.
+            continue
+        branch=item.get('head_branch')
+        if type(branch) is not str or not branch:
+            return 'BLOCKED_RUN_BRANCH_UNKNOWN',candidate_date
+        if branch!='main':
+            if event=='schedule':
+                return 'BLOCKED_CURRENT_EPOCH_NATURAL_PROVENANCE_UNVERIFIED',candidate_date
+            # A manual diagnostic on a non-production branch is unrelated.
             continue
         try:
             created=datetime.fromisoformat(item['created_at'].replace('Z','+00:00'))
