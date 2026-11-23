@@ -1091,6 +1091,50 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         return HTTPError('https://sheets.googleapis.com/v4/spreadsheets/TEST_ONLY',
                          429, 'synthetic quota', {}, None)
 
+    def test_malformed_google_json_or_utf8_is_redacted_without_post_retry(self):
+        """A possibly committed 200 POST can carry an undecodable response.
+
+        HTTP status 200 alone is never a commit certificate: malformed
+        JSON/UTF-8 cannot escape as raw parser errors or authorize re-POST.
+        """
+        from io import BytesIO
+        cases=(
+            ("invalid_json",
+             b'{"replies": PRIVATE_TEST_JSON_CONTENT_MUST_NOT_APPEAR}'),
+            ("invalid_utf8", b'\\xffPRIVATE_TEST_UTF8_CONTENT_MUST_NOT_APPEAR'),
+        )
+        for label,data in cases:
+            with self.subTest(provider_reply=label):
+                api=self._api()
+                with patch.object(w,'urlopen',
+                    side_effect=lambda *args,**kwargs:BytesIO(data)) as google:
+                    with patch.object(w.time,'sleep') as pause:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,
+                                'GOOGLE_SHEETS_RESPONSE_INVALID') as cm:
+                            api.request('?fields=properties(timeZone)')
+                        self.assertNotIn('PRIVATE_TEST_',str(cm.exception))
+                        self.assertEqual(google.call_count,4)
+                        self.assertEqual(pause.call_count,3)
+                api=self._api()
+                with patch.object(w,'urlopen',
+                    side_effect=lambda *args,**kwargs:BytesIO(data)) as google:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                                      ) as source:
+                        with patch.object(w,'require_epoch_lease_before_private_post'
+                                          ) as lease:
+                            with patch.dict(w.os.environ,{
+                                'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'OFF'}):
+                                with self.assertRaisesRegex(
+                                        w.HandoffBlocked,
+                                        'GOOGLE_SHEETS_RESPONSE_INVALID') as cm:
+                                    api.request(':batchUpdate',method='POST',
+                                                body=self.canonical_eod_payload())
+                            self.assertNotIn('PRIVATE_TEST_',str(cm.exception))
+                            self.assertEqual(google.call_count,1)
+                            source.assert_called_once()
+                            lease.assert_called_once()
+
     def test_raw_socket_disconnect_is_sanitized_and_post_never_retried(self):
         """Raw socket OSError is neither a URLError nor a TimeoutError.
 
