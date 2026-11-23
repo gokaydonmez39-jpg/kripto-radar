@@ -16,7 +16,7 @@ const SCOPE='3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060';
 const ALGO='cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c'; // Reviewed forward-only 2026-11-23 epoch
 const SCAN_HEAD=['ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ','EKSİK','FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'];
 const SCAN_ROW=[ASOF,'GitHub schedule VERIFIED IEX EOD','477','477','477','0','TRUE','1',RUN,
-  'scopeSHA='+SCOPE+';algorithmSHA='+ALGO+';source_event=schedule;NO_ORDERS'];
+  'scopeSHA='+SCOPE+';algorithmSHA='+ALGO+';source_event=schedule;NO_ORDERS; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK'];
 const SCORE_HEAD=Array(35).fill('');
 for(const [idx,value] of [[0,'KAYIT_KIMLIGI'],[1,'ASOF_ET'],[4,'KAYIT_TIPI'],[27,'BILDIRIM_DURUMU'],[28,'BILDIRIM_ZAMANI_TR']])SCORE_HEAD[idx]=value;
 const SUM=Array(35).fill('');
@@ -67,4 +67,31 @@ test('No older ASOF may be served from a later verified source',()=>{
 test('No private side effects are referenced in this isolated suite',()=>{
  assert.equal(version.portable.blob.length,40);
  assert.equal(version.blocks[3].includes('SCAN_SOURCE_PROVENANCE'),true);
+});
+
+for(const [name,mutate] of [
+ ['unexpected authority suffix',r=>r[9]+=';UNAUTHORIZED_OVERRIDE=true'],
+ ['missing device-ACK disclaimer',r=>r[9]=r[9].replace('; NOT_DEVICE_ACK','')],
+ ['tampered NO_ORDERS',r=>r[9]=r[9].replace('NO_ORDERS','ALLOW_ORDERS')],
+ ['missing readback requirement',r=>r[9]=r[9].replace('; SHEETS_READBACK_REQUIRED','')],
+ ['incorrect 64-hex scope',r=>r[9]=r[9].replace(SCOPE,'e'.repeat(64))],
+ ['incorrect 64-hex algorithm',r=>r[9]=r[9].replace(ALGO,'f'.repeat(64))],
+ ['duplicate NO_ORDERS',r=>r[9]+=';NO_ORDERS'],
+ ['extra internal whitespace',r=>r[9]=r[9].replace('; NOT_DEVICE_ACK',';  NOT_DEVICE_ACK')]
+]){
+ test('A and B: reject post-Nov23 source-note tamper '+name,()=>{
+  const scan=base();mutate(scan[1]);
+  assert.equal(route(scan).stage,'SCAN_SOURCE_PROVENANCE');
+  assert.equal(aRoute(scan).stage,'A_SCAN_PROVENANCE');
+ });
+}
+test('Old 2026-11-19 canonical source row remains read-only admissible',()=>{
+ const old='2026-11-19';
+ const s=base();s[1][0]=old;
+ s[1][9]=s[1][9].replace(ALGO,'0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523');
+ s[1][9]=s[1][9].replace('; SHEETS_READBACK_REQUIRED; NOT_DEVICE_ACK','');
+ const sc=SUM.slice();sc[0]=old+'|SUMMARY';sc[1]=old;
+ const ev=event.slice();ev[4]=old;
+ assert.equal(B.route({expected_asof:old,scan:s,baseline:[SCORE_HEAD,sc]}).state,'CHECK_B');
+ assert.equal(A.locateA({expected_asof:old,scan:s,alerts:[Array(20).fill(''),ev],history}).state,'A_NEEDS_SOURCE');
 });
