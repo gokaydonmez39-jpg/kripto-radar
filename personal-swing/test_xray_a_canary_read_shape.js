@@ -39,7 +39,7 @@ const eventHeader = ['OLAY_ANAHTARI','ADAY_ANAHTARI','AL_ASOF_ET','SEMBOL','OLAY
   'BIRINCIL_KANIT_URL','BILDIRIM_DURUMU','BILDIRIM_ZAMANI_TR','NOT'];
 const scan = [['ASOF ET','ÜRETİM KANALI','İSTENEN','İŞLENEN','GEÇERLİ','EKSİK',
   'FINAL READY','YENİ KAYIT','RUN KANITI','DURUM / VERİ SINIRI'],
-  [ASOF,'fixture','477','477','477','0','TRUE','1',WEB,
+  [ASOF,'GitHub schedule VERIFIED IEX EOD','477','477','477','0','TRUE','1',WEB,
     'scopeSHA='+SCOPE+';algorithmSHA='+ALGO+';source_event=schedule;']];
 const alKey = ASOF+'|SYNTHAL';
 const stopKey = OPEN+'|SYNTHSTOP';
