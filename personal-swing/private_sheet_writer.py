@@ -1127,6 +1127,17 @@ class SheetApi:
             try:
                 with urlopen(req, timeout=30) as response:
                     return json.load(response)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                # A Google 200 can carry a malformed/undecodable body after
+                # the batch has already committed. Never expose response
+                # bytes, retry a possibly committing POST or infer success.
+                # An idempotent GET is eligible for the existing bounded
+                # retry policy; epoch POST is reconciled by separate exact
+                # named-range and ledger GETs in apply().
+                if method == 'GET' and attempt + 1 < read_attempts:
+                    time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
+                    continue
+                raise HandoffBlocked('GOOGLE_SHEETS_RESPONSE_INVALID') from None
             except HTTPError as exc:
                 retriable = exc.code in (429, 500, 502, 503, 504)
                 if method == 'GET' and retriable and attempt + 1 < read_attempts:
@@ -1241,6 +1252,7 @@ class SheetApi:
                 'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
                 'GOOGLE_SHEETS_TRANSPORT_URLError',
                 'GOOGLE_SHEETS_TRANSPORT_IO_ERROR',
+                'GOOGLE_SHEETS_RESPONSE_INVALID',
                 'GOOGLE_SHEETS_HTTP_5XX',
             ))
             if (not p['scan_rows'] or type(error) is not HandoffBlocked
