@@ -1945,6 +1945,7 @@ class GoogleUncertainCommitReconciliationTests(unittest.TestCase):
         from unittest.mock import Mock
         for code in ("GOOGLE_SHEETS_TRANSPORT_TimeoutError",
                      "GOOGLE_SHEETS_TRANSPORT_URLError",
+                     "GOOGLE_SHEETS_TRANSPORT_IO_ERROR",
                      "GOOGLE_SHEETS_HTTP_5XX"):
             with self.subTest(code=code):
                 p,marker,api,candidates,scans=self.fixture()
