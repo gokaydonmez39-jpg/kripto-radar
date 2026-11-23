@@ -1140,12 +1140,20 @@ class SheetApi:
                 else:
                     category = 'GOOGLE_SHEETS_HTTP_OTHER'
                 raise HandoffBlocked(category) from None
-            except (URLError, TimeoutError) as exc:
+            except (URLError, TimeoutError, OSError) as exc:
+                # urllib can propagate raw socket OSError subclasses directly:
+                # ConnectionResetError, BrokenPipeError, ConnectionAbortedError.
+                # Never print provider text/URL or raw errors from a private
+                # authenticated client. GET may retry; POST is one-shot.
                 if method == 'GET' and attempt + 1 < read_attempts:
                     time.sleep(2 ** attempt + random.uniform(0.0, 0.25))
                     continue
-                raise HandoffBlocked(
-                    'GOOGLE_SHEETS_TRANSPORT_' + type(exc).__name__) from None
+                category = (
+                    'GOOGLE_SHEETS_TRANSPORT_' + type(exc).__name__
+                    if isinstance(exc, (URLError, TimeoutError))
+                    else 'GOOGLE_SHEETS_TRANSPORT_IO_ERROR'
+                )
+                raise HandoffBlocked(category) from None
         raise HandoffBlocked('GOOGLE_SHEETS_READ_RETRY_EXHAUSTED')
 
     def check_metadata(self):
@@ -1232,6 +1240,7 @@ class SheetApi:
             ambiguous=frozenset((
                 'GOOGLE_SHEETS_TRANSPORT_TimeoutError',
                 'GOOGLE_SHEETS_TRANSPORT_URLError',
+                'GOOGLE_SHEETS_TRANSPORT_IO_ERROR',
                 'GOOGLE_SHEETS_HTTP_5XX',
             ))
             if (not p['scan_rows'] or type(error) is not HandoffBlocked

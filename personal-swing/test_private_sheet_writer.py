@@ -1091,6 +1091,47 @@ class SheetsTransportRegressionTests(unittest.TestCase):
         return HTTPError('https://sheets.googleapis.com/v4/spreadsheets/TEST_ONLY',
                          429, 'synthetic quota', {}, None)
 
+    def test_raw_socket_disconnect_is_sanitized_and_post_never_retried(self):
+        """Raw socket OSError is neither a URLError nor a TimeoutError.
+
+        Both GET and POST must fail closed without exposing socket contents.
+        GET may retry boundedly; potentially committed POST must never retry.
+        """
+        for error_type in (ConnectionResetError, BrokenPipeError,
+                           ConnectionAbortedError):
+            with self.subTest(socket_failure=error_type.__name__):
+                private_message='PRIVATE_TEST_SOCKET_TOKEN_MUST_NOT_APPEAR'
+                api=self._api()
+                with patch.object(w,'urlopen',
+                                  side_effect=error_type(private_message)) as call:
+                    with patch.object(w.time,'sleep') as snooze:
+                        with self.assertRaisesRegex(
+                                w.HandoffBlocked,
+                                'GOOGLE_SHEETS_TRANSPORT_IO_ERROR') as cm:
+                            api.request('?fields=properties(timeZone)')
+                        self.assertNotIn(private_message,str(cm.exception))
+                        self.assertEqual(call.call_count,4)
+                        self.assertEqual(snooze.call_count,3)
+
+                api=self._api()
+                with patch.object(w,'urlopen',
+                                  side_effect=error_type(private_message)) as call:
+                    with patch.object(w,'require_source_lastmile_before_private_post'
+                                      ) as source:
+                        with patch.object(w,'require_epoch_lease_before_private_post'
+                                          ) as lease:
+                            with patch.dict(w.os.environ,{
+                                'XRAY_PERSONAL477_SOURCE_LASTMILE_MODE':'OFF'}):
+                                with self.assertRaisesRegex(
+                                        w.HandoffBlocked,
+                                        'GOOGLE_SHEETS_TRANSPORT_IO_ERROR') as cm:
+                                    api.request(':batchUpdate',method='POST',
+                                                body=self.canonical_eod_payload())
+                            self.assertNotIn(private_message,str(cm.exception))
+                            self.assertEqual(call.call_count,1)
+                            source.assert_called_once()
+                            lease.assert_called_once()
+
     def test_unapproved_mutating_http_verbs_never_reach_google(self):
         """No DELETE/PATCH/PUT from the shared private Sheets transport."""
         api=self._api()
@@ -1904,6 +1945,7 @@ class GoogleUncertainCommitReconciliationTests(unittest.TestCase):
         from unittest.mock import Mock
         for code in ("GOOGLE_SHEETS_TRANSPORT_TimeoutError",
                      "GOOGLE_SHEETS_TRANSPORT_URLError",
+                     "GOOGLE_SHEETS_TRANSPORT_IO_ERROR",
                      "GOOGLE_SHEETS_HTTP_5XX"):
             with self.subTest(code=code):
                 p,marker,api,candidates,scans=self.fixture()
