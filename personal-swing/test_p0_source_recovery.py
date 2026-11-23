@@ -70,7 +70,7 @@ class ProductionFailureRegression(unittest.TestCase):
                           return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
-             patch("private_sheet_writer.SheetApi",
+             patch("kronos_research_transport.KronosV2ResearchApi",
                    side_effect=RuntimeError("SECRET_PRIVATE_TOKEN_DO_NOT_LOG")), \
              contextlib.redirect_stdout(io.StringIO()) as printed:
             status=kronos_v2.main()
@@ -89,7 +89,7 @@ class ProductionFailureRegression(unittest.TestCase):
                           return_value=SYNTHETIC_PARENT), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
-             patch("private_sheet_writer.SheetApi",
+             patch("kronos_research_transport.KronosV2ResearchApi",
                    side_effect=kronos_v2.k.ShadowHold(
                        "KRONOS2_SECRET_PRIVATE_TOKEN")), \
              contextlib.redirect_stdout(io.StringIO()) as printed:
@@ -106,7 +106,7 @@ class ProductionFailureRegression(unittest.TestCase):
                           return_value=KRONOS_ASOF), \
              patch.dict(kronos_v2.os.environ,
                         {"XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON":"MASKED"},clear=True), \
-             patch("private_sheet_writer.SheetApi") as auth, \
+             patch("kronos_research_transport.KronosV2ResearchApi") as auth, \
              contextlib.redirect_stdout(io.StringIO()) as printed:
             status=kronos_v2.main()
         self.assertEqual(status,3)
