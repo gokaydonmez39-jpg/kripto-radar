@@ -101,3 +101,39 @@ test('A test never imports providers or a write adapter',()=>{
  assert.equal(v.blocks.length,12);
  assert.equal(A.constants.ALGO,OLD);assert.equal(A.constants.ALGO_NEXT,NEXT);
 });
+
+function maskedNested(input,modify=x=>x){
+ const key=234502;const log=input.logs[key].structuredContent;
+ const lines=log.content.split('\n');
+ const i=lines.findIndex(l=>l.includes('"no_execution":true'));
+ const cut=lines[i].indexOf(' '), ts=lines[i].slice(0,cut), src=JSON.parse(lines[i].slice(cut+1));
+ const o={...src};delete o.new_entries;
+ const nested={asof:src.asof_et,notification_sent:false,orders_sent:0,scored:477,status:'NEON_SHADOW_477_READY_PRIVATE_NO_DELIVERY'};
+ const encoded=JSON.stringify({...o,neon_shadow:nested,new_entries:src.new_entries});
+ lines[i]=ts+' '+modify(encoded.replace(/[{}]/g,'***'));
+ log.content=lines.join('\n');return input;
+}
+test('A receipt: strict GitHub masked nested NEON delimiters pass',()=>{
+ const p=A.proveA(maskedNested(sourced(NEXT)));
+ assert.equal(p.state,'A_SOURCE_VERIFIED');assert.equal(p.verified.length,1);
+});
+test('A receipt: unknown masked child rejected',()=>{
+ assert.equal(A.proveA(maskedNested(sourced(NEXT),x=>x.replace('neon_shadow','foreign_shadow'))).stage,'A_SCAN_RECEIPT');
+});
+test('A receipt: masked scalar rejected',()=>{
+ assert.equal(A.proveA(maskedNested(sourced(NEXT),x=>x.replace('"scored":477','"scored":***'))).stage,'A_SCAN_RECEIPT');
+});
+test('A receipt: unsafe NEON values rejected',()=>{
+ assert.equal(A.proveA(maskedNested(sourced(NEXT),x=>x.replace('"orders_sent":0','"orders_sent":1'))).stage,'A_SCAN_RECEIPT');
+});
+test('A receipt: wrong NEON day rejected',()=>{
+ assert.equal(A.proveA(maskedNested(sourced(NEXT),x=>x.replace('"asof":"2026-11-23"','"asof":"2026-11-20"'))).stage,'A_SCAN_RECEIPT');
+});
+test('A receipt: duplicate receipt rejected',()=>{
+ const x=maskedNested(sourced(NEXT)),log=x.logs[234502].structuredContent;
+ log.content+='\n'+log.content.split('\n').find(l=>l.includes('"no_execution":true'));
+ assert.equal(A.proveA(x).stage,'A_SCAN_RECEIPT');
+});
+test('A receipt: correct scan row cannot authorize stale logged algorithm',()=>{
+ assert.equal(A.proveA(maskedNested(sourced(NEXT),x=>x.replace(NEXT,OLD))).stage,'A_SCAN_RECEIPT');
+});

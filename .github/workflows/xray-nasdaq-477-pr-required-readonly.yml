@@ -57,6 +57,9 @@ jobs:
           python -m unittest -q test_neon_private_ledger_v3
           python -O -m unittest -q test_neon_private_ledger_v3
           python -m py_compile neon_private_ledger_v3.py
+          python -m unittest -q test_a_source_envelope
+          python -O -m unittest -q test_a_source_envelope
+          python -m py_compile emit_b_source_envelope.py
           python -m py_compile swing_score_daily.py delivery_evidence_audit.py preopen_a34.py
           python -m py_compile alert_ledger_contract.py private_lifecycle.py engine.py runner.py
       - name: Personal schedule fallback and official research-shadow negative acceptance

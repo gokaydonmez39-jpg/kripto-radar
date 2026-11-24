@@ -155,6 +155,48 @@ def receipts(log: str, job: dict, asof: str, index: int) -> list[list[str]]:
 A_SCHEMA = "XRAY_477_A_SOURCE_ENVELOPE_V1"
 A_SCOPE = "3d1d226e2ef511570b2abd57e59c74d2c2156e6eed9baf4a08b8d3df82223060"
 A_ALGO = "0c137ecbdaf0eb68dbab3a642cfd501e4af61641b52367607fe616713af32523"
+A_ALGO_NEXT = "cac4dd7b729e23cd4f6e4c181f569ef286858c1473217e46358202f595f7723c"
+
+
+def a_source_algo(asof: str) -> str:
+    return A_ALGO_NEXT if asof >= "2026-11-23" else A_ALGO
+
+
+# Recover delimiters only for the exact known, non-secret NEON child.
+# No scalar unmasking, general substitution or synthesized evidence.
+_A_NEON_MASK = re.compile(
+    r'"neon_shadow"\s*:\s*\*\*\*("[^*\r\n]+?)\*\*\*(?=\s*,\s*"new_entries"\s*:)'
+)
+_A_NEON_CHILD = re.compile(
+    r'"asof"\s*:\s*"(\d{4}-\d\d-\d\d)"\s*,\s*'
+    r'"notification_sent"\s*:\s*false\s*,\s*"orders_sent"\s*:\s*0\s*,\s*'
+    r'"scored"\s*:\s*477\s*,\s*"status"\s*:\s*"NEON_SHADOW_477_READY_PRIVATE_NO_DELIVERY"'
+)
+
+
+def a_receipt_object(text: str):
+    child_asof = None
+    if text.startswith('***"') and text.endswith("***"):
+        text = "{" + text[3:-3] + "}"
+        if "***" in text:
+            found = list(_A_NEON_MASK.finditer(text))
+            if len(found) != 1 or text.count("***") != 2:
+                return None
+            match = found[0]
+            child = _A_NEON_CHILD.fullmatch(match.group(1))
+            if child is None:
+                return None
+            child_asof = child.group(1)
+            text = text[:match.start()] + '"neon_shadow": {' + match.group(1) + "}" + text[match.end():]
+    if "***" in text or not text.startswith("{") or not text.endswith("}"):
+        return None
+    try:
+        obj = json.loads(text)
+    except ValueError:
+        return None
+    if not isinstance(obj, dict) or (child_asof is not None and obj.get("asof_et") != child_asof):
+        return None
+    return obj
 
 
 def a_log_rows(log: str, job: dict) -> list[tuple[str, dict]]:
@@ -164,16 +206,8 @@ def a_log_rows(log: str, job: dict) -> list[tuple[str, dict]]:
         stamp, sep, text = raw.partition(" ")
         if not sep or not STAMP.fullmatch(stamp) or not started <= utc(stamp) < ended + dt.timedelta(seconds=1):
             continue
-        text = text.strip()
-        if text.startswith('***"') and text.endswith("***"):
-            text = "{" + text[3:-3] + "}"
-        if not text.startswith("{") or not text.endswith("}"):
-            continue
-        try:
-            obj = json.loads(text)
-        except ValueError:
-            continue
-        if isinstance(obj, dict):
+        obj = a_receipt_object(text.strip())
+        if obj is not None:
             found.append((stamp, obj))
     return found
 
@@ -194,7 +228,7 @@ def a_supplement(jobs: dict, logs: dict[str, str], asof: str, source_proof: list
                  and all(type(o.get(k)) is int and o[k] == 477 for k in ("universe", "processed", "valid"))
                  and all(type(o.get(k)) is int and o[k] == 0 for k in ("invalid_or_missing", "remaining"))
                  and type(o.get("new_entries")) is int and o["new_entries"] == new
-                 and o.get("scope_sha256") == A_SCOPE and o.get("analysis_fingerprint_sha256") == A_ALGO,
+                 and o.get("scope_sha256") == A_SCOPE and o.get("analysis_fingerprint_sha256") == a_source_algo(asof),
                  "SCAN")
     o, outbox = match(scan, lambda x: today(x) and x.get("status") == "AL_OUTBOX_PENDING_READBACK_PASS"
                       and type(x.get("technical_al")) is int and x["technical_al"] == new
