@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from master_spac_operating_guard import nonblank_requires_completion
+from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence
 
 ROOT=Path(__file__).resolve().parent
 MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
@@ -44,35 +45,6 @@ def current_spac_suspects(names:dict,industries:dict)->list[str]:
       sym for sym,name in names.items()
       if bool(SPAC_SUSPECT_RE.search(str(name or "")))
     )
-
-def sec_source_binds_cik(source:str,cik:str)->bool:
-    """Require manual SEC evidence URL to bind the exact issuer CIK."""
-    try:
-        target=str(int(str(cik).strip()))
-    except Exception:
-        return False
-    try:
-        u=urllib.parse.urlparse(str(source or ""))
-    except Exception:
-        return False
-    if u.scheme!="https" or u.netloc.lower()!="www.sec.gov":
-        return False
-    q=urllib.parse.parse_qs(u.query)
-    for key,vals in q.items():
-        if str(key).upper()=="CIK":
-            for val in vals:
-                try:
-                    if str(int(str(val).strip()))==target:
-                        return True
-                except Exception:
-                    pass
-    m=re.search(r"/Archives/edgar/data/(\d+)/",u.path,re.I)
-    if m:
-        try:
-            return str(int(m.group(1)))==target
-        except Exception:
-            return False
-    return False
 
 DIRECTORY_SNAPSHOT_SCHEMA="XRAY_NASDAQ_DIRECTORY_SNAPSHOT_V1"
 STAMP_RE=re.compile(r"^(master_(?:asof_identity|sec_spac)_proof_)(\d{8})\.json$")
@@ -421,11 +393,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
           "path":str(MANUAL_IDENTITY_SEED.relative_to(ROOT.parent)).replace("\\","/"),
           "blob_sha":None,"record_count":0,
         }
-    j=json.loads(MANUAL_IDENTITY_SEED.read_text(encoding="utf-8"))
-    assert j.get("schema")=="XRAY_MASTER_SEC_IDENTITY_MANUAL_SEED_REGISTRY_V1"
-    assert j.get("execution")=="NONE" and j.get("real_money")=="NO-GO"
-    assert j.get("unknown_never_pass") is True
-    assert j.get("authority")=="OFFICIAL_SEC_EVIDENCE_DISCOVERY_SEED_ONLY"
+    j=load_registry_document(MANUAL_IDENTITY_SEED.read_text(encoding="utf-8"))
     # Offline official SEC accession/index crosscheck. This vetoes only a
     # contradicted manual SIC=6770 EXCLUSION seed; it cannot manufacture an
     # operating or alpha PASS. The registry and already committed historical
@@ -451,8 +419,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
             raise RuntimeError("OFFICIAL_SEC_SIC_DISCREPANCY_WITNESS_INVALID")
         discrepancies=witness["discrepancies"]
     rows={}
-    for sym,row in sorted((j.get("records") or {}).items()):
-        sym=str(sym).upper().strip()
+    for sym,row in sorted(select_registry_rows(j,asof,discrepancies).items()):
         if sym not in names or not isinstance(row,dict):
             continue
         current_name=str(names.get(sym) or "").strip()
@@ -507,11 +474,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
           or ((not is_blank) and sic==6770)
         ):
             continue
-        try:
-            age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
-        except Exception:
-            continue
-        if age<0 or age>120:
+        if not eligible_evidence(asof,evidence,verified_asof):
             continue
         out=dict(row)
         out["cik"]=cik
@@ -1074,9 +1037,10 @@ def main():
     elif sec_path.exists():
         sec_path.unlink()
 
-    assert validate_existing_identity(identity_path,asof)
-    if proofs:
-        assert validate_existing_sec(sec_path,asof)
+    if not validate_existing_identity(identity_path,asof):
+        raise RuntimeError("IDENTITY_PROOF_VALIDATION_FAILED")
+    if proofs and not validate_existing_sec(sec_path,asof):
+        raise RuntimeError("SEC_SPAC_PROOF_VALIDATION_FAILED")
     print(json.dumps({
       "result":"PASS",
       "asof_et":asof,
