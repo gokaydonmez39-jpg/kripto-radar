@@ -33,6 +33,10 @@ jobs:
         run: |
           python -m pip install -r personal-swing/requirements.txt
           python -m pip install 'PyYAML==6.0.2' 'google-auth>=2.35,<3' 'requests>=2.31,<3'
+      - name: Global NASDAQ schedule and least-privilege boundary (required)
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/all_workflow_schedule_audit.py --selftest
+          PYTHONDONTWRITEBYTECODE=1 python -O nasdaq-xray/all_workflow_schedule_audit.py --out "$RUNNER_TEMP/xray_schedule_audit.json"
       - name: Personal 477 normal and optimized regression
         working-directory: personal-swing
         run: |
