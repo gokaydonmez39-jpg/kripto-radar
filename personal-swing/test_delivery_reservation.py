@@ -135,6 +135,30 @@ class DeliveryReservationTests(unittest.TestCase):
         with self.assertRaises(reservation.Refused):
             reservation.plan_digest(33, scores(), DAY, "b" * 64, STAMP)
 
+    def test_canonical_event_identity_and_trigger_bounds(self):
+        kind="AL_NEW_EPISODE"
+        for opening,event_day,index in (
+                ("20261112",DAY,1), ("2026-W46-4",DAY,1),
+                (DAY,"20261112",1), (DAY,DAY,0),
+                (DAY,DAY,1000000000000000), (DAY,DAY,True)):
+            with self.subTest(opening=opening,event_day=event_day,index=index):
+                with self.assertRaises(ledger.LedgerRefused):
+                    ledger.event_key(opening,"TEST",event_day,kind,index)
+        self.assertEqual(ledger.event_key(DAY,"TEST",DAY,kind,999999999999999),
+                         f"{DAY}|TEST|{DAY}|{kind}|999999999999999")
+        for opening,index in (("20261112",1),("2026-W46-4",1),
+                              (DAY,1000000000000000)):
+            rows=events()
+            key=f"{opening}|TEST|{DAY}|{kind}|{index}"
+            rows[1][0:3]=[key,f"{opening}|TEST",opening]
+            with self.subTest(key=key),self.assertRaises(reservation.Refused):
+                reservation.plan_events(17,rows,[key],DAY,STAMP)
+        rows=events()
+        key=ledger.event_key(DAY,"TEST",DAY,kind,999999999999999)
+        rows[1][0]=key
+        plan=reservation.plan_events(17,rows,[key],DAY,STAMP)
+        self.assertEqual(plan.targets,((key,1),))
+
     def test_scope_status_stamp_and_sparse_rows_fail_closed(self):
         for sid, stamp in ((-1, STAMP), (True, STAMP), (17, "2026-11-13 99:30 TRT"),
                            (17, "2026-11-10 09:30 TRT")):
