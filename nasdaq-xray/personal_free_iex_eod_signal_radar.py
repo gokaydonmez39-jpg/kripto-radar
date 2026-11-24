@@ -105,19 +105,40 @@ def indicator(bars,days):
         return "TREND_WATCH",["NO_BREAKOUT_OR_RECLAIM_CONFIRMATION"]
     return "WATCH_ONLY",["NO_RESEARCH_SETUP_OBSERVED"]
 
-def api_batch(symbols,dates,key,secret,urlopen=urllib.request.urlopen):
+class CallBudget:
+    """One shared job budget, charged before every attempted HTTP request."""
+    def __init__(self,limit=MAX_CALLS):
+        need(type(limit) is int and 0<=limit<=MAX_CALLS,"INVALID_CALL_BUDGET")
+        self.limit=limit
+        self.used=0
+
+    def reserve(self):
+        need(self.used<self.limit,"ZERO_DOLLAR_JOB_CALL_CAP")
+        self.used+=1
+
+
+def api_batch(symbols,dates,key,secret,urlopen=urllib.request.urlopen,*,budget=None):
+    if budget is None:
+        budget=CallBudget(4)
+    need(isinstance(budget,CallBudget),"SHARED_CALL_BUDGET_REQUIRED")
     args={"symbols":",".join(symbols),"timeframe":"1Day","feed":"iex",
           "start":dates[0]+"T00:00:00Z",
           "end":(datetime.fromisoformat(dates[-1])+timedelta(days=1)).date().isoformat()+"T00:00:00Z",
           "limit":"10000","sort":"asc"}
     token=None;combined={s:[] for s in symbols};calls=0
+    seen_tokens=set()
     while True:
+        need(calls<4,"EXCESSIVE_IEX_PAGINATION")
         qs=dict(args)
         if token:qs["page_token"]=token
         endpoint="https://data.alpaca.markets/v2/stocks/bars?"+urllib.parse.urlencode(qs)
         request=urllib.request.Request(endpoint,headers={
             "APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,
             "Accept":"application/json"})
+        # Count the attempt before IO, including rejected HTTP responses,
+        # timeouts, and invalid bodies. No retries after a failure.
+        budget.reserve()
+        calls+=1
         with urlopen(request,timeout=20) as response:
             payload=response.read(5_000_001)
             need(len(payload)<=5_000_000,"API_BODY_TOO_LARGE")
@@ -128,32 +149,32 @@ def api_batch(symbols,dates,key,secret,urlopen=urllib.request.urlopen):
         for sym,rows in body["bars"].items():
             need(isinstance(rows,list) and len(rows)<=10000,"API_PAGE_ROWS_INVALID")
             combined[sym].extend(rows)
-        calls+=1
         token=body.get("next_page_token")
         need(token is None or isinstance(token,str) and 0<len(token)<=512,
              "API_PAGE_TOKEN_INVALID")
         if not token:break
-        need(calls<=3,"EXCESSIVE_IEX_PAGINATION")
+        need(token not in seen_tokens,"REPEATED_IEX_PAGE_TOKEN")
+        seen_tokens.add(token)
     return combined,calls
 
 def evaluate(root,root_blob_sha,dates,fetch,asof):
     names=source_scope(root,asof)
     need(len(dates)==N and dates==sorted(set(dates))
          and dates[-1]==asof, "260_OFFICIAL_SESSION_ORDER")
-    entries={};calls=0;exhausted=False
+    entries={};budget=CallBudget();exhausted=False
     for start in range(0,len(names),BATCH):
         part=names[start:start+BATCH]
-        if exhausted:
+        if exhausted or budget.used>=budget.limit:
             for sym in part:
                 entries[sym]={"label":"UNKNOWN_IEX_COVERAGE",
                               "reasons":["PROVIDER_BUDGET_OR_ACCESS_UNVERIFIED"]}
             continue
         try:
-            bars,n=fetch(part,dates)
+            before=budget.used
+            bars,n=fetch(part,dates,budget)
             need(isinstance(bars,dict) and set(bars).issubset(part)
-                 and isinstance(n,int) and 1<=n<=4,"BOUNDED_BATCH_INTEGRITY")
-            calls+=n
-            if calls>MAX_CALLS:raise ValueError("ZERO_DOLLAR_JOB_CALL_CAP")
+                 and type(n) is int and 1<=n<=4 and budget.used-before==n
+                 and budget.used<=budget.limit,"BOUNDED_BATCH_INTEGRITY")
             for sym in part:
                 label,reasons=indicator(bars.get(sym,[]),dates)
                 entries[sym]={"label":label,"reasons":reasons}
@@ -168,7 +189,7 @@ def evaluate(root,root_blob_sha,dates,fetch,asof):
     return {"schema":SCHEMA,"asof_et":asof,"root_blob_sha":root_blob_sha,
             "population_sha256":hashlib.sha256("\n".join(names).encode()).hexdigest(),
             "total_watch_symbols":len(names),"attempted_symbols":len(entries),
-            "vendor_requests":calls,"max_vendor_requests":MAX_CALLS,
+            "vendor_requests":budget.used,"max_vendor_requests":MAX_CALLS,
             "confidence":{"grade":"LOW","feed":"IEX_SINGLE_EXCHANGE",
               "consolidated_rth_volume_verified":False,
               "independent_issuer_mc_verified":False,
@@ -229,7 +250,10 @@ def selftest():
                         "classification":"WATCH_LIQUIDITY_PRE_SCREEN_ONLY"}]},
           "candidate_technical_funnel":{"asof_et":"2026-10-21",
                                         "source_candidates_sha256":"a"*64}}
-    got=evaluate(fake,"f"*40,dates,lambda sy,ds:({sy[0]:series},1),"2026-10-21")
+    def one_page(sy,ds,budget):
+        budget.reserve()
+        return {sy[0]:series},1
+    got=evaluate(fake,"f"*40,dates,one_page,"2026-10-21")
     need(got["attempted_symbols"]==1 and got["vendor_requests"]==1
          and got["registered_r92_count"]==0 and got["orders"]==[]
          and got["confidence"]["grade"]=="LOW"
@@ -243,11 +267,76 @@ def selftest():
     try:source_scope(mutated,"2026-10-21")
     except ValueError:pass
     else:raise AssertionError("CROSS_ASOF_ACCEPTED")
-    missing=evaluate(fake,"f"*40,dates,lambda sy,ds:({},1),"2026-10-21")
+    def empty_page(sy,ds,budget):
+        budget.reserve()
+        return {},1
+    missing=evaluate(fake,"f"*40,dates,empty_page,"2026-10-21")
     need(missing["state_counts"]=={"UNKNOWN_IEX_COVERAGE":1}
          and missing["research_review_count"]==0,
          "EMPTY_VENDOR_RESPONSE_NOT_A_CANDIDATE")
-    print("XRAY_PERSONAL_FREE_IEX_SELFTEST=PASS_10_BOUNDARIES_NO_R92_NO_VENDOR_IO")
+    # Test the actual IO boundary with a fake transport: the remaining
+    # request is charged before HTTP and a next-page token cannot exceed it.
+    class Response:
+        def __init__(self,obj): self.data=json.dumps(obj).encode()
+        def __enter__(self): return self
+        def __exit__(self,*exc): return False
+        def read(self,n): return self.data
+    for remaining in (0,1):
+        b=CallBudget()
+        for _ in range(MAX_CALLS-remaining): b.reserve()
+        sent=[]
+        def page(req,timeout):
+            sent.append(req.full_url)
+            return Response({"bars":{},"next_page_token":"page2"})
+        try:api_batch(["AAPL"],dates,"test","test",page,budget=b)
+        except ValueError as exc:
+            need(str(exc)=="XRAY_PERSONAL_IEX_ZERO_DOLLAR_JOB_CALL_CAP","WRONG_BUDGET_FAILURE")
+        else:raise AssertionError("OVER_BUDGET_ACCEPTED")
+        need(len(sent)==remaining and b.used==MAX_CALLS,"HARD_CALL_CAP")
+    # Rejected HTTP consumes an attempt and must not trigger a retry.
+    b=CallBudget()
+    sent=[]
+    def rejected(req,timeout):
+        sent.append(1)
+        raise urllib.error.HTTPError(req.full_url,429,"blocked",None,None)
+    try:api_batch(["AAPL"],dates,"test","test",rejected,budget=b)
+    except urllib.error.HTTPError:pass
+    else:raise AssertionError("HTTP_FAILURE_SUPPRESSED")
+    need(len(sent)==b.used==1,"FAILED_HTTP_NOT_COUNTED")
+    def fail_fetch(sy,ds,budget):
+        return api_batch(sy,ds,"test","test",rejected,budget=budget)
+    failed=evaluate(fake,"f"*40,dates,fail_fetch,"2026-10-21")
+    need(failed["vendor_requests"]==1 and failed["state_counts"]=={"UNKNOWN_IEX_COVERAGE":1}
+         and failed["research_review_count"]==0,"FAILED_EVALUATION_NOT_COUNTED")
+    # Repeated token must stop before a third request.
+    b=CallBudget()
+    repeated=[]
+    def repeated_page(req,timeout):
+        repeated.append(1)
+        return Response({"bars":{},"next_page_token":"same"})
+    try:api_batch(["AAPL"],dates,"test","test",repeated_page,budget=b)
+    except ValueError as exc:
+        need(str(exc)=="XRAY_PERSONAL_IEX_REPEATED_IEX_PAGE_TOKEN","WRONG_REPEAT_FAILURE")
+    else:raise AssertionError("REPEATED_TOKEN_ACCEPTED")
+    need(len(repeated)==b.used==2,"REPEATED_TOKEN_EXTRA_IO")
+    # Full job boundary with more batches than the quota, using the exact
+    # network boundary above rather than a post-hoc count.
+    wide=copy.deepcopy(fake)
+    names=["X"+str(i) for i in range(170)]
+    wide["watch_radar"].update(watchlist_count=len(names),
+        price_liquidity_screened_count=len(names),watchlist=[
+            {"symbol":n,"buy_signal":False,"classification":"WATCH_LIQUIDITY_PRE_SCREEN_ONLY"} for n in names])
+    io=[]
+    def four_pages(req,timeout):
+        io.append(1)
+        i=len(io)%4
+        return Response({"bars":{},"next_page_token":"page"+str(i) if i else None})
+    def multi_fetch(sy,ds,budget):
+        return api_batch(sy,ds,"test","test",four_pages,budget=budget)
+    capped=evaluate(wide,"f"*40,dates,multi_fetch,"2026-10-21")
+    need(capped["vendor_requests"]==len(io)==MAX_CALLS and capped["attempted_symbols"]==170
+         and capped["state_counts"]=={"UNKNOWN_IEX_COVERAGE":170},"WHOLE_JOB_HARD_CALL_CAP")
+    print("XRAY_PERSONAL_FREE_IEX_SELFTEST=PASS_BOUNDARIES_HARD_CALL_CAP_FAILED_IO_COUNTED_NO_R92_NO_VENDOR_IO")
 
 def main():
     a=argparse.ArgumentParser()
@@ -273,7 +362,7 @@ def main():
         print("XRAY_PERSONAL_IEX=BLOCKED_NO_EXISTING_ALPACA_DATA_CREDENTIALS_NO_API_CALLS")
         raise SystemExit(3)
     report=evaluate(root,seal(raw),dates,
-                    lambda names,days:api_batch(names,days,key,secret),asof)
+                    lambda names,days,budget:api_batch(names,days,key,secret,budget=budget),asof)
     z.out.parent.mkdir(parents=True,exist_ok=True)
     z.out.write_text(json.dumps(report,sort_keys=True,separators=(",",":"))+"\n")
     print("XRAY_PERSONAL_IEX=RESEARCH_EVIDENCE_ONLY_NOT_R92")
