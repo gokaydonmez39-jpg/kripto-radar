@@ -62,12 +62,35 @@ class Contract(unittest.TestCase):
         from pathlib import Path
         j=load_registry_document((Path(__file__).resolve().parent/"master_sec_identity_manual_seed_registry.json").read_text())
         old=copy.deepcopy(j["records"])
-        selected=select_registry_rows(j,"2026-11-24",{"FVN"})
-        self.assertEqual(j["records"],old)
-        self.assertEqual(set(selected),set(old))
         for sym,versions in j.get("renewals",{}).items():
-            self.assertEqual(selected[sym],versions[-1])
-            self.assertTrue(eligible_evidence("2026-11-24",selected[sym]["evidence_date"],selected[sym]["verified_asof_et"]))
+            for version in versions:
+                asof=version["verified_asof_et"]
+                selected=select_registry_rows(j,asof,{"FVN"})
+                self.assertEqual(set(selected),set(old))
+                self.assertEqual(selected[sym],version)
+                self.assertTrue(eligible_evidence(asof,version["evidence_date"],version["verified_asof_et"]))
+        self.assertEqual(j["records"],old)
+
+    def test_producer_manual_admission_offline(self):
+        # Calendar/network operations are not exercised by this test.
+        import sys
+        import types
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        names={"AEAQ":"Activate Energy Acquisition Corp.","AESP":"Aeon Acquisition I Corp.",
+               "aeaQ":"Unrelated Acquisition Corp."}
+        current,meta=producer.manual_identity_seed_registry("2026-11-24",names)
+        self.assertEqual(set(current),{"AEAQ","AESP"})
+        self.assertEqual(current["AEAQ"]["evidence_date"],"2026-11-12")
+        self.assertEqual(current["AESP"]["evidence_date"],"2026-11-18")
+        self.assertEqual(meta["record_count"],2)
+        self.assertEqual(meta["blob_sha"],producer.file_blob_sha(producer.MANUAL_IDENTITY_SEED))
+        before,_=producer.manual_identity_seed_registry("2026-11-23",names)
+        self.assertEqual(before,{})
+        wrong_case,_=producer.manual_identity_seed_registry("2026-11-24",{"aeaQ":"Other Acquisition Corp."})
+        self.assertEqual(wrong_case,{})
 
 if __name__=="__main__":
     unittest.main()
