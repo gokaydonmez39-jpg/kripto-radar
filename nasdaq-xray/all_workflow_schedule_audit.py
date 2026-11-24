@@ -77,6 +77,13 @@ READONLY_PROVIDER_SCHEDULED={
 # User preference 2026-10-12: GitHub stores audit evidence only;
 # new Issues, issue-write permissions and issue-triggered alerts are forbidden.
 ISSUE_WRITERS=set()
+# Exact reviewed EOD workflow; this is NOT live tag or delivery authority.
+REVIEWED_EOD_TAG_WORKFLOW_BLOB="e68cefdfb9559687127d85e15b3eca60a6eec5f3"
+
+def git_blob_sha(source):
+    raw=source.encode("utf-8")
+    return hashlib.sha1(("blob "+str(len(raw))+"\0").encode("ascii")+raw).hexdigest()
+
 PROVIDER_RIGHTS={
  "xray-massive-grouped-history-resume.yml":(
     'XRAY_MASSIVE_NONDISPLAY_LICENSE_OK', 'XRAY_MASSIVE_PRIVATE_CACHE_RIGHTS_OK',
@@ -123,7 +130,8 @@ def inventory(files):
             writer_names.append(name)
         if name in READONLY_PROVIDER_SCHEDULED:
             # Scheduled source jobs are read-only. Only the dedicated
-            # snapshot publisher may have a job-scoped contents:write grant.
+            # snapshot publisher and exact reviewed EOD tag-canary job may
+            # retain their existing job-scoped contents:write grants.
             # Inspect effective scopes rather than searching for any "write".
             try:
                 document=yaml.load(source,Loader=yaml.BaseLoader)
@@ -136,6 +144,16 @@ def inventory(files):
                     continue
                 publisher="personal-eod-verified-snapshot"
                 is_snapshot=name=="xray-candidate-local-alpaca-sip-recovery.yml"
+                is_tag_eod=name=="xray-personal-477-eod.yml"
+                # Any workflow byte change needs explicit review and re-pin.
+                tag_job=jobs.get("daily-private-scan")
+                tag_scope_ok=(is_tag_eod and isinstance(tag_job,dict)
+                    and git_blob_sha(source)==REVIEWED_EOD_TAG_WORKFLOW_BLOB
+                    and top=={"contents":"read","actions":"read"}
+                    and tag_job.get("permissions")=={"contents":"write","actions":"read"}
+                    and tag_job.get("if")=="github.event_name == 'schedule'")
+                if is_tag_eod and not tag_scope_ok:
+                    errors.append("EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT:"+name)
                 for job_id,job in jobs.items():
                     if not isinstance(job,dict):
                         errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name+":"+str(job_id))
@@ -147,7 +165,8 @@ def inventory(files):
                     level=permission.get("contents")
                     if level not in (None,"read","write"):
                         errors.append("SCHEDULED_SHADOW_JOB_SCOPE_INVALID:"+name+":"+str(job_id))
-                    if level=="write" and not (is_snapshot and job_id==publisher):
+                    if level=="write" and not ((is_snapshot and job_id==publisher)
+                            or (tag_scope_ok and job_id=="daily-private-scan")):
                         errors.append("SCHEDULED_SHADOW_WRITE_PRIVILEGE:"+name+":"+str(job_id))
                 if is_snapshot:
                     publish=jobs.get(publisher)
@@ -417,6 +436,28 @@ def selftest():
         "    if: github.event_name == 'schedule'",
         "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",1)}),
         "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    # No blanket exemption: workflow drift, wrong event or scope is RED.
+    bad(lambda x:x.update({primary:x[primary]+"\n# unreviewed drift\n"}),
+        "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "    if: github.event_name == 'schedule'",
+        "    if: github.event_name != 'pull_request'",1)}),
+        "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "      contents: write","      contents: read",1)}),
+        "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "      contents: write\n      actions: read",
+        "      contents: write\n      actions: write",1)}),
+        "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "python epoch_natural_claim_canary.py --schedule-canary",
+        "python epoch_natural_claim_canary.py --unreviewed",1)}),
+        "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "      contents: read\n      actions: read",
+        "      contents: write\n      actions: read",1)}),
+        "SCHEDULED_SHADOW_WRITE_PRIVILEGE")
     a14="xray-personal-nasdaq-a14-readonly.yml"
     bad(lambda x:x.update({a14:x[a14].replace(
         "github.event.workflow_run.event == 'schedule' ||",
