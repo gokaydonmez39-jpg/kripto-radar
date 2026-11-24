@@ -6,7 +6,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:56.089749+00:00",
+      "last_success_at_utc": "2026-11-24T21:33:01.496527+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -17,7 +17,7 @@
       "last_error_retryable": null,
       "last_failure_at_utc": "2026-10-08T16:32:18.021406+00:00",
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:08:14.781504+00:00",
+      "last_success_at_utc": "2026-11-24T21:33:23.152173+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -27,7 +27,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:55.755064+00:00",
+      "last_success_at_utc": "2026-11-24T21:33:01.363937+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -37,7 +37,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:53.051864+00:00",
+      "last_success_at_utc": "2026-11-24T21:32:53.032274+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -47,7 +47,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:52.733454+00:00",
+      "last_success_at_utc": "2026-11-24T21:32:52.732750+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -57,7 +57,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:54.110605+00:00",
+      "last_success_at_utc": "2026-11-24T21:32:54.011952+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -67,7 +67,7 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:54.462458+00:00",
+      "last_success_at_utc": "2026-11-24T21:32:54.230847+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
@@ -77,26 +77,26 @@
       "last_error_code": null,
       "last_error_retryable": null,
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:07:53.577565+00:00",
+      "last_success_at_utc": "2026-11-24T21:32:53.895731+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     },
     "SEC_EFTS": {
       "consecutive_failures": 0,
-      "last_error": "HTTPError:HTTP Error 403: Forbidden",
+      "last_error": "HTTP_403",
       "last_error_code": "HTTP_DEFINITIVE",
       "last_error_retryable": false,
-      "last_failure_at_utc": "2026-10-08T20:07:55.237796+00:00",
+      "last_failure_at_utc": "2026-11-24T21:33:01.190486+00:00",
       "last_http_status": 403,
       "open_until_epoch": 0,
       "status": "NONRETRYABLE_ERROR"
     },
     "SEC_TICKER_MAP": {
       "consecutive_failures": 0,
-      "last_error": "HTTPError:HTTP Error 403: Forbidden",
+      "last_error": "HTTP_403",
       "last_error_code": "HTTP_DEFINITIVE",
       "last_error_retryable": false,
-      "last_failure_at_utc": "2026-10-08T20:07:55.088171+00:00",
+      "last_failure_at_utc": "2026-11-24T21:32:59.998790+00:00",
       "last_http_status": 403,
       "open_until_epoch": 0,
       "status": "NONRETRYABLE_ERROR"
@@ -108,11 +108,11 @@
       "last_error_retryable": null,
       "last_failure_at_utc": "2026-10-03T00:21:44.840917+00:00",
       "last_http_status": null,
-      "last_success_at_utc": "2026-10-08T20:08:13.643459+00:00",
+      "last_success_at_utc": "2026-11-24T21:33:19.163876+00:00",
       "open_until_epoch": 0,
       "status": "HEALTHY"
     }
   },
   "schema": "XRAY_PROVIDER_HEALTH_LEDGER_V1",
-  "updated_at_utc": "2026-10-08T20:08:14.781524+00:00"
+  "updated_at_utc": "2026-11-24T21:33:23.152188+00:00"
 }
