@@ -131,6 +131,47 @@ class AuditTests(unittest.TestCase):
         with self.assertRaisesRegex(audit.EvidenceHold, "SCORE_READY_BUT_TIMESTAMPED"):
             audit.assess(a,s,c)
 
+
+    def test_nonempty_keyless_score_row_blocks_instead_of_disappearing(self):
+        a,s,c=fixture()
+        s.append(["","2026-11-04","","","EPISODE"])
+        with self.assertRaisesRegex(audit.EvidenceHold,"SCORE_NONEMPTY_ROW_WITHOUT_KEY"):
+            audit.assess(a,s,c)
+
+    def test_blank_score_padding_preserved(self):
+        a,s,c=fixture()
+        s.extend([[],["","",""]])
+        before=copy.deepcopy((a,s,c))
+        self.assertEqual(audit.assess(a,s,c)["score_count"],1)
+        self.assertEqual((a,s,c),before)
+
+    def test_invalid_score_row_type_blocks(self):
+        a,s,c=fixture()
+        s.append("not a Sheet row")
+        with self.assertRaisesRegex(audit.EvidenceHold,"SCORE_ROW_TYPE_INVALID"):
+            audit.assess(a,s,c)
+
+    def test_nonhex_equal_digest_is_not_a_valid_hash(self):
+        a,s,c=fixture()
+        s[1][29]=s[2][29]="z"*64
+        with self.assertRaisesRegex(audit.EvidenceHold,"SCORE_DIGEST_DRIFT"):
+            audit.assess(a,s,c)
+
+    def test_score_requested_timestamp_validation(self):
+        for value in ("garbage","2026-11-05T10:00:05Z","2026-11-55 10:00 TRT","2026-11-05T10:00:05"):
+            a,s,c=fixture()
+            s[1][28]=value
+            with self.subTest(value=value),self.assertRaisesRegex(audit.EvidenceHold,"REQUESTED_TIMESTAMP_INVALID"):
+                audit.assess(a,s,c)
+        for value in ("2026-11-05 10:00 TRT","2026-11-05 10:00:05 TRT","2026-11-05T10:00:05+03:00"):
+            a,s,c=fixture()
+            s[1][28]=value
+            before=copy.deepcopy((a,s,c))
+            result=audit.assess(a,s,c)
+            self.assertEqual(result["last_asof_score"],"SUMMARY_PRESENT")
+            self.assertFalse(result["chatgpt_visible_message_proven"])
+            self.assertEqual((a,s,c),before)
+
     def test_duplicate_alert_blocks(self):
         a,s,c=fixture()
         a.append(copy.deepcopy(a[1]))
