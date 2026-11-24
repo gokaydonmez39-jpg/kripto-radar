@@ -161,10 +161,20 @@ def build_witness_results(scope,asof):
             results[sym]={"identity_status":"UNKNOWN","reason":resolve_reason or "SEC_IDENTITY_UNRESOLVED","filings":[]}; continue
         try:
             sub=sec_fetch_json("SEC_SUBMISSIONS",f"https://data.sec.gov/submissions/CIK{ident['cik']:010d}.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=300)
-            # Exact issuer identity: if SEC submissions returns tickers, the requested
-            # symbol must be among them. Otherwise do not use filings as evidence.
-            st=[str(x).upper() for x in (sub.get("tickers") or [])]
-            if st and sym not in st:
+            # A requested URL or prior routing hint is not an issuer witness.
+            # Require an explicit positive CIK and exact symbol in the response.
+            raw_cik=sub.get("cik")
+            response_cik=None
+            if type(raw_cik) is int and raw_cik>0:
+                response_cik=raw_cik
+            elif isinstance(raw_cik,str) and re.fullmatch(r"[0-9]{1,10}",raw_cik):
+                response_cik=int(raw_cik)
+            if response_cik!=ident["cik"] or not response_cik:
+                results[sym]={"identity_status":"UNKNOWN","cik":ident["cik"],"reason":"SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH","filings":[]}; continue
+            st=sub.get("tickers")
+            if not isinstance(st,list) or not st or any(not isinstance(x,str) or not x for x in st):
+                results[sym]={"identity_status":"UNKNOWN","cik":ident["cik"],"reason":"SEC_SUBMISSIONS_TICKERS_MISSING_OR_INVALID","filings":[]}; continue
+            if sym not in [x.upper() for x in st]:
                 results[sym]={"identity_status":"UNKNOWN","cik":ident["cik"],"reason":"SEC_SUBMISSIONS_TICKER_MISMATCH","filings":[]}; continue
             recent=((sub.get("filings") or {}).get("recent") or {})
             forms=recent.get("form") or []; dates=recent.get("filingDate") or []
