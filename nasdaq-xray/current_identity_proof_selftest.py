@@ -115,21 +115,21 @@ def main():
                 }
             if "CIK0002128462.json" in url:
                 return {
-                  "tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks",
+                  "cik":2128462,"tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks",
                   "filings":{"recent":{"filingDate":["2026-09-30","2026-10-07"],"acceptanceDateTime":["2026-09-30T18:10:00Z","2026-10-07T18:10:00Z"]}},
                 }
             if "CIK0005550001.json" in url:
                 # Deliberately wrong-case ticker for CIK 5550001.
-                return {"tickers":["BCpC"],"sic":"6770","sicDescription":"Blank Checks",
+                return {"cik":5550001,"tickers":["BCpC"],"sic":"6770","sicDescription":"Blank Checks",
                         "filings":{"recent":{"filingDate":["2026-09-30"],
                         "acceptanceDateTime":["2026-09-30T18:10:00Z"]}}}
             if "CIK0005550002.json" in url:
-                return {"tickers":["BCPC"],"sic":"3571","sicDescription":"Electronic Computers",
+                return {"cik":5550002,"tickers":["BCPC"],"sic":"3571","sicDescription":"Electronic Computers",
                         "filings":{"recent":{"filingDate":["2026-09-30"],
                         "acceptanceDateTime":["2026-09-30T18:10:00Z"]}}}
             if "CIK0001234567.json" in url:
                 return {
-                  "tickers":["OPER"],"sic":"3571","sicDescription":"Electronic Computers",
+                  "cik":1234567,"tickers":["OPER"],"sic":"3571","sicDescription":"Electronic Computers",
                   "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}},
                 }
             raise AssertionError("unexpected URL "+url)
@@ -226,7 +226,7 @@ def main():
         # A valid CIK/ticker and recent filing cannot compensate for missing SIC.
         def missing_sic(url):
             if "CIK0001234567.json" in url:
-                return {"tickers":["OPER"],"sic":None,"sicDescription":"",
+                return {"cik":1234567,"tickers":["OPER"],"sic":None,"sicDescription":"",
                         "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}}}
             return fake_load(url)
         m.load_json_url=missing_sic
@@ -235,7 +235,7 @@ def main():
         # A conflicting official description must not turn any issuer PASS.
         def contradictory_sic(url):
             if "CIK0001234567.json" in url:
-                return {"tickers":["OPER"],"sic":"3571","sicDescription":"Blank Checks",
+                return {"cik":1234567,"tickers":["OPER"],"sic":"3571","sicDescription":"Blank Checks",
                         "filings":{"recent":{"filingDate":["2026-09-29"],"acceptanceDateTime":["2026-09-29T18:10:00Z"]}}}
             return fake_load(url)
         m.load_json_url=contradictory_sic

@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from master_spac_operating_guard import nonblank_requires_completion
-from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence
+from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence,cik_number
 
 ROOT=Path(__file__).resolve().parent
 MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
@@ -310,13 +310,32 @@ def sec_ticker_cik_map(asof=None,subjects=None):
         raise RuntimeError("SEC_CIK_ROUTING_UNAVAILABLE_PRIMARY_AND_SECONDARY")
     return out
 
-def sec_submissions_transport_is_blocked(exc):
-    """Only explicit access-policy HTTP failures stop a same-run SEC fan-out.
+# Shared across current discovery and both prior-proof revalidation loops.
+# A denial is never an invitation to switch SEC endpoints for the same issuer.
+_SEC_ISSUER_ACCESS_DENIAL=None
 
-    A single 403/429 means the remaining CIK issuers stay UNKNOWN this run.
-    Other transient errors are symbol-local; no synthetic classifications.
-    """
-    return getattr(exc,"code",None) in (403,429)
+def sec_submissions_transport_is_blocked(exc):
+    return getattr(exc,"code",None) in (401,403,429)
+
+def sec_issuer_read(reader,*args):
+    global _SEC_ISSUER_ACCESS_DENIAL
+    if _SEC_ISSUER_ACCESS_DENIAL is not None:
+        raise _SEC_ISSUER_ACCESS_DENIAL
+    try:
+        return reader(*args)
+    except Exception as exc:
+        if sec_submissions_transport_is_blocked(exc):
+            _SEC_ISSUER_ACCESS_DENIAL=exc
+        raise
+
+def exact_submissions_identity(sub,sym,cik):
+    expected=cik_number(cik)
+    if expected is None or not isinstance(sub,dict) or cik_number(sub.get("cik"))!=expected:
+        return False
+    tickers=sub.get("tickers")
+    return (isinstance(tickers,list) and bool(tickers)
+            and all(isinstance(x,str) and x and x==x.strip() for x in tickers)
+            and sym in tickers)
 
 def official_sec_sic(sub:dict):
     """Never infer operating issuer status from absent or contradictory SEC SIC."""
@@ -335,9 +354,8 @@ def official_sec_sic(sub:dict):
 def sec_current_classification(sym:str,asof:str,cik:int|None):
     """One same-run SEC submissions read returning blank/nonblank classification."""
     if cik is None:return None
-    sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
-    tickers=[str(x).strip() for x in (sub.get("tickers") or [])]
-    if sym not in tickers:return None
+    sub=sec_issuer_read(load_json_url,f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
+    if not exact_submissions_identity(sub,sym,cik):return None
     official=official_sec_sic(sub)
     if official is None:return None
     sic,desc=official
@@ -536,7 +554,7 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
     if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
         return None
     url=f"https://www.sec.gov/edgar/browse/?CIK={int(cik)}&owner=exclude"
-    raw=request_bytes(url,SEC_UA,35).decode("utf-8","ignore")
+    raw=sec_issuer_read(request_bytes,url,SEC_UA,35).decode("utf-8","ignore")
     text=html.unescape(re.sub(r"<[^>]+>"," ",raw))
     text=re.sub(r"\s+"," ",text)
     # SEC landing fallback must bind the exact exchange ticker, including
@@ -573,11 +591,12 @@ def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence
     if cik is None:
         return None
     try:
-        sub=load_json_url(f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
-    except Exception:
+        sub=sec_issuer_read(load_json_url,f"{SEC_SUBMISSIONS}/CIK{cik:010d}.json")
+    except Exception as exc:
+        if sec_submissions_transport_is_blocked(exc):
+            raise
         return sec_entity_landing_row(sym,asof,cik,want_blank,prior_evidence_date)
-    tickers=[str(x).strip() for x in (sub.get("tickers") or [])]
-    if sym not in tickers:
+    if not exact_submissions_identity(sub,sym,cik):
         return None
     official=official_sec_sic(sub)
     if official is None:
@@ -787,6 +806,8 @@ def frozen_exact_asof_directory(asof,root=ROOT):
     return None
 
 def main():
+    global _SEC_ISSUER_ACCESS_DENIAL
+    _SEC_ISSUER_ACCESS_DENIAL=None
     asof=completed_asof()
     identity_path,sec_path=proof_paths(asof)
     if exact_proofs_complete(identity_path,sec_path,asof):

@@ -92,5 +92,50 @@ class Contract(unittest.TestCase):
         wrong_case,_=producer.manual_identity_seed_registry("2026-11-24",{"aeaQ":"Other Acquisition Corp."})
         self.assertEqual(wrong_case,{})
 
+
+    def test_master_live_identity_and_access_fence_offline(self):
+        import sys,types,urllib.error
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            m=import_module("build_current_identity_proofs")
+        for payload,expected in [
+            ({"cik":2128462,"tickers":["TLAC"]},True),
+            ({"cik":"0002128462","tickers":["TLAC"]},True),
+            ({"cik":1,"tickers":["TLAC"]},False),
+            ({"tickers":["TLAC"]},False),
+            ({"cik":True,"tickers":["TLAC"]},False),
+            ({"cik":2128462.0,"tickers":["TLAC"]},False),
+            ({"cik":2128462,"tickers":[]},False),
+            ({"cik":2128462,"tickers":"TLAC"},False),
+            ({"cik":2128462,"tickers":["Tlac"]},False),
+            ({"cik":2128462,"tickers":[" TLAC"]},False),
+            ({"cik":2128462,"tickers":["TLAC",None]},False),
+        ]:
+            row=dict(payload,sic="6770",sicDescription="Blank Checks")
+            with self.subTest(payload=payload),patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",return_value=row),patch.object(m,"latest_filing_date",return_value="2026-11-23"),patch.object(m,"sec_entity_landing_row") as landing:
+                self.assertEqual(m.sec_current_classification("TLAC","2026-11-24",2128462) is not None,expected)
+                self.assertEqual(m.sec_current_row("TLAC","2026-11-24",2128462,True) is not None,expected)
+                landing.assert_not_called()
+        for code in (401,403,429):
+            exc=urllib.error.HTTPError("https://data.sec.gov/",code,"denied",{},None)
+            with self.subTest(code=code),patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",side_effect=exc) as network,patch.object(m,"request_bytes") as landing:
+                for call in (
+                    lambda:m.sec_current_row("TLAC","2026-11-24",2128462,True,"2026-11-23"),
+                    lambda:m.sec_current_classification("OTHER","2026-11-24",1234567),
+                    lambda:m.sec_entity_landing_row("OTHER","2026-11-24",1234567,True,"2026-11-23"),
+                    lambda:m.sec_current_row("OTHER","2026-11-24",1234567,True,"2026-11-23"),
+                ):
+                    with self.assertRaises(urllib.error.HTTPError) as err:
+                        call()
+                    self.assertEqual(err.exception.code,code)
+                network.assert_called_once()
+                landing.assert_not_called()
+        transient=urllib.error.HTTPError("https://data.sec.gov/",500,"transient",{},None)
+        with patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",side_effect=transient),patch.object(m,"sec_entity_landing_row",return_value=None) as landing:
+            self.assertIsNone(m.sec_current_row("TLAC","2026-11-24",2128462,True,"2026-11-23"))
+            landing.assert_called_once()
+            self.assertIsNone(m._SEC_ISSUER_ACCESS_DENIAL)
+
 if __name__=="__main__":
     unittest.main()
