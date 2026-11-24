@@ -45,6 +45,10 @@ jobs:
         run: |
           python nasdaq-xray/macro_context_probe.py --selftest
           python -O nasdaq-xray/macro_context_probe.py --selftest
+      - name: Provider health publication regression (offline only)
+        run: |
+          python nasdaq-xray/resilience_runtime.py --selftest-health-publication
+          python -O nasdaq-xray/resilience_runtime.py --selftest-health-publication
       - name: Personal 477 normal and optimized regression
         working-directory: personal-swing
         run: |
