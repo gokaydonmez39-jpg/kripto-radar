@@ -9,8 +9,8 @@
   "discovery_version": "SEC_CURRENT_SUSPECT_DISCOVERY_V9",
   "discovery_coverage": {
     "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-    "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380",
-    "manual_seed_registry_record_count": 124,
+    "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8",
+    "manual_seed_registry_record_count": 128,
     "sec_cik_routing": {
       "source": "SEC_TICKERS_PLUS_NASDAQ_EXCHANGE_CIK_ROUTING_ONLY",
       "legacy_valid_count": 0,
@@ -30,12 +30,12 @@
       "total_resolved_cik_routes": 626,
       "sec_submissions_blocked_http_code": 403,
       "sec_submissions_blocked_at": "AACIU",
-      "sec_submissions_skip_count": 503,
+      "sec_submissions_skip_count": 499,
       "sec_submissions_classification_authority": false
     },
     "current_suspect_count": 628,
-    "resolved_current_suspect_count": 551,
-    "unresolved_current_suspect_count": 77,
+    "resolved_current_suspect_count": 555,
+    "unresolved_current_suspect_count": 73,
     "unresolved_current_suspects": [
       "AEAQ",
       "AESP",
@@ -76,10 +76,6 @@
       "IPXG",
       "IPXGU",
       "IPXGW",
-      "LEDR",
-      "LEDRW",
-      "LOVI",
-      "LOVIW",
       "LPAA",
       "LPBBU",
       "LPBBW",
@@ -136,7 +132,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "AACO": {
       "cik": "0002099906",
@@ -150,7 +146,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "AACP": {
       "cik": "0002102123",
@@ -164,7 +160,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ACAA": {
       "cik": "0002096900",
@@ -178,7 +174,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ACGC": {
       "cik": "0002111542",
@@ -192,7 +188,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ADAC": {
       "cik": "0002083002",
@@ -206,7 +202,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ALF": {
       "cik": "0002010930",
@@ -220,7 +216,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ALPX": {
       "cik": "0002125551",
@@ -234,7 +230,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "AMAN": {
       "cik": "0002112457",
@@ -248,7 +244,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "APAC": {
       "cik": "0002043630",
@@ -262,7 +258,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ARCI": {
       "cik": "0002083910",
@@ -276,7 +272,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ARCL": {
       "cik": "0002073515",
@@ -290,7 +286,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ARTC": {
       "cik": "0002086545",
@@ -304,7 +300,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ASPC": {
       "cik": "0001890361",
@@ -318,7 +314,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BCCQ": {
       "cik": "0002128045",
@@ -332,7 +328,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BEAG": {
       "cik": "0001852207",
@@ -346,7 +342,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BHAIU": {
       "cik": "0002142627",
@@ -360,7 +356,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BHAV": {
       "cik": "0002097288",
@@ -374,7 +370,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BIXI": {
       "cik": "0002082542",
@@ -388,7 +384,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BLRK": {
       "cik": "0002081532",
@@ -402,7 +398,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BLUW": {
       "cik": "0002050501",
@@ -416,7 +412,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BLZR": {
       "cik": "0002075310",
@@ -430,7 +426,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BPAC": {
       "cik": "0002064177",
@@ -444,7 +440,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BREZ": {
       "cik": "0002095443",
@@ -458,7 +454,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BRKH": {
       "cik": "0002098707",
@@ -472,7 +468,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BRRK": {
       "cik": "0002098410",
@@ -486,7 +482,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "BRRKW": {
       "cik": "0002098410",
@@ -500,7 +496,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CAII": {
       "cik": "0002115404",
@@ -514,7 +510,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CAPN": {
       "cik": "0002024203",
@@ -528,7 +524,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CAQ": {
       "cik": "0002100125",
@@ -542,7 +538,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CATL": {
       "cik": "0002104391",
@@ -556,7 +552,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CCAQ": {
       "cik": "0002041047",
@@ -570,7 +566,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CCCT": {
       "cik": "0002123471",
@@ -584,7 +580,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CCII": {
       "cik": "0002064683",
@@ -598,7 +594,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CHAR": {
       "cik": "0002024459",
@@ -612,7 +608,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CHEC": {
       "cik": "0002047177",
@@ -626,7 +622,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CHPG": {
       "cik": "0002024460",
@@ -640,7 +636,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CRAC": {
       "cik": "0002070887",
@@ -654,7 +650,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CRAN": {
       "cik": "0002081358",
@@ -668,7 +664,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CRAQ": {
       "cik": "0002058359",
@@ -682,7 +678,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "CTAA": {
       "cik": "0002094073",
@@ -696,7 +692,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "DMAA": {
       "cik": "0002028614",
@@ -710,7 +706,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "DRDB": {
       "cik": "0002032528",
@@ -724,7 +720,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "DSAC": {
       "cik": "0002082149",
@@ -738,7 +734,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "EGHA": {
       "cik": "0002052547",
@@ -752,7 +748,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "EMIS": {
       "cik": "0002075816",
@@ -766,7 +762,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "EURK": {
       "cik": "0002000410",
@@ -780,7 +776,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "EVOX": {
       "cik": "0002077954",
@@ -794,7 +790,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "EWAV": {
       "cik": "0002100704",
@@ -808,7 +804,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FERA": {
       "cik": "0002025401",
@@ -822,7 +818,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FIGX": {
       "cik": "0002059033",
@@ -836,7 +832,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FSHP": {
       "cik": "0001850059",
@@ -850,7 +846,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FTHA": {
       "cik": "0002097986",
@@ -864,7 +860,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FVAV": {
       "cik": "0001850733",
@@ -878,7 +874,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FWAC": {
       "cik": "0002116105",
@@ -892,7 +888,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "FXAC": {
       "cik": "0002121703",
@@ -906,7 +902,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "GPAC": {
       "cik": "0002085408",
@@ -920,7 +916,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "GPAT": {
       "cik": "0001834526",
@@ -934,7 +930,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "GSRV": {
       "cik": "0002111762",
@@ -948,7 +944,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "GUAC": {
       "cik": "0002081515",
@@ -962,7 +958,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "HCMA": {
       "cik": "0002069856",
@@ -976,7 +972,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "HLXC": {
       "cik": "0002099656",
@@ -990,7 +986,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "IDAC": {
       "cik": "0002090441",
@@ -1004,7 +1000,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "IGAC": {
       "cik": "0002075068",
@@ -1018,7 +1014,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ITHA": {
       "cik": "0002080985",
@@ -1032,7 +1028,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "JATT": {
       "cik": "0002112446",
@@ -1046,7 +1042,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "KEYY": {
       "cik": "0002102771",
@@ -1060,7 +1056,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "KFII": {
       "cik": "0002029976",
@@ -1074,7 +1070,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "KTWO": {
       "cik": "0002086524",
@@ -1088,7 +1084,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "LATA": {
       "cik": "0002076427",
@@ -1102,7 +1098,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "LCCC": {
       "cik": "0002049248",
@@ -1116,7 +1112,63 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
+    },
+    "LEDR": {
+      "cik": "0002109823",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2109823/000121390026116465/0001213900-26-116465-index.htm",
+      "evidence_date": "2026-11-05",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_security_name": "Leader's Advantage Acquisition Corp. - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
+      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
+    },
+    "LEDRW": {
+      "cik": "0002109823",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2109823/000121390026116465/0001213900-26-116465-index.htm",
+      "evidence_date": "2026-11-05",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_security_name": "Leader's Advantage Acquisition Corp. - Warrants",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
+      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
+    },
+    "LOVI": {
+      "cik": "0002115191",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2115191/000121390026118124/0001213900-26-118124-index.htm",
+      "evidence_date": "2026-11-10",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_security_name": "Live Oak Acquisition Corp. VI - Class A Ordinary Shares",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
+      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
+    },
+    "LOVIW": {
+      "cik": "0002115191",
+      "sic": 6770,
+      "classification": "Blank Checks",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2115191/000121390026118124/0001213900-26-118124-index.htm",
+      "evidence_date": "2026-11-10",
+      "same_asof_revalidated_without_sec_network": true,
+      "revalidation_semantics": "MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+      "same_asof_nasdaq_security_name": "Live Oak Acquisition Corp. VI - Warrants",
+      "same_asof_nasdaq_screener_industry": "",
+      "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
+      "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "LPBB": {
       "cik": "0002023676",
@@ -1130,7 +1182,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "LPCV": {
       "cik": "0002083728",
@@ -1144,7 +1196,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "LWAC": {
       "cik": "0002061379",
@@ -1158,7 +1210,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "MESH": {
       "cik": "0002081468",
@@ -1172,7 +1224,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "MIAC": {
       "cik": "0002136530",
@@ -1186,7 +1238,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "MKLY": {
       "cik": "0002067592",
@@ -1200,7 +1252,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "MMTX": {
       "cik": "0002077033",
@@ -1214,7 +1266,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "NBRG": {
       "cik": "0001918414",
@@ -1228,7 +1280,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "NPAC": {
       "cik": "0002048948",
@@ -1242,7 +1294,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "NSAI": {
       "cik": "0002133719",
@@ -1256,7 +1308,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "NTWO": {
       "cik": "0002028027",
@@ -1270,7 +1322,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "OCLT": {
       "cik": "0002137679",
@@ -1284,7 +1336,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "OHAC": {
       "cik": "0002090787",
@@ -1298,7 +1350,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "ONCH": {
       "cik": "0002054272",
@@ -1312,7 +1364,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "OSPR": {
       "cik": "0002113481",
@@ -1326,7 +1378,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "OYSE": {
       "cik": "0002042182",
@@ -1340,7 +1392,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "PAAC": {
       "cik": "0002087446",
@@ -1354,7 +1406,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "PACH": {
       "cik": "0002040381",
@@ -1368,7 +1420,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "PGAC": {
       "cik": "0002030829",
@@ -1382,7 +1434,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "PLCI": {
       "cik": "0002122392",
@@ -1396,7 +1448,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "POLE": {
       "cik": "0002025341",
@@ -1410,7 +1462,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "PTAC": {
       "cik": "0002099095",
@@ -1424,7 +1476,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "QSEA": {
       "cik": "0002047455",
@@ -1438,7 +1490,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "QUMS": {
       "cik": "0002070900",
@@ -1452,7 +1504,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RANG": {
       "cik": "0002035644",
@@ -1466,7 +1518,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RDAC": {
       "cik": "0002018145",
@@ -1480,7 +1532,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RDAG": {
       "cik": "0002055459",
@@ -1494,7 +1546,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RFAI": {
       "cik": "0002012807",
@@ -1508,7 +1560,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RIBB": {
       "cik": "0002035016",
@@ -1522,7 +1574,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RREV": {
       "cik": "0002123969",
@@ -1536,7 +1588,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "RTAC": {
       "cik": "0002035173",
@@ -1550,7 +1602,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SAAQ": {
       "cik": "0002091222",
@@ -1564,7 +1616,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCATR": {
       "cik": "0002133239",
@@ -1578,7 +1630,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCATW": {
       "cik": "0002133239",
@@ -1592,7 +1644,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCII": {
       "cik": "0002076739",
@@ -1606,7 +1658,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCQC": {
       "cik": "0002131303",
@@ -1620,7 +1672,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCQCR": {
       "cik": "0002131303",
@@ -1634,7 +1686,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCQCU": {
       "cik": "0002131303",
@@ -1648,7 +1700,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SCQCW": {
       "cik": "0002131303",
@@ -1662,7 +1714,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SIMA": {
       "cik": "0002014982",
@@ -1676,7 +1728,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SPEG": {
       "cik": "0002028735",
@@ -1690,7 +1742,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SSAC": {
       "cik": "0002081300",
@@ -1704,7 +1756,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SVAQ": {
       "cik": "0002085659",
@@ -1718,7 +1770,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SVIV": {
       "cik": "0002098242",
@@ -1732,7 +1784,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "SZZL": {
       "cik": "0002030663",
@@ -1746,7 +1798,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "TAVI": {
       "cik": "0002020385",
@@ -1760,7 +1812,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "TCGX": {
       "cik": "0002137965",
@@ -1774,7 +1826,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "TVA": {
       "cik": "0002033991",
@@ -1788,7 +1840,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "TVIV": {
       "cik": "0002096755",
@@ -1802,7 +1854,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "VLOS": {
       "cik": "0002016072",
@@ -1816,7 +1868,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "WSTN": {
       "cik": "0002076192",
@@ -1830,7 +1882,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "XSLL": {
       "cik": "0002088807",
@@ -1844,7 +1896,7 @@
       "same_asof_nasdaq_screener_industry": "",
       "same_asof_nasdaq_directory_footer": "File Creation Time: 1124202617:01|||||||",
       "manual_seed_registry_path": "nasdaq-xray/master_sec_identity_manual_seed_registry.json",
-      "manual_seed_registry_blob_sha": "f9e42a44229adc5a3cb7508f6c75f02a8c7a0380"
+      "manual_seed_registry_blob_sha": "2537a0ac43501d3db36356f17d5b8db0219ca2e8"
     },
     "AACIU": {
       "cik": "0002092897",
