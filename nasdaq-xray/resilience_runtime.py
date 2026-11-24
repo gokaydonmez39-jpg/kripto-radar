@@ -53,10 +53,17 @@ def _record_success(provider):
     })
     l["updated_at_utc"]=now(); save_ledger(l)
 
+def failure_message(provider,exc,cls):
+    # FRED uses a query-string API key. Never persist raw exception text for it.
+    if provider=="FRED":
+        status=cls.get("http_status")
+        return "FRED:HTTP_"+str(status) if type(status) is int and 100<=status<=599 else "FRED:PROVIDER_ERROR"
+    return f"{type(exc).__name__}:{str(exc)[:240]}"
+
 def _record_failure(provider,exc,circuit_failures,cooldown):
     cls=classify_exception(exc)
     l,p=_provider_state(provider)
-    err=f"{type(exc).__name__}:{str(exc)[:240]}"
+    err=failure_message(provider,exc,cls)
     if cls["retryable"]:
         n=int(p.get("consecutive_failures") or 0)+1
         p.update({
