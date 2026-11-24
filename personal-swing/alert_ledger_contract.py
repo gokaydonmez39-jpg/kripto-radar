@@ -46,9 +46,16 @@ def event_key(al_asof,symbol,event_asof,event_type,first_trigger_index=1):
         triggered=date.fromisoformat(event_asof)
     except (ValueError,TypeError) as exc:
         raise LedgerRefused('BAD_EVENT_DATE') from exc
-    if triggered<opening or not TICKER.fullmatch(str(symbol)):
+    # Canonical ISO dates and bounded decimal trigger indices must agree with
+    # the portable JavaScript reservation contract. ISO basic/week dates
+    # accepted by Python's parser are not canonical event identities.
+    if (opening.isoformat()!=al_asof or triggered.isoformat()!=event_asof
+            or triggered<opening or type(symbol) is not str
+            or not TICKER.fullmatch(symbol)):
         raise LedgerRefused('BAD_EVENT_IDENTITY')
-    if event_type not in TYPES or type(first_trigger_index) is not int or first_trigger_index<1:
+    if (type(event_type) is not str or event_type not in TYPES
+            or type(first_trigger_index) is not int
+            or not 1<=first_trigger_index<=999999999999999):
         raise LedgerRefused('BAD_EVENT_KIND_OR_EPISODE')
     return f'{al_asof}|{symbol}|{event_asof}|{event_type}|{first_trigger_index}'
 
