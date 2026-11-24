@@ -41,6 +41,22 @@ jobs:
           python -m py_compile nasdaq-xray/personal_free_iex_advisory_guard.py
           python nasdaq-xray/personal_free_iex_advisory_guard.py
           python -O nasdaq-xray/personal_free_iex_advisory_guard.py
+      - name: Reject unguarded personal artifact upload
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path(".github/workflows/xray-personal-free-iex-eod-signals.yml").read_text()
+          marker="      - name: Upload private derived classifications only in a private repository"
+          hold="      - name: Report public repository output hold (no personal artifact)"
+          expr="        if: $"+"{{ success() && github.event.repository.private "
+          guard=expr+"== true }}"
+          upload="uses: actions/"+"upload-artifact@"
+          if s.count(upload)!=1 or (marker+"\n"+guard+"\n        "+upload) not in s:
+              raise SystemExit("XRAY_PRIVATE_ARTIFACT_GUARD_MISSING")
+          if (hold+"\n"+expr+"!= true }}\n") not in s:
+              raise SystemExit("XRAY_PUBLIC_OUTPUT_HOLD_MISSING")
+          print("XRAY_PRIVATE_ARTIFACT_GUARD=PASS")
+          PY
   # On an explicitly reviewed main push, immediately probe the existing free
   # personal source once. Never run vendor HTTP on untrusted PRs.
   research:
@@ -102,8 +118,11 @@ jobs:
           assert x["execution"]=="NONE" and x["real_money"]=="NO-GO"
           print("XRAY_PERSONAL_IEX_RESULT=PRIVATE_RESEARCH_ONLY_SINGLE_VENUE_LOW_CONFIDENCE_NO_AL")
           PY
-      - name: Upload PRIVATE derived classifications only (no raw OHLCV)
-        if: success()
+      - name: Report public repository output hold (no personal artifact)
+        if: ${{ success() && github.event.repository.private != true }}
+        run: echo "XRAY_PERSONAL_IEX_OUTPUT=HOLD_PUBLIC_OR_UNVERIFIED_REPOSITORY_NO_PRIVATE_ARTIFACT"
+      - name: Upload private derived classifications only in a private repository
+        if: ${{ success() && github.event.repository.private == true }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: xray-personal-free-iex-eod-study-private-no-ohlcv
