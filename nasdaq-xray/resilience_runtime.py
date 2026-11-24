@@ -58,7 +58,8 @@ def failure_message(provider,exc,cls):
     if provider=="FRED":
         status=cls.get("http_status")
         return "FRED:HTTP_"+str(status) if type(status) is int and 100<=status<=599 else "FRED:PROVIDER_ERROR"
-    return f"{type(exc).__name__}:{str(exc)[:240]}"
+    status=cls.get("http_status")
+    return "HTTP_"+str(status) if type(status) is int and 100<=status<=599 else cls["code"]
 
 def _record_failure(provider,exc,circuit_failures,cooldown):
     cls=classify_exception(exc)
@@ -194,3 +195,141 @@ def fetch_text(provider,url,headers=None,timeout=20,cache_ttl=0,circuit_failures
     finally:
         with _LOCK:
             _INFLIGHT.pop(key,None); evt.set()
+
+# Public diagnostics only; preserve the original circuit-state schema and each
+# observation timestamp. A successful HTTP request is not data/license authority.
+HEALTH_PROVIDERS=frozenset({
+    "CLOUDFLARE_STATUS","CLOUDFLARE_RADAR","GITHUB_REPO_VERIFY","GITHUB_STATUS",
+    "NASDAQ_ADDS_DELETES","NASDAQ_SECURITY_STATUS","NASDAQ_SYSTEM_STATUS_IPO",
+    "NASDAQ_SYSTEM_STATUS_SELFHELP","NASDAQ_TRADE_HALTS","SEC_EFTS",
+    "SEC_TICKER_MAP","SEC_SUBMISSIONS","US_TREASURY_YIELD_CURVE","FRED",
+})
+HEALTH_CODES=frozenset({"HTTP_TRANSIENT","HTTP_DEFINITIVE","UPSTREAM_INVALID_JSON",
+                        "TRANSPORT_TRANSIENT","INTERNAL_OR_DEFINITIVE"})
+HEALTH_FIELDS=frozenset({"status","consecutive_failures","last_error","last_error_code",
+    "last_error_retryable","last_http_status","open_until_epoch",
+    "last_success_at_utc","last_failure_at_utc"})
+
+def prepare_health_publication(previous,current,at):
+    import math
+    def require(ok,label):
+        if not ok: raise ValueError(label)
+    def stamp(v):
+        require(type(v) is str,"HEALTH_TIMESTAMP_TYPE")
+        d=datetime.fromisoformat(v)
+        require(d.tzinfo is not None and d<=at,"HEALTH_TIMESTAMP_FUTURE_OR_NAIVE")
+        return d
+    require(at.tzinfo is not None,"HEALTH_CLOCK")
+    for obj in (previous,current):
+        require(type(obj) is dict and set(obj)=={"schema","providers","updated_at_utc"}
+                and obj["schema"]=="XRAY_PROVIDER_HEALTH_LEDGER_V1"
+                and type(obj["providers"]) is dict
+                and set(obj["providers"])<=HEALTH_PROVIDERS,"HEALTH_SCHEMA_OR_PROVIDER")
+    old,new=previous["providers"],current["providers"]
+    before,after=stamp(previous["updated_at_utc"]),stamp(current["updated_at_utc"])
+    require(0<=(at-after).total_seconds()<=900 and after>before,"HEALTH_GENERATION_AGE")
+    require(set(old)<=set(new),"HEALTH_PROVIDER_REMOVED")
+    output={}
+    observed=0
+    for name,row in new.items():
+        require(type(row) is dict and set(row)<=HEALTH_FIELDS,"HEALTH_ROW_SCHEMA")
+        state=row.get("status")
+        n=row.get("consecutive_failures")
+        retry=row.get("last_error_retryable")
+        code=row.get("last_error_code")
+        http=row.get("last_http_status")
+        until=row.get("open_until_epoch",0)
+        require(type(n) is int and n>=0 and type(until) in (float,int)
+                and math.isfinite(until) and until>=0,"HEALTH_COUNTER")
+        require(http is None or (type(http) is int and 100<=http<=599),"HEALTH_HTTP")
+        times={}
+        for key in ("last_success_at_utc","last_failure_at_utc"):
+            if key in row:
+                times[key]=stamp(row[key])
+                require(times[key]<=after,"HEALTH_OBSERVATION_AFTER_UPDATE")
+            if key in old.get(name,{}):
+                require(key in times and times[key]>=stamp(old[name][key]),"HEALTH_OBSERVATION_REGRESSION")
+            if key in times and (key not in old.get(name,{}) or times[key]>stamp(old[name][key])):
+                observed+=1
+        success=times.get("last_success_at_utc")
+        failure=times.get("last_failure_at_utc")
+        if state=="HEALTHY":
+            require(success is not None and (failure is None or success>=failure)
+                    and n==0 and until==0 and retry is None and code is None and http is None,
+                    "HEALTH_SUCCESS_CONTRADICTION")
+            error=None
+        elif state in ("DEGRADED","CIRCUIT_OPEN","NONRETRYABLE_ERROR"):
+            require(failure is not None and (success is None or failure>=success)
+                    and code in HEALTH_CODES,"HEALTH_FAILURE_CONTRADICTION")
+            if state=="NONRETRYABLE_ERROR":
+                require(retry is False and n==0 and until==0
+                        and code in {"HTTP_DEFINITIVE","INTERNAL_OR_DEFINITIVE"},"HEALTH_DEFINITIVE_CONTRADICTION")
+            else:
+                require(retry is True and n>0 and code not in {"HTTP_DEFINITIVE","INTERNAL_OR_DEFINITIVE"}
+                        and (state!="CIRCUIT_OPEN" or until>0),"HEALTH_RETRY_CONTRADICTION")
+            error=("FRED:HTTP_"+str(http) if http is not None else "FRED:PROVIDER_ERROR") if name=="FRED" else ("HTTP_"+str(http) if http is not None else code)
+        else:
+            raise ValueError("HEALTH_UNKNOWN_STATE")
+        # A changed state requires a changed observation, not just a new file timestamp.
+        if name in old and state!=old[name].get("status"):
+            require(any(key not in old[name] or value>stamp(old[name][key]) for key,value in times.items()),
+                    "HEALTH_STATE_WITHOUT_OBSERVATION")
+        clean={"status":state,"consecutive_failures":n,"last_error":error,
+               "last_error_code":code,"last_error_retryable":retry,"last_http_status":http,
+               "open_until_epoch":until}
+        clean.update({key:row[key] for key in times})
+        output[name]=clean
+    require(observed>0,"HEALTH_NO_NEW_OBSERVATIONS")
+    return {"schema":current["schema"],"updated_at_utc":current["updated_at_utc"],"providers":output}
+
+def health_publication_selftest():
+    from copy import deepcopy
+    def require(ok,label):
+        if not ok: raise AssertionError(label)
+    oldstamp="2026-11-24T20:00:00+00:00"
+    stamp="2026-11-24T21:00:00+00:00"
+    at=datetime.fromisoformat(stamp)
+    old={"schema":"XRAY_PROVIDER_HEALTH_LEDGER_V1","updated_at_utc":oldstamp,
+         "providers":{"GITHUB_STATUS":{"status":"HEALTHY","consecutive_failures":0,
+            "last_error":None,"last_error_code":None,"last_error_retryable":None,
+            "last_http_status":None,"open_until_epoch":0,"last_success_at_utc":oldstamp}}}
+    curr=deepcopy(old);curr["updated_at_utc"]=stamp
+    curr["providers"]["SEC_TICKER_MAP"]={"status":"NONRETRYABLE_ERROR","consecutive_failures":0,
+       "last_error":"https://example.invalid/?secret=TEST_SECRET","last_error_code":"HTTP_DEFINITIVE",
+       "last_error_retryable":False,"last_http_status":403,"open_until_epoch":0,
+       "last_failure_at_utc":stamp}
+    got=prepare_health_publication(old,curr,at)
+    require(got["providers"]["GITHUB_STATUS"]["last_success_at_utc"]==oldstamp,"PRESERVE_OLD_OBSERVATION")
+    require(got["providers"]["SEC_TICKER_MAP"]["last_error"]=="HTTP_403"
+            and "TEST_SECRET" not in json.dumps(got),"REDACT_SECRET")
+    cases=[]
+    def negative(label,change):
+        x=deepcopy(curr);change(x);cases.append((label,x))
+    negative("DROPPED",lambda x:x["providers"].pop("GITHUB_STATUS"))
+    negative("UNKNOWN_PROVIDER",lambda x:x["providers"].update({"BAD":{}}))
+    negative("NO_OBSERVATION",lambda x:x["providers"].pop("SEC_TICKER_MAP"))
+    negative("FALSE_HEALTHY",lambda x:x["providers"]["SEC_TICKER_MAP"].update(status="HEALTHY"))
+    negative("FUTURE",lambda x:x["providers"]["SEC_TICKER_MAP"].update(last_failure_at_utc="2026-11-25T00:00:00+00:00"))
+    negative("REGRESSION",lambda x:x["providers"]["GITHUB_STATUS"].update(last_success_at_utc="2026-11-23T00:00:00+00:00"))
+    negative("STALE_GENERATION",lambda x:x.update(updated_at_utc=oldstamp))
+    negative("UNEXPECTED_FIELD",lambda x:x["providers"]["GITHUB_STATUS"].update(secret="TEST_SECRET"))
+    for label,x in cases:
+        try:prepare_health_publication(old,x,at)
+        except ValueError:continue
+        raise AssertionError("HEALTH_NEGATIVE_ACCEPTED:"+label)
+    print("XRAY_PROVIDER_HEALTH_PUBLICATION_SELFTEST=PASS_PRESERVE_REDACT_8_NEGATIVE")
+
+if __name__=="__main__":
+    import argparse
+    ap=argparse.ArgumentParser()
+    group=ap.add_mutually_exclusive_group(required=True)
+    group.add_argument("--selftest-health-publication",action="store_true")
+    group.add_argument("--prepare-health-publication",nargs=3,type=Path)
+    args=ap.parse_args()
+    if args.selftest_health_publication:
+        health_publication_selftest()
+    else:
+        prior,current,out=args.prepare_health_publication
+        result=prepare_health_publication(json.loads(prior.read_text()),json.loads(current.read_text()),datetime.now(timezone.utc))
+        out.write_text(json.dumps(result,sort_keys=True,indent=2)+"\n")
+        print("XRAY_PROVIDER_HEALTH_PUBLICATION_VALIDATED=OBSERVATIONS_ONLY")
