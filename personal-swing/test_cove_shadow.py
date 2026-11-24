@@ -218,6 +218,24 @@ class CoveShadowContractTests(unittest.TestCase):
         self.assertEqual(len(many["robustness"]["counterfactual"]),3)
         self.assertEqual(many["robustness"]["recommendation"],"NONE_DIAGNOSTIC_ONLY")
 
+    def test_rounded_original_target_is_exact_at_baseline(self):
+        # All three targets are within the existing 2R rounding tolerance.
+        # A near-boundary high distinguishes an archived bracket from 2R
+        # recomputation. Both directions and the exact touch must agree.
+        for target,high,expected in ((110.02,110.01,"OPEN"),
+                                     (109.98,109.99,"TARGET_TOUCHED"),
+                                     (110.02,110.02,"TARGET_TOUCHED")):
+            with self.subTest(target=target,high=high):
+                src=bundle()
+                src["episodes"][0]["target_2r"]=target
+                place_event(src,FUTURE[0],o=100,h=high,l=98,c=100)
+                out=shadow.run_bundle(src,slippage_bps=20,commission_per_share=0.01,
+                                      stop_multipliers=(0.8,1.0,1.2))
+                self.assertEqual(out["baseline"]["terminal_counts"],{expected:1})
+                exact=next(x["summary"] for x in out["robustness"]["counterfactual"]
+                           if x["stop_risk_multiplier"]==1.0)
+                self.assertEqual(exact,out["baseline"])
+
     def test_provider_or_broker_import_is_forbidden(self):
         import inspect
         source=inspect.getsource(shadow)
