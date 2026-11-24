@@ -217,10 +217,12 @@ jobs:
           git config user.email "xray-official-safety-bot@users.noreply.github.com"
           pre_guard="$(git rev-parse HEAD:nasdaq-xray/canonical_official_source_guard.json)"
           pre_ledger="$(git rev-parse HEAD:nasdaq-xray/official_pit_ledger.json)"
+          pre_health="$(git rev-parse HEAD:nasdaq-xray/provider_health_ledger.json)"
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           cp nasdaq-xray/canonical_official_source_guard.json "$tmpdir/guard.json"
           cp nasdaq-xray/official_pit_ledger.json "$tmpdir/ledger.json"
+          cp nasdaq-xray/provider_health_ledger.json "$tmpdir/health.json"
           git fetch origin main
           live_guard="$(git rev-parse origin/main:nasdaq-xray/canonical_official_source_guard.json)"
           live_ledger="$(git rev-parse origin/main:nasdaq-xray/official_pit_ledger.json)"
@@ -228,7 +230,15 @@ jobs:
             echo "XRAY_OFFICIAL_PERSISTENCE=RACE_ABORT_NO_OVERWRITE"
             exit 0
           fi
+          live_health="$(git rev-parse origin/main:nasdaq-xray/provider_health_ledger.json)"
           git reset --hard origin/main
+          # Preserve observations from the official probe only if its ledger base
+          # did not move. They are not staged by this independent safety commit.
+          if [[ "$pre_health" == "$live_health" ]]; then
+            cp "$tmpdir/health.json" nasdaq-xray/provider_health_ledger.json
+          else
+            echo "XRAY_PROVIDER_HEALTH_OFFICIAL_PROBE=BASE_MOVED_DISCARD_LOCAL"
+          fi
           cp "$tmpdir/guard.json" nasdaq-xray/canonical_official_source_guard.json
           cp "$tmpdir/ledger.json" nasdaq-xray/official_pit_ledger.json
           git add nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json
