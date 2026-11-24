@@ -1,7 +1,7 @@
 {
   "asof_et": "2026-11-24",
   "asof_identity_proof": {
-    "blob_sha": "5fd2f305bdedc7824e76c7b8b515c887930a81e8",
+    "blob_sha": "f205e123af86fbac45bdb7d409483e556d377ca8",
     "counts": {
       "operating_overrides": 2,
       "remove_from_asof": 0,
@@ -29,18 +29,18 @@
   },
   "counts": {
     "PASS_IDENTITY": 3187,
-    "UNKNOWN_IDENTITY": 31
+    "UNKNOWN_IDENTITY": 30
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2391,
-  "explicit_excluded_hash": "dad126a9d897336fcecb4537f2486136a19b4f45c307c90c0838d27c539a5a1c",
+  "explicit_excluded_count": 2392,
+  "explicit_excluded_hash": "96cf3bddfc6595aed01ff9b1ab7b0b9395d0a28ce60307690cb90a095b451160",
   "explicit_excluded_reason_counts": {
     "DEBT": 57,
     "ETF": 1297,
     "FUND": 32,
     "PREFERRED": 103,
     "RIGHT": 103,
-    "SPAC_BLANK_CHECK": 180,
+    "SPAC_BLANK_CHECK": 181,
     "TEST_ISSUE": 8,
     "UNIT": 252,
     "WARRANT": 357,
@@ -3254,22 +3254,22 @@
   "queue_hash": "8952a4ebbbc35605674857e30503d12e5d539063154c84a12290d457b448f45c",
   "queue_total": 3187,
   "queue_unique": 3187,
-  "raw_identity_total": 3218,
+  "raw_identity_total": 3217,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "e8d080e9cd21221e724eaa4add252fd77b4553b2",
-    "count": 542,
+    "blob_sha": "dd25abee95b3161a630fec9c84cc64e4d4c32c23",
+    "count": 546,
     "path": "nasdaq-xray/master_sec_spac_proof_20261124.json",
-    "symbol_hash": "381d1f5e7ea55846b0b8471f7f08e5128a53db442da15b851d0b85bd16a55697"
+    "symbol_hash": "1441860898b1cc5c681215c779ea836f4ba0eb966b2426d39a7b1b1235bbb37c"
   },
-  "source_state_blob_sha": "7afb973412bdd71a644a60addf270ccbcc7b5d3f",
-  "source_state_hash": "719a3818cf0e944598aac5f05fc04aed5b9cb87526d3915b30afc76e0c51762a",
+  "source_state_blob_sha": "52eda1b45aba04c237a3651bb3f0a02e32a2f66c",
+  "source_state_hash": "159f242491ae124d3b27eff0df860e3ef377acd4fc9625361e6243cfb4e50c90",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 31,
+  "unknown_count": 30,
   "unknown_detail": {
     "AEAQ": {
       "exact_sec_spac_proof": false,
@@ -3322,15 +3322,6 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "Tribeca Strategic Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
-    "BRRK": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "Bluerock Acquisition Corp. II - Class A Ordinary Shares",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3559,7 +3550,6 @@
     "AMAC",
     "BACC",
     "BID",
-    "BRRK",
     "BSAA",
     "CXII",
     "DAAQ",
