@@ -217,10 +217,12 @@ jobs:
           git config user.email "xray-official-safety-bot@users.noreply.github.com"
           pre_guard="$(git rev-parse HEAD:nasdaq-xray/canonical_official_source_guard.json)"
           pre_ledger="$(git rev-parse HEAD:nasdaq-xray/official_pit_ledger.json)"
+          pre_health="$(git rev-parse HEAD:nasdaq-xray/provider_health_ledger.json)"
           tmpdir="$(mktemp -d)"
           trap 'rm -rf "$tmpdir"' EXIT
           cp nasdaq-xray/canonical_official_source_guard.json "$tmpdir/guard.json"
           cp nasdaq-xray/official_pit_ledger.json "$tmpdir/ledger.json"
+          cp nasdaq-xray/provider_health_ledger.json "$tmpdir/health.json"
           git fetch origin main
           live_guard="$(git rev-parse origin/main:nasdaq-xray/canonical_official_source_guard.json)"
           live_ledger="$(git rev-parse origin/main:nasdaq-xray/official_pit_ledger.json)"
@@ -228,7 +230,15 @@ jobs:
             echo "XRAY_OFFICIAL_PERSISTENCE=RACE_ABORT_NO_OVERWRITE"
             exit 0
           fi
+          live_health="$(git rev-parse origin/main:nasdaq-xray/provider_health_ledger.json)"
           git reset --hard origin/main
+          # Preserve observations from the official probe only if its ledger base
+          # did not move. They are not staged by this independent safety commit.
+          if [[ "$pre_health" == "$live_health" ]]; then
+            cp "$tmpdir/health.json" nasdaq-xray/provider_health_ledger.json
+          else
+            echo "XRAY_PROVIDER_HEALTH_OFFICIAL_PROBE=BASE_MOVED_DISCARD_LOCAL"
+          fi
           cp "$tmpdir/guard.json" nasdaq-xray/canonical_official_source_guard.json
           cp "$tmpdir/ledger.json" nasdaq-xray/official_pit_ledger.json
           git add nasdaq-xray/canonical_official_source_guard.json nasdaq-xray/official_pit_ledger.json
@@ -351,6 +361,46 @@ jobs:
 
       - name: Verify free/open-source solution references
         run: python nasdaq-xray/free_solution_verifier.py
+
+      - name: Persist sanitized provider health independently (no authority)
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=nasdaq-xray/provider_health_ledger.json
+          code=nasdaq-xray/resilience_runtime.py
+          tmp="$(mktemp -d)"
+          work="$tmp/work"
+          cleanup() {
+            result=$?
+            trap - EXIT
+            if [[ -d "$work" ]]; then git worktree remove --force "$work" >/dev/null 2>&1 || true; fi
+            rm -rf "$tmp"
+            if [[ "$result" != 0 ]]; then
+              echo "XRAY_PROVIDER_HEALTH_PERSISTENCE=HOLD_VALIDATION_OR_RACE_NO_RETRY"
+            fi
+            exit "$result"
+          }
+          trap cleanup EXIT
+          python "$code" --selftest-health-publication
+          python -O "$code" --selftest-health-publication
+          prior="$(git rev-parse "HEAD:$file")"
+          git fetch origin main
+          live="$(git rev-parse origin/main)"
+          test "$(git rev-parse "$live:$code")" = "$(git hash-object "$code")"
+          test "$(git rev-parse "$live:$file")" = "$prior"
+          git show "$live:$file" > "$tmp/previous.json"
+          python "$code" --prepare-health-publication "$tmp/previous.json" "$file" "$tmp/clean.json"
+          expected="$(git hash-object "$tmp/clean.json")"
+          git worktree add --detach "$work" "$live"
+          cp "$tmp/clean.json" "$work/$file"
+          git -C "$work" add -- "$file"
+          test "$(git -C "$work" diff --cached --name-only)" = "$file"
+          git -C "$work" -c user.name=xray-provider-health-bot -c user.email=xray-provider-health-bot@users.noreply.github.com commit -m "chore(xray): publish sanitized provider health observations"
+          git -C "$work" push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse "origin/main:$file")" = "$expected"
+          echo "XRAY_PROVIDER_HEALTH_PERSISTENCE=PASS_EXACT_GITHUB_READBACK_OBSERVATIONS_ONLY"
 
       - name: Build data-lineage registry
         run: python nasdaq-xray/data_lineage_registry.py
@@ -566,7 +616,6 @@ jobs:
             nasdaq-xray/external_health_state.json
             nasdaq-xray/canonical_candidate_enrichment.json
             nasdaq-xray/free_solution_verification.json
-            nasdaq-xray/provider_health_ledger.json
             nasdaq-xray/canonical_data_lineage_registry.json
             nasdaq-xray/canonical_replay_guard.json
             nasdaq-xray/canonical_guardian_state.json
