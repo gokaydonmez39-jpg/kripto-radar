@@ -3,6 +3,7 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
+      "BBAI.W",
       "DDC",
       "EFTY",
       "HCHL",
@@ -52,6 +53,7 @@
     ],
     "veto_symbols": [
       "ARBEW",
+      "BBAI.W",
       "BBBYW",
       "BLFS",
       "COLA",
@@ -95,7 +97,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-24T16:25:20.012434+00:00",
+  "generated_at_utc": "2026-11-24T21:20:03.761801+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -111,13 +113,31 @@
       "row_count": 50,
       "rows": [
         {
-          "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
+          "CompanyName": "ATA Creativity Global American Depositary Shares",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Security Additions",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "D-Deficient",
+          "OldFinancialStatus": "N-Normal",
+          "Symbol": "AACG"
+        },
+        {
+          "CompanyName": "AfterNext Acquisition I Corp. Unit",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Anticipated Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "BBCI"
+          "Symbol": "AFNXU"
+        },
+        {
+          "CompanyName": "Arbe Robotics Ltd. Warrant",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "ARBEW"
         },
         {
           "CompanyName": "Neighborhood Intelligence, Inc. Warrants",
@@ -129,28 +149,37 @@
           "Symbol": "BBBYW"
         },
         {
-          "CompanyName": "ATA Creativity Global American Depositary Shares",
+          "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "D-Deficient",
-          "OldFinancialStatus": "N-Normal",
-          "Symbol": "AACG"
-        },
-        {
-          "CompanyName": "Triller Group Inc. Warrant",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Issue Suspensions",
+          "IssueEvent": "Anticipated Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "ILLRW"
+          "Symbol": "BBCI"
+        },
+        {
+          "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "BBCI"
         },
         {
           "CompanyName": "Bradbury Capital Inc. Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
           "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "BBCIW"
+        },
+        {
+          "CompanyName": "Bradbury Capital Inc. Warrants",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "BBCIW"
@@ -165,40 +194,13 @@
           "Symbol": "BBGI"
         },
         {
-          "CompanyName": "Arbe Robotics Ltd. Warrant",
+          "CompanyName": "BioLife Solutions, Inc. Common Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
           "IssueEvent": "Issue Suspensions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "ARBEW"
-        },
-        {
-          "CompanyName": "AfterNext Acquisition I Corp. Unit",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "AFNXU"
-        },
-        {
-          "CompanyName": "Bradbury Capital Inc. Warrants",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "BBCIW"
-        },
-        {
-          "CompanyName": "Bradbury Capital Inc. Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "BBCI"
+          "Symbol": "BLFS"
         },
         {
           "CompanyName": "Triller Group Inc. Common Stock",
@@ -210,13 +212,13 @@
           "Symbol": "ILLR"
         },
         {
-          "CompanyName": "Simulations Plus, Inc. Common Stock",
+          "CompanyName": "Triller Group Inc. Warrant",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
           "IssueEvent": "Issue Suspensions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "SLP"
+          "Symbol": "ILLRW"
         },
         {
           "CompanyName": "Outdoor Holding Company Common Stock",
@@ -228,40 +230,13 @@
           "Symbol": "POWW"
         },
         {
-          "CompanyName": "Spark I Acquisition Corp. Unit",
+          "CompanyName": "Outdoor Holding Company 8.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Issue Suspensions",
+          "IssueEvent": "Name/Symbol Changes",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "SPKLU"
-        },
-        {
-          "CompanyName": "SCWorx Corp. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "WORX"
-        },
-        {
-          "CompanyName": "BioLife Solutions, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "BLFS"
-        },
-        {
-          "CompanyName": "Solesence, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Financial Status Changes",
-          "NewFinancialStatus": "D-Deficient",
-          "OldFinancialStatus": "N-Normal",
-          "Symbol": "SLSN"
+          "Symbol": "POWWP"
         },
         {
           "CompanyName": "Real Messenger Corporation Warrants",
@@ -273,6 +248,24 @@
           "Symbol": "RMSGW"
         },
         {
+          "CompanyName": "Simulations Plus, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SLP"
+        },
+        {
+          "CompanyName": "Solesence, Inc. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Financial Status Changes",
+          "NewFinancialStatus": "D-Deficient",
+          "OldFinancialStatus": "N-Normal",
+          "Symbol": "SLSN"
+        },
+        {
           "CompanyName": "Spark I Acquisition Corp. Class A Ordinary Share",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
@@ -282,13 +275,13 @@
           "Symbol": "SPKL"
         },
         {
-          "CompanyName": "Outdoor Holding Company 8.75% Series A Cumulative Redeemable Perpetual Preferred Stock",
+          "CompanyName": "Spark I Acquisition Corp. Unit",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-07",
-          "IssueEvent": "Name/Symbol Changes",
+          "IssueEvent": "Issue Suspensions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "POWWP"
+          "Symbol": "SPKLU"
         },
         {
           "CompanyName": "Spark I Acquisition Corp. Warrant",
@@ -316,6 +309,15 @@
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
           "Symbol": "WBD"
+        },
+        {
+          "CompanyName": "SCWorx Corp. Common Stock",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-07",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "WORX"
         },
         {
           "CompanyName": "SCWorx Corp. Common Stock",
@@ -363,22 +365,13 @@
           "Symbol": "NCPL"
         },
         {
-          "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
+          "CompanyName": "Palladyne AI Corp Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Security Additions",
+          "IssueEvent": "Issue Deletions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "SCAT"
-        },
-        {
-          "CompanyName": "Southern Cross Acquisition II Corp. Rights",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "SCATR"
+          "Symbol": "PDYNW"
         },
         {
           "CompanyName": "Purple Innovation, Inc. Common Stock",
@@ -390,13 +383,13 @@
           "Symbol": "PRPL"
         },
         {
-          "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+          "CompanyName": "BRC Group Holdings, Inc. 6.50% Senior Notes Due 2026",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Security Additions",
+          "IssueEvent": "Issue Deletions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "SCATR"
+          "Symbol": "RILYN"
         },
         {
           "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
@@ -408,6 +401,33 @@
           "Symbol": "SCAT"
         },
         {
+          "CompanyName": "Southern Cross Acquisition II Corp. Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCAT"
+        },
+        {
+          "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Anticipated Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCATR"
+        },
+        {
+          "CompanyName": "Southern Cross Acquisition II Corp. Rights",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-08",
+          "IssueEvent": "Security Additions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "SCATR"
+        },
+        {
           "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
@@ -417,31 +437,13 @@
           "Symbol": "SCATW"
         },
         {
-          "CompanyName": "BRC Group Holdings, Inc. 6.50% Senior Notes Due 2026",
+          "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Issue Deletions",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "RILYN"
-        },
-        {
-          "CompanyName": "Palladyne AI Corp Warrants",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Issue Deletions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "PDYNW"
-        },
-        {
-          "CompanyName": "Texas Capital Bancshares, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "TCBI"
+          "Symbol": "SCATW"
         },
         {
           "CompanyName": "SKYX Platforms Corp. Common Stock",
@@ -453,13 +455,13 @@
           "Symbol": "SKYX"
         },
         {
-          "CompanyName": "Southern Cross Acquisition II Corp. Warrants",
+          "CompanyName": "Texas Capital Bancshares, Inc. Common Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-08",
-          "IssueEvent": "Security Additions",
+          "IssueEvent": "Issue Suspensions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "SCATW"
+          "Symbol": "TCBI"
         },
         {
           "CompanyName": "Texas Capital Bancshares, Inc. Depositary Shares 5.75% Fixed Rate Non-Cumulative Perpetual Preferred Stock Series B",
@@ -480,22 +482,22 @@
           "Symbol": "VTIX"
         },
         {
-          "CompanyName": "Nexpu Ltd. Class A Ordinary Shares",
+          "CompanyName": "AI OKTO CORP. Common Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Name/Symbol Changes",
+          "IssueEvent": "Anticipated Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "DPU"
+          "Symbol": "AIOK"
         },
         {
-          "CompanyName": "Nvni Group Limited Warrants",
+          "CompanyName": "AI OKTO CORP. Common Stock",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Issue Suspensions",
+          "IssueEvent": "Security Additions",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "NVNIW"
+          "Symbol": "AIOK"
         },
         {
           "CompanyName": "Biddance AI Systems, Inc. Class A Ordinary Share",
@@ -507,40 +509,13 @@
           "Symbol": "BDAI"
         },
         {
-          "CompanyName": "AI OKTO CORP. Common Stock",
+          "CompanyName": "Nexpu Ltd. Class A Ordinary Shares",
           "DowngradeReason": "",
           "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Security Additions",
+          "IssueEvent": "Name/Symbol Changes",
           "NewFinancialStatus": "",
           "OldFinancialStatus": "",
-          "Symbol": "AIOK"
-        },
-        {
-          "CompanyName": "AI OKTO CORP. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Anticipated Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "AIOK"
-        },
-        {
-          "CompanyName": "Retension Pharmaceuticals, Inc. Common Stock",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Security Additions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "RTSN"
-        },
-        {
-          "CompanyName": "MaxsMaking Inc. Class A Ordinary Shares",
-          "DowngradeReason": "",
-          "EffectiveDate": "2026-10-09",
-          "IssueEvent": "Issue Suspensions",
-          "NewFinancialStatus": "",
-          "OldFinancialStatus": "",
-          "Symbol": "MAMK"
+          "Symbol": "DPU"
         },
         {
           "CompanyName": "Gauzy Ltd. Ordinary Shares",
@@ -559,6 +534,33 @@
           "NewFinancialStatus": "D-Deficient",
           "OldFinancialStatus": "N-Normal",
           "Symbol": "HCTI"
+        },
+        {
+          "CompanyName": "MaxsMaking Inc. Class A Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-09",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "MAMK"
+        },
+        {
+          "CompanyName": "Nvni Group Limited Ordinary Shares",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-09",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "NVNI"
+        },
+        {
+          "CompanyName": "Nvni Group Limited Warrants",
+          "DowngradeReason": "",
+          "EffectiveDate": "2026-10-09",
+          "IssueEvent": "Issue Suspensions",
+          "NewFinancialStatus": "",
+          "OldFinancialStatus": "",
+          "Symbol": "NVNIW"
         }
       ],
       "status": "PASS",
@@ -745,8 +747,19 @@
       "url": "https://www.nasdaqtrader.com/Trader.aspx?id=nasdaq-security-status-updates&from=10/07/2026&to=11/24/2026"
     },
     "system_status_ipo": {
-      "item_count": 0,
-      "items": [],
+      "item_count": 1,
+      "items": [
+        {
+          "Market": "NASDAQ Options,PHLX",
+          "Message": "The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MRX and Nasdaq GEMX&nbsp;effective at the opening of business on Wednesday, November 25, 2026: ANDD, ANSS, ANTC etc. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br>\n<br><a href=\"http://www.nasdaqtrader.com/content/sstat/Allocation2026112420261124142449.pdf\">Allocations112426</a><br>",
+          "Message_dt": "Tue, 24 Nov 2026 19:25:49 GMT",
+          "SubjectLine": "Option Notice: New Listing Start Date",
+          "Time": "14:25:49",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Time</th><th align=\"left\">Market</th><th align=\"left\">Message</th></tr><tr><td valign=\"top\">14:25:49</td><td valign=\"top\">NASDAQ Options,PHLX</td><td valign=\"top\">The following option(s) will commence trading at the Nasdaq PHLX, NTX Options, Nasdaq Options Market, Nasdaq ISE, Nasdaq MRX and Nasdaq GEMX&nbsp;effective at the opening of business on Wednesday, November 25, 2026: ANDD, ANSS, ANTC etc. Please contact Nasdaq Option Listings at 215-496-1266 with any questions. <br>\n<br><a href=\"http://www.nasdaqtrader.com/content/sstat/Allocation2026112420261124142449.pdf\">Allocations112426</a><br></td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 19:25:49 GMT",
+          "title": "Option Notice: New Listing Start Date"
+        }
+      ],
       "status": "PASS",
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=IPO"
     },
@@ -757,8 +770,9 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 12,
+      "active_halt_count": 13,
       "active_halt_symbols": [
+        "BBAI.W",
         "DDC",
         "EFTY",
         "HCHL",
@@ -773,8 +787,383 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 50,
+      "item_count": 75,
       "items": [
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "16:01:00.000",
+          "IssueName": "Ambarella, Inc.",
+          "IssueSymbol": "AMBA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T3",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "16:30:00",
+          "ResumptionTradeTime": "16:35:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">16:01:00.000</td><td valign=\"top\">AMBA</td><td valign=\"top\">Ambarella, Inc.</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">16:30:00                      </td><td valign=\"top\">16:35:00                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "AMBA"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "15:58:50.793",
+          "IssueName": "Jaguar Health, Inc. Cmn",
+          "IssueSymbol": "JAGX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "15:58:50",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:58:50.793</td><td valign=\"top\">JAGX</td><td valign=\"top\">Jaguar Health, Inc. Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:58:50                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "JAGX"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "15:42:32.796",
+          "IssueName": "PolyPid Ltd. ORD SHR",
+          "IssueSymbol": "PYPD",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T3",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "16:15:00",
+          "ResumptionTradeTime": "16:20:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:42:32.796</td><td valign=\"top\">PYPD</td><td valign=\"top\">PolyPid Ltd. ORD SHR</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">16:15:00                      </td><td valign=\"top\">16:20:00                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "PYPD"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "15:40:18.270",
+          "IssueName": "EUDA Health Hldgs Cl AOrd Shs",
+          "IssueSymbol": "EUDA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "15:40:18",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:40:18.270</td><td valign=\"top\">EUDA</td><td valign=\"top\">EUDA Health Hldgs Cl AOrd Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:40:18                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "EUDA"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "15:34:45.190",
+          "IssueName": "EUDA Health Hldgs Cl AOrd Shs",
+          "IssueSymbol": "EUDA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "15:34:45",
+          "ResumptionTradeTime": "15:39:45",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:34:45.190</td><td valign=\"top\">EUDA</td><td valign=\"top\">EUDA Health Hldgs Cl AOrd Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:34:45                      </td><td valign=\"top\">15:39:45                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "EUDA"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "15:13:42.980",
+          "IssueName": "CNS Pharmaceuticals, Inc.CS",
+          "IssueSymbol": "CNSP",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "15:13:42",
+          "ResumptionTradeTime": "15:18:42",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:13:42.980</td><td valign=\"top\">CNSP</td><td valign=\"top\">CNS Pharmaceuticals, Inc.CS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">15:13:42                      </td><td valign=\"top\">15:18:42                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "CNSP"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "14:44:08.396",
+          "IssueName": "DB Gold Short ETN due February 15, 2038",
+          "IssueSymbol": "DGZ",
+          "Market": "NYSE Arca",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "14:49:08",
+          "ResumptionTradeTime": "14:49:08",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">14:44:08.396</td><td valign=\"top\">DGZ</td><td valign=\"top\">DB Gold Short ETN due February 15, 2038</td><td valign=\"top\">NYSE Arca</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">14:49:08                      </td><td valign=\"top\">14:49:08                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "DGZ"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "14:11:44.740",
+          "IssueName": "AIFU Inc. Class A Ordinary Sh",
+          "IssueSymbol": "AIFU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "14:11:44",
+          "ResumptionTradeTime": "14:16:44",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">14:11:44.740</td><td valign=\"top\">AIFU</td><td valign=\"top\">AIFU Inc. Class A Ordinary Sh</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">14:11:44                      </td><td valign=\"top\">14:16:44                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "AIFU"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:43:27.420",
+          "IssueName": "Intercont Cayman Cl A Ord Shs",
+          "IssueSymbol": "NCT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:43:27",
+          "ResumptionTradeTime": "13:53:27",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:43:27.420</td><td valign=\"top\">NCT</td><td valign=\"top\">Intercont Cayman Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:43:27                      </td><td valign=\"top\">13:53:27                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "NCT"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:38:58.056",
+          "IssueName": "J-Long Group Ltd Cl A Ord Shs",
+          "IssueSymbol": "JL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:38:58",
+          "ResumptionTradeTime": "13:49:03",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:38:58.056</td><td valign=\"top\">JL</td><td valign=\"top\">J-Long Group Ltd Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:38:58                      </td><td valign=\"top\">13:49:03                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "JL"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:32:56.466",
+          "IssueName": "Intercont Cayman Cl A Ord Shs",
+          "IssueSymbol": "NCT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:32:56",
+          "ResumptionTradeTime": "13:42:56",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:32:56.466</td><td valign=\"top\">NCT</td><td valign=\"top\">Intercont Cayman Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:32:56                      </td><td valign=\"top\">13:42:56                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "NCT"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:22:23.650",
+          "IssueName": "Intercont Cayman Cl A Ord Shs",
+          "IssueSymbol": "NCT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:22:23",
+          "ResumptionTradeTime": "13:27:23",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:22:23.650</td><td valign=\"top\">NCT</td><td valign=\"top\">Intercont Cayman Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:22:23                      </td><td valign=\"top\">13:27:23                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "NCT"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:10:08.283",
+          "IssueName": "Roma Grn Fin Ltd Ord A",
+          "IssueSymbol": "ROMA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:10:08",
+          "ResumptionTradeTime": "13:15:08",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:10:08.283</td><td valign=\"top\">ROMA</td><td valign=\"top\">Roma Grn Fin Ltd Ord A</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:10:08                      </td><td valign=\"top\">13:15:08                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "ROMA"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:05:31.480",
+          "IssueName": "EUDA Health Hldgs Cl AOrd Shs",
+          "IssueSymbol": "EUDA",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:05:31",
+          "ResumptionTradeTime": "13:10:31",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:05:31.480</td><td valign=\"top\">EUDA</td><td valign=\"top\">EUDA Health Hldgs Cl AOrd Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:05:31                      </td><td valign=\"top\">13:10:31                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "EUDA"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:05:17.406",
+          "IssueName": "Intercont Cayman Cl A Ord Shs",
+          "IssueSymbol": "NCT",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:05:17",
+          "ResumptionTradeTime": "13:15:17",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:05:17.406</td><td valign=\"top\">NCT</td><td valign=\"top\">Intercont Cayman Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:05:17                      </td><td valign=\"top\">13:15:17                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "NCT"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "13:03:13.855",
+          "IssueName": "BIGBEAR.AI HOLDINGS INC",
+          "IssueSymbol": "BBAI.W",
+          "Market": "NYSE",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "H11",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:03:13.855</td><td valign=\"top\">BBAI.W</td><td valign=\"top\">BIGBEAR.AI HOLDINGS INC</td><td valign=\"top\">NYSE</td><td valign=\"top\">H11</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "BBAI.W"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "12:55:56.926",
+          "IssueName": "Corgi APP 2x Daily ETF",
+          "IssueSymbol": "APPC",
+          "Market": "Non NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "13:00:56",
+          "ResumptionTradeTime": "13:00:56",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">12:55:56.926</td><td valign=\"top\">APPC</td><td valign=\"top\">Corgi APP 2x Daily ETF</td><td valign=\"top\">Non NASDAQ</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">13:00:56                      </td><td valign=\"top\">13:00:56                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "APPC"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "12:39:11.800",
+          "IssueName": "NestYield Total Return Guard ETF",
+          "IssueSymbol": "EGGS",
+          "Market": "NYSE Arca",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "12:44:11",
+          "ResumptionTradeTime": "12:44:11",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">12:39:11.800</td><td valign=\"top\">EGGS</td><td valign=\"top\">NestYield Total Return Guard ETF</td><td valign=\"top\">NYSE Arca</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">12:44:11                      </td><td valign=\"top\">12:44:11                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "EGGS"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:59:23.200",
+          "IssueName": "Phoenix Asia Holdings Limited",
+          "IssueSymbol": "PHOE",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:59:23",
+          "ResumptionTradeTime": "12:09:23",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:59:23.200</td><td valign=\"top\">PHOE</td><td valign=\"top\">Phoenix Asia Holdings Limited</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:59:23                      </td><td valign=\"top\">12:09:23                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "PHOE"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:46:04.466",
+          "IssueName": "Clywedog Thera Holdings Com Sk",
+          "IssueSymbol": "CLYD",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:46:04",
+          "ResumptionTradeTime": "11:51:04",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:46:04.466</td><td valign=\"top\">CLYD</td><td valign=\"top\">Clywedog Thera Holdings Com Sk</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:46:04                      </td><td valign=\"top\">11:51:04                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "CLYD"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:45:38.596",
+          "IssueName": "Ping An Biomedical Co Cl A Ord",
+          "IssueSymbol": "PASW",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:45:38",
+          "ResumptionTradeTime": "11:50:38",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:45:38.596</td><td valign=\"top\">PASW</td><td valign=\"top\">Ping An Biomedical Co Cl A Ord</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:45:38                      </td><td valign=\"top\">11:50:38                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "PASW"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:44:47.493",
+          "IssueName": "Co-Diagnostics, Inc. CM",
+          "IssueSymbol": "CODX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:44:47",
+          "ResumptionTradeTime": "11:54:47",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:44:47.493</td><td valign=\"top\">CODX</td><td valign=\"top\">Co-Diagnostics, Inc. CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:44:47                      </td><td valign=\"top\">11:54:47                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "CODX"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:41:48.696",
+          "IssueName": "Inflection Point Acq VII Unit",
+          "IssueSymbol": "IPXGU",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:41:48",
+          "ResumptionTradeTime": "11:46:48",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:41:48.696</td><td valign=\"top\">IPXGU</td><td valign=\"top\">Inflection Point Acq VII Unit</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:41:48                      </td><td valign=\"top\">11:46:48                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "IPXGU"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:30:57.350",
+          "IssueName": "Jaguar Health, Inc. Cmn",
+          "IssueSymbol": "JAGX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:30:57",
+          "ResumptionTradeTime": "11:35:57",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:30:57.350</td><td valign=\"top\">JAGX</td><td valign=\"top\">Jaguar Health, Inc. Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:30:57                      </td><td valign=\"top\">11:35:57                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "JAGX"
+        },
+        {
+          "HaltDate": "11/24/2026",
+          "HaltTime": "11:28:51.266",
+          "IssueName": "Co-Diagnostics, Inc. CM",
+          "IssueSymbol": "CODX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/24/2026",
+          "ResumptionQuoteTime": "11:28:51",
+          "ResumptionTradeTime": "11:33:51",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:28:51.266</td><td valign=\"top\">CODX</td><td valign=\"top\">Co-Diagnostics, Inc. CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:28:51                      </td><td valign=\"top\">11:33:51                      </td></tr></table>",
+          "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
+          "title": "CODX"
+        },
         {
           "HaltDate": "11/24/2026",
           "HaltTime": "11:24:25.566",
@@ -785,8 +1174,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "11/24/2026",
           "ResumptionQuoteTime": "11:24:25",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:24:25.566</td><td valign=\"top\">JAGX</td><td valign=\"top\">Jaguar Health, Inc. Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:24:25                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "11:29:25",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:24:25.566</td><td valign=\"top\">JAGX</td><td valign=\"top\">Jaguar Health, Inc. Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/24/2026                    </td><td valign=\"top\">11:24:25                      </td><td valign=\"top\">11:29:25                      </td></tr></table>",
           "pubDate": "Tue, 24 Nov 2026 05:00:00 GMT",
           "title": "JAGX"
         },
