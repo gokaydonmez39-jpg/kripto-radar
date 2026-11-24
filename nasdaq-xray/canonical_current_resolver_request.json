@@ -37,7 +37,7 @@
     "2026-11-23",
     "2026-11-24"
   ],
-  "master_unknown_count": 30,
+  "master_unknown_count": 29,
   "master_unknown_detail": {
     "AEAQ": {
       "exact_sec_spac_proof": false,
@@ -273,15 +273,6 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
-    "SCQC": {
-      "exact_sec_spac_proof": false,
-      "official_blank_checks_proof": false,
-      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
-      "same_asof_nasdaq_industry": "",
-      "security_name": "SPACCircle Acquisition Corp. - Class A Ordinary Shares",
-      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
-      "unknown_never_pass": true
-    },
     "TACH": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -310,7 +301,7 @@
       "unknown_never_pass": true
     }
   },
-  "master_unknown_hash": "5496c017d763d2e6fbb18890b8f8744b45241328292bffda1b86733f855f67fa",
+  "master_unknown_hash": "984610a0b5531b33970748479e5fb681eff89b14ba45fca1dd5a92e363e675a8",
   "master_unknown_symbols": [
     "AEAQ",
     "AESP",
@@ -338,12 +329,11 @@
     "PAXG",
     "PLMK",
     "RFAM",
-    "SCQC",
     "TACH",
     "TCXB",
     "WTG"
   ],
-  "official_footer": "File Creation Time: 1124202615:41|||||||",
+  "official_footer": "File Creation Time: 1124202617:01|||||||",
   "pointer_asof_et": "2026-10-07",
   "price_blocked_count": 0,
   "price_blocked_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -6463,9 +6453,9 @@
     "NVDA",
     "MSFT"
   ],
-  "source_master_blob_sha": "efda2e03f48040d3045bed8e07e0481a78c26abe",
+  "source_master_blob_sha": "1bb418cd1c8f240ac62ec3a125ed3b57432f3a0b",
   "source_master_path": "nasdaq-xray/canonical_current_master_manifest.json",
-  "source_overlay_blob_sha": "5b2a1054c07e7f2f8215f33dadbe774aa6489692",
+  "source_overlay_blob_sha": "bbb0628703076cfc2fe385477900b687dfde667b",
   "source_overlay_path": "nasdaq-xray/canonical_current_resolution_overlay.json",
   "source_pointer_blob_sha": "11761c589063d28d8795621844c9ce8f965dd911",
   "source_pointer_path": "nasdaq-xray/chatgpt_canonical_state_v2.json",
@@ -6480,9 +6470,9 @@
   "source_price_pass_count": 0,
   "source_price_pass_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "source_price_path": "nasdaq-xray/canonical_current_price_dv30.json",
-  "source_state_blob_sha": "52eda1b45aba04c237a3651bb3f0a02e32a2f66c",
+  "source_state_blob_sha": "e4c87e98da56deb4de75699b1020ad1049457d03",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
-  "source_unknowns_blob_sha": "b5c3c8cb0369077391b83a5b51a39f90e7fc5e7f",
+  "source_unknowns_blob_sha": "80678a668e7f997b60d217ee0b44ae4361974e01",
   "source_unknowns_path": "nasdaq-xray/canonical_current_unknowns.json",
   "status": "READY",
   "symbol_count": 553,
