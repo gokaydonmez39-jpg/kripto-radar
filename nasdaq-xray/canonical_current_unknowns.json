@@ -1,5 +1,5 @@
 {
-  "asof_et": "2026-11-23",
+  "asof_et": "2026-11-24",
   "by_reason": {
     "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3187
   },
@@ -7,14 +7,14 @@
     "UNKNOWN_STATIC": 3187
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1123202621:31|||||||",
+  "official_footer": "File Creation Time: 1124202615:41|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
     "UNKNOWN_STATIC": 3187
   },
-  "source_queue_hash": "ec3c4f52405787c2f11c9887999aaf0c15c18a69d19e842c4ead0ace9d37c86e",
-  "source_state_hash": "b2105486b24d45654f16657adacdb8680f269bc43f1586a47e7b2aaf3ea20031",
+  "source_queue_hash": "8952a4ebbbc35605674857e30503d12e5d539063154c84a12290d457b448f45c",
+  "source_state_hash": "719a3818cf0e944598aac5f05fc04aed5b9cb87526d3915b30afc76e0c51762a",
   "source_unknown_count": 3187,
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 3187,
@@ -15983,24 +15983,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Eastern Bankshares, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "EBMT": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Eagle Bancorp Montana, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "EBON": {
@@ -37241,6 +37223,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Orchestra BioMed Holdings, Inc. - Ordinary Shares",
+      "status": "UNKNOWN_STATIC"
+    },
+    "OBMT": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Opportunity Bancorp, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "OBT": {
