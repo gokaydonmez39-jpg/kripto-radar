@@ -22,9 +22,26 @@ def error_label(exc):
         return f"{type(exc).__name__}:HTTP_{status}"
     return f"{type(exc).__name__}:{str(exc)[:180]}"
 
+# Process-local pacing. Other processes are not covered by this limiter.
+_SEC_LAST_REQUEST = None
+
+def sec_fetch_json(provider, url, headers, **kwargs):
+    """One attempt per official endpoint observation; never retry a 429."""
+    global _SEC_LAST_REQUEST
+    current = time.monotonic()
+    if _SEC_LAST_REQUEST is not None:
+        delay = 1.05 - (current - _SEC_LAST_REQUEST)
+        if delay > 0:
+            time.sleep(delay)
+    _SEC_LAST_REQUEST = time.monotonic()
+    return fetch_json(provider, url, headers, retry_delays=(), **kwargs)
+
+def access_stop(exc):
+    return getattr(exc, "code", None) in (401, 403, 429) or str(exc).startswith("CIRCUIT_OPEN:")
+
 def resolve_from_map(scope):
     try:
-        ticker_map=fetch_json("SEC_TICKER_MAP","https://www.sec.gov/files/company_tickers_exchange.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=3600)
+        ticker_map=sec_fetch_json("SEC_TICKER_MAP","https://www.sec.gov/files/company_tickers_exchange.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=3600)
     except Exception as e:
         return {}, error_label(e)
     fields=ticker_map.get("fields") or []; rows=ticker_map.get("data") or []
@@ -47,7 +64,7 @@ def resolve_from_efts(sym,asof):
         "enddt":asof.isoformat(),
         "from":0,
     })
-    j=fetch_json("SEC_EFTS",f"https://efts.sec.gov/LATEST/search-index?{q}",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=900)
+    j=sec_fetch_json("SEC_EFTS",f"https://efts.sec.gov/LATEST/search-index?{q}",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=900)
     hits=(((j.get("hits") or {}).get("hits")) or [])
     cands=[]
     for hit in hits:
@@ -80,6 +97,11 @@ def bounded_identity_resolution(scope,asof):
         "efts_probe_symbol":None,
         "efts_probe_error":None,
     }
+    # A rate-limit or authentication failure is not a reason to try another
+    # endpoint. Preserve the existing single official diagnostic on map 403.
+    if map_error and (map_error.endswith(":HTTP_429") or map_error.endswith(":HTTP_401") or "CIRCUIT_OPEN:" in map_error):
+        transport["status"]="BLOCKED_BOUNDED_PROBE"
+        return by,prefetch,transport
     if map_error and scope:
         probe=sorted(scope)[0]
         transport["efts_probe_symbol"]=probe
@@ -103,14 +125,22 @@ def main():
     # SEC witness is only an enrichment/confirmation layer. Restrict to geometry
     # scope to avoid unnecessary public-endpoint load. Absence can never imply CLEAN.
     scope=sorted(set(r.get("geometry_scope") or r.get("weekly_scope") or []))
-    asof=date.fromisoformat(r["asof_et"]); floor=asof-timedelta(days=14)
+    asof=date.fromisoformat(r["asof_et"])
+    results,transport=build_witness_results(scope,asof)
+    unknown=sum(v["identity_status"]!="PASS" for v in results.values())
+    out={"schema":"XRAY_SEC_OFFICIAL_WITNESS_V1","status":"READY" if unknown==0 else "READY_WITH_UNKNOWNS","authority":"SEC_PRIMARY_WITNESS_OPTIONAL","task_id":r.get("task_id"),"asof_et":r["asof_et"],"execution":"NONE","real_money":"NO-GO","alpha_authority":False,"absence_never_clean":True,"scope_kind":"GEOMETRY_ONLY","geometry_scope":scope,"geometry_scope_count":len(scope),"geometry_scope_hash":r.get("geometry_scope_hash") or h(scope),"weekly_scope_hash":r.get("weekly_scope_hash"),"sec_transport":transport,"results":results,"unknown_count":unknown,"generated_at_utc":now()}
+    write(out)
+    print(json.dumps({"status":out["status"],"asof":out["asof_et"],"scope":len(scope),"unknown":unknown},sort_keys=True))
+
+def build_witness_results(scope,asof):
+    floor=asof-timedelta(days=14)
     by,prefetch,transport=bounded_identity_resolution(scope,asof)
     results={}
     for sym in scope:
-        if transport.get("status")=="BLOCKED_BOUNDED_PROBE":
+        if transport.get("status") in ("BLOCKED_BOUNDED_PROBE","BLOCKED_DURING_SCOPE"):
             results[sym]={
                 "identity_status":"UNKNOWN",
-                "reason":"SEC_TRANSPORT_BLOCKED_BOUNDED_PROBE",
+                "reason":"SEC_TRANSPORT_" + transport["status"],
                 "transport":transport,
                 "filings":[],
             }
@@ -125,10 +155,12 @@ def main():
                     ident,resolve_reason=resolve_from_efts(sym,asof)
                 except Exception as e:
                     resolve_reason=error_label(e)
+                    if access_stop(e):
+                        transport.update(status="BLOCKED_DURING_SCOPE", blocked_provider="SEC_EFTS", blocked_reason=resolve_reason)
         if not ident:
             results[sym]={"identity_status":"UNKNOWN","reason":resolve_reason or "SEC_IDENTITY_UNRESOLVED","filings":[]}; continue
         try:
-            sub=fetch_json("SEC_SUBMISSIONS",f"https://data.sec.gov/submissions/CIK{ident['cik']:010d}.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=300)
+            sub=sec_fetch_json("SEC_SUBMISSIONS",f"https://data.sec.gov/submissions/CIK{ident['cik']:010d}.json",{"User-Agent":UA,"Accept":"application/json"},cache_ttl=300)
             # Exact issuer identity: if SEC submissions returns tickers, the requested
             # symbol must be among them. Otherwise do not use filings as evidence.
             st=[str(x).upper() for x in (sub.get("tickers") or [])]
@@ -147,11 +179,10 @@ def main():
                 filings.append({"form":form,"filing_date":dates[i],"report_date":report[i] if i<len(report) else None,"accession_number":acc[i] if i<len(acc) else None,"primary_document":docs[i] if i<len(docs) else None})
             results[sym]={"identity_status":"PASS","cik":ident["cik"],"name":sub.get("name") or ident.get("name"),"exchange":ident.get("exchange"),"resolver":ident.get("resolver"),"filings":filings}
         except Exception as e:
-            results[sym]={"identity_status":"UNKNOWN","cik":ident["cik"],"reason":f"{type(e).__name__}:{str(e)[:180]}","filings":[]}
-        time.sleep(0.12)
+            reason=error_label(e)
+            results[sym]={"identity_status":"UNKNOWN","cik":ident["cik"],"reason":reason,"filings":[]}
+            if access_stop(e):
+                transport.update(status="BLOCKED_DURING_SCOPE", blocked_provider="SEC_SUBMISSIONS", blocked_reason=reason)
 
-    unknown=sum(v["identity_status"]!="PASS" for v in results.values())
-    out={"schema":"XRAY_SEC_OFFICIAL_WITNESS_V1","status":"READY" if unknown==0 else "READY_WITH_UNKNOWNS","authority":"SEC_PRIMARY_WITNESS_OPTIONAL","task_id":r.get("task_id"),"asof_et":r["asof_et"],"execution":"NONE","real_money":"NO-GO","alpha_authority":False,"absence_never_clean":True,"scope_kind":"GEOMETRY_ONLY","geometry_scope":scope,"geometry_scope_count":len(scope),"geometry_scope_hash":r.get("geometry_scope_hash") or h(scope),"weekly_scope_hash":r.get("weekly_scope_hash"),"sec_transport":transport,"results":results,"unknown_count":unknown,"generated_at_utc":now()}
-    write(out)
-    print(json.dumps({"status":out["status"],"asof":out["asof_et"],"scope":len(scope),"unknown":unknown},sort_keys=True))
+    return results,transport
 if __name__=="__main__": main()
