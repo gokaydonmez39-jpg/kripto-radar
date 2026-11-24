@@ -41,6 +41,11 @@ jobs:
         run: |
           python nasdaq-xray/sec_official_witness_selftest.py
           python -O nasdaq-xray/sec_official_witness_selftest.py
+      - name: Master SEC seed registry exact-ASOF and renewal contract (offline only)
+        run: |
+          python nasdaq-xray/sec_manual_seed_contract_selftest.py
+          python -O nasdaq-xray/sec_manual_seed_contract_selftest.py
+          python -m py_compile nasdaq-xray/build_current_identity_proofs.py
       - name: Macro context validity regression (offline only)
         run: |
           python nasdaq-xray/macro_context_probe.py --selftest
