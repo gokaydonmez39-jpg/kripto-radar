@@ -99,7 +99,7 @@ def test_access_fence():
                     code=403 if mode=="sub403" else 429
                     raise urllib.error.HTTPError(url,code,"blocked",None,None)
                 name=scope[len(calls)-2]
-                return {"tickers":[name],"name":name,"filings":{"recent":{}}}
+                return {"cik":len(calls)-1,"tickers":[name],"name":name,"filings":{"recent":{}}}
             raise AssertionError("UNEXPECTED_PROVIDER:"+provider)
         s.fetch_json=fake
         s.time.sleep=lambda _:None
@@ -128,8 +128,51 @@ def test_access_fence():
     require(transport["status"]=="AVAILABLE" and all(x["identity_status"]=="PASS" for x in results.values()),"NORMAL_REGRESSION")
 
 
+def test_exact_submissions_identity():
+    scope=["AAPL"]
+    cases=[
+        ({"cik":320193,"tickers":["AAPL"]},"PASS",None),
+        ({"cik":"0000320193","tickers":["aapl"]},"PASS",None),
+        ({"cik":320193,"tickers":[]},"UNKNOWN","SEC_SUBMISSIONS_TICKERS_MISSING_OR_INVALID"),
+        ({"cik":320193},"UNKNOWN","SEC_SUBMISSIONS_TICKERS_MISSING_OR_INVALID"),
+        ({"cik":320193,"tickers":"AAPL"},"UNKNOWN","SEC_SUBMISSIONS_TICKERS_MISSING_OR_INVALID"),
+        ({"cik":320193,"tickers":["AAPL",None]},"UNKNOWN","SEC_SUBMISSIONS_TICKERS_MISSING_OR_INVALID"),
+        ({"cik":320193,"tickers":["MSFT"]},"UNKNOWN","SEC_SUBMISSIONS_TICKER_MISMATCH"),
+        ({"cik":789019,"tickers":["AAPL"]},"UNKNOWN","SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH"),
+        ({"tickers":["AAPL"]},"UNKNOWN","SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH"),
+        ({"cik":True,"tickers":["AAPL"]},"UNKNOWN","SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH"),
+        ({"cik":320193.0,"tickers":["AAPL"]},"UNKNOWN","SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH"),
+        ({"cik":"320193x","tickers":["AAPL"]},"UNKNOWN","SEC_SUBMISSIONS_CIK_MISSING_OR_MISMATCH"),
+    ]
+    for payload,status,reason in cases:
+        old_fetch,old_sleep,old_last=s.fetch_json,s.time.sleep,s._SEC_LAST_REQUEST
+        calls=[]
+        def fake(provider,url,headers=None,**kwargs):
+            calls.append(provider)
+            require(kwargs.get("retry_delays")==(),"IDENTITY_RETRY")
+            if provider=="SEC_TICKER_MAP":
+                return {"fields":["cik","name","ticker","exchange"],"data":[[320193,"Apple","AAPL","Nasdaq"]]}
+            if provider=="SEC_SUBMISSIONS":
+                return dict(payload,filings={"recent":{"form":["8-K"],"filingDate":["2026-10-05"],"accessionNumber":["0000320193-26-000001"],"primaryDocument":["x.htm"]}})
+            raise AssertionError(provider)
+        s.fetch_json=fake
+        s.time.sleep=lambda _:None
+        s._SEC_LAST_REQUEST=None
+        try:
+            results,transport=s.build_witness_results(scope,date(2026,10,6))
+        finally:
+            s.fetch_json,s.time.sleep,s._SEC_LAST_REQUEST=old_fetch,old_sleep,old_last
+        row=results["AAPL"]
+        require(calls==["SEC_TICKER_MAP","SEC_SUBMISSIONS"],"EXACT_IDENTITY_CALLS")
+        require(row["identity_status"]==status,"EXACT_IDENTITY:"+repr(payload)+":"+repr(row))
+        require(row.get("reason")==reason,"EXACT_IDENTITY_REASON:"+repr(payload))
+        require(len(row["filings"])==(1 if status=="PASS" else 0),"UNBOUND_FILINGS:"+repr(payload))
+        require(transport["status"]=="AVAILABLE","IDENTITY_NOT_TRANSPORT")
+
+
 if __name__=="__main__":
     test_dual_transport_failure_is_bounded()
     test_map_failure_efts_success_remains_degraded_not_blocked()
     test_access_fence()
+    test_exact_submissions_identity()
     print("XRAY_SEC_OFFICIAL_WITNESS_SELFTEST=PASS")
