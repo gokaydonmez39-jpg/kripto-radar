@@ -47,10 +47,13 @@ jobs:
           from pathlib import Path
           s=Path(".github/workflows/xray-personal-free-iex-eod-signals.yml").read_text()
           marker="      - name: Upload private derived classifications only in a private repository"
-          guard="        if: ${{ success() && github.event.repository.private == true }}"
-          if s.count("uses: actions/upload-artifact@")!=1 or (marker+"\n"+guard+"\n        uses: actions/upload-artifact@") not in s:
+          hold="      - name: Report public repository output hold (no personal artifact)"
+          expr="        if: $"+"{{ success() && github.event.repository.private "
+          guard=expr+"== true }}"
+          upload="uses: actions/"+"upload-artifact@"
+          if s.count(upload)!=1 or (marker+"\n"+guard+"\n        "+upload) not in s:
               raise SystemExit("XRAY_PRIVATE_ARTIFACT_GUARD_MISSING")
-          if "github.event.repository.private != true" not in s:
+          if (hold+"\n"+expr+"!= true }}\n") not in s:
               raise SystemExit("XRAY_PUBLIC_OUTPUT_HOLD_MISSING")
           print("XRAY_PRIVATE_ARTIFACT_GUARD=PASS")
           PY
