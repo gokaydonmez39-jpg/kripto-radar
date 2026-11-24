@@ -37,6 +37,10 @@ jobs:
         run: |
           PYTHONDONTWRITEBYTECODE=1 python nasdaq-xray/all_workflow_schedule_audit.py --selftest
           PYTHONDONTWRITEBYTECODE=1 python -O nasdaq-xray/all_workflow_schedule_audit.py --out "$RUNNER_TEMP/xray_schedule_audit.json"
+      - name: SEC official witness access fence regression (offline only)
+        run: |
+          python nasdaq-xray/sec_official_witness_selftest.py
+          python -O nasdaq-xray/sec_official_witness_selftest.py
       - name: Personal 477 normal and optimized regression
         working-directory: personal-swing
         run: |
