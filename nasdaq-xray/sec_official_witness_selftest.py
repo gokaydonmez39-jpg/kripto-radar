@@ -73,7 +73,63 @@ def test_map_failure_efts_success_remains_degraded_not_blocked():
     assert len(calls)==2,calls
 
 
+def require(value, label):
+    if not value:
+        raise AssertionError(label)
+
+
+def test_access_fence():
+    scope=["AAPL","MSFT","NVDA"]
+    def run(mode):
+        calls=[]
+        old_fetch=s.fetch_json
+        old_sleep=s.time.sleep
+        old_last=s._SEC_LAST_REQUEST
+        def fake(provider,url,headers=None,**kwargs):
+            require(kwargs.get("retry_delays")==(), "SEC_AUTOMATIC_RETRY_ENABLED")
+            calls.append(provider)
+            if provider=="SEC_TICKER_MAP":
+                if mode in ("map429","map401"):
+                    code=429 if mode=="map429" else 401
+                    raise urllib.error.HTTPError(url,code,"blocked",None,None)
+                return {"fields":["cik","name","ticker","exchange"],
+                        "data":[[i+1,k,k,"Nasdaq"] for i,k in enumerate(scope)]}
+            if provider=="SEC_SUBMISSIONS":
+                if len(calls)==3 and mode in ("sub403","sub429"):
+                    code=403 if mode=="sub403" else 429
+                    raise urllib.error.HTTPError(url,code,"blocked",None,None)
+                name=scope[len(calls)-2]
+                return {"tickers":[name],"name":name,"filings":{"recent":{}}}
+            raise AssertionError("UNEXPECTED_PROVIDER:"+provider)
+        s.fetch_json=fake
+        s.time.sleep=lambda _:None
+        s._SEC_LAST_REQUEST=None
+        try:
+            results,transport=s.build_witness_results(scope,date(2026,10,6))
+        finally:
+            s.fetch_json=old_fetch
+            s.time.sleep=old_sleep
+            s._SEC_LAST_REQUEST=old_last
+        return results,transport,calls
+    for mode in ("map429","map401"):
+        results,transport,calls=run(mode)
+        require(calls==["SEC_TICKER_MAP"],"MAP_ACCESS_STOP:"+mode)
+        require(transport["status"]=="BLOCKED_BOUNDED_PROBE","MAP_STATUS:"+mode)
+        require(all(x["identity_status"]=="UNKNOWN" for x in results.values()),"MAP_FALSE_PASS:"+mode)
+    for mode in ("sub403","sub429"):
+        results,transport,calls=run(mode)
+        require(calls==["SEC_TICKER_MAP","SEC_SUBMISSIONS","SEC_SUBMISSIONS"],"SUB_ACCESS_STOP:"+mode)
+        require(transport["status"]=="BLOCKED_DURING_SCOPE" and transport["blocked_provider"]=="SEC_SUBMISSIONS","SUB_STATUS:"+mode)
+        require(results["AAPL"]["identity_status"]=="PASS","PRIOR_SUCCESS_LOST:"+mode)
+        require(all(results[k]["identity_status"]=="UNKNOWN" for k in ("MSFT","NVDA")),"SUB_FALSE_PASS:"+mode)
+        require(results["NVDA"]["filings"]==[],"FABRICATED_FILINGS:"+mode)
+    results,transport,calls=run("ok")
+    require(calls==["SEC_TICKER_MAP"]+["SEC_SUBMISSIONS"]*3,"NORMAL_CALLS")
+    require(transport["status"]=="AVAILABLE" and all(x["identity_status"]=="PASS" for x in results.values()),"NORMAL_REGRESSION")
+
+
 if __name__=="__main__":
     test_dual_transport_failure_is_bounded()
     test_map_failure_efts_success_remains_degraded_not_blocked()
+    test_access_fence()
     print("XRAY_SEC_OFFICIAL_WITNESS_SELFTEST=PASS")
