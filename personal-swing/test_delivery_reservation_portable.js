@@ -48,6 +48,20 @@ test("identical POST receipt, readback and anti-replay decisions",()=>{
     ])assert.deepEqual(portable.operation(sample),py(sample));
   }
 });
+test("canonical date and trigger index limits match Python",()=>{
+  for(const [opening,suffix,valid] of [
+    ["20261112","1",false],["2026-W46-4","1",false],
+    ["2026-11-12","0",false],["2026-11-12","1000000000000000",false],
+    ["2026-11-12","999999999999999",true]
+  ]){
+    const input=structuredClone(fixtures[0]),row=input.baseline[1];
+    const key=opening+"|TEST|2026-11-12|AL_NEW_EPISODE|"+suffix;
+    row[0]=key;row[1]=opening+"|TEST";row[2]=opening;input.keys=[key];
+    const js=portable.operation(input),p=py(input);
+    assert.deepEqual(js,p);
+    assert.equal(js.status,valid?"PLAN_ONLY":"RESERVATION_HOLD");
+  }
+});
 test("UTF-8 SHA and producer float canonicalization match Python",()=>{
   for(const x of ["","abc","örnek 🦖", "A".repeat(140)])
     assert.equal(portable.sha256(x),createHash("sha256").update(x).digest("hex"));
