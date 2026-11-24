@@ -3,17 +3,22 @@
   "authority": "NASDAQTRADER_OFFICIAL_SAFETY_AND_PIT_SUPPORT",
   "candidate_safety": {
     "active_halt_symbols": [
-      "BBIO",
+      "CCTG",
+      "CODX",
       "DDC",
       "EFTY",
+      "GFAI",
       "HCHL",
       "IPFX",
       "IPFXU",
       "IPFXW",
+      "ISPC",
+      "JAGX",
       "LAWR",
       "MAGH",
       "OST",
       "PC",
+      "RBNE",
       "SVA",
       "TJGC",
       "TOVX",
@@ -57,8 +62,9 @@
     "veto_symbols": [
       "ARBEW",
       "BBBYW",
-      "BBIO",
       "BLFS",
+      "CCTG",
+      "CODX",
       "COLA",
       "COLAR",
       "COLAU",
@@ -66,6 +72,7 @@
       "DRCT",
       "EFTY",
       "FSEA",
+      "GFAI",
       "GFAIW",
       "HCHL",
       "ILLR",
@@ -73,6 +80,8 @@
       "IPFX",
       "IPFXU",
       "IPFXW",
+      "ISPC",
+      "JAGX",
       "LAWR",
       "LESL",
       "MAGH",
@@ -85,6 +94,7 @@
       "PC",
       "PSKY",
       "QRVO",
+      "RBNE",
       "SLP",
       "SPKL",
       "SPKLU",
@@ -103,7 +113,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-23T20:33:45.226876+00:00",
+  "generated_at_utc": "2026-11-24T02:40:21.413444+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -796,19 +806,24 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=systemstatus&subject=SELFHELP"
     },
     "trade_halts": {
-      "active_halt_count": 16,
+      "active_halt_count": 21,
       "active_halt_symbols": [
-        "BBIO",
+        "CCTG",
+        "CODX",
         "DDC",
         "EFTY",
+        "GFAI",
         "HCHL",
         "IPFX",
         "IPFXU",
         "IPFXW",
+        "ISPC",
+        "JAGX",
         "LAWR",
         "MAGH",
         "OST",
         "PC",
+        "RBNE",
         "SVA",
         "TJGC",
         "TOVX",
@@ -816,8 +831,128 @@
         "UCFIW"
       ],
       "active_state_rule": "EXPLICIT_EMPTY_RESUMPTION_FIELDS_ONLY",
-      "item_count": 241,
+      "item_count": 249,
       "items": [
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Robin Energy Ltd Cmn",
+          "IssueSymbol": "RBNE",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">RBNE</td><td valign=\"top\">Robin Energy Ltd Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "RBNE"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "CCSC Technology Intern Cl A OS",
+          "IssueSymbol": "CCTG",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">CCTG</td><td valign=\"top\">CCSC Technology Intern Cl A OS</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "CCTG"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Co-Diagnostics, Inc. CM",
+          "IssueSymbol": "CODX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">CODX</td><td valign=\"top\">Co-Diagnostics, Inc. CM</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "CODX"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "iSpecimen Inc. Common Stock",
+          "IssueSymbol": "ISPC",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">ISPC</td><td valign=\"top\">iSpecimen Inc. Common Stock</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "ISPC"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Guardforce AI Limited Ord Shs",
+          "IssueSymbol": "GFAI",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">GFAI</td><td valign=\"top\">Guardforce AI Limited Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "GFAI"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "19:50:00.000",
+          "IssueName": "Jaguar Health, Inc. Cmn",
+          "IssueSymbol": "JAGX",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "T1",
+          "ResumptionDate": "",
+          "ResumptionQuoteTime": "",
+          "ResumptionTradeTime": "",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">19:50:00.000</td><td valign=\"top\">JAGX</td><td valign=\"top\">Jaguar Health, Inc. Cmn</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "JAGX"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "15:50:07.326",
+          "IssueName": "ETRACS Monthly Pay 1.5X Leveraged Mortgage REIT ETN",
+          "IssueSymbol": "MVRL",
+          "Market": "NYSE Arca",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "M",
+          "ResumptionDate": "11/23/2026",
+          "ResumptionQuoteTime": "16:00:00",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:50:07.326</td><td valign=\"top\">MVRL</td><td valign=\"top\">ETRACS Monthly Pay 1.5X Leveraged Mortgage REIT ETN</td><td valign=\"top\">NYSE Arca</td><td valign=\"top\">M</td><td valign=\"top\"></td><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">16:00:00                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "MVRL"
+        },
+        {
+          "HaltDate": "11/23/2026",
+          "HaltTime": "15:37:41.910",
+          "IssueName": "Everli Glbl Hldgs Cl A Ord Shs",
+          "IssueSymbol": "EVRL",
+          "Market": "NASDAQ",
+          "PauseThresholdPrice": "",
+          "ReasonCode": "LUDP",
+          "ResumptionDate": "11/23/2026",
+          "ResumptionQuoteTime": "15:37:41",
+          "ResumptionTradeTime": "15:47:41",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:37:41.910</td><td valign=\"top\">EVRL</td><td valign=\"top\">Everli Glbl Hldgs Cl A Ord Shs</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:37:41                      </td><td valign=\"top\">15:47:41                      </td></tr></table>",
+          "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
+          "title": "EVRL"
+        },
         {
           "HaltDate": "11/23/2026",
           "HaltTime": "15:32:44.786",
@@ -828,8 +963,8 @@
           "ReasonCode": "LUDP",
           "ResumptionDate": "11/23/2026",
           "ResumptionQuoteTime": "15:32:44",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:32:44.786</td><td valign=\"top\">RDACU</td><td valign=\"top\">Rising Dragon Acq Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:32:44                      </td><td valign=\"top\"></td></tr></table>",
+          "ResumptionTradeTime": "16:00:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:32:44.786</td><td valign=\"top\">RDACU</td><td valign=\"top\">Rising Dragon Acq Ut</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">LUDP</td><td valign=\"top\"></td><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">15:32:44                      </td><td valign=\"top\">16:00:00                      </td></tr></table>",
           "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
           "title": "RDACU"
         },
@@ -915,11 +1050,11 @@
           "IssueSymbol": "BBIO",
           "Market": "NASDAQ",
           "PauseThresholdPrice": "",
-          "ReasonCode": "T1",
-          "ResumptionDate": "",
-          "ResumptionQuoteTime": "",
-          "ResumptionTradeTime": "",
-          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">13:17:41.000</td><td valign=\"top\">BBIO</td><td valign=\"top\">BridgeBio Pharma, Inc. Cm St</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T1</td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td><td valign=\"top\"></td></tr></table>",
+          "ReasonCode": "T3",
+          "ResumptionDate": "11/23/2026",
+          "ResumptionQuoteTime": "16:35:00",
+          "ResumptionTradeTime": "16:40:00",
+          "description": "<table width=\"100%\" cellpadding=\"5\"><tr><th align=\"left\">Halt Date</th><th align=\"left\">Halt Time</th><th align=\"left\">Issue Symbol</th><th align=\"left\">Issue Name</th><th align=\"left\">Market</th><th align=\"left\">Reason Code</th><th align=\"left\">Pause Threshold Price</th><th align=\"left\">Resumption Date</th><th align=\"left\">Resumption Quote Time</th><th align=\"left\">Resumption Trade Time</th></tr><tr><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">13:17:41.000</td><td valign=\"top\">BBIO</td><td valign=\"top\">BridgeBio Pharma, Inc. Cm St</td><td valign=\"top\">NASDAQ</td><td valign=\"top\">T3</td><td valign=\"top\"></td><td valign=\"top\">11/23/2026                    </td><td valign=\"top\">16:35:00                      </td><td valign=\"top\">16:40:00                      </td></tr></table>",
           "pubDate": "Mon, 23 Nov 2026 05:00:00 GMT",
           "title": "BBIO"
         },
@@ -4438,268 +4573,106 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 29,
+      "row_count": 11,
       "rows": [
         {
-          "BX Action": "Add",
-          "Company Name": "GraniteShares ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
+          "BX Action": "Delete",
+          "Company Name": "Tidal Trust II",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "P",
+          "Symbol": "COPZ"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "The RBB Fund, Inc.",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "G",
-          "Symbol": "AIL"
+          "Symbol": "CPHY"
         },
         {
-          "BX Action": "Add",
-          "Company Name": "Zacks Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ALLZ"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Themes ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ANDD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "GraniteShares ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
+          "BX Action": "Delete",
+          "Company Name": "Inflection Point Acquisition Corp. VI",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "G",
-          "Symbol": "ANS"
+          "Symbol": "IPFX"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Inflection Point Acquisition Corp. VI",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "IPFXU"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Inflection Point Acquisition Corp. VI",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "IPFXW"
         },
         {
           "BX Action": "Add",
-          "Company Name": "Themes ETF Trust",
-          "Effective Date": "11/23/2026",
+          "Company Name": "Wedbush Series Trust",
+          "Effective Date": "11/24/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
+          "Primary Listing Market": "P",
+          "Symbol": "IVEA"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Tidal Trust II",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
           "Primary Listing Market": "Z",
-          "Symbol": "ANSS"
+          "Symbol": "KEEX"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Quantum Space, Inc.",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "N",
+          "Symbol": "QSPC"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "Quantum Space, Inc.",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "A",
+          "Symbol": "QSPC+"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Tidal Trust II",
+          "Effective Date": "11/24/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "G",
+          "Symbol": "RCAX"
         },
         {
           "BX Action": "Add",
           "Company Name": "Tidal Trust II",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTC"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Direxion Shares ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Direxion Shares ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTO"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Tidal Trust II",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTQ"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Tradr 2X Long CIEN Daily ETF",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ANTT"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "ProShares Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "ProShares Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ANTY"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Tradr 2X Long CIEN Daily ETF",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ANTZ"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Themes ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ANUU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Volatility Shares Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ATHX"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Brookfield Infrastructure Partners LP",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "BIP"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Brookfield Infrastructure Partners Inc.",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "N",
-          "Symbol": "BIP"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Brookfield Infrastructure Corporation",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "N",
-          "Symbol": "BIPC"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Vesicor Therapeutics Holdings, Inc.",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "BKHAR"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Vesicor Therapeutics Holdings, Inc.",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "BKHAU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "ETF Opportunities Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "CLAU"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Clywedog Therapeutics Holdings, Inc.",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "S",
-          "Symbol": "CLYD"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "AB Active ETFs, Inc.",
-          "Effective Date": "11/23/2026",
+          "Effective Date": "11/24/2026",
           "NASDAQ Action": "Add",
           "PSX Action": "Add",
           "Primary Listing Market": "P",
-          "Symbol": "DIVA"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "BlackRock ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "ENHV"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Everli Global Holdings",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "MACIU"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "ETF Series Solutions",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "G",
-          "Symbol": "RKNG"
-        },
-        {
-          "BX Action": "Delete",
-          "Company Name": "Calamos ETF Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Delete",
-          "PSX Action": "Delete",
-          "Primary Listing Market": "P",
-          "Symbol": "SROI"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Zacks Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "Z",
-          "Symbol": "ZCAP"
-        },
-        {
-          "BX Action": "Add",
-          "Company Name": "Grayscale Funds Trust",
-          "Effective Date": "11/23/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "P",
-          "Symbol": "ZECX"
+          "Symbol": "YANT"
         }
       ],
       "status": "PASS",
