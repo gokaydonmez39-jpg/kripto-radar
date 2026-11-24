@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, math, os, urllib.parse, xml.etree.ElementTree as ET
+import argparse, json, math, os, re, urllib.parse, xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -62,7 +62,7 @@ def latest_fred(payload,today):
         v=numeric(x["value"])
         if d in rows and numeric(rows[d]["value"])!=v:
             raise ValueError("CONFLICTING_OBSERVATION")
-        rows[d]={"date":d.isoformat(),"value":str(x["value"])}
+        rows[d]={"date":d.isoformat(),"value":str(v)}
     if not rows:
         raise ValueError("NO_NUMERIC_OBSERVATION")
     row=rows[max(rows)]
@@ -147,6 +147,48 @@ def select_context(series,treasury,today):
                    observation_date=t[0].isoformat(),reason="FRED_PAIR_UNAVAILABLE_OR_OLDER")
     return out
 
+def validate_artifact(out,at):
+    """Publication schema + recency guard. No market/trading authority."""
+    def require(ok,label):
+        if not ok: raise ValueError(label)
+    required={"schema","execution","real_money","alpha_authority","generated_at_utc",
+              "series","source_priority","context_only","max_age_calendar_days",
+              "crosscheck_tolerance_pct_points","treasury_zero_key","status","authority",
+              "observation_date","same_date_crosscheck","reason"}
+    require(type(out) is dict and set(out)==required,"MACRO_SCHEMA")
+    require(out["schema"]=="XRAY_MACRO_CONTEXT_V1" and out["execution"]=="NONE"
+            and out["real_money"]=="NO-GO" and out["alpha_authority"] is False
+            and out["context_only"] is True,"MACRO_AUTHORITY")
+    require(out["source_priority"]==["FRED_OPTIONAL","US_TREASURY_ZERO_KEY_FALLBACK"]
+            and out["max_age_calendar_days"]==MAX_AGE_DAYS
+            and out["crosscheck_tolerance_pct_points"]==CROSSCHECK_TOLERANCE_PCT_POINTS,"MACRO_POLICY")
+    stamp=datetime.fromisoformat(out["generated_at_utc"])
+    require(stamp.tzinfo is not None and at.tzinfo is not None
+            and 0<=(at-stamp).total_seconds()<=900,"MACRO_GENERATION_AGE")
+    today=stamp.astimezone(ZoneInfo("America/New_York")).date()
+    def error_row(x):
+        return (type(x) is dict and set(x)=={"status","reason"} and x["status"]=="UNKNOWN"
+                and isinstance(x["reason"],str)
+                and re.fullmatch(r"(?:HTTP_[1-5][0-9]{2}|PROVIDER_OR_PARSE_ERROR)",x["reason"]) is not None)
+    series=out["series"]
+    require(type(series) is dict and set(series)<={"DGS2","DGS10","DFEDTARU"},"MACRO_SERIES_IDS")
+    for row in series.values():
+        if error_row(row): continue
+        require(type(row) is dict and set(row)=={"date","value"} and isinstance(row["value"],str),"MACRO_FRED_ROW")
+        usable_day(row["date"],today)
+        require(str(numeric(row["value"]))==row["value"],"MACRO_FRED_VALUE")
+    t=out["treasury_zero_key"]
+    if not error_row(t):
+        require(type(t) is dict and set(t)=={"date","dgs2","dgs10","spread_2s10s_pct_points","source"}
+                and t["source"]=="US_TREASURY_DAILY_PAR_YIELD_CURVE_XML","MACRO_TREASURY_ROW")
+        usable_day(t["date"],today)
+        require(type(t["dgs2"]) in (int,float) and type(t["dgs10"]) in (int,float)
+                and type(t["spread_2s10s_pct_points"]) in (int,float)
+                and round(numeric(t["dgs10"])-numeric(t["dgs2"]),4)==numeric(t["spread_2s10s_pct_points"]),"MACRO_TREASURY_SPREAD")
+    expected=select_context(series,t,today)
+    require(all(type(out[k]) is type(v) and out[k]==v for k,v in expected.items()),"MACRO_SELECTION_CONTRADICTION")
+    return True
+
 def selftest():
     # Explicit guards remain effective with python -O.
     def require(ok,label):
@@ -178,13 +220,36 @@ def selftest():
         except ValueError: pass
         else: raise AssertionError("INVALID_FRED_ACCEPTED")
     require("SECRET" not in safe_error(RuntimeError("https://example.invalid?api_key=SECRET")),"ERROR_PRIVACY")
-    print("XRAY_MACRO_CONTEXT_SELFTEST=PASS_NO_FALSE_READY_FRESHNESS_CROSSCHECK_PRIVACY")
+    at=datetime(2026,11,24,21,0,tzinfo=timezone.utc)
+    record={"schema":"XRAY_MACRO_CONTEXT_V1","execution":"NONE","real_money":"NO-GO","alpha_authority":False,
+            "generated_at_utc":at.isoformat(),"series":{},
+            "source_priority":["FRED_OPTIONAL","US_TREASURY_ZERO_KEY_FALLBACK"],"context_only":True,
+            "max_age_calendar_days":MAX_AGE_DAYS,"crosscheck_tolerance_pct_points":CROSSCHECK_TOLERANCE_PCT_POINTS,
+            "treasury_zero_key":dict(t,source="US_TREASURY_DAILY_PAR_YIELD_CURVE_XML",spread_2s10s_pct_points=0.2)}
+    record.update(select_context(record["series"],record["treasury_zero_key"],day))
+    require(validate_artifact(record,at),"VALID_PUBLICATION")
+    for modified in (dict(record,alpha_authority=True),dict(record,status="UNKNOWN"),
+                     dict(record,generated_at_utc="2026-11-24T20:44:59+00:00"),
+                     dict(record,generated_at_utc="2026-11-24T21:00:01+00:00"),
+                     dict(record,series={"DGS2":{"status":"UNKNOWN","reason":"SECRET"}}),
+                     dict(record,treasury_zero_key=dict(record["treasury_zero_key"],spread_2s10s_pct_points=0.3))):
+        try: validate_artifact(modified,at)
+        except ValueError: pass
+        else: raise AssertionError("INVALID_PUBLICATION_ACCEPTED")
+    print("XRAY_MACRO_CONTEXT_SELFTEST=PASS_NO_FALSE_READY_FRESHNESS_CROSSCHECK_PRIVACY_PUBLICATION")
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("--selftest",action="store_true")
-    if ap.parse_args().selftest:
+    mode=ap.add_mutually_exclusive_group()
+    mode.add_argument("--selftest",action="store_true")
+    mode.add_argument("--validate-file",type=Path)
+    args=ap.parse_args()
+    if args.selftest:
         selftest()
+        return
+    if args.validate_file is not None:
+        validate_artifact(json.loads(args.validate_file.read_text()),datetime.now(timezone.utc))
+        print("XRAY_MACRO_PUBLICATION_VALIDATED=NO_ALPHA")
         return
     today=datetime.now(ZoneInfo("America/New_York")).date()
     key=os.getenv("FRED_API_KEY","").strip()
@@ -205,6 +270,7 @@ def main():
     except Exception as e:
         out["treasury_zero_key"]={"status":"UNKNOWN","reason":safe_error(e)}
     out.update(select_context(out["series"],out["treasury_zero_key"],today))
+    validate_artifact(out,datetime.now(timezone.utc))
     OUT.write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
     print(json.dumps({"status":out["status"],"authority":out["authority"],"observation_date":out["observation_date"]},sort_keys=True))
 if __name__=="__main__": main()
