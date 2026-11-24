@@ -148,11 +148,20 @@ def reserve(current,study,root,root_git_blob_sha,task_id):
     return new
 
 def selftest():
-    root_raw=(ROOT/"orchestrator_state.json").read_bytes()
-    root=json.loads(root_raw)
+    # Offline regression must be independent of the live population, which
+    # may legitimately be empty while the upstream price chain is blocked.
+    names=["FIXTUREA","FIXTUREB","FIXTUREC"]
+    day="2026-10-21"
+    root={"asof_et":day,"execution":"NONE","real_money":"NO-GO",
+          "watch_radar":{"asof_et":day,"execution":"NONE","real_money":"NO-GO",
+              "unknown_never_pass":True,"all_eligible_candidates_tracked":True,
+              "watchlist_cap":None,"watchlist_count":len(names),
+              "price_liquidity_screened_count":len(names),"source_candidates_sha256":"a"*64,
+              "watchlist":[{"symbol":sym,"buy_signal":False,
+                  "classification":"WATCH_LIQUIDITY_PRE_SCREEN_ONLY"} for sym in names]},
+          "candidate_technical_funnel":{"asof_et":day,"source_candidates_sha256":"a"*64}}
+    root_raw=json.dumps(root,sort_keys=True).encode()
     sha=gitblob(root_raw)
-    names=sorted(x["symbol"] for x in root["watch_radar"]["watchlist"])
-    assert len(names)==root["watch_radar"]["watchlist_count"]
     rows={s:{"label":"WATCH_ONLY","reasons":["NO_RESEARCH_SETUP_OBSERVED"]}
           for s in names}
     rows[names[0]]={"label":"RESEARCH_BREAKOUT_WATCH",
@@ -176,7 +185,9 @@ def selftest():
         "certified_buy_count":0,"broker":False,"orders":[],
         "iphone_receipt_attested":False,"execution":"NONE","real_money":"NO-GO",
         "unknown_never_pass":True,"raw_vendor_ohlcv_exported":False}
-    existing=json.loads((ROOT/"personal_research_advisory_ledger.json").read_text())
+    existing={"schema":LEDGER_SCHEMA,"execution":"NONE","real_money":"NO-GO",
+              "unknown_never_pass":True,"scope":"PERSONAL_RESEARCH_ADVISORY_ONLY_NEVER_R92",
+              "entries":[]}
     positive=reserve(existing,study,root,sha,ALERT_TASK)
     need(positive is not None and len(positive["entries"])==len(existing["entries"])+1
          and reserve(positive,study,root,sha,ALERT_TASK) is None
@@ -220,6 +231,16 @@ def selftest():
     quiet["research_review_symbols"]=[]
     quiet["research_review_count"]=0
     need(reserve(existing,quiet,root,sha,ALERT_TASK) is None,"NO_TRIGGER_MUST_BE_SILENT")
-    print("XRAY_PRIVATE_FREE_IEX_ALERT_SELFTEST=PASS_16_NEGATIVES_EXACT_475_ROOT_LOW_GRADE_NO_R92")
+    empty=deepcopy(root)
+    empty["watch_radar"].update(watchlist=[],watchlist_count=0,price_liquidity_screened_count=0)
+    empty_sha=gitblob(json.dumps(empty,sort_keys=True).encode())
+    empty_study=deepcopy(quiet)
+    empty_study.update(root_blob_sha=empty_sha,population_sha256=hashlib.sha256(b"").hexdigest(),
+        total_watch_symbols=0,attempted_symbols=0,per_symbol={},state_counts={},vendor_requests=0)
+    try:reserve(existing,empty_study,empty,empty_sha,ALERT_TASK)
+    except ValueError as exc:
+        need(str(exc)=="XRAY_PRIVATE_IEX_ADVISORY_ROOT_WATCH_SCOPE","EMPTY_SCOPE_WRONG_FAILURE")
+    else:raise AssertionError("EMPTY_SCOPE_RESERVED")
+    print("XRAY_PRIVATE_FREE_IEX_ALERT_SELFTEST=PASS_FIXED_FIXTURE_EMPTY_SCOPE_FAIL_CLOSED_NO_R92")
 
 if __name__=="__main__":selftest()
