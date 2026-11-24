@@ -270,8 +270,10 @@ def prepare_health_publication(previous,current,at):
             error=("FRED:HTTP_"+str(http) if http is not None else "FRED:PROVIDER_ERROR") if name=="FRED" else ("HTTP_"+str(http) if http is not None else code)
         else:
             raise ValueError("HEALTH_UNKNOWN_STATE")
-        # A changed state requires a changed observation, not just a new file timestamp.
-        if name in old and state!=old[name].get("status"):
+        # A changed circuit state/counter requires a new observation, not
+        # just a new file timestamp. Error-string sanitization is exempt.
+        comparable=("status","consecutive_failures","last_error_code","last_error_retryable","last_http_status","open_until_epoch")
+        if name in old and any(row.get(k,0 if k=="open_until_epoch" else None)!=old[name].get(k,0 if k=="open_until_epoch" else None) for k in comparable):
             require(any(key not in old[name] or value>stamp(old[name][key]) for key,value in times.items()),
                     "HEALTH_STATE_WITHOUT_OBSERVATION")
         clean={"status":state,"consecutive_failures":n,"last_error":error,
@@ -313,11 +315,14 @@ def health_publication_selftest():
     negative("REGRESSION",lambda x:x["providers"]["GITHUB_STATUS"].update(last_success_at_utc="2026-11-23T00:00:00+00:00"))
     negative("STALE_GENERATION",lambda x:x.update(updated_at_utc=oldstamp))
     negative("UNEXPECTED_FIELD",lambda x:x["providers"]["GITHUB_STATUS"].update(secret="TEST_SECRET"))
+    negative("UNOBSERVED_STATE",lambda x:x["providers"]["GITHUB_STATUS"].update(
+        status="NONRETRYABLE_ERROR",last_error_code="HTTP_DEFINITIVE",
+        last_error_retryable=False,last_http_status=403,last_failure_at_utc="2026-11-24T19:00:00+00:00"))
     for label,x in cases:
         try:prepare_health_publication(old,x,at)
         except ValueError:continue
         raise AssertionError("HEALTH_NEGATIVE_ACCEPTED:"+label)
-    print("XRAY_PROVIDER_HEALTH_PUBLICATION_SELFTEST=PASS_PRESERVE_REDACT_8_NEGATIVE")
+    print("XRAY_PROVIDER_HEALTH_PUBLICATION_SELFTEST=PASS_PRESERVE_REDACT_9_NEGATIVE")
 
 if __name__=="__main__":
     import argparse
