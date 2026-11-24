@@ -284,8 +284,13 @@ def run_bundle(bundle,*,slippage_bps=0.0,commission_per_share=0.0,
         paths=[]
         for ep,bars,due,entry,stop,target in prepared:
             base_risk=entry-stop
-            hypothetical_stop=entry-base_risk*multiplier
-            hypothetical_target=entry+2*base_risk*multiplier
+            if multiplier==1.0:
+                # The source bracket is authoritative, including its allowed
+                # rounding. Recomputing 2R can change a near-boundary outcome.
+                hypothetical_stop,hypothetical_target=stop,target
+            else:
+                hypothetical_stop=entry-base_risk*multiplier
+                hypothetical_target=entry+2*base_risk*multiplier
             # A 3x or wider stop could move <=0 for very volatile entries.
             require(hypothetical_stop>0,"COUNTERFACTUAL_STOP_NONPOSITIVE")
             paths.append(_path(ep,bars,due,hypothetical_stop,
@@ -293,6 +298,9 @@ def run_bundle(bundle,*,slippage_bps=0.0,commission_per_share=0.0,
                                commission_per_share))
         comparison.append({"stop_risk_multiplier":multiplier,
                            "summary":_summarize(paths,len(prepared))})
+    exact_baseline=[x["summary"] for x in comparison
+                    if x["stop_risk_multiplier"]==1.0]
+    require(exact_baseline==[baseline_summary],"COUNTERFACTUAL_BASELINE_DRIFT")
     # Only the canonical 1.0 pass is the base engine's 2R path; all other
     # figures are counterfactual DIAGNOSTICS, not parameter recommendations.
     try:
