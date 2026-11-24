@@ -41,6 +41,10 @@ jobs:
         run: |
           python nasdaq-xray/sec_official_witness_selftest.py
           python -O nasdaq-xray/sec_official_witness_selftest.py
+      - name: Macro context validity regression (offline only)
+        run: |
+          python nasdaq-xray/macro_context_probe.py --selftest
+          python -O nasdaq-xray/macro_context_probe.py --selftest
       - name: Personal 477 normal and optimized regression
         working-directory: personal-swing
         run: |
