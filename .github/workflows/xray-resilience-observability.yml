@@ -286,7 +286,65 @@ jobs:
         run: python nasdaq-xray/external_health_probe.py
 
       - name: Macro context
-        run: python nasdaq-xray/macro_context_probe.py
+        run: |
+          python nasdaq-xray/macro_context_probe.py --selftest
+          python -O nasdaq-xray/macro_context_probe.py --selftest
+          python nasdaq-xray/macro_context_probe.py
+
+      - name: Persist current macro context independently (no alpha)
+        # This advisory context is not a terminal/current-price proof.
+        # No reset of the active worktree, no retries, no force push.
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=nasdaq-xray/canonical_macro_context.json
+          code=nasdaq-xray/macro_context_probe.py
+          runtime=nasdaq-xray/resilience_runtime.py
+          tmp="$(mktemp -d)"
+          work="$tmp/work"
+          cleanup() {
+            result=$?
+            trap - EXIT
+            if [[ -d "$work" ]]; then git worktree remove --force "$work" >/dev/null 2>&1 || true; fi
+            rm -rf "$tmp"
+            if [[ "$result" != 0 ]]; then
+              echo "XRAY_MACRO_PERSISTENCE=HOLD_VALIDATION_OR_RACE_NO_RETRY"
+            fi
+            exit "$result"
+          }
+          trap cleanup EXIT
+          python "$code" --validate-file "$file"
+          expected="$(git hash-object "$file")"
+          prior="$(git rev-parse "HEAD:$file")"
+          git fetch origin main
+          live="$(git rev-parse origin/main)"
+          # Both implementation and target must match the run's starting view.
+          test "$(git rev-parse "$live:$code")" = "$(git hash-object "$code")"
+          test "$(git rev-parse "$live:$runtime")" = "$(git hash-object "$runtime")"
+          test "$(git rev-parse "$live:$file")" = "$prior"
+          git show "$live:$file" > "$tmp/previous.json"
+          python - "$tmp/previous.json" "$file" <<'PY'
+          import json,sys
+          from datetime import datetime
+          with open(sys.argv[1],encoding="utf-8") as f:
+              prev=json.load(f)
+          with open(sys.argv[2],encoding="utf-8") as f:
+              curr=json.load(f)
+          a=datetime.fromisoformat(prev["generated_at_utc"])
+          b=datetime.fromisoformat(curr["generated_at_utc"])
+          if a.tzinfo is None or b.tzinfo is None or b<=a:
+              raise SystemExit("XRAY_MACRO_NONMONOTONIC_TIMESTAMP")
+          PY
+          git worktree add --detach "$work" "$live"
+          cp "$file" "$work/$file"
+          git -C "$work" add -- "$file"
+          test "$(git -C "$work" diff --cached --name-only)" = "$file"
+          git -C "$work" -c user.name=xray-macro-context-bot -c user.email=xray-macro-context-bot@users.noreply.github.com commit -m "chore(xray): publish independently validated macro context"
+          git -C "$work" push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse "origin/main:$file")" = "$expected"
+          echo "XRAY_MACRO_PERSISTENCE=PASS_EXACT_GITHUB_READBACK_NO_ALPHA"
 
       - name: Candidate enrichment
         run: python nasdaq-xray/candidate_enrichment.py
@@ -506,7 +564,6 @@ jobs:
           files=(
             nasdaq-xray/canonical_sec_official_witness.json
             nasdaq-xray/external_health_state.json
-            nasdaq-xray/canonical_macro_context.json
             nasdaq-xray/canonical_candidate_enrichment.json
             nasdaq-xray/free_solution_verification.json
             nasdaq-xray/provider_health_ledger.json
