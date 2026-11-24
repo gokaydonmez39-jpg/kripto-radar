@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from collections import Counter
 from datetime import date, datetime, timedelta
 
@@ -81,7 +82,14 @@ def assess(alerts, scores, scans, expected_asof=None):
 
     need(isinstance(scores, list) and scores and
          tuple(scores[0]) == scoring.HEADER, "SCORE_TAB_MISSING_OR_SCHEMA_DRIFT")
-    score_rows = [list(r) for r in scores[1:] if r and r[0]]
+    score_rows = []
+    for raw in scores[1:]:
+        need(isinstance(raw,(list,tuple)), "SCORE_ROW_TYPE_INVALID")
+        if not raw or not any(cell != "" for cell in raw):
+            continue
+        need(isinstance(raw[0],str) and bool(raw[0].strip()),
+             "SCORE_NONEMPTY_ROW_WITHOUT_KEY")
+        score_rows.append(list(raw))
     score_keys = [r[0] for r in score_rows]
     need(len(score_keys) == len(set(score_keys)), "SCORE_DUPLICATE_KEY")
     by_day = {}
@@ -108,11 +116,13 @@ def assess(alerts, scores, scans, expected_asof=None):
              scored + hold == active and 0 <= distinct <= active and
              active == len(rows["episodes"]), "SCORE_COUNT_OR_ROW_MISMATCH")
         need(summary[27] in STATUS_ALLOWED, "SCORE_NOTIFICATION_STATE_DRIFT")
-        need(len(summary[29]) == 64 and
+        need(isinstance(summary[29],str) and
+             re.fullmatch(r"[0-9a-f]{64}",summary[29]) is not None and
              all(r[29] == summary[29] for r in rows["episodes"]),
              "SCORE_DIGEST_DRIFT")
         if summary[27] == scoring.REQUESTED:
             need(bool(summary[28]), "SCORE_REQUESTED_WITHOUT_TIME")
+            _request_timestamp_class(summary[28])
         else:
             need(not summary[28], "SCORE_READY_BUT_TIMESTAMPED")
         historical_valid += 1
