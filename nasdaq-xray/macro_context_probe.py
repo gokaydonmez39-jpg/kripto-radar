@@ -220,6 +220,12 @@ def selftest():
         except ValueError: pass
         else: raise AssertionError("INVALID_FRED_ACCEPTED")
     require("SECRET" not in safe_error(RuntimeError("https://example.invalid?api_key=SECRET")),"ERROR_PRIVACY")
+    from resilience_runtime import classify_exception, failure_message
+    err=RuntimeError("https://example.invalid?api_key=SECRET")
+    require(failure_message("FRED",err,classify_exception(err))=="FRED:PROVIDER_ERROR","LEDGER_ERROR_PRIVACY")
+    import urllib.error
+    err=urllib.error.HTTPError("https://example.invalid?api_key=SECRET",403,"SECRET",None,None)
+    require(failure_message("FRED",err,classify_exception(err))=="FRED:HTTP_403","LEDGER_HTTP_PRIVACY")
     at=datetime(2026,11,24,21,0,tzinfo=timezone.utc)
     record={"schema":"XRAY_MACRO_CONTEXT_V1","execution":"NONE","real_money":"NO-GO","alpha_authority":False,
             "generated_at_utc":at.isoformat(),"series":{},
