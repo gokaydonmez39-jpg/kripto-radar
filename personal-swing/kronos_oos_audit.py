@@ -37,9 +37,13 @@ def validate_ledger(matrix):
             "KRONOS_OOS_LEDGER_HEADER_OR_CAP")
     rows=[]
     for raw in matrix[1:]:
-        if not raw or not raw[0]:
+        require(isinstance(raw,(list,tuple)),"KRONOS_OOS_ROW_TYPE_INVALID")
+        if not raw or not any(cell!="" for cell in raw):
             continue
-        require(len(raw)<=20,"KRONOS_OOS_ROW_TOO_WIDE")
+        require(isinstance(raw[0],str) and bool(raw[0].strip()),
+                "KRONOS_OOS_KEYLESS_NONEMPTY_ROW")
+        require(len(raw)<=20 and all(isinstance(cell,str) for cell in raw),
+                "KRONOS_OOS_ROW_TOO_WIDE_OR_BAD_CELL_TYPE")
         row=list(raw)+[""]*(20-len(raw))
         require(row[19]==k.canonical_sha(row[:19]),
                 "KRONOS_OOS_ROW_TAMPERED")
@@ -85,6 +89,10 @@ def validate_ledger(matrix):
     require(all(len(pair)==3 and {r[3] for r in pair}=={'1','5','12'} and
                 len({r[17] for r in pair})==1 for pair in by_pair.values()),
             "KRONOS_OOS_PARTIAL_PAIR")
+    # All horizons are one frozen forecast and one point-in-time source.
+    # Per-row hashes alone cannot detect inconsistent reference/input lineage.
+    require(all(all(len({r[i] for r in pair})==1 for i in (4,11,12,13,14,15,16,18))
+                for pair in by_pair.values()),"KRONOS_OOS_PAIR_PROVENANCE_DRIFT")
     return rows
 
 
@@ -175,6 +183,13 @@ def score_matured(matured, completed_asof, read_batch):
         key = (symbol, target)
         require(key in by_symbol_date, 'KRONOS_OOS_MISSING_TARGET_CLOSE')
         actual = by_symbol_date[key]
+        reference_key = (symbol, asof)
+        require(reference_key in by_symbol_date,"KRONOS_OOS_MISSING_REFERENCE_CLOSE")
+        # Same raw IEX close, same six-decimal representation as build_rows.
+        # A source correction, ticker remap or changed price basis is HOLD;
+        # never silently revise a frozen forecast or its persistence benchmark.
+        require(f"{by_symbol_date[reference_key]:.6f}"==row[4],
+                "KRONOS_OOS_REFERENCE_CLOSE_DRIFT")
         reference = float(row[4])
         predicted = float(row[5])
         actual_move = actual-reference
