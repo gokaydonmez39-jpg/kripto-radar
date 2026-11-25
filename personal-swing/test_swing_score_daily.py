@@ -208,6 +208,7 @@ class SwingScoreTests(unittest.TestCase):
         prior[:2] = ["2026-11-03|SUMMARY", "2026-11-03"]
         prior[4] = "SUMMARY"
         prior[27] = score.READY
+        prior[29:33] = ["c" * 64, SHA, POLICY, score.VERSION]
         self.api.scored.append(prior)
         self.api.alerts[1][17:19] = [life.EVENT_PENDING, ""]
         return prior
@@ -273,7 +274,7 @@ class SwingScoreTests(unittest.TestCase):
                         if count == 3:
                             prior[27:29] = [score.REQUESTED, "2026-11-04 08:57 TRT"]
                             if corrupt:
-                                prior[29] = "CHANGED_DIGEST"
+                                prior[29] = "d" * 64
                     return old_request(path, **kw)
                 with patch.object(self.api, "request", side_effect=request):
                     if corrupt:
@@ -337,6 +338,60 @@ class SwingScoreTests(unittest.TestCase):
             return {"AAA":x,"BBB":bars(1.)}
         with self.assertRaises((ValueError,writer.HandoffBlocked)):
             score.build(*inputs(),ASOF,bad)
+
+    def test_ledger_guard_rejects_corruption_before_provider_or_append(self):
+        def invalid_cases(rows):
+            for state, stamp in (("DEVICE_ACK", "2026-11-05 09:57 TRT"),
+                                 (score.READY, "2026-11-05 09:57 TRT"),
+                                 (score.REQUESTED, ""),
+                                 (score.REQUESTED, "2026-11-03 09:57 TRT")):
+                bad = copy.deepcopy(rows)
+                bad[1][27:29] = [state, stamp]
+                yield bad, "SWING_SCORE_LEDGER_DELIVERY"
+            bad = copy.deepcopy(rows)
+            bad[2][27:29] = [score.REQUESTED, "2026-11-05 09:57 TRT"]
+            yield bad, "SWING_SCORE_LEDGER_DELIVERY"
+            bad = copy.deepcopy(rows)
+            bad[2].append("EXTRA")
+            yield bad, "SWING_SCORE_LEDGER_ROW_SHAPE"
+            bad = copy.deepcopy(rows)
+            bad.insert(2, [])
+            yield bad, "SWING_SCORE_LEDGER_ROW_SHAPE"
+            bad = copy.deepcopy(rows)
+            bad[2][29] = "not-a-digest"
+            yield bad, "SWING_SCORE_LEDGER_PIN"
+            bad = copy.deepcopy(rows)
+            bad[2][0] = "WRONG_ID"
+            yield bad, "SWING_SCORE_LEDGER_IDENTITY"
+            bad = copy.deepcopy(rows)
+            bad.append(copy.deepcopy(bad[-1]))
+            yield bad, "SWING_SCORE_LEDGER_IDENTITY"
+
+        rows = [list(score.HEADER)] + score.build(*inputs(), ASOF, self.read_batch)
+        for bad, reason in invalid_cases(rows):
+            with self.subTest(reason=reason):
+                self.api = FakeAPI()
+                self.api.scored = bad
+                with patch.object(self, "read_batch",
+                                  side_effect=AssertionError("NO_PROVIDER")) as provider:
+                    with self.assertRaisesRegex(writer.HandoffBlocked, reason):
+                        score.synchronize(self.api, ASOF, self.read_batch)
+                    provider.assert_not_called()
+                self.assertEqual(self.api.writes, 0)
+                self.assertEqual(score.safe_hold_receipt(
+                    writer.HandoffBlocked(reason), "SCORE_LEDGER_READ"
+                )["reason_code"], reason)
+
+    def test_ledger_guard_preserves_header_only_and_valid_request(self):
+        self.assertEqual(score.score_read(self.api), [list(score.HEADER)])
+        score.synchronize(self.api, ASOF, self.read_batch)
+        self.api.scored[1][27:29] = [
+            score.REQUESTED, "2026-11-05 09:57 TRT"]
+        expected = copy.deepcopy(self.api.scored)
+        result = score.synchronize(self.api, ASOF, self.read_batch)
+        self.assertEqual(result["status"], "SWING_SCORE_IDEMPOTENT_READBACK_PASS")
+        self.assertEqual(self.api.scored, expected)
+        self.assertEqual(self.api.writes, 1)
 
     def test_score_read_uses_open_ended_range_to_avoid_hidden_old_asof(self):
         from urllib.parse import unquote
