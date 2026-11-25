@@ -37,9 +37,13 @@ def validate_ledger(matrix):
             "KRONOS_OOS_LEDGER_HEADER_OR_CAP")
     rows=[]
     for raw in matrix[1:]:
-        if not raw or not raw[0]:
+        require(isinstance(raw,(list,tuple)),"KRONOS_OOS_ROW_TYPE_INVALID")
+        if not raw or not any(cell!="" for cell in raw):
             continue
-        require(len(raw)<=20,"KRONOS_OOS_ROW_TOO_WIDE")
+        require(isinstance(raw[0],str) and bool(raw[0].strip()),
+                "KRONOS_OOS_KEYLESS_NONEMPTY_ROW")
+        require(len(raw)<=20 and all(isinstance(cell,str) for cell in raw),
+                "KRONOS_OOS_ROW_TOO_WIDE_OR_BAD_CELL_TYPE")
         row=list(raw)+[""]*(20-len(raw))
         require(row[19]==k.canonical_sha(row[:19]),
                 "KRONOS_OOS_ROW_TAMPERED")
@@ -85,7 +89,32 @@ def validate_ledger(matrix):
     require(all(len(pair)==3 and {r[3] for r in pair}=={'1','5','12'} and
                 len({r[17] for r in pair})==1 for pair in by_pair.values()),
             "KRONOS_OOS_PARTIAL_PAIR")
+    # All horizons are one frozen forecast and one point-in-time source.
+    # Per-row hashes alone cannot detect inconsistent reference/input lineage.
+    require(all(all(len({r[i] for r in pair})==1 for i in (4,11,12,13,14,15,16,18))
+                for pair in by_pair.values()),"KRONOS_OOS_PAIR_PROVENANCE_DRIFT")
     return rows
+
+
+def _window_rows(rows, cutoff):
+    """Filter only after identifying nonempty rows and validating dates."""
+    out=[]
+    for raw in rows:
+        require(isinstance(raw,(list,tuple)),"KRONOS_OOS_ROW_TYPE_INVALID")
+        if not raw or not any(cell!="" for cell in raw):
+            continue
+        require(len(raw)>=2 and isinstance(raw[0],str) and bool(raw[0].strip()),
+                "KRONOS_OOS_KEYLESS_NONEMPTY_ROW")
+        try:
+            asof=raw[1]
+            valid=(isinstance(asof,str) and re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",asof)
+                   and date.fromisoformat(asof).isoformat()==asof)
+        except (ValueError,TypeError):
+            valid=False
+        require(valid,"KRONOS_OOS_INVALID_ROW_ASOF")
+        if asof>=cutoff:
+            out.append(raw)
+    return out
 
 
 def load_recent_ledgers(api, completed_asof):
@@ -96,7 +125,7 @@ def load_recent_ledgers(api, completed_asof):
     require(legacy and tuple(legacy[0])==k.HEADERS,
             "KRONOS_OOS_LEGACY_HEADER")
     results=[list(k.HEADERS)]
-    results += [r for r in legacy[1:] if r and r[0] and r[1]>=cutoff]
+    results += _window_rows(legacy[1:],cutoff)
     metadata=api.request("?fields=sheets.properties(title)")
     names=sorted({s.get("properties",{}).get("title","")
                  for s in metadata.get("sheets",[])})
@@ -109,7 +138,7 @@ def load_recent_ledgers(api, completed_asof):
         if month_end.isoformat()<cutoff or period>completed_asof[:7]:
             continue
         rows=v2.read_partition(api,name)
-        results += [r for r in rows if r[1]>=cutoff]
+        results += _window_rows(rows,cutoff)
     require(len(results)<=40000,"KRONOS_OOS_RECENT_WINDOW_CAP")
     return results
 
@@ -175,6 +204,13 @@ def score_matured(matured, completed_asof, read_batch):
         key = (symbol, target)
         require(key in by_symbol_date, 'KRONOS_OOS_MISSING_TARGET_CLOSE')
         actual = by_symbol_date[key]
+        reference_key = (symbol, asof)
+        require(reference_key in by_symbol_date,"KRONOS_OOS_MISSING_REFERENCE_CLOSE")
+        # Same raw IEX close, same six-decimal representation as build_rows.
+        # A source correction, ticker remap or changed price basis is HOLD;
+        # never silently revise a frozen forecast or its persistence benchmark.
+        require(f"{by_symbol_date[reference_key]:.6f}"==row[4],
+                "KRONOS_OOS_REFERENCE_CLOSE_DRIFT")
         reference = float(row[4])
         predicted = float(row[5])
         actual_move = actual-reference

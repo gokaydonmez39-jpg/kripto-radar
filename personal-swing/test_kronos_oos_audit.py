@@ -64,7 +64,7 @@ class TestOosAudit(unittest.TestCase):
         def reader(symbols,asof):
             self.assertEqual(symbols,['AAPL'])
             self.assertEqual(asof,'2026-11-09')
-            return {'AAPL':[{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
+            return {'AAPL':[{'timestamp':'2026-11-06T05:00:00Z','close':102.0},{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
         evidence=o.score_matured(pairs,'2026-11-09',reader)
         outcome=o.summarize(evidence,2,0)
         self.assertEqual(outcome['horizons']['1']['model_mape_pct'],
@@ -78,7 +78,7 @@ class TestOosAudit(unittest.TestCase):
     def test_utc_nov20_target_from_offset_bar_is_scored_correctly(self):
         row=forecast('AAPL','2026-11-19')[0]
         pairs=[(row,'2026-11-20')]
-        bars={'AAPL':[{'timestamp':'2026-11-19T23:30:00-05:00',
+        bars={'AAPL':[{'timestamp':'2026-11-19T05:00:00Z','close':102.0},{'timestamp':'2026-11-19T23:30:00-05:00',
                        'close':103.0}]}
         result=o.score_matured(pairs,'2026-11-20',lambda *args:bars)
         self.assertEqual(len(result[1]),1)
@@ -144,7 +144,7 @@ class TestOosAudit(unittest.TestCase):
         def reader(symbols,asof):
             # No delisted issuer lookup or GNTX/FOXA proxy.
             self.assertEqual(symbols,['AAPL'])
-            return {'AAPL':[{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
+            return {'AAPL':[{'timestamp':'2026-11-06T05:00:00Z','close':102.0},{'timestamp':'2026-11-09T05:00:00Z','close':103.0}]}
         future=['2026-11-09','2026-11-10','2026-11-11','2026-11-12',
                   '2026-11-13','2026-11-16','2026-11-17','2026-11-18',
                   '2026-11-19','2026-11-20','2026-11-23','2026-11-24']
@@ -161,7 +161,7 @@ class TestOosAudit(unittest.TestCase):
         matrix=[list(k.HEADERS)]+forecast('ROKU','2026-11-05')
         def reader(symbols,asof):
             self.assertEqual(symbols,['ROKU'])
-            return {'ROKU':[{'timestamp':'2026-11-06T04:00:00Z','close':103.0}]}
+            return {'ROKU':[{'timestamp':'2026-11-05T05:00:00Z','close':102.0},{'timestamp':'2026-11-06T04:00:00Z','close':103.0}]}
         future=['2026-11-06','2026-11-09','2026-11-10','2026-11-11',
                   '2026-11-12','2026-11-13','2026-11-16','2026-11-17',
                   '2026-11-18','2026-11-19','2026-11-20','2026-11-23']
@@ -248,6 +248,61 @@ class TestOosAudit(unittest.TestCase):
         self.assertEqual(len(result),6)
         self.assertEqual({x[17] for x in result},
                          {'RESEARCH_ONLY','RESEARCH_CLOSE_ONLY'})
+
+
+    def test_frozen_reference_close_requires_independent_source(self):
+        row=forecast()[0]
+        target={"timestamp":"2026-11-09T05:00:00Z","close":103.0}
+        with self.assertRaisesRegex(k.ShadowHold,"MISSING_REFERENCE_CLOSE"):
+            o.score_matured([(row,"2026-11-09")],"2026-11-09",
+                            lambda *a:{"AAPL":[target]})
+        for close in (101.0,102.000001,204.0):
+            with self.subTest(close=close),self.assertRaisesRegex(k.ShadowHold,"REFERENCE_CLOSE_DRIFT"):
+                o.score_matured([(row,"2026-11-09")],"2026-11-09",
+                    lambda *a:{"AAPL":[{"timestamp":"2026-11-06T05:00:00Z","close":close},target]})
+        for close in (102.0,102.0000001):
+            out=o.score_matured([(row,"2026-11-09")],"2026-11-09",
+                lambda *a:{"AAPL":[{"timestamp":"2026-11-06T05:00:00Z","close":close},target]})
+            self.assertEqual(len(out[1]),1)
+
+    def test_rehashed_horizon_provenance_conflict_is_rejected(self):
+        for col,value in ((4,"101.000000"),(11,"c"*64),(12,"d"*64),
+                          (13,"2026-11-05"),(14,"e"*64),(15,"f"*64),
+                          (18,"OTHER")):
+            rows=forecast()
+            rows[1][col]=value
+            rows[1][19]=k.canonical_sha(rows[1][:19])
+            with self.subTest(col=col),self.assertRaisesRegex(k.ShadowHold,"PAIR_PROVENANCE_DRIFT"):
+                o.validate_ledger([list(k.HEADERS)]+rows)
+
+    def test_nonempty_keyless_row_and_nonstring_cells_fail_closed(self):
+        rows=forecast()
+        self.assertEqual(len(o.validate_ledger([list(k.HEADERS)]+rows+[[],["",""]])),3)
+        with self.assertRaisesRegex(k.ShadowHold,"KEYLESS_NONEMPTY_ROW"):
+            o.validate_ledger([list(k.HEADERS)]+rows+[["","2026-11-06"]])
+        with self.assertRaisesRegex(k.ShadowHold,"ROW_TYPE_INVALID"):
+            o.validate_ledger([list(k.HEADERS)]+rows+["not a row"])
+        with self.assertRaisesRegex(k.ShadowHold,"BAD_CELL_TYPE"):
+            o.validate_ledger([list(k.HEADERS)]+rows+[[123 if i==1 else c for i,c in enumerate(rows[0])]])
+
+
+    def test_window_does_not_hide_malformed_rows_before_validation(self):
+        for row,reason in (
+            (["","2026-10-01"],"KEYLESS_NONEMPTY_ROW"),
+            (["bad","2026-02-30"],"INVALID_ROW_ASOF"),
+            (["bad","2026-1-1"],"INVALID_ROW_ASOF"),
+            (["bad",123],"INVALID_ROW_ASOF"),
+            ("not a row","ROW_TYPE_INVALID"),
+        ):
+            class FakeApi:
+                def read(self,*args):
+                    return [list(k.HEADERS),row]
+                def request(self,*args,**kwargs):
+                    return {"sheets":[]}
+            with self.subTest(row=row),self.assertRaisesRegex(k.ShadowHold,reason):
+                o.load_recent_ledgers(FakeApi(),"2026-11-24")
+        rows=forecast(asof="2026-10-01")+forecast(asof="2026-11-06")
+        self.assertEqual(o._window_rows(rows+[[],["",""]],"2026-10-25"),rows[3:])
 
 
 if __name__=='__main__':
