@@ -18,16 +18,18 @@ SEC_INDEX="https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/00
 FVN_SOURCE="https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm"
 
 def read_producer():
-    source=(ROOT/"build_current_identity_proofs.py").read_text()
-    tree=ast.parse(source)
-    function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=="manual_identity_seed_registry")
-    ns={"ROOT":ROOT,"MANUAL_IDENTITY_SEED":ROOT/"master_sec_identity_manual_seed_registry.json",
-        "json":json,"re":re,"datetime":datetime,
-        "SPAC_SUSPECT_RE":re.compile(r"acquisition|spac",re.I),
-        "sec_source_binds_cik":lambda url,cik:f"/data/{int(cik)}/" in url,
-        "file_blob_sha":lambda path:"OFFLINE_ONLY_SHA"}
-    exec(compile(ast.Module(body=[function],type_ignores=[]),str(ROOT/"build_current_identity_proofs.py"),"exec"),ns)
-    return ns["manual_identity_seed_registry"]
+    # Exercise the real module and its real SEC contract, not an incomplete
+    # AST-only namespace or a permissive URL substitute. No network calls.
+    import sys,types
+    from unittest.mock import patch
+    from importlib import import_module
+    sys.path.insert(0,str(ROOT))
+    try:
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        return producer.manual_identity_seed_registry
+    finally:
+        sys.path.pop(0)
 
 def run():
     reg=json.loads((ROOT/"master_sec_identity_manual_seed_registry.json").read_text())

@@ -101,7 +101,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-25T05:36:01.112951+00:00",
+  "generated_at_utc": "2026-11-25T10:28:57.770695+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -1014,8 +1014,17 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 1,
+      "row_count": 2,
       "rows": [
+        {
+          "BX Action": "Add",
+          "Company Name": "The RBB Fund, Inc.",
+          "Effective Date": "11/25/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "G",
+          "Symbol": "CPHY"
+        },
         {
           "BX Action": "Delete",
           "Company Name": "XCF Global, Inc.",

@@ -2,7 +2,7 @@
 import copy
 import json
 import unittest
-from sec_manual_seed_contract import load_registry_document,select_registry_rows,eligible_evidence,sec_source_binds_cik
+from sec_manual_seed_contract import load_registry_document,select_registry_rows,eligible_evidence,sec_source_binds_cik,exact_manual_seed_identity
 
 def doc():
     old={"cik":"0002083689","sic":6770,"classification":"Blank Checks","is_blank_check":True,
@@ -34,6 +34,138 @@ class Contract(unittest.TestCase):
                     "https://www.sec.gov/not-a-filing?CIK=2083689","https://www.sec.gov.evil.test/edgar/browse/?CIK=2083689",
                     "https://www.sec.gov/edgar/browse/?CIK=2083689&CIK=2083689"):
             self.assertFalse(sec_source_binds_cik(url,"0002083689"),url)
+    def test_exact_archive_path_and_seed_identity_fence(self):
+        row=doc()["renewals"]["AEAQ"][0]
+        self.assertTrue(exact_manual_seed_identity(row))
+        base="https://www.sec.gov/Archives/edgar/data/2083689/"
+        for url in (base+"../1/other-index.htm",base+"%2e%2e/1/other-index.htm",
+                    base+"000121390026118205/",base+"foo/bar-index.htm",
+                    base+"document.htm\n",base+"file.exe"):
+            with self.subTest(url=url):
+                self.assertFalse(sec_source_binds_cik(url,row["cik"]))
+        for key,value in (("sic","6770"),("sic",6770.0),("sic",True),
+                          ("cik",2083689),("cik","0000000000"),
+                          ("cik"," 0002083689"),("evidence_authority","MIRROR"),
+                          ("classification","Operating"),("is_blank_check",1)):
+            with self.subTest(key=key,value=value):
+                self.assertFalse(exact_manual_seed_identity(dict(row,**{key:value})))
+        nonblank=dict(row,sic=7374,classification="Data processing",is_blank_check=False)
+        self.assertTrue(exact_manual_seed_identity(nonblank))
+        self.assertFalse(exact_manual_seed_identity(dict(nonblank,classification="Blank Checks")))
+
+    def test_real_registry_and_historical_135_proofs_preserved(self):
+        from pathlib import Path
+        import sec_spac_manual_seed_appendonly_guard as legacy
+        root=Path(__file__).resolve().parent
+        raw=(root/"master_sec_identity_manual_seed_registry.json").read_bytes()
+        registry=load_registry_document(raw)
+        for sym,row in registry["records"].items():
+            with self.subTest(symbol=sym):
+                self.assertTrue(exact_manual_seed_identity(row))
+        # The genuine 135-row frozen proof and its original 20 negative
+        # mutations must still pass in mandatory normal/optimized PR CI.
+        legacy.test()
+        historic=json.loads((root/"master_sec_spac_proof_20261009.json").read_text())
+        original=historic["discovery_coverage"]["manual_seed_registry_blob_sha"]
+        current=legacy.git_blob_bytes(raw)
+        for key,value in (
+            ("source_url","https://www.sec.gov/Archives/edgar/data/1/other-index.htm"),
+            ("source_url","https://www.sec.gov/Archives/edgar/data/2092897/../1/other-index.htm"),
+            ("sic",6770.0),
+        ):
+            with self.subTest(key=key,value=value):
+                p=copy.deepcopy(historic);s=copy.deepcopy(registry)
+                p["proofs"]["AACI"][key]=value
+                s["records"]["AACI"][key]=value
+                with self.assertRaisesRegex(ValueError,"MANUAL_SEC_ORIGINAL_IDENTITY_INVALID"):
+                    legacy.prove(p,s,historic["asof_et"],"AACI",original,current)
+
+    def test_producer_rejects_unofficial_or_coerced_seed_even_with_current_name(self):
+        import sys,types,tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        root=producer.ROOT
+        actual=load_registry_document((root/"master_sec_identity_manual_seed_registry.json").read_text())
+        good=copy.deepcopy(actual["records"]["AACI"])
+        names={"AACI":"Armada Acquisition Corp. III - Class A Ordinary Share"}
+        # Use a historical date before the discrepancy-witness switch and a
+        # temporary registry; never touch the real historical files.
+        asof="2026-10-07"
+        with tempfile.TemporaryDirectory() as d:
+            temp_root=Path(d)/"nasdaq-xray"
+            temp_root.mkdir()
+            path=temp_root/"master_sec_identity_manual_seed_registry.json"
+            fixture=copy.deepcopy(actual)
+            fixture["records"]={"AACI":good}
+            fixture["renewals"]={}
+            with patch.object(producer,"ROOT",temp_root),patch.object(producer,"MANUAL_IDENTITY_SEED",path):
+                path.write_text(json.dumps(fixture))
+                self.assertEqual(set(producer.manual_identity_seed_registry(asof,names)[0]),{"AACI"})
+                for key,value in (("sic","6770"),("sic",6770.0),("evidence_authority","MIRROR"),
+                                  ("classification","Other"),("cik",2092897)):
+                    with self.subTest(key=key,value=value):
+                        fixture["records"]["AACI"]=dict(good,**{key:value})
+                        path.write_text(json.dumps(fixture))
+                        self.assertEqual(producer.manual_identity_seed_registry(asof,names)[0],{})
+
+    def test_existing_standalone_fvn_and_nbrg_entrypoints(self):
+        import subprocess,sys
+        from pathlib import Path
+        root=Path(__file__).resolve().parent
+        for script,marker in (
+            ("tests/test_fvn_sec_sic_discrepancy.py",
+             "XRAY_FVN_CONTRADICTED_SIC6770=VETOED_KEEP_UNKNOWN_IBAC_NBRG_PRESERVED_NO_ALPHA"),
+            ("nbrg_official_sec_identity_seed_selftest.py",
+             "XRAY_NBRG_SEC_OFFICIAL_20260803_IDENTITY_SEED=PASS_FAIL_ONLY_NO_PRIMARY"),
+        ):
+            with self.subTest(script=script):
+                # Deliberately use a normal subprocess even under python -O;
+                # the historical scripts use asserts, which must remain active.
+                completed=subprocess.run([sys.executable,str(root/script)],
+                                         cwd=root,capture_output=True,text=True,
+                                         timeout=30,check=False)
+                self.assertEqual(completed.returncode,0,completed.stderr)
+                self.assertIn(marker,completed.stdout)
+
+    def test_real_joint_filer_fvn_veto_and_unrelated_archive_rejected(self):
+        import sys,types,tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        root=Path(__file__).resolve().parent
+        registry=(root/"master_sec_identity_manual_seed_registry.json").read_bytes()
+        witness_name="master_sec_sic_discrepancies_20261009.json"
+        witness=json.loads((root/witness_name).read_text())
+        names={"FVN":"Future Vision II Acquisition Corporation - Ordinary Shares",
+               "IBAC":"IB Acquisition Corp. - Common Stock",
+               "NBRG":"Newbridge Acquisition Limited - Class A Ordinary Share"}
+        for day,expected in (("2026-10-07",set()),("2026-10-09",{"IBAC","NBRG"})):
+            self.assertEqual(set(producer.manual_identity_seed_registry(day,names)[0]),expected)
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/"nasdaq-xray";p.mkdir()
+            seed=p/"master_sec_identity_manual_seed_registry.json";seed.write_bytes(registry)
+            with patch.object(producer,"ROOT",p),patch.object(producer,"MANUAL_IDENTITY_SEED",seed):
+                for key,value in (
+                    ("official_index_url","https://www.sec.gov/Archives/edgar/data/999/000182912626006424/0001829126-26-006424-index.htm"),
+                    ("official_index_url","https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm?CIK=1"),
+                    ("official_sec_filer_name","Other issuer"),
+                    ("official_sec_filer_sic",6770),
+                    ("official_accession","0001829126-26-006425"),
+                ):
+                    with self.subTest(key=key,value=value):
+                        changed=copy.deepcopy(witness)
+                        changed["discrepancies"]["FVN"][key]=value
+                        (p/witness_name).write_text(json.dumps(changed))
+                        with self.assertRaisesRegex(RuntimeError,"OFFICIAL_SEC_SIC_DISCREPANCY_BAD_BINDING:FVN"):
+                            producer.manual_identity_seed_registry("2026-10-09",names)
+                (p/witness_name).write_text(json.dumps(witness))
+                self.assertEqual(set(producer.manual_identity_seed_registry("2026-10-09",names)[0]),{"IBAC","NBRG"})
+
     def test_pit_and_age(self):
         j=doc();original=copy.deepcopy(j)
         self.assertEqual(select_registry_rows(j,"2026-11-23")["AEAQ"],j["records"]["AEAQ"])
@@ -120,6 +252,14 @@ class Contract(unittest.TestCase):
             self.assertTrue(row["is_blank_check"])
             self.assertTrue(sec_source_binds_cik(row["source_url"],cik))
             self.assertTrue(sec_source_binds_cik(row["official_ticker_identity_url"],cik))
+            self.assertEqual(row["official_ticker_identity_url"],
+                             "https://www.sec.gov/Archives/edgar/data/2091712/000182912626007711/rfacquisitioncorp3_10q.htm" if sym=="RFAM" else
+                             "https://www.sec.gov/Archives/edgar/data/2076561/000147793226006931/ptree_10q.htm")
+            from datetime import date,timedelta
+            deadline=(date.fromisoformat(day)+timedelta(days=120)).isoformat()
+            expired=(date.fromisoformat(day)+timedelta(days=121)).isoformat()
+            self.assertTrue(eligible_evidence(deadline,day,"2026-11-25"))
+            self.assertFalse(eligible_evidence(expired,day,"2026-11-25"))
             self.assertIn("NO_ALPHA_PASS",row["seed_semantics"])
         unrelated,_=producer.manual_identity_seed_registry(
             "2026-11-25",{"RFAM":"Unrelated Operating Company",

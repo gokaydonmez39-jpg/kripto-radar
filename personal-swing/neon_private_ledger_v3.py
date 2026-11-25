@@ -102,6 +102,15 @@ def source_proof(scans, asof, url, master_sha, policy_sha):
     return r
 
 
+def score_delta(score, previous, policy_sha):
+    """One exact calculation for stored history and newly appended rows."""
+    old=previous[4] if previous is not None and previous[21]==policy_sha else "N/A"
+    if score=="N/A" or old=="N/A":
+        return "N/A"
+    return str((number(score)-number(old)).quantize(
+        Decimal(".01"),rounding=ROUND_HALF_UP))
+
+
 def previous_archive(existing, asof, master):
     need(isinstance(existing,list) and existing and tuple(existing[0])==HEADER,
          "NEON_LEDGER_HEADER_DRIFT")
@@ -171,6 +180,24 @@ def previous_archive(existing, asof, master):
             need(last_score is None or score<=last_score,
                  "LEDGER_RANK_SCORE_ORDER_DRIFT")
             last_score=score
+    # The immutable archive is itself a consumer-facing score history.
+    # Validate recorded prior date and delta before idempotent success or
+    # another write. Preserve the producer's same-symbol/same-policy rule,
+    # including gaps in sessions, PIT membership changes and N/A epochs.
+    prior_day=None
+    prior_rows={}
+    for day,rows in day_rows.items():
+        for symbol,row in rows.items():
+            need(row[5]==(prior_day or "N/A"),"LEDGER_PRIOR_ASOF_DRIFT")
+            old=prior_rows.get(symbol)
+            expected=score_delta(row[4],old,row[21])
+            if expected=="N/A":
+                need(row[6]=="N/A","LEDGER_DELTA_MISSING_BASELINE")
+            else:
+                need(row[6]!="N/A" and
+                     number(row[6],-100,100)==Decimal(expected),
+                     "LEDGER_DELTA_MATH_DRIFT")
+        prior_day,prior_rows=day,rows
     if asof in day_rows:
         return day_rows, "EXISTS"
     need(not day_rows or asof > max(day_rows), "NO_REPLAY_OR_BACKFILL")
@@ -277,9 +304,6 @@ def plan(asof, url, master, policy_sha, scans, existing, shadow):
     rows=[]
     for s in master:
         previous=ledger.get(prior,{}).get(s)
-        # A different factor-policy version must never yield a numeric delta.
-        # PIT membership changes are not joined across distinct issuer identities.
-        old=previous[4] if previous and previous[21]==policy_sha else "N/A"
         if measures is None:
             score="N/A";rank="N/A";factors=["N/A"]*5
             status="HOLD_SHADOW_RESULT_MISSING";corridor="HOLD";source_dec="UNKNOWN"
@@ -293,9 +317,7 @@ def plan(asof, url, master, policy_sha, scans, existing, shadow):
             source_dec=item["source_decision"]
             timestamp=item["last_valid_bar_time"]
             liquid=item["liquidity"];spread=item["spread"];gap=item["gap"]
-        delta=(str((number(score)-number(old)).quantize(Decimal(".01"),
-                rounding=ROUND_HALF_UP))
-               if score!="N/A" and old!="N/A" else "N/A")
+        delta=score_delta(score,previous,policy_sha)
         rows.append([asof+"|"+s,asof,s,rank,score,prior or "N/A",delta,
                      *factors,corridor,source_dec,status,timestamp,liquid,spread,gap,
                      url,master_sha,policy_sha,VERSION])

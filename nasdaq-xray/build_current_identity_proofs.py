@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from master_spac_operating_guard import nonblank_requires_completion
-from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence,cik_number,strict_date
+from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence,cik_number,strict_date,exact_manual_seed_identity
 
 ROOT=Path(__file__).resolve().parent
 MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
@@ -455,8 +455,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
         evidence=str(row.get("evidence_date") or "")
         verified_asof=str(row.get("verified_asof_et") or "")
         cik=str(row.get("cik") or "").strip()
-        try:sic=int(row.get("sic"))
-        except Exception:continue
+        sic=row.get("sic")
         is_blank=row.get("is_blank_check")
         if sym in discrepancies:
             # The SEC index for the SAME 2026-06-12 S-4/A names FVN issuer
@@ -469,6 +468,7 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
                 mismatch.get("action")=="VETO_MANUAL_SIC6770_BLANK_PROOF_KEEP_UNKNOWN"
                 and mismatch.get("cik")==cik
                 and mismatch.get("source_url")==source
+                and type(sic) is int and type(mismatch.get("manual_seed_sic")) is int
                 and mismatch.get("manual_seed_sic")==sic==6770
                 and is_blank is True
                 and type(mismatch.get("official_sec_filer_sic")) is int
@@ -478,6 +478,19 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
                 and accession.replace("-","") in source
                 and accession.replace("-","") in official
                 and official.startswith("https://www.sec.gov/Archives/edgar/data/")
+                and exact_manual_seed_identity(row)
+                # The frozen FVN joint-filer index resides under the other
+                # registrant's archive CIK. This exact dated accession is
+                # a FAIL-ONLY contradiction, never a positive issuer proof.
+                and (sec_source_binds_cik(official,cik) or (
+                    sym=="FVN" and cik=="0002010653"
+                    and accession=="0001829126-26-006424"
+                    and source=="https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm"
+                    and official=="https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm"
+                    and mismatch.get("official_sec_filer_name")=="Future Vision II Acquisition Corp."
+                    and mismatch["official_sec_filer_sic"]==7373
+                    and mismatch.get("official_filing_date")=="2026-06-12"
+                ))
                 and official.endswith("-index.htm")
                 and evidence<=asof
             ):
@@ -486,7 +499,8 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
             # separately proven current answer; NEVER classify 7373 as PASS.
             continue
         if (
-          not source.startswith("https://www.sec.gov/")
+          not exact_manual_seed_identity(row)
+          or not source.startswith("https://www.sec.gov/")
           or not sec_source_binds_cik(source,cik)
           or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence)
           or evidence>asof
