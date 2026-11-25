@@ -93,6 +93,39 @@ class Contract(unittest.TestCase):
         self.assertEqual(wrong_case,{})
 
 
+    def test_nov25_official_seed_batch_is_forward_only_and_symbol_exact(self):
+        import sys, types
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules, {"pandas_market_calendars":
+                                      types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        names={"RFAM":"RF Acquisition Corp III - Class A Ordinary Shares",
+               "PAXG":"Pine Tree Acquisition Corp. - Class A Ordinary Shares",
+               "PAXGR":"Pine Tree Acquisition Corp. - Rights",
+               "PAXGU":"Pine Tree Acquisition Corp. - Units",
+               "paxg":"Pine Tree Acquisition Corp. - Class A Ordinary Shares"}
+        before,_=producer.manual_identity_seed_registry("2026-11-24",names)
+        self.assertEqual(before,{})
+        now,meta=producer.manual_identity_seed_registry("2026-11-25",names)
+        self.assertEqual(set(now),{"RFAM","PAXG","PAXGR"})
+        self.assertEqual(meta["record_count"],3)
+        for sym,cik,day in (("RFAM","0002091712","2026-11-12"),
+                            ("PAXG","0002076561","2026-10-06"),
+                            ("PAXGR","0002076561","2026-10-06")):
+            row=now[sym]
+            self.assertEqual((row["cik"],row["sic"],row["evidence_date"]),
+                             (cik,6770,day))
+            self.assertEqual(row["verified_asof_et"],"2026-11-25")
+            self.assertTrue(row["is_blank_check"])
+            self.assertTrue(sec_source_binds_cik(row["source_url"],cik))
+            self.assertTrue(sec_source_binds_cik(row["official_ticker_identity_url"],cik))
+            self.assertIn("NO_ALPHA_PASS",row["seed_semantics"])
+        unrelated,_=producer.manual_identity_seed_registry(
+            "2026-11-25",{"RFAM":"Unrelated Operating Company",
+                          "PAXG":"Unrelated Operating Company"})
+        self.assertEqual(unrelated,{})
+
     def test_master_live_identity_and_access_fence_offline(self):
         import sys,types,urllib.error
         from unittest.mock import patch
