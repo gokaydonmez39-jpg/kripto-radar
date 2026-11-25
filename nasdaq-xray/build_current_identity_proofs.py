@@ -189,14 +189,18 @@ def revalidate_prior_blank_proofs(blank_seed,discovered_blank,operating,names,in
                     (cik_number(cik) is None or cik_number(current_cik_map[sym])!=cik_number(cik)))):
             unresolved_sec_spac.append(sym)
             continue
+        received_vetoes=set()
         try:
-            row=sec_current_row(sym,asof,cik,True,str((old or {}).get("evidence_date") or ""))
+            row=sec_current_row(sym,asof,cik,True,str((old or {}).get("evidence_date") or ""),reuse_vetoes=received_vetoes)
         except Exception as e:
             row=None
             sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
         if row is not None:
             row["same_asof_revalidated_without_sec_network"]=False
             proofs[sym]=row
+            continue
+        if sym in received_vetoes:
+            unresolved_sec_spac.append(sym)
             continue
         # SEC transport may be unavailable on shared CI IPs. Reuse only the
         # prior SEC SIC 6770 evidence (<=120d) when the exact-ASOF Nasdaq
@@ -402,16 +406,22 @@ def official_sec_sic(sub:dict):
         return None
     return sic,desc
 
-def sec_current_classification(sym:str,asof:str,cik:int|None):
+def veto_prior_sec_reuse(sym, reuse_vetoes):
+    """A received but unverified issuer response is not a transport outage."""
+    if reuse_vetoes is not None:
+        reuse_vetoes.add(sym)
+    return None
+
+def sec_current_classification(sym:str,asof:str,cik:int|None,*,reuse_vetoes=None):
     """One same-run SEC submissions read returning blank/nonblank classification."""
     if cik is None:return None
     sub=sec_issuer_read(load_json_url,f"{SEC_SUBMISSIONS}/CIK{int(cik):010d}.json")
-    if not exact_submissions_identity(sub,sym,cik):return None
+    if not exact_submissions_identity(sub,sym,cik):return veto_prior_sec_reuse(sym,reuse_vetoes)
     official=official_sec_sic(sub)
-    if official is None:return None
+    if official is None:return veto_prior_sec_reuse(sym,reuse_vetoes)
     sic,desc=official
     evidence=latest_filing_date(sub,asof)
-    if not evidence:return None
+    if not evidence:return veto_prior_sec_reuse(sym,reuse_vetoes)
     is_blank=(sic==6770)
     return {
       "cik":f"{int(cik):010d}",
@@ -617,7 +627,7 @@ def latest_filing_date(sub:dict,asof:str):
     return max(valid) if valid else None
 
 
-def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None):
+def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None,*,reuse_vetoes=None):
     if cik is None:
         return None
     evidence=str(prior_evidence_date or "")
@@ -640,11 +650,13 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
     else:
         sic=6770 if re.search(r"6770\s*[-–]\s*Blank Checks",text,re.I) else -1
         desc="Blank Checks" if sic==6770 else ""
-    if sic<=0 or (desc and (desc.casefold().startswith("blank checks") != (sic==6770))):
-        return None
+    if sic<=0:
+        return None  # No readable SIC on landing shell: not contrary evidence.
+    if desc and (desc.casefold().startswith("blank checks") != (sic==6770)):
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     is_blank=(sic==6770)
     if bool(want_blank)!=bool(is_blank):
-        return None
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     return {
       "cik":f"{int(cik):010d}",
       "sic":sic,
@@ -657,7 +669,7 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
       "revalidation_asof_et":asof,
     }
 
-def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None=None):
+def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence_date:str|None=None,*,reuse_vetoes=None):
     if cik is None:
         return None
     try:
@@ -665,19 +677,19 @@ def sec_current_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_evidence
     except Exception as exc:
         if sec_submissions_transport_is_blocked(exc):
             raise
-        return sec_entity_landing_row(sym,asof,cik,want_blank,prior_evidence_date)
+        return sec_entity_landing_row(sym,asof,cik,want_blank,prior_evidence_date,reuse_vetoes=reuse_vetoes)
     if not exact_submissions_identity(sub,sym,cik):
-        return None
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     official=official_sec_sic(sub)
     if official is None:
-        return None
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     sic,desc=official
     is_blank=(sic==6770)
     if bool(want_blank)!=bool(is_blank):
-        return None
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     evidence=latest_filing_date(sub,asof)
     if not evidence:
-        return None
+        return veto_prior_sec_reuse(sym,reuse_vetoes)
     return {
       "cik":f"{cik:010d}",
       "sic":sic,
@@ -923,8 +935,9 @@ def main():
             nonblank_pending_completion.add(sym)
             continue
         cik=cik_from_prior_row(old)
+        received_vetoes=set()
         try:
-            row=sec_current_row(sym,asof,cik,False,str((old or {}).get("evidence_date") or ""))
+            row=sec_current_row(sym,asof,cik,False,str((old or {}).get("evidence_date") or ""),reuse_vetoes=received_vetoes)
         except Exception as e:
             row=None
             sec_network_error=f"{type(e).__name__}:{str(e)[:200]}"
@@ -939,6 +952,8 @@ def main():
               "same_asof_revalidated_without_sec_network":False,
             }
             continue
+        if sym in received_vetoes:
+            raise RuntimeError("OPERATING_OVERRIDE_CURRENT_SEC_RESPONSE_UNVERIFIED:"+sym)
         fallback=prior_operating_fallback(sym,old,asof,names,industries)
         if fallback is None:
             raise RuntimeError("OPERATING_OVERRIDE_REVALIDATION_FAILED:"+sym)
@@ -1019,7 +1034,7 @@ def main():
             unresolved_current_suspects.append(sym)
             continue
         try:
-            row=sec_current_classification(sym,asof,cik)
+            row=sec_current_classification(sym,asof,cik,reuse_vetoes=prior_blank_vetoes)
         except Exception as e:
             if sec_submissions_transport_is_blocked(e):
                 sec_submissions_blocked_code=int(e.code)

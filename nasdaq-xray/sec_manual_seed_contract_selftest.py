@@ -428,5 +428,75 @@ class Contract(unittest.TestCase):
             self.assertIsNone(m.sec_entity_landing_row("TLAC",asof,2128462,True,"2026-02-30"))
             network.assert_not_called()
 
+
+    def test_received_unverified_sec_response_cannot_resurrect_prior_blank(self):
+        import sys,types,urllib.error
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            m=import_module("build_current_identity_proofs")
+        old={"cik":"0002128462","sic":6770,"classification":"Blank Checks",
+             "source_url":"https://www.sec.gov/edgar/browse/?CIK=2128462",
+             "evidence_date":"2026-11-23"}
+        names={"TLAC":"Three Lions Acquisition Corp."}
+        asof="2026-11-25"
+        good={"cik":2128462,"tickers":["TLAC"],"sic":"6770","sicDescription":"Blank Checks"}
+        def run(vetoes=()):
+            return m.revalidate_prior_blank_proofs(
+                {"TLAC":old},{},{},names,{},asof,
+                "File Creation Time: 1125202618:01|||||||",["TLAC"],None,
+                nonblank_pending_completion=set(),current_cik_map={"TLAC":2128462},
+                prior_blank_vetoes=vetoes)
+        # Establish the previously admitted fallback independently, then
+        # exercise the actual revalidation loop with provider responses.
+        self.assertIsNotNone(m.prior_blank_fallback("TLAC",old,asof,names,{}))
+        for payload,filing in (
+            (dict(good,cik=2128463),"2026-11-24"),
+            (dict(good,tickers=["Tlac"]),"2026-11-24"),
+            (dict(good,sic="7373",sicDescription="Services"),"2026-11-24"),
+            (dict(good,sic="6770",sicDescription="Services"),"2026-11-24"),
+            (dict(good,sic=None),"2026-11-24"),
+            (good,None),
+            ([],None),
+        ):
+            with self.subTest(payload=payload,filing=filing),patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",return_value=payload),patch.object(m,"latest_filing_date",return_value=filing),patch.object(m,"prior_blank_fallback") as fallback,patch.object(m,"sec_entity_landing_row") as landing:
+                self.assertEqual(run(),({},["TLAC"],None))
+                fallback.assert_not_called()
+                landing.assert_not_called()
+        # A verified same-class response and a real access denial preserve
+        # their original distinct paths. No new positive authority.
+        with patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",return_value=good),patch.object(m,"latest_filing_date",return_value="2026-11-24"):
+            proof,unresolved,error=run()
+            self.assertEqual((set(proof),unresolved,error),({"TLAC"},[],None))
+            self.assertFalse(proof["TLAC"]["same_asof_revalidated_without_sec_network"])
+        denial=urllib.error.HTTPError("https://data.sec.gov/",403,"denied",{},None)
+        with patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",side_effect=denial),patch.object(m,"request_bytes") as landing:
+            proof,unresolved,error=run()
+            self.assertEqual((set(proof),unresolved),({"TLAC"},[]))
+            self.assertTrue(proof["TLAC"]["same_asof_revalidated_without_sec_network"])
+            self.assertIsNotNone(error)
+            landing.assert_not_called()
+        # Discovery must carry the negative observation to the prior loop
+        # without a second live request, even when a route agrees.
+        with patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",return_value=dict(good,cik=2128463)) as network:
+            vetoes=set()
+            self.assertIsNone(m.sec_current_classification("TLAC",asof,2128462,reuse_vetoes=vetoes))
+            self.assertEqual(vetoes,{"TLAC"})
+            self.assertEqual(run(vetoes),({},["TLAC"],None))
+            network.assert_called_once()
+        # A bound landing's contrary SIC is also a veto. A generic landing
+        # without readable SIC has no contrary observation.
+        for body,want in ((b"CIK 0002128462 TLAC SIC: 7373 - Services",True),
+                          (b"CIK 0002128462 TLAC SIC: 6770 - Blank Checks",False),
+                          (b"CIK 0002128462 TLAC",None)):
+            with self.subTest(body=body),patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"request_bytes",return_value=body):
+                vetoes=set()
+                self.assertIsNone(m.sec_entity_landing_row("TLAC",asof,2128462,True if want is None else want,"2026-11-23",reuse_vetoes=vetoes))
+                self.assertEqual(vetoes,{"TLAC"} if want is not None else set())
+        with patch.object(m,"_SEC_ISSUER_ACCESS_DENIAL",None),patch.object(m,"load_json_url",return_value=good):
+            vetoes=set()
+            self.assertIsNone(m.sec_current_row("TLAC",asof,2128462,False,reuse_vetoes=vetoes))
+            self.assertEqual(vetoes,{"TLAC"})
+
 if __name__=="__main__":
     unittest.main()
