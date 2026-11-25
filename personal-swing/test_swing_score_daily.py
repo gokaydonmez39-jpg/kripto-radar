@@ -208,6 +208,7 @@ class SwingScoreTests(unittest.TestCase):
         prior[:2] = ["2026-11-03|SUMMARY", "2026-11-03"]
         prior[4] = "SUMMARY"
         prior[27] = score.READY
+        prior[29:33] = ["c" * 64, SHA, POLICY, score.VERSION]
         self.api.scored.append(prior)
         self.api.alerts[1][17:19] = [life.EVENT_PENDING, ""]
         return prior
@@ -273,7 +274,7 @@ class SwingScoreTests(unittest.TestCase):
                         if count == 3:
                             prior[27:29] = [score.REQUESTED, "2026-11-04 08:57 TRT"]
                             if corrupt:
-                                prior[29] = "CHANGED_DIGEST"
+                                prior[29] = "d" * 64
                     return old_request(path, **kw)
                 with patch.object(self.api, "request", side_effect=request):
                     if corrupt:
@@ -370,6 +371,53 @@ class SwingScoreTests(unittest.TestCase):
             result=score.synchronize(self.api,ASOF,self.read_batch)
         self.assertEqual(result["status"],"SWING_SCORE_IDEMPOTENT_READBACK_PASS")
         self.assertEqual(self.api.writes,1)
+
+    def test_score_ledger_rejects_malformed_history_before_provider_or_post(self):
+        def prohibited(*args):
+            raise AssertionError("Unexpected market read")
+        for mutation, reason in (
+            ("fake_ack", "DELIVERY"),
+            ("bad_timestamp", "DELIVERY"),
+            ("overwide", "ROW_SHAPE"),
+            ("interior_blank", "ROW_SHAPE"),
+            ("bad_pin", "PIN"),
+            ("wrong_id", "IDENTITY"),
+            ("duplicate", "IDENTITY"),
+            ("episode_delivery", "DELIVERY"),
+        ):
+            with self.subTest(mutation=mutation):
+                self.api = FakeAPI()
+                self.api.scored += score.build(*inputs(), ASOF, self.read_batch)
+                row = self.api.scored[1]
+                if mutation == "fake_ack":
+                    row[27] = "DEVICE_ACK"
+                elif mutation == "bad_timestamp":
+                    row[27:29] = [score.REQUESTED, "2026-11-04 25:00 TRT"]
+                elif mutation == "overwide":
+                    row.append("EXTRA")
+                elif mutation == "interior_blank":
+                    self.api.scored.insert(2, [""])
+                elif mutation == "bad_pin":
+                    row[29] = "NOT_SHA"
+                elif mutation == "wrong_id":
+                    row[0] = ASOF + "|OTHER"
+                elif mutation == "duplicate":
+                    self.api.scored.append(copy.deepcopy(row))
+                elif mutation == "episode_delivery":
+                    self.api.scored[2][27] = score.REQUESTED
+                with self.assertRaisesRegex(writer.HandoffBlocked,
+                                            "SWING_SCORE_LEDGER_" + reason):
+                    score.synchronize(self.api, ASOF, prohibited)
+                self.assertEqual(self.api.writes, 0)
+
+    def test_score_ledger_guard_reasons_are_redacted_static_codes(self):
+        for suffix in ("ROW_SHAPE", "IDENTITY", "PIN", "DELIVERY"):
+            code = "SWING_SCORE_LEDGER_" + suffix
+            receipt = score.safe_hold_receipt(writer.HandoffBlocked(code),
+                                              "SCORE_LEDGER_READ")
+            self.assertEqual(receipt["reason_code"], code)
+            self.assertEqual(receipt["execution"], "NONE")
+            self.assertEqual(receipt["failure_phase"], "SCORE_LEDGER_READ")
 
     def test_new_asof_append_over_capacity_blocks_before_write(self):
         with patch.object(score, "MAX_ROWS", 4):
