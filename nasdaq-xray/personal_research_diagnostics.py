@@ -23,6 +23,7 @@ TICKER = re.compile(r"[A-Z][A-Z0-9.]{0,9}\Z")
 REASON = re.compile(r"[A-Z0-9_]+\Z")
 # Producer-compatible terminal/pending partition; never let unreviewed states pass.
 PENDING_STATES = frozenset((
+    "UNKNOWN_NOT_ATTEMPTED",  # digest-derived; never a technical PASS
     "UNKNOWN_260_OFFICIAL_HISTORY",
     "UNKNOWN_CORPORATE_ACTION_PIT",
     "UNKNOWN_52_COMPLETED_WEEKS",
@@ -287,7 +288,8 @@ def selftest():
             raise AssertionError("FALSE_MIXED_PARTITION_PASS_" + label)
     # End-to-end read-only canonical checked-in source test (no vendor IO).
     from personal_research_signal_digest import build as build_digest, VALID_RESULT
-    check(VALID_RESULT == PENDING_STATES | TERMINAL_STATES,
+    check(VALID_RESULT == (PENDING_STATES - {"UNKNOWN_NOT_ATTEMPTED"}) | TERMINAL_STATES
+          and "UNKNOWN_NOT_ATTEMPTED" not in VALID_RESULT,
           "PRODUCER_STATUS_CONTRACT_DRIFT")
     epoch = observed_blobs()
     actual_digest = build_digest(

@@ -76,9 +76,12 @@ def build(root, master, price, blob_ids):
     require(isinstance(wrows, list) and isinstance(trows, dict)
             and len(wrows) == watch.get("watchlist_count")
             == watch.get("price_liquidity_screened_count")
-            == tech.get("candidate_count") == tech.get("attempted_count")
-            and tech.get("evaluated_count") + tech.get("pending_count")
-                == len(wrows)
+            == tech.get("candidate_count")
+            and type(tech.get("attempted_count")) is int
+            and type(tech.get("evaluated_count")) is int
+            and type(tech.get("pending_count")) is int
+            and 0 <= tech["evaluated_count"] <= tech["attempted_count"] <= len(wrows)
+            and tech["evaluated_count"] + tech["pending_count"] == len(wrows)
             and watch.get("all_eligible_candidates_tracked") is True
             and watch.get("watchlist_cap") is None
             and watch.get("registered_r92_count") == 0
@@ -97,33 +100,39 @@ def build(root, master, price, blob_ids):
             and all(isinstance(s, str) and re.fullmatch("[A-Z0-9.]+", s)
                     for s in names)
             and set(names).issubset(set(master["pass_symbols"]))
-            and set(trows) == set(names), "WATCH_SYMBOL_PROVENANCE")
+            and set(trows).issubset(set(names)), "WATCH_SYMBOL_PROVENANCE")
     require(all(row["classification"] == "WATCH_LIQUIDITY_PRE_SCREEN_ONLY"
                 and row.get("buy_signal") is False
                 and row.get("setup_confirmation") == "NOT_EVALUATED_HERE"
                 for row in wrows), "WATCH_NEVER_BUY")
-    statuses = Counter(row.get("status") for row in trows.values())
-    # The original funnel counts pending from terminal_scan=False, not solely
-    # UNKNOWN_260_OFFICIAL_HISTORY. Missing geometry and corporate-action
-    # evidence are equally pending, even when an A/B/D trigger was observed.
-    pending = sorted(s for s in names
-                     if trows[s].get("terminal_scan") is False)
-    require(set(statuses).issubset(VALID_RESULT)
-            and sum(statuses.values()) == len(names)
-            and all(type(trows[s]) is dict and
-                    type(trows[s].get("terminal_scan")) is bool and
-                    (trows[s]["terminal_scan"] is
-                     (not trows[s]["status"].startswith("UNKNOWN")))
-                    for s in names)
-            and len(pending) == tech.get("pending_count")
-            and len(names) - len(pending) == tech.get("evaluated_count")
-            and sorted(tech.get("pending_symbols", [])) == pending,
+    require(tech["attempted_count"] == len(trows)
+            and all(type(row) is dict and type(row.get("status")) is str
+                    and row["status"] in VALID_RESULT
+                    and type(row.get("terminal_scan")) is bool
+                    and row["terminal_scan"] is (not row["status"].startswith("UNKNOWN"))
+                    for row in trows.values()), "TECHNICAL_ATTEMPTED_PARTITION_EXACT")
+    statuses = Counter(row["status"] for row in trows.values())
+    # A missing result is unattempted, not a fabricated history failure.
+    # Every such symbol must be explicitly declared pending by the producer.
+    unattempted=set(names)-set(trows)
+    pending=sorted(unattempted | {sym for sym,row in trows.items()
+                                 if row["terminal_scan"] is False})
+    declared=tech.get("pending_symbols")
+    require(type(declared) is list and all(type(x) is str for x in declared)
+            and len(declared)==len(set(declared))
+            and sorted(declared)==pending
+            and len(pending)==tech["pending_count"]
+            and len(names)-len(pending)==tech["evaluated_count"],
             "TECHNICAL_PARTITION_EXACT")
+    if unattempted:
+        statuses["UNKNOWN_NOT_ATTEMPTED"]=len(unattempted)
+    require(sum(statuses.values())==len(names),"TECHNICAL_PARTITION_EXACT")
     trigger = tech.get("recent_a_b_d_trigger_symbols", [])
     require(isinstance(trigger, list)
             and len(trigger) == len(set(trigger)) ==
                 tech.get("recent_a_b_d_trigger_count")
-            and set(trigger).issubset(set(names)), "TRIGGER_SET_EXACT")
+            and all(type(x) is str for x in trigger)
+            and set(trigger).issubset(set(trows)), "TRIGGER_SET_EXACT")
     triggers, setups = [], []
     for sym in trigger:
         item = trows[sym]
