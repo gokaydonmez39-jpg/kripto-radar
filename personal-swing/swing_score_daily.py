@@ -246,7 +246,11 @@ def score_read(api):
 def normalize_rows(matrix):
     return [list(r) + [""] * (len(HEADER) - len(r)) for r in matrix]
 
-def synchronize(api, asof, read_batch):
+def synchronize(api, asof, read_batch, *, on_phase=None):
+    # Fixed categorical diagnostics only; no source data or exception text
+    # is exported. Existing callers need not provide a phase observer.
+    phase=on_phase if on_phase is not None else lambda value: None
+    phase("SHEET_METADATA")
     api.check_metadata()
     metadata = api.request("?fields=properties(timeZone),sheets.properties(sheetId,title)")
     writer.require(metadata.get("properties", {}).get("timeZone") == "Europe/Istanbul",
@@ -256,13 +260,17 @@ def synchronize(api, asof, read_batch):
     writer.require(len(matches) == 1 and type(matches[0]) is int,
                    "SWING_SCORE_TAB_MISSING_OR_DUPLICATE")
     tabid = matches[0]
+    phase("SCORE_LEDGER_READ")
     before = score_read(api)
     writer.require(before and tuple(before[0]) == HEADER,
                    "SWING_SCORE_HEADER_DRIFT")
+    phase("SOURCE_LEDGER_READ")
     candidates = api.read("ADAY_GECMISI", "M")
     scans = api.read("TARAMA_KAYITLARI", "J")
     alerts = api.read("UYARI_OLAYLARI", "T")
+    phase("SOURCE_VALIDATE_AND_SCORE")
     rows = build(candidates, scans, alerts, asof, read_batch)
+    phase("EXISTING_SCORE_VALIDATE")
     existing = [r for r in before[1:] if r and r[0]]
     writer.require(len({r[0] for r in existing}) == len(existing),
                    "SWING_SCORE_EXISTING_KEY_DUPLICATE")
@@ -288,13 +296,16 @@ def synchronize(api, asof, read_batch):
                    "SWING_SCORE_CAPACITY_REACHED")
     writer.require(not existing or max(r[1] for r in existing) < asof,
                    "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED")
+    phase("PREWRITE_REVALIDATE")
     writer.require(score_read(api)==before and
                    api.read("ADAY_GECMISI","M")==candidates and
                    api.read("TARAMA_KAYITLARI","J")==scans and
                    api.read("UYARI_OLAYLARI","T")==alerts,
                    "SWING_SCORE_CONCURRENT_MODIFICATION")
+    phase("APPEND_GATE_OR_POST")
     api.request(":batchUpdate",method="POST",
                 body={"requests":[writer.as_cells(rows,tabid)]})
+    phase("POST_READBACK")
     after = score_read(api)
     writer.require(after[:len(before)] == before and
                    normalize_rows(after[len(before):]) == rows,
@@ -334,10 +345,102 @@ def publish_action_receipt(result):
             stream.write("score_status="+status+"\n")
             stream.write("score_asof_et="+asof+"\n")
 
+# Only exact static reason strings from the local contracts may leave this
+# private process. Regex-only or prefix-only filtering would permit exfiltration.
+_SAFE_HOLD_CODES=frozenset((
+    "EPOCH_LEASE_CONSUMER_UNVERIFIED",
+    "EPOCH_LEASE_MODE_UNRECOGNIZED",
+    "EPOCH_LEASE_TOKEN_MISSING",
+    "EXISTING_SCAN_SOURCE_PROOF_MISSING_OR_MALFORMED",
+    "GOOGLE_AUTH_CONFIGURATION_INVALID",
+    "GOOGLE_SHEETS_METHOD_SCOPE_INVALID",
+    "GOOGLE_SHEETS_POST_SCOPE_INVALID",
+    "GOOGLE_SHEETS_READ_RETRY_EXHAUSTED",
+    "GOOGLE_SHEETS_RESPONSE_INVALID",
+    "GOOGLE_SHEETS_TRANSPORT_IO_ERROR",
+    "GOOGLE_TOKEN_NOT_AVAILABLE",
+    "INVALID_EXISTING_LEVEL",
+    "LIFECYCLE_DUPLICATE_ID",
+    "LIFECYCLE_FUTURE_OR_UNVERIFIED_COUNT",
+    "LIFECYCLE_HEADER_DRIFT",
+    "LIFECYCLE_IDENTITY_CONFLICT",
+    "LIFECYCLE_INCOMPLETE_ROW",
+    "LIFECYCLE_INVALID_PRICE_GEOMETRY",
+    "LIFECYCLE_INVALID_START_DATE",
+    "LIFECYCLE_INVALID_START_SESSION",
+    "LIFECYCLE_MISSING_LEVELS",
+    "LIFECYCLE_NON_2R_OR_TAMPERED_LEVEL",
+    "LIFECYCLE_OPEN_COUNT_OUTSIDE_RANGE",
+    "LIFECYCLE_TOO_MANY_EPISODES",
+    "LIFECYCLE_UNKNOWN_STATUS",
+    "NATURAL_EOD_WRITER_IDENTITY_UNVERIFIED",
+    "PRIVATE_SHEET_ID_NOT_CONFIGURED",
+    "SHEET_HEADER_DRIFT",
+    "SHEET_METADATA",
+    "SHEET_MISSING",
+    "SHEET_PANEL_IDENTITY_MISMATCH",
+    "SHEET_READ_CAPACITY_REACHED",
+    "SHEET_TAB_OR_ID_DRIFT",
+    "SHEET_TIMEZONE_DRIFT",
+    "SOURCE_LASTMILE_MODE_UNRECOGNIZED",
+    "SOURCE_LASTMILE_PROVENANCE_UNVERIFIED",
+    "SOURCE_LASTMILE_TOKEN_MISSING",
+    "SWING_SCORE_ACTION_RECEIPT_BAD_ASOF",
+    "SWING_SCORE_ACTION_RECEIPT_UNRECOGNIZED_STATUS",
+    "SWING_SCORE_ALERT_DUPLICATE",
+    "SWING_SCORE_ALERT_HEADER_DRIFT",
+    "SWING_SCORE_BAD_ASOF",
+    "SWING_SCORE_BAD_DATE",
+    "SWING_SCORE_BAR_DATE_MISMATCH",
+    "SWING_SCORE_CAPACITY_REACHED",
+    "SWING_SCORE_COL_COUNT",
+    "SWING_SCORE_CONCURRENT_MODIFICATION",
+    "SWING_SCORE_EXISTING_DAY_CONTENT_DRIFT",
+    "SWING_SCORE_EXISTING_DAY_INCOMPLETE",
+    "SWING_SCORE_EXISTING_KEY_DUPLICATE",
+    "SWING_SCORE_HEADER_DRIFT",
+    "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED",
+    "SWING_SCORE_HOLD",
+    "SWING_SCORE_LAST_SCAN_ASOF_DRIFT",
+    "SWING_SCORE_LOST_EPISODE",
+    "SWING_SCORE_NONCURRENT_NATURAL_ASOF",
+    "SWING_SCORE_NONFINITE",
+    "SWING_SCORE_NON_NATURAL_SOURCE",
+    "SWING_SCORE_NO_SESSION_WITH_ASOF",
+    "SWING_SCORE_PRIVATE_AUTH_MISSING",
+    "SWING_SCORE_READBACK_MISMATCH",
+    "SWING_SCORE_READ_CAPACITY_REACHED",
+    "SWING_SCORE_SCAN_NOT_FINAL_477",
+    "SWING_SCORE_SHEET_TIMEZONE_DRIFT",
+    "SWING_SCORE_SOURCE_NOT_DICT",
+    "SWING_SCORE_SOURCE_SHA_DRIFT",
+    "SWING_SCORE_TAB_MISSING_OR_DUPLICATE",
+    "SWING_SCORE_TOO_MANY_EPISODES",
+))
+_SAFE_PHASES=frozenset(("SESSION_SELECT","NATURAL_SOURCE_GATE","PRIVATE_AUTH",
+    "SHEET_METADATA","SCORE_LEDGER_READ","SOURCE_LEDGER_READ",
+    "SOURCE_VALIDATE_AND_SCORE","EXISTING_SCORE_VALIDATE","PREWRITE_REVALIDATE",
+    "APPEND_GATE_OR_POST","POST_READBACK","RECEIPT_PUBLICATION"))
+
+def safe_hold_receipt(exc,phase):
+    reason="UNCLASSIFIED"
+    if type(exc) is writer.HandoffBlocked and len(exc.args)==1:
+        raw=exc.args[0]
+        if type(raw) is str and raw in _SAFE_HOLD_CODES:
+            reason=raw
+    return {"status":"SWING_SCORE_HOLD","reason_type":type(exc).__name__,
+            "reason_code":reason,
+            "failure_phase":phase if phase in _SAFE_PHASES else "UNCLASSIFIED",
+            "execution":"NONE"}
+
 def main(argv=None):
     parser=argparse.ArgumentParser()
     parser.add_argument("--asof",default="")
     args=parser.parse_args(argv)
+    failure_phase="SESSION_SELECT"
+    def observe_phase(value):
+        nonlocal failure_phase
+        failure_phase=value
     try:
         asof=args.asof or daily_job.current_completed_session()
         if asof is None:
@@ -349,21 +452,22 @@ def main(argv=None):
         # The CLI --asof cannot override the current natural completed
         # session to produce an old private score. Reject foreign workflows
         # before Google auth or market bars can be accessed.
+        observe_phase("NATURAL_SOURCE_GATE")
         writer.verify_natural_eod_writer_identity(os.environ)
         current=daily_job.current_completed_session()
         writer.require(asof==current,"SWING_SCORE_NONCURRENT_NATURAL_ASOF")
+        observe_phase("PRIVATE_AUTH")
         credential=os.environ.get("XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON","")
         writer.require(bool(credential),"SWING_SCORE_PRIVATE_AUTH_MISSING")
         api=writer.SheetApi(credential)
-        result=synchronize(api, asof, engine.live_read)
+        result=synchronize(api, asof, engine.live_read,on_phase=observe_phase)
+        observe_phase("RECEIPT_PUBLICATION")
         publish_action_receipt(result)
         print(json.dumps(result,sort_keys=True))
         return 0
     except Exception as exc:
         # Never leak user symbols, market bars, tokens, URLs, row contents.
-        print(json.dumps({"status":"SWING_SCORE_HOLD",
-                          "reason_type":type(exc).__name__,
-                          "execution":"NONE"},sort_keys=True))
+        print(json.dumps(safe_hold_receipt(exc,failure_phase),sort_keys=True))
         return 3
 
 if __name__=="__main__":

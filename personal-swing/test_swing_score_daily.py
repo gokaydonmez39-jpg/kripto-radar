@@ -154,6 +154,55 @@ class SwingScoreTests(unittest.TestCase):
         with self.assertRaisesRegex(writer.HandoffBlocked,"SWING_SCORE_SCAN_NOT_FINAL_477"):
             score.build(c,s,a,ASOF,self.read_batch)
 
+    def test_score_phase_success_and_guard_failure_are_distinct(self):
+        phases=[]
+        result=score.synchronize(self.api,ASOF,self.read_batch,on_phase=phases.append)
+        self.assertEqual(result["status"],"SWING_SCORE_PRIVATE_READBACK_PASS")
+        self.assertEqual(phases,["SHEET_METADATA","SCORE_LEDGER_READ","SOURCE_LEDGER_READ",
+            "SOURCE_VALIDATE_AND_SCORE","EXISTING_SCORE_VALIDATE","PREWRITE_REVALIDATE",
+            "APPEND_GATE_OR_POST","POST_READBACK"])
+        api=FakeAPI()
+        phases=[]
+        with patch.object(api,"read",side_effect=writer.HandoffBlocked("SHEET_HEADER_DRIFT")):
+            with self.assertRaisesRegex(writer.HandoffBlocked,"SHEET_HEADER_DRIFT"):
+                score.synchronize(api,ASOF,self.read_batch,on_phase=phases.append)
+        self.assertEqual(phases[-1],"SOURCE_LEDGER_READ")
+        self.assertEqual(api.writes,0)
+
+    def test_safe_hold_reason_is_exact_allowlist_not_prefix_or_raw_exception(self):
+        for raw,want in (("SWING_SCORE_CONCURRENT_MODIFICATION","SWING_SCORE_CONCURRENT_MODIFICATION"),
+                         ("SOURCE_LASTMILE_PROVENANCE_UNVERIFIED","SOURCE_LASTMILE_PROVENANCE_UNVERIFIED"),
+                         ("SWING_SCORE_PRIVATE_ACCOUNT_12345","UNCLASSIFIED"),
+                         ("SWING_SCORE_SOURCE_SHA_DRIFT\nPRIVATE_SECRET","UNCLASSIFIED"),
+                         ("https://private.example/secret","UNCLASSIFIED")):
+            with self.subTest(raw=raw):
+                receipt=score.safe_hold_receipt(writer.HandoffBlocked(raw),"PREWRITE_REVALIDATE")
+                self.assertEqual(receipt["reason_code"],want)
+                self.assertEqual(receipt["failure_phase"],"PREWRITE_REVALIDATE")
+                self.assertEqual(receipt["status"],"SWING_SCORE_HOLD")
+                self.assertEqual(receipt["execution"],"NONE")
+        self.assertEqual(score.safe_hold_receipt(ValueError("PRIVATE_SECRET"),"POST_READBACK")["reason_code"],"UNCLASSIFIED")
+        self.assertEqual(score.safe_hold_receipt(writer.HandoffBlocked("SHEET_HEADER_DRIFT"),"PRIVATE_SECRET")["failure_phase"],"UNCLASSIFIED")
+
+    def test_17_open_episodes_15_unique_symbols_exact_score_batch_transport(self):
+        # Same cardinality as the 24-Nov observed ledger, synthetic IDs/bars.
+        symbols=["X%02d"%i for i in range(15)]
+        candidates=[list(writer.CANDIDATE_HEADER)]+[candidate(ASOF,s,0) for s in symbols]
+        candidates.extend([candidate("2026-11-03",s,1) for s in symbols[:2]])
+        _,scans,alerts=inputs()
+        scans[1][7]="15"
+        alerts=[list(life.ALERT_HEADER)]
+        rows=score.build(candidates,scans,alerts,ASOF,
+                        lambda syms,asof:{s:bars(i*.01) for i,s in enumerate(syms)})
+        self.assertEqual(len(rows),18)
+        self.assertEqual(rows[0][5],"17")
+        self.assertEqual(rows[0][8],"15")
+        self.assertEqual(len({r[2] for r in rows[1:]}),17)
+        scope={"scan":1,"candidate":2,"alerts":3,"panel":4,"score":5}
+        payload={"requests":[writer.as_cells(rows,5)]}
+        self.assertTrue(writer._valid_private_batch_post(payload))
+        self.assertTrue(writer._valid_private_batch_targets(payload,scope))
+
     def test_no_duplicate_daily_write_and_request_preserved(self):
         original=copy.deepcopy(self.api.candidates)
         out=score.synchronize(self.api,ASOF,self.read_batch)
