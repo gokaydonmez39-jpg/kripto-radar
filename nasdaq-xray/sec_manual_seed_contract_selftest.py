@@ -311,6 +311,75 @@ class Contract(unittest.TestCase):
             self.assertIsNone(m._SEC_ISSUER_ACCESS_DENIAL)
 
 
+    def test_prior_blank_revalidation_conflicts_are_fail_only_no_io(self):
+        import sys,types
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            m=import_module("build_current_identity_proofs")
+        good={"cik":"0002128462","sic":6770,"classification":"Blank Checks",
+              "source_url":"https://www.sec.gov/edgar/browse/?CIK=2128462",
+              "evidence_date":"2026-11-23"}
+        names={"TLAC":"Three Lions Acquisition Corp."}
+        def run(*,pending=(),routes=None,vetoes=(),fresh=None):
+            return m.revalidate_prior_blank_proofs(
+                {"TLAC":good},fresh or {},{},names,{},"2026-11-25",
+                "File Creation Time: 1125202618:01|||||||",["TLAC"],None,
+                nonblank_pending_completion=pending,current_cik_map=routes or {},
+                prior_blank_vetoes=vetoes)
+        # The original fallback alone would accept this prior row even when
+        # a newer conflicting classification or issuer route has been found.
+        self.assertIsNotNone(m.prior_blank_fallback("TLAC",good,"2026-11-25",names,{}))
+        for kw in ({"pending":{"TLAC"}},{"vetoes":{"TLAC"}},
+                   {"routes":{"TLAC":2128463}},{"routes":{"TLAC":None}}):
+            with self.subTest(kw=kw),patch.object(m,"sec_current_row") as net,patch.object(m,"prior_blank_fallback") as offline:
+                proof,unresolved,error=run(**kw)
+                self.assertEqual((proof,unresolved,error),({},["TLAC"],None))
+                net.assert_not_called()
+                offline.assert_not_called()
+        # Exact current route and missing discovery route keep the existing
+        # bounded fallback behavior, not a new authority path.
+        for routes in ({"TLAC":2128462},{}):
+            with self.subTest(routes=routes),patch.object(m,"sec_current_row",return_value=None) as net:
+                proof,unresolved,error=run(routes=routes)
+                self.assertEqual((set(proof),unresolved,error),({"TLAC"},[],None))
+                self.assertTrue(m.valid_sec_spac_proof_row(proof["TLAC"],"2026-11-25"))
+                net.assert_called_once()
+        # Independently acquired current evidence is not a prior fallback.
+        with patch.object(m,"sec_current_row") as net,patch.object(m,"prior_blank_fallback") as offline:
+            fresh=dict(good,same_asof_revalidated_without_sec_network=False)
+            proof,unresolved,error=run(vetoes={"TLAC"},fresh={"TLAC":fresh})
+            self.assertEqual((proof,unresolved,error),({"TLAC":fresh},[],None))
+            net.assert_not_called()
+            offline.assert_not_called()
+
+    def test_real_fvn_witness_cannot_be_resurrected_by_prior_proof(self):
+        import sys,types,json
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            m=import_module("build_current_identity_proofs")
+        old=json.loads(m.MANUAL_IDENTITY_SEED.read_text())["records"]["FVN"]
+        names={"FVN":"Future Vision II Acquisition Corporation - Ordinary Shares"}
+        # Exact frozen historical source remains unchanged. It would still
+        # meet the age and CIK predicates on 9 Oct absent the conflict fence.
+        self.assertIsNotNone(m.prior_blank_fallback("FVN",old,"2026-10-09",names,{}))
+        vetoes=set()
+        manual,_=m.manual_identity_seed_registry("2026-10-09",names,prior_blank_vetoes=vetoes)
+        self.assertEqual((manual,vetoes),({},{"FVN"}))
+        earlier=set()
+        m.manual_identity_seed_registry("2026-10-07",names,prior_blank_vetoes=earlier)
+        self.assertEqual(earlier,set())
+        with patch.object(m,"sec_current_row") as net,patch.object(m,"prior_blank_fallback") as offline:
+            proof,unresolved,error=m.revalidate_prior_blank_proofs(
+                {"FVN":old},{},{},names,{},"2026-10-09",
+                "File Creation Time: 1009202618:01|||||||",["FVN"],None,
+                nonblank_pending_completion=set(),current_cik_map={"FVN":2010653},
+                prior_blank_vetoes=vetoes)
+            self.assertEqual((proof,unresolved,error),({},["FVN"],None))
+            net.assert_not_called()
+            offline.assert_not_called()
+
     def test_blank_proof_source_identity_and_pit(self):
         import sys,types
         from unittest.mock import patch
