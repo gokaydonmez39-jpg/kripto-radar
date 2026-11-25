@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal, ROUND_HALF_UP
+from fractions import Fraction
 from pathlib import Path
 import hashlib
 import json
@@ -270,7 +271,12 @@ def risk_cohort_counts(master, raw_by_symbol, *, asof, now_utc):
         require(math.isfinite(vol) and math.isfinite(minimum), "RISK_NONFINITE")
         high += vol >= .60
         low += vol <= .10
-        discontinuity += minimum <= -.10
+        # Exact decimal-rendered input comparison: open <= 0.9 * prior close.
+        # Avoid binary float cancellation at exactly -10% (90/100 - 1).
+        discontinuity += any(
+            10 * Fraction(str(bars[i]["open"])) <=
+            9 * Fraction(str(bars[i-1]["close"]))
+            for i in range(1, len(bars)))
     # Only cohort counts and source/authority labels leave this function.
     # Never emit symbol classifications, OHLCV, candidate IDs or trade levels.
     return {"schema": "XRAY_477_RISK_COUNTS_SHADOW_V1",

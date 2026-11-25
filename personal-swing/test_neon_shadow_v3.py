@@ -246,6 +246,7 @@ class NeonShadowV3Tests(unittest.TestCase):
 
     def test_natural_risk_sidecar_counts_and_exact_coverage(self):
         from statistics import stdev
+        from decimal import Decimal
         import math
         summary=n.risk_cohort_counts(MASTER,self.raw,asof=ASOF,now_utc=NOW)
         dates=n.session_dates(ASOF,NOW)
@@ -254,10 +255,12 @@ class NeonShadowV3Tests(unittest.TestCase):
             b=n.validated_bars(s,self.raw[s],dates)
             ret=[b[i]["close"]/b[i-1]["close"]-1. for i in range(len(b)-20,len(b))]
             v=stdev(ret)*math.sqrt(252)
-            g=min(b[i]["open"]/b[i-1]["close"]-1. for i in range(1,len(b)))
+            # Independent decimal oracle; no binary subtraction at boundary.
+            g=any(Decimal(str(b[i]["open"]))*10 <=
+                  Decimal(str(b[i-1]["close"]))*9 for i in range(1,len(b)))
             expected[0]+=v>=.60
             expected[1]+=v<=.10
-            expected[2]+=g<=-.10
+            expected[2]+=g
         self.assertEqual(summary["symbols"],477)
         self.assertEqual(summary["sessions"],52)
         self.assertEqual([summary["high_vol20_count"],summary["low_vol20_count"],
@@ -270,6 +273,34 @@ class NeonShadowV3Tests(unittest.TestCase):
         missing=dict(self.raw);del missing[MASTER[0]]
         with self.assertRaisesRegex(n.NeonHold,"RISK_CAPTURE_SCOPE"):
             n.risk_cohort_counts(MASTER,missing,asof=ASOF,now_utc=NOW)
+
+    def test_risk_discontinuity_exact_boundary_and_477_oracle(self):
+        from decimal import Decimal
+        prices=[89.99,90,90.01,80,100,90.00000000000001,89.99999999999999]*68+[90]
+        self.assertEqual(len(prices),477)
+        dates=n.session_dates(ASOF,NOW)
+        raw={}
+        for symbol,price in zip(MASTER,prices):
+            bars=[dict(timestamp=d+"T21:00:00Z",open=100.,high=110.,
+                       low=80.,close=100.,volume=10000) for d in dates]
+            bars[1]["open"]=price
+            raw[symbol]=bars
+        expected=sum(Decimal(str(p))*10<=Decimal(100)*9 for p in prices)
+        self.assertEqual(expected,273)
+        r=n.risk_cohort_counts(MASTER,raw,asof=ASOF,now_utc=NOW)
+        self.assertEqual(r["negative_open_close_discontinuity_10_count"],expected)
+        self.assertEqual(r["low_vol20_count"],477)
+        self.assertFalse(r["production_decision_authority"])
+        # Check a second occurrence counts once and a non-integer price scale.
+        symbol=MASTER[1]
+        raw[symbol][2]["open"]=89.99
+        self.assertEqual(n.risk_cohort_counts(MASTER,raw,asof=ASOF,now_utc=NOW)
+                         ["negative_open_close_discontinuity_10_count"],expected)
+        symbol=MASTER[2] # prior 90.01 did not qualify
+        raw[symbol][0].update(close=.30,low=.20)
+        raw[symbol][1].update(open=.27,low=.20)
+        self.assertEqual(n.risk_cohort_counts(MASTER,raw,asof=ASOF,now_utc=NOW)
+                         ["negative_open_close_discontinuity_10_count"],expected+1)
 
     def test_risk_sidecar_failure_preserves_neon_file_and_no_extra_read(self):
         from unittest.mock import patch
