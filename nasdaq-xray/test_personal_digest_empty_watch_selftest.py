@@ -117,6 +117,48 @@ def producer_mixed_status_adversarial():
         raise AssertionError("FALSE_BLOCKED_WATCH_PROMOTION")
 
 
+def unattempted_exact_partition():
+    import copy
+    root, master, price, blobs=fixture(2)
+    tech=root["candidate_technical_funnel"]
+    tech["results"].pop("NVDA")
+    tech.update(attempted_count=1,evaluated_count=1,pending_count=1,pending_symbols=["NVDA"])
+    report=module.build(root,master,price,blobs)
+    if not (report["technical_state_counts"]=={"NO_CONFIRMED_A_B_D_RECENT_TRIGGER":1,
+                                              "UNKNOWN_NOT_ATTEMPTED":1}
+            and report["technical_pending_symbols"]==["NVDA"]
+            and report["registered_r92_count"]==0
+            and report["automated_alert_authority"] is False):
+        raise AssertionError("UNATTEMPTED_PENDING_NOT_PRESERVED")
+    # Consumer independently validates the exact aggregate partition.
+    import personal_research_diagnostics as diagnostic
+    diagnostic.verify(report)
+    for label,mutate in (
+        ("FALSE_ATTEMPTED",lambda t:t.update(attempted_count=2)),
+        ("MISSING_PENDING",lambda t:t.update(pending_symbols=[])),
+        ("DUP_PENDING",lambda t:t.update(pending_symbols=["NVDA","NVDA"])),
+        ("EXTRA_PENDING",lambda t:t.update(pending_symbols=["AAPL","NVDA"])),
+        ("MISSING_RESULT",lambda t:t["results"].pop("AAPL")),
+        ("UNATTEMPTED_TRIGGER",lambda t:t.update(recent_a_b_d_trigger_symbols=["NVDA"],recent_a_b_d_trigger_count=1)),
+        ("FORGED_UNATTEMPTED_ROW",lambda t:t["results"]["AAPL"].update(status="UNKNOWN_NOT_ATTEMPTED",terminal_scan=False)),
+    ):
+        bad=copy.deepcopy(root)
+        mutate(bad["candidate_technical_funnel"])
+        try:
+            module.build(bad,master,price,blobs)
+        except ValueError:
+            continue
+        raise AssertionError("FALSE_UNATTEMPTED_ACCEPT_"+label)
+    mixed=copy.deepcopy(root)
+    tech=mixed["candidate_technical_funnel"]
+    tech["results"]["AAPL"]={"status":"UNKNOWN_260_OFFICIAL_HISTORY","terminal_scan":False}
+    tech.update(evaluated_count=0,pending_count=2,pending_symbols=["AAPL","NVDA"])
+    result=module.build(mixed,master,price,blobs)
+    if result["technical_state_counts"]!={"UNKNOWN_260_OFFICIAL_HISTORY":1,"UNKNOWN_NOT_ATTEMPTED":1}:
+        raise AssertionError("MIXED_UNATTEMPTED_PARTITION")
+    diagnostic.verify(result)
+
+
 def current_public_source_contract_smoke():
     """Prove real checked-out canonical public source is internally coherent.
 
@@ -164,6 +206,7 @@ def main():
             raise AssertionError("INVALID_FIXTURE_OR_FALSE_ALERT:" + str(n))
         module.selftest(root, master, price, blobs)
     producer_mixed_status_adversarial()
+    unattempted_exact_partition()
     current_public_source_contract_smoke()
     print("XRAY_DIGEST_EMPTY_SINGLE_DOUBLE_WATCH_SELFTEST=PASS_3_SIZES"
           "_10_NEGATIVES_EACH_NO_FALSE_BUY")
