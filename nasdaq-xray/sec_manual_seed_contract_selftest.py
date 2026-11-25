@@ -137,5 +137,54 @@ class Contract(unittest.TestCase):
             landing.assert_called_once()
             self.assertIsNone(m._SEC_ISSUER_ACCESS_DENIAL)
 
+
+    def test_blank_proof_source_identity_and_pit(self):
+        import sys,types
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            m=import_module("build_current_identity_proofs")
+        asof="2026-11-24"
+        good={"cik":"0002128462","sic":6770,"classification":"Blank Checks",
+              "source_url":"https://www.sec.gov/edgar/browse/?CIK=2128462",
+              "evidence_date":"2026-11-23","same_asof_revalidated_without_sec_network":False}
+        names={"TLAC":"Three Lions Acquisition Corp."}
+        self.assertTrue(m.valid_sec_spac_proof_row(good,asof))
+        self.assertIsNotNone(m.prior_blank_fallback("TLAC",good,asof,names,{}))
+        for field,bad in (
+            ("cik","0000000000"),("cik",2128462),("cik","0002128463"),("cik",None),
+            ("sic","6770"),("sic",6770.0),("sic",True),("sic",7373),
+            ("source_url","https://www.sec.gov/example"),
+            ("source_url","https://www.sec.gov/Archives/edgar/data/1/other-index.htm?CIK=2128462"),
+            ("source_url","https://www.sec.gov/edgar/browse/?CIK=1"),
+            ("classification","Operating company"),
+            ("evidence_date","2026-11-25"),("evidence_date","2026-02-30"),
+        ):
+            row=dict(good,**{field:bad})
+            with self.subTest(field=field,bad=bad):
+                self.assertFalse(m.valid_sec_spac_proof_row(row,asof))
+                self.assertIsNone(m.prior_blank_fallback("TLAC",row,asof,names,{}))
+        for bad in (None,0,"false","true"):
+            self.assertFalse(m.valid_sec_spac_proof_row(dict(good,same_asof_revalidated_without_sec_network=bad),asof))
+        missing=dict(good)
+        del missing["same_asof_revalidated_without_sec_network"]
+        self.assertFalse(m.valid_sec_spac_proof_row(missing,asof))
+        for day,expected in (("2026-07-27",True),("2026-07-26",False)):
+            row=dict(good,evidence_date=day)
+            out=m.prior_blank_fallback("TLAC",row,asof,names,{})
+            self.assertEqual(out is not None,expected)
+            if out:
+                out["same_asof_nasdaq_directory_footer"]="File Creation Time: 1124202617:01|||||||"
+                self.assertTrue(m.valid_sec_spac_proof_row(out,asof))
+        landing=dict(good,same_asof_sec_entity_landing_revalidated=True,
+                     revalidation_transport="SEC_EDGAR_ENTITY_LANDING",revalidation_asof_et=asof)
+        self.assertTrue(m.valid_sec_spac_proof_row(landing,asof))
+        self.assertFalse(m.valid_sec_spac_proof_row(dict(landing,evidence_date="2026-07-26"),asof))
+        self.assertFalse(m.valid_sec_spac_proof_row(dict(landing,revalidation_asof_et="2026-11-23"),asof))
+        with patch.object(m,"request_bytes") as network:
+            self.assertIsNone(m.sec_entity_landing_row("TLAC",asof,2128462,True,"2026-07-26"))
+            self.assertIsNone(m.sec_entity_landing_row("TLAC",asof,2128462,True,"2026-02-30"))
+            network.assert_not_called()
+
 if __name__=="__main__":
     unittest.main()
