@@ -55,13 +55,16 @@ jobs:
               raise SystemExit("XRAY_PRIVATE_ARTIFACT_GUARD_MISSING")
           if (hold+"\n"+expr+"!= true }}\n") not in s:
               raise SystemExit("XRAY_PUBLIC_OUTPUT_HOLD_MISSING")
+          live="    if: $"+"{{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}"
+          if s.count(live)!=1:
+              raise SystemExit("XRAY_FREE_IEX_MAIN_PUSH_MUST_BE_OFFLINE")
           print("XRAY_PRIVATE_ARTIFACT_GUARD=PASS")
           PY
-  # On an explicitly reviewed main push, immediately probe the existing free
-  # personal source once. Never run vendor HTTP on untrusted PRs.
+  # Code-only main push remains offline. No live vendor probe on merge.
+  # Preserve the existing natural schedule and explicit manual workflow semantics.
   research:
     needs: offline-regression
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 13
     steps:
