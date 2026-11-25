@@ -111,6 +111,25 @@ class Contract(unittest.TestCase):
                         path.write_text(json.dumps(fixture))
                         self.assertEqual(producer.manual_identity_seed_registry(asof,names)[0],{})
 
+    def test_existing_standalone_fvn_and_nbrg_entrypoints(self):
+        import subprocess,sys
+        from pathlib import Path
+        root=Path(__file__).resolve().parent
+        for script,marker in (
+            ("tests/test_fvn_sec_sic_discrepancy.py",
+             "XRAY_FVN_CONTRADICTED_SIC6770=VETOED_KEEP_UNKNOWN_IBAC_NBRG_PRESERVED_NO_ALPHA"),
+            ("nbrg_official_sec_identity_seed_selftest.py",
+             "XRAY_NBRG_SEC_OFFICIAL_20260803_IDENTITY_SEED=PASS_FAIL_ONLY_NO_PRIMARY"),
+        ):
+            with self.subTest(script=script):
+                # Deliberately use a normal subprocess even under python -O;
+                # the historical scripts use asserts, which must remain active.
+                completed=subprocess.run([sys.executable,str(root/script)],
+                                         cwd=root,capture_output=True,text=True,
+                                         timeout=30,check=False)
+                self.assertEqual(completed.returncode,0,completed.stderr)
+                self.assertIn(marker,completed.stdout)
+
     def test_real_joint_filer_fvn_veto_and_unrelated_archive_rejected(self):
         import sys,types,tempfile
         from pathlib import Path
