@@ -96,6 +96,27 @@ def validate_ledger(matrix):
     return rows
 
 
+def _window_rows(rows, cutoff):
+    """Filter only after identifying nonempty rows and validating dates."""
+    out=[]
+    for raw in rows:
+        require(isinstance(raw,(list,tuple)),"KRONOS_OOS_ROW_TYPE_INVALID")
+        if not raw or not any(cell!="" for cell in raw):
+            continue
+        require(len(raw)>=2 and isinstance(raw[0],str) and bool(raw[0].strip()),
+                "KRONOS_OOS_KEYLESS_NONEMPTY_ROW")
+        try:
+            asof=raw[1]
+            valid=(isinstance(asof,str) and re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",asof)
+                   and date.fromisoformat(asof).isoformat()==asof)
+        except (ValueError,TypeError):
+            valid=False
+        require(valid,"KRONOS_OOS_INVALID_ROW_ASOF")
+        if asof>=cutoff:
+            out.append(raw)
+    return out
+
+
 def load_recent_ledgers(api, completed_asof):
     """Recent-month partition + immutable legacy. Bound reads to 30 calendar days."""
     from urllib.parse import quote
@@ -104,7 +125,7 @@ def load_recent_ledgers(api, completed_asof):
     require(legacy and tuple(legacy[0])==k.HEADERS,
             "KRONOS_OOS_LEGACY_HEADER")
     results=[list(k.HEADERS)]
-    results += [r for r in legacy[1:] if r and r[0] and r[1]>=cutoff]
+    results += _window_rows(legacy[1:],cutoff)
     metadata=api.request("?fields=sheets.properties(title)")
     names=sorted({s.get("properties",{}).get("title","")
                  for s in metadata.get("sheets",[])})
@@ -117,7 +138,7 @@ def load_recent_ledgers(api, completed_asof):
         if month_end.isoformat()<cutoff or period>completed_asof[:7]:
             continue
         rows=v2.read_partition(api,name)
-        results += [r for r in rows if r[1]>=cutoff]
+        results += _window_rows(rows,cutoff)
     require(len(results)<=40000,"KRONOS_OOS_RECENT_WINDOW_CAP")
     return results
 
