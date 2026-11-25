@@ -111,6 +111,42 @@ class Contract(unittest.TestCase):
                         path.write_text(json.dumps(fixture))
                         self.assertEqual(producer.manual_identity_seed_registry(asof,names)[0],{})
 
+    def test_real_joint_filer_fvn_veto_and_unrelated_archive_rejected(self):
+        import sys,types,tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from importlib import import_module
+        with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+            producer=import_module("build_current_identity_proofs")
+        root=Path(__file__).resolve().parent
+        registry=(root/"master_sec_identity_manual_seed_registry.json").read_bytes()
+        witness_name="master_sec_sic_discrepancies_20261009.json"
+        witness=json.loads((root/witness_name).read_text())
+        names={"FVN":"Future Vision II Acquisition Corporation - Ordinary Shares",
+               "IBAC":"IB Acquisition Corp. - Common Stock",
+               "NBRG":"Newbridge Acquisition Limited - Class A Ordinary Share"}
+        for day,expected in (("2026-10-07",set()),("2026-10-09",{"IBAC","NBRG"})):
+            self.assertEqual(set(producer.manual_identity_seed_registry(day,names)[0]),expected)
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/"nasdaq-xray";p.mkdir()
+            seed=p/"master_sec_identity_manual_seed_registry.json";seed.write_bytes(registry)
+            with patch.object(producer,"ROOT",p),patch.object(producer,"MANUAL_IDENTITY_SEED",seed):
+                for key,value in (
+                    ("official_index_url","https://www.sec.gov/Archives/edgar/data/999/000182912626006424/0001829126-26-006424-index.htm"),
+                    ("official_index_url","https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm?CIK=1"),
+                    ("official_sec_filer_name","Other issuer"),
+                    ("official_sec_filer_sic",6770),
+                    ("official_accession","0001829126-26-006425"),
+                ):
+                    with self.subTest(key=key,value=value):
+                        changed=copy.deepcopy(witness)
+                        changed["discrepancies"]["FVN"][key]=value
+                        (p/witness_name).write_text(json.dumps(changed))
+                        with self.assertRaisesRegex(RuntimeError,"OFFICIAL_SEC_SIC_DISCREPANCY_BAD_BINDING:FVN"):
+                            producer.manual_identity_seed_registry("2026-10-09",names)
+                (p/witness_name).write_text(json.dumps(witness))
+                self.assertEqual(set(producer.manual_identity_seed_registry("2026-10-09",names)[0]),{"IBAC","NBRG"})
+
     def test_pit_and_age(self):
         j=doc();original=copy.deepcopy(j)
         self.assertEqual(select_registry_rows(j,"2026-11-23")["AEAQ"],j["records"]["AEAQ"])

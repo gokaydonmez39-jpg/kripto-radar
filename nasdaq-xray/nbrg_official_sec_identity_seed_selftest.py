@@ -31,29 +31,21 @@ def run():
     assert rec.get("evidence_authority")=="SEC_EDGAR_OFFICIAL"
     source=(ROOT/"build_current_identity_proofs.py").read_text()
     assert re.search(r'def manual_identity_seed_registry\(',source)
-    assert 'age>120' in source
     assert 'sec_source_binds_cik(source,cik)' in source
     assert '"same_asof_nasdaq_security_name"' in source
     assert '"OFFICIAL_SEC_STATIC_EVIDENCE_PLUS_EXACT_ASOF_NASDAQ_IDENTITY;NO_ALPHA_PASS"' in source
     # PIT regression: proof verified on Oct 9 must NEVER be backported
     # to an earlier Oct 7 canonical epoch just because the filing is older.
-    # Exercise the REAL producer function in an isolated stdlib namespace.
-    import ast
-    from datetime import datetime
-    tree=ast.parse(source)
-    target=next(n for n in tree.body
-                if isinstance(n,ast.FunctionDef) and n.name=="manual_identity_seed_registry")
-    ns={
-        "ROOT":ROOT,
-        "MANUAL_IDENTITY_SEED":ROOT/"master_sec_identity_manual_seed_registry.json",
-        "json":json,"re":re,"datetime":datetime,
-        "SPAC_SUSPECT_RE":re.compile("acquisition",re.I),
-        "sec_source_binds_cik":lambda url,cik:f"/data/{int(cik)}/" in url,
-        "file_blob_sha":lambda p:"OFFLINE_UNIT_SHA_NOT_PRIMARY",
-    }
-    exec(compile(ast.Module(body=[target],type_ignores=[]),
-                 "producer:manual_identity_seed_registry","exec"),ns)
-    consumer=ns["manual_identity_seed_registry"]
+    # Exercise the actual producer and SEC helper imports, offline.
+    import sys,types
+    from unittest.mock import patch
+    from importlib import import_module
+    with patch.dict(sys.modules,{"pandas_market_calendars":types.ModuleType("pandas_market_calendars")}):
+        producer=import_module("build_current_identity_proofs")
+    consumer=producer.manual_identity_seed_registry
+    from sec_manual_seed_contract import eligible_evidence
+    assert eligible_evidence("2026-11-24","2026-07-27","2026-10-09")
+    assert not eligible_evidence("2026-11-24","2026-07-26","2026-10-09")
     # Exact SEC filings available before the Oct-09 epoch, fail-only.
     for sym,cik,evidence,document in (
         ("IBAC","0001998781","2026-07-24",

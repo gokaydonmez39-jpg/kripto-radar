@@ -478,7 +478,19 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
                 and accession.replace("-","") in source
                 and accession.replace("-","") in official
                 and official.startswith("https://www.sec.gov/Archives/edgar/data/")
-                and sec_source_binds_cik(official,cik)
+                and exact_manual_seed_identity(row)
+                # The frozen FVN joint-filer index resides under the other
+                # registrant's archive CIK. This exact dated accession is
+                # a FAIL-ONLY contradiction, never a positive issuer proof.
+                and (sec_source_binds_cik(official,cik) or (
+                    sym=="FVN" and cik=="0002010653"
+                    and accession=="0001829126-26-006424"
+                    and source=="https://www.sec.gov/Archives/edgar/data/2010653/000182912626006424/futurevision2_s4a.htm"
+                    and official=="https://www.sec.gov/Archives/edgar/data/2110070/000182912626006424/0001829126-26-006424-index.htm"
+                    and mismatch.get("official_sec_filer_name")=="Future Vision II Acquisition Corp."
+                    and mismatch["official_sec_filer_sic"]==7373
+                    and mismatch.get("official_filing_date")=="2026-06-12"
+                ))
                 and official.endswith("-index.htm")
                 and evidence<=asof
             ):
