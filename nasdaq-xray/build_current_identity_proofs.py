@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 import pandas_market_calendars as mcal
 from master_spac_operating_guard import nonblank_requires_completion
-from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence,cik_number
+from sec_manual_seed_contract import sec_source_binds_cik,load_registry_document,select_registry_rows,eligible_evidence,cik_number,strict_date
 
 ROOT=Path(__file__).resolve().parent
 MANUAL_IDENTITY_SEED=ROOT/"master_sec_identity_manual_seed_registry.json"
@@ -133,22 +133,30 @@ def prior_operating_fallback(sym,old,asof,names,industries):
     out["revalidation_semantics"]="FAIL_CLOSED_PREVENT_FALSE_SPAC_EXCLUSION_ONLY;NO_ALPHA_PASS"
     return out
 
+def blank_proof_source_identity(row,asof):
+    """Every blank-check proof must bind official issuer and PIT evidence."""
+    if not isinstance(row,dict) or type(row.get("sic")) is not int or row["sic"]!=6770:
+        return False
+    cik=row.get("cik")
+    if not isinstance(cik,str) or re.fullmatch(r"[0-9]{10}",cik) is None or cik_number(cik) is None:
+        return False
+    if not sec_source_binds_cik(row.get("source_url"),cik):
+        return False
+    if row.get("classification")!="Blank Checks":
+        return False
+    try:
+        return strict_date(row.get("evidence_date"))<=strict_date(asof)
+    except (ValueError,TypeError):
+        return False
+
 def prior_blank_fallback(sym,old,asof,names,industries):
     if sym not in names:
         return None
     current_name=str(names.get(sym) or "").strip()
     industry=str(industries.get(sym) or "").strip()
-    if int((old or {}).get("sic",-1))!=6770:
+    if not blank_proof_source_identity(old,asof):
         return None
-    source=str((old or {}).get("source_url") or "")
-    evidence=str((old or {}).get("evidence_date") or "")
-    if not source.startswith("https://www.sec.gov/") or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
-        return None
-    try:
-        age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
-    except Exception:
-        return None
-    if age<0 or age>120:
+    if not eligible_evidence(asof,old["evidence_date"],asof):
         return None
     name_spac=bool(SPAC_SUSPECT_RE.search(current_name))
     industry_spac=(industry.lower()=="blank checks")
@@ -551,7 +559,7 @@ def sec_entity_landing_row(sym:str,asof:str,cik:int|None,want_blank:bool,prior_e
     if cik is None:
         return None
     evidence=str(prior_evidence_date or "")
-    if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
+    if not eligible_evidence(asof,evidence,asof) or cik_number(cik) is None:
         return None
     url=f"https://www.sec.gov/edgar/browse/?CIK={int(cik)}&owner=exclude"
     raw=sec_issuer_read(request_bytes,url,SEC_UA,35).decode("utf-8","ignore")
@@ -633,9 +641,16 @@ def validate_existing_identity(path:Path,asof:str)->bool:
         return False
 
 def valid_sec_spac_proof_row(v:dict,asof:str)->bool:
-    if not isinstance(v,dict) or int(v.get("sic",-1))!=6770:
+    if not blank_proof_source_identity(v,asof):
         return False
-    if v.get("same_asof_revalidated_without_sec_network") is not True:
+    offline=v.get("same_asof_revalidated_without_sec_network")
+    if type(offline) is not bool:
+        return False
+    if not offline:
+        if v.get("same_asof_sec_entity_landing_revalidated") is True:
+            return (v.get("revalidation_transport")=="SEC_EDGAR_ENTITY_LANDING"
+                    and v.get("revalidation_asof_et")==asof
+                    and eligible_evidence(asof,v["evidence_date"],asof))
         return True
     semantics=str(v.get("revalidation_semantics") or "")
     allowed={
@@ -652,16 +667,9 @@ def valid_sec_spac_proof_row(v:dict,asof:str)->bool:
           or v.get("manual_seed_registry_blob_sha")!=file_blob_sha(MANUAL_IDENTITY_SEED)
         ):
             return False
-    source=str(v.get("source_url") or "")
-    evidence=str(v.get("evidence_date") or "")
     footer=str(v.get("same_asof_nasdaq_directory_footer") or "")
-    if not source.startswith("https://www.sec.gov/"):
-        return False
-    if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}",evidence) or evidence>asof:
-        return False
     try:
-        age=(datetime.fromisoformat(asof)-datetime.fromisoformat(evidence)).days
-        if age<0 or age>120 or parse_footer_date(footer)!=asof:
+        if not eligible_evidence(asof,v["evidence_date"],asof) or parse_footer_date(footer)!=asof:
             return False
     except Exception:
         return False
