@@ -23,6 +23,7 @@ TICKER = re.compile(r"[A-Z][A-Z0-9.]{0,9}\Z")
 REASON = re.compile(r"[A-Z0-9_]+\Z")
 # Producer-compatible terminal/pending partition; never let unreviewed states pass.
 PENDING_STATES = frozenset((
+    "UNKNOWN_NOT_ATTEMPTED",  # digest-derived; never a technical PASS
     "UNKNOWN_260_OFFICIAL_HISTORY",
     "UNKNOWN_CORPORATE_ACTION_PIT",
     "UNKNOWN_52_COMPLETED_WEEKS",
