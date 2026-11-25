@@ -169,6 +169,49 @@ def prior_blank_fallback(sym,old,asof,names,industries):
     out["revalidation_semantics"]="PRIOR_SEC_SIC6770_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS"
     return out
 
+def revalidate_prior_blank_proofs(blank_seed,discovered_blank,operating,names,industries,
+                                  asof,footer,unresolved_current_suspects,sec_network_error,
+                                  *,nonblank_pending_completion,current_cik_map,prior_blank_vetoes):
+    """Revalidate prior exclusions without bypassing a current conflict or issuer drift."""
+    proofs=dict(discovered_blank)
+    unresolved_sec_spac=list(unresolved_current_suspects)
+    for sym,old in sorted(blank_seed.items()):
+        if sym in proofs or sym in operating:
+            continue
+        if sym not in names:
+            continue
+        cik=cik_from_prior_row(old)
+        # An explicit contrary classification or known issuer-route conflict
+        # must remain unresolved. Do not make a second live/landing request
+        # with the stale CIK, or fall back to its historical SIC 6770 row.
+        if (sym in nonblank_pending_completion or sym in prior_blank_vetoes
+                or (sym in current_cik_map and
+                    (cik_number(cik) is None or cik_number(current_cik_map[sym])!=cik_number(cik)))):
+            unresolved_sec_spac.append(sym)
+            continue
+        try:
+            row=sec_current_row(sym,asof,cik,True,str((old or {}).get("evidence_date") or ""))
+        except Exception as e:
+            row=None
+            sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
+        if row is not None:
+            row["same_asof_revalidated_without_sec_network"]=False
+            proofs[sym]=row
+            continue
+        # SEC transport may be unavailable on shared CI IPs. Reuse only the
+        # prior SEC SIC 6770 evidence (<=120d) when the exact-ASOF Nasdaq
+        # directory still independently identifies the same ticker as a SPAC.
+        # This is exclusion-only evidence; it can never create alpha PASS.
+        fallback=prior_blank_fallback(sym,old,asof,names,industries)
+        if fallback is not None:
+            fallback["same_asof_nasdaq_directory_footer"]=footer
+            proofs[sym]=fallback
+            continue
+        unresolved_sec_spac.append(sym)
+    unresolved_sec_spac=sorted(set(unresolved_sec_spac)-set(proofs))
+    return proofs,unresolved_sec_spac,sec_network_error
+
+
 def load_json_url(url:str):
     return json.loads(request_bytes(url,SEC_UA,35).decode("utf-8"))
 
@@ -412,7 +455,7 @@ def file_blob_sha(path:Path)->str:
     b=path.read_bytes()
     return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
 
-def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
+def manual_identity_seed_registry(asof:str,names:dict,*,prior_blank_vetoes=None)->tuple[dict,dict]:
     """Read bounded official-SEC seed evidence; seed data never creates alpha PASS."""
     if not MANUAL_IDENTITY_SEED.exists():
         return {},{
@@ -497,6 +540,11 @@ def manual_identity_seed_registry(asof:str,names:dict)->tuple[dict,dict]:
                 raise RuntimeError("OFFICIAL_SEC_SIC_DISCREPANCY_BAD_BINDING:"+sym)
             # Fail-only: let live SEC classification return UNKNOWN or a
             # separately proven current answer; NEVER classify 7373 as PASS.
+            # Also prevent the later prior-proof path from resurrecting this
+            # contradicted issuer. A fresh independent current discovery may
+            # still classify it; a prior proof may not bypass the veto.
+            if prior_blank_vetoes is not None:
+                prior_blank_vetoes.add(sym)
             continue
         if (
           not exact_manual_seed_identity(row)
@@ -914,7 +962,9 @@ def main():
         current_cik_map={}
         sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
     current_suspects=current_spac_suspects(names,industries)
-    manual_seeds,manual_seed_meta=manual_identity_seed_registry(asof,names)
+    prior_blank_vetoes=set()
+    manual_seeds,manual_seed_meta=manual_identity_seed_registry(
+        asof,names,prior_blank_vetoes=prior_blank_vetoes)
     sec_submissions_blocked_code=None
     sec_submissions_blocked_at=None
     sec_submissions_skipped=0
@@ -1023,34 +1073,11 @@ def main():
     }
     identity_path.write_text(json.dumps(identity,ensure_ascii=False,sort_keys=False,indent=2)+"\n",encoding="utf-8")
 
-    proofs=dict(discovered_blank)
-    unresolved_sec_spac=list(unresolved_current_suspects)
-    for sym,old in sorted(blank_seed.items()):
-        if sym in proofs or sym in operating:
-            continue
-        if sym not in names:
-            continue
-        cik=cik_from_prior_row(old)
-        try:
-            row=sec_current_row(sym,asof,cik,True,str((old or {}).get("evidence_date") or ""))
-        except Exception as e:
-            row=None
-            sec_network_error=sec_network_error or f"{type(e).__name__}:{str(e)[:200]}"
-        if row is not None:
-            row["same_asof_revalidated_without_sec_network"]=False
-            proofs[sym]=row
-            continue
-        # SEC transport may be unavailable on shared CI IPs. Reuse only the
-        # prior SEC SIC 6770 evidence (<=120d) when the exact-ASOF Nasdaq
-        # directory still independently identifies the same ticker as a SPAC.
-        # This is exclusion-only evidence; it can never create alpha PASS.
-        fallback=prior_blank_fallback(sym,old,asof,names,industries)
-        if fallback is not None:
-            fallback["same_asof_nasdaq_directory_footer"]=footer
-            proofs[sym]=fallback
-            continue
-        unresolved_sec_spac.append(sym)
-    unresolved_sec_spac=sorted(set(unresolved_sec_spac)-set(proofs))
+    proofs,unresolved_sec_spac,sec_network_error=revalidate_prior_blank_proofs(
+        blank_seed,discovered_blank,operating,names,industries,asof,footer,
+        unresolved_current_suspects,sec_network_error,
+        nonblank_pending_completion=nonblank_pending_completion,
+        current_cik_map=current_cik_map,prior_blank_vetoes=prior_blank_vetoes)
     if proofs:
         sec={
           "schema":"XRAY_MASTER_SEC_SPAC_PROOF_V1",
