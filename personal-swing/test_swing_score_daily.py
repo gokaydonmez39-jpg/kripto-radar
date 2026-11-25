@@ -203,6 +203,113 @@ class SwingScoreTests(unittest.TestCase):
         self.assertTrue(writer._valid_private_batch_post(payload))
         self.assertTrue(writer._valid_private_batch_targets(payload,scope))
 
+    def _seed_prior_summary_and_pending_alert(self):
+        prior = [""] * len(score.HEADER)
+        prior[:2] = ["2026-11-03|SUMMARY", "2026-11-03"]
+        prior[4] = "SUMMARY"
+        prior[27] = score.READY
+        self.api.scored.append(prior)
+        self.api.alerts[1][17:19] = [life.EVENT_PENDING, ""]
+        return prior
+
+    def test_one_stable_delivery_only_snapshot_refresh_keeps_single_post(self):
+        prior = self._seed_prior_summary_and_pending_alert()
+        reads = {"score": 0, "alerts": 0}
+        old_request, old_read = self.api.request, self.api.read
+        def request(path, **kw):
+            if path.startswith("/values/"):
+                reads["score"] += 1
+                if reads["score"] == 2:
+                    prior[27:29] = [score.REQUESTED, "2026-11-04 08:57 TRT"]
+            return old_request(path, **kw)
+        def read(name, last_col):
+            if name == "UYARI_OLAYLARI":
+                reads["alerts"] += 1
+                if reads["alerts"] == 2:
+                    self.api.alerts[1][17:19] = [
+                        "ALERT_REQUESTED_NOT_DEVICE_ACK", "2026-11-04 08:57 TRT"]
+            return old_read(name, last_col)
+        with patch.object(self.api, "request", side_effect=request), \
+             patch.object(self.api, "read", side_effect=read), \
+             patch.object(self, "read_batch", wraps=self.read_batch) as provider:
+            result = score.synchronize(self.api, ASOF, self.read_batch)
+        self.assertEqual(result["status"], "SWING_SCORE_PRIVATE_READBACK_PASS")
+        self.assertEqual(self.api.writes, 1)
+        self.assertEqual(provider.call_count, 1)
+        self.assertEqual(reads, {"score": 4, "alerts": 3})
+        self.assertEqual(prior[27], score.REQUESTED)
+
+    def test_delivery_snapshot_drift_again_blocks_without_post(self):
+        self._seed_prior_summary_and_pending_alert()
+        count = 0
+        old_read = self.api.read
+        def read(name, last_col):
+            nonlocal count
+            if name == "UYARI_OLAYLARI":
+                count += 1
+                if count == 2:
+                    self.api.alerts[1][17:19] = [
+                        "ALERT_REQUESTED_NOT_DEVICE_ACK", "2026-11-04 08:57 TRT"]
+                if count == 3:
+                    self.api.alerts[1][19] = "CHANGED_IMMUTABLE_NOTE"
+            return old_read(name, last_col)
+        with patch.object(self.api, "read", side_effect=read):
+            with self.assertRaisesRegex(writer.HandoffBlocked,
+                                        "SWING_SCORE_CONCURRENT_MODIFICATION"):
+                score.synchronize(self.api, ASOF, self.read_batch)
+        self.assertEqual(self.api.writes, 0)
+
+    def test_post_readback_allows_prior_summary_request_but_not_digest_change(self):
+        for corrupt in (False, True):
+            with self.subTest(corrupt=corrupt):
+                self.api = FakeAPI()
+                prior = self._seed_prior_summary_and_pending_alert()
+                count = 0
+                old_request = self.api.request
+                def request(path, **kw):
+                    nonlocal count
+                    if path.startswith("/values/"):
+                        count += 1
+                        if count == 3:
+                            prior[27:29] = [score.REQUESTED, "2026-11-04 08:57 TRT"]
+                            if corrupt:
+                                prior[29] = "CHANGED_DIGEST"
+                    return old_request(path, **kw)
+                with patch.object(self.api, "request", side_effect=request):
+                    if corrupt:
+                        with self.assertRaisesRegex(writer.HandoffBlocked,
+                                                    "SWING_SCORE_READBACK_MISMATCH"):
+                            score.synchronize(self.api, ASOF, self.read_batch)
+                    else:
+                        result = score.synchronize(self.api, ASOF, self.read_batch)
+                        self.assertEqual(result["status"], "SWING_SCORE_PRIVATE_READBACK_PASS")
+                self.assertEqual(self.api.writes, 1)
+
+    def test_delivery_only_revalidation_rejects_every_other_transition(self):
+        prior = self._seed_prior_summary_and_pending_alert()
+        before = copy.deepcopy(self.api.alerts)
+        good = copy.deepcopy(before)
+        good[1][17:19] = ["ALERT_REQUESTED_NOT_DEVICE_ACK", "2026-11-04 08:57 TRT"]
+        self.assertTrue(score._delivery_only_progress(before, good, score_ledger=False))
+        for col, value in ((0, "OTHER_ID"), (5, "STOP_TOUCHED"),
+                           (17, "DUPLICATE_ACTIVE_EPISODE_NO_NEW_ALERT"),
+                           (17, "DEVICE_ACK"), (18, "2026-11-03 08:57 TRT"),
+                           (18, "2026-11-04 25:00 TRT"), (19, "OTHER_NOTE")):
+            with self.subTest(col=col, value=value):
+                other = copy.deepcopy(good)
+                other[1][col] = value
+                self.assertFalse(score._delivery_only_progress(before, other,
+                                                                score_ledger=False))
+        self.assertFalse(score._delivery_only_progress(good, before, score_ledger=False))
+        self.assertFalse(score._delivery_only_progress(before, good + [good[1]],
+                                                        score_ledger=False))
+        old_score = [list(score.HEADER), prior]
+        new_score = copy.deepcopy(old_score)
+        new_score[1][27:29] = [score.REQUESTED, "2026-11-04 08:57 TRT"]
+        self.assertTrue(score._delivery_only_progress(old_score, new_score, score_ledger=True))
+        new_score[1][29] = "OTHER_DIGEST"
+        self.assertFalse(score._delivery_only_progress(old_score, new_score, score_ledger=True))
+
     def test_no_duplicate_daily_write_and_request_preserved(self):
         original=copy.deepcopy(self.api.candidates)
         out=score.synchronize(self.api,ASOF,self.read_batch)

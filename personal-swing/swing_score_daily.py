@@ -11,7 +11,7 @@ import json
 import math
 import os
 import re
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from urllib.parse import quote
 
@@ -246,6 +246,57 @@ def score_read(api):
 def normalize_rows(matrix):
     return [list(r) + [""] * (len(HEADER) - len(r)) for r in matrix]
 
+def _request_timestamp(value, event_asof):
+    """Validate canonical request timestamp; never infer transport/device ACK."""
+    if type(value) is not str or type(event_asof) is not str:
+        return False
+    try:
+        stamp = datetime.strptime(value, "%Y-%m-%d %H:%M TRT")
+        day = date.fromisoformat(event_asof)
+        return (stamp.strftime("%Y-%m-%d %H:%M TRT") == value and
+                day.isoformat() == event_asof and stamp.date() >= day)
+    except ValueError:
+        return False
+
+
+def _delivery_only_progress(before, after, *, score_ledger):
+    """Exact immutable rows, one-way request transitions only; no ACK authority.
+
+    The scoring algorithm uses an alert's identity and suppression class, not
+    its pending/requested delivery status. Prior score SUMMARY delivery cells
+    are also separate from the immutable score. No row may be added, removed,
+    reordered, suppressed, reactivated, or changed in any other column.
+    """
+    header = HEADER if score_ledger else life.ALERT_HEADER
+    width = len(header)
+    if (type(before) is not list or type(after) is not list or not before or
+            len(before) != len(after) or type(before[0]) is not list or
+            type(after[0]) is not list or tuple(before[0]) != header or
+            tuple(after[0]) != header):
+        return False
+    status_col, time_col = (27, 28) if score_ledger else (17, 18)
+    old_state, new_state = ((READY, REQUESTED) if score_ledger else
+                            (life.EVENT_PENDING, "ALERT_REQUESTED_NOT_DEVICE_ACK"))
+    for old, new in zip(before[1:], after[1:]):
+        if old == new:
+            continue
+        if (type(old) is not list or type(new) is not list or
+                not status_col < len(old) <= width or
+                not time_col < len(new) <= width or
+                any(type(v) is not str for v in old + new)):
+            return False
+        a = old + [""] * (width - len(old))
+        b = new + [""] * (width - len(new))
+        if (not a[0] or (score_ledger and a[4] != "SUMMARY") or
+                a[status_col] != old_state or a[time_col] != "" or
+                b[status_col] != new_state or
+                not _request_timestamp(b[time_col], a[1 if score_ledger else 4]) or
+                any(a[i] != b[i] for i in range(width)
+                    if i not in (status_col, time_col))):
+            return False
+    return True
+
+
 def synchronize(api, asof, read_batch, *, on_phase=None):
     # Fixed categorical diagnostics only; no source data or exception text
     # is exported. Existing callers need not provide a phase observer.
@@ -297,17 +348,33 @@ def synchronize(api, asof, read_batch, *, on_phase=None):
     writer.require(not existing or max(r[1] for r in existing) < asof,
                    "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED")
     phase("PREWRITE_REVALIDATE")
-    writer.require(score_read(api)==before and
-                   api.read("ADAY_GECMISI","M")==candidates and
-                   api.read("TARAMA_KAYITLARI","J")==scans and
-                   api.read("UYARI_OLAYLARI","T")==alerts,
-                   "SWING_SCORE_CONCURRENT_MODIFICATION")
+    latest_before = score_read(api)
+    latest_candidates = api.read("ADAY_GECMISI", "M")
+    latest_scans = api.read("TARAMA_KAYITLARI", "J")
+    latest_alerts = api.read("UYARI_OLAYLARI", "T")
+    writer.require(
+        latest_candidates == candidates and latest_scans == scans and
+        _delivery_only_progress(before, latest_before, score_ledger=True) and
+        _delivery_only_progress(alerts, latest_alerts, score_ledger=False),
+        "SWING_SCORE_CONCURRENT_MODIFICATION")
+    if latest_before != before or latest_alerts != alerts:
+        # At most one extra read-only snapshot, only after a verified benign
+        # request-state transition. The final comparison is still exact.
+        # No second market-data fetch, no second POST, no historical replay.
+        writer.require(score_read(api) == latest_before and
+                       api.read("ADAY_GECMISI", "M") == candidates and
+                       api.read("TARAMA_KAYITLARI", "J") == scans and
+                       api.read("UYARI_OLAYLARI", "T") == latest_alerts,
+                       "SWING_SCORE_CONCURRENT_MODIFICATION")
+    before = latest_before
     phase("APPEND_GATE_OR_POST")
     api.request(":batchUpdate",method="POST",
                 body={"requests":[writer.as_cells(rows,tabid)]})
     phase("POST_READBACK")
     after = score_read(api)
-    writer.require(after[:len(before)] == before and
+    writer.require(len(after) == len(before) + len(rows) and
+                   _delivery_only_progress(before, after[:len(before)],
+                                           score_ledger=True) and
                    normalize_rows(after[len(before):]) == rows,
                    "SWING_SCORE_READBACK_MISMATCH")
     return {"status":"SWING_SCORE_PRIVATE_READBACK_PASS","asof_et":asof,
