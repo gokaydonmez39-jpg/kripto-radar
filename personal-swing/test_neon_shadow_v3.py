@@ -244,6 +244,62 @@ class NeonShadowV3Tests(unittest.TestCase):
             self.assertEqual(data['scope_sha256'],n.scope_digest(MASTER))
             self.assertFalse(data['notification_sent'])
 
+    def test_natural_risk_sidecar_counts_and_exact_coverage(self):
+        from statistics import stdev
+        import math
+        summary=n.risk_cohort_counts(MASTER,self.raw,asof=ASOF,now_utc=NOW)
+        dates=n.session_dates(ASOF,NOW)
+        expected=[0,0,0]
+        for s in MASTER:
+            b=n.validated_bars(s,self.raw[s],dates)
+            ret=[b[i]["close"]/b[i-1]["close"]-1. for i in range(len(b)-20,len(b))]
+            v=stdev(ret)*math.sqrt(252)
+            g=min(b[i]["open"]/b[i-1]["close"]-1. for i in range(1,len(b)))
+            expected[0]+=v>=.60
+            expected[1]+=v<=.10
+            expected[2]+=g<=-.10
+        self.assertEqual(summary["symbols"],477)
+        self.assertEqual(summary["sessions"],52)
+        self.assertEqual([summary["high_vol20_count"],summary["low_vol20_count"],
+                          summary["negative_open_close_discontinuity_10_count"]],expected)
+        self.assertFalse(summary["production_decision_authority"])
+        self.assertEqual(summary["extra_market_requests"],0)
+        self.assertEqual(summary["corporate_action_clearance"],"UNKNOWN")
+        self.assertNotIn("rows",summary)
+        self.assertNotIn("bars",summary)
+        missing=dict(self.raw);del missing[MASTER[0]]
+        with self.assertRaisesRegex(n.NeonHold,"RISK_CAPTURE_SCOPE"):
+            n.risk_cohort_counts(MASTER,missing,asof=ASOF,now_utc=NOW)
+
+    def test_risk_sidecar_failure_preserves_neon_file_and_no_extra_read(self):
+        from unittest.mock import patch
+        count=[]
+        def provider(group,asof):
+            count.append((group,asof))
+            return {s:self.raw[s][:] for s in group}
+        capture=n.Capture(provider,MASTER,ASOF)
+        for i in range(0,477,10):
+            capture.read(MASTER[i:i+10],ASOF)
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"neon.json"
+            result=capture.finish(self.snapshot,expected_policy_sha=POLICY,
+                                  now_utc=NOW,source_event="schedule",output_file=path)
+            original=path.read_bytes()
+            self.assertEqual(result["risk_shadow"]["status"],"COHORT_COUNTS_READY_RESEARCH_ONLY")
+            self.assertEqual(len(count),48)
+            with patch.object(n,"risk_cohort_counts",side_effect=RuntimeError("PRIVATE_EXAMPLE")):
+                failed=capture.finish(self.snapshot,expected_policy_sha=POLICY,
+                                      now_utc=NOW,source_event="schedule",output_file=path)
+                self.assertEqual(failed["risk_shadow"]["status"],"HOLD_RISK_SHADOW")
+                self.assertEqual(failed["status"],result["status"])
+                self.assertEqual(path.read_bytes(),original)
+            with patch.object(n,"risk_cohort_counts",side_effect=AssertionError("MUST_NOT_RUN")) as f:
+                manual=capture.finish(self.snapshot,expected_policy_sha=POLICY,
+                                      now_utc=NOW,source_event="workflow_dispatch",output_file=path)
+                self.assertEqual(manual["risk_shadow"]["status"],"SKIPPED_NON_NATURAL")
+                f.assert_not_called()
+            self.assertEqual(len(count),48)
+
     def test_shadow_capture_fault_does_not_block_original_provider(self):
         class FailingSlice(list):
             def __getitem__(self, key):
