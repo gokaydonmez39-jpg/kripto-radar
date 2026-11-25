@@ -48,7 +48,9 @@ def source_scope(root,asof):
          and watch.get("all_eligible_candidates_tracked") is True
          and watch.get("watchlist_cap") is None
          and watch.get("source_candidates_sha256")==tech.get("source_candidates_sha256")
-         and isinstance(rows,list) and bool(rows)
+         and isinstance(rows,list)
+         and type(watch.get("watchlist_count")) is int
+         and type(watch.get("price_liquidity_screened_count")) is int
          and len(rows)==watch.get("watchlist_count")==watch.get("price_liquidity_screened_count"),
          "WATCH_ASOF_UNIVERSE_NOT_EXACT")
     symbols=[x.get("symbol") for x in rows if isinstance(x,dict)]
@@ -253,6 +255,24 @@ def selftest():
     def one_page(sy,ds,budget):
         budget.reserve()
         return {sy[0]:series},1
+    empty=copy.deepcopy(fake)
+    empty["watch_radar"].update(watchlist=[],watchlist_count=0,price_liquidity_screened_count=0)
+    def no_vendor(*args):
+        raise AssertionError("EMPTY_COHORT_MUST_NOT_CALL_VENDOR")
+    quiet=evaluate(empty,"f"*40,dates,no_vendor,"2026-10-21")
+    need(quiet["total_watch_symbols"]==quiet["attempted_symbols"]==quiet["vendor_requests"]==quiet["research_review_count"]==0
+         and quiet["state_counts"]==quiet["per_symbol"]=={}
+         and quiet["research_review_symbols"]==quiet["orders"]==[]
+         and quiet["registered_r92_count"]==quiet["certified_buy_count"]==0,
+         "EMPTY_COHORT_NO_VENDOR_NO_SIGNAL")
+    for field,value in (("watchlist_count",1),("price_liquidity_screened_count",1),
+                        ("watchlist_count",False),("all_eligible_candidates_tracked",False),
+                        ("watchlist_cap",0),("watchlist",None)):
+        bad=copy.deepcopy(empty)
+        bad["watch_radar"][field]=value
+        try: evaluate(bad,"f"*40,dates,no_vendor,"2026-10-21")
+        except ValueError: pass
+        else: raise AssertionError("MALFORMED_EMPTY_COHORT_ACCEPTED_"+field)
     got=evaluate(fake,"f"*40,dates,one_page,"2026-10-21")
     need(got["attempted_symbols"]==1 and got["vendor_requests"]==1
          and got["registered_r92_count"]==0 and got["orders"]==[]
@@ -358,14 +378,16 @@ def main():
     need(len(weeks)==52,"OFFICIAL_WEEKLY_WINDOW_INVALID")
     key=os.environ.get("XRAY_ALPACA_DATA_KEY_ID") or os.environ.get("XRAY_ALPACA_API_KEY_ID")
     secret=os.environ.get("XRAY_ALPACA_DATA_SECRET_KEY") or os.environ.get("XRAY_ALPACA_API_SECRET_KEY")
-    if not key or not secret:
+    names=source_scope(root,asof)
+    if names and (not key or not secret):
         print("XRAY_PERSONAL_IEX=BLOCKED_NO_EXISTING_ALPACA_DATA_CREDENTIALS_NO_API_CALLS")
         raise SystemExit(3)
     report=evaluate(root,seal(raw),dates,
                     lambda names,days,budget:api_batch(names,days,key,secret,budget=budget),asof)
     z.out.parent.mkdir(parents=True,exist_ok=True)
     z.out.write_text(json.dumps(report,sort_keys=True,separators=(",",":"))+"\n")
-    print("XRAY_PERSONAL_IEX=RESEARCH_EVIDENCE_ONLY_NOT_R92")
+    print("XRAY_PERSONAL_IEX="+("RESEARCH_EVIDENCE_ONLY_NOT_R92" if names else
+                               "NO_WATCH_COHORT_NO_VENDOR_NO_SIGNAL"))
     print("XRAY_PERSONAL_IEX_WATCH_TOTAL="+str(report["total_watch_symbols"]))
     print("XRAY_PERSONAL_IEX_REVIEW_CANDIDATES="+str(report["research_review_count"]))
     print("XRAY_PERSONAL_IEX_COUNTS="+json.dumps(report["state_counts"],sort_keys=True))
