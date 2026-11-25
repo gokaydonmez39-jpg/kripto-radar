@@ -539,6 +539,65 @@ class PrivateNeonLedgerTests(unittest.TestCase):
         self.assertEqual(rows[0][6],"N/A")
         self.assertEqual(rows[1][6],"10.00")
 
+    def two_valid_epochs(self):
+        older=copy.deepcopy(self.calculate()["rows"])
+        for row in older:
+            row[0]="2026-11-18|"+row[2]
+            row[1]="2026-11-18"
+            row[4]="70.00"
+            for j in range(7,12):
+                row[j]="70.00"
+        first=[list(ledger.HEADER)]+older
+        return first+self.calculate(old=first)["rows"]
+
+    def test_stored_two_epoch_deltas_exact_and_idempotent(self):
+        self.api.tab=self.two_valid_epochs()
+        result=ledger.synchronize(self.api,ASOF,RUN,MASTER,POLICY,self.snap)
+        self.assertEqual(result["status"],"NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY")
+        self.assertEqual(self.api.posts,0)
+        self.assertEqual(len(self.api.tab),955)
+
+    def test_mutated_historical_delta_or_prior_day_is_hold_before_post(self):
+        for index,column,value,reason in (
+            (1,5,"2026-11-17","LEDGER_PRIOR_ASOF_DRIFT"),
+            (1,6,"0.00","LEDGER_DELTA_MISSING_BASELINE"),
+            (478,5,"2026-11-17","LEDGER_PRIOR_ASOF_DRIFT"),
+            (478,6,"10.01","LEDGER_DELTA_MATH_DRIFT"),
+            (478,6,"N/A","LEDGER_DELTA_MATH_DRIFT"),
+        ):
+            with self.subTest(index=index,column=column,value=value):
+                self.api.tab=self.two_valid_epochs()
+                self.api.tab[index][column]=value
+                with self.assertRaisesRegex(ledger.NeonLedgerHold,reason):
+                    ledger.synchronize(self.api,ASOF,RUN,MASTER,POLICY,self.snap)
+                self.assertEqual(self.api.posts,0)
+
+    def test_stored_deltas_preserve_policy_and_na_boundaries(self):
+        for mode in ("policy","missing_shadow","missing_symbol"):
+            with self.subTest(mode=mode):
+                older=copy.deepcopy(self.calculate()["rows"])
+                if mode=="missing_shadow":
+                    older=ledger.plan(ASOF,RUN,MASTER,POLICY,scans(),
+                        [list(ledger.HEADER)],None)["rows"]
+                for row in older:
+                    row[0]="2026-11-18|"+row[2]
+                    row[1]="2026-11-18"
+                    if mode=="policy":
+                        row[21]="a"*64
+                if mode=="missing_symbol":
+                    older[0][2]="OLDPIT"
+                    older[0][0]="2026-11-18|OLDPIT"
+                first=[list(ledger.HEADER)]+older
+                current=self.calculate(old=first)["rows"]
+                self.assertEqual(current[0][6],"N/A")
+                self.api.tab=first+current
+                self.assertEqual(ledger.synchronize(self.api,ASOF,RUN,MASTER,POLICY,self.snap)["status"],
+                                 "NEON_PRIVATE_477_ALREADY_VERIFIED_NO_REPLAY")
+                self.api.tab[478][6]="0.00"
+                with self.assertRaisesRegex(ledger.NeonLedgerHold,"LEDGER_DELTA_MISSING_BASELINE"):
+                    ledger.synchronize(self.api,ASOF,RUN,MASTER,POLICY,self.snap)
+                self.assertEqual(self.api.posts,0)
+
     def test_old_factor_policy_change_yields_na_delta(self):
         old=copy.deepcopy(self.calculate()["rows"])
         for row in old:
