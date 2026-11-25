@@ -55,6 +55,21 @@ class SixJobOnlyProof(unittest.TestCase):
         with self.assertRaisesRegex(proof.ReceiptHold,"PRIMARY_JOB_STEP_RECEIPT_MISSING"):
             proof.validate(run,jobs,ASOF,NOW)
 
+    def test_green_jobs_without_exact_offline_panel_or_score_steps_hold(self):
+        for job_name, required in (
+            ("offline-guard", "Static tests before any data API access"),
+            ("offline-guard", "Require real natural EOD GitHub-run receipt (GET only, no tag claim)"),
+            ("private-episode-followups", "Reconcile PANEL from verified private scan and immutable candidate ledger"),
+            ("private-episode-followups", "Private EOD swing ranking V1 (advisory; never blocks AL or Guardian)"),
+        ):
+            with self.subTest(job=job_name, step=required):
+                run, jobs = fixture()
+                job = next(j for j in jobs["jobs"] if j["name"] == job_name)
+                job["steps"] = [s for s in job["steps"] if s["name"] != required]
+                with self.assertRaisesRegex(proof.ReceiptHold,
+                                            "PRIMARY_JOB_STEP_RECEIPT_MISSING"):
+                    proof.validate(run, jobs, ASOF, NOW)
+
     def test_successful_parent_with_skipped_guardian_is_hold(self):
         run,jobs=fixture()
         jobs["jobs"][4]["conclusion"]="skipped"
@@ -182,6 +197,53 @@ class ReadOnlyAuditSelection(unittest.TestCase):
         self.assertTrue(all("https://api.github.com/repos/"+REPO+"/actions/"
                             in item for item in calls))
         self.assertFalse(out["private_sheet_verified"])
+
+    def test_list_detail_identity_drift_stops_before_jobs(self):
+        run, jobs = fixture()
+        # Old code accepted same-ID substituted detail and matching job SHA.
+        for key, value in (
+            ("head_sha", "b"*40),
+            ("created_at", "2026-11-19T23:49:00Z"),
+            ("run_attempt", True),
+            ("id", float(RUN_ID)),
+            ("repository", {"full_name": "other/project"}),
+            ("status", "in_progress"),
+        ):
+            with self.subTest(key=key):
+                detail = copy.deepcopy(run)
+                detail[key] = value
+                changed_jobs = copy.deepcopy(jobs)
+                if key == "head_sha":
+                    for job in changed_jobs["jobs"]:
+                        job["head_sha"] = value
+                calls = []
+                def get(url):
+                    calls.append(url)
+                    if "/actions/workflows/" in url:
+                        return {"total_count": 1, "workflow_runs": [run]}
+                    if url.endswith("/jobs?per_page=100"):
+                        return changed_jobs
+                    return detail
+                with self.assertRaisesRegex(proof.ReceiptHold,
+                                            "PRIMARY_RUN_LIST_DETAIL_DRIFT"):
+                    proof.audit(ASOF, now=NOW, get=get)
+                self.assertEqual(len(calls), 2)
+
+    def test_equivalent_utc_created_timestamp_is_not_false_drift(self):
+        run, jobs = fixture()
+        detail = copy.deepcopy(run)
+        detail["created_at"] = "2026-11-19T18:50:00-05:00"
+        def get(url):
+            if "/actions/workflows/" in url:
+                return {"total_count": 1, "workflow_runs": [run]}
+            if url.endswith("/jobs?per_page=100"):
+                return jobs
+            return detail
+        self.assertEqual(proof.audit(ASOF, now=NOW, get=get)["run_id"], RUN_ID)
+
+    def test_dag_reason_is_safe_public_category(self):
+        self.assertIn("PRIMARY_JOB_DAG_UNVERIFIED", proof.PUBLIC_ERRORS)
+        self.assertIn("PRIMARY_RUN_LIST_DETAIL_DRIFT", proof.PUBLIC_ERRORS)
 
     def test_competing_natural_run_in_same_epoch_is_hold(self):
         # A second natural EOD could have touched the private writer even
