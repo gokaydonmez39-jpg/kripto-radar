@@ -30,12 +30,18 @@ def git_blob_bytes(buf):
     return hashlib.sha1(b"blob "+str(len(buf)).encode("ascii")+b"\0"+buf).hexdigest()
 
 def sec_url_valid(url,cik):
-    if not isinstance(url,str) or not isinstance(cik,str):
+    if (type(url) is not str or type(cik) is not str
+            or re.fullmatch(r"[0-9]{10}",cik) is None or int(cik)==0):
         return False
-    if url.startswith("https://www.sec.gov/Archives/edgar/data/"):
-        return True
-    # Prior official SEC identity seeds sometimes link the SEC CIK browse
-    # page rather than an accession; do not turn this into arbitrary URLs.
+    # This standalone historical loader is also executed through importlib
+    # without its parent on sys.path. Keep its exact URL fence self-contained.
+    archive=re.fullmatch(
+        r"https://www\.sec\.gov/Archives/edgar/data/([0-9]{1,10})/"
+        r"(?:[0-9]{18}/)?[A-Za-z0-9_-][A-Za-z0-9._-]*\.(?:htm|html|txt|xml)",
+        url)
+    if archive is not None:
+        return int(archive.group(1))==int(cik)
+    # Frozen SEC entity URLs use the exact padded CIK only.
     return url=="https://www.sec.gov/edgar/browse/?CIK="+cik
 
 def date_valid(text):
@@ -90,7 +96,8 @@ def prove(proof,seed,asof,symbol,original_sha,current_sha):
     for k in FIELDS:
         if row.get(k)!=manual.get(k):
             reject("PREEXISTING_RECORD_CHANGED:"+k)
-    if (row.get("sic")!=6770 or row.get("classification")!="Blank Checks"
+    if (type(row.get("sic")) is not int or type(manual.get("sic")) is not int
+        or row.get("sic")!=6770 or row.get("classification")!="Blank Checks"
         or manual.get("is_blank_check") is not True
         or manual.get("evidence_authority")!="SEC_EDGAR_OFFICIAL"
         or not re.fullmatch(r"0[0-9]{9}",str(manual.get("cik") or ""))

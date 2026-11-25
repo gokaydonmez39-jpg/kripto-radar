@@ -18,7 +18,8 @@ def cik_number(v):
 
 def sec_source_binds_cik(source,cik):
     target=cik_number(cik)
-    if target is None or not isinstance(source,str):
+    if (target is None or type(source) is not str or not source.isascii()
+            or any(ord(ch)<=32 or ord(ch)==127 for ch in source)):
         return False
     try:
         u=urlsplit(source)
@@ -27,12 +28,36 @@ def sec_source_binds_cik(source,cik):
         q=[v for k,v in parse_qsl(u.query,keep_blank_values=True) if k.upper()=="CIK"]
         if q and (len(q)!=1 or cik_number(q[0])!=target):
             return False
-        m=re.fullmatch(r"/Archives/edgar/data/([0-9]{1,10})/.+",u.path,re.I)
+        # Exact archive document, not a directory, traversal, encoded path
+        # separator or arbitrary same-host resource. Preserve legacy flat
+        # accession filenames and current nested filing documents.
+        m=re.fullmatch(
+            r"/Archives/edgar/data/([0-9]{1,10})/(?:[0-9]{18}/)?"
+            r"[A-Za-z0-9_-][A-Za-z0-9._-]*\.(?:htm|html|txt|xml)",
+            u.path,re.I)
         if m:
             return cik_number(m.group(1))==target
         return u.path in ("/edgar/browse/","/cgi-bin/browse-edgar") and len(q)==1
     except (ValueError,TypeError):
         return False
+
+def exact_manual_seed_identity(row):
+    """Reject coerced or unverified identity fields; never confer alpha authority."""
+    if type(row) is not dict:
+        return False
+    cik=row.get("cik")
+    sic=row.get("sic")
+    blank=row.get("is_blank_check")
+    classification=row.get("classification")
+    return (type(cik) is str and re.fullmatch(r"[0-9]{10}",cik) is not None
+            and cik_number(cik) is not None
+            and type(sic) is int and 100<=sic<=9999
+            and type(blank) is bool and blank==(sic==6770)
+            and type(classification) is str and bool(classification.strip())
+            and ((classification=="Blank Checks")==blank)
+            and row.get("evidence_authority")=="SEC_EDGAR_OFFICIAL"
+            and sec_source_binds_cik(row.get("source_url"),cik))
+
 
 def eligible_evidence(asof,evidence,verified):
     try:
