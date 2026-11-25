@@ -286,5 +286,24 @@ class TestOosAudit(unittest.TestCase):
             o.validate_ledger([list(k.HEADERS)]+rows+[[123 if i==1 else c for i,c in enumerate(rows[0])]])
 
 
+    def test_window_does_not_hide_malformed_rows_before_validation(self):
+        for row,reason in (
+            (["","2026-10-01"],"KEYLESS_NONEMPTY_ROW"),
+            (["bad","2026-02-30"],"INVALID_ROW_ASOF"),
+            (["bad","2026-1-1"],"INVALID_ROW_ASOF"),
+            (["bad",123],"INVALID_ROW_ASOF"),
+            ("not a row","ROW_TYPE_INVALID"),
+        ):
+            class FakeApi:
+                def read(self,*args):
+                    return [list(k.HEADERS),row]
+                def request(self,*args,**kwargs):
+                    return {"sheets":[]}
+            with self.subTest(row=row),self.assertRaisesRegex(k.ShadowHold,reason):
+                o.load_recent_ledgers(FakeApi(),"2026-11-24")
+        rows=forecast(asof="2026-10-01")+forecast(asof="2026-11-06")
+        self.assertEqual(o._window_rows(rows+[[],["",""]],"2026-10-25"),rows[3:])
+
+
 if __name__=='__main__':
     unittest.main()
