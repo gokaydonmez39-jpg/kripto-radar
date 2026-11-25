@@ -59,6 +59,7 @@ jobs:
           # never run with PR secrets / altered market-data authority.
           grep -Fq 'cron: "51 5-23 * * 1-5"' .github/workflows/xray-personal-eod-research-digest.yml
           grep -Fq 'cron: "51 0-3 * * 2-6"' .github/workflows/xray-personal-eod-research-digest.yml
+          grep -Fq "github.event_name != 'push'" .github/workflows/xray-personal-eod-research-digest.yml
           python -m py_compile nasdaq-xray/personal_research_signal_digest.py
           # Offline fixtures exercise the real digest selftest for empty/one/two WATCH rows.
           python -m py_compile nasdaq-xray/test_personal_digest_empty_watch_selftest.py
@@ -80,7 +81,7 @@ jobs:
           python -O nasdaq-xray/personal_research_diagnostics.py --selftest
   publish:
     needs: [offline-regression]
-    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'push' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
