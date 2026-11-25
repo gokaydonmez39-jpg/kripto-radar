@@ -27,6 +27,11 @@ NAMES=(
     "daily-private-score-acceptance",
 )
 REQUIRED_STEPS={
+    "offline-guard": (
+        "Static tests before any data API access",
+        "Personal scheduler and official research-shadow fail-closed contracts",
+        "Require real natural EOD GitHub-run receipt (GET only, no tag claim)",
+    ),
     "private-sheets-auth-preflight": (
         "Verify service-account access and private worksheet headers without writes",),
     "daily-private-scan": (
@@ -36,7 +41,10 @@ REQUIRED_STEPS={
         "Reserve verified new AL events PENDING in private outbox (NO PUSH)",
     ),
     "private-episode-followups": (
-        "Track each open private episode from exact completed XNAS daily IEX bars",),
+        "Track each open private episode from exact completed XNAS daily IEX bars",
+        "Reconcile PANEL from verified private scan and immutable candidate ledger",
+        "Private EOD swing ranking V1 (advisory; never blocks AL or Guardian)",
+    ),
     "guardian-acceptance": (
         "Independent Guardian gates and bounded PANEL-only self-repair",),
     "daily-private-score-acceptance": (
@@ -52,6 +60,8 @@ PUBLIC_ERRORS=frozenset((
     "PRIMARY_RUN_ORIGIN_NOT_VERIFIED",
     "PRIMARY_JOB_RECEIPT_MISSING",
     "PRIMARY_JOB_STEP_RECEIPT_MISSING",
+    "PRIMARY_JOB_DAG_UNVERIFIED",
+    "PRIMARY_RUN_LIST_DETAIL_DRIFT",
     "PRIMARY_EOD_TIME_WINDOW_UNVERIFIED",
     "PRIMARY_EOD_EPOCH_AMBIGUOUS",
     "PRIMARY_API_COLLECTION_UNTRUSTED",
@@ -221,6 +231,30 @@ def github_get(url,token):
         return json.load(response)
 
 
+def _same_run_identity(listed, detail):
+    """Immutable source fields must agree across independently read endpoints.
+
+    A matching numeric run ID alone cannot bind the unique selected producer
+    to a substituted commit or timestamp. Do not request jobs on disagreement.
+    The mutable updated_at field is independently checked by validate().
+    """
+    if not isinstance(listed, dict) or not isinstance(detail, dict):
+        return False
+    for key in ("id", "run_attempt"):
+        if type(listed.get(key)) is not int or type(detail.get(key)) is not int:
+            return False
+    fields = ("id", "run_attempt", "head_sha", "head_branch", "event",
+              "path", "status", "conclusion")
+    if any(listed.get(key) != detail.get(key) for key in fields):
+        return False
+    for row in (listed, detail):
+        repo = row.get("repository")
+        if not isinstance(repo, dict) or repo.get("full_name") != REPO:
+            return False
+    created = utc(listed.get("created_at"))
+    return created is not None and created == utc(detail.get("created_at"))
+
+
 def audit(asof,*,now=None,get=None):
     """Independently re-fetch natural run and its exact six jobs; no POST."""
     now=now if now is not None else datetime.now(timezone.utc)
@@ -252,8 +286,8 @@ def audit(asof,*,now=None,get=None):
          "PRIMARY_EOD_EPOCH_AMBIGUOUS")
     rid=natural[0]["id"]
     original=get(EOD_RUN_BASE+str(rid))
-    need(isinstance(original,dict) and original.get("id")==rid,
-         "PRIMARY_RUN_ORIGIN_NOT_VERIFIED")
+    need(_same_run_identity(natural[0], original),
+         "PRIMARY_RUN_LIST_DETAIL_DRIFT")
     jobs=get(EOD_RUN_BASE+str(rid)+"/jobs?per_page=100")
     return validate(original,jobs,asof,now)
 
