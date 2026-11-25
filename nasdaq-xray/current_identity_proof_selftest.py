@@ -61,8 +61,13 @@ def main():
     assert m.prior_blank_fallback("TLAC",blank,"2026-10-06",names,inds)
     assert m.prior_blank_fallback("TLAC",blank,"2026-10-06",names,{"TLAC":"Technology"})
     fjdi_names={"FJDI":"ARC Group Securities Acquisition I - Class A Ordinary Shares"}
-    fjdi_old={"cik":"0002094712","sic":6770,"classification":"Blank Checks","source_url":"https://www.sec.gov/Archives/edgar/data/2094712/example","evidence_date":"2026-08-03"}
+    # Synthetic offline fixture: URL shape only, never a real filing claim.
+    fjdi_old={"cik":"0002094712","sic":6770,"classification":"Blank Checks","source_url":"https://www.sec.gov/Archives/edgar/data/2094712/example.htm","evidence_date":"2026-08-03"}
     assert m.prior_blank_fallback("FJDI",fjdi_old,"2026-10-06",fjdi_names,{"FJDI":""})
+    malformed=dict(fjdi_old,source_url="https://www.sec.gov/Archives/edgar/data/2094712/example")
+    assert m.prior_blank_fallback("FJDI",malformed,"2026-10-06",fjdi_names,{"FJDI":""}) is None
+    wrong_cik=dict(fjdi_old,source_url="https://www.sec.gov/Archives/edgar/data/2094713/example.htm")
+    assert m.prior_blank_fallback("FJDI",wrong_cik,"2026-10-06",fjdi_names,{"FJDI":""}) is None
     stale=dict(fjdi_old); stale["evidence_date"]="2026-01-01"
     assert m.prior_blank_fallback("FJDI",stale,"2026-10-06",fjdi_names,{"FJDI":""}) is None
     assert m.prior_blank_fallback("XYZ",fjdi_old,"2026-10-06",{"XYZ":"Ordinary Operating Company"},{"XYZ":""}) is None
@@ -352,13 +357,17 @@ def main():
                 "TLAC":{"cik":"0002128462","sic":6770,"classification":"Blank Checks",
                         "is_blank_check":True,"evidence_date":"2026-09-01",
                         "verified_asof_et":"2026-10-06",
+                        "evidence_authority":"SEC_EDGAR_OFFICIAL", # synthetic fixture only
                         "source_url":"https://www.sec.gov/Archives/edgar/data/2128462/example-index.htm"},
                 "ALIS":{"cik":"0002026767","sic":7374,"classification":"Services-Computer Processing & Data Preparation",
                         "is_blank_check":False,"evidence_date":"2026-09-04",
                         "verified_asof_et":"2026-10-06",
+                        "evidence_authority":"SEC_EDGAR_OFFICIAL", # synthetic fixture only
                         "source_url":"https://www.sec.gov/Archives/edgar/data/2026767/example-index.htm"},
                 "OLD":{"cik":"0002000000","sic":6770,"classification":"Blank Checks",
                         "is_blank_check":True,"evidence_date":"2026-01-01",
+                        "verified_asof_et":"2026-10-06",
+                        "evidence_authority":"SEC_EDGAR_OFFICIAL", # synthetic fixture only
                         "source_url":"https://www.sec.gov/Archives/edgar/data/2000000/example-index.htm"},
               },
             }))
