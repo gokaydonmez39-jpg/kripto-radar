@@ -113,7 +113,7 @@
     ]
   },
   "execution": "NONE",
-  "generated_at_utc": "2026-11-26T01:07:58.509520+00:00",
+  "generated_at_utc": "2026-11-26T03:06:23.749038+00:00",
   "real_money": "NO-GO",
   "rules": {
     "halt_poll_min_seconds": 60,
@@ -2352,25 +2352,34 @@
       "url": "https://www.nasdaqtrader.com/rss.aspx?feed=tradehalts"
     },
     "trading_system_adds_deletes": {
-      "row_count": 2,
+      "row_count": 3,
       "rows": [
         {
-          "BX Action": "Add",
-          "Company Name": "The RBB Fund, Inc.",
-          "Effective Date": "11/25/2026",
-          "NASDAQ Action": "Add",
-          "PSX Action": "Add",
-          "Primary Listing Market": "G",
-          "Symbol": "CPHY"
-        },
-        {
           "BX Action": "Delete",
-          "Company Name": "XCF Global, Inc.",
-          "Effective Date": "11/25/2026",
+          "Company Name": "Healthcare Triangle, Inc.",
+          "Effective Date": "11/27/2026",
           "NASDAQ Action": "Delete",
           "PSX Action": "Delete",
           "Primary Listing Market": "S",
-          "Symbol": "SAFX"
+          "Symbol": "HCTI"
+        },
+        {
+          "BX Action": "Add",
+          "Company Name": "H2O America",
+          "Effective Date": "11/27/2026",
+          "NASDAQ Action": "Add",
+          "PSX Action": "Add",
+          "Primary Listing Market": "Q",
+          "Symbol": "HTOEU"
+        },
+        {
+          "BX Action": "Delete",
+          "Company Name": "Vivos Therapeutics, Inc.",
+          "Effective Date": "11/27/2026",
+          "NASDAQ Action": "Delete",
+          "PSX Action": "Delete",
+          "Primary Listing Market": "S",
+          "Symbol": "VVOS"
         }
       ],
       "status": "PASS",
