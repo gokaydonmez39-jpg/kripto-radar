@@ -3,13 +3,13 @@
   "asof_et": "2026-11-25",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-25",
-    "attempted_count": 480,
+    "attempted_count": 475,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 480,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 477,
+    "evaluated_count": 472,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,11 +18,16 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 20,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 3,
+    "pending_count": 8,
     "pending_symbols": [
       "TGTX",
       "GRAL",
-      "LIFE"
+      "LIFE",
+      "REAL",
+      "NTLA",
+      "STNE",
+      "ELVN",
+      "RARE"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -1197,12 +1202,6 @@
         "terminal_scan": true
       },
       "EEFT": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "ELVN": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2481,12 +2480,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "NTLA": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
       "NTNX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2974,18 +2967,6 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
-      "RARE": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "REAL": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
       "REG": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3366,12 +3347,6 @@
         "terminal_scan": true
       },
       "STLD": {
-        "completed_weeks": 54,
-        "history_source": "SINA_US_DAILY",
-        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
-        "terminal_scan": true
-      },
-      "STNE": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -4000,17 +3975,17 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "34e552acb745334a6cbe9b56b0254e02521ad7da9b3559f3be81ff1c9ac52f9f",
+    "source_candidates_sha256": "904c32e850e3bdbf396bd731c4b42ae2a6cf3525a385c30a2d6ebc7aec7bb65b",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 94,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 363,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 358,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 20,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1
     },
     "transient_retry_count": 3,
     "unknown_never_pass": true,
-    "watchlist_digest": "38723be6edaa393c2a2812b6b15f31f26e40391a3ee251693724d4578ddef6e4"
+    "watchlist_digest": "4ad6f4949f333843c1b57a0e1017c32a53bc66e6441c63bbe5842a2a225b28bb"
   },
   "cursor": 3186,
   "downstream_invalidation": {
@@ -4050,8 +4025,8 @@
   "history_unknown_reason_counts": {
     "ASOF_BAR_MISSING_NOT_SHORT_HISTORY_PROOF": 38,
     "EXACT30_SESSIONS_INCOMPLETE": 3,
-    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 136,
-    "STATIC_UNKNOWN_OTHER": 31
+    "SHORT_HISTORY_REQUIRES_INDEPENDENT_PROOF": 137,
+    "STATIC_UNKNOWN_OTHER": 30
   },
   "late_asof_canary_probes_this_run": 0,
   "pending_late_asof_recheck": 0,
@@ -4064,7 +4039,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 208,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-26T01:07:04.778341+00:00",
+  "updated_at_utc": "2026-11-26T02:59:32.848087+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -4082,7 +4057,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "34e552acb745334a6cbe9b56b0254e02521ad7da9b3559f3be81ff1c9ac52f9f",
+    "source_candidates_sha256": "904c32e850e3bdbf396bd731c4b42ae2a6cf3525a385c30a2d6ebc7aec7bb65b",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4286,7 +4261,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 42.57,
-        "dv30_usd_observed": 3499397900.59,
+        "dv30_usd_observed": 3513138262.06,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "CoreWeave, Inc. - Class A Common Stock",
@@ -4692,7 +4667,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 190.34,
-        "dv30_usd_observed": 1119677506.72,
+        "dv30_usd_observed": 1124473313.36,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Astera Labs, Inc. - Common Stock",
@@ -4972,7 +4947,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 13.07,
-        "dv30_usd_observed": 717978489.98,
+        "dv30_usd_observed": 719531813.74,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "SoFi Technologies, Inc.  - Common Stock",
@@ -5000,7 +4975,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 62.48,
-        "dv30_usd_observed": 707034615.2,
+        "dv30_usd_observed": 707233239.12,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "ON Semiconductor Corporation - Common Stock",
@@ -5126,7 +5101,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 172.15,
-        "dv30_usd_observed": 672237865.62,
+        "dv30_usd_observed": 672323165.94,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Airbnb, Inc. - Class A Common Stock",
@@ -5308,7 +5283,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 104.52,
-        "dv30_usd_observed": 554331252.33,
+        "dv30_usd_observed": 554441834.49,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "United Airlines Holdings, Inc. - Common Stock",
@@ -5994,7 +5969,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 48.83,
-        "dv30_usd_observed": 336756716.0,
+        "dv30_usd_observed": 336854839.88,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Hut 8 Corp. - Common Stock",
@@ -6302,7 +6277,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 60.52,
-        "dv30_usd_observed": 274399120.68,
+        "dv30_usd_observed": 274427867.68,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Affirm Holdings, Inc. - Class A Common Stock",
@@ -6596,7 +6571,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 361.53,
-        "dv30_usd_observed": 230721248.91,
+        "dv30_usd_observed": 230733540.93,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Domino's Pizza Inc - Common Stock",
@@ -7365,22 +7340,8 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 245.29,
-        "dv30_usd_observed": 153892737.34,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Jazz Pharmaceuticals plc - Ordinary Shares",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "JAZZ",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 7.85,
-        "dv30_usd_observed": 153865194.17,
+        "dv30_usd_observed": 154225834.94,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Rigetti Computing, Inc.  - Common stock",
@@ -7388,6 +7349,20 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGTI",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 245.29,
+        "dv30_usd_observed": 153911134.09,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Jazz Pharmaceuticals plc - Ordinary Shares",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "JAZZ",
         "tracking_state": "PERSISTING"
       },
       {
@@ -7421,6 +7396,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 14.95,
+        "dv30_usd_observed": 152990768.45,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Strive, Inc. - Class A Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "ASST",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 241.28,
         "dv30_usd_observed": 152619290.13,
         "exact_completed_sessions": 30,
@@ -7430,20 +7419,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "RGLD",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 14.95,
-        "dv30_usd_observed": 152565343.77,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Strive, Inc. - Class A Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "ASST",
         "tracking_state": "PERSISTING"
       },
       {
@@ -7603,6 +7578,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 7.0,
+        "dv30_usd_observed": 143815549.24,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "D-Wave Quantum Inc. - Common Stock",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "QBTS",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 45.7,
         "dv30_usd_observed": 143804082.62,
         "exact_completed_sessions": 30,
@@ -7612,20 +7601,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "TENB",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 7.0,
-        "dv30_usd_observed": 143423559.74,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "D-Wave Quantum Inc. - Common Stock",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "QBTS",
         "tracking_state": "PERSISTING"
       },
       {
@@ -10782,7 +10757,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 50.72,
-        "dv30_usd_observed": 50185470.92,
+        "dv30_usd_observed": 50188285.88,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Enliven Therapeutics, Inc.  - Common Stock",
@@ -10809,6 +10784,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 480,
-    "watchlist_digest": "38723be6edaa393c2a2812b6b15f31f26e40391a3ee251693724d4578ddef6e4"
+    "watchlist_digest": "4ad6f4949f333843c1b57a0e1017c32a53bc66e6441c63bbe5842a2a225b28bb"
   }
 }
