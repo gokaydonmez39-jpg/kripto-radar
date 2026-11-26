@@ -141,6 +141,36 @@ class Contract(unittest.TestCase):
                     "https://www.sec.gov/not-a-filing?CIK=2083689","https://www.sec.gov.evil.test/edgar/browse/?CIK=2083689",
                     "https://www.sec.gov/edgar/browse/?CIK=2083689&CIK=2083689"):
             self.assertFalse(sec_source_binds_cik(url,"0002083689"),url)
+    def test_exact_url_query_fence_preserves_landing_owner_filter(self):
+        cik="0002094919"
+        landing="https://www.sec.gov/edgar/browse/"
+        archive="https://www.sec.gov/Archives/edgar/data/2094919/000121390026120230/0001213900-26-120230-index.html"
+        for url in (
+            landing+"?CIK=2094919",landing+"?CIK=0002094919",
+            landing+"?CIK=2094919&owner=exclude",
+            landing+"?owner=exclude&CIK=2094919",
+            archive,archive+"?CIK=2094919",
+            "https://www.sec.gov/cgi-bin/browse-edgar?CIK=2094919",
+        ):
+            with self.subTest(url=url):
+                self.assertTrue(sec_source_binds_cik(url,cik))
+        for url in (
+            landing+"?CIK=2094919&action=other",
+            landing+"?CIK=2094919&owner=include",
+            landing+"?CIK=2094919&owner=exclude&owner=exclude",
+            landing+"?CIK=2094919&foo=",
+            landing+"?CIK=%32%30%39%34%39%31%39",
+            landing+"?CIK=2094919&",
+            archive+"?CIK=2094919&owner=exclude",
+            archive+"?symbol=OTHER",
+            landing+"?CIK=0",landing+"?CIK=2094919&CIK=",
+            landing+"?CIK=2094919&CIK=2094919",
+            landing+"?CIK=1",archive.replace("/2094919/","/1/"),
+            landing+"?owner=exclude",landing+"?CIK=2094919#x",
+        ):
+            with self.subTest(url=url):
+                self.assertFalse(sec_source_binds_cik(url,cik))
+
     def test_exact_archive_path_and_seed_identity_fence(self):
         row=doc()["renewals"]["AEAQ"][0]
         self.assertTrue(exact_manual_seed_identity(row))
