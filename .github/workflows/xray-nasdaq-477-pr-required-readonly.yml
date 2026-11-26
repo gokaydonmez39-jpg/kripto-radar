@@ -49,6 +49,12 @@ jobs:
           # This assert-based legacy integration suite must run without -O.
           # Same offline fixtures as the existing post-merge SPAC guard.
           python nasdaq-xray/current_identity_proof_selftest.py
+      - name: Historical SIP official session close settlement regression (offline only)
+        run: |
+          python nasdaq-xray/sip_settlement_witness_guard.py --selftest
+          python -O nasdaq-xray/sip_settlement_witness_guard.py --selftest
+          python nasdaq-xray/settlement_same_asof_failonly_rebind.py
+          python -O nasdaq-xray/settlement_same_asof_failonly_rebind.py
       - name: Macro context validity regression (offline only)
         run: |
           python nasdaq-xray/macro_context_probe.py --selftest

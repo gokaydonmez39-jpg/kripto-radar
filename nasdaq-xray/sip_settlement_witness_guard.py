@@ -9,7 +9,7 @@ import copy
 import hashlib
 import json
 import math
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -62,6 +62,11 @@ def verify_proof(w: dict) -> None:
     asof = w.get("asof_et")
     if not isinstance(asof, str):
         raise ValueError("SIP_ASOF_MISSING")
+    # Same pinned Nasdaq calendar as the existing RTH integrity guard.
+    # The closing timestamp must follow the official session, including
+    # early closes; no weekday/16:00 assumption and no holiday acceptance.
+    from alpaca_rth_minute_integrity_shadow import official_window
+    _, close, _ = official_window(asof)
     for sym in names:
         record = evidence[sym]
         a = record.get("alpaca_sip") or {}
@@ -78,7 +83,7 @@ def verify_proof(w: dict) -> None:
                 and session.astimezone(ET).date().isoformat() == asof
                 and session.astimezone(ET).time() == time(0, 0)
                 and quote.astimezone(ET).date().isoformat() == asof
-                and time(16, 0) <= quote.astimezone(ET).time() <= time(16, 2)):
+                and close <= quote <= close + timedelta(minutes=2)):
             raise ValueError("SIP_SESSION_TIMESTAMP_MISMATCH:" + sym)
         for field in ("open", "high", "low", "close"):
             sip, rallies, longbridge = (amount(o[field]) for o in (a, r, l))
@@ -155,6 +160,34 @@ def selftest() -> None:
     must_fail(lambda x: x["settlement_evidence"].pop("MSFT"))
     must_fail(lambda x: x.__setitem__("settlement_status", "UNKNOWN"))
     print("XRAY_SIP_SETTLEMENT_WITNESS_SELFTEST=PASS_POSITIVE_AND_5_NEGATIVE")
+    # Synthetic timestamps only: these are calendar boundary regressions,
+    # never a claim of observed future market data or settlement.
+    def on_date(day, quote_clock):
+        x = copy.deepcopy(witness)
+        x["asof_et"] = day
+        x["settlement_evidence_provenance"]["observation_asof_et"] = day
+        for row in x["settlement_evidence"].values():
+            row["alpaca_sip"]["timestamp"] = day + "T00:00:00-05:00"
+            row["rallies"]["date"] = day
+            row["longbridge"]["timestamp"] = day + "T" + quote_clock + "-05:00"
+        return x
+    for day, stamp in (("2026-11-25", "16:00:00"),
+                       ("2026-11-25", "16:02:00"),
+                       ("2026-11-27", "13:00:00"),
+                       ("2026-11-27", "13:02:00")):
+        verify_proof(on_date(day, stamp))
+    for day, stamp in (("2026-11-26", "16:00:00"),
+                       ("2026-11-27", "12:59:59"),
+                       ("2026-11-27", "13:02:01"),
+                       ("2026-11-27", "16:00:00"),
+                       ("2026-11-25", "13:00:00"),
+                       ("2026-11-25", "16:02:01")):
+        try:
+            verify_proof(on_date(day, stamp))
+        except ValueError:
+            continue
+        raise AssertionError("UNSAFE_OFFICIAL_CLOSE_ACCEPTED:" + day + ":" + stamp)
+    print("XRAY_SIP_SETTLEMENT_OFFICIAL_CLOSE_SELFTEST=PASS_4_POSITIVE_6_NEGATIVE_NO_ALPHA")
 
 
 if __name__ == "__main__":
