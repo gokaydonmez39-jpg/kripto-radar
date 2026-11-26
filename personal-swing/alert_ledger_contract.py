@@ -39,6 +39,56 @@ class LedgerRefused(ValueError):
     pass
 
 
+def prior_active_at_session_start(rows, symbol, asof):
+    """Shared AL suppression policy: prior episode active entering ASOF.
+
+    A prior episode closed during ASOF was active at the session boundary.
+    The producer runs before lifecycle, Guardian after it. Never reinterpret
+    the same-day close as authority to request another notification.
+    A previously closed episode does not suppress. Unproven closure fails
+    closed; a late historical correction may require separate reconciliation.
+    """
+    active = False
+    for old in rows:
+        if len(old) < 3 or old[2] != symbol or old[1] >= asof:
+            continue
+        try:
+            opening = date.fromisoformat(old[1])
+            session = date.fromisoformat(asof)
+            if opening.isoformat() != old[1] or session.isoformat() != asof:
+                raise ValueError
+            if len(old) < 8:
+                raise ValueError
+            state = str(old[7])
+            opened = re.fullmatch(r'AÇIK • (\d+)/15 SEANS', state)
+            if opened:
+                if not 0 <= int(opened.group(1)) < 15:
+                    raise ValueError
+                if any(str(v) for v in old[8:10]):
+                    raise ValueError
+                active = True
+                continue
+            closed = re.fullmatch(r'KAPALI • ([A-Z_]+) • (\d+)/15 SEANS', state)
+            if not closed or len(old) < 10:
+                raise ValueError
+            code, held = closed.group(1), int(closed.group(2))
+            terminal = {'STOP_TOUCHED', 'BOTH_TOUCHED_STOP_FIRST_AMBIGUOUS',
+                        'TARGET_TOUCHED', 'TIME_EXIT_AT_CLOSE',
+                        'CORPORATE_ACTION_REVIEW'}
+            closure = date.fromisoformat(old[8])
+            if (code not in terminal or old[9] != code
+                    or not (0 <= held <= 15)
+                    or (code == 'TIME_EXIT_AT_CLOSE' and held != 15)
+                    or (code != 'CORPORATE_ACTION_REVIEW' and held == 0)
+                    or closure.isoformat() != old[8]
+                    or not opening < closure <= session):
+                raise ValueError
+            active = active or closure == session
+        except (TypeError, ValueError, IndexError):
+            raise LedgerRefused('PRIOR_EPISODE_BOUNDARY_UNPROVEN') from None
+    return active
+
+
 def event_key(al_asof,symbol,event_asof,event_type,first_trigger_index=1):
     """The same logical event cannot get a new ID on retries."""
     try:

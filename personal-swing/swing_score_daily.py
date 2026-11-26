@@ -232,6 +232,61 @@ def build(candidate_values, scan_values, alert_values, asof, read_batch):
     writer.require(len(result) == len(episodes) + 1, "SWING_SCORE_LOST_EPISODE")
     return result
 
+def require_score_ledger(matrix, header, ready, requested, timestamp_check, require):
+    """Validate without modifying rows. Header-only is a valid empty ledger.
+
+    Google values API omits trailing empty cells; a row can therefore end at
+    version (column 33). An interior blank row or malformed nonempty row is
+    not silently dropped. Summary request is *not* device ACK. No inference of
+    actual delivery, score validity, or historical receipt authenticity.
+    """
+    require(type(matrix) is list and bool(matrix) and
+            type(matrix[0]) is list and tuple(matrix[0]) == tuple(header),
+            "SWING_SCORE_HEADER_DRIFT")
+    require(len(header) == 35, "SWING_SCORE_COL_COUNT")
+    seen = set()
+    for row in matrix[1:]:
+        require(type(row) is list and 33 <= len(row) <= 35 and
+                all(type(v) is str for v in row),
+                "SWING_SCORE_LEDGER_ROW_SHAPE")
+        key, asof, ep, symbol, kind = row[:5]
+        valid_date = False
+        if re.fullmatch(r"20\d{2}-\d{2}-\d{2}", asof):
+            try:
+                valid_date = date.fromisoformat(asof).isoformat() == asof
+            except ValueError:
+                pass
+        require(valid_date and bool(key) and key not in seen,
+                "SWING_SCORE_LEDGER_IDENTITY")
+        seen.add(key)
+        require(all(re.fullmatch(r"[a-f0-9]{64}", row[i]) is not None
+                    for i in (29, 30, 31)) and bool(row[32]),
+                "SWING_SCORE_LEDGER_PIN")
+        state, stamp = row[27:29]
+        if kind == "SUMMARY":
+            require(key == asof + "|SUMMARY" and ep == symbol == "",
+                    "SWING_SCORE_LEDGER_IDENTITY")
+            require((state == ready and stamp == "") or
+                    (state == requested and timestamp_check(stamp, asof)),
+                    "SWING_SCORE_LEDGER_DELIVERY")
+        elif kind == "EPISODE":
+            ep_asof, sep, ep_symbol = ep.partition("|")
+            ep_date_valid = False
+            if re.fullmatch(r"20\d{2}-\d{2}-\d{2}", ep_asof):
+                try:
+                    ep_date_valid = date.fromisoformat(ep_asof).isoformat() == ep_asof
+                except ValueError:
+                    pass
+            require(sep == "|" and ep_date_valid and ep_asof <= asof and
+                    re.fullmatch(r"[A-Z][A-Z0-9.]{0,15}", symbol) is not None and
+                    ep_symbol == symbol and key == asof + "|" + ep,
+                    "SWING_SCORE_LEDGER_IDENTITY")
+            require(state == stamp == "", "SWING_SCORE_LEDGER_DELIVERY")
+        else:
+            require(False, "SWING_SCORE_LEDGER_IDENTITY")
+    return matrix
+
+
 def score_read(api):
     # Read every occupied row, not merely the first 50,000. Google Sheets
     # appendCells extends the grid; truncated old ASOF keys would falsely
@@ -241,7 +296,9 @@ def score_read(api):
                          "?valueRenderOption=FORMATTED_VALUE").get("values", [])
     writer.require(isinstance(matrix, list) and len(matrix) <= MAX_ROWS,
                    "SWING_SCORE_READ_CAPACITY_REACHED")
-    return matrix
+    return require_score_ledger(matrix, HEADER, READY, REQUESTED,
+                                _request_timestamp, writer.require)
+
 
 def normalize_rows(matrix):
     return [list(r) + [""] * (len(HEADER) - len(r)) for r in matrix]
@@ -469,6 +526,10 @@ _SAFE_HOLD_CODES=frozenset((
     "SWING_SCORE_HISTORICAL_BACKFILL_REJECTED",
     "SWING_SCORE_HOLD",
     "SWING_SCORE_LAST_SCAN_ASOF_DRIFT",
+    "SWING_SCORE_LEDGER_ROW_SHAPE",
+    "SWING_SCORE_LEDGER_IDENTITY",
+    "SWING_SCORE_LEDGER_PIN",
+    "SWING_SCORE_LEDGER_DELIVERY",
     "SWING_SCORE_LOST_EPISODE",
     "SWING_SCORE_NONCURRENT_NATURAL_ASOF",
     "SWING_SCORE_NONFINITE",

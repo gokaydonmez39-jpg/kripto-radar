@@ -75,11 +75,8 @@ def plan(snapshot, candidates, scans, alerts, run_url):
                            (6, row['indicative_target_2r'])):
             require(price_matches(candidate[col], value),
                     'CANDIDATE_IMMUTABLE_LEVEL_DRIFT')
-        active_before = any(old[2] == symbol
-                            and old[1] < asof
-                            and len(old) > 7
-                            and str(old[7]).startswith('AÇIK')
-                            for old in existing_candidates)
+        active_before = contract.prior_active_at_session_start(
+            existing_candidates, symbol, asof)
         status = contract.SUPPRESSED if active_before else contract.CONFIRMED_PENDING
         key = contract.event_key(asof, symbol, asof, 'AL_NEW_EPISODE', 1)
         older = prior.get(key)

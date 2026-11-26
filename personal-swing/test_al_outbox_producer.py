@@ -143,6 +143,40 @@ class ALPendingOutboxTests(unittest.TestCase):
         self.assertEqual(matched[0][17], lc.SUPPRESSED)
         self.assertEqual(result['messages_sent'], 0)
 
+    def test_session_boundary_same_day_close_preserves_suppression(self):
+        a = Fake()
+        sym = next(r['symbol'] for r in a.snap['rows'] if r['decision'] == 'AL')
+        day = a.snap['asof_et']
+        old = ['2026-10-20|' + sym, '2026-10-20', sym, 'TEKNİK AL ADAYI',
+               '50', '45', '60', 'AÇIK • 3/15 SEANS', '', '', '']
+        a.candidates.insert(1, old)
+        self.assertEqual(out.synchronize(a.snap, RUN, a)['new_suppressed'], 1)
+        frozen = copy.deepcopy(a.alerts)
+        old[7:11] = ['KAPALI • TIME_EXIT_AT_CLOSE • 15/15 SEANS',
+                     day, 'TIME_EXIT_AT_CLOSE', '0']
+        result = out.synchronize(a.snap, RUN, a)
+        self.assertEqual(result['new_suppressed'], 0)
+        self.assertEqual(a.alerts, frozen)
+        self.assertEqual(a.append_calls, 1)
+
+    def test_previous_session_close_not_suppressed_and_malformed_blocks(self):
+        a = Fake()
+        sym = next(r['symbol'] for r in a.snap['rows'] if r['decision'] == 'AL')
+        old = ['2026-10-20|' + sym, '2026-10-20', sym, 'TEKNİK AL ADAYI',
+               '50', '45', '60', 'KAPALI • STOP_TOUCHED • 3/15 SEANS',
+               '2026-10-23', 'STOP_TOUCHED', '-10']
+        a.candidates.insert(1, old)
+        self.assertEqual(out.synchronize(a.snap, RUN, a)['new_pending'], 2)
+        for bad in ('', '2026-10-27', '20261023'):
+            b = Fake()
+            row = copy.deepcopy(old)
+            row[8] = bad
+            b.candidates.insert(1, row)
+            with self.assertRaisesRegex(lc.LedgerRefused,
+                                        'PRIOR_EPISODE_BOUNDARY_UNPROVEN'):
+                out.synchronize(b.snap, RUN, b)
+            self.assertEqual(b.append_calls, 0)
+
     def test_existing_requested_event_never_replayed(self):
         a = Fake()
         first = out.synchronize(a.snap, RUN, a)

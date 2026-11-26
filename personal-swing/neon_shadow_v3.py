@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal, ROUND_HALF_UP
+from fractions import Fraction
 from pathlib import Path
 import hashlib
 import json
@@ -15,7 +16,7 @@ import math
 import os
 import re
 from bisect import bisect_left, bisect_right
-from statistics import mean
+from statistics import mean, stdev
 
 import exchange_calendars as ec
 
@@ -245,6 +246,51 @@ def evaluate(snapshot, master, raw_by_symbol, *, expected_policy_sha, now_utc, s
             "rows":ranked}
 
 
+def risk_cohort_counts(master, raw_by_symbol, *, asof, now_utc):
+    """Advisory aggregate counts on the existing exact 52-session capture.
+
+    Sample standard deviation of last 20 simple close returns, annualized
+    using sqrt(252). A >=10% negative open/previous-close discontinuity is a
+    review flag, NOT a confirmed gap loss: corporate action and execution
+    attribution remain UNKNOWN. The illustrative 60/10 percent thresholds
+    are NOT a calibrated model, order gate, or ranking input.
+    """
+    scope_digest(master)
+    dates = session_dates(asof, now_utc)
+    require(len(dates) == 52, "RISK_CALENDAR_CONTRACT")
+    require(type(raw_by_symbol) is dict and set(raw_by_symbol) == set(master),
+            "RISK_CAPTURE_SCOPE")
+    high = low = discontinuity = 0
+    for symbol in master:
+        bars = validated_bars(symbol, raw_by_symbol[symbol], dates)
+        returns = [bars[i]["close"] / bars[i-1]["close"] - 1.
+                   for i in range(1, len(bars))]
+        vol = stdev(returns[-20:]) * math.sqrt(252.)
+        minimum = min(bars[i]["open"] / bars[i-1]["close"] - 1.
+                      for i in range(1, len(bars)))
+        require(math.isfinite(vol) and math.isfinite(minimum), "RISK_NONFINITE")
+        high += vol >= .60
+        low += vol <= .10
+        # Exact decimal-rendered input comparison: open <= 0.9 * prior close.
+        # Avoid binary float cancellation at exactly -10% (90/100 - 1).
+        discontinuity += any(
+            10 * Fraction(str(bars[i]["open"])) <=
+            9 * Fraction(str(bars[i-1]["close"]))
+            for i in range(1, len(bars)))
+    # Only cohort counts and source/authority labels leave this function.
+    # Never emit symbol classifications, OHLCV, candidate IDs or trade levels.
+    return {"schema": "XRAY_477_RISK_COUNTS_SHADOW_V1",
+            "status": "COHORT_COUNTS_READY_RESEARCH_ONLY",
+            "asof_et": asof, "symbols": 477, "sessions": len(dates),
+            "high_vol20_count": high, "low_vol20_count": low,
+            "negative_open_close_discontinuity_10_count": discontinuity,
+            "vol20_thresholds": "ANNUALIZED_SAMPLE_STD_GE_0.60_LE_0.10",
+            "basis": "ORIGINAL_IEX_CAPTURE_NOT_CONSOLIDATED",
+            "corporate_action_clearance": "UNKNOWN", "spread": "UNKNOWN",
+            "extra_market_requests": 0, "production_decision_authority": False,
+            "orders_sent": 0, "notification_sent": False}
+
+
 class Capture:
     """A tap on the existing provider call. Does not add a market-data request."""
     def __init__(self, provider, symbols, asof):
@@ -281,6 +327,21 @@ class Capture:
         temp = path.with_suffix(path.suffix + '.tmp')
         temp.write_text(payload,encoding='utf-8')
         os.replace(temp,path)
-        return {"status":"NEON_SHADOW_477_READY_PRIVATE_NO_DELIVERY",
-                "scored":result["counts"]["scored"],"asof":result["asof_et"],
-                "orders_sent":0,"notification_sent":False}
+        outcome = {"status":"NEON_SHADOW_477_READY_PRIVATE_NO_DELIVERY",
+                   "scored":result["counts"]["scored"],"asof":result["asof_et"],
+                   "orders_sent":0,"notification_sent":False}
+        # Independent advisory failure boundary AFTER the original atomic NEON
+        # file write. No extra provider read, no alteration of the NEON payload,
+        # no extra Sheet write, no change to AL/score/Guardian/lease authority.
+        risk = {"schema": "XRAY_477_RISK_COUNTS_SHADOW_V1",
+                "status": "SKIPPED_NON_NATURAL", "production_decision_authority": False}
+        if source_event == "schedule":
+            try:
+                risk = risk_cohort_counts(self.master, self.raw,
+                                          asof=self.asof, now_utc=now_utc)
+            except Exception:
+                # Fixed redacted failure, never publish exception text/rows.
+                risk = {"schema": "XRAY_477_RISK_COUNTS_SHADOW_V1",
+                        "status": "HOLD_RISK_SHADOW", "production_decision_authority": False}
+        outcome["risk_shadow"] = risk
+        return outcome
