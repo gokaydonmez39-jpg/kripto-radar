@@ -92,7 +92,7 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertEqual(api.panel[12][1],
                          'KİŞİSEL ARAŞTIRMA START AKTİF · CHATGPT TESLİMİ AYRI')
         self.assertEqual(api.panel[13][1],
-                         'KİŞİSEL IEX EOD PASS · CANONICAL NO-GO')
+                         'IEX TARAMA PASS · EOD KABULÜ AYRI · CANONICAL NO-GO')
         self.assertIn('ChatGPT',api.panel[12][2])
         self.assertIn('ayrı kabul',api.panel[13][2])
         self.assertEqual(api.panel[15][1],'1 TEKNİK KAYIT')
@@ -111,6 +111,15 @@ class PanelReconcileTests(unittest.TestCase):
         self.assertNotIn('ACK UNKNOWN',texts)
         self.assertNotIn('cihaz ACK',texts)
         self.assertIn('ayrı kabul',texts)
+    def test_pre_guardian_panel_never_claims_full_eod_pass(self):
+        api=FakeApi()
+        plan=p.plan(api.panel,api.candidates,api.scans)
+        self.assertTrue(plan['values'][10][0].startswith('Son doğrulanmış tarama '))
+        self.assertNotIn('Son FINAL',plan['values'][10][0])
+        self.assertIn('EOD KABULÜ AYRI',plan['values'][13][0])
+        self.assertNotIn('EOD PASS',plan['values'][13][0])
+        self.assertIn('Guardian ve tam EOD',plan['values'][13][1])
+
     def test_idempotent_replay_has_no_second_write(self):
         api=FakeApi()
         p.synchronize(api)
