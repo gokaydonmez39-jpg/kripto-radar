@@ -125,10 +125,10 @@ def evaluate(candidates, scans, alerts, dashboard, expected_asof,
         key = lc.event_key(asof, symbol, asof, "AL_NEW_EPISODE", 1)
         e = events.get(key)
         need(e is not None, "AL_OUTBOX_EVENT_MISSING")
-        prev_open = any(
-            old[2] == symbol and old[1] < asof and
-            str(old[7]).startswith("AÇIK")
-            for old in rows)
+        try:
+            prev_open = lc.prior_active_at_session_start(rows, symbol, asof)
+        except lc.LedgerRefused:
+            raise GuardianHold("PRIOR_EPISODE_BOUNDARY_UNPROVEN") from None
         allowed = {lc.SUPPRESSED} if prev_open else FOLLOWUP_STATES
         need(e["status"] in allowed, "AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT")
         erow = e["row"]
@@ -284,6 +284,7 @@ def main(argv=None):
             "IMMUTABLE_PRICE_ORDER", "IMMUTABLE_RR_NOT_2R",
             "LIFECYCLE_15_SESSION_BOUNDS", "AL_OUTBOX_EVENT_MISSING",
             "AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT",
+            "PRIOR_EPISODE_BOUNDARY_UNPROVEN",
             "AL_OUTBOX_IMMUTABLE_LEVEL_DRIFT",
             "PANEL_SOURCE_ASOF_DRIFT", "EXPECTED_RUN_ID_INVALID",
             "CONCURRENT_SOURCE_CHANGE_NO_REPAIR",
