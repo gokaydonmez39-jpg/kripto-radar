@@ -171,6 +171,41 @@ class GuardianTests(unittest.TestCase):
                                     "AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT"):
             guardian.run(a, a.asof)
 
+    def test_same_session_terminal_after_reservation_preserves_guardian(self):
+        src = cases.Fake()
+        sym = next(r['symbol'] for r in src.snap['rows'] if r['decision'] == 'AL')
+        day = src.snap['asof_et']
+        old = ['2026-10-05|' + sym, '2026-10-05', sym, 'TEKNİK AL ADAYI',
+               '100', '95', '110', 'AÇIK • 14/15 SEANS', '', '', '']
+        src.candidates.insert(1, old)
+        out.synchronize(src.snap, src.scans[1][8], src)
+        a = Fixture()
+        a.candidates = copy.deepcopy(src.candidates)
+        a.scans = copy.deepcopy(src.scans)
+        a.alerts = copy.deepcopy(src.alerts)
+        self.assertEqual(a.evaluate()['suppressed_new_al'], 1)
+        a.candidates[1][7:11] = ['KAPALI • TIME_EXIT_AT_CLOSE • 15/15 SEANS',
+                                 day, 'TIME_EXIT_AT_CLOSE', '0']
+        frozen = copy.deepcopy((a.candidates, a.scans, a.alerts))
+        self.assertEqual(a.evaluate()['suppressed_new_al'], 1)
+        self.assertEqual((a.candidates, a.scans, a.alerts), frozen)
+        event = next(r for r in a.alerts[1:] if r[3] == sym)
+        event[17] = lc.CONFIRMED_PENDING
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    'AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT'):
+            a.evaluate()
+        event[17] = lc.SUPPRESSED
+        a.candidates[1][8] = '2026-10-23'
+        with self.assertRaisesRegex(guardian.GuardianHold,
+                                    'AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT'):
+            a.evaluate()
+        for bad in ('', '2026-10-27', '20261026'):
+            a.candidates[1][8] = bad
+            with self.assertRaisesRegex(guardian.GuardianHold,
+                                        'PRIOR_EPISODE_BOUNDARY_UNPROVEN'):
+                a.evaluate()
+        self.assertEqual(a.writes, 0)
+
     def test_bad_header_and_state_hold(self):
         a = Fixture()
         a.alerts[0][0] = "WRONG"
