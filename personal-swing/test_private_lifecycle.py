@@ -102,6 +102,18 @@ class LifeCycleNaturalWriterSourceAcceptance(unittest.TestCase):
         provider.assert_called_once()
         operation.assert_called_once()
 
+    def test_pre_al_expired_or_wrong_session_blocks_before_sheet(self):
+        for eligible in (None,'2026-11-25'):
+            with self.subTest(eligible=eligible),patch.dict(os.environ,self.source_env(),clear=True):
+                with patch.object(life.daily_job,'current_completed_session',return_value=eligible):
+                    with patch.object(life,'SheetApi',side_effect=AssertionError('NO_SHEET')) as api:
+                        with contextlib.redirect_stdout(io.StringIO()) as captured:
+                            rc=life.main(['--asof','2026-11-23','--before-al-reservation'])
+            self.assertEqual(rc,3)
+            self.assertEqual(json.loads(captured.getvalue())['reason_code'],
+                             'LIFECYCLE_PRE_AL_CURRENT_SESSION_REQUIRED')
+            api.assert_not_called()
+
     def test_legitimate_natural_no_session_preserves_noop_without_sheet(self):
         with patch.dict(os.environ,self.source_env(),clear=True):
             with patch.object(life.daily_job,'current_completed_session',
@@ -164,6 +176,37 @@ class FakeApi:
 
 
 class LifecycleTruthTests(unittest.TestCase):
+    def test_pre_al_catchup_noop_and_exact_run_fence(self):
+        api=FakeApi()
+        with patch.object(life,'build_updates',side_effect=AssertionError('NO_VENDOR_OR_PLAN')):
+            result=life.synchronize(api,'2026-10-26',fetch,before_al_run_url=SOURCE_RUN)
+        self.assertEqual(result['status'],'LIFECYCLE_PRE_AL_CURRENT_HISTORY_NOOP')
+        self.assertEqual(api.writes,0)
+        with self.assertRaisesRegex(HandoffBlocked,'LIFECYCLE_PRE_AL_EXACT_RUN_REQUIRED'):
+            life.synchronize(api,'2026-10-26',fetch,before_al_run_url=SOURCE_RUN+'9')
+        self.assertEqual(api.writes,0)
+
+    def test_pre_al_catchup_missed_friday_and_repeat(self):
+        api=FakeApi()
+        api.rows=[list(CANDIDATE_HEADER),row('2026-10-22',100.,95.,110.,0)]
+        before=copy.deepcopy(api.rows)
+        with self.assertRaisesRegex(ValueError,'FOLLOWUP_MISSING_INTERMEDIATE_SESSION'):
+            life.synchronize(api,'2026-10-26',fetch,before_al_run_url=SOURCE_RUN)
+        self.assertEqual(api.rows,before)
+        self.assertEqual(api.writes,0)
+        def read(syms,day):
+            self.assertEqual((syms,day),(['AAA'],'2026-10-26'))
+            return {'AAA':[bar('2026-10-23',o=100,h=104,l=94,c=100)]}
+        result=life.synchronize(api,'2026-10-26',read,before_al_run_url=SOURCE_RUN)
+        self.assertEqual(result['terminal_updates'],1)
+        self.assertEqual(api.rows[1][8],'2026-10-23')
+        self.assertEqual(api.rows[1][:7],before[1][:7])
+        self.assertEqual(api.writes,1)
+        again=life.synchronize(api,'2026-10-26',
+            lambda *args: self.fail('NO_REPEAT_VENDOR_CALL'),before_al_run_url=SOURCE_RUN)
+        self.assertEqual(again['status'],'LIFECYCLE_PRE_AL_CURRENT_HISTORY_NOOP')
+        self.assertEqual(api.writes,1)
+
     def test_same_symbol_multiple_episodes_distinct_outcomes(self):
         plan=life.build_updates(sheet(),'2026-10-26',fetch)
         self.assertEqual((plan['evaluated'],plan['closed']),(2,1))

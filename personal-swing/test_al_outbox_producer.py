@@ -134,7 +134,7 @@ class ALPendingOutboxTests(unittest.TestCase):
         sym = next(r['symbol'] for r in a.snap['rows']
                    if r['decision'] == 'AL')
         old = ['2026-10-23|' + sym, '2026-10-23', sym, 'TEKNİK AL ADAYI',
-               '50', '45', '60', 'AÇIK • 2/15 SEANS']
+               '50', '45', '60', 'AÇIK • 0/15 SEANS']
         a.candidates.insert(1, old)
         result = out.synchronize(a.snap, RUN, a)
         self.assertEqual(result['new_suppressed'], 1)
@@ -176,6 +176,16 @@ class ALPendingOutboxTests(unittest.TestCase):
                                         'PRIOR_EPISODE_BOUNDARY_UNPROVEN'):
                 out.synchronize(b.snap, RUN, b)
             self.assertEqual(b.append_calls, 0)
+
+    def test_overdue_prior_episode_blocks_before_any_new_event(self):
+        a=Fake()
+        sym=next(r['symbol'] for r in a.snap['rows'] if r['decision']=='AL')
+        a.candidates.insert(1,['2026-10-22|'+sym,'2026-10-22',sym,
+            'TEKNİK AL ADAYI','100','95','110','AÇIK • 0/15 SEANS','','',''])
+        with self.assertRaisesRegex(out.OutboxBlocked,'PRIOR_EPISODE_HISTORY_NOT_CURRENT'):
+            out.synchronize(a.snap,RUN,a)
+        self.assertEqual(a.append_calls,0)
+        self.assertEqual(len(a.alerts),1)
 
     def test_existing_requested_event_never_replayed(self):
         a = Fake()

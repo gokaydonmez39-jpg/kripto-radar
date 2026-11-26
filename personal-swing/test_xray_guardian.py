@@ -206,6 +206,61 @@ class GuardianTests(unittest.TestCase):
                 a.evaluate()
         self.assertEqual(a.writes, 0)
 
+    def test_missed_session_close_precedes_reservation_without_weakening_guardian(self):
+        import private_lifecycle as life
+        import test_private_lifecycle as fixtures
+        def source():
+            src=cases.Fake()
+            sym=next(r['symbol'] for r in src.snap['rows'] if r['decision']=='AL')
+            src.candidates.insert(1,fixtures.row('2026-10-22',100,95,110,0,symbol=sym))
+            return src,sym
+        def follow(src,sym,close_earlier):
+            bars=[fixtures.bar('2026-10-23',o=100,h=104,l=94 if close_earlier else 99,c=100)]
+            if not close_earlier:
+                bars.append(fixtures.bar('2026-10-26',o=100,h=104,l=94,c=100))
+            p=life.build_updates(src.candidates,src.snap['asof_et'],lambda *args:{sym:bars})
+            events=life.plan_outbox_events(p,src.alerts,src.scans[1][8])
+            for u in p['updates']:
+                src.candidates[u['sheet_row_index']][7:11]=u['new_cells']
+            src.alerts.extend(events['new_rows'])
+        def guardian_fixture(src):
+            a=Fixture()
+            a.candidates=copy.deepcopy(src.candidates)
+            a.scans=copy.deepcopy(src.scans)
+            a.alerts=copy.deepcopy(src.alerts)
+            return a
+        # Reproduce former order, bypassing ONLY the newly introduced fence.
+        old,sym=source()
+        with patch.object(out,'require_prior_history_ready'):
+            self.assertEqual(out.synchronize(old.snap,old.scans[1][8],old)['new_suppressed'],1)
+        follow(old,sym,True)
+        with self.assertRaisesRegex(guardian.GuardianHold,'AL_OUTBOX_SUPPRESSION_OR_STATE_DRIFT'):
+            guardian_fixture(old).evaluate()
+        for earlier in (True,False):
+            with self.subTest(earlier=earlier):
+                new,sym=source()
+                follow(new,sym,earlier)
+                result=out.synchronize(new.snap,new.scans[1][8],new)
+                self.assertEqual(result['new_suppressed'],0 if earlier else 1)
+                self.assertEqual(result['new_pending'],2 if earlier else 1)
+                self.assertEqual(guardian_fixture(new).evaluate()['suppressed_new_al'],0 if earlier else 1)
+                frozen=copy.deepcopy(new.alerts)
+                out.synchronize(new.snap,new.scans[1][8],new)
+                self.assertEqual(new.alerts,frozen)
+
+    def test_workflow_catchup_fence_before_al_reservation(self):
+        from pathlib import Path
+        src=(Path(__file__).resolve().parent.parent /
+             '.github/workflows/xray-personal-477-eod.yml').read_text()
+        writer=src.index('python private_sheet_writer.py --snapshot "$path"')
+        catchup=src.index('python private_lifecycle.py --asof "$asof" --before-al-reservation')
+        outbox=src.index('python alert_outbox_producer.py --snapshot "$path"')
+        followup=src.index('  private-episode-followups:')
+        self.assertLess(writer,catchup)
+        self.assertLess(catchup,outbox)
+        self.assertLess(outbox,followup)
+        self.assertIn('python private_lifecycle.py "${args[@]}"',src[followup:])
+
     def test_bad_header_and_state_hold(self):
         a = Fixture()
         a.alerts[0][0] = "WRONG"
