@@ -2,7 +2,7 @@
 import json
 import re
 from datetime import date
-from urllib.parse import parse_qsl,urlsplit
+from urllib.parse import urlsplit
 
 def strict_date(v):
     if not isinstance(v,str) or not re.fullmatch(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}",v):
@@ -25,8 +25,23 @@ def sec_source_binds_cik(source,cik):
         u=urlsplit(source)
         if u.scheme!="https" or u.netloc.lower()!="www.sec.gov" or u.fragment:
             return False
-        q=[v for k,v in parse_qsl(u.query,keep_blank_values=True) if k.upper()=="CIK"]
-        if q and (len(q)!=1 or cik_number(q[0])!=target):
+        landing=u.path in ("/edgar/browse/","/cgi-bin/browse-edgar")
+        # Only the canonical CIK and the existing landing producer's
+        # owner=exclude filter may be present; never bind a URL with an
+        # unrelated action, identity override, duplicate or encoded query.
+        params={}
+        for part in u.query.split("&") if u.query else ():
+            if re.fullmatch(r"(?i:CIK)=[0-9]{1,10}",part):
+                key,value="CIK",part.split("=",1)[1]
+            elif landing and part=="owner=exclude":
+                key,value="owner","exclude"
+            else:
+                return False
+            if key in params:
+                return False
+            params[key]=value
+        q=[params["CIK"]] if "CIK" in params else []
+        if q and cik_number(q[0])!=target:
             return False
         # Exact archive document, not a directory, traversal, encoded path
         # separator or arbitrary same-host resource. Preserve legacy flat
