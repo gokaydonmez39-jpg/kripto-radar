@@ -199,7 +199,15 @@ def run(api, expected_asof, *, expected_run_id=None, panel_repair=True):
         # Re-read all FOUR authorities before permitting the only repair.
         need(snapshot(api) == before, "CONCURRENT_SOURCE_CHANGE_NO_REPAIR")
         result["panel_repair_attempts"] = PANEL_REPAIR_BUDGET
-        panel.synchronize(api)
+        try:
+            panel.synchronize(api, expected_asof=expected_asof,
+                              guardian_snapshot=before)
+        except sheets.HandoffBlocked as exc:
+            # Fixed classifications only; no private values or raw errors.
+            if str(exc) in ("PANEL_GUARDIAN_SNAPSHOT_CHANGED",
+                            "PANEL_GUARDIAN_ALERTS_CHANGED_DURING_WRITE"):
+                raise GuardianHold(str(exc)) from None
+            raise
         after = snapshot(api)
         need(after[:3] == before[:3], "SOURCES_CHANGED_DURING_PANEL_REPAIR")
         final = evaluate(*after, expected_asof,
@@ -289,6 +297,8 @@ def main(argv=None):
             "PANEL_SOURCE_ASOF_DRIFT", "EXPECTED_RUN_ID_INVALID",
             "CONCURRENT_SOURCE_CHANGE_NO_REPAIR",
             "SOURCES_CHANGED_DURING_PANEL_REPAIR",
+            "PANEL_GUARDIAN_SNAPSHOT_CHANGED",
+            "PANEL_GUARDIAN_ALERTS_CHANGED_DURING_WRITE",
             "PANEL_REPAIR_READBACK_FAILED", "MISSING_PRIVATE_GOOGLE_AUTH",
             "GUARDIAN_NONCURRENT_NATURAL_ASOF",
             "INVALID_IMMUTABLE_PRICE"} else "PROVIDER_OR_CONTRACT_BLOCKED"
