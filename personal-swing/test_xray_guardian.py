@@ -59,6 +59,62 @@ class GuardianTests(unittest.TestCase):
         self.assertEqual(r["panel_repair_attempts"], 0)
         self.assertEqual(a.writes, 1)
 
+    def test_guardian_repair_cannot_adopt_changed_authorities(self):
+        for authority in ("alerts", "candidates", "scans", "panel"):
+            with self.subTest(authority=authority):
+                a = Fixture()
+                original = guardian.panel.synchronize
+                def drift(api, *args, **kwargs):
+                    getattr(api, authority).append(["synthetic concurrent change"])
+                    return original(api, *args, **kwargs)
+                with patch.object(guardian.panel, "synchronize", side_effect=drift):
+                    with self.assertRaisesRegex(guardian.GuardianHold,
+                                                "PANEL_GUARDIAN_SNAPSHOT_CHANGED"):
+                        guardian.run(a, a.asof)
+                self.assertEqual(a.writes, 0)
+
+    def test_guardian_repair_checks_alerts_immediately_before_post(self):
+        a = Fixture()
+        original = a.read
+        calls = 0
+        def drift(title, last):
+            nonlocal calls
+            if title == "UYARI_OLAYLARI":
+                calls += 1
+                if calls == 4:
+                    a.alerts.append(["synthetic concurrent change"])
+            return original(title, last)
+        with patch.object(a, "read", side_effect=drift):
+            with self.assertRaisesRegex(guardian.GuardianHold,
+                                        "PANEL_GUARDIAN_SNAPSHOT_CHANGED"):
+                guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 0)
+
+    def test_guardian_detects_alert_change_during_one_shot_panel_write(self):
+        a = Fixture()
+        original = a.request
+        def drift(path, method="GET", body=None):
+            response = original(path, method=method, body=body)
+            if method == "POST":
+                a.alerts.append(["synthetic concurrent change"])
+            return response
+        with patch.object(a, "request", side_effect=drift):
+            with self.assertRaisesRegex(guardian.GuardianHold,
+                                        "PANEL_GUARDIAN_ALERTS_CHANGED_DURING_WRITE"):
+                guardian.run(a, a.asof)
+        self.assertEqual(a.writes, 1)
+
+    def test_guardian_passes_verified_snapshot_and_session_to_repair(self):
+        a = Fixture()
+        expected = guardian.snapshot(a)
+        with patch.object(guardian.panel, "synchronize",
+                          wraps=guardian.panel.synchronize) as sync:
+            result = guardian.run(a, a.asof)
+        self.assertEqual(sync.call_args.kwargs["expected_asof"], a.asof)
+        self.assertEqual(sync.call_args.kwargs["guardian_snapshot"], expected)
+        self.assertEqual(result["repair"], "PANEL_REPAIRED_AND_VERIFIED")
+        self.assertEqual(a.writes, 1)
+
     def test_no_repair_mode(self):
         a = Fixture()
         r = guardian.run(a, a.asof, panel_repair=False)
