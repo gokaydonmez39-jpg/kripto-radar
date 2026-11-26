@@ -1,23 +1,23 @@
 {
-  "asof_et": "2026-11-24",
+  "asof_et": "2026-11-25",
   "by_reason": {
-    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3187
+    "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY": 3186
   },
   "by_status": {
-    "UNKNOWN_STATIC": 3187
+    "UNKNOWN_STATIC": 3186
   },
   "execution": "NONE",
-  "official_footer": "File Creation Time: 1124202617:01|||||||",
+  "official_footer": "File Creation Time: 1125202621:32|||||||",
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_UNKNOWN_MANIFEST_V2",
   "source_counts": {
-    "UNKNOWN_STATIC": 3187
+    "UNKNOWN_STATIC": 3186
   },
-  "source_queue_hash": "8952a4ebbbc35605674857e30503d12e5d539063154c84a12290d457b448f45c",
-  "source_state_hash": "d0bfb9f9a168186bd1674fd37d07d6b0acef11fb45be8f305692e60681d11845",
-  "source_unknown_count": 3187,
+  "source_queue_hash": "0308a8e40937d2c64773eb0dd007bac0e73e573c790bba5e802ee196bc2603ff",
+  "source_state_hash": "decd2c05c0bc62dafc16e07584eadc82775e94ae2ab6682390ec6bc4f1f0c5a2",
+  "source_unknown_count": 3186,
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 3187,
+  "unknown_count": 3186,
   "unknowns": {
     "AACG": {
       "attempts": 0,
@@ -6677,6 +6677,24 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Bank First Corporation - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
+    "BFLR": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "BlueFlare, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "BFRG": {
@@ -19439,24 +19457,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Foremost Clean Energy Ltd. - Common Shares",
-      "status": "UNKNOWN_STATIC"
-    },
-    "FNGR": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "FingerMotion, Inc. - common stock",
       "status": "UNKNOWN_STATIC"
     },
     "FNKO": {
@@ -39043,24 +39043,6 @@
       "security_name": "Park Dental Partners, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
-    "PASG": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "Passage Bio, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
     "PASW": {
       "attempts": 0,
       "discovery": {
@@ -44101,6 +44083,24 @@
       "security_name": "Rockwell Medical, Inc. - Common Stock",
       "status": "UNKNOWN_STATIC"
     },
+    "RMTX": {
+      "attempts": 0,
+      "discovery": {
+        "country": null,
+        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
+        "industry": null,
+        "screener_market_cap": null,
+        "screener_price": null,
+        "screener_volume": null,
+        "sector": null
+      },
+      "info": {
+        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
+        "source": "MASTER_IDENTITY_ONLY_MODE"
+      },
+      "security_name": "Remix Therapeutics, Inc. - Common Stock",
+      "status": "UNKNOWN_STATIC"
+    },
     "RNA": {
       "attempts": 0,
       "discovery": {
@@ -45035,24 +45035,6 @@
         "source": "MASTER_IDENTITY_ONLY_MODE"
       },
       "security_name": "Safety Insurance Group, Inc. - Common Stock",
-      "status": "UNKNOWN_STATIC"
-    },
-    "SAFX": {
-      "attempts": 0,
-      "discovery": {
-        "country": null,
-        "discovery_reason": "NASDAQTRADER_FULL_IDENTITY_MARKET_GATES_DEFERRED_NO_WEB_SCREENER",
-        "industry": null,
-        "screener_market_cap": null,
-        "screener_price": null,
-        "screener_volume": null,
-        "sector": null
-      },
-      "info": {
-        "reason": "MARKET_GATES_DEFERRED_TO_PRICE_DV30_HISTORY",
-        "source": "MASTER_IDENTITY_ONLY_MODE"
-      },
-      "security_name": "XCF Global, Inc. - Class A Common Stock",
       "status": "UNKNOWN_STATIC"
     },
     "SAGT": {
