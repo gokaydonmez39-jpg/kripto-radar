@@ -111,6 +111,27 @@ def prove(proof,seed,asof,symbol,original_sha,current_sha):
         reject("MANUAL_SEED_STALE_OR_FUTURE")
     return "UNCHANGED_OFFICIAL_SEC_RECORD_APPEND_ONLY_REGISTRY_ACCEPTED_NO_ALPHA"
 
+def prepare_bound_registry(proof, raw, asof):
+    """Resolve the exact-ASOF registry version from the same hashed bytes.
+
+    Only an exact current blob permits renewal selection. The original
+    append-only proof path remains unchanged for older, nonmatching blobs.
+    A historical renewal without its exact source blob is not inferred.
+    """
+    from sec_manual_seed_contract import load_registry_document, select_registry_rows
+    seed=load_registry_document(raw)
+    current=git_blob_bytes(raw)
+    coverage=proof.get("discovery_coverage")
+    if (not isinstance(coverage,dict)
+            or coverage.get("manual_seed_registry_blob_sha")!=current):
+        return seed,current
+    # The dated official FVN discrepancy is a fail-only veto, not a
+    # renewal or classification authority. No source files are modified.
+    forbidden=("FVN",) if asof>="2026-10-09" else ()
+    selected=select_registry_rows(seed,asof,forbidden)
+    resolved=dict(seed,records=selected)
+    return resolved,current
+
 def test():
     proof=json.loads(MASTER.read_text(encoding="utf-8"))
     manual=json.loads(SEEDS.read_text(encoding="utf-8"))

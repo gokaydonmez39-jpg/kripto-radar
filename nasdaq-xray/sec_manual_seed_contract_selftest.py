@@ -16,6 +16,60 @@ def doc():
             "records":{"AEAQ":old},"renewals":{"AEAQ":[new]}}
 
 class Contract(unittest.TestCase):
+    def test_consumer_renewal_exact_blob_pit_and_legacy(self):
+        import sec_spac_manual_seed_appendonly_guard as guard
+        seed=doc()
+        raw=json.dumps(seed,sort_keys=True).encode("utf-8")
+        sha=guard.git_blob_bytes(raw)
+        def proof(day,row,source_sha=sha):
+            return {"schema":guard.PROOF_SCHEMA,"execution":"NONE",
+                    "real_money":"NO-GO","unknown_never_pass":True,
+                    "authority":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+                    "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+                    "asof_et":day,"discovery_coverage":{
+                        "manual_seed_registry_path":guard.ORIGINAL_REGISTRY_PATH,
+                        "manual_seed_registry_blob_sha":source_sha,
+                        "manual_seed_registry_record_count":1},
+                    "proofs":{"AEAQ":dict(row,
+                        revalidation_semantics="MANUAL_OFFICIAL_SEC_EVIDENCE_WITHIN_120D_PLUS_SAME_ASOF_NASDAQ_SPAC_IDENTITY;NO_ALPHA_PASS",
+                        manual_seed_registry_path=guard.ORIGINAL_REGISTRY_PATH,
+                        manual_seed_registry_blob_sha=source_sha)}}
+        renewal=seed["renewals"]["AEAQ"][0]
+        p=proof("2026-11-25",renewal)
+        # Reproduce the observed failure with the previous consumer.
+        with self.assertRaisesRegex(ValueError,"PREEXISTING_RECORD_CHANGED:source_url"):
+            guard.prove(p,seed,"2026-11-25","AEAQ",sha,sha)
+        fixed,bound=guard.prepare_bound_registry(p,raw,"2026-11-25")
+        self.assertEqual(bound,sha)
+        self.assertEqual(guard.prove(p,fixed,"2026-11-25","AEAQ",sha,bound),
+                         "UNCHANGED_OFFICIAL_SEC_RECORD_APPEND_ONLY_REGISTRY_ACCEPTED_NO_ALPHA")
+        self.assertEqual(seed["records"]["AEAQ"],doc()["records"]["AEAQ"])
+        # No premature selection; a future renewal cannot be used.
+        early=proof("2026-11-23",renewal)
+        fixed,bound=guard.prepare_bound_registry(early,raw,"2026-11-23")
+        with self.assertRaises(ValueError):
+            guard.prove(early,fixed,"2026-11-23","AEAQ",sha,bound)
+        # Current blob cannot be substituted for a different frozen blob.
+        wrong=proof("2026-11-25",renewal,"f"*40)
+        fixed,bound=guard.prepare_bound_registry(wrong,raw,"2026-11-25")
+        with self.assertRaises(ValueError):
+            guard.prove(wrong,fixed,"2026-11-25","AEAQ","f"*40,bound)
+        # Exact current blob must not accept an obsolete original version.
+        old=proof("2026-11-25",seed["records"]["AEAQ"])
+        fixed,bound=guard.prepare_bound_registry(old,raw,"2026-11-25")
+        with self.assertRaises(ValueError):
+            guard.prove(old,fixed,"2026-11-25","AEAQ",sha,bound)
+        # Mutating the proof's source URL cannot be normalized away.
+        tampered=copy.deepcopy(p)
+        tampered["proofs"]["AEAQ"]["source_url"]="https://www.sec.gov/Archives/edgar/data/2083689/other-index.htm"
+        fixed,bound=guard.prepare_bound_registry(tampered,raw,"2026-11-25")
+        with self.assertRaisesRegex(ValueError,"PREEXISTING_RECORD_CHANGED:source_url"):
+            guard.prove(tampered,fixed,"2026-11-25","AEAQ",sha,bound)
+        # Frozen original records may still use the existing append-only rule.
+        historic=proof("2026-10-09",seed["records"]["AEAQ"],"f"*40)
+        fixed,bound=guard.prepare_bound_registry(historic,raw,"2026-10-09")
+        self.assertIn("NO_ALPHA",guard.prove(historic,fixed,"2026-10-09","AEAQ","f"*40,bound))
+
     def test_header(self):
         for k,v in [("execution","TRADE"),("real_money","GO"),("unknown_never_pass",False),("schema","WRONG"),("authority","AL"),("records",[]),("renewals",[])]:
             j=doc();j[k]=v
