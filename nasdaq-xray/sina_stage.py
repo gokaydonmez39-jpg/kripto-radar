@@ -28,7 +28,8 @@ from sina_state_hash_guard import seal as seal_sina_state
 from sina_directory_run_fence import ENV_NAME as DIRECTORY_FENCE_ENV, read_once as official_directory_once
 from sina_identity_epoch import frozen_identity_fingerprint
 from sina_late_asof_recheck import choose as choose_late_asof, choose_canary_probe
-from sec_spac_manual_seed_appendonly_guard import prove as prove_manual_sec_seed
+from sec_spac_manual_seed_appendonly_guard import (prove as prove_manual_sec_seed,
+    prepare_bound_registry)
 from pathlib import Path
 
 import akshare as ak
@@ -120,10 +121,9 @@ def load_sec_spac_proof(asof):
     has_manual=any(isinstance(r,dict) and
         str(r.get("revalidation_semantics") or "").startswith("MANUAL_OFFICIAL_SEC_")
         for r in proofs.values())
-    seed_doc=(json.loads(MANUAL_IDENTITY_SEED.read_text(encoding="utf-8"))
-              if has_manual and MANUAL_IDENTITY_SEED.is_file() else None)
-    seed_blob=(git_blob_sha(MANUAL_IDENTITY_SEED)
-               if has_manual and MANUAL_IDENTITY_SEED.is_file() else None)
+    seed_doc,seed_blob=(prepare_bound_registry(
+        j,MANUAL_IDENTITY_SEED.read_bytes(),asof)
+        if has_manual and MANUAL_IDENTITY_SEED.is_file() else (None,None))
     out={}
     for sym,row in proofs.items():
         sym=str(sym or "").strip().upper()
