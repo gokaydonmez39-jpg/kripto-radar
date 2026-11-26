@@ -45,6 +45,8 @@ _PUBLIC_LIFECYCLE_CODES = frozenset({
     'LIFECYCLE_BAD_SYMBOL',
     'LIFECYCLE_CONCURRENT_MODIFICATION',
     'LIFECYCLE_CURRENT_FINAL_SCAN_MISSING',
+    'LIFECYCLE_PRE_AL_EXACT_RUN_REQUIRED',
+    'LIFECYCLE_PRE_AL_CURRENT_SESSION_REQUIRED',
     'LIFECYCLE_DISPATCH_ASOF_OUTSIDE_SAFE_WINDOW',
     'LIFECYCLE_DUPLICATE_ID',
     'LIFECYCLE_EOD_NOT_FINAL_477',
@@ -433,14 +435,26 @@ def verify_readback(plan, after):
     return True
 
 
-def synchronize(api, asof, read_batch):
+def synchronize(api, asof, read_batch, *, before_al_run_url=None):
     api.check_metadata()
     # P0: source-first admission. No IEX/vendor market-data request may
     # occur until the sole current natural, final 477/477 EOD receipt,
     # source SHA and immutable ledger chronology have been validated.
     scans=api.read('TARAMA_KAYITLARI','J')
     source_url=verified_terminal_eod_run(scans,asof)
+    if before_al_run_url is not None:
+        require(source_url==before_al_run_url,'LIFECYCLE_PRE_AL_EXACT_RUN_REQUIRED')
     before=api.read('ADAY_GECMISI','M')
+    if before_al_run_url is not None:
+        # Only reconcile when a prior episode still lacks an earlier session.
+        # Normal EOD keeps the existing lifecycle order and vendor-call budget.
+        cal=ec.get_calendar(CALENDAR)
+        previous=cal.previous_session(cal.date_to_session(asof)).date().isoformat()
+        decoded=decode_open_episodes(before,asof)
+        if not any(e['processed_through']<previous for e in decoded):
+            return {'status':'LIFECYCLE_PRE_AL_CURRENT_HISTORY_NOOP',
+                    'asof_et':asof,'market_data_called':False,
+                    'device_ack':False,'execution':'NONE'}
     alert_before=api.read('UYARI_OLAYLARI','T')
     plan=build_updates(before,asof,read_batch)
     outbox=plan_outbox_events(plan,alert_before,source_url)
@@ -474,6 +488,7 @@ def synchronize(api, asof, read_batch):
 def main(argv=None):
     parser=argparse.ArgumentParser()
     parser.add_argument('--asof',default='')
+    parser.add_argument('--before-al-reservation',action='store_true')
     args=parser.parse_args(argv)
     try:
         # This writer mutates immutable-identity episode followups and may
@@ -483,6 +498,9 @@ def main(argv=None):
         verify_natural_eod_writer_identity(os.environ)
         # Public workflow runs before US close may not process the current day.
         eligible=daily_job.current_completed_session()
+        if args.before_al_reservation:
+            require(bool(args.asof) and eligible==args.asof,
+                    'LIFECYCLE_PRE_AL_CURRENT_SESSION_REQUIRED')
         if eligible is None:
             print(json.dumps({'status':'LIFECYCLE_NO_COMPLETED_SESSION',
                               'market_data_called':False,'execution':'NONE'}))
@@ -492,7 +510,11 @@ def main(argv=None):
         credential=os.environ.get('XRAY_PRIVATE_SHEET_SERVICE_ACCOUNT_JSON','')
         require(bool(credential),'LIFECYCLE_GOOGLE_AUTH_NOT_CONFIGURED')
         api=SheetApi(credential)
-        result=synchronize(api,eligible,engine.live_read)
+        if args.before_al_reservation:
+            run_url='https://github.com/gokaydonmez39-jpg/kripto-radar/actions/runs/'+os.environ['GITHUB_RUN_ID']
+            result=synchronize(api,eligible,engine.live_read,before_al_run_url=run_url)
+        else:
+            result=synchronize(api,eligible,engine.live_read)
         # Aggregate safe data only. Never print symbol IDs or reference levels.
         print(json.dumps(result,sort_keys=True))
         return 0

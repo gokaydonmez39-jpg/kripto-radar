@@ -38,6 +38,31 @@ def price_matches(cell, engine_value):
     return abs(normalized_price(cell) - float(engine_value)) <= tolerance
 
 
+def require_prior_history_ready(rows, symbol, asof):
+    """Do not reserve against a prior open episode with missed sessions.
+
+    The existing natural lifecycle may close it on an earlier session.
+    Refuse until that history is reconciled, never guess a new AL state.
+    Same-session closure remains governed by the shared boundary policy.
+    """
+    import exchange_calendars as ec
+    import re
+    try:
+        cal=ec.get_calendar('XNAS')
+        current=cal.date_to_session(asof)
+        previous=cal.previous_session(current)
+        for old in rows:
+            if len(old)<8 or old[2]!=symbol or old[1]>=asof:
+                continue
+            opened=re.fullmatch(r'AÇIK • (\d+)/15 SEANS',str(old[7]))
+            if not opened:
+                continue
+            processed=cal.session_offset(cal.date_to_session(old[1]),int(opened.group(1)))
+            if not previous<=processed<=current:
+                raise ValueError
+    except Exception:
+        raise OutboxBlocked('PRIOR_EPISODE_HISTORY_NOT_CURRENT') from None
+
 def plan(snapshot, candidates, scans, alerts, run_url):
     """Return only append-only new events. No AL, STOP or existing row mutation."""
     try:
@@ -77,6 +102,7 @@ def plan(snapshot, candidates, scans, alerts, run_url):
                     'CANDIDATE_IMMUTABLE_LEVEL_DRIFT')
         active_before = contract.prior_active_at_session_start(
             existing_candidates, symbol, asof)
+        require_prior_history_ready(existing_candidates,symbol,asof)
         status = contract.SUPPRESSED if active_before else contract.CONFIRMED_PENDING
         key = contract.event_key(asof, symbol, asof, 'AL_NEW_EPISODE', 1)
         older = prior.get(key)

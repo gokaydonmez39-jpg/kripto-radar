@@ -277,6 +277,11 @@ jobs:
             echo 'AL_OUTBOX=BLOCKED_NO_PRIVATE_AUTH; NO_DEVICE_ACK'
             exit 3
           fi
+          # Only an overdue prior episode triggers the existing lifecycle
+          # before AL reservation. Normal sessions make no extra vendor call.
+          # A missing/failed prior history must stop this reservation.
+          asof="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["asof_et"])' "$path")"
+          python private_lifecycle.py --asof "$asof" --before-al-reservation
           python alert_outbox_producer.py --snapshot "$path"
       - name: No public delivery of private signals
         run: echo 'Only authenticated Google Sheets API can persist private candidate rows; private writer readback is independent of GitHub success; no push/device ACK is claimed.'

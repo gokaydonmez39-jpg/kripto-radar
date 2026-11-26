@@ -78,7 +78,7 @@ READONLY_PROVIDER_SCHEDULED={
 # new Issues, issue-write permissions and issue-triggered alerts are forbidden.
 ISSUE_WRITERS=set()
 # Exact reviewed EOD workflow; this is NOT live tag or delivery authority.
-REVIEWED_EOD_TAG_WORKFLOW_BLOB="e68cefdfb9559687127d85e15b3eca60a6eec5f3"
+REVIEWED_EOD_TAG_WORKFLOW_BLOB="fcfbf6b68ad61859da2780b5c020dfa106c06c43"
 
 def git_blob_sha(source):
     raw=source.encode("utf-8")
