@@ -171,7 +171,7 @@ class Contract(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertFalse(sec_source_binds_cik(url,cik))
 
-
+    def test_exact_archive_path_and_seed_identity_fence(self):
         row=doc()["renewals"]["AEAQ"][0]
         self.assertTrue(exact_manual_seed_identity(row))
         base="https://www.sec.gov/Archives/edgar/data/2083689/"
