@@ -70,6 +70,59 @@ class Contract(unittest.TestCase):
         fixed,bound=guard.prepare_bound_registry(historic,raw,"2026-10-09")
         self.assertIn("NO_ALPHA",guard.prove(historic,fixed,"2026-10-09","AEAQ","f"*40,bound))
 
+    def test_master_manifest_consumer_renewal_exact_asof_and_negative(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        import build_current_master_manifest as manifest
+        import sec_spac_manual_seed_appendonly_guard as guard
+        seed=doc()
+        raw=json.dumps(seed,sort_keys=True).encode("utf-8")
+        sha=guard.git_blob_bytes(raw)
+        with tempfile.TemporaryDirectory() as folder:
+            parent=Path(folder)
+            root=parent/"nasdaq-xray"
+            root.mkdir()
+            path=root/"master_sec_identity_manual_seed_registry.json"
+            path.write_bytes(raw)
+            day="2026-11-25"
+            current=dict(seed["renewals"]["AEAQ"][0],
+                manual_seed_registry_path="nasdaq-xray/master_sec_identity_manual_seed_registry.json",
+                manual_seed_registry_blob_sha=sha,
+                same_asof_revalidated_without_sec_network=True,
+                revalidation_semantics=manifest.MANUAL_SPAC_REVALIDATION,
+                same_asof_nasdaq_directory_footer="File Creation Time: 1125202621:32",
+                same_asof_nasdaq_security_name="Acquisition Corp")
+            proof={"schema":guard.PROOF_SCHEMA,"execution":"NONE",
+                "real_money":"NO-GO","unknown_never_pass":True,
+                "authority":"SEC_EDGAR_SIC_6770_EXACT_ASOF",
+                "applicability":"EXACT_ASOF_ONLY_NO_FORWARD_CARRY",
+                "asof_et":day,"discovery_coverage":{
+                    "manual_seed_registry_blob_sha":sha},
+                "proofs":{"AEAQ":current}}
+            proof_path=root/"master_sec_spac_proof_20261125.json"
+            def check(p,asof):
+                proof_path.write_text(json.dumps(p),encoding="utf-8")
+                dm={"sec_spac_proof_count":1,
+                    "sec_spac_proof_path":str(proof_path.relative_to(parent)),
+                    "sec_spac_proof_blob_sha":manifest.blob_sha(proof_path)}
+                return manifest.valid_sec_spac_proof_binding(dm,asof)
+            with patch.object(manifest,"ROOT",root),patch.object(manifest,"MANUAL_IDENTITY_SEED",path):
+                self.assertTrue(check(proof,day))
+                self.assertFalse(manifest.manual_blank_seed_binding_exact("AEAQ",current,"2026-11-23"))
+                for key,value in (("source_url",seed["records"]["AEAQ"]["source_url"]),
+                    ("manual_seed_registry_blob_sha","f"*40),
+                    ("cik","0000000001"),("sic",6770.0),
+                    ("classification","Operating")):
+                    bad=copy.deepcopy(proof)
+                    bad["proofs"]["AEAQ"][key]=value
+                    with self.subTest(key=key):
+                        self.assertFalse(check(bad,day))
+                bad=copy.deepcopy(proof)
+                bad["discovery_coverage"]["manual_seed_registry_blob_sha"]="f"*40
+                self.assertFalse(check(bad,day))
+                self.assertEqual(path.read_bytes(),raw)
+
     def test_header(self):
         for k,v in [("execution","TRADE"),("real_money","GO"),("unknown_never_pass",False),("schema","WRONG"),("authority","AL"),("records",[]),("renewals",[])]:
             j=doc();j[k]=v
