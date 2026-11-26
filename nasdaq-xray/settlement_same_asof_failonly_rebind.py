@@ -11,6 +11,7 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import math
+from zoneinfo import ZoneInfo
 
 TASK="6a825366222081918997094d76e6ae46"
 POLICY_HASH="68684c130849016dd5148c1afdaa888766dc8070506af892420e493629a92fa4"
@@ -24,6 +25,26 @@ def _lines(rows):
 def _ordered(rows):
     return isinstance(rows,list) and rows==sorted(set(rows)) and all(
         isinstance(x,str) and x for x in rows)
+
+def legacy_close_timestamp_exact(stamp,asof):
+    """Legacy snapshot method remains normal-close only under C4.17.
+
+    The separate historical SIP witness supports official early closes.
+    Do not widen the legacy method's authority or accept holidays, naive
+    timestamps, or a same-date quote from another part of the session.
+    """
+    if not isinstance(stamp,str) or not isinstance(asof,str) or not stamp.startswith(asof+"T"):
+        return False
+    try:
+        from alpaca_rth_minute_integrity_shadow import official_window
+        _,close,minutes=official_window(asof)
+        if minutes!=390 or close.astimezone(ZoneInfo("America/New_York")).time()!=dt.time(16):
+            return False
+        quote=dt.datetime.fromisoformat(stamp.replace("Z","+00:00"))
+        return (quote.tzinfo is not None and quote.utcoffset() is not None
+                and close<=quote<=close+dt.timedelta(minutes=2))
+    except Exception:
+        return False
 
 def safe_same_asof_failonly_settlement(bridge,price,master,master_blob,price_blob):
     """Return bool; an old PRICE SHA is NEVER generalized to new price authority."""
@@ -139,11 +160,72 @@ def safe_same_asof_failonly_settlement(bridge,price,master,master_blob,price_blo
         if v.get("longbridge_trade_status")!="Normal":
             return False
         stamp=v.get("longbridge_rth_close_timestamp")
-        if not isinstance(stamp,str) or not stamp.startswith(asof+"T"):
+        if not legacy_close_timestamp_exact(stamp,asof):
             return False
     return True
 
 def selftest():
+    import copy
+    def fixture(day,stamp):
+        scope=["AAPL","MSFT","NVDA","ZZZZ"]
+        passing=["AAPL","MSFT","NVDA"]
+        oldblock=["ZZZZ"]
+        common={"asof_et":day,"execution":"NONE","real_money":"NO-GO",
+                "unknown_never_pass":True,"task_id":TASK}
+        master=dict(common,pass_symbols=scope,queue_total=4,queue_hash=_lines(scope))
+        price=dict(common,source_master_queue_hash=master["queue_hash"],source_master_count=4,
+                   unknown_count=0,blocked_count=0,unknown_symbols=[],blocked_symbols=[],
+                   pass_symbols=passing,pass_count=3,pass_hash=_lines(passing),
+                   results={**{s:{"status":"PASS_PRICE_DV30"} for s in passing},
+                            "ZZZZ":{"status":"FAIL_PRICE"}})
+        bridge=dict(common,schema="XRAY_RESOLVER_EPOCH_RESULT_V1",status="COMMITTED",
+                    bridge_role="CURRENT_RESIDUAL_REQUEST_AUTHORITY",
+                    queue_hash=master["queue_hash"],queue_total=4,
+                    source_master_blob_sha="a"*40,
+                    source_master_path="nasdaq-xray/canonical_current_master_manifest.json",
+                    source_price_path="nasdaq-xray/canonical_current_price_dv30.json",
+                    source_price_blob_sha="b"*40,compiled_policy_version="C4.17",
+                    compiled_policy_hash=POLICY_HASH,compiled_policy_blob_sha=POLICY_BLOB,
+                    settlement_status="PASS",settlement_required=True,
+                    settlement_method="ALPACA_DELAYED_SIP_SNAPSHOT_DAILY_BAR_RALLIES_LONGBRIDGE_OHLC",
+                    coverage_complete=True,classification_coverage_complete=True,
+                    pagination_complete=True,partial_data=False,symbols=scope,symbol_count=4,
+                    price_unknown_count=4,pass_price_dv30_symbols=passing,block_current_run=oldblock,
+                    pass_price_dv30_hash=_lines(passing),block_hash=_lines(oldblock),
+                    unresolved_symbols=[],price_resolutions={
+                        **{s:{"decision":"PASS_PRICE_DV30"} for s in passing},
+                        "ZZZZ":{"decision":"BLOCK_CURRENT_RUN"}},
+                    settlement_symbols=list(SETTLEMENT),settlement_evidence={
+                        s:{"ohlc":[10,12,9,11],"alpaca_volume":1000,"rallies_volume":1000,
+                           "longbridge_volume":1000,"longbridge_trade_status":"Normal",
+                           "longbridge_rth_close_timestamp":stamp} for s in SETTLEMENT})
+        return bridge,price,master
+    def accepts(day,stamp):
+        return safe_same_asof_failonly_settlement(*fixture(day,stamp),"a"*40,"c"*40)
+    for day,stamp in (
+        ("2026-10-07","2026-10-07T20:00:00Z"),
+        ("2026-11-25","2026-11-25T16:00:00-05:00"),
+        ("2026-11-25","2026-11-25T21:02:00Z")):
+        if not accepts(day,stamp):
+            raise AssertionError("VALID_LEGACY_CLOSE_REJECTED:"+stamp)
+    for day,stamp in (
+        ("2026-11-25","2026-11-25T09:30:00-05:00"),
+        ("2026-11-25","2026-11-25T15:59:59-05:00"),
+        ("2026-11-25","2026-11-25T21:02:01Z"),
+        ("2026-11-25","2026-11-25T16:00:00"),
+        ("2026-11-25","2026-11-25T16:00:00Z"),
+        ("2026-11-25","2026-11-25Tbad"),
+        ("2026-11-26","2026-11-26T16:00:00-05:00"),
+        ("2026-11-27","2026-11-27T13:00:00-05:00"),
+        ("2026-11-27","2026-11-27T16:00:00-05:00")):
+        if accepts(day,stamp):
+            raise AssertionError("UNSAFE_LEGACY_CLOSE_ACCEPTED:"+stamp)
+    bridge,price,master=fixture("2026-11-25","2026-11-25T21:00:00Z")
+    bad=copy.deepcopy(price)
+    bad["results"]["ZZZZ"]["status"]="PASS_PRICE_DV30"
+    if safe_same_asof_failonly_settlement(bridge,bad,master,"a"*40,"c"*40):
+        raise AssertionError("FAIL_ONLY_PROMOTION_ACCEPTED")
     print("XRAY_SAME_ASOF_SETTLEMENT_REBIND_MODULE_LOAD=PASS_FAIL_ONLY_NO_PROVIDER")
+    print("XRAY_LEGACY_SETTLEMENT_CLOSE_SELFTEST=PASS_3_POSITIVE_10_NEGATIVE_NO_ALPHA")
 if __name__=="__main__":
     selftest()
