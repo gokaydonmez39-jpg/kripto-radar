@@ -3,13 +3,13 @@
   "asof_et": "2026-11-25",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-25",
-    "attempted_count": 475,
+    "attempted_count": 480,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 480,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 472,
+    "evaluated_count": 477,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,16 +18,11 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 20,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 8,
+    "pending_count": 3,
     "pending_symbols": [
       "TGTX",
       "GRAL",
-      "LIFE",
-      "REAL",
-      "NTLA",
-      "STNE",
-      "ELVN",
-      "RARE"
+      "LIFE"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -1202,6 +1197,12 @@
         "terminal_scan": true
       },
       "EEFT": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "ELVN": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2480,6 +2481,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "NTLA": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "NTNX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2967,6 +2974,18 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "RARE": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "REAL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "REG": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3347,6 +3366,12 @@
         "terminal_scan": true
       },
       "STLD": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "STNE": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3978,7 +4003,7 @@
     "source_candidates_sha256": "34c28f13c0bfa0665d5b5928e561b2eb37b0a9f0ebf207ad35a0f45be35b6516",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 94,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 358,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 363,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 20,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1
@@ -4039,7 +4064,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 208,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-27T09:26:33.755908+00:00",
+  "updated_at_utc": "2026-11-27T11:27:32.423912+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
