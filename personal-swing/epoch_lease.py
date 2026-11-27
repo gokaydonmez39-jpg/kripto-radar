@@ -371,7 +371,8 @@ def acquire_first_claim(owner, transport, *, now=None, runtime_env=None):
 
 
 def verify_existing_tag_consumer(asof, transport, *, now=None,
-                                 runtime_env=None, completed_session=None):
+                                 runtime_env=None, completed_session=None,
+                                 recovery_owner_shadow=False):
     """Independently re-read current natural owner's protected lease; GET only.
 
     This cannot acquire ownership or release Sheets/A/B. Future consumers
@@ -379,6 +380,7 @@ def verify_existing_tag_consumer(asof, transport, *, now=None,
     Caller-injected runtime/clock/session are for isolated OFFLINE tests.
     Never retry or mutate a missing/ambiguous permanent tag.
     """
+    require(type(recovery_owner_shadow) is bool, "LEASE_RECOVERY_SHADOW_MODE_INVALID")
     captured=now if now is not None else datetime.now(timezone.utc)
     require(isinstance(captured,datetime) and captured.tzinfo is not None and
             captured.utcoffset() is not None,
@@ -444,7 +446,14 @@ def verify_existing_tag_consumer(asof, transport, *, now=None,
                 "LEASE_CONSUMER_OWNER_MISMATCH")
         actual=transport("GET","/actions/runs/"+str(expected["run_id"]))
         verify_live_natural_run_receipt(manifest,actual,now=captured)
-        verify_live_unique_natural_epoch(manifest,actual,transport)
+        if recovery_owner_shadow:
+            import natural_run_readonly_probe as source
+            shadow=source.verify_owned_natural_epoch(manifest,actual,transport,now=captured)
+            require(shadow.get("state")=="IMMUTABLE_OWNER_COLLECTION_READ_ONLY" and
+                    shadow.get("write_authority") is False and shadow.get("writes")==0,
+                    "LEASE_RECOVERY_SHADOW_INVALID")
+        else:
+            verify_live_unique_natural_epoch(manifest,actual,transport)
         # Repository protection might have been revoked during readback:
         # a previously valid tag is not sufficient if protection is gone.
         verify_live_tag_protection(transport)
@@ -453,12 +462,14 @@ def verify_existing_tag_consumer(asof, transport, *, now=None,
     except (HTTPError,URLError,TimeoutError,OSError,ValueError,TypeError,KeyError):
         raise LeaseHold("LEASE_CONSUMER_TAG_READBACK_UNVERIFIED") from None
     return {
-        "state":"LEASE_OWNER_READBACK_ONLY", "schema":SCHEMA,
+        "state":("LEASE_RECOVERY_OWNER_SHADOW_READBACK_ONLY" if recovery_owner_shadow
+                 else "LEASE_OWNER_READBACK_ONLY"), "schema":SCHEMA,
         "asof_et":asof, "run_id":expected["run_id"],
         "source_sha":expected["source_sha"], "tag_sha":tag_sha,
         "source_event":"schedule", "sheet_writes":0,
         "orders":False, "ab_release_authorized":False,
         "device_ack":"UNKNOWN",
+        **({"recovery_owner_shadow":shadow, "write_authority":False} if recovery_owner_shadow else {}),
     }
 
 
