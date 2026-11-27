@@ -105,6 +105,25 @@ def verify_unique_natural_epoch(owner, actual, transport):
     return True
 
 
+
+def verify_owned_natural_epoch(owner, actual, transport, *, now):
+    """Future recovery shadow: GET-only evidence after immutable tag verification.
+
+    The existing unique-source admission and acquisition remain unchanged.
+    This function cannot authorize a producer, private POST or delivery.
+    """
+    from recovery_owner_collection import verify_owned_collection, OwnerCollectionHold
+    try:
+        path = schedule_runs_path(owner["asof_et"])
+        cutoff = datetime.fromisoformat(
+            path.split("created=", 1)[1].split("..", 1)[0].replace("Z", "+00:00"))
+        page = transport("GET", path)
+        return verify_owned_collection(owner, actual, page, cutoff=cutoff, now=now)
+    except (OwnerCollectionHold, HTTPError, URLError, TimeoutError, OSError,
+            ValueError, TypeError, KeyError, IndexError):
+        raise lease.LeaseHold("RECOVERY_OWNER_COLLECTION_SHADOW_HOLD") from None
+
+
 def verify_once(runtime, transport, *, now=None, completed_session=None):
     """Validate actual GitHub run identity and epoch uniqueness by TWO GETs.
 
