@@ -1,13 +1,13 @@
 {
-  "asof_et": "2026-11-25",
+  "asof_et": "2026-11-27",
   "asof_identity_proof": {
-    "blob_sha": "39d90be106ec847accf1f04a4d450e926fdd84ba",
+    "blob_sha": "7e9ea9b398afbffb56fe24a338422b15b751a9e3",
     "counts": {
       "operating_overrides": 2,
       "remove_from_asof": 0,
       "restore_to_asof": 0
     },
-    "path": "nasdaq-xray/master_asof_identity_proof_20261125.json"
+    "path": "nasdaq-xray/master_asof_identity_proof_20261127.json"
   },
   "completion_proof": {
     "asof_identity_proof_binding": true,
@@ -28,38 +28,38 @@
     "security_names_exact": true
   },
   "counts": {
-    "PASS_IDENTITY": 3186,
-    "UNKNOWN_IDENTITY": 23
+    "PASS_IDENTITY": 3184,
+    "UNKNOWN_IDENTITY": 25
   },
   "execution": "NONE",
-  "explicit_excluded_count": 2400,
-  "explicit_excluded_hash": "6be28de30fb2f6df4cedae95943006099daa3abf1d83e3718dac7f0e6195f3d4",
+  "explicit_excluded_count": 2399,
+  "explicit_excluded_hash": "d684e68353db7eb750edf0d132f398d6d04fa72c2dfa71a1e9ca950f32fe67be",
   "explicit_excluded_reason_counts": {
     "DEBT": 57,
     "ETF": 1298,
     "FUND": 32,
     "PREFERRED": 103,
     "RIGHT": 103,
-    "SPAC_BLANK_CHECK": 188,
+    "SPAC_BLANK_CHECK": 186,
     "TEST_ISSUE": 8,
-    "UNIT": 252,
+    "UNIT": 253,
     "WARRANT": 357,
     "WHEN_ISSUED": 2
   },
   "history_price_state_diagnostic_only": {
     "source_counts": {
-      "UNKNOWN_STATIC": 3186
+      "UNKNOWN_STATIC": 3184
     },
     "source_pending_retry": 0,
     "source_status": "IDENTITY_READY_MARKET_GATES_DEFERRED",
-    "source_unknown_count": 3186
+    "source_unknown_count": 3184
   },
   "identity_authority": "NASDAQTRADER_EXPLICIT_TYPE_FILTER_V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
   "identity_partition_policy": "MASTER_SPAC_OFFICIAL_BLANK_EXCLUDE_V4_EXACT_ASOF_SNAPSHOT_GUARD",
   "identity_ruleset": "V6_ASOF_IDENTITY_AND_SPAC_PROOF_AT_MASTER",
-  "official_footer": "File Creation Time: 1125202621:32|||||||",
-  "pass_count": 3186,
-  "pass_hash": "0308a8e40937d2c64773eb0dd007bac0e73e573c790bba5e802ee196bc2603ff",
+  "official_footer": "File Creation Time: 1127202614:01|||||||",
+  "pass_count": 3184,
+  "pass_hash": "168775615be4730341ebcc322ad3b1148821ad6ade65c0d43309614c90fb3ec2",
   "pass_symbols": [
     "AACG",
     "AAL",
@@ -1355,7 +1355,6 @@
     "HCKT",
     "HCM",
     "HCSG",
-    "HCTI",
     "HCWB",
     "HDL",
     "HDRN",
@@ -3084,7 +3083,6 @@
     "VTSI",
     "VTVT",
     "VUZI",
-    "VVOS",
     "VWAV",
     "VYGR",
     "WABC",
@@ -3250,25 +3248,25 @@
   ],
   "pending_retry": 0,
   "phase": "MASTER_IDENTITY",
-  "queue_hash": "0308a8e40937d2c64773eb0dd007bac0e73e573c790bba5e802ee196bc2603ff",
-  "queue_total": 3186,
-  "queue_unique": 3186,
+  "queue_hash": "168775615be4730341ebcc322ad3b1148821ad6ade65c0d43309614c90fb3ec2",
+  "queue_total": 3184,
+  "queue_unique": 3184,
   "raw_identity_total": 3209,
   "real_money": "NO-GO",
   "schema": "XRAY_CANONICAL_CURRENT_MASTER_MANIFEST_V1",
   "sec_spac_proof": {
-    "blob_sha": "45ab7dc0026cbb315cf287bcad900e7a1cebd5c1",
-    "count": 560,
-    "path": "nasdaq-xray/master_sec_spac_proof_20261125.json",
-    "symbol_hash": "41b75b67dd4b8e7eafbe101895b0acfd71469c9ac5cd901aefd033a4af23b4ca"
+    "blob_sha": "6bff744f482022b195afee70dbd28fea847daa9c",
+    "count": 558,
+    "path": "nasdaq-xray/master_sec_spac_proof_20261127.json",
+    "symbol_hash": "9b227cb68185a52318f8c90c4f600ce8d6db118ac4f70fbd60aa629a5f93bea6"
   },
-  "source_state_blob_sha": "1486320113765ccd9bdd12cc71eceb2ed8b0c7bf",
-  "source_state_hash": "decd2c05c0bc62dafc16e07584eadc82775e94ae2ab6682390ec6bc4f1f0c5a2",
+  "source_state_blob_sha": "64b009fe1375bc44d52ed8bbdaef6569d9b23dea",
+  "source_state_hash": "dc69ff06c4d0f66c606d679c8b66448689cf13a79dbcb7b92838d17b1bde4ace",
   "source_state_path": "nasdaq-xray/canonical_current_full_state.json",
   "status": "PARTIAL_UNKNOWN",
   "status_semantics": "IDENTITY_PARTITION_EXACT_WITH_UNKNOWN",
   "task_id": "6a825366222081918997094d76e6ae46",
-  "unknown_count": 23,
+  "unknown_count": 25,
   "unknown_detail": {
     "ALIS": {
       "exact_sec_spac_proof": false,
@@ -3450,6 +3448,15 @@
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
+    "RDAC": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Rising Dragon Acquisition Corp. - Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
     "TACH": {
       "exact_sec_spac_proof": false,
       "official_blank_checks_proof": false,
@@ -3465,6 +3472,15 @@
       "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
       "same_asof_nasdaq_industry": "",
       "security_name": "TCGX Acquisition Corp. II - Class A Ordinary Shares",
+      "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
+      "unknown_never_pass": true
+    },
+    "WSTN": {
+      "exact_sec_spac_proof": false,
+      "official_blank_checks_proof": false,
+      "reason": "SPAC_NAME_SUSPECT_OFFICIAL_CLASSIFICATION_UNRESOLVED",
+      "same_asof_nasdaq_industry": "",
+      "security_name": "Westin Acquisition Corp - Class A Ordinary Share",
       "source": "NASDAQ_SAME_ASOF_DIRECTORY_NAME_FAIL_CLOSED",
       "unknown_never_pass": true
     },
@@ -3500,8 +3516,10 @@
     "LPAA",
     "MCGA",
     "PLMK",
+    "RDAC",
     "TACH",
     "TCXB",
+    "WSTN",
     "WTG"
   ]
 }
