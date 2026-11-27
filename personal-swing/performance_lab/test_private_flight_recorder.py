@@ -545,11 +545,37 @@ class FlightNegativeTests(unittest.TestCase):
                                     'MISSING_TERMINAL_EVENT'):
             g.inspect(*b,expected_asof='2026-10-29')
 
-    def test_prior_close_on_successor_day_does_not_prove_overlap(self):
+    def _same_session_close_fixture(self):
         b=self._suppressed_successor_closes_after_prior_was_live_at_issuance()
+        b[0][1][7]='KAPALI • STOP_TOUCHED • 1/15 SEANS'
         b[0][1][8]='2026-10-28'
         b[2][-1][0]=KEY+'|2026-10-28|STOP_TOUCHED|1'
         b[2][-1][4]='2026-10-28'
+        return b
+
+    def test_prior_close_on_successor_day_exact_terminal_proves_overlap(self):
+        b=self._same_session_close_fixture()
+        result=g.inspect(*b,expected_asof='2026-10-29')
+        self.assertEqual(result['suppressed_active_al'],1)
+        self.assertEqual(result['device_receipts_verified'],0)
+
+    def test_same_session_without_terminal_does_not_prove_overlap(self):
+        b=self._same_session_close_fixture()
+        b[2].pop()
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE'):
+            g.inspect(*b,expected_asof='2026-10-29')
+
+    def test_same_session_zero_duration_does_not_prove_overlap(self):
+        b=self._same_session_close_fixture()
+        b[0][1][7]='KAPALI • STOP_TOUCHED • 0/15 SEANS'
+        with self.assertRaisesRegex(g.FlightRecorderBlocked,
+                                    'SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE'):
+            g.inspect(*b,expected_asof='2026-10-29')
+
+    def test_same_session_mismatched_terminal_state_does_not_prove_overlap(self):
+        b=self._same_session_close_fixture()
+        b[0][1][7]='KAPALI • TARGET_TOUCHED • 1/15 SEANS'
         with self.assertRaisesRegex(g.FlightRecorderBlocked,
                                     'SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE'):
             g.inspect(*b,expected_asof='2026-10-29')
