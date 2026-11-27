@@ -3,13 +3,13 @@
   "asof_et": "2026-11-25",
   "candidate_technical_funnel": {
     "asof_et": "2026-11-25",
-    "attempted_count": 475,
+    "attempted_count": 480,
     "authority": "C417_CANDIDATE_LOCAL_TECHNICAL_RESEARCH_NO_RELEASE",
     "automatic_orders": [],
     "benchmark_status": "QQQ_260_COMPLETED_RTH_BARS_OBSERVED",
     "candidate_count": 480,
     "engine_source_sha256": "4f2e0491241130f4c87ee799442b20a3c2e915cd94878a093d4348d5573f8a64",
-    "evaluated_count": 472,
+    "evaluated_count": 477,
     "execution": "NONE",
     "final_buy_signal_count": 0,
     "final_buy_signals": [],
@@ -18,16 +18,11 @@
     "independent_math_audit_unresolved_count": 1,
     "independent_math_audit_verified_count": 20,
     "last_batch_source_mode": "SINA_US_DAILY_WITH_OFFICIAL_CALENDAR",
-    "pending_count": 8,
+    "pending_count": 3,
     "pending_symbols": [
       "TGTX",
       "GRAL",
-      "LIFE",
-      "REAL",
-      "NTLA",
-      "STNE",
-      "ELVN",
-      "RARE"
+      "LIFE"
     ],
     "preliminary_technical_watch_count": 0,
     "preliminary_technical_watch_symbols": [],
@@ -1202,6 +1197,12 @@
         "terminal_scan": true
       },
       "EEFT": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "ELVN": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -2480,6 +2481,12 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "NTLA": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "NTNX": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -2967,6 +2974,18 @@
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
         "terminal_scan": true
       },
+      "RARE": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "REAL": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
       "REG": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
@@ -3347,6 +3366,12 @@
         "terminal_scan": true
       },
       "STLD": {
+        "completed_weeks": 54,
+        "history_source": "SINA_US_DAILY",
+        "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
+        "terminal_scan": true
+      },
+      "STNE": {
         "completed_weeks": 54,
         "history_source": "SINA_US_DAILY",
         "status": "NO_CURRENT_OR_RECENT_WEEKLY_GATE",
@@ -3975,17 +4000,17 @@
       }
     },
     "schema": "XRAY_ALL_CANDIDATES_C417_TECHNICAL_FUNNEL_V1",
-    "source_candidates_sha256": "904c32e850e3bdbf396bd731c4b42ae2a6cf3525a385c30a2d6ebc7aec7bb65b",
+    "source_candidates_sha256": "34c28f13c0bfa0665d5b5928e561b2eb37b0a9f0ebf207ad35a0f45be35b6516",
     "status_counts": {
       "NO_CONFIRMED_A_B_D_RECENT_TRIGGER": 94,
-      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 358,
+      "NO_CURRENT_OR_RECENT_WEEKLY_GATE": 363,
       "TECHNICAL_GEOMETRY_NOT_APPROVED": 20,
       "UNKNOWN_260_OFFICIAL_HISTORY": 2,
       "UNKNOWN_FROZEN_TECHNICAL_GEOMETRY": 1
     },
     "transient_retry_count": 3,
     "unknown_never_pass": true,
-    "watchlist_digest": "4ad6f4949f333843c1b57a0e1017c32a53bc66e6441c63bbe5842a2a225b28bb"
+    "watchlist_digest": "5f837935b344580ae16ad3bbb41de23c4d993054e41babc4a3ef0318c90671ff"
   },
   "cursor": 3186,
   "downstream_invalidation": {
@@ -4039,7 +4064,7 @@
   "task_id": "6a825366222081918997094d76e6ae46",
   "unknown_count": 208,
   "unknown_reason_partition_exact": true,
-  "updated_at_utc": "2026-11-26T02:59:32.848087+00:00",
+  "updated_at_utc": "2026-11-27T12:56:00.643786+00:00",
   "watch_radar": {
     "alert_semantics": "RESEARCH_WATCH_NOT_AL_OR_REGISTERED_R92",
     "all_eligible_candidates_tracked": true,
@@ -4057,7 +4082,7 @@
     "registered_r92_count": 0,
     "schema": "XRAY_MINIMAL_SWING_WATCH_RADAR_V1",
     "setup_D_or_A_or_B_fully_approved": false,
-    "source_candidates_sha256": "904c32e850e3bdbf396bd731c4b42ae2a6cf3525a385c30a2d6ebc7aec7bb65b",
+    "source_candidates_sha256": "34c28f13c0bfa0665d5b5928e561b2eb37b0a9f0ebf207ad35a0f45be35b6516",
     "source_rows_excluded": 20,
     "unknown_never_pass": true,
     "watchlist": [
@@ -4135,7 +4160,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 380.14,
-        "dv30_usd_observed": 13185199720.49,
+        "dv30_usd_observed": 13215239143.57,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Tesla, Inc.  - Common Stock",
@@ -4274,6 +4299,20 @@
       {
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
+        "close_usd_observed": 84.99,
+        "dv30_usd_observed": 3487912853.65,
+        "exact_completed_sessions": 30,
+        "liquidity_observation_pass": true,
+        "name": "Nebius Group N.V. - Class A Ordinary Shares",
+        "previous_completed_session_change_pct": null,
+        "price_observation_pass": true,
+        "setup_confirmation": "NOT_EVALUATED_HERE",
+        "symbol": "NBIS",
+        "tracking_state": "PERSISTING"
+      },
+      {
+        "buy_signal": false,
+        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 476.58,
         "dv30_usd_observed": 3463437661.88,
         "exact_completed_sessions": 30,
@@ -4283,20 +4322,6 @@
         "price_observation_pass": true,
         "setup_confirmation": "NOT_EVALUATED_HERE",
         "symbol": "LITE",
-        "tracking_state": "PERSISTING"
-      },
-      {
-        "buy_signal": false,
-        "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
-        "close_usd_observed": 84.99,
-        "dv30_usd_observed": 3460552787.86,
-        "exact_completed_sessions": 30,
-        "liquidity_observation_pass": true,
-        "name": "Nebius Group N.V. - Class A Ordinary Shares",
-        "previous_completed_session_change_pct": null,
-        "price_observation_pass": true,
-        "setup_confirmation": "NOT_EVALUATED_HERE",
-        "symbol": "NBIS",
         "tracking_state": "PERSISTING"
       },
       {
@@ -4401,7 +4426,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 1303.08,
-        "dv30_usd_observed": 2489029381.61,
+        "dv30_usd_observed": 2491974342.4,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "ASML Holding N.V. - New York Registry Shares",
@@ -4835,7 +4860,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 232.83,
-        "dv30_usd_observed": 874424903.65,
+        "dv30_usd_observed": 874596382.95,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Adobe Inc. - Common Stock",
@@ -5493,7 +5518,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 67.23,
-        "dv30_usd_observed": 471229438.87,
+        "dv30_usd_observed": 471320669.98,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Flex Ltd. - Ordinary Shares",
@@ -5577,7 +5602,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 147.88,
-        "dv30_usd_observed": 437267033.02,
+        "dv30_usd_observed": 437681984.31,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "First Solar, Inc. - Common Stock",
@@ -5955,7 +5980,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 58.17,
-        "dv30_usd_observed": 336937369.06,
+        "dv30_usd_observed": 336974197.14,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "TTM Technologies, Inc. - Common Stock",
@@ -7467,7 +7492,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 138.57,
-        "dv30_usd_observed": 150243323.37,
+        "dv30_usd_observed": 150282122.97,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Sanmina Corporation - Common Stock",
@@ -7817,7 +7842,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 148.31,
-        "dv30_usd_observed": 133777748.31,
+        "dv30_usd_observed": 133823946.88,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Axsome Therapeutics, Inc. - Common Stock",
@@ -8685,7 +8710,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 46.91,
-        "dv30_usd_observed": 89057558.01,
+        "dv30_usd_observed": 89120909.97,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Cognex Corporation - Common Stock",
@@ -9399,7 +9424,7 @@
         "buy_signal": false,
         "classification": "WATCH_LIQUIDITY_PRE_SCREEN_ONLY",
         "close_usd_observed": 15.82,
-        "dv30_usd_observed": 72034614.68,
+        "dv30_usd_observed": 72036275.78,
         "exact_completed_sessions": 30,
         "liquidity_observation_pass": true,
         "name": "Erasca, Inc. - Common Stock",
@@ -10784,6 +10809,6 @@
     ],
     "watchlist_cap": null,
     "watchlist_count": 480,
-    "watchlist_digest": "4ad6f4949f333843c1b57a0e1017c32a53bc66e6441c63bbe5842a2a225b28bb"
+    "watchlist_digest": "5f837935b344580ae16ad3bbb41de23c4d993054e41babc4a3ef0318c90671ff"
   }
 }
