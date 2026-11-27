@@ -336,5 +336,74 @@ class BoundedNaturalGetRecoveryTests(unittest.TestCase):
         self.assertTrue(all(m=="GET" for m,_ in calls))
 
 
+
+# The existing normal and optimized EOD offline suites discover this class.
+from test_recovery_owner_collection import OwnedCollectionTests
+
+class RecoveryOwnerShadowIntegration(unittest.TestCase):
+    def setup_claim(self):
+        from test_epoch_lease import claim, natural
+        git=MockGit()
+        claim(natural(),git)
+        git.calls.clear()
+        return git
+
+    def transport(self, git, *, early=False, incomplete=False):
+        def read(method,path,body=None):
+            if method=="GET" and path.startswith("/actions/workflows/"):
+                git.calls.append((method,path,body))
+                current=dict(git.run_context.receipt)
+                other=dict(current,id=890124,status="queued",
+                           created_at="2026-11-23T22:04:59Z" if early else "2026-11-23T22:06:00Z",
+                           updated_at="2026-11-23T22:06:00Z")
+                return {"total_count":3 if incomplete else 2,
+                        "workflow_runs":[current,other]}
+            return git(method,path,body)
+        return read
+
+    def consume(self, git, *, shadow=False, run="890123", early=False, incomplete=False):
+        from datetime import timedelta
+        return lease.verify_existing_tag_consumer(
+            ASOF,self.transport(git,early=early,incomplete=incomplete),
+            now=NOW+timedelta(minutes=2),runtime_env=env(run),
+            completed_session=lambda _:ASOF,recovery_owner_shadow=shadow)
+
+    def test_late_competitor_shadow_has_distinct_non_authorizing_receipt(self):
+        git=self.setup_claim()
+        out=self.consume(git,shadow=True)
+        self.assertEqual(out["state"],"LEASE_RECOVERY_OWNER_SHADOW_READBACK_ONLY")
+        self.assertEqual(out["recovery_owner_shadow"]["later_competitors"],1)
+        self.assertFalse(out["write_authority"])
+        self.assertFalse(out["ab_release_authorized"])
+        self.assertEqual(out["sheet_writes"],0)
+        self.assertTrue(all(method=="GET" for method,_,_ in git.calls))
+
+    def test_default_path_still_rejects_duplicate(self):
+        git=self.setup_claim()
+        with self.assertRaisesRegex(lease.LeaseHold,"NATURAL_EOD_EPOCH_AMBIGUOUS"):
+            self.consume(git)
+        self.assertTrue(all(method=="GET" for method,_,_ in git.calls))
+
+    def test_other_run_cannot_borrow_owner_even_in_shadow(self):
+        git=self.setup_claim()
+        with self.assertRaisesRegex(lease.LeaseHold,"LEASE_CONSUMER_OWNER_MISMATCH"):
+            self.consume(git,shadow=True,run="890124")
+        self.assertTrue(all(method=="GET" for method,_,_ in git.calls))
+
+    def test_earlier_competitor_and_partial_page_hold(self):
+        for kwargs in ({"early":True},{"incomplete":True}):
+            git=self.setup_claim()
+            with self.assertRaisesRegex(lease.LeaseHold,"RECOVERY_OWNER_COLLECTION_SHADOW_HOLD"):
+                self.consume(git,shadow=True,**kwargs)
+            self.assertTrue(all(method=="GET" for method,_,_ in git.calls))
+
+    def test_revoked_protection_does_not_pass_shadow(self):
+        git=self.setup_claim()
+        git.protection="disabled"
+        with self.assertRaises(lease.LeaseHold):
+            self.consume(git,shadow=True)
+        self.assertTrue(all(method=="GET" for method,_,_ in git.calls))
+
+
 if __name__=="__main__":
     unittest.main()
