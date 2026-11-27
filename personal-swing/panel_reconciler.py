@@ -96,12 +96,12 @@ def plan(panel, candidate_table, scan_table):
     # user-owned notes outside this agreed source-of-truth summary rectangle.
     values = {
         8: [day,
-            'Alpaca IEX EOD · 477/477 geçerli · 0 eksik · FINAL READY · '
+            'Alpaca IEX tarama · 477/477 geçerli · 0 eksik · tarama hazır · '
             +str(matches)+' yeni teknik AL; XNAS '+day],
         9: [str(s[8]),
             'GitHub EOD kaynak kanıtı · özel Sheet readback ayrı · '
             'planlı ChatGPT teslimi ayrı kabul'],
-        10: ['Son FINAL '+day+'; toplam '+str(len(candidates))+
+        10: ['Son doğrulanmış tarama '+day+'; toplam '+str(len(candidates))+
              ' gözlem: '+str(open_count)+' açık, '+str(closed_count)+
              ' kapalı; '+str(matches)+' yeni AL.',
              'Tek borsa IEX · teorik risk · gerçek fill yok · '
@@ -109,13 +109,13 @@ def plan(panel, candidate_table, scan_table):
         12: ['KİŞİSEL ARAŞTIRMA START AKTİF · CHATGPT TESLİMİ AYRI',
              day+' · IEX 477/477 geçerli · 0 eksik · 52 ardışık XNAS; '
              'teknik araştırma aktif; planlı ChatGPT mesaj teslimi ayrı kabul'],
-        13: ['KİŞİSEL IEX EOD PASS · CANONICAL NO-GO',
-             day+' · FINAL READY · '+str(matches)+
-             ' yeni teknik AL · source readback PASS; canonical kaynak '
+        13: ['IEX TARAMA PASS · EOD KABULÜ AYRI · CANONICAL NO-GO',
+             day+' · tarama hazır · '+str(matches)+
+             ' yeni teknik AL · tarama kaydı PASS; Guardian ve tam EOD '
              've planlı ChatGPT teslimi ayrı kabul; otomatik emir yok'],
         15: [str(len(candidates))+' TEKNİK KAYIT',
              'ASOF|SEMBOL ayrı gözlem; orijinal stop ve hedef değişmez; '
-             'son doğrulanmış EOD '+day],
+             'son doğrulanmış tarama '+day],
     }
     changes = {r: vals for r, vals in values.items()
                if list(panel[r][1:3])+['']*(2-len(panel[r][1:3])) != vals}
@@ -123,11 +123,20 @@ def plan(panel, candidate_table, scan_table):
             'candidate_count': len(candidates), 'new_count': matches}
 
 
-def synchronize(api, expected_asof=None):
+def synchronize(api, expected_asof=None, *, guardian_snapshot=None):
     api.check_metadata()
     original_panel = api.read('PANEL', 'C')
     original_candidates = api.read('ADAY_GECMISI', 'M')
     original_scans = api.read('TARAMA_KAYITLARI', 'J')
+    # A Guardian-authorized repair may not adopt a newer set of sources.
+    # This is a bounded pre-write fence, not an atomic Sheet transaction.
+    if guardian_snapshot is not None:
+        require(isinstance(guardian_snapshot, tuple) and
+                len(guardian_snapshot) == 4 and
+                (original_candidates, original_scans,
+                 api.read('UYARI_OLAYLARI', 'T'), original_panel)
+                == guardian_snapshot,
+                'PANEL_GUARDIAN_SNAPSHOT_CHANGED')
     p = plan(original_panel, original_candidates, original_scans)
     # A prior valid Sheet row cannot promote itself to this natural epoch.
     if expected_asof is not None:
@@ -157,6 +166,9 @@ def synchronize(api, expected_asof=None):
                                for v in vals]}],
             'fields':'userEnteredValue'
         }})
+    if guardian_snapshot is not None:
+        require(api.read('UYARI_OLAYLARI', 'T') == guardian_snapshot[2],
+                'PANEL_GUARDIAN_SNAPSHOT_CHANGED')
     api.request(':batchUpdate',method='POST',body={'requests':requests})
     after_panel = api.read('PANEL','C')
     require(all(len(after_panel)>idx and after_panel[idx][1:3]==vals
@@ -165,6 +177,9 @@ def synchronize(api, expected_asof=None):
     require(api.read('ADAY_GECMISI','M') == original_candidates
             and api.read('TARAMA_KAYITLARI','J') == original_scans,
             'PANEL_AUTHORITY_CHANGED_DURING_WRITE')
+    if guardian_snapshot is not None:
+        require(api.read('UYARI_OLAYLARI', 'T') == guardian_snapshot[2],
+                'PANEL_GUARDIAN_ALERTS_CHANGED_DURING_WRITE')
     return {'status':'PANEL_READBACK_PASS', 'changed':True,
             'asof_et':p['asof_et'], 'device_ack':False}
 
