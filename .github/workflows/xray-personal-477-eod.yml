@@ -51,6 +51,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   offline-guard:
+    outputs:
+      natural_eod_eligible: ${{ steps.natural_receipt.outputs.eligible }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     # This permits GET of the current scheduled workflow run only.
@@ -115,6 +117,8 @@ jobs:
           python -O -m unittest -q test_schedule_failover
           python -m unittest -q test_natural_run_readonly_probe
           python -O -m unittest -q test_natural_run_readonly_probe
+          python -m unittest -q test_natural_holiday_guard test_downstream_eod_gate
+          python -O -m unittest -q test_natural_holiday_guard test_downstream_eod_gate
           python -m py_compile natural_run_readonly_probe.py
           # Fail-closed if GitHub delivers a natural EOD after the safe source window.
           python -m unittest -q test_natural_eod_expiry_guard
@@ -132,15 +136,24 @@ jobs:
           python -O -m unittest -q test_official_shadow_477 test_official_eod_shadow_receipt test_official_guard_cutoff_select
           python -m py_compile official_shadow_477.py official_eod_shadow_receipt.py official_guard_cutoff_select.py
       - name: Require real natural EOD GitHub-run receipt (GET only, no tag claim)
+        id: natural_receipt
         if: ${{ github.event_name == 'schedule' }}
         working-directory: personal-swing
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          python natural_run_readonly_probe.py --verify
+          python natural_run_readonly_probe.py --verify | tee "$RUNNER_TEMP/xray-natural-receipt.json"
+          python - <<'PY_GATE'
+          import json, os
+          from natural_holiday_guard import private_jobs_eligible
+          with open(os.path.join(os.environ['RUNNER_TEMP'],'xray-natural-receipt.json'),encoding='utf-8') as f:
+              eligible=private_jobs_eligible(json.load(f))
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as f:
+              f.write('eligible='+('true' if eligible else 'false')+'\n')
+          PY_GATE
       - name: Read-only immutable epoch lease credential witness (no tag writes)
-        if: ${{ github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 }}
+        if: ${{ github.event_name == 'schedule' && github.ref == 'refs/heads/main' && github.run_attempt == 1 && steps.natural_receipt.outputs.eligible == 'true' }}
         working-directory: personal-swing
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -156,7 +169,7 @@ jobs:
           fi
   daily-private-scan:
     needs: offline-guard
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 42
     # This is the ONE existing schedule-only job with Git ref write access.
@@ -373,7 +386,7 @@ jobs:
 
   private-sheets-auth-preflight:
     needs: offline-guard
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
@@ -424,7 +437,7 @@ jobs:
     # Independent even when 477 full-universe producer fails.
     # The single private sheet is read after that job has stopped writing.
     needs: [offline-guard, daily-private-scan]
-    if: always() && needs.offline-guard.result == 'success' && github.event_name == 'schedule'
+    if: always() && needs.offline-guard.result == 'success' && github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 16
     # Raw step outcome precedes continue-on-error (unlike conclusion).
@@ -481,7 +494,7 @@ jobs:
     # Second independent private readback after EOD/episode/PANEL writers.
     # No new cron, no extra ChatGPT task and no phone delivery claim.
     needs: [offline-guard, daily-private-scan, private-sheets-auth-preflight, private-episode-followups]
-    if: ${{ always() && github.event_name == 'schedule' && needs.daily-private-scan.result == 'success' && needs.private-sheets-auth-preflight.result == 'success' && needs.private-episode-followups.result == 'success' }}
+    if: ${{ always() && github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true' && needs.daily-private-scan.result == 'success' && needs.private-sheets-auth-preflight.result == 'success' && needs.private-episode-followups.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
@@ -541,8 +554,8 @@ jobs:
     # An incomplete daily score can never turn the entire EOD green.
     # No IEX, extra cron, orders or delivery here. The optional proof bridge only
     # annotates the verified current SUMMARY link cell. It cannot reserve a delivery.
-    needs: [guardian-acceptance, private-episode-followups]
-    if: ${{ always() && github.event_name == 'schedule' && needs.guardian-acceptance.result == 'success' }}
+    needs: [offline-guard, guardian-acceptance, private-episode-followups]
+    if: ${{ always() && github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true' && needs.guardian-acceptance.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:

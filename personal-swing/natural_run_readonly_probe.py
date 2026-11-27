@@ -192,7 +192,15 @@ def main(argv=None):
                           "writes":0,"ab_release_authorized":False}))
         return 3
     try:
-        result=verify_bounded(runtime,lease.github_transport(token))
+        import daily_job
+        from natural_holiday_guard import classify_holiday_noop, private_jobs_eligible
+        transport=lease.github_transport(token)
+        at=datetime.now(timezone.utc)
+        if daily_job.current_completed_session(at) is None:
+            result=classify_holiday_noop(runtime,transport,at)
+        else:
+            result=verify_bounded(runtime,transport)
+        private_jobs_eligible(result)
     except Exception:
         # Never log provider exceptions, token, private data or raw bodies.
         print(json.dumps({"status":HOLD,

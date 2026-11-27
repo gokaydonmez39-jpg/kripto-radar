@@ -78,7 +78,9 @@ READONLY_PROVIDER_SCHEDULED={
 # new Issues, issue-write permissions and issue-triggered alerts are forbidden.
 ISSUE_WRITERS=set()
 # Exact reviewed EOD workflow; this is NOT live tag or delivery authority.
-REVIEWED_EOD_TAG_WORKFLOW_BLOB="fcfbf6b68ad61859da2780b5c020dfa106c06c43"
+# V167 draft: exact proposed workflow bytes; production review/merge remains separate.
+REVIEWED_EOD_TAG_WORKFLOW_BLOB="c7d7c11b04701ce1d2c4f526e618b6633e018e88"
+EOD_WRITER_GUARD="github.event_name == 'schedule' && needs.offline-guard.outputs.natural_eod_eligible == 'true'"
 
 def git_blob_sha(source):
     raw=source.encode("utf-8")
@@ -151,7 +153,8 @@ def inventory(files):
                     and git_blob_sha(source)==REVIEWED_EOD_TAG_WORKFLOW_BLOB
                     and top=={"contents":"read","actions":"read"}
                     and tag_job.get("permissions")=={"contents":"write","actions":"read"}
-                    and tag_job.get("if")=="github.event_name == 'schedule'")
+                    and tag_job.get("if")==EOD_WRITER_GUARD
+                    and tag_job.get("needs")=="offline-guard")
                 if is_tag_eod and not tag_scope_ok:
                     errors.append("EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT:"+name)
                 for job_id,job in jobs.items():
@@ -308,16 +311,20 @@ def inventory(files):
             primary=yaml.load(files[primary_name],Loader=yaml.BaseLoader)
             jobs=primary["jobs"]
             triggers=primary["on"]
-            writer_guard="github.event_name == 'schedule'"
+            writer_guard=EOD_WRITER_GUARD
             writer_jobs=("daily-private-scan","private-sheets-auth-preflight")
             downstream=("private-episode-followups","guardian-acceptance","daily-private-score-acceptance")
             safe=(set(triggers).issuperset({"schedule","push","pull_request","workflow_dispatch"})
                 and len(triggers["schedule"])==1
                 and triggers["schedule"][0].get("cron")=="16 23 * * 1-5"
                 and all(jobs[j].get("if")==writer_guard for j in writer_jobs)
+                and all(jobs[j].get("needs")=="offline-guard" for j in writer_jobs)
                 and all("github.event_name == 'schedule'" in jobs[j].get("if","")
+                        and "needs.offline-guard.outputs.natural_eod_eligible == 'true'" in jobs[j].get("if","")
+                        and "offline-guard" in jobs[j].get("needs",[])
                         and "workflow_dispatch" not in jobs[j].get("if","")
                         for j in downstream)
+                and jobs["offline-guard"].get("outputs",{}).get("natural_eod_eligible")=="${{ steps.natural_receipt.outputs.eligible }}"
                 and jobs["offline-guard"].get("if") is None
                 and primary.get("permissions",{}).get("contents")=="read")
             if not safe:
@@ -339,7 +346,9 @@ def inventory(files):
                     and "github.event.workflow_run.conclusion == 'success'" in condition
                     and "github.event.workflow_run.event == 'schedule' ||" in condition
                     and "github.event.workflow_run.event == 'workflow_dispatch'" in condition
-                    and "github.event.workflow_run.event != 'pull_request'" not in condition)
+                    and "github.event.workflow_run.event != 'pull_request'" not in condition
+                    and "needs.parent-eod-admission.result == 'success'" in condition
+                    and a14_jobs[job].get("needs")==["parent-eod-admission"])
             if not all(safe_a14_origin(j) for j in guarded):
                 errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
             one_time=a14_jobs["private-one-time-real-source-readback"]["if"]
@@ -436,6 +445,13 @@ def selftest():
         "    if: github.event_name == 'schedule'",
         "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'",1)}),
         "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        " && needs.offline-guard.outputs.natural_eod_eligible == 'true'", "", 1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
+    bad(lambda x:x.update({primary:x[primary].replace(
+        "needs: [offline-guard, guardian-acceptance, private-episode-followups]",
+        "needs: [guardian-acceptance, private-episode-followups]",1)}),
+        "PRIMARY_477_EOD_PUSH_WRITER_BOUNDARY_DRIFT")
     # No blanket exemption: workflow drift, wrong event or scope is RED.
     bad(lambda x:x.update({primary:x[primary]+"\n# unreviewed drift\n"}),
         "EOD_TAG_CANARY_REVIEWED_SCOPE_DRIFT")
@@ -474,9 +490,12 @@ def selftest():
         "github.event_name == 'push' &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
     bad(lambda x:x.update({a14:x[a14].replace(
-        "      github.event_name == 'workflow_run' &&",
-        "      (github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
+        "vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' && github.event_name == 'workflow_run' &&",
+        "vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "needs.parent-eod-admission.result == 'success' &&", "",1)}),
+        "PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")

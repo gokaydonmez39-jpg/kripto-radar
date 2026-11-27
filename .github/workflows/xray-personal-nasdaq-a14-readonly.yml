@@ -38,6 +38,27 @@ concurrency:
   group: xray-personal-nasdaq-private-research-shadow
   cancel-in-progress: false
 jobs:
+  parent-eod-admission:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify natural parent exact epoch and all six jobs before private work
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m pip install -r personal-swing/requirements.txt
+          python personal-swing/downstream_eod_gate.py
   configuration-readiness:
     # No secrets, network calls, private records or new cadence. This attests
     # the actual GitHub job context before any private researcher is allowed.
@@ -115,18 +136,13 @@ jobs:
       - name: Explicit research-only evidence semantics
         run: echo 'XRAY_A16=PRIVATE_IEX_SHEETS_READ_ONLY_NO_PRIVATE_ARTIFACTS_NO_ORDERS_NO_DEVICE_DELIVERY'
   private-flight-recorder:
+    needs: [parent-eod-admission]
     # A21: read-only witness AFTER a successful genuine EOD producer only.
     # A14 file pushes cannot access private data; no device ACK is inferred.
     # OAuth grants Google Sheets READONLY; never sends or marks any alert ACK.
     if: >-
-      github.ref_protected == true &&
-      vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' &&
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      (github.event.workflow_run.event == 'schedule' ||
-       github.event.workflow_run.event == 'workflow_dispatch') &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+      needs.parent-eod-admission.result == 'success' &&
+      (github.ref_protected == true && vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     environment: private-nasdaq-research
     timeout-minutes: 10
@@ -186,18 +202,13 @@ jobs:
           python -O -m unittest discover -v -s .. -p 'test_raw_corporate_action_witness.py'
           python -m py_compile nasdaq_performance_guard.py private_performance_adapter.py nasdaq_challenger_protocol.py private_flight_recorder.py ../raw_corporate_action_witness.py
   private-research-after-eod:
+    needs: [parent-eod-admission]
     # HARD GATES: origin is successful same-repo non-PR main EOD;
     # no private job at all until main branch protection and admin-enabled
     # private research permission are both demonstrated by GitHub.
     if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      (github.event.workflow_run.event == 'schedule' ||
-        github.event.workflow_run.event == 'workflow_dispatch') &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.ref_protected == true &&
-      vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true'
+      needs.parent-eod-admission.result == 'success' &&
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository && github.ref_protected == true && vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true')
     runs-on: ubuntu-latest
     environment: private-nasdaq-research
     timeout-minutes: 18
