@@ -490,8 +490,8 @@ def selftest():
         "github.event_name == 'push' &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
     bad(lambda x:x.update({a14:x[a14].replace(
-        "github.event_name == 'workflow_run' &&",
-        "(github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
+        "vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' && github.event_name == 'workflow_run' &&",
+        "vars.XRAY_NASDAQ_RESEARCH_PRIVATE_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
     bad(lambda x:x.update({a14:x[a14].replace(
         "needs.parent-eod-admission.result == 'success' &&", "",1)}),
