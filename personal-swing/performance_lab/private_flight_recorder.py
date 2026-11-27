@@ -354,10 +354,37 @@ def inspect(candidate_table, scan_table, event_table, panel_table, *, expected_a
             # An older episode can have closed AFTER this AL, yet still was
             # live at the decision date. Do not demand a second STOP alert
             # for an AL suppressed on that historical overlapping episode.
-            # Same-day closing is ambiguous, never a sufficient witness.
-            need(event_day == start and any(
+            # Production evaluates AL before lifecycle closes the session.
+            # A same-session closure proves overlap only with a valid prior
+            # episode and its exact terminal event, independently validated
+            # below. Never treat a closed-before-start episode as active.
+            same_session_witness = False
+            for prior in candidates:
+                if value(prior,2) != symbol or value(prior,1) >= start:
+                    continue
+                if value(prior,8) != start:
+                    continue
+                kind = value(prior,9)
+                match = re.fullmatch(
+                    r'KAPALI • ([A-Z_]+) • ([0-9]|1[0-5])/15 SEANS',
+                    value(prior,7))
+                if (match is None or match.group(1) != kind
+                        or not 1 <= int(match.group(2)) <= 15
+                        or kind not in TERMINAL_CODES
+                        or kind in ('GAP_BELOW_STOP', 'CORPORATE_ACTION_REVIEW')
+                        or (kind == 'TIME_EXIT_AT_CLOSE' and int(match.group(2)) != 15)):
+                    continue
+                terminal_key = closed_terminal_by_owner.get(value(prior,0))
+                if terminal_key and any(
+                        value(w,0) == terminal_key and value(w,1) == value(prior,0)
+                        and value(w,4) == start and value(w,5) == kind
+                        and value(w,17) in PENDING | {UNKNOWN, USER_ATTESTED}
+                        for w in alerts):
+                    same_session_witness = True
+                    break
+            need(event_day == start and (same_session_witness or any(
                 old_start < start and (end is None or end > start)
-                for old_start,end in episode_windows.get(symbol, [])),
+                for old_start,end in episode_windows.get(symbol, []))),
                 'FLIGHT_SUPPRESSION_WITHOUT_PRIOR_ACTIVE_EPISODE')
             suppressed_active_al += 1
             if owner in closed_terminal_by_owner:
