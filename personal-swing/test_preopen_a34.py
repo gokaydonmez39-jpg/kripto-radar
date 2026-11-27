@@ -425,6 +425,9 @@ class A34ScheduleResilienceTest(unittest.TestCase):
         self.assertIn("github.event_name == 'workflow_run' &&",private)
         self.assertIn("github.run_attempt == 1",private)
         self.assertNotIn("github.event_name != 'workflow_run' ||",private)
+        self.assertIn("needs: [offline-guard, parent-eod-admission]",private)
+        self.assertIn("needs.offline-guard.result == 'success'",private)
+        self.assertIn("(github.event_name == 'schedule' || (github.event_name == 'workflow_run' && needs.parent-eod-admission.result == 'success'))",private)
         self.assertIn("github.event.workflow_run.event == 'schedule'",private)
         self.assertIn("github.event.workflow_run.run_attempt == 1",private)
         self.assertIn(

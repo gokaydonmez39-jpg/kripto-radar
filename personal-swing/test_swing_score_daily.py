@@ -472,7 +472,8 @@ class DailyScoreWorkflowAcceptanceTests(unittest.TestCase):
 
     def test_guardian_independent_score_receipt_gate_is_mandatory(self):
         gate = self.job(self.workflow(), "daily-private-score-acceptance")
-        self.assertIn("needs: [guardian-acceptance, private-episode-followups]",gate)
+        self.assertIn("needs: [offline-guard, guardian-acceptance, private-episode-followups]",gate)
+        self.assertIn("needs.offline-guard.outputs.natural_eod_eligible == 'true'",gate)
         self.assertIn("needs.guardian-acceptance.result == 'success'", gate)
         self.assertIn("github.event_name == 'schedule'", gate)
         self.assertNotIn("workflow_dispatch", gate)

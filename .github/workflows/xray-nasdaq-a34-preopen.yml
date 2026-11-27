@@ -91,7 +91,7 @@ jobs:
       always() &&
       !cancelled() &&
       needs.offline-guard.result == 'success' &&
-      (github.event_name != 'workflow_run' || needs.parent-eod-admission.result == 'success') &&
+      (github.event_name == 'schedule' || (github.event_name == 'workflow_run' && needs.parent-eod-admission.result == 'success')) &&
       (github.ref == 'refs/heads/main' && github.run_attempt == 1 && github.event_name != 'push' && github.event_name != 'pull_request' && (github.event_name == 'schedule' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event == 'schedule' && github.event.workflow_run.run_attempt == 1 && github.event.workflow_run.path == '.github/workflows/xray-personal-477-eod.yml' && github.event.workflow_run.repository.full_name == github.repository)))
     runs-on: ubuntu-latest
     timeout-minutes: 25
