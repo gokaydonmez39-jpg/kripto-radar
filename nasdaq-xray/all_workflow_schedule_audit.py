@@ -346,7 +346,9 @@ def inventory(files):
                     and "github.event.workflow_run.conclusion == 'success'" in condition
                     and "github.event.workflow_run.event == 'schedule' ||" in condition
                     and "github.event.workflow_run.event == 'workflow_dispatch'" in condition
-                    and "github.event.workflow_run.event != 'pull_request'" not in condition)
+                    and "github.event.workflow_run.event != 'pull_request'" not in condition
+                    and "needs.parent-eod-admission.result == 'success'" in condition
+                    and a14_jobs[job].get("needs")==["parent-eod-admission"])
             if not all(safe_a14_origin(j) for j in guarded):
                 errors.append("PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
             one_time=a14_jobs["private-one-time-real-source-readback"]["if"]
@@ -488,9 +490,12 @@ def selftest():
         "github.event_name == 'push' &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
     bad(lambda x:x.update({a14:x[a14].replace(
-        "      github.event_name == 'workflow_run' &&",
-        "      (github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
+        "github.event_name == 'workflow_run' &&",
+        "(github.event_name == 'push' || github.event_name == 'workflow_run') &&",1)}),
         "PERSONAL_A14_PRIVATE_PUSH_READERS_BLOCKED_DRIFT")
+    bad(lambda x:x.update({a14:x[a14].replace(
+        "needs.parent-eod-admission.result == 'success' &&", "",1)}),
+        "PERSONAL_A14_UPSTREAM_EVENT_PROVENANCE_DRIFT")
     shadow="xray406_close_window_shadow.yml"
     bad(lambda x:x.update({shadow:x[shadow].replace("America/New_York","UTC")}),
         "XRAY406_SHADOW_SCHEDULE_OR_PRIVILEGE_DRIFT")
