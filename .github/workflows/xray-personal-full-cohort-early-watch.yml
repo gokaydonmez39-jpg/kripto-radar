@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - "nasdaq-xray/personal_watch_artifact_admission.py"
+      - "nasdaq-xray/test_personal_watch_artifact_admission.py"
       - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
   workflow_run:
     workflows: ["XRAY Personal Full-Universe SIP EOD Coverage (Research Only)"]
@@ -13,6 +15,8 @@ on:
     branches: [main]
     paths:
       - "nasdaq-xray/personal_full_cohort_early_technical_watch.py"
+      - "nasdaq-xray/personal_watch_artifact_admission.py"
+      - "nasdaq-xray/test_personal_watch_artifact_admission.py"
       - ".github/workflows/xray-personal-full-cohort-early-watch.yml"
   workflow_dispatch:
   schedule:
@@ -41,6 +45,7 @@ jobs:
           python -m py_compile nasdaq-xray/personal_full_cohort_early_technical_watch.py
           python nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
           python -O nasdaq-xray/personal_full_cohort_early_technical_watch.py --selftest
+          (cd nasdaq-xray && python -m unittest -q test_personal_watch_artifact_admission && python -O -m unittest -q test_personal_watch_artifact_admission)
       - name: Select completed-success exact research cohort, not stale or failed source
         # PR validation must be strictly OFFLINE; no provider calls or
         # downloaded private source artifacts from untrusted head commits.
@@ -59,6 +64,8 @@ jobs:
           from pathlib import Path
           sys.path.insert(0,str(Path("nasdaq-xray").resolve()))
           from personal_watch_run_lineage_guard import verify_run
+          from personal_watch_artifact_admission import admit, ARTIFACT
+          from root_weekend_quota_guard import permit_compute
           def gh(*args):
               return json.loads(subprocess.check_output(
                   ["gh","api",*args],text=True))
@@ -86,6 +93,20 @@ jobs:
               run=gh("repos/"+repo+"/actions/runs/"+str(run_id))
               verify_run(run,repo,expected_run_id=run_id,
                          expected_head_sha=run["head_sha"])
+          artifacts=gh("repos/"+repo+"/actions/runs/"+str(run_id)+"/artifacts?per_page=100")
+          jobs=None
+          if not any(a.get("name")==ARTIFACT for a in artifacts.get("artifacts", [])):
+              jobs=gh("repos/"+repo+"/actions/runs/"+str(run_id)+"/jobs?per_page=100")
+          admission=admit(run,artifacts,jobs,permit_compute=permit_compute)
+          if admission=="CLOSED_SESSION_NOOP":
+              with open(os.environ["GITHUB_OUTPUT"],"a") as out:
+                  out.write("ready=false\n")
+              with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as out:
+                  out.write("XRAY_EARLY_WATCH=VERIFIED_CLOSED_SESSION_NOOP; NO SOURCE DATA; NO WATCH; NO AL; NO DELIVERY\n")
+              print("XRAY_EARLY_WATCH_VERIFIED_CLOSED_SESSION_NOOP")
+              raise SystemExit(0)
+          if admission!="READY":
+              raise ValueError("XRAY_EARLY_WATCH_UNKNOWN_ADMISSION")
           with open(os.environ["GITHUB_OUTPUT"],"a") as out:
               out.write("ready=true\n")
               out.write("upstream_run_id="+str(run_id)+"\n")
